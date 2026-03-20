@@ -280,11 +280,49 @@ function bindEvents(ids, renderer) {
   });
 }
 
+function flashButton(button, label) {
+  if (!button) return;
+  const original = button.textContent;
+  button.textContent = label;
+  window.setTimeout(() => {
+    button.textContent = original;
+  }, 1600);
+}
+
+function resetInputs(container, renderer) {
+  container.querySelectorAll("input").forEach((input) => {
+    if (input.type === "checkbox") input.checked = input.defaultChecked;
+    else input.value = input.defaultValue;
+  });
+  renderHints();
+  renderer();
+}
+
+function initActionBar({ resetId, copyId, renderer }) {
+  const page = document.querySelector(".calculator-page");
+  if (!page) return;
+
+  $(resetId)?.addEventListener("click", () => {
+    resetInputs(page, renderer);
+    flashButton($(resetId), "초기화됨");
+  });
+
+  $(copyId)?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      flashButton($(copyId), "링크 복사됨");
+    } catch {
+      flashButton($(copyId), "복사 실패");
+    }
+  });
+}
+
 function initSalaryPage() {
   bindEvents(["currentAnnualInput", "bonus", "annualLeavePay", "includeBonusToggle", "raise1", "raise2", "raise3"], renderSalary);
   $("calcBtn")?.addEventListener("click", renderSalary);
   renderHints();
   renderSalary();
+  initActionBar({ resetId: "resetSalaryBtn", copyId: "copySalaryLinkBtn", renderer: renderSalary });
 }
 
 function initRetirementPage() {
@@ -292,6 +330,7 @@ function initRetirementPage() {
   $("calcRetirementBtn")?.addEventListener("click", renderRetirement);
   renderHints();
   renderRetirement();
+  initActionBar({ resetId: "resetRetirementBtn", copyId: "copyRetirementLinkBtn", renderer: renderRetirement });
 }
 
 function initNegotiationPage() {
@@ -299,6 +338,7 @@ function initNegotiationPage() {
   $("calcNegotiationBtn")?.addEventListener("click", renderNegotiation);
   renderHints();
   renderNegotiation();
+  initActionBar({ resetId: "resetNegotiationBtn", copyId: "copyNegotiationLinkBtn", renderer: renderNegotiation });
 }
 
 function initLeavePage() {
@@ -306,6 +346,7 @@ function initLeavePage() {
   $("calcLeaveBtn")?.addEventListener("click", renderLeave);
   renderHints();
   renderLeave();
+  initActionBar({ resetId: "resetLeaveBtn", copyId: "copyLeaveLinkBtn", renderer: renderLeave });
 }
 
 const page = document.querySelector("[data-calculator]")?.dataset.calculator;

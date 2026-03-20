@@ -3,6 +3,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import ToolTabs from "../../components/ToolTabs.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -20,6 +23,8 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       description="연봉과 근속연수, 보너스 반영 여부를 기준으로 평균임금과 퇴직금 실수령 추정액을 계산합니다."
     />
     <ToolTabs />
+
+    <ToolActionBar resetId="resetRetirementBtn" copyId="copyRetirementLinkBtn" />
 
     <section class="calculator-grid">
       <div class="stack">
@@ -56,23 +61,26 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
           </div>
           <button id="calcRetirementBtn" class="button button--primary" type="button">퇴직금 계산</button>
         </article>
+
+        <InfoNotice
+          title="안내"
+          lines={[
+            "퇴직소득세는 간이 추정 비율이며 실제 정산과 다를 수 있습니다.",
+            "평균임금 반영 방식은 회사 제도와 지급 항목에 따라 달라질 수 있습니다.",
+            "근속연수와 상여 반영 여부를 함께 점검해보는 것이 좋습니다."
+          ]}
+        />
       </div>
 
       <div class="stack">
-        <section class="metrics metrics--three">
-          <article class="metric-card">
-            <p>평균임금 추정</p>
-            <strong id="retirementAvgMonthlyWage">-</strong>
-          </article>
-          <article class="metric-card">
-            <p>퇴직금 세전</p>
-            <strong id="retirementGross">-</strong>
-          </article>
-          <article class="metric-card">
-            <p>퇴직금 세후</p>
-            <strong id="retirementNet">-</strong>
-          </article>
-        </section>
+        <SummaryCards
+          columns={3}
+          items={[
+            { label: "평균임금 추정", id: "retirementAvgMonthlyWage" },
+            { label: "퇴직금 세전", id: "retirementGross" },
+            { label: "퇴직금 세후", id: "retirementNet" }
+          ]}
+        />
 
         <article class="panel">
           <h2 class="panel__title">계산 상세</h2>
@@ -94,4 +102,3 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
-

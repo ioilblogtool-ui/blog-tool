@@ -3,6 +3,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import ToolTabs from "../../components/ToolTabs.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -20,6 +23,8 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       description="현재 연봉과 목표 연봉을 비교해 월 세전, 월 실수령, 인상률 변화를 빠르게 확인합니다."
     />
     <ToolTabs />
+
+    <ToolActionBar resetId="resetNegotiationBtn" copyId="copyNegotiationLinkBtn" />
 
     <section class="calculator-grid">
       <div class="stack">
@@ -39,27 +44,27 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
           </div>
           <button id="calcNegotiationBtn" class="button button--primary" type="button">비교하기</button>
         </article>
+
+        <InfoNotice
+          title="안내"
+          lines={[
+            "실수령 증감은 간이 공제 기준으로 계산됩니다.",
+            "보너스, 복지, RSU 같은 총보상 요소는 별도로 반영되지 않습니다.",
+            "협상 기준을 잡을 때는 월 실수령 증가와 인상률을 함께 확인하세요."
+          ]}
+        />
       </div>
 
       <div class="stack">
-        <section class="metrics metrics--four">
-          <article class="metric-card">
-            <p>연봉 인상액</p>
-            <strong id="negRaiseAmount">-</strong>
-          </article>
-          <article class="metric-card">
-            <p>연봉 인상률</p>
-            <strong id="negRaisePct">-</strong>
-          </article>
-          <article class="metric-card">
-            <p>월 세전 증가</p>
-            <strong id="negMonthlyGrossIncrease">-</strong>
-          </article>
-          <article class="metric-card">
-            <p>월 실수령 증가</p>
-            <strong id="negMonthlyNetIncrease">-</strong>
-          </article>
-        </section>
+        <SummaryCards
+          columns={4}
+          items={[
+            { label: "연봉 인상액", id: "negRaiseAmount" },
+            { label: "연봉 인상률", id: "negRaisePct" },
+            { label: "월 세전 증가", id: "negMonthlyGrossIncrease" },
+            { label: "월 실수령 증가", id: "negMonthlyNetIncrease" }
+          ]}
+        />
 
         <article class="panel">
           <h2 class="panel__title">비교 상세</h2>
@@ -81,4 +86,3 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
-

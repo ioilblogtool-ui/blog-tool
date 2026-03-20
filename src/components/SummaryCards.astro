@@ -1,0 +1,24 @@
+﻿---
+interface SummaryItem {
+  label: string;
+  id: string;
+}
+
+interface Props {
+  items: SummaryItem[];
+  columns?: 3 | 4;
+}
+
+const { items, columns = 4 } = Astro.props;
+---
+
+<section class:list={["metrics", columns === 3 ? "metrics--three" : "metrics--four"]}>
+  {
+    items.map((item) => (
+      <article class="metric-card summary-card">
+        <p>{item.label}</p>
+        <strong id={item.id}>-</strong>
+      </article>
+    ))
+  }
+</section>

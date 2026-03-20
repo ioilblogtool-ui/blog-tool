@@ -1,0 +1,17 @@
+﻿---
+interface Props {
+  title: string;
+  lines: string[];
+}
+
+const { title, lines } = Astro.props;
+---
+
+<aside class="notice-box" aria-label={title}>
+  <p class="notice-box__title">{title}</p>
+  <ul class="notice-box__list">
+    {
+      lines.map((line) => <li>{line}</li>)
+    }
+  </ul>
+</aside>
