@@ -1,0 +1,100 @@
+﻿---
+interface RelatedLink {
+  href: string;
+  label: string;
+}
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  introTitle: string;
+  intro: string[];
+  inputPoints?: string[];
+  criteria?: string[];
+  faq?: FaqItem[];
+  related?: RelatedLink[];
+}
+
+const {
+  introTitle,
+  intro,
+  inputPoints = [],
+  criteria = [],
+  faq = [],
+  related = []
+} = Astro.props;
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<section class="seo-content stack">
+  <article class="panel seo-panel">
+    <div class="panel-heading">
+      <div>
+        <p class="panel-heading__eyebrow">Guide</p>
+        <h2 class="panel__title">{introTitle}</h2>
+      </div>
+      <p class="panel-heading__summary">검색에서 바로 들어와도 계산 기준과 활용 맥락을 바로 이해할 수 있게 정리했습니다.</p>
+    </div>
+    <div class="seo-copy">
+      {intro.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+  </article>
+
+  {
+    inputPoints.length > 0 && (
+      <article class="panel seo-panel">
+        <h2 class="panel__title">이 페이지에서 확인할 수 있는 것</h2>
+        <ul class="seo-list">
+          {inputPoints.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+    )
+  }
+
+  {
+    criteria.length > 0 && (
+      <article class="panel seo-panel">
+        <h2 class="panel__title">계산 기준과 해석 포인트</h2>
+        <ul class="seo-list">
+          {criteria.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+    )
+  }
+
+  {
+    faq.length > 0 && (
+      <article class="panel seo-panel">
+        <h2 class="panel__title">자주 묻는 질문</h2>
+        <div class="faq-list">
+          {faq.map((item) => (
+            <details class="faq-item">
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </article>
+    )
+  }
+
+  {
+    related.length > 0 && (
+      <article class="panel seo-panel">
+        <h2 class="panel__title">관련 계산기</h2>
+        <div class="related-links">
+          {related.map((item) => (
+            <a class="related-link" href={withBase(item.href)}>{item.label}</a>
+          ))}
+        </div>
+      </article>
+    )
+  }
+</section>

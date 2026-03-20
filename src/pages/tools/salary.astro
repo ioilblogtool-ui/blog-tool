@@ -4,6 +4,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -110,8 +111,38 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </article>
       </div>
     </section>
+    <SeoContent
+      introTitle="연봉 인상 계산기를 어떻게 보면 좋은가"
+      intro={[
+        "연봉 인상 계산기는 현재 연봉 대비 인상액이 실제 월 실수령과 총보상에 얼마나 영향을 주는지 빠르게 비교하는 페이지입니다. 연봉 협상, 이직 제안 검토, 승진 직전 보상 점검처럼 숫자를 짧게 비교해야 할 때 유용합니다.",
+        "이 페이지는 세후 금액을 정밀 세무 계산처럼 맞추는 용도보다는, 인상액 200만 원과 500만 원이 체감상 얼마나 다른지 판단하는 용도로 설계했습니다. 보너스와 연차수당을 함께 넣으면 총보상 관점에서도 비교할 수 있습니다."
+      ]}
+      inputPoints={[
+        "현재 연봉, 보너스, 연차수당을 한 번에 입력해 현재 총보상 기준을 잡을 수 있습니다.",
+        "인상 시나리오 3개를 동시에 비교해 협상 하한선과 목표값을 같이 볼 수 있습니다.",
+        "보너스 포함 여부를 바꿔 연봉 중심 비교와 총보상 중심 비교를 나눠볼 수 있습니다."
+      ]}
+      criteria={[
+        "월 실수령은 간이 공제 기준으로 보는 참고값이며 실제 원천징수와는 차이가 날 수 있습니다.",
+        "협상용으로 볼 때는 인상액 자체보다 월 체감액, 연 총보상 증가폭, 기존 대비 증가율을 같이 보는 것이 좋습니다.",
+        "이직 제안 비교라면 이직 계산기와 함께 보면 더 정확한 판단이 가능합니다."
+      ]}
+      faq={[
+        { question: "연봉 인상 계산기는 실수령을 정확히 맞춰주나요?", answer: "이 페이지는 공제 구조를 단순화한 빠른 비교용 계산기입니다. 실제 실수령은 부양가족, 비과세, 복리후생, 회사별 급여 체계에 따라 달라질 수 있습니다." },
+        { question: "보너스를 포함해서 보는 게 좋나요?", answer: "협상이나 오퍼 비교에서는 기본연봉만 보면 놓치는 부분이 있어서, 보너스와 연차수당을 포함한 총보상 기준도 같이 보는 편이 좋습니다." },
+        { question: "이직 제안 비교에도 쓸 수 있나요?", answer: "가능합니다. 다만 회사 간 총보상 차이를 더 직접적으로 보려면 이직 계산기와 함께 비교하는 것이 좋습니다." }
+      ]}
+      related={[
+        { href: "/tools/negotiation/", label: "이직 계산기" },
+        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+        { href: "/tools/retirement/", label: "퇴직금 계산기" }
+      ]}
+    />
   </main>
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
+
+
+
 

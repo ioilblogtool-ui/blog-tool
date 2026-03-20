@@ -4,6 +4,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -132,7 +133,37 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
         </article>
       </div>
     </section>
+    <SeoContent
+      introTitle="출산~2세 총지원금 계산기를 보는 방법"
+      intro={[
+        "출산~2세 총지원금 계산기는 아이 출생부터 두 돌 전까지 받을 수 있는 첫만남이용권, 부모급여, 아동수당을 한 번에 합산해서 보여주는 페이지입니다. 출산 직후 총 얼마를 받을 수 있는지 가장 직관적으로 확인하고 싶을 때 적합합니다.",
+        "제도 안내를 길게 읽지 않아도 출생 순번과 기간만으로 총액과 월별 현금흐름을 바로 볼 수 있게 구성했습니다. 특히 첫째와 둘째 이상 차이를 빠르게 비교하는 데 유용합니다."
+      ]}
+      inputPoints={[
+        "첫만남이용권, 부모급여, 아동수당을 합친 총액을 빠르게 계산할 수 있습니다.",
+        "18개월 또는 24개월 구간으로 끊어서 월별 현금흐름을 볼 수 있습니다.",
+        "월급 참고값을 넣으면 지원금이 월급 몇 개월치 느낌인지 가볍게 비교할 수 있습니다."
+      ]}
+      criteria={[
+        "첫만남이용권은 첫째 200만 원, 둘째 이상 300만 원 기준으로 계산합니다.",
+        "부모급여는 0세 월 100만 원, 1세 월 50만 원 구조를 기준으로 단순 누적합니다.",
+        "아동수당은 0~24개월 구간만 반영하며 실제 제도 전체 기간과는 다를 수 있습니다."
+      ]}
+      faq={[
+        { question: "두 돌까지 총지원금에는 무엇이 포함되나요?", answer: "이 페이지에서는 첫만남이용권, 부모급여, 아동수당을 기본 포함 대상으로 봅니다." },
+        { question: "출생월이 지나도 계산할 수 있나요?", answer: "네. 현재 아이 개월 수를 바탕으로 현재까지 누적 추정과 남은 흐름을 함께 볼 수 있습니다." },
+        { question: "육아휴직 급여도 포함되나요?", answer: "아니요. 육아휴직 급여까지 포함한 가구 총액은 한 명만 육아휴직 총수령액 계산기에서 보는 편이 맞습니다." }
+      ]}
+      related={[
+        { href: "/tools/single-parental-leave-total/", label: "한 명만 육아휴직 총수령액 계산기" },
+        { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+        { href: "/tools/six-plus-six/", label: "6+6 부모육아휴직제 계산기" }
+      ]}
+    />
   </main>
 
   <script type="module" src={withBase("/scripts/birth-support-total.js")}></script>
 </BaseLayout>
+
+
+

@@ -4,6 +4,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -147,7 +148,37 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
         </article>
       </div>
     </section>
+    <SeoContent
+      introTitle="6+6 부모육아휴직제 계산기를 써야 하는 이유"
+      intro={[
+        "6+6 부모육아휴직제 계산기는 부모가 모두 육아휴직을 사용할 때 특례 적용 가능 여부와 일반 육아휴직 대비 추가 수령액을 비교하는 페이지입니다. 맞벌이 부부가 육아휴직 계획을 세울 때 가장 궁금한 차액 중심으로 설계했습니다.",
+        "단순히 제도 설명만 보는 것보다, 엄마와 아빠 각각의 월 통상임금과 사용 개월 수를 넣고 가구 총액 차이를 바로 보는 방식이 훨씬 판단하기 쉽습니다."
+      ]}
+      inputPoints={[
+        "엄마와 아빠 각각의 월 통상임금과 사용 개월 수를 넣어 총액을 계산할 수 있습니다.",
+        "자녀 생후 개월 수와 사용 방식에 따라 특례 적용 가능 여부를 바로 확인할 수 있습니다.",
+        "일반 육아휴직 대비 얼마나 더 받는지 가구 총액 차액으로 비교할 수 있습니다."
+      ]}
+      criteria={[
+        "자녀 생후 18개월 내 부모 모두 육아휴직을 사용할 때 첫 6개월간 상한이 확대되는 구조를 기준으로 계산합니다.",
+        "7개월 이후와 13~18개월 구간은 일반 육아휴직 구조를 이어 적용한 비교용 추정입니다.",
+        "실제 제도 적용 세부 조건은 회사, 고용 형태, 사용 시점에 따라 달라질 수 있습니다."
+      ]}
+      faq={[
+        { question: "6+6이 항상 일반 육아휴직보다 유리한가요?", answer: "대체로 가구 총액 측면에서는 유리할 가능성이 높지만, 실제 체감은 두 사람의 급여 수준과 사용 시점에 따라 달라집니다." },
+        { question: "부모가 순차 사용해도 계산할 수 있나요?", answer: "네. 동시 사용과 순차 사용 모두 비교할 수 있게 입력 구조를 두었습니다." },
+        { question: "18개월 연장까지 같이 볼 수 있나요?", answer: "가능합니다. 다만 확장 구간은 제도 안내를 단순화한 비교용 계산으로 해석하는 것이 좋습니다." }
+      ]}
+      related={[
+        { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+        { href: "/tools/single-parental-leave-total/", label: "한 명만 육아휴직 총수령액 계산기" },
+        { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" }
+      ]}
+    />
   </main>
 
   <script type="module" src={withBase("/scripts/six-plus-six.js")}></script>
 </BaseLayout>
+
+
+

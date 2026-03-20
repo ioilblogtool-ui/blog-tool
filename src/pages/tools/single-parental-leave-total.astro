@@ -4,6 +4,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -164,7 +165,37 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
         </article>
       </div>
     </section>
+    <SeoContent
+      introTitle="한 명만 육아휴직할 때 가구 총액을 왜 봐야 하나"
+      intro={[
+        "한 명만 육아휴직 총수령액 계산기는 엄마 또는 아빠 한 명이 육아휴직을 쓸 때, 육아휴직자 급여와 배우자 월급, 부모급여, 아동수당, 첫만남이용권을 합쳐 두 돌까지 가구 기준 총 현금흐름을 보여주는 페이지입니다.",
+        "실제로 많은 가정이 궁금한 것은 육아휴직 급여 단독 금액보다, 우리 집 통장에 두 돌까지 총 얼마가 들어오고 월 평균 소득이 어느 정도인지입니다. 이 페이지는 그 질문에 바로 답하도록 설계한 대표 계산기입니다."
+      ]}
+      inputPoints={[
+        "육아휴직자 월 통상임금과 배우자 월급을 함께 넣어 가구 기준으로 계산합니다.",
+        "육아휴직 기간에는 육아휴직 급여를, 복직 후에는 원래 월급을 반영합니다.",
+        "부모급여, 아동수당, 첫만남이용권까지 합산해 두 돌까지 총액과 월 평균 가구소득을 보여줍니다."
+      ]}
+      criteria={[
+        "이 계산기는 개인 급여가 아니라 가구 기준 총 현금흐름을 보는 데 초점을 둡니다.",
+        "배우자 급여는 24개월 동안 계속 들어오는 월 소득으로 반영합니다.",
+        "18개월 연장 조건과 첫째·둘째 차이를 함께 고려해 실전형 비교가 가능하도록 설계했습니다."
+      ]}
+      faq={[
+        { question: "엄마 육아휴직 + 남편 직장 급여 형태도 계산되나요?", answer: "네. 육아휴직 사용자를 엄마로 선택하고 배우자 월급을 입력하면 가구 기준으로 합산 계산됩니다." },
+        { question: "월 평균 가구소득은 무엇을 의미하나요?", answer: "두 돌까지 24개월 동안 들어오는 육아휴직자 소득, 배우자 급여, 부모급여, 아동수당, 첫만남이용권을 평균한 참고 지표입니다." },
+        { question: "6+6과는 어떻게 다른가요?", answer: "이 페이지는 한 명만 육아휴직할 때의 가구 총액을 보는 도구이고, 6+6 계산기는 부모가 모두 육아휴직을 쓸 때 특례 적용 차이를 비교하는 도구입니다." }
+      ]}
+      related={[
+        { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+        { href: "/tools/six-plus-six/", label: "6+6 부모육아휴직제 계산기" },
+        { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" }
+      ]}
+    />
   </main>
 
   <script type="module" src={withBase("/scripts/single-parental-leave-total.js")}></script>
 </BaseLayout>
+
+
+

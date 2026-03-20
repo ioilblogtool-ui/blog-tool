@@ -4,6 +4,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -119,7 +120,37 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
         </article>
       </div>
     </section>
+    <SeoContent
+      introTitle="육아휴직 급여 계산기에서 봐야 할 포인트"
+      intro={[
+        "육아휴직 급여 계산기는 월 통상임금을 기준으로 육아휴직 기간 동안 실제로 받을 수 있는 급여 구간을 월별로 계산하는 페이지입니다. 육아휴직을 3개월, 6개월, 12개월, 18개월까지 사용할 때 총액이 어떻게 달라지는지 빠르게 비교할 수 있습니다.",
+        "특히 1~3개월, 4~6개월, 7개월 이후 구간마다 상한이 달라지기 때문에, 내 월급이 어느 시점부터 상한에 걸리는지 확인하는 것이 중요합니다."
+      ]}
+      inputPoints={[
+        "월 통상임금과 사용 개월 수를 바탕으로 총 육아휴직 급여를 계산합니다.",
+        "18개월 연장 조건을 선택해 확장 구간까지 가정 비교할 수 있습니다.",
+        "월별 급여표를 통해 어느 시점에 상한이 적용되는지 바로 확인할 수 있습니다."
+      ]}
+      criteria={[
+        "1~3개월, 4~6개월, 7개월 이후 구간의 상한 구조를 기준으로 단순 계산합니다.",
+        "18개월 연장은 2025년 2월 23일 시행 기준을 단순화해 입력받고 있습니다.",
+        "13~18개월 구간은 공개 안내 흐름을 바탕으로 7~12개월 구조를 이어 적용한 비교용 추정입니다."
+      ]}
+      faq={[
+        { question: "육아휴직 18개월까지 모두 정확히 반영되나요?", answer: "현재 페이지는 제도 확장 흐름을 비교용으로 반영한 버전입니다. 13~18개월 구간은 공개 안내를 바탕으로 단순화한 추정 구조를 사용합니다." },
+        { question: "상한 적용 여부를 왜 봐야 하나요?", answer: "월 통상임금이 높을수록 계산상 비율보다 상한 금액에 먼저 걸릴 수 있어서, 실제 수령 체감이 달라지기 때문입니다." },
+        { question: "가구 전체 기준으로도 볼 수 있나요?", answer: "가구 총액은 배우자 월급과 부모급여까지 합산하는 한 명만 육아휴직 총수령액 계산기에서 확인하는 것이 맞습니다." }
+      ]}
+      related={[
+        { href: "/tools/single-parental-leave-total/", label: "한 명만 육아휴직 총수령액 계산기" },
+        { href: "/tools/six-plus-six/", label: "6+6 부모육아휴직제 계산기" },
+        { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" }
+      ]}
+    />
   </main>
 
   <script type="module" src={withBase("/scripts/parental-leave-pay.js")}></script>
 </BaseLayout>
+
+
+

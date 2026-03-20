@@ -4,6 +4,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -93,8 +94,38 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </article>
       </div>
     </section>
+    <SeoContent
+      introTitle="퇴직금 계산기에서 확인해야 하는 핵심"
+      intro={[
+        "퇴직금 계산기는 연봉과 근속연수, 상여 반영 여부를 기준으로 평균임금과 예상 퇴직금을 빠르게 확인하는 페이지입니다. 퇴사 시점 점검, 희망퇴직 비교, 커리어 이동 계획을 세울 때 가장 먼저 보는 숫자를 정리하는 데 맞춰져 있습니다.",
+        "실무에서는 퇴직금 세전 금액만 보는 경우가 많은데, 실제 체감은 세후 추정액과 근속연수 변화에 따라 꽤 달라집니다. 이 페이지는 그런 차이를 빠르게 확인할 수 있게 구성했습니다."
+      ]}
+      inputPoints={[
+        "현재 연봉과 근속연수로 기본 퇴직금 규모를 계산할 수 있습니다.",
+        "정기 보너스와 연차수당을 반영해 평균임금 기준이 얼마나 달라지는지 확인할 수 있습니다.",
+        "퇴직소득세 추정 비율을 직접 넣어 세후 감각도 함께 볼 수 있습니다."
+      ]}
+      criteria={[
+        "평균임금 반영 범위는 회사의 상여금 지급 방식과 취업규칙에 따라 달라질 수 있습니다.",
+        "세후 금액은 단순 추정치이므로 실제 정산 결과와 차이가 날 수 있습니다.",
+        "퇴직 직전 연봉 협상이나 이직 결정 전에는 연봉 계산기와 함께 보는 것이 좋습니다."
+      ]}
+      faq={[
+        { question: "보너스를 평균임금에 항상 넣어야 하나요?", answer: "항상 그런 것은 아닙니다. 지급 주기와 회사 규정에 따라 평균임금 반영 여부가 달라질 수 있어서, 비교용으로 포함/제외를 둘 다 보는 것이 좋습니다." },
+        { question: "근속연수는 소수점으로 넣어도 되나요?", answer: "네. 실제 퇴사 시점이 딱 정수 연수가 아닐 수 있으므로 대략적인 개월 수를 반영해 소수점으로 넣어볼 수 있습니다." },
+        { question: "세후 추정은 왜 대략치인가요?", answer: "퇴직소득세는 다양한 공제와 계산 단계가 있어서 페이지에서는 빠른 판단용 비율 입력 방식으로 단순화했습니다." }
+      ]}
+      related={[
+        { href: "/tools/salary/", label: "연봉 인상 계산기" },
+        { href: "/tools/negotiation/", label: "이직 계산기" },
+        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" }
+      ]}
+    />
   </main>
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
+
+
+
 

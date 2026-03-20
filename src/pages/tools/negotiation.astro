@@ -4,6 +4,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -77,8 +78,38 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </article>
       </div>
     </section>
+    <SeoContent
+      introTitle="이직 계산기를 활용하는 방법"
+      intro={[
+        "이직 계산기는 현재 연봉과 목표 연봉의 차이를 단순 숫자뿐 아니라 월 체감과 총보상 관점에서 비교하기 위한 페이지입니다. 오퍼를 받았을 때 지금보다 얼마나 나아지는지 빠르게 보는 용도로 잘 맞습니다.",
+        "특히 연봉만 높아 보이는 제안이 실제로는 월 실수령 차이가 작을 수 있기 때문에, 세전 금액과 체감 금액을 같이 보는 것이 중요합니다."
+      ]}
+      inputPoints={[
+        "현재 조건과 목표 조건을 넣어 이직 전후 차이를 바로 비교할 수 있습니다.",
+        "월 단위 체감 변화와 연 단위 차이를 함께 볼 수 있습니다.",
+        "연봉 인상 계산기와 연결해서 사내 협상안과 외부 오퍼를 같이 검토할 수 있습니다."
+      ]}
+      criteria={[
+        "이직 판단은 연봉 외에도 보너스, 성과급, 복지, 근무 강도까지 같이 봐야 합니다.",
+        "세후 금액은 빠른 비교용 추정치이므로 실제 지급 구조와는 차이가 날 수 있습니다.",
+        "대기업 이직이라면 성과급 시뮬레이터를 같이 봐야 총보상 판단이 더 명확해집니다."
+      ]}
+      faq={[
+        { question: "오퍼 금액만 넣어도 비교가 되나요?", answer: "네. 현재 연봉과 목표 연봉만으로도 차이는 볼 수 있습니다. 다만 보너스나 성과급 요소가 큰 회사라면 총보상 기준으로 추가 확인하는 것이 좋습니다." },
+        { question: "이직과 연봉 인상 중 무엇이 유리한지 판단할 수 있나요?", answer: "가능합니다. 이직 계산기와 연봉 인상 계산기를 함께 보면 회사 내부 인상안과 외부 오퍼를 나란히 비교할 수 있습니다." },
+        { question: "세전과 실수령 중 무엇을 더 봐야 하나요?", answer: "계약 조건은 세전이 기준이지만 실제 체감은 실수령에 가깝습니다. 두 숫자를 함께 보는 편이 안전합니다." }
+      ]}
+      related={[
+        { href: "/tools/salary/", label: "연봉 인상 계산기" },
+        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+        { href: "/tools/retirement/", label: "퇴직금 계산기" }
+      ]}
+    />
   </main>
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
+
+
+
 
