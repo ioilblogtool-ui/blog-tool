@@ -1,0 +1,125 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout title="육아휴직 급여 계산기" description="월 통상임금 기준으로 일반 육아휴직 사용 시 월별 급여와 총액을 계산하는 도구">
+  <SiteHeader />
+
+  <main class="container page-shell calculator-page" data-calculator="parental-leave-pay">
+    <CalculatorHero
+      eyebrow="Parental Leave Pay Tool"
+      title="육아휴직 급여 계산기"
+      description="월 통상임금을 기준으로 일반 육아휴직 18개월까지의 급여와 월급 대비 보전율을 계산합니다."
+    />
+
+    <section class="calculator-grid">
+      <div class="stack">
+        <article class="panel">
+          <h2 class="panel__title">육아휴직 정보 입력</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>월 통상임금</span>
+              <input id="leavePayMonthlyWage" type="number" value="2500000" />
+              <small id="leavePayMonthlyWageHint"></small>
+            </label>
+            <label class="field">
+              <span>사용 개월 수</span>
+              <select id="leavePayMonths">
+                <option value="1">1개월</option>
+                <option value="3">3개월</option>
+                <option value="6">6개월</option>
+                <option value="9">9개월</option>
+                <option value="12" selected>12개월</option>
+                <option value="15">15개월</option>
+                <option value="18">18개월</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>18개월 연장 조건</span>
+              <select id="leavePayExtensionType">
+                <option value="NONE" selected>기본 12개월</option>
+                <option value="SHARED_PARENT">부모 모두 3개월 이상 사용</option>
+                <option value="SINGLE_PARENT">한부모 가정</option>
+                <option value="DISABLED_CHILD">중증장애아동 양육</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>사용자</span>
+              <select id="leavePayUser">
+                <option value="MOTHER">엄마</option>
+                <option value="FATHER">아빠</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>시작 시점</span>
+              <select id="leavePayStartMonth">
+                <option value="0" selected>출생 직후</option>
+                <option value="1">1개월차</option>
+                <option value="3">3개월차</option>
+                <option value="6">6개월차</option>
+                <option value="12">12개월차</option>
+              </select>
+            </label>
+          </div>
+          <button id="calcLeavePayBtn" class="button button--primary" type="button">육아휴직 급여 계산하기</button>
+        </article>
+
+        <InfoNotice
+          title="안내"
+          lines={[
+            "육아휴직 1년 6개월 연장은 2025년 2월 23일 시행 기준으로 단순화한 조건 입력입니다.",
+            "1~3개월은 통상임금 100% 상한 250만 원, 4~6개월은 100% 상한 200만 원, 이후는 80% 상한 160만 원 기준으로 계산합니다.",
+            "13~18개월 구간은 공개 안내 흐름을 기준으로 7~12개월과 같은 상한 구조를 이어서 적용한 추정값입니다."
+          ]}
+        />
+      </div>
+
+      <div class="stack">
+        <SummaryCards
+          columns={4}
+          items={[
+            { label: "총 육아휴직 급여", id: "leavePayTotalSummary" },
+            { label: "월 평균 급여", id: "leavePayAverageSummary" },
+            { label: "월급 대비 보전율", id: "leavePayReplacementSummary" },
+            { label: "허용 한도", id: "leavePayAllowanceSummary" }
+          ]}
+        />
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Monthly Breakdown</p>
+              <h2 class="panel__title">월별 육아휴직 급여</h2>
+            </div>
+            <p class="panel-heading__summary" id="leavePaySummaryNote">-</p>
+          </div>
+          <div class="table-wrap">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>개월</th>
+                  <th>적용 비율</th>
+                  <th>상한</th>
+                  <th>월 급여</th>
+                  <th>상한 적용</th>
+                </tr>
+              </thead>
+              <tbody id="leavePayTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src={withBase("/scripts/parental-leave-pay.js")}></script>
+</BaseLayout>

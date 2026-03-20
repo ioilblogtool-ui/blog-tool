@@ -38,13 +38,8 @@ const toolLibraryScript = `
         if (visible) visibleCount += 1;
       });
 
-      if (emptyState) {
-        emptyState.hidden = visibleCount > 0;
-      }
-
-      if (countNode) {
-        countNode.textContent = visibleCount + "개 결과";
-      }
+      if (emptyState) emptyState.hidden = visibleCount > 0;
+      if (countNode) countNode.textContent = visibleCount + "개 결과";
     };
 
     filters.forEach((button) => {
@@ -64,14 +59,14 @@ const toolLibraryScript = `
 `;
 ---
 
-<BaseLayout title="ioil's Blog Tool" description="카드형 검색과 필터로 탐색하는 도구 목록">
+<BaseLayout title="비교계산소 도구 목록" description="생활과 실무에서 자주 마주치는 숫자를 빠르게 계산하고 비교해볼 수 있는 도구 목록">
   <SiteHeader />
 
   <main class="container page-shell tool-library-page">
     <CalculatorHero
-      eyebrow="Tool Library"
-      title="도구 목록"
-      description="카드형 목록에서 검색과 필터로 원하는 계산기와 시뮬레이터를 빠르게 찾을 수 있습니다."
+      eyebrow="도구 목록"
+      title="필요한 계산과 비교를 바로 찾을 수 있게"
+      description="생활과 실무에서 자주 마주치는 숫자를 빠르게 계산하고, 상황별로 비교해볼 수 있는 도구를 모아두었습니다."
     />
 
     <section class="library-toolbar panel">
@@ -122,4 +117,3 @@ const toolLibraryScript = `
 
   <script is:inline set:html={toolLibraryScript}></script>
 </BaseLayout>
-

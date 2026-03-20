@@ -1,0 +1,153 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout title="6+6 부모육아휴직제 계산기" description="부모 모두 육아휴직을 쓸 때 특례 적용 여부와 일반 육아휴직 대비 차액을 비교하는 도구">
+  <SiteHeader />
+
+  <main class="container page-shell calculator-page" data-calculator="six-plus-six">
+    <CalculatorHero
+      eyebrow="6+6 Tool"
+      title="6+6 부모육아휴직제 계산기"
+      description="부모가 모두 육아휴직을 사용할 때 6+6 특례와 18개월 연장 가능성까지 반영해 일반 육아휴직 대비 차액을 계산합니다."
+    />
+
+    <section class="calculator-grid">
+      <div class="stack">
+        <article class="panel">
+          <h2 class="panel__title">부모 육아휴직 정보 입력</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>엄마 월 통상임금</span>
+              <input id="sixMotherWage" type="number" value="2500000" />
+            </label>
+            <label class="field">
+              <span>아빠 월 통상임금</span>
+              <input id="sixFatherWage" type="number" value="2500000" />
+            </label>
+            <label class="field">
+              <span>엄마 사용 개월 수</span>
+              <select id="sixMotherMonths">
+                <option value="1">1개월</option>
+                <option value="3">3개월</option>
+                <option value="6" selected>6개월</option>
+                <option value="9">9개월</option>
+                <option value="12">12개월</option>
+                <option value="15">15개월</option>
+                <option value="18">18개월</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>아빠 사용 개월 수</span>
+              <select id="sixFatherMonths">
+                <option value="1">1개월</option>
+                <option value="3">3개월</option>
+                <option value="6" selected>6개월</option>
+                <option value="9">9개월</option>
+                <option value="12">12개월</option>
+                <option value="15">15개월</option>
+                <option value="18">18개월</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>자녀 생후 개월 수</span>
+              <input id="sixChildAgeMonths" type="number" min="0" max="18" value="0" />
+            </label>
+            <label class="field">
+              <span>사용 방식</span>
+              <select id="sixLeaveMode">
+                <option value="SEQUENTIAL" selected>순차</option>
+                <option value="SIMULTANEOUS">동시</option>
+              </select>
+            </label>
+          </div>
+          <button id="calcSixPlusSixBtn" class="button button--primary" type="button">6+6 가능 여부 확인하기</button>
+        </article>
+
+        <InfoNotice
+          title="안내"
+          lines={[
+            "자녀 생후 18개월 내 부모 모두 육아휴직을 사용할 때 첫 6개월간 상한이 확대되는 가정으로 계산합니다.",
+            "육아휴직 18개월 연장은 2025년 2월 23일 시행 기준으로 부모 모두 3개월 이상 사용 조건을 단순 반영했습니다.",
+            "7개월 이후와 13~18개월 구간은 일반 육아휴직 급여 구조를 이어서 적용한 추정 비교입니다."
+          ]}
+        />
+      </div>
+
+      <div class="stack">
+        <SummaryCards
+          columns={4}
+          items={[
+            { label: "6+6 적용 가능 여부", id: "sixEligibilitySummary" },
+            { label: "가구 총액", id: "sixHouseholdTotalSummary" },
+            { label: "일반 대비 차액", id: "sixDifferenceSummary" },
+            { label: "원래 월급 대비 보전율", id: "sixReplacementSummary" }
+          ]}
+        />
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Comparison</p>
+              <h2 class="panel__title">엄마 / 아빠 / 가구 총액 비교</h2>
+            </div>
+            <p class="panel-heading__summary" id="sixSummaryNote">-</p>
+          </div>
+          <div class="breakdown-grid">
+            <article class="breakdown-chip">
+              <span>엄마 총 급여</span>
+              <strong id="sixMotherTotalValue">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span>아빠 총 급여</span>
+              <strong id="sixFatherTotalValue">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span>가구 총액</span>
+              <strong id="sixHouseholdTotalValue">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span>일반 육아휴직 대비 차액</span>
+              <strong id="sixDifferenceValue">-</strong>
+            </article>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Detailed Comparison</p>
+              <h2 class="panel__title">일반 육아휴직 vs 6+6 비교</h2>
+            </div>
+            <p class="panel-heading__summary">월별 상한 차이를 기준으로 비교합니다.</p>
+          </div>
+          <div class="table-wrap">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>항목</th>
+                  <th>엄마 6+6</th>
+                  <th>엄마 일반</th>
+                  <th>아빠 6+6</th>
+                  <th>아빠 일반</th>
+                </tr>
+              </thead>
+              <tbody id="sixComparisonTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src={withBase("/scripts/six-plus-six.js")}></script>
+</BaseLayout>

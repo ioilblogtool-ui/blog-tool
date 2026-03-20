@@ -1,0 +1,138 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout title="출산~2세 총지원금 계산기" description="첫만남이용권, 부모급여, 아동수당을 합쳐 아이 두 돌 전까지 받을 수 있는 총액을 계산하는 도구">
+  <SiteHeader />
+
+  <main class="container page-shell calculator-page" data-calculator="birth-support-total">
+    <CalculatorHero
+      eyebrow="Birth Support Tool"
+      title="출산~2세 총지원금 계산기"
+      description="첫만남이용권, 부모급여, 아동수당을 합쳐 아이 18개월 또는 두 돌 전까지 우리 집이 받을 수 있는 총지원금을 계산합니다."
+    />
+
+    <section class="calculator-grid">
+      <div class="stack">
+        <article class="panel">
+          <h2 class="panel__title">기본 정보 입력</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>출생일</span>
+              <input id="birthDate" type="date" />
+            </label>
+            <label class="field">
+              <span>자녀 순번</span>
+              <select id="childOrder">
+                <option value="FIRST">첫째</option>
+                <option value="SECOND_PLUS">둘째 이상</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>계산 구간</span>
+              <select id="supportWindowMonths">
+                <option value="18">출생~18개월</option>
+                <option value="24" selected>출생~24개월</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>현재 아이 개월 수</span>
+              <input id="currentAgeMonths" type="number" min="0" max="24" value="0" />
+              <small>출생일 기준으로 자동 계산되며 필요하면 직접 수정할 수 있습니다.</small>
+            </label>
+            <label class="field">
+              <span>비교용 월급(직장인 급여 감각)</span>
+              <input id="supportMonthlySalaryReference" type="number" value="3000000" />
+              <small id="supportSalaryReferenceHint"></small>
+            </label>
+          </div>
+          <button id="calcBirthSupportBtn" class="button button--primary" type="button">우리 집 총액 계산하기</button>
+        </article>
+
+        <InfoNotice
+          title="안내"
+          lines={[
+            "첫만남이용권은 첫째 200만 원, 둘째 이상 300만 원 기준으로 계산합니다.",
+            "부모급여는 0세 월 100만 원, 1세 월 50만 원 기준이며 계산 구간에 맞춰 누적합니다.",
+            "아동수당은 월 10만 원을 단순 반영하며, 비교용 월급은 총보수 감각을 보기 위한 참고값입니다."
+          ]}
+        />
+      </div>
+
+      <div class="stack">
+        <SummaryCards
+          columns={4}
+          items={[
+            { label: "선택 구간 총지원금", id: "supportTotalSummary" },
+            { label: "월 평균 체감액", id: "supportMonthlyAverage" },
+            { label: "월급 몇 개월치", id: "supportSalaryEquivalent" },
+            { label: "월급 대비 보전율", id: "supportReplacementRate" }
+          ]}
+        />
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Support Breakdown</p>
+              <h2 class="panel__title">항목별 지원금 분해</h2>
+            </div>
+            <p class="panel-heading__summary" id="supportSummaryNote">-</p>
+          </div>
+          <div class="breakdown-grid">
+            <article class="breakdown-chip">
+              <span>첫만남이용권</span>
+              <strong id="firstMeetingVoucherValue">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span>부모급여 총액</span>
+              <strong id="parentBenefitTotalValue">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span>아동수당 총액</span>
+              <strong id="childAllowanceTotalValue">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span>현재까지 누적 추정</span>
+              <strong id="supportCurrentAccumulated">-</strong>
+            </article>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Monthly Timeline</p>
+              <h2 class="panel__title">월별 현금흐름</h2>
+            </div>
+            <p class="panel-heading__summary">선택한 구간의 월별 수령 흐름을 보여줍니다.</p>
+          </div>
+          <div class="table-wrap">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>개월</th>
+                  <th>첫만남이용권</th>
+                  <th>부모급여</th>
+                  <th>아동수당</th>
+                  <th>월 합계</th>
+                </tr>
+              </thead>
+              <tbody id="birthSupportTimelineTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src={withBase("/scripts/birth-support-total.js")}></script>
+</BaseLayout>
