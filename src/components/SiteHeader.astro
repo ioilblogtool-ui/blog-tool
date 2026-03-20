@@ -1,0 +1,27 @@
+---
+const currentPath = Astro.url.pathname;
+
+const links = [
+  { href: "/", label: "홈" },
+  { href: "/calculators/", label: "계산기" },
+  { href: "/posts/", label: "포스팅" }
+];
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="site-logo" href="/">Blog Tool</a>
+    <nav class="site-nav" aria-label="주요 메뉴">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class:list={["site-nav__link", currentPath === link.href && "is-active"]}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>

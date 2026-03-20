@@ -1,0 +1,104 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CalculatorTabs from "../../components/CalculatorTabs.astro";
+---
+
+<BaseLayout title="육아휴직 계산기 | Blog Tool">
+  <SiteHeader />
+
+  <main class="container page-shell calculator-page" data-calculator="leave">
+    <CalculatorHero
+      eyebrow="Parental Leave Calculator"
+      title="육아휴직 계산기"
+      description="휴직 중 월 수령액과 복직 후 연봉 기준 실수령을 비교해 필요한 생활비 버퍼를 계산합니다."
+    />
+    <CalculatorTabs />
+
+    <section class="calculator-grid">
+      <div class="stack">
+        <article class="panel">
+          <h2 class="panel__title">육아휴직 입력</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>휴직 전 월 실수령</span>
+              <input id="leaveBeforeNet" type="number" value="3200000" />
+            </label>
+            <label class="field">
+              <span>복직 후 연봉</span>
+              <input id="leaveAfterAnnual" type="number" value="52000000" />
+              <small id="leaveAfterAnnualHint"></small>
+            </label>
+            <label class="field">
+              <span>휴직 중 월 수령액</span>
+              <input id="leaveMonthlyIncome" type="number" value="1500000" />
+            </label>
+            <label class="field">
+              <span>휴직 개월 수</span>
+              <input id="leaveMonths" type="number" value="12" />
+            </label>
+            <label class="field">
+              <span>중간정산 금액</span>
+              <input id="leaveRetirementPayout" type="number" value="12000000" />
+              <small id="leaveRetirementPayoutHint"></small>
+            </label>
+            <label class="field">
+              <span>보너스</span>
+              <input id="leaveBonus" type="number" value="3000000" />
+              <small id="leaveBonusHint"></small>
+            </label>
+            <label class="field">
+              <span>연차수당</span>
+              <input id="leaveAnnualLeavePay" type="number" value="1000000" />
+              <small id="leaveAnnualLeavePayHint"></small>
+            </label>
+            <label class="check-field">
+              <input id="leaveIncludeBonus" type="checkbox" checked />
+              <span>복직 후 총보상에 보너스 포함</span>
+            </label>
+          </div>
+          <button id="calcLeaveBtn" class="button button--primary" type="button">비교하기</button>
+        </article>
+      </div>
+
+      <div class="stack">
+        <section class="metrics metrics--four">
+          <article class="metric-card">
+            <p>휴직 중 월 수령</p>
+            <strong id="leaveMonthlyIncomeCard">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>복직 후 월 실수령</p>
+            <strong id="leaveAfterMonthlyNet">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>월 차이</p>
+            <strong id="leaveMonthlyGap">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>버퍼 가능 개월</p>
+            <strong id="leaveBufferMonths">-</strong>
+          </article>
+        </section>
+
+        <article class="panel">
+          <h2 class="panel__title">비교 상세</h2>
+          <div class="table-wrap">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>항목</th>
+                  <th>값</th>
+                </tr>
+              </thead>
+              <tbody id="leaveTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/scripts/calculators.js"></script>
+</BaseLayout>

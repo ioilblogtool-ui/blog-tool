@@ -1,0 +1,23 @@
+---
+const currentPath = Astro.url.pathname;
+
+const links = [
+  { href: "/calculators/salary/", label: "연봉 인상" },
+  { href: "/calculators/retirement/", label: "퇴직금" },
+  { href: "/calculators/negotiation/", label: "이직" },
+  { href: "/calculators/parental-leave/", label: "육아휴직" }
+];
+---
+
+<nav class="calculator-tabs" aria-label="계산기 이동">
+  {
+    links.map((link) => (
+      <a
+        href={link.href}
+        class:list={["calculator-tabs__link", currentPath === link.href && "is-active"]}
+      >
+        {link.label}
+      </a>
+    ))
+  }
+</nav>

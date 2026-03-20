@@ -1,0 +1,78 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CalculatorTabs from "../../components/CalculatorTabs.astro";
+---
+
+<BaseLayout title="이직 계산기 | Blog Tool">
+  <SiteHeader />
+
+  <main class="container page-shell calculator-page" data-calculator="negotiation">
+    <CalculatorHero
+      eyebrow="Job Change Calculator"
+      title="이직 계산기"
+      description="현재 연봉과 목표 연봉을 비교해 월 세전, 월 실수령, 인상률 변화를 빠르게 확인합니다."
+    />
+    <CalculatorTabs />
+
+    <section class="calculator-grid">
+      <div class="stack">
+        <article class="panel">
+          <h2 class="panel__title">이직 입력</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>현재 연봉</span>
+              <input id="negCurrentAnnual" type="number" value="50000000" />
+              <small id="negCurrentAnnualHint"></small>
+            </label>
+            <label class="field">
+              <span>목표 연봉</span>
+              <input id="negTargetAnnual" type="number" value="65000000" />
+              <small id="negTargetAnnualHint"></small>
+            </label>
+          </div>
+          <button id="calcNegotiationBtn" class="button button--primary" type="button">비교하기</button>
+        </article>
+      </div>
+
+      <div class="stack">
+        <section class="metrics metrics--four">
+          <article class="metric-card">
+            <p>연봉 인상액</p>
+            <strong id="negRaiseAmount">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>연봉 인상률</p>
+            <strong id="negRaisePct">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>월 세전 증가</p>
+            <strong id="negMonthlyGrossIncrease">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>월 실수령 증가</p>
+            <strong id="negMonthlyNetIncrease">-</strong>
+          </article>
+        </section>
+
+        <article class="panel">
+          <h2 class="panel__title">비교 상세</h2>
+          <div class="table-wrap">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>항목</th>
+                  <th>값</th>
+                </tr>
+              </thead>
+              <tbody id="negotiationTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/scripts/calculators.js"></script>
+</BaseLayout>

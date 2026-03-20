@@ -1,0 +1,111 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CalculatorTabs from "../../components/CalculatorTabs.astro";
+---
+
+<BaseLayout title="연봉 인상 계산기 | Blog Tool">
+  <SiteHeader />
+
+  <main class="container page-shell calculator-page" data-calculator="salary">
+    <CalculatorHero
+      eyebrow="Salary Calculator"
+      title="연봉 인상 계산기"
+      description="현재 연봉과 보너스, 연차수당을 기준으로 인상 시나리오별 월 실수령 변화를 비교합니다."
+    />
+    <CalculatorTabs />
+
+    <section class="calculator-grid">
+      <div class="stack">
+        <article class="panel">
+          <h2 class="panel__title">기본 정보 입력</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>현재 연봉</span>
+              <input id="currentAnnualInput" type="number" value="50000000" />
+              <small id="currentAnnualInputHint"></small>
+            </label>
+            <label class="field">
+              <span>보너스</span>
+              <input id="bonus" type="number" value="3000000" />
+              <small id="bonusHint"></small>
+            </label>
+            <label class="field">
+              <span>연차수당</span>
+              <input id="annualLeavePay" type="number" value="1000000" />
+              <small id="annualLeavePayHint"></small>
+            </label>
+            <label class="check-field">
+              <input id="includeBonusToggle" type="checkbox" checked />
+              <span>총보상에 보너스 포함</span>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2 class="panel__title">인상 시나리오</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>케이스 1 인상액</span>
+              <input id="raise1" type="number" value="2000000" />
+              <small id="raise1Hint"></small>
+            </label>
+            <label class="field">
+              <span>케이스 2 인상액</span>
+              <input id="raise2" type="number" value="3000000" />
+              <small id="raise2Hint"></small>
+            </label>
+            <label class="field">
+              <span>케이스 3 인상액</span>
+              <input id="raise3" type="number" value="5000000" />
+              <small id="raise3Hint"></small>
+            </label>
+          </div>
+          <button id="calcBtn" class="button button--primary" type="button">계산하기</button>
+        </article>
+      </div>
+
+      <div class="stack">
+        <section class="metrics metrics--four">
+          <article class="metric-card">
+            <p>현재 연봉</p>
+            <strong id="currentAnnualSalary">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>현재 총보상</p>
+            <strong id="currentTotalComp">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>현재 월 세전</p>
+            <strong id="currentGrossMonthly">-</strong>
+          </article>
+          <article class="metric-card">
+            <p>현재 월 실수령</p>
+            <strong id="currentNetDisplay">-</strong>
+          </article>
+        </section>
+
+        <article class="panel">
+          <h2 class="panel__title">시나리오 비교</h2>
+          <div class="table-wrap">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>항목</th>
+                  <th>현재</th>
+                  <th>케이스 1</th>
+                  <th>케이스 2</th>
+                  <th>케이스 3</th>
+                </tr>
+              </thead>
+              <tbody id="resultTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/scripts/calculators.js"></script>
+</BaseLayout>
