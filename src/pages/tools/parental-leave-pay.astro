@@ -17,15 +17,16 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   <main class="container page-shell calculator-page" data-calculator="parental-leave-pay">
     <CalculatorHero
-      eyebrow="Parental Leave Pay Tool"
+      eyebrow="급여 계산"
       title="육아휴직 급여 계산기"
       description="월 통상임금을 기준으로 일반 육아휴직 18개월까지의 급여와 월급 대비 보전율을 계산합니다."
     />
 
-    <section class="calculator-grid">
+    <section class="calculator-grid content-section">
       <div class="stack">
         <article class="panel">
           <h2 class="panel__title">육아휴직 정보 입력</h2>
+          <p class="panel__intro">월 통상임금과 사용 개월 수를 넣으면 월별 급여 구간과 상한 적용 여부를 바로 확인할 수 있습니다.</p>
           <div class="form-grid">
             <label class="field">
               <span>월 통상임금</span>
@@ -73,15 +74,6 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
           </div>
           <button id="calcLeavePayBtn" class="button button--primary" type="button">육아휴직 급여 계산하기</button>
         </article>
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "육아휴직 1년 6개월 연장은 2025년 2월 23일 시행 기준으로 단순화한 조건 입력입니다.",
-            "1~3개월은 통상임금 100% 상한 250만 원, 4~6개월은 100% 상한 200만 원, 이후는 80% 상한 160만 원 기준으로 계산합니다.",
-            "13~18개월 구간은 공개 안내 흐름을 기준으로 7~12개월과 같은 상한 구조를 이어서 적용한 추정값입니다."
-          ]}
-        />
       </div>
 
       <div class="stack">
@@ -95,10 +87,19 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
           ]}
         />
 
+        <InfoNotice
+          title="안내"
+          lines={[
+            "육아휴직 1년 6개월 연장은 2025년 2월 23일 시행 기준으로 단순화한 조건 입력입니다.",
+            "1~3개월은 통상임금 100% 상한 250만 원, 4~6개월은 100% 상한 200만 원, 이후는 80% 상한 160만 원 기준으로 계산합니다.",
+            "13~18개월 구간은 공개 안내 흐름을 기준으로 7~12개월과 같은 상한 구조를 이어서 적용한 추정값입니다."
+          ]}
+        />
+
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Monthly Breakdown</p>
+              <p class="panel-heading__eyebrow">월별 급여</p>
               <h2 class="panel__title">월별 육아휴직 급여</h2>
             </div>
             <p class="panel-heading__summary" id="leavePaySummaryNote">-</p>
@@ -151,6 +152,3 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   <script type="module" src={withBase("/scripts/parental-leave-pay.js")}></script>
 </BaseLayout>
-
-
-

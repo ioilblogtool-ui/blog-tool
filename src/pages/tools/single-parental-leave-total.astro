@@ -17,15 +17,16 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   <main class="container page-shell calculator-page" data-calculator="single-parental-leave-total">
     <CalculatorHero
-      eyebrow="Household Cashflow Tool"
+      eyebrow="가구 합산"
       title="한 명만 육아휴직 총수령액 계산기"
       description="엄마 또는 아빠 한 명만 육아휴직할 때, 육아휴직자 소득과 배우자 월급을 함께 반영해 아이 두 돌까지 가구 총액과 월 평균 소득을 계산합니다."
     />
 
-    <section class="calculator-grid">
+    <section class="calculator-grid content-section">
       <div class="stack">
         <article class="panel">
           <h2 class="panel__title">가구 기준 입력</h2>
+          <p class="panel__intro">육아휴직자 소득과 배우자 월급을 함께 넣어두면 두 돌까지 가구 기준 총액을 한 번에 확인할 수 있습니다.</p>
           <div class="form-grid">
             <label class="field">
               <span>육아휴직 사용자</span>
@@ -89,15 +90,6 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
           </div>
           <button id="calcSingleLeaveBtn" class="button button--primary" type="button">가구 총액 계산하기</button>
         </article>
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "육아휴직 기간에는 육아휴직자 소득을 육아휴직 급여로 계산하고, 복직 후에는 다시 월 통상임금 기준으로 반영합니다.",
-            "배우자(직장인) 월급은 24개월 내내 계속 들어오는 가구 소득으로 반영합니다.",
-            "육아휴직 1년 6개월 연장은 2025년 2월 23일 시행된 조건 확대를 단순화한 입력입니다."
-          ]}
-        />
       </div>
 
       <div class="stack">
@@ -111,10 +103,19 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
           ]}
         />
 
+        <InfoNotice
+          title="안내"
+          lines={[
+            "육아휴직 기간에는 육아휴직자 소득을 육아휴직 급여로 계산하고, 복직 후에는 다시 월 통상임금 기준으로 반영합니다.",
+            "배우자(직장인) 월급은 24개월 내내 계속 들어오는 가구 소득으로 반영합니다.",
+            "육아휴직 1년 6개월 연장은 2025년 2월 23일 시행된 조건 확대를 단순화한 입력입니다."
+          ]}
+        />
+
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Household Breakdown</p>
+              <p class="panel-heading__eyebrow">가구 분해</p>
               <h2 class="panel__title">항목별 총수령액 분해</h2>
             </div>
             <p class="panel-heading__summary" id="singleSummaryNote">-</p>
@@ -142,7 +143,7 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Monthly Timeline</p>
+              <p class="panel-heading__eyebrow">월별 흐름</p>
               <h2 class="panel__title">월별 가구 소득 타임라인</h2>
             </div>
             <p class="panel-heading__summary">육아휴직자 소득, 배우자 월급, 지원금을 합친 가구 현금흐름입니다.</p>
@@ -196,6 +197,3 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   <script type="module" src={withBase("/scripts/single-parental-leave-total.js")}></script>
 </BaseLayout>
-
-
-

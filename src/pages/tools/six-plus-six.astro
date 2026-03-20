@@ -17,15 +17,16 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   <main class="container page-shell calculator-page" data-calculator="six-plus-six">
     <CalculatorHero
-      eyebrow="6+6 Tool"
+      eyebrow="특례 비교"
       title="6+6 부모육아휴직제 계산기"
       description="부모가 모두 육아휴직을 사용할 때 6+6 특례와 18개월 연장 가능성까지 반영해 일반 육아휴직 대비 차액을 계산합니다."
     />
 
-    <section class="calculator-grid">
+    <section class="calculator-grid content-section">
       <div class="stack">
         <article class="panel">
           <h2 class="panel__title">부모 육아휴직 정보 입력</h2>
+          <p class="panel__intro">엄마와 아빠 각각의 월 통상임금과 사용 개월 수를 넣으면 6+6 적용 여부와 가구 총액 차이를 빠르게 볼 수 있습니다.</p>
           <div class="form-grid">
             <label class="field">
               <span>엄마 월 통상임금</span>
@@ -73,15 +74,6 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
           </div>
           <button id="calcSixPlusSixBtn" class="button button--primary" type="button">6+6 가능 여부 확인하기</button>
         </article>
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "자녀 생후 18개월 내 부모 모두 육아휴직을 사용할 때 첫 6개월간 상한이 확대되는 가정으로 계산합니다.",
-            "육아휴직 18개월 연장은 2025년 2월 23일 시행 기준으로 부모 모두 3개월 이상 사용 조건을 단순 반영했습니다.",
-            "7개월 이후와 13~18개월 구간은 일반 육아휴직 급여 구조를 이어서 적용한 추정 비교입니다."
-          ]}
-        />
       </div>
 
       <div class="stack">
@@ -95,10 +87,19 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
           ]}
         />
 
+        <InfoNotice
+          title="안내"
+          lines={[
+            "자녀 생후 18개월 내 부모 모두 육아휴직을 사용할 때 첫 6개월간 상한이 확대되는 가정으로 계산합니다.",
+            "육아휴직 18개월 연장은 2025년 2월 23일 시행 기준으로 부모 모두 3개월 이상 사용 조건을 단순 반영했습니다.",
+            "7개월 이후와 13~18개월 구간은 일반 육아휴직 급여 구조를 이어서 적용한 추정 비교입니다."
+          ]}
+        />
+
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Comparison</p>
+              <p class="panel-heading__eyebrow">비교 요약</p>
               <h2 class="panel__title">엄마 / 아빠 / 가구 총액 비교</h2>
             </div>
             <p class="panel-heading__summary" id="sixSummaryNote">-</p>
@@ -126,7 +127,7 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Detailed Comparison</p>
+              <p class="panel-heading__eyebrow">상세 비교</p>
               <h2 class="panel__title">일반 육아휴직 vs 6+6 비교</h2>
             </div>
             <p class="panel-heading__summary">월별 상한 차이를 기준으로 비교합니다.</p>
@@ -179,6 +180,3 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   <script type="module" src={withBase("/scripts/six-plus-six.js")}></script>
 </BaseLayout>
-
-
-

@@ -5,6 +5,7 @@ import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -17,15 +18,18 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
   <main class="container page-shell calculator-page" data-calculator="salary">
     <CalculatorHero
-      eyebrow="Salary Tool"
+      eyebrow="급여 비교"
       title="연봉 인상 계산기"
       description="현재 연봉과 보너스, 연차수당을 기준으로 인상 시나리오별 월 실수령 변화를 비교합니다."
     />
 
-    <section class="calculator-grid">
+    <ToolActionBar resetId="resetSalaryBtn" copyId="copySalaryLinkBtn" />
+
+    <section class="calculator-grid calculator-grid--balanced content-section">
       <div class="stack">
         <article class="panel">
           <h2 class="panel__title">기본 정보 입력</h2>
+          <p class="panel__intro">현재 보상 기준을 먼저 입력하면 인상 시나리오별 체감 차이를 바로 비교할 수 있습니다.</p>
           <div class="form-grid">
             <label class="field">
               <span>현재 연봉</span>
@@ -51,6 +55,7 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
         <article class="panel">
           <h2 class="panel__title">인상 시나리오</h2>
+          <p class="panel__intro">케이스를 3개까지 넣어두면 월 실수령 증가폭과 총보상 차이를 한 번에 볼 수 있습니다.</p>
           <div class="form-grid">
             <label class="field">
               <span>케이스 1 인상액</span>
@@ -70,15 +75,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
           </div>
           <button id="calcBtn" class="button button--primary" type="button">계산하기</button>
         </article>
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "실수령은 간이 추정치이며 실제 공제 항목에 따라 달라질 수 있습니다.",
-            "보너스와 연차수당 포함 여부에 따라 총보상 결과가 달라집니다.",
-            "시나리오 비교는 현재 연봉 대비 증가폭을 빠르게 보는 용도입니다."
-          ]}
-        />
       </div>
 
       <div class="stack">
@@ -93,7 +89,34 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         />
 
         <article class="panel">
-          <h2 class="panel__title">시나리오 비교</h2>
+          <h2 class="panel__title">핵심 비교</h2>
+          <p class="panel__intro">모바일에서는 먼저 월 실수령 증가와 인상 후 연봉만 빠르게 확인해도 충분합니다.</p>
+          <div class="result-summary-grid">
+            <article class="result-summary-card result-summary-card--accent">
+              <p>케이스 1</p>
+              <strong id="raiseCase1Net">-</strong>
+              <span id="raiseCase1Annual">-</span>
+            </article>
+            <article class="result-summary-card">
+              <p>케이스 2</p>
+              <strong id="raiseCase2Net">-</strong>
+              <span id="raiseCase2Annual">-</span>
+            </article>
+            <article class="result-summary-card">
+              <p>케이스 3</p>
+              <strong id="raiseCase3Net">-</strong>
+              <span id="raiseCase3Annual">-</span>
+            </article>
+            <article class="result-summary-card">
+              <p>가장 큰 인상폭</p>
+              <strong id="raiseBestLabel">-</strong>
+              <span id="raiseBestNet">-</span>
+            </article>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2 class="panel__title">시나리오 비교 표</h2>
           <div class="table-wrap">
             <table class="result-table">
               <thead>
@@ -109,8 +132,18 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
             </table>
           </div>
         </article>
+
+        <InfoNotice
+          title="안내"
+          lines={[
+            "실수령은 간이 추정치이며 실제 공제 항목에 따라 달라질 수 있습니다.",
+            "보너스와 연차수당 포함 여부에 따라 총보상 결과가 달라집니다.",
+            "시나리오 비교는 현재 연봉 대비 증가폭을 빠르게 보는 용도입니다."
+          ]}
+        />
       </div>
     </section>
+
     <SeoContent
       introTitle="연봉 인상 계산기를 어떻게 보면 좋은가"
       intro={[
@@ -142,7 +175,3 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
-
-
-
-

@@ -17,15 +17,16 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   <main class="container page-shell calculator-page" data-calculator="birth-support-total">
     <CalculatorHero
-      eyebrow="Birth Support Tool"
+      eyebrow="지원금 합산"
       title="출산~2세 총지원금 계산기"
       description="첫만남이용권, 부모급여, 아동수당을 합쳐 아이 18개월 또는 두 돌 전까지 우리 집이 받을 수 있는 총지원금을 계산합니다."
     />
 
-    <section class="calculator-grid">
+    <section class="calculator-grid content-section">
       <div class="stack">
         <article class="panel">
           <h2 class="panel__title">기본 정보 입력</h2>
+          <p class="panel__intro">출생일과 자녀 순번만 넣으면 구간별 총액과 월별 현금흐름을 빠르게 확인할 수 있습니다.</p>
           <div class="form-grid">
             <label class="field">
               <span>출생일</span>
@@ -51,22 +52,13 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
               <small>출생일 기준으로 자동 계산되며 필요하면 직접 수정할 수 있습니다.</small>
             </label>
             <label class="field">
-              <span>비교용 월급(직장인 급여 감각)</span>
+              <span>비교용 월급</span>
               <input id="supportMonthlySalaryReference" type="number" value="3000000" />
               <small id="supportSalaryReferenceHint"></small>
             </label>
           </div>
           <button id="calcBirthSupportBtn" class="button button--primary" type="button">우리 집 총액 계산하기</button>
         </article>
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "첫만남이용권은 첫째 200만 원, 둘째 이상 300만 원 기준으로 계산합니다.",
-            "부모급여는 0세 월 100만 원, 1세 월 50만 원 기준이며 계산 구간에 맞춰 누적합니다.",
-            "아동수당은 월 10만 원을 단순 반영하며, 비교용 월급은 총보수 감각을 보기 위한 참고값입니다."
-          ]}
-        />
       </div>
 
       <div class="stack">
@@ -80,10 +72,19 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
           ]}
         />
 
+        <InfoNotice
+          title="안내"
+          lines={[
+            "첫만남이용권은 첫째 200만 원, 둘째 이상 300만 원 기준으로 계산합니다.",
+            "부모급여는 0세 월 100만 원, 1세 월 50만 원 기준이며 계산 구간에 맞춰 누적합니다.",
+            "아동수당은 월 10만 원을 단순 반영하며, 비교용 월급은 총보수 감각을 보기 위한 참고값입니다."
+          ]}
+        />
+
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Support Breakdown</p>
+              <p class="panel-heading__eyebrow">지원금 분해</p>
               <h2 class="panel__title">항목별 지원금 분해</h2>
             </div>
             <p class="panel-heading__summary" id="supportSummaryNote">-</p>
@@ -111,7 +112,7 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Monthly Timeline</p>
+              <p class="panel-heading__eyebrow">월별 흐름</p>
               <h2 class="panel__title">월별 현금흐름</h2>
             </div>
             <p class="panel-heading__summary">선택한 구간의 월별 수령 흐름을 보여줍니다.</p>
@@ -164,6 +165,3 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   <script type="module" src={withBase("/scripts/birth-support-total.js")}></script>
 </BaseLayout>
-
-
-

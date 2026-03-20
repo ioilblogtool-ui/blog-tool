@@ -9,12 +9,22 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 const orderedTools = [...tools].sort((a, b) => a.order - b.order);
 const spotlight = orderedTools.find((tool) => tool.slug === "bonus-simulator") ?? orderedTools[0];
+const featuredTools = orderedTools.slice(0, 6);
+
+const homeHighlights: Record<string, string> = {
+  salary: "인상률을 넣으면 월 실수령 변화까지 바로 비교합니다.",
+  retirement: "근속연수와 평균임금 기준으로 예상 퇴직금을 빠르게 확인합니다.",
+  negotiation: "현재 연봉과 이직 제안 연봉 차이를 한 번에 비교합니다.",
+  "parental-leave": "휴직 중 소득 공백과 복직 후 흐름을 같이 봅니다.",
+  "bonus-simulator": "삼성전자, SK하이닉스, 현대차 보상 시나리오를 나란히 비교합니다.",
+  "birth-support-total": "출산 직후부터 두 돌까지 받을 수 있는 지원금 총액을 정리합니다."
+};
 ---
 
 <BaseLayout title="비교계산소" description="비교해서 더 잘 판단하게 만드는 계산 도구">
   <SiteHeader />
 
-  <main class="container page-shell">
+  <main class="container page-shell home-page">
     <section class="hero hero--home hero--magazine">
       <p class="hero__eyebrow">비교계산소</p>
       <h1 class="hero__title">계산은 빠르게, 비교는 명확하게</h1>
@@ -27,10 +37,15 @@ const spotlight = orderedTools.find((tool) => tool.slug === "bonus-simulator") ?
       </div>
     </section>
 
-    <section class="home-spotlight">
+    <section class="home-spotlight content-section">
       <article class="panel home-spotlight__feature">
+        <div class="section-header">
+          <p class="section-header__eyebrow">Featured Tool</p>
+          <h2>지금 바로 써보기 좋은 대표 도구</h2>
+          <p>빠르게 비교해보고 판단까지 이어질 수 있는 대표 페이지를 먼저 배치했습니다.</p>
+        </div>
         <div class="tool-card__head">
-          <p class="tool-card__eyebrow">추천 도구</p>
+          <p class="tool-card__eyebrow">{spotlight.eyebrow ?? "추천 도구"}</p>
           {
             spotlight.badges && spotlight.badges.length > 0 && (
               <div class="tool-badges">
@@ -41,8 +56,9 @@ const spotlight = orderedTools.find((tool) => tool.slug === "bonus-simulator") ?
         </div>
         <h2>{spotlight.title}</h2>
         <p>{spotlight.description}</p>
-        <a class="button button--secondary" href={withBase(`/tools/${spotlight.slug}/`)}>바로 열기</a>
+        <a class="button button--secondary" href={withBase(`/tools/${spotlight.slug}/`)}>대표 도구 열기</a>
       </article>
+
       <div class="home-spotlight__stats">
         <article class="metric-card">
           <p>등록 도구 수</p>
@@ -55,26 +71,36 @@ const spotlight = orderedTools.find((tool) => tool.slug === "bonus-simulator") ?
       </div>
     </section>
 
-    <section class="tool-showcase tool-showcase--grid tool-showcase--magazine">
-      {
-        orderedTools.map((tool) => (
-          <a class="tool-card tool-card--feature" href={withBase(`/tools/${tool.slug}/`)}>
-            <div class="tool-card__head">
-              <p class="tool-card__eyebrow">{tool.eyebrow ?? "Tool"}</p>
-              {
-                tool.badges && tool.badges.length > 0 && (
-                  <div class="tool-badges">
-                    {tool.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
-                  </div>
-                )
-              }
-            </div>
-            <h2>{tool.title}</h2>
-            <p>{tool.description}</p>
-            <span class="tool-card__meta">바로 이동</span>
-          </a>
-        ))
-      }
+    <section class="content-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">Tool Library</p>
+        <h2>많이 찾는 계산기부터 바로 눌러보세요</h2>
+        <p>각 페이지에서 무엇을 바로 확인할 수 있는지 먼저 보이고, 클릭 후 바로 입력할 수 있게 정리했습니다.</p>
+      </div>
+      <div class="tool-showcase tool-showcase--grid tool-showcase--magazine">
+        {
+          featuredTools.map((tool) => (
+            <a class="tool-card tool-card--feature" href={withBase(`/tools/${tool.slug}/`)}>
+              <div class="tool-card__head">
+                <p class="tool-card__eyebrow">{tool.eyebrow ?? "Tool"}</p>
+                {
+                  tool.badges && tool.badges.length > 0 && (
+                    <div class="tool-badges">
+                      {tool.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
+                    </div>
+                  )
+                }
+              </div>
+              <h2>{tool.title}</h2>
+              <p>{tool.description}</p>
+              <span class="tool-card__meta">{homeHighlights[tool.slug] ?? "입력값을 넣고 결과를 바로 확인해보세요."}</span>
+            </a>
+          ))
+        }
+      </div>
+      <div class="home-actions">
+        <a class="button button--ghost" href={withBase("/tools/")}>전체 도구 목록 더 보기</a>
+      </div>
     </section>
   </main>
 </BaseLayout>

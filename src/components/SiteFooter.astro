@@ -1,0 +1,54 @@
+﻿---
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const year = new Date().getFullYear();
+
+const primaryLinks = [
+  { href: withBase("/"), label: "홈" },
+  { href: withBase("/tools/"), label: "도구 목록" },
+  { href: withBase("/tools/salary/"), label: "연봉 계산기" },
+  { href: withBase("/tools/retirement/"), label: "퇴직금 계산기" },
+  { href: withBase("/tools/bonus-simulator/"), label: "성과급 시뮬레이터" },
+  { href: withBase("/tools/parental-leave/"), label: "육아휴직 계산기" }
+];
+
+const trustLinks = [
+  { href: withBase("/about/"), label: "About" },
+  { href: withBase("/privacy/"), label: "Privacy" },
+  { href: withBase("/contact/"), label: "Contact" },
+  { href: withBase("/disclaimer/"), label: "면책 안내" }
+];
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__brand">
+      <p class="site-footer__eyebrow">비교계산소</p>
+      <strong>생활과 실무의 숫자를 더 쉽게 비교하는 계산 도구</strong>
+      <p>
+        비교계산소는 연봉, 퇴직금, 성과급, 육아휴직처럼 자주 확인하는 수치를
+        빠르게 계산하고 비교할 수 있도록 정리한 정보형 계산 사이트입니다.
+      </p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="풋터 링크">
+      <p class="site-footer__title">주요 링크</p>
+      <div class="site-footer__links">
+        {primaryLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      </div>
+      <div class="site-footer__links site-footer__links--sub">
+        {trustLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      </div>
+    </nav>
+
+    <div class="site-footer__meta">
+      <p class="site-footer__title">이용 안내</p>
+      <p>모든 계산 결과는 입력값과 공개 기준을 바탕으로 한 참고용 추정치입니다.</p>
+      <p>실제 지급액과 적용 기준은 회사 정책, 기관 공지, 최신 법령에 따라 달라질 수 있습니다.</p>
+      <p>중요한 의사결정 전에는 원문 공지와 공식 자료를 함께 확인해주세요.</p>
+      <p class="site-footer__copyright">© {year} 비교계산소</p>
+    </div>
+  </div>
+</footer>

@@ -5,6 +5,7 @@ import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
 import { companyConfigs, growthModeOptions, rankOptions, scenarioOptions } from "../../data/bonusSimulator";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
@@ -22,20 +23,22 @@ const initialCompany = companyConfigs[0];
 
   <main class="container page-shell calculator-page bonus-page" data-calculator="bonus-simulator">
     <CalculatorHero
-      eyebrow="Bonus Tool"
+      eyebrow="보상 비교"
       title="대기업 성과급 시뮬레이터"
       description="삼성전자, SK하이닉스, 현대자동차의 직급별 보상 감각을 빠르게 비교하고 2026~2028 총보상 시나리오를 확인해보세요."
     />
 
-    <section class="calculator-grid">
+    <ToolActionBar resetId="resetBonusBtn" copyId="copyBonusLinkBtn" />
+
+    <section class="calculator-grid calculator-grid--balanced content-section">
       <div class="stack">
         <article class="panel bonus-input-panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Quick Input</p>
-              <h2 class="panel__title">빠른 입력</h2>
+              <p class="panel-heading__eyebrow">입력</p>
+              <h2 class="panel__title">빠른 조건 선택</h2>
             </div>
-            <p class="panel-heading__summary">3~4번 선택으로 올해 성과급과 3개년 총보상 흐름을 봅니다.</p>
+            <p class="panel-heading__summary">회사, 직급, 연봉만 먼저 잡고 필요하면 상세 옵션을 추가하세요.</p>
           </div>
 
           <div class="form-grid">
@@ -118,32 +121,6 @@ const initialCompany = companyConfigs[0];
           <button id="calcBonusBtn" class="button button--primary" type="button">바로 계산하기</button>
         </article>
 
-        <InfoNotice
-          title="안내"
-          lines={[
-            "공개 자료와 보도 내용을 바탕으로 단순화한 시뮬레이션입니다.",
-            "실제 지급액은 사업부, 평가, 재직기간, 노사합의, 연도별 정책에 따라 달라질 수 있습니다.",
-            "2027~2028 값은 예측이 아니라 가정 기반 시나리오입니다."
-          ]}
-        />
-
-        <article class="panel source-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="panel-heading__eyebrow">Source Notes</p>
-              <h2 class="panel__title">기준값 메모</h2>
-            </div>
-            <p class="panel-heading__summary">Phase 1 튜닝에 반영한 최근 공개 포인트</p>
-          </div>
-          <div class="note-stack note-stack--compact">
-            <p class="note-chip">삼성전자: 2026년 1월 16일 기준 2025년분 OPI가 사업부별로 11%~50% 수준까지 공지된 보도 흐름을 반영했습니다.</p>
-            <p class="note-chip">SK하이닉스: 2026년 1월 28일 FY2025 매출 97.1467조 원, 영업이익 47.2063조 원과 2026년 2월 PS 2964% 사례를 기준점으로 잡았습니다.</p>
-            <p class="note-chip">현대자동차: 2025년 9월 9일 잠정합의안 기준 성과금 450% + 1,580만 원, 주식 30주, 상품권 20만 원 패키지를 반영했습니다.</p>
-          </div>
-        </article>
-      </div>
-
-      <div class="stack">
         <SummaryCards
           columns={4}
           items={[
@@ -172,13 +149,24 @@ const initialCompany = companyConfigs[0];
           </article>
         </section>
 
+        <InfoNotice
+          title="안내"
+          lines={[
+            "공개 자료와 보도 내용을 바탕으로 단순화한 시뮬레이션입니다.",
+            "실제 지급액은 사업부, 평가, 재직기간, 노사합의, 연도별 정책에 따라 달라질 수 있습니다.",
+            "2027~2028 값은 예측이 아니라 가정 기반 시나리오입니다."
+          ]}
+        />
+      </div>
+
+      <div class="stack">
         <article class="panel scenario-panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">Scenario Snapshot</p>
+              <p class="panel-heading__eyebrow">빠른 비교</p>
               <h2 class="panel__title">시나리오 한눈 비교</h2>
             </div>
-            <p class="panel-heading__summary">같은 프리셋과 직급 기준으로 보수적, 기준, 공격적 차이를 바로 봅니다.</p>
+            <p class="panel-heading__summary">같은 직급과 프리셋 기준으로 보수적, 기준, 공격적 흐름만 먼저 확인합니다.</p>
           </div>
           <div class="scenario-grid">
             <article class="scenario-card" data-scenario-card="CONSERVATIVE">
@@ -202,7 +190,30 @@ const initialCompany = companyConfigs[0];
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">2026 Breakdown</p>
+              <p class="panel-heading__eyebrow">회사 비교</p>
+              <h2 class="panel__title">같은 직급 기준 3사 비교</h2>
+            </div>
+            <p class="panel-heading__summary">추천 연봉 기준으로 올해 총보상을 비교합니다.</p>
+          </div>
+          <div class="compare-list" id="companyCompareList"></div>
+        </article>
+
+        <article class="panel insight-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">해석</p>
+              <h2 class="panel__title">한 줄 해석</h2>
+            </div>
+            <p class="panel-heading__summary" id="shareCopy">-</p>
+          </div>
+          <p class="insight-text" id="insightText">-</p>
+          <div class="note-stack" id="companyNotes"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">세부 분해</p>
               <h2 class="panel__title">성과급 분해</h2>
             </div>
             <p class="panel-heading__summary" id="companyTagline">-</p>
@@ -239,30 +250,19 @@ const initialCompany = companyConfigs[0];
           </div>
         </article>
 
-        <article class="panel">
-          <div class="panel-heading">
-            <div>
-              <p class="panel-heading__eyebrow">Same Rank Snapshot</p>
-              <h2 class="panel__title">같은 직급 기준 3사 비교</h2>
+        <details class="detail-box">
+          <summary>기준값 메모 보기</summary>
+          <div class="detail-box__content">
+            <div class="note-stack note-stack--compact">
+              <p class="note-chip">삼성전자: 2026년 1월 16일 기준 2025년분 OPI가 사업부별로 11%~50% 수준까지 공지된 보도 흐름을 반영했습니다.</p>
+              <p class="note-chip">SK하이닉스: 2026년 1월 28일 FY2025 매출 97.1467조 원, 영업이익 47.2063조 원과 2026년 2월 PS 2964% 사례를 기준점으로 잡았습니다.</p>
+              <p class="note-chip">현대자동차: 2025년 9월 9일 잠정합의안 기준 성과금 450% + 1,580만 원, 주식 30주, 상품권 20만 원 패키지를 반영했습니다.</p>
             </div>
-            <p class="panel-heading__summary">추천 연봉 기준으로 올해 총보상을 비교합니다.</p>
           </div>
-          <div class="compare-list" id="companyCompareList"></div>
-        </article>
-
-        <article class="panel insight-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="panel-heading__eyebrow">Interpretation</p>
-              <h2 class="panel__title">한 줄 해석</h2>
-            </div>
-            <p class="panel-heading__summary" id="shareCopy">-</p>
-          </div>
-          <p class="insight-text" id="insightText">-</p>
-          <div class="note-stack" id="companyNotes"></div>
-        </article>
+        </details>
       </div>
     </section>
+
     <SeoContent
       introTitle="대기업 성과급 시뮬레이터를 보는 관점"
       intro={[
@@ -295,7 +295,3 @@ const initialCompany = companyConfigs[0];
   <script id="bonusSimulatorConfig" type="application/json" set:html={JSON.stringify({ companyConfigs, rankOptions, scenarioOptions, growthModeOptions })}></script>
   <script type="module" src={withBase("/scripts/bonus-simulator.js")}></script>
 </BaseLayout>
-
-
-
-

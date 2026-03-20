@@ -5,6 +5,7 @@ import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -17,15 +18,18 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
   <main class="container page-shell calculator-page" data-calculator="leave">
     <CalculatorHero
-      eyebrow="Parental Leave Tool"
+      eyebrow="현금흐름 비교"
       title="육아휴직 계산기"
       description="휴직 중 월 수령액과 복직 후 연봉 기준 실수령을 비교해 필요한 생활비 버퍼를 계산합니다."
     />
 
-    <section class="calculator-grid">
+    <ToolActionBar resetId="resetLeaveBtn" copyId="copyLeaveLinkBtn" />
+
+    <section class="calculator-grid content-section">
       <div class="stack">
         <article class="panel">
           <h2 class="panel__title">육아휴직 입력</h2>
+          <p class="panel__intro">휴직 중 소득과 복직 후 소득을 함께 넣어두면 월 차이와 버퍼 가능 기간을 바로 볼 수 있습니다.</p>
           <div class="form-grid">
             <label class="field">
               <span>휴직 전 월 실수령</span>
@@ -66,15 +70,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
           </div>
           <button id="calcLeaveBtn" class="button button--primary" type="button">비교하기</button>
         </article>
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "실수령과 휴직 급여는 간이 추정 기준이며 실제 제도와 차이가 있을 수 있습니다.",
-            "정책형 계산기는 연도별 제도 변경 여부를 함께 확인하는 것이 좋습니다.",
-            "복직 후 총보상은 보너스 포함 여부에 따라 크게 달라질 수 있습니다."
-          ]}
-        />
       </div>
 
       <div class="stack">
@@ -85,6 +80,15 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
             { label: "복직 후 월 실수령", id: "leaveAfterMonthlyNet" },
             { label: "월 차이", id: "leaveMonthlyGap" },
             { label: "버퍼 가능 개월", id: "leaveBufferMonths" }
+          ]}
+        />
+
+        <InfoNotice
+          title="안내"
+          lines={[
+            "실수령과 휴직 급여는 간이 추정 기준이며 실제 제도와 차이가 있을 수 있습니다.",
+            "정책형 계산기는 연도별 제도 변경 여부를 함께 확인하는 것이 좋습니다.",
+            "복직 후 총보상은 보너스 포함 여부에 따라 크게 달라질 수 있습니다."
           ]}
         />
 
@@ -135,7 +139,3 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
-
-
-
-

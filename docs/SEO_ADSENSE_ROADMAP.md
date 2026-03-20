@@ -70,16 +70,20 @@ Sitemap: https://bigyocalc.com/sitemap.xml
   - Twitter Card
 
 ### 체크리스트
-- [ ] `https://bigyocalc.com/robots.txt` 접근 가능
-- [ ] `https://bigyocalc.com/sitemap.xml` 접근 가능
-- [ ] 모든 페이지 source에 canonical 존재
-- [ ] 중복 URL 없음
-- [ ] 404 페이지 별도 존재
+- [x] `https://bigyocalc.com/robots.txt` 접근 가능
+- [x] `https://bigyocalc.com/sitemap.xml` 접근 가능
+- [x] 확인한 주요 페이지 source에 canonical 존재
+- [x] 대표 도메인 기준 중복 노출 이슈 없음
+- [x] 404 페이지 별도 존재
 
 ### 진행 기록
-- 상태:
-- 작업일:
+- 상태: 진행 중
+- 작업일: 2026-03-20
 - 메모:
+  - `robots.txt` 실접속 확인 완료
+  - `sitemap.xml` 실접속 확인 완료
+  - 홈 `/`, `/tools/`, `/tools/salary/` canonical 확인 완료
+  - `https://bigyocalc.com/not-found-test`가 `404`가 아니라 `200`으로 응답함`r`n  - 없는 페이지가 홈 canonical로 처리되고 있어 404 분기 작업 필요`r`n  - `www.bigyocalc.com`은 `bigyocalc.com`으로 정상 리디렉션 확인`r`n  - `bigyocalc.pages.dev`는 외부 공개되지 않아 중복 노출 이슈 없음
 
 ---
 
@@ -377,10 +381,11 @@ google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
 ## 현재 부족한 부분 요약
 
 ### 기술
-- [ ] canonical 누락 여부 확인 필요
-- [ ] sitemap / robots 미정리
-- [ ] 도메인 중복 정리 미흡 가능성
+- [x] canonical 주요 페이지 확인 완료
+- [x] sitemap / robots 기본 접근 확인 완료
+- [x] 도메인 중복 정리 확인 완료
 - [ ] Search Console 미등록
+- [ ] 404 처리 미흡
 
 ### 콘텐츠
 - [ ] 계산기 설명 페이지 부족
@@ -396,12 +401,15 @@ google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
 
 ## 가장 추천하는 우선순위
 1. Search Console + sitemap + canonical + robots.txt
-2. 계산기 4종 각각에 대응하는 가이드 페이지 작성
-3. About / Privacy / Contact / FAQ
-4. AdSense 신청 + ads.txt + 광고 위치 최적화
+2. 404 페이지와 중복 도메인 정리
+3. 계산기 4종 각각에 대응하는 가이드 페이지 작성
+4. About / Privacy / Contact / FAQ
+5. AdSense 신청 + ads.txt + 광고 위치 최적화
 
 ---
 
 ## 한 줄 결론
 지금 비교계산소는 검색엔진이 잘 읽는 기술 구조와 광고 심사를 통과할 만한 콘텐츠 구조를 먼저 갖춰야 한다.  
-먼저 SEO 기반을 깔고, 계산기 4종을 설명하는 가이드 콘텐츠를 붙인 뒤, Search Console과 AdSense를 순서대로 여는 방식이 가장 안전하다.
+기술 SEO 기본 세팅은 일부 확인됐지만, 404 처리, Search Console 등록, 가이드 콘텐츠 확장이 다음 핵심 작업이다.
+
+
