@@ -10,6 +10,58 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 const orderedTools = [...tools].sort((a, b) => a.order - b.order);
 const categories = Array.from(new Set(orderedTools.map((tool) => tool.category ?? "tool")));
+const toolLibraryScript = `
+  (() => {
+    const searchInput = document.getElementById("toolSearchInput");
+    const emptyState = document.getElementById("toolLibraryEmpty");
+    const countNode = document.getElementById("toolLibraryCount");
+    const cards = Array.from(document.querySelectorAll("[data-tool-card]"));
+    const filters = Array.from(document.querySelectorAll("[data-filter]"));
+
+    if (!searchInput || cards.length === 0) return;
+
+    let activeFilter = "all";
+
+    const render = () => {
+      const query = String(searchInput.value || "").trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const category = card.getAttribute("data-category") || "";
+        const text = String(card.textContent || "").toLowerCase();
+        const slug = String(card.getAttribute("href") || "").toLowerCase();
+        const matchesFilter = activeFilter === "all" || category === activeFilter;
+        const matchesQuery = query.length === 0 || text.includes(query) || slug.includes(query);
+        const visible = matchesFilter && matchesQuery;
+
+        card.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+
+      if (emptyState) {
+        emptyState.hidden = visibleCount > 0;
+      }
+
+      if (countNode) {
+        countNode.textContent = visibleCount + "개 결과";
+      }
+    };
+
+    filters.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeFilter = button.getAttribute("data-filter") || "all";
+        filters.forEach((item) => item.classList.toggle("is-active", item === button));
+        render();
+      });
+    });
+
+    searchInput.addEventListener("input", render);
+    searchInput.addEventListener("keyup", render);
+    searchInput.addEventListener("search", render);
+    searchInput.addEventListener("compositionend", render);
+    render();
+  })();
+`;
 ---
 
 <BaseLayout title="ioil's Blog Tool" description="카드형 검색과 필터로 탐색하는 도구 목록">
@@ -25,7 +77,7 @@ const categories = Array.from(new Set(orderedTools.map((tool) => tool.category ?
     <section class="library-toolbar panel">
       <div class="library-toolbar__search field">
         <span>검색</span>
-        <input id="toolSearchInput" type="search" placeholder="도구 이름 또는 설명 검색" />
+        <input id="toolSearchInput" type="search" placeholder="도구 이름 또는 설명 검색" autocomplete="off" />
       </div>
       <div class="library-toolbar__filters">
         <button class="tool-filter is-active" type="button" data-filter="all">전체</button>
@@ -35,6 +87,7 @@ const categories = Array.from(new Set(orderedTools.map((tool) => tool.category ?
           ))
         }
       </div>
+      <p class="library-count" id="toolLibraryCount">{orderedTools.length}개 결과</p>
     </section>
 
     <section class="tool-showcase tool-showcase--grid" id="toolLibraryGrid">
@@ -45,7 +98,6 @@ const categories = Array.from(new Set(orderedTools.map((tool) => tool.category ?
             href={withBase(`/tools/${tool.slug}/`)}
             data-tool-card
             data-category={tool.category ?? "tool"}
-            data-search={`${tool.title} ${tool.description} ${tool.slug}`.toLowerCase()}
           >
             <div class="tool-card__head">
               <p class="tool-card__eyebrow">{tool.category ?? "tool"}</p>
@@ -68,5 +120,6 @@ const categories = Array.from(new Set(orderedTools.map((tool) => tool.category ?
     <p class="library-empty" id="toolLibraryEmpty" hidden>검색 결과가 없습니다. 다른 키워드나 필터를 선택해보세요.</p>
   </main>
 
-  <script type="module" src={withBase("/scripts/tool-library.js")}></script>
+  <script is:inline set:html={toolLibraryScript}></script>
 </BaseLayout>
+
