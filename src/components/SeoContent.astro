@@ -31,26 +31,64 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const quickHighlights = (inputPoints.length > 0 ? inputPoints : criteria).slice(0, 3);
+const jumpLinks = [
+  { id: "overview", label: "핵심 안내", visible: true },
+  { id: "highlights", label: "바로 확인할 것", visible: quickHighlights.length > 0 },
+  { id: "criteria", label: "계산 기준", visible: criteria.length > 0 },
+  { id: "faq", label: "FAQ", visible: faq.length > 0 },
+  { id: "related", label: "관련 계산기", visible: related.length > 0 }
+].filter((item) => item.visible);
 ---
 
 <section class="seo-content stack">
-  <article class="panel seo-panel">
+  <article class="panel seo-panel seo-panel--intro" id="overview">
     <div class="panel-heading">
       <div>
-        <p class="panel-heading__eyebrow">Guide</p>
+        <p class="panel-heading__eyebrow">상세 안내</p>
         <h2 class="panel__title">{introTitle}</h2>
       </div>
-      <p class="panel-heading__summary">검색에서 바로 들어와도 계산 기준과 활용 맥락을 바로 이해할 수 있게 정리했습니다.</p>
+      <p class="panel-heading__summary">검색에서 바로 들어와도 계산 기준, 활용 맥락, 다음 행동까지 빠르게 이해할 수 있게 정리했습니다.</p>
     </div>
+
+    {
+      jumpLinks.length > 0 && (
+        <nav class="seo-jump-links" aria-label="상세 페이지 빠른 이동">
+          {jumpLinks.map((item) => <a class="seo-jump-link" href={`#${item.id}`}>{item.label}</a>)}
+        </nav>
+      )
+    }
+
     <div class="seo-copy">
       {intro.map((paragraph) => <p>{paragraph}</p>)}
     </div>
   </article>
 
   {
+    quickHighlights.length > 0 && (
+      <article class="panel seo-panel" id="highlights">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">핵심 포인트</p>
+            <h2 class="panel__title">이 페이지에서 바로 확인할 수 있는 것</h2>
+          </div>
+          <p class="panel-heading__summary">사용자가 가장 빨리 이해해야 하는 포인트만 먼저 뽑았습니다.</p>
+        </div>
+        <div class="seo-highlight-grid">
+          {quickHighlights.map((item) => (
+            <article class="seo-highlight-card">
+              <strong>{item}</strong>
+            </article>
+          ))}
+        </div>
+      </article>
+    )
+  }
+
+  {
     inputPoints.length > 0 && (
       <article class="panel seo-panel">
-        <h2 class="panel__title">이 페이지에서 확인할 수 있는 것</h2>
+        <h2 class="panel__title">이 도구를 이렇게 활용하면 좋습니다</h2>
         <ul class="seo-list">
           {inputPoints.map((item) => <li>{item}</li>)}
         </ul>
@@ -60,7 +98,7 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   {
     criteria.length > 0 && (
-      <article class="panel seo-panel">
+      <article class="panel seo-panel" id="criteria">
         <h2 class="panel__title">계산 기준과 해석 포인트</h2>
         <ul class="seo-list">
           {criteria.map((item) => <li>{item}</li>)}
@@ -71,11 +109,11 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   {
     faq.length > 0 && (
-      <article class="panel seo-panel">
+      <article class="panel seo-panel" id="faq">
         <h2 class="panel__title">자주 묻는 질문</h2>
         <div class="faq-list">
-          {faq.map((item) => (
-            <details class="faq-item">
+          {faq.map((item, index) => (
+            <details class="faq-item" open={index === 0}>
               <summary>{item.question}</summary>
               <p>{item.answer}</p>
             </details>
@@ -87,8 +125,14 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
   {
     related.length > 0 && (
-      <article class="panel seo-panel">
-        <h2 class="panel__title">관련 계산기</h2>
+      <article class="panel seo-panel" id="related">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">다음 계산기</p>
+            <h2 class="panel__title">같이 보면 이해가 더 쉬운 계산기</h2>
+          </div>
+          <p class="panel-heading__summary">이 페이지를 본 사용자가 바로 이어서 많이 확인하는 흐름을 기준으로 연결했습니다.</p>
+        </div>
         <div class="related-links">
           {related.map((item) => (
             <a class="related-link" href={withBase(item.href)}>{item.label}</a>

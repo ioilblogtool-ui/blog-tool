@@ -6,6 +6,7 @@ import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -16,162 +17,184 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 <BaseLayout title="연봉 인상 계산기" description="현재 연봉과 인상 시나리오별 월 실수령 변화를 비교하는 도구">
   <SiteHeader />
 
-  <main class="container page-shell calculator-page" data-calculator="salary">
-    <CalculatorHero
-      eyebrow="급여 비교"
-      title="연봉 인상 계산기"
-      description="현재 연봉과 보너스, 연차수당을 기준으로 인상 시나리오별 월 실수령 변화를 비교합니다."
+  <SimpleToolShell calculatorId="salary" pageClass="salary-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="급여 비교"
+        title="연봉 인상 계산기"
+        description="현재 연봉과 보너스, 연차수당을 기준으로 인상 시나리오별 월 실수령 변화를 비교합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetSalaryBtn" copyId="copySalaryLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">기본 보상 정보</h2>
+          </div>
+          <p class="panel-heading__summary">현재 연봉과 보너스 기준을 먼저 잡아두면 인상 시나리오별 체감 차이를 바로 비교할 수 있습니다.</p>
+        </div>
+        <div class="form-grid form-grid--compact">
+          <label class="field">
+            <span>현재 연봉</span>
+            <input id="currentAnnualInput" type="number" value="50000000" />
+            <small id="currentAnnualInputHint"></small>
+          </label>
+          <label class="field">
+            <span>보너스</span>
+            <input id="bonus" type="number" value="3000000" />
+            <small id="bonusHint"></small>
+          </label>
+          <label class="field">
+            <span>연차수당</span>
+            <input id="annualLeavePay" type="number" value="1000000" />
+            <small id="annualLeavePayHint"></small>
+          </label>
+          <label class="check-field field-span-full">
+            <input id="includeBonusToggle" type="checkbox" checked />
+            <span>총보상에 보너스 포함</span>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">시나리오</p>
+            <h2 class="panel__title">인상 시나리오 3개 입력</h2>
+          </div>
+          <p class="panel-heading__summary">협상 하한선, 목표, 공격적 제안을 같이 놓고 볼 수 있게 3개 케이스를 비교합니다.</p>
+        </div>
+        <div class="form-grid form-grid--compact">
+          <label class="field">
+            <span>케이스 1 인상액</span>
+            <input id="raise1" type="number" value="2000000" />
+            <small id="raise1Hint"></small>
+          </label>
+          <label class="field">
+            <span>케이스 2 인상액</span>
+            <input id="raise2" type="number" value="3000000" />
+            <small id="raise2Hint"></small>
+          </label>
+          <label class="field field-span-full">
+            <span>케이스 3 인상액</span>
+            <input id="raise3" type="number" value="5000000" />
+            <small id="raise3Hint"></small>
+          </label>
+        </div>
+        <button id="calcBtn" class="button button--primary" type="button">계산하기</button>
+      </article>
+    </Fragment>
+
+    <SummaryCards
+      columns={4}
+      items={[
+        { label: "현재 연봉", id: "currentAnnualSalary" },
+        { label: "현재 총보상", id: "currentTotalComp" },
+        { label: "현재 월 세전", id: "currentGrossMonthly" },
+        { label: "현재 월 실수령", id: "currentNetDisplay" }
+      ]}
     />
 
-    <ToolActionBar resetId="resetSalaryBtn" copyId="copySalaryLinkBtn" />
-
-    <section class="calculator-grid calculator-grid--balanced content-section">
-      <div class="stack">
-        <article class="panel">
-          <h2 class="panel__title">기본 정보 입력</h2>
-          <p class="panel__intro">현재 보상 기준을 먼저 입력하면 인상 시나리오별 체감 차이를 바로 비교할 수 있습니다.</p>
-          <div class="form-grid">
-            <label class="field">
-              <span>현재 연봉</span>
-              <input id="currentAnnualInput" type="number" value="50000000" />
-              <small id="currentAnnualInputHint"></small>
-            </label>
-            <label class="field">
-              <span>보너스</span>
-              <input id="bonus" type="number" value="3000000" />
-              <small id="bonusHint"></small>
-            </label>
-            <label class="field">
-              <span>연차수당</span>
-              <input id="annualLeavePay" type="number" value="1000000" />
-              <small id="annualLeavePayHint"></small>
-            </label>
-            <label class="check-field">
-              <input id="includeBonusToggle" type="checkbox" checked />
-              <span>총보상에 보너스 포함</span>
-            </label>
-          </div>
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">핵심 비교</p>
+          <h2 class="panel__title">케이스별 체감 차이</h2>
+        </div>
+        <p class="panel-heading__summary">모바일에서는 월 실수령 증가와 인상 후 연봉만 먼저 확인해도 충분합니다.</p>
+      </div>
+      <div class="result-summary-grid">
+        <article class="result-summary-card result-summary-card--accent">
+          <p>케이스 1</p>
+          <strong id="raiseCase1Net">-</strong>
+          <span id="raiseCase1Annual">-</span>
         </article>
-
-        <article class="panel">
-          <h2 class="panel__title">인상 시나리오</h2>
-          <p class="panel__intro">케이스를 3개까지 넣어두면 월 실수령 증가폭과 총보상 차이를 한 번에 볼 수 있습니다.</p>
-          <div class="form-grid">
-            <label class="field">
-              <span>케이스 1 인상액</span>
-              <input id="raise1" type="number" value="2000000" />
-              <small id="raise1Hint"></small>
-            </label>
-            <label class="field">
-              <span>케이스 2 인상액</span>
-              <input id="raise2" type="number" value="3000000" />
-              <small id="raise2Hint"></small>
-            </label>
-            <label class="field">
-              <span>케이스 3 인상액</span>
-              <input id="raise3" type="number" value="5000000" />
-              <small id="raise3Hint"></small>
-            </label>
-          </div>
-          <button id="calcBtn" class="button button--primary" type="button">계산하기</button>
+        <article class="result-summary-card">
+          <p>케이스 2</p>
+          <strong id="raiseCase2Net">-</strong>
+          <span id="raiseCase2Annual">-</span>
+        </article>
+        <article class="result-summary-card">
+          <p>케이스 3</p>
+          <strong id="raiseCase3Net">-</strong>
+          <span id="raiseCase3Annual">-</span>
+        </article>
+        <article class="result-summary-card">
+          <p>가장 큰 인상폭</p>
+          <strong id="raiseBestLabel">-</strong>
+          <span id="raiseBestNet">-</span>
         </article>
       </div>
+    </article>
 
-      <div class="stack">
-        <SummaryCards
-          columns={4}
-          items={[
-            { label: "현재 연봉", id: "currentAnnualSalary" },
-            { label: "현재 총보상", id: "currentTotalComp" },
-            { label: "현재 월 세전", id: "currentGrossMonthly" },
-            { label: "현재 월 실수령", id: "currentNetDisplay" }
-          ]}
-        />
-
-        <article class="panel">
-          <h2 class="panel__title">핵심 비교</h2>
-          <p class="panel__intro">모바일에서는 먼저 월 실수령 증가와 인상 후 연봉만 빠르게 확인해도 충분합니다.</p>
-          <div class="result-summary-grid">
-            <article class="result-summary-card result-summary-card--accent">
-              <p>케이스 1</p>
-              <strong id="raiseCase1Net">-</strong>
-              <span id="raiseCase1Annual">-</span>
-            </article>
-            <article class="result-summary-card">
-              <p>케이스 2</p>
-              <strong id="raiseCase2Net">-</strong>
-              <span id="raiseCase2Annual">-</span>
-            </article>
-            <article class="result-summary-card">
-              <p>케이스 3</p>
-              <strong id="raiseCase3Net">-</strong>
-              <span id="raiseCase3Annual">-</span>
-            </article>
-            <article class="result-summary-card">
-              <p>가장 큰 인상폭</p>
-              <strong id="raiseBestLabel">-</strong>
-              <span id="raiseBestNet">-</span>
-            </article>
-          </div>
-        </article>
-
-        <article class="panel">
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">상세 비교</p>
           <h2 class="panel__title">시나리오 비교 표</h2>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th>항목</th>
-                  <th>현재</th>
-                  <th>케이스 1</th>
-                  <th>케이스 2</th>
-                  <th>케이스 3</th>
-                </tr>
-              </thead>
-              <tbody id="resultTable"></tbody>
-            </table>
-          </div>
-        </article>
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "실수령은 간이 추정치이며 실제 공제 항목에 따라 달라질 수 있습니다.",
-            "보너스와 연차수당 포함 여부에 따라 총보상 결과가 달라집니다.",
-            "시나리오 비교는 현재 연봉 대비 증가폭을 빠르게 보는 용도입니다."
-          ]}
-        />
+        </div>
       </div>
-    </section>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>현재</th>
+              <th>케이스 1</th>
+              <th>케이스 2</th>
+              <th>케이스 3</th>
+            </tr>
+          </thead>
+          <tbody id="resultTable"></tbody>
+        </table>
+      </div>
+    </article>
 
-    <SeoContent
-      introTitle="연봉 인상 계산기를 어떻게 보면 좋은가"
-      intro={[
-        "연봉 인상 계산기는 현재 연봉 대비 인상액이 실제 월 실수령과 총보상에 얼마나 영향을 주는지 빠르게 비교하는 페이지입니다. 연봉 협상, 이직 제안 검토, 승진 직전 보상 점검처럼 숫자를 짧게 비교해야 할 때 유용합니다.",
-        "이 페이지는 세후 금액을 정밀 세무 계산처럼 맞추는 용도보다는, 인상액 200만 원과 500만 원이 체감상 얼마나 다른지 판단하는 용도로 설계했습니다. 보너스와 연차수당을 함께 넣으면 총보상 관점에서도 비교할 수 있습니다."
-      ]}
-      inputPoints={[
-        "현재 연봉, 보너스, 연차수당을 한 번에 입력해 현재 총보상 기준을 잡을 수 있습니다.",
-        "인상 시나리오 3개를 동시에 비교해 협상 하한선과 목표값을 같이 볼 수 있습니다.",
-        "보너스 포함 여부를 바꿔 연봉 중심 비교와 총보상 중심 비교를 나눠볼 수 있습니다."
-      ]}
-      criteria={[
-        "월 실수령은 간이 공제 기준으로 보는 참고값이며 실제 원천징수와는 차이가 날 수 있습니다.",
-        "협상용으로 볼 때는 인상액 자체보다 월 체감액, 연 총보상 증가폭, 기존 대비 증가율을 같이 보는 것이 좋습니다.",
-        "이직 제안 비교라면 이직 계산기와 함께 보면 더 정확한 판단이 가능합니다."
-      ]}
-      faq={[
-        { question: "연봉 인상 계산기는 실수령을 정확히 맞춰주나요?", answer: "이 페이지는 공제 구조를 단순화한 빠른 비교용 계산기입니다. 실제 실수령은 부양가족, 비과세, 복리후생, 회사별 급여 체계에 따라 달라질 수 있습니다." },
-        { question: "보너스를 포함해서 보는 게 좋나요?", answer: "협상이나 오퍼 비교에서는 기본연봉만 보면 놓치는 부분이 있어서, 보너스와 연차수당을 포함한 총보상 기준도 같이 보는 편이 좋습니다." },
-        { question: "이직 제안 비교에도 쓸 수 있나요?", answer: "가능합니다. 다만 회사 간 총보상 차이를 더 직접적으로 보려면 이직 계산기와 함께 비교하는 것이 좋습니다." }
-      ]}
-      related={[
-        { href: "/tools/negotiation/", label: "이직 계산기" },
-        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
-        { href: "/tools/retirement/", label: "퇴직금 계산기" }
+    <InfoNotice
+      title="안내"
+      lines={[
+        "실수령은 간이 추정치이며 실제 공제 항목에 따라 달라질 수 있습니다.",
+        "보너스와 연차수당 포함 여부에 따라 총보상 결과가 달라집니다.",
+        "시나리오 비교는 현재 연봉 대비 증가폭을 빠르게 보는 용도입니다."
       ]}
     />
-  </main>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="연봉 인상 계산기를 어떻게 보면 좋은가"
+        intro={[
+          "연봉 인상 계산기는 현재 연봉 대비 인상액이 실제 월 실수령과 총보상에 얼마나 영향을 주는지 빠르게 비교하는 페이지입니다. 연봉 협상, 이직 제안 검토, 승진 직전 보상 점검처럼 숫자를 짧게 비교해야 할 때 유용합니다.",
+          "이 페이지는 세후 금액을 정밀 세무 계산처럼 맞추는 용도보다는, 인상액 200만 원과 500만 원이 체감상 얼마나 다른지 판단하는 용도로 설계했습니다. 보너스와 연차수당을 함께 넣으면 총보상 관점에서도 비교할 수 있습니다."
+        ]}
+        inputPoints={[
+          "현재 연봉, 보너스, 연차수당을 한 번에 입력해 현재 총보상 기준을 잡을 수 있습니다.",
+          "인상 시나리오 3개를 동시에 비교해 협상 하한선과 목표값을 같이 볼 수 있습니다.",
+          "보너스 포함 여부를 바꿔 연봉 중심 비교와 총보상 중심 비교를 나눠볼 수 있습니다."
+        ]}
+        criteria={[
+          "월 실수령은 간이 공제 기준으로 보는 참고값이며 실제 원천징수와는 차이가 날 수 있습니다.",
+          "협상용으로 볼 때는 인상액 자체보다 월 체감액, 연 총보상 증가폭, 기존 대비 증가율을 같이 보는 것이 좋습니다.",
+          "이직 제안 비교라면 이직 계산기와 함께 보면 더 정확한 판단이 가능합니다."
+        ]}
+        faq={[
+          { question: "연봉 인상 계산기는 실수령을 정확히 맞춰주나요?", answer: "이 페이지는 공제 구조를 단순화한 빠른 비교용 계산기입니다. 실제 실수령은 부양가족, 비과세, 복리후생, 회사별 급여 체계에 따라 달라질 수 있습니다." },
+          { question: "보너스를 포함해서 보는 게 좋나요?", answer: "협상이나 오퍼 비교에서는 기본연봉만 보면 놓치는 부분이 있어서, 보너스와 연차수당을 포함한 총보상 기준도 같이 보는 편이 좋습니다." },
+          { question: "이직 제안 비교에도 쓸 수 있나요?", answer: "가능합니다. 다만 회사 간 총보상 차이를 더 직접적으로 보려면 이직 계산기와 함께 비교하는 것이 좋습니다." }
+        ]}
+        related={[
+          { href: "/tools/negotiation/", label: "이직 계산기" },
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+          { href: "/tools/retirement/", label: "퇴직금 계산기" }
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>

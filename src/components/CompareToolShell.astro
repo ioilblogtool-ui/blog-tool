@@ -1,0 +1,25 @@
+﻿---
+interface Props {
+  calculatorId: string;
+  pageClass?: string;
+}
+
+const { calculatorId, pageClass = "" } = Astro.props;
+---
+
+<main class:list={["container", "page-shell", "calculator-page", pageClass]} data-calculator={calculatorId}>
+  <slot name="hero" />
+  <slot name="actions" />
+
+  <section class="compare-tool-shell content-section">
+    <aside class="compare-tool-shell__aside">
+      <slot name="aside" />
+    </aside>
+
+    <div class="compare-tool-shell__main">
+      <slot />
+    </div>
+  </section>
+
+  <slot name="seo" />
+</main>

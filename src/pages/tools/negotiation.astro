@@ -6,6 +6,7 @@ import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -16,100 +17,113 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 <BaseLayout title="이직 계산기" description="현재 연봉과 목표 연봉의 세전·실수령 차이를 비교하는 도구">
   <SiteHeader />
 
-  <main class="container page-shell calculator-page" data-calculator="negotiation">
-    <CalculatorHero
-      eyebrow="이직 비교"
-      title="이직 계산기"
-      description="현재 연봉과 목표 연봉을 비교해 월 세전, 월 실수령, 인상률 변화를 빠르게 확인합니다."
+  <SimpleToolShell calculatorId="negotiation" pageClass="negotiation-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="이직 비교"
+        title="이직 계산기"
+        description="현재 연봉과 목표 연봉을 비교해 월 세전, 월 실수령, 인상률 변화를 빠르게 확인합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetNegotiationBtn" copyId="copyNegotiationLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">현재 조건과 목표 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">현재 연봉과 목표 연봉만 넣으면 이직 전후의 연봉 증가액과 월 체감 차이를 바로 비교할 수 있습니다.</p>
+        </div>
+        <div class="form-grid form-grid--compact">
+          <label class="field">
+            <span>현재 연봉</span>
+            <input id="negCurrentAnnual" type="number" value="50000000" />
+            <small id="negCurrentAnnualHint"></small>
+          </label>
+          <label class="field">
+            <span>목표 연봉</span>
+            <input id="negTargetAnnual" type="number" value="65000000" />
+            <small id="negTargetAnnualHint"></small>
+          </label>
+        </div>
+        <button id="calcNegotiationBtn" class="button button--primary" type="button">비교하기</button>
+      </article>
+    </Fragment>
+
+    <SummaryCards
+      columns={4}
+      items={[
+        { label: "연봉 인상액", id: "negRaiseAmount" },
+        { label: "연봉 인상률", id: "negRaisePct" },
+        { label: "월 세전 증가", id: "negMonthlyGrossIncrease" },
+        { label: "월 실수령 증가", id: "negMonthlyNetIncrease" }
+      ]}
     />
 
-    <ToolActionBar resetId="resetNegotiationBtn" copyId="copyNegotiationLinkBtn" />
-
-    <section class="calculator-grid content-section">
-      <div class="stack">
-        <article class="panel">
-          <h2 class="panel__title">이직 입력</h2>
-          <p class="panel__intro">현재 조건과 목표 조건을 넣으면 연봉 증가액과 월 체감 차이를 바로 비교할 수 있습니다.</p>
-          <div class="form-grid">
-            <label class="field">
-              <span>현재 연봉</span>
-              <input id="negCurrentAnnual" type="number" value="50000000" />
-              <small id="negCurrentAnnualHint"></small>
-            </label>
-            <label class="field">
-              <span>목표 연봉</span>
-              <input id="negTargetAnnual" type="number" value="65000000" />
-              <small id="negTargetAnnualHint"></small>
-            </label>
-          </div>
-          <button id="calcNegotiationBtn" class="button button--primary" type="button">비교하기</button>
-        </article>
-      </div>
-
-      <div class="stack">
-        <SummaryCards
-          columns={4}
-          items={[
-            { label: "연봉 인상액", id: "negRaiseAmount" },
-            { label: "연봉 인상률", id: "negRaisePct" },
-            { label: "월 세전 증가", id: "negMonthlyGrossIncrease" },
-            { label: "월 실수령 증가", id: "negMonthlyNetIncrease" }
-          ]}
-        />
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "실수령 증감은 간이 공제 기준으로 계산됩니다.",
-            "보너스, 복지, RSU 같은 총보상 요소는 별도로 반영되지 않습니다.",
-            "협상 기준을 잡을 때는 월 실수령 증가와 인상률을 함께 확인하세요."
-          ]}
-        />
-
-        <article class="panel">
-          <h2 class="panel__title">비교 상세</h2>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th>항목</th>
-                  <th>값</th>
-                </tr>
-              </thead>
-              <tbody id="negotiationTable"></tbody>
-            </table>
-          </div>
-        </article>
-      </div>
-    </section>
-    <SeoContent
-      introTitle="이직 계산기를 활용하는 방법"
-      intro={[
-        "이직 계산기는 현재 연봉과 목표 연봉의 차이를 단순 숫자뿐 아니라 월 체감과 총보상 관점에서 비교하기 위한 페이지입니다. 오퍼를 받았을 때 지금보다 얼마나 나아지는지 빠르게 보는 용도로 잘 맞습니다.",
-        "특히 연봉만 높아 보이는 제안이 실제로는 월 실수령 차이가 작을 수 있기 때문에, 세전 금액과 체감 금액을 같이 보는 것이 중요합니다."
-      ]}
-      inputPoints={[
-        "현재 조건과 목표 조건을 넣어 이직 전후 차이를 바로 비교할 수 있습니다.",
-        "월 단위 체감 변화와 연 단위 차이를 함께 볼 수 있습니다.",
-        "연봉 인상 계산기와 연결해서 사내 협상안과 외부 오퍼를 같이 검토할 수 있습니다."
-      ]}
-      criteria={[
-        "이직 판단은 연봉 외에도 보너스, 성과급, 복지, 근무 강도까지 같이 봐야 합니다.",
-        "세후 금액은 빠른 비교용 추정치이므로 실제 지급 구조와는 차이가 날 수 있습니다.",
-        "대기업 이직이라면 성과급 시뮬레이터를 같이 봐야 총보상 판단이 더 명확해집니다."
-      ]}
-      faq={[
-        { question: "오퍼 금액만 넣어도 비교가 되나요?", answer: "네. 현재 연봉과 목표 연봉만으로도 차이는 볼 수 있습니다. 다만 보너스나 성과급 요소가 큰 회사라면 총보상 기준으로 추가 확인하는 것이 좋습니다." },
-        { question: "이직과 연봉 인상 중 무엇이 유리한지 판단할 수 있나요?", answer: "가능합니다. 이직 계산기와 연봉 인상 계산기를 함께 보면 회사 내부 인상안과 외부 오퍼를 나란히 비교할 수 있습니다." },
-        { question: "세전과 실수령 중 무엇을 더 봐야 하나요?", answer: "계약 조건은 세전이 기준이지만 실제 체감은 실수령에 가깝습니다. 두 숫자를 함께 보는 편이 안전합니다." }
-      ]}
-      related={[
-        { href: "/tools/salary/", label: "연봉 인상 계산기" },
-        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
-        { href: "/tools/retirement/", label: "퇴직금 계산기" }
+    <InfoNotice
+      title="안내"
+      lines={[
+        "실수령 증감은 간이 공제 기준으로 계산됩니다.",
+        "보너스, 복지, RSU 같은 총보상 요소는 별도로 반영되지 않습니다.",
+        "협상 기준을 잡을 때는 월 실수령 증가와 인상률을 함께 확인하세요."
       ]}
     />
-  </main>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">상세 비교</p>
+          <h2 class="panel__title">현재 조건과 목표 조건 비교</h2>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>값</th>
+            </tr>
+          </thead>
+          <tbody id="negotiationTable"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="이직 계산기를 활용하는 방법"
+        intro={[
+          "이직 계산기는 현재 연봉과 목표 연봉의 차이를 단순 숫자뿐 아니라 월 체감과 총보상 관점에서 비교하기 위한 페이지입니다. 오퍼를 받았을 때 지금보다 얼마나 나아지는지 빠르게 보는 용도로 잘 맞습니다.",
+          "특히 연봉만 높아 보이는 제안이 실제로는 월 실수령 차이가 작을 수 있기 때문에, 세전 금액과 체감 금액을 같이 보는 것이 중요합니다."
+        ]}
+        inputPoints={[
+          "현재 조건과 목표 조건을 넣어 이직 전후 차이를 바로 비교할 수 있습니다.",
+          "월 단위 체감 변화와 연 단위 차이를 함께 볼 수 있습니다.",
+          "연봉 인상 계산기와 연결해서 사내 협상안과 외부 오퍼를 같이 검토할 수 있습니다."
+        ]}
+        criteria={[
+          "이직 판단은 연봉 외에도 보너스, 성과급, 복지, 근무 강도까지 같이 봐야 합니다.",
+          "세후 금액은 빠른 비교용 추정치이므로 실제 지급 구조와는 차이가 날 수 있습니다.",
+          "대기업 이직이라면 성과급 시뮬레이터를 같이 봐야 총보상 판단이 더 명확해집니다."
+        ]}
+        faq={[
+          { question: "오퍼 금액만 넣어도 비교가 되나요?", answer: "네. 현재 연봉과 목표 연봉만으로도 차이는 볼 수 있습니다. 다만 보너스나 성과급 요소가 큰 회사라면 총보상 기준으로 추가 확인하는 것이 좋습니다." },
+          { question: "이직과 연봉 인상 중 무엇이 유리한지 판단할 수 있나요?", answer: "가능합니다. 이직 계산기와 연봉 인상 계산기를 함께 보면 회사 내부 인상안과 외부 오퍼를 나란히 비교할 수 있습니다." },
+          { question: "세전과 실수령 중 무엇을 더 봐야 하나요?", answer: "계약 조건은 세전이 기준이지만 실제 체감은 실수령에 가깝습니다. 두 숫자를 함께 보는 편이 안전합니다." }
+        ]}
+        related={[
+          { href: "/tools/salary/", label: "연봉 인상 계산기" },
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+          { href: "/tools/retirement/", label: "퇴직금 계산기" }
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>

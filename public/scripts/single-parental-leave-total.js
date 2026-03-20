@@ -62,6 +62,28 @@ function buildTimeline(monthlyWage, spouseSalary, leaveMonths, childOrder, inclu
   return timeline;
 }
 
+function flashButton(button, label) {
+  if (!button) return;
+  const original = button.textContent;
+  button.textContent = label;
+  window.setTimeout(() => {
+    button.textContent = original;
+  }, 1600);
+}
+
+function resetSingleLeaveForm() {
+  $("singleLeaveUser").value = "MOTHER";
+  $("singleMonthlyWage").value = "2500000";
+  $("singleSpouseSalary").value = "3500000";
+  $("singleLeaveMonths").value = "12";
+  $("singleExtensionType").value = "NONE";
+  $("singleChildOrder").value = "FIRST";
+  $("singleCurrentStatus").value = "BEFORE_BIRTH";
+  $("includeVoucherToggle").checked = true;
+  $("singleBirthDate").value = getTodayIso();
+  renderSingleLeaveTotal();
+}
+
 function renderSingleLeaveTotal() {
   const leaveUser = $("singleLeaveUser").value;
   const monthlyWage = Number($("singleMonthlyWage").value || 0);
@@ -94,6 +116,10 @@ function renderSingleLeaveTotal() {
   $("singleHouseholdAverage").textContent = formatKoreanAmount(householdAverage);
   $("singleLeaveUserIncomeSummary").textContent = formatKoreanAmount(leaveUserIncomeTotal);
   $("singleSpouseIncomeSummary").textContent = formatKoreanAmount(spouseIncomeTotal);
+
+  $("singleLeaveMonthsMetric").textContent = `${effectiveLeaveMonths}개월`;
+  $("singleSupportMetric").textContent = formatKoreanAmount(supportTotal);
+  $("singleVoucherMetric").textContent = voucherTotal > 0 ? formatKoreanAmount(voucherTotal) : "미포함";
 
   $("singleLeaveUserIncomeValue").textContent = formatKoreanAmount(leaveUserIncomeTotal);
   $("singleSpouseIncomeValue").textContent = formatKoreanAmount(spouseIncomeTotal);
@@ -139,5 +165,19 @@ if (page === "single-parental-leave-total") {
   });
 
   $("calcSingleLeaveBtn")?.addEventListener("click", renderSingleLeaveTotal);
+  $("resetSingleLeaveBtn")?.addEventListener("click", () => {
+    resetSingleLeaveForm();
+    flashButton($("resetSingleLeaveBtn"), "초기화됨");
+  });
+
+  $("copySingleLeaveLinkBtn")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      flashButton($("copySingleLeaveLinkBtn"), "링크 복사됨");
+    } catch {
+      flashButton($("copySingleLeaveLinkBtn"), "복사 실패");
+    }
+  });
+
   renderSingleLeaveTotal();
 }

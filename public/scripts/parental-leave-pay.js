@@ -28,6 +28,24 @@ function leavePayForMonth(monthlyWage, monthNumber) {
   return { pay: Math.min(monthlyWage * 0.8, 1600000), cap: 1600000, ratio: "80%" };
 }
 
+function flashButton(button, label) {
+  if (!button) return;
+  const original = button.textContent;
+  button.textContent = label;
+  window.setTimeout(() => {
+    button.textContent = original;
+  }, 1600);
+}
+
+function resetLeavePayForm() {
+  $("leavePayMonthlyWage").value = "2500000";
+  $("leavePayMonths").value = "12";
+  $("leavePayExtensionType").value = "NONE";
+  $("leavePayUser").value = "MOTHER";
+  $("leavePayStartMonth").value = "0";
+  renderParentalLeavePay();
+}
+
 function renderParentalLeavePay() {
   const monthlyWage = Number($("leavePayMonthlyWage").value || 0);
   const requestedLeaveMonths = Number($("leavePayMonths").value || 12);
@@ -91,5 +109,19 @@ if (page === "parental-leave-pay") {
   });
 
   $("calcLeavePayBtn")?.addEventListener("click", renderParentalLeavePay);
+  $("resetLeavePayBtn")?.addEventListener("click", () => {
+    resetLeavePayForm();
+    flashButton($("resetLeavePayBtn"), "초기화됨");
+  });
+
+  $("copyLeavePayLinkBtn")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      flashButton($("copyLeavePayLinkBtn"), "링크 복사됨");
+    } catch {
+      flashButton($("copyLeavePayLinkBtn"), "복사 실패");
+    }
+  });
+
   renderParentalLeavePay();
 }

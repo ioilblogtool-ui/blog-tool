@@ -56,6 +56,24 @@ function calculateTimeline(childOrder, windowMonths) {
   return timeline;
 }
 
+function flashButton(button, label) {
+  if (!button) return;
+  const original = button.textContent;
+  button.textContent = label;
+  window.setTimeout(() => {
+    button.textContent = original;
+  }, 1600);
+}
+
+function resetBirthSupportForm() {
+  $("birthDate").value = getTodayIso();
+  $("childOrder").value = "FIRST";
+  $("supportWindowMonths").value = "24";
+  $("currentAgeMonths").value = "0";
+  $("supportMonthlySalaryReference").value = "3000000";
+  renderBirthSupport();
+}
+
 function renderBirthSupport() {
   const birthDateInput = $("birthDate");
   const childOrder = $("childOrder").value;
@@ -123,5 +141,19 @@ if (page === "birth-support-total") {
   });
 
   $("calcBirthSupportBtn")?.addEventListener("click", renderBirthSupport);
+  $("resetBirthSupportBtn")?.addEventListener("click", () => {
+    resetBirthSupportForm();
+    flashButton($("resetBirthSupportBtn"), "초기화됨");
+  });
+
+  $("copyBirthSupportLinkBtn")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      flashButton($("copyBirthSupportLinkBtn"), "링크 복사됨");
+    } catch {
+      flashButton($("copyBirthSupportLinkBtn"), "복사 실패");
+    }
+  });
+
   renderBirthSupport();
 }

@@ -48,6 +48,30 @@ function computeTotal(monthlyWage, months, useSpecial, allowedMonthsCount) {
   return { total, monthly, effectiveMonths };
 }
 
+function flashButton(button, label) {
+  if (!button) return;
+  const original = button.textContent;
+  button.textContent = label;
+  window.setTimeout(() => {
+    button.textContent = original;
+  }, 1600);
+}
+
+function setText(id, value) {
+  const node = $(id);
+  if (node) node.textContent = value;
+}
+
+function resetSixPlusSixForm() {
+  $("sixMotherWage").value = "2500000";
+  $("sixFatherWage").value = "2500000";
+  $("sixMotherMonths").value = "6";
+  $("sixFatherMonths").value = "6";
+  $("sixChildAgeMonths").value = "0";
+  $("sixLeaveMode").value = "SEQUENTIAL";
+  renderSixPlusSix();
+}
+
 function renderSixPlusSix() {
   const motherWage = Number($("sixMotherWage").value || 0);
   const fatherWage = Number($("sixFatherWage").value || 0);
@@ -68,17 +92,41 @@ function renderSixPlusSix() {
   const difference = householdTotal - normalTotal;
   const originalSalaryTotal = motherWage * motherSpecial.effectiveMonths + fatherWage * fatherSpecial.effectiveMonths;
   const replacementRate = originalSalaryTotal > 0 ? householdTotal / originalSalaryTotal : 0;
+  const motherGain = motherSpecial.total - motherNormal.total;
+  const fatherGain = fatherSpecial.total - fatherNormal.total;
+  const eligibilityLabel = specialEligible ? "6+6 가능" : "6+6 불가";
+  const modeLabel = leaveMode === "SIMULTANEOUS" ? "동시" : "순차";
 
-  $("sixEligibilitySummary").textContent = specialEligible ? "6+6 가능" : "6+6 불가";
-  $("sixHouseholdTotalSummary").textContent = formatKoreanAmount(householdTotal);
-  $("sixDifferenceSummary").textContent = formatKoreanAmount(difference);
-  $("sixReplacementSummary").textContent = formatPercent(replacementRate);
+  setText("sixEligibilitySummary", eligibilityLabel);
+  setText("sixHouseholdTotalSummary", formatKoreanAmount(householdTotal));
+  setText("sixDifferenceSummary", formatKoreanAmount(difference));
+  setText("sixReplacementSummary", formatPercent(replacementRate));
+  setText("sixExtensionSummary", `${extensionMonths}개월`);
 
-  $("sixMotherTotalValue").textContent = formatKoreanAmount(motherSpecial.total);
-  $("sixFatherTotalValue").textContent = formatKoreanAmount(fatherSpecial.total);
-  $("sixHouseholdTotalValue").textContent = formatKoreanAmount(householdTotal);
-  $("sixDifferenceValue").textContent = formatKoreanAmount(difference);
-  $("sixSummaryNote").textContent = `${leaveMode === "SIMULTANEOUS" ? "동시" : "순차"} 사용 · 자녀 생후 ${childAgeMonths}개월 · 연장 한도 ${extensionMonths}개월`;
+  setText("sixMotherGainMetric", formatKoreanAmount(motherGain));
+  setText("sixFatherGainMetric", formatKoreanAmount(fatherGain));
+  setText("sixMotherGainMetricCard", formatKoreanAmount(motherGain));
+  setText("sixFatherGainMetricCard", formatKoreanAmount(fatherGain));
+  setText("sixEligibilityMetric", eligibilityLabel);
+  setText("sixReplacementSummaryMirror", formatPercent(replacementRate));
+
+  setText("sixMotherTotalValue", formatKoreanAmount(motherSpecial.total));
+  setText("sixFatherTotalValue", formatKoreanAmount(fatherSpecial.total));
+  setText("sixHouseholdTotalValue", formatKoreanAmount(householdTotal));
+  setText("sixHouseholdTotalMirror", formatKoreanAmount(householdTotal));
+  setText("sixDifferenceValue", formatKoreanAmount(difference));
+  setText("sixSummaryNote", `${modeLabel} 사용 · 자녀 생후 ${childAgeMonths}개월 · 연장 한도 ${extensionMonths}개월`);
+
+  const largerParent = motherGain === fatherGain ? "부모 모두 비슷하게" : motherGain > fatherGain ? "엄마 쪽이 더 크게" : "아빠 쪽이 더 크게";
+  const decisionCopy = specialEligible
+    ? `${largerParent} 체감하는 구조입니다. 두 사람 모두 사용하면 일반 육아휴직보다 총액이 유리합니다.`
+    : `현재 조건으로는 6+6 특례 적용이 어렵습니다. 자녀 개월 수와 두 사람 사용 여부를 다시 확인해보세요.`;
+  const differenceCopy = difference > 0
+    ? `일반 육아휴직 대비 ${formatKoreanAmount(difference)} 더 받을 수 있는 흐름입니다.`
+    : `현재 입력 기준으로는 일반 육아휴직 대비 추가 수령 차이가 크지 않습니다.`;
+
+  setText("sixDecisionCopy", decisionCopy);
+  setText("sixDifferenceCopy", differenceCopy);
 
   const maxMonths = Math.max(motherSpecial.effectiveMonths, fatherSpecial.effectiveMonths, 6);
   const rows = [];
@@ -124,5 +172,19 @@ if (page === "six-plus-six") {
   });
 
   $("calcSixPlusSixBtn")?.addEventListener("click", renderSixPlusSix);
+  $("resetSixPlusSixBtn")?.addEventListener("click", () => {
+    resetSixPlusSixForm();
+    flashButton($("resetSixPlusSixBtn"), "초기화됨");
+  });
+
+  $("copySixPlusSixLinkBtn")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      flashButton($("copySixPlusSixLinkBtn"), "링크 복사됨");
+    } catch {
+      flashButton($("copySixPlusSixLinkBtn"), "복사 실패");
+    }
+  });
+
   renderSixPlusSix();
 }

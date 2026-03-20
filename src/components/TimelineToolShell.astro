@@ -1,0 +1,31 @@
+﻿---
+interface Props {
+  calculatorId: string;
+  pageClass?: string;
+}
+
+const { calculatorId, pageClass = "" } = Astro.props;
+---
+
+<main class:list={["container", "page-shell", "calculator-page", pageClass]} data-calculator={calculatorId}>
+  <slot name="hero" />
+  <slot name="actions" />
+
+  <section class="timeline-tool-shell content-section">
+    <div class="timeline-tool-shell__top">
+      <aside class="timeline-tool-shell__aside">
+        <slot name="aside" />
+      </aside>
+
+      <div class="timeline-tool-shell__summary">
+        <slot />
+      </div>
+    </div>
+
+    <div class="timeline-tool-shell__timeline">
+      <slot name="timeline" />
+    </div>
+  </section>
+
+  <slot name="seo" />
+</main>

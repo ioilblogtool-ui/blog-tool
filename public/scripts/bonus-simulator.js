@@ -39,6 +39,11 @@ function formatPct(value) {
   return `${(Number(value || 0) * 100).toFixed(1)}%`;
 }
 
+function setText(id, value) {
+  const element = $(id);
+  if (element) element.textContent = value;
+}
+
 function toNumber(input) {
   return Number(input && input.value ? input.value : 0);
 }
@@ -60,9 +65,9 @@ function fillPresetOptions(company) {
     .map((preset) => `<option value="${preset.key}">${preset.label}</option>`)
     .join("");
   presetSelect.value = company.defaultPresetKey;
-  $("presetHeading").textContent = company.presetHeading;
-  $("payoutLabel1").textContent = company.payoutLabels[0];
-  $("payoutLabel2").textContent = company.payoutLabels[1];
+  setText("presetHeading", company.presetHeading);
+  setText("payoutLabel1", company.payoutLabels[0]);
+  setText("payoutLabel2", company.payoutLabels[1]);
 }
 
 function syncRecommendedAnnual() {
@@ -86,11 +91,11 @@ function updateContextHints() {
   const growthMode = growthMap[growthModeSelect.value];
   const preset = company.presets.find((item) => item.key === presetSelect.value) || company.presets[0];
 
-  $("annualSalaryHint").textContent = `추천값: ${formatKoreanAmount(company.baseSalaryByRank[rankSelect.value])}`;
-  $("scenarioHint").textContent = scenario.description;
-  $("presetHint").textContent = preset.description;
-  $("growthModeHint").textContent = growthMode.description;
-  $("monthlyBaseHint").textContent = `${company.companyName} 기준 자동 추정: ${formatKoreanAmount(toNumber(monthlyBaseInput))}`;
+  setText("annualSalaryHint", `추천값: ${formatKoreanAmount(company.baseSalaryByRank[rankSelect.value])}`);
+  setText("scenarioHint", scenario.description);
+  setText("presetHint", preset.description);
+  setText("growthModeHint", growthMode.description);
+  setText("monthlyBaseHint", `${company.companyName} 기준 자동 추정: ${formatKoreanAmount(toNumber(monthlyBaseInput))}`);
 
   const isHyundai = company.companyCode === "HYUNDAI";
   includeStockToggle.disabled = !isHyundai;
@@ -220,6 +225,11 @@ function renderCompare(rankCode, scenarioCode, growthCode, includeStock) {
 
   const maxTotal = Math.max(...compareData.map((item) => item.totalComp), 1);
 
+  setText(
+    "companyCompareList",
+    ""
+  );
+
   $("companyCompareList").innerHTML = compareData
     .map((item) => {
       const width = `${(item.totalComp / maxTotal) * 100}%`;
@@ -249,8 +259,8 @@ function renderScenarioCards(company, annualSalary, monthlyBase, presetKey, incl
 
   mappings.forEach(([scenarioCode, bonusId, totalId]) => {
     const result = calculateBonus(company, annualSalary, monthlyBase, scenarioCode, presetKey, includeStock);
-    $(bonusId).textContent = formatKoreanAmount(result.bonusAmount);
-    $(totalId).textContent = `총보상 ${formatKoreanAmount(result.totalComp)}`;
+    setText(bonusId, formatKoreanAmount(result.bonusAmount));
+    setText(totalId, `총보상 ${formatKoreanAmount(result.totalComp)}`);
   });
 
   document.querySelectorAll("[data-scenario-card]").forEach((card) => {
@@ -299,23 +309,28 @@ function render() {
   const cumulativeTotal = projections.reduce((sum, item) => sum + item.total, 0);
   const insight = buildInsight(company, scenarioCode, presetKey, growthCode);
 
-  $("bonusSummary").textContent = formatKoreanAmount(result.bonusAmount);
-  $("totalCompSummary").textContent = formatKoreanAmount(result.totalComp);
-  $("threeYearSummary").textContent = formatKoreanAmount(cumulativeTotal);
-  $("positionSummary").textContent = result.positionLabel;
+  setText("bonusSummary", formatKoreanAmount(result.bonusAmount));
+  setText("totalCompSummary", formatKoreanAmount(result.totalComp));
+  setText("threeYearSummary", formatKoreanAmount(cumulativeTotal));
+  setText("positionSummary", result.positionLabel);
 
-  $("year2026Total").textContent = formatKoreanAmount(projections[0].total);
-  $("year2027Total").textContent = formatKoreanAmount(projections[1].total);
-  $("year2028Total").textContent = formatKoreanAmount(projections[2].total);
-  $("year2026Note").textContent = `${company.heroLabel} 반영`;
-  $("year2027Note").textContent = projections[1].annualGrowth > 0 ? `전년 대비 +${formatPct(projections[1].annualGrowth)}` : "전년 수준 가정";
-  $("year2028Note").textContent = projections[2].annualGrowth > 0 ? `전년 대비 +${formatPct(projections[2].annualGrowth)}` : "전년 수준 가정";
+  setText("bonusSummaryMirror", formatKoreanAmount(result.bonusAmount));
+  setText("totalCompSummaryMirror", formatKoreanAmount(result.totalComp));
+  setText("threeYearSummaryMirror", formatKoreanAmount(cumulativeTotal));
+  setText("positionSummaryMirror", result.positionLabel);
 
-  $("companyTagline").textContent = `${company.companyName} · ${company.heroLabel} · ${result.preset.label}`;
-  $("payoutValue1").textContent = formatKoreanAmount(result.payout1);
-  $("payoutValue2").textContent = formatKoreanAmount(result.payout2);
-  $("baseAnnualValue").textContent = formatKoreanAmount(annualSalary);
-  $("extrasValue").textContent = formatKoreanAmount(result.extras);
+  setText("year2026Total", formatKoreanAmount(projections[0].total));
+  setText("year2027Total", formatKoreanAmount(projections[1].total));
+  setText("year2028Total", formatKoreanAmount(projections[2].total));
+  setText("year2026Note", `${company.heroLabel} 반영`);
+  setText("year2027Note", projections[1].annualGrowth > 0 ? `전년 대비 +${formatPct(projections[1].annualGrowth)}` : "전년 수준 가정");
+  setText("year2028Note", projections[2].annualGrowth > 0 ? `전년 대비 +${formatPct(projections[2].annualGrowth)}` : "전년 수준 가정");
+
+  setText("companyTagline", `${company.companyName} · ${company.heroLabel} · ${result.preset.label}`);
+  setText("payoutValue1", formatKoreanAmount(result.payout1));
+  setText("payoutValue2", formatKoreanAmount(result.payout2));
+  setText("baseAnnualValue", formatKoreanAmount(annualSalary));
+  setText("extrasValue", formatKoreanAmount(result.extras));
 
   $("bonusBreakdownTable").innerHTML = buildDetailRows(company, annualSalary, monthlyBase, result, projections)
     .map(([label, value]) => `
@@ -326,8 +341,8 @@ function render() {
     `)
     .join("");
 
-  $("insightText").textContent = insight.body;
-  $("shareCopy").textContent = insight.share;
+  setText("insightText", insight.body);
+  setText("shareCopy", insight.share);
   $("companyNotes").innerHTML = company.notes.map((line) => `<p class="note-chip">${line}</p>`).join("");
 
   renderScenarioCards(company, annualSalary, monthlyBase, presetKey, includeStock);
@@ -406,4 +421,3 @@ $("copyBonusLinkBtn")?.addEventListener("click", async () => {
 
 initDefaults();
 render();
-

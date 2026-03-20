@@ -5,6 +5,7 @@ import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -12,22 +13,29 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 ---
 
-<BaseLayout title="6+6 부모육아휴직제 계산기" description="부모 모두 육아휴직을 쓸 때 특례 적용 여부와 일반 육아휴직 대비 차액을 비교하는 도구">
+<BaseLayout title="6+6 부모육아휴직제 계산기" description="부모 모두 육아휴직을 사용할 때 6+6 특례와 일반 육아휴직 차이를 결론 중심으로 비교하는 도구">
   <SiteHeader />
 
-  <main class="container page-shell calculator-page" data-calculator="six-plus-six">
+  <main class="container page-shell calculator-page six-decision-page six-plus-six-page" data-calculator="six-plus-six">
     <CalculatorHero
       eyebrow="특례 비교"
       title="6+6 부모육아휴직제 계산기"
-      description="부모가 모두 육아휴직을 사용할 때 6+6 특례와 18개월 연장 가능성까지 반영해 일반 육아휴직 대비 차액을 계산합니다."
+      description="엄마와 아빠의 월 통상임금, 사용 개월 수, 자녀 개월 수를 기준으로 6+6 적용 가능 여부와 가구 총액 차이를 빠르게 판단합니다."
     />
 
-    <section class="calculator-grid content-section">
-      <div class="stack">
+    <ToolActionBar resetId="resetSixPlusSixBtn" copyId="copySixPlusSixLinkBtn" />
+
+    <section class="six-decision-layout">
+      <section class="six-decision-layout__top">
         <article class="panel">
-          <h2 class="panel__title">부모 육아휴직 정보 입력</h2>
-          <p class="panel__intro">엄마와 아빠 각각의 월 통상임금과 사용 개월 수를 넣으면 6+6 적용 여부와 가구 총액 차이를 빠르게 볼 수 있습니다.</p>
-          <div class="form-grid">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Step 1</p>
+              <h2 class="panel__title">빠른 입력</h2>
+            </div>
+            <p class="panel-heading__summary">두 사람 월 통상임금과 사용 개월 수만 먼저 넣으면 6+6 차이와 가구 총액을 바로 볼 수 있습니다.</p>
+          </div>
+          <div class="form-grid form-grid--compact">
             <label class="field">
               <span>엄마 월 통상임금</span>
               <input id="sixMotherWage" type="number" value="2500000" />
@@ -60,6 +68,18 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
                 <option value="18">18개월</option>
               </select>
             </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Step 2</p>
+              <h2 class="panel__title">적용 조건</h2>
+            </div>
+            <p class="panel-heading__summary">자녀 개월 수와 사용 방식을 넣어 6+6 적용 가능 여부와 연장 한도를 판단합니다.</p>
+          </div>
+          <div class="form-grid form-grid--compact">
             <label class="field">
               <span>자녀 생후 개월 수</span>
               <input id="sixChildAgeMonths" type="number" min="0" max="18" value="0" />
@@ -67,71 +87,110 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
             <label class="field">
               <span>사용 방식</span>
               <select id="sixLeaveMode">
-                <option value="SEQUENTIAL" selected>순차</option>
-                <option value="SIMULTANEOUS">동시</option>
+                <option value="SEQUENTIAL" selected>순차 사용</option>
+                <option value="SIMULTANEOUS">동시 사용</option>
               </select>
             </label>
           </div>
-          <button id="calcSixPlusSixBtn" class="button button--primary" type="button">6+6 가능 여부 확인하기</button>
+          <button id="calcSixPlusSixBtn" class="button button--primary" type="button">6+6 결론 보기</button>
         </article>
-      </div>
+      </section>
 
-      <div class="stack">
+      <section class="six-decision-layout__summary">
         <SummaryCards
           columns={4}
           items={[
             { label: "6+6 적용 가능 여부", id: "sixEligibilitySummary" },
-            { label: "가구 총액", id: "sixHouseholdTotalSummary" },
-            { label: "일반 대비 차액", id: "sixDifferenceSummary" },
-            { label: "원래 월급 대비 보전율", id: "sixReplacementSummary" }
+            { label: "가구 총 수령액", id: "sixHouseholdTotalSummary" },
+            { label: "일반 대비 추가 수령", id: "sixDifferenceSummary" },
+            { label: "최대 사용 가능 한도", id: "sixExtensionSummary" }
           ]}
         />
+      </section>
+
+      <section class="six-decision-layout__insight">
+        <article class="panel six-decision-recommendation">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">추천 해석</p>
+              <h2 class="panel__title">현재 입력 기준 결론</h2>
+            </div>
+            <p class="panel-heading__summary" id="sixSummaryNote">-</p>
+          </div>
+          <div class="result-summary-grid six-decision-recommendation-grid">
+            <article class="result-summary-card result-summary-card--accent">
+              <p>결론</p>
+              <strong id="sixEligibilityMetric">-</strong>
+              <span id="sixDecisionCopy">-</span>
+            </article>
+            <article class="result-summary-card">
+              <p>가구 총액 해석</p>
+              <strong id="sixHouseholdTotalValue">-</strong>
+              <span id="sixDifferenceCopy">-</span>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <section class="six-decision-layout__family">
+        <article class="result-summary-card result-summary-card--accent">
+          <p>엄마 총 수령액</p>
+          <strong id="sixMotherTotalValue">-</strong>
+          <span>일반 대비 <b id="sixMotherGainMetric">-</b> 추가 수령</span>
+        </article>
+        <article class="result-summary-card result-summary-card--accent">
+          <p>아빠 총 수령액</p>
+          <strong id="sixFatherTotalValue">-</strong>
+          <span>일반 대비 <b id="sixFatherGainMetric">-</b> 추가 수령</span>
+        </article>
+        <article class="result-summary-card">
+          <p>가구 총액</p>
+          <strong id="sixHouseholdTotalMirror">-</strong>
+          <span>일반 대비 <b id="sixDifferenceValue">-</b> 차이</span>
+        </article>
+      </section>
+
+      <section class="six-decision-layout__compare">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">부모별 비교</p>
+              <h2 class="panel__title">누가 더 크게 체감하는지</h2>
+            </div>
+            <p class="panel-heading__summary">현재 입력값 기준 특례 구간에서의 추가 수령 차이를 먼저 확인합니다.</p>
+          </div>
+          <section class="metrics metrics--three">
+            <article class="metric-card">
+              <p>엄마 추가 수령액</p>
+              <strong id="sixMotherGainMetricCard">-</strong>
+              <span class="metric-sub">일반 육아휴직 대비 엄마 기준 차액</span>
+            </article>
+            <article class="metric-card">
+              <p>아빠 추가 수령액</p>
+              <strong id="sixFatherGainMetricCard">-</strong>
+              <span class="metric-sub">일반 육아휴직 대비 아빠 기준 차액</span>
+            </article>
+            <article class="metric-card">
+              <p>원래 월급 대비 보전율</p>
+              <strong id="sixReplacementSummaryMirror">-</strong>
+              <span class="metric-sub">가구 기준 전체 보전율</span>
+            </article>
+          </section>
+        </article>
 
         <InfoNotice
           title="안내"
           lines={[
             "자녀 생후 18개월 내 부모 모두 육아휴직을 사용할 때 첫 6개월간 상한이 확대되는 가정으로 계산합니다.",
-            "육아휴직 18개월 연장은 2025년 2월 23일 시행 기준으로 부모 모두 3개월 이상 사용 조건을 단순 반영했습니다.",
-            "7개월 이후와 13~18개월 구간은 일반 육아휴직 급여 구조를 이어서 적용한 추정 비교입니다."
+            "부모 모두 3개월 이상 사용하면 최대 18개월 사용이 가능한 구조를 단순 반영했습니다.",
+            "7개월 이후와 13~18개월 구간은 일반 육아휴직 급여 구조를 이어 적용한 비교용 추정입니다."
           ]}
         />
+      </section>
 
-        <article class="panel">
-          <div class="panel-heading">
-            <div>
-              <p class="panel-heading__eyebrow">비교 요약</p>
-              <h2 class="panel__title">엄마 / 아빠 / 가구 총액 비교</h2>
-            </div>
-            <p class="panel-heading__summary" id="sixSummaryNote">-</p>
-          </div>
-          <div class="breakdown-grid">
-            <article class="breakdown-chip">
-              <span>엄마 총 급여</span>
-              <strong id="sixMotherTotalValue">-</strong>
-            </article>
-            <article class="breakdown-chip">
-              <span>아빠 총 급여</span>
-              <strong id="sixFatherTotalValue">-</strong>
-            </article>
-            <article class="breakdown-chip">
-              <span>가구 총액</span>
-              <strong id="sixHouseholdTotalValue">-</strong>
-            </article>
-            <article class="breakdown-chip">
-              <span>일반 육아휴직 대비 차액</span>
-              <strong id="sixDifferenceValue">-</strong>
-            </article>
-          </div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-heading">
-            <div>
-              <p class="panel-heading__eyebrow">상세 비교</p>
-              <h2 class="panel__title">일반 육아휴직 vs 6+6 비교</h2>
-            </div>
-            <p class="panel-heading__summary">월별 상한 차이를 기준으로 비교합니다.</p>
-          </div>
+      <details class="detail-box detail-box--soft six-decision-layout__table">
+        <summary>월별 6+6 vs 일반 육아휴직 비교표 보기</summary>
+        <div class="detail-box__content detail-box__content--tight">
           <div class="table-wrap">
             <table class="result-table">
               <thead>
@@ -146,19 +205,20 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
               <tbody id="sixComparisonTable"></tbody>
             </table>
           </div>
-        </article>
-      </div>
+        </div>
+      </details>
     </section>
+
     <SeoContent
-      introTitle="6+6 부모육아휴직제 계산기를 써야 하는 이유"
+      introTitle="6+6 부모육아휴직제 계산기에서 먼저 확인할 점"
       intro={[
-        "6+6 부모육아휴직제 계산기는 부모가 모두 육아휴직을 사용할 때 특례 적용 가능 여부와 일반 육아휴직 대비 추가 수령액을 비교하는 페이지입니다. 맞벌이 부부가 육아휴직 계획을 세울 때 가장 궁금한 차액 중심으로 설계했습니다.",
-        "단순히 제도 설명만 보는 것보다, 엄마와 아빠 각각의 월 통상임금과 사용 개월 수를 넣고 가구 총액 차이를 바로 보는 방식이 훨씬 판단하기 쉽습니다."
+        "6+6 부모육아휴직제 계산기는 부모가 모두 육아휴직을 사용할 때 특례 적용 가능 여부와 일반 육아휴직 대비 추가 수령액을 비교하는 페이지입니다. 맞벌이 부부가 휴직 순서를 정하거나 총액 차이를 판단할 때 가장 먼저 보는 숫자를 빠르게 정리할 수 있게 구성했습니다.",
+        "실제로는 엄마와 아빠 각각의 급여 수준, 사용 개월 수, 자녀 개월 수에 따라 체감 차이가 달라집니다. 이 페이지는 그 차이를 부모별, 가구 전체 기준으로 함께 보게 하는 데 초점을 두고 있습니다."
       ]}
       inputPoints={[
         "엄마와 아빠 각각의 월 통상임금과 사용 개월 수를 넣어 총액을 계산할 수 있습니다.",
         "자녀 생후 개월 수와 사용 방식에 따라 특례 적용 가능 여부를 바로 확인할 수 있습니다.",
-        "일반 육아휴직 대비 얼마나 더 받는지 가구 총액 차액으로 비교할 수 있습니다."
+        "일반 육아휴직 대비 얼마나 더 받는지 부모별과 가구 총액 기준으로 비교할 수 있습니다."
       ]}
       criteria={[
         "자녀 생후 18개월 내 부모 모두 육아휴직을 사용할 때 첫 6개월간 상한이 확대되는 구조를 기준으로 계산합니다.",

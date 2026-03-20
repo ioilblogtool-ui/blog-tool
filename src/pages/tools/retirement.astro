@@ -6,6 +6,7 @@ import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -16,116 +17,129 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 <BaseLayout title="퇴직금 계산기" description="평균임금 기준 퇴직금과 세후 추정액을 계산하는 도구">
   <SiteHeader />
 
-  <main class="container page-shell calculator-page" data-calculator="retirement">
-    <CalculatorHero
-      eyebrow="퇴직 준비"
-      title="퇴직금 계산기"
-      description="연봉과 근속연수, 보너스 반영 여부를 기준으로 평균임금과 퇴직금 실수령 추정액을 계산합니다."
+  <SimpleToolShell calculatorId="retirement" pageClass="retirement-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="퇴직 준비"
+        title="퇴직금 계산기"
+        description="연봉과 근속연수, 보너스 반영 여부를 기준으로 평균임금과 퇴직금 실수령 추정액을 계산합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetRetirementBtn" copyId="copyRetirementLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">퇴직금 계산 기준 입력</h2>
+          </div>
+          <p class="panel-heading__summary">근속연수와 상여 반영 여부에 따라 평균임금과 퇴직금 규모가 얼마나 달라지는지 빠르게 확인합니다.</p>
+        </div>
+        <div class="form-grid form-grid--compact">
+          <label class="field">
+            <span>현재 연봉</span>
+            <input id="retirementAnnualSalary" type="number" value="50000000" />
+            <small id="retirementAnnualSalaryHint"></small>
+          </label>
+          <label class="field">
+            <span>근속연수</span>
+            <input id="yearsOfService" type="number" step="0.1" value="5" />
+          </label>
+          <label class="field">
+            <span>정기 보너스</span>
+            <input id="retirementBonus" type="number" value="3000000" />
+            <small id="retirementBonusHint"></small>
+          </label>
+          <label class="field">
+            <span>연차수당</span>
+            <input id="retirementLeavePay" type="number" value="1000000" />
+            <small id="retirementLeavePayHint"></small>
+          </label>
+          <label class="check-field field-span-full">
+            <input id="retirementIncludeBonus" type="checkbox" checked />
+            <span>평균임금에 보너스 반영</span>
+          </label>
+          <label class="field field-span-full">
+            <span>퇴직소득세 추정 비율 (%)</span>
+            <input id="retirementTaxRate" type="number" step="0.1" value="6" />
+          </label>
+        </div>
+        <button id="calcRetirementBtn" class="button button--primary" type="button">퇴직금 계산</button>
+      </article>
+    </Fragment>
+
+    <SummaryCards
+      columns={3}
+      items={[
+        { label: "평균임금 추정", id: "retirementAvgMonthlyWage" },
+        { label: "퇴직금 세전", id: "retirementGross" },
+        { label: "퇴직금 세후", id: "retirementNet" }
+      ]}
     />
 
-    <ToolActionBar resetId="resetRetirementBtn" copyId="copyRetirementLinkBtn" />
-
-    <section class="calculator-grid content-section">
-      <div class="stack">
-        <article class="panel">
-          <h2 class="panel__title">퇴직금 입력</h2>
-          <p class="panel__intro">근속연수와 상여 반영 여부에 따라 평균임금과 퇴직금 규모가 얼마나 달라지는지 빠르게 확인합니다.</p>
-          <div class="form-grid">
-            <label class="field">
-              <span>현재 연봉</span>
-              <input id="retirementAnnualSalary" type="number" value="50000000" />
-              <small id="retirementAnnualSalaryHint"></small>
-            </label>
-            <label class="field">
-              <span>근속연수</span>
-              <input id="yearsOfService" type="number" step="0.1" value="5" />
-            </label>
-            <label class="field">
-              <span>정기 보너스</span>
-              <input id="retirementBonus" type="number" value="3000000" />
-              <small id="retirementBonusHint"></small>
-            </label>
-            <label class="field">
-              <span>연차수당</span>
-              <input id="retirementLeavePay" type="number" value="1000000" />
-              <small id="retirementLeavePayHint"></small>
-            </label>
-            <label class="check-field">
-              <input id="retirementIncludeBonus" type="checkbox" checked />
-              <span>평균임금에 보너스 반영</span>
-            </label>
-            <label class="field">
-              <span>퇴직소득세 추정 비율 (%)</span>
-              <input id="retirementTaxRate" type="number" step="0.1" value="6" />
-            </label>
-          </div>
-          <button id="calcRetirementBtn" class="button button--primary" type="button">퇴직금 계산</button>
-        </article>
-      </div>
-
-      <div class="stack">
-        <SummaryCards
-          columns={3}
-          items={[
-            { label: "평균임금 추정", id: "retirementAvgMonthlyWage" },
-            { label: "퇴직금 세전", id: "retirementGross" },
-            { label: "퇴직금 세후", id: "retirementNet" }
-          ]}
-        />
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "퇴직소득세는 간이 추정 비율이며 실제 정산과 다를 수 있습니다.",
-            "평균임금 반영 방식은 회사 제도와 지급 항목에 따라 달라질 수 있습니다.",
-            "근속연수와 상여 반영 여부를 함께 점검해보는 것이 좋습니다."
-          ]}
-        />
-
-        <article class="panel">
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">상세 계산</p>
           <h2 class="panel__title">계산 상세</h2>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th>항목</th>
-                  <th>금액</th>
-                </tr>
-              </thead>
-              <tbody id="retirementTable"></tbody>
-            </table>
-          </div>
-        </article>
+        </div>
       </div>
-    </section>
-    <SeoContent
-      introTitle="퇴직금 계산기에서 확인해야 하는 핵심"
-      intro={[
-        "퇴직금 계산기는 연봉과 근속연수, 상여 반영 여부를 기준으로 평균임금과 예상 퇴직금을 빠르게 확인하는 페이지입니다. 퇴사 시점 점검, 희망퇴직 비교, 커리어 이동 계획을 세울 때 가장 먼저 보는 숫자를 정리하는 데 맞춰져 있습니다.",
-        "실무에서는 퇴직금 세전 금액만 보는 경우가 많은데, 실제 체감은 세후 추정액과 근속연수 변화에 따라 꽤 달라집니다. 이 페이지는 그런 차이를 빠르게 확인할 수 있게 구성했습니다."
-      ]}
-      inputPoints={[
-        "현재 연봉과 근속연수로 기본 퇴직금 규모를 계산할 수 있습니다.",
-        "정기 보너스와 연차수당을 반영해 평균임금 기준이 얼마나 달라지는지 확인할 수 있습니다.",
-        "퇴직소득세 추정 비율을 직접 넣어 세후 감각도 함께 볼 수 있습니다."
-      ]}
-      criteria={[
-        "평균임금 반영 범위는 회사의 상여금 지급 방식과 취업규칙에 따라 달라질 수 있습니다.",
-        "세후 금액은 단순 추정치이므로 실제 정산 결과와 차이가 날 수 있습니다.",
-        "퇴직 직전 연봉 협상이나 이직 결정 전에는 연봉 계산기와 함께 보는 것이 좋습니다."
-      ]}
-      faq={[
-        { question: "보너스를 평균임금에 항상 넣어야 하나요?", answer: "항상 그런 것은 아닙니다. 지급 주기와 회사 규정에 따라 평균임금 반영 여부가 달라질 수 있어서, 비교용으로 포함/제외를 둘 다 보는 것이 좋습니다." },
-        { question: "근속연수는 소수점으로 넣어도 되나요?", answer: "네. 실제 퇴사 시점이 딱 정수 연수가 아닐 수 있으므로 대략적인 개월 수를 반영해 소수점으로 넣어볼 수 있습니다." },
-        { question: "세후 추정은 왜 대략치인가요?", answer: "퇴직소득세는 다양한 공제와 계산 단계가 있어서 페이지에서는 빠른 판단용 비율 입력 방식으로 단순화했습니다." }
-      ]}
-      related={[
-        { href: "/tools/salary/", label: "연봉 인상 계산기" },
-        { href: "/tools/negotiation/", label: "이직 계산기" },
-        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" }
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+            </tr>
+          </thead>
+          <tbody id="retirementTable"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "퇴직소득세는 간이 추정 비율이며 실제 정산과 다를 수 있습니다.",
+        "평균임금 반영 방식은 회사 제도와 지급 항목에 따라 달라질 수 있습니다.",
+        "근속연수와 상여 반영 여부를 함께 점검해보는 것이 좋습니다."
       ]}
     />
-  </main>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="퇴직금 계산기에서 확인해야 하는 핵심"
+        intro={[
+          "퇴직금 계산기는 연봉과 근속연수, 상여 반영 여부를 기준으로 평균임금과 예상 퇴직금을 빠르게 확인하는 페이지입니다. 퇴사 시점 점검, 희망퇴직 비교, 커리어 이동 계획을 세울 때 가장 먼저 보는 숫자를 정리하는 데 맞춰져 있습니다.",
+          "실무에서는 퇴직금 세전 금액만 보는 경우가 많은데, 실제 체감은 세후 추정액과 근속연수 변화에 따라 꽤 달라집니다. 이 페이지는 그런 차이를 빠르게 확인할 수 있게 구성했습니다."
+        ]}
+        inputPoints={[
+          "현재 연봉과 근속연수로 기본 퇴직금 규모를 계산할 수 있습니다.",
+          "정기 보너스와 연차수당을 반영해 평균임금 기준이 얼마나 달라지는지 확인할 수 있습니다.",
+          "퇴직소득세 추정 비율을 직접 넣어 세후 감각도 함께 볼 수 있습니다."
+        ]}
+        criteria={[
+          "평균임금 반영 범위는 회사의 상여금 지급 방식과 취업규칙에 따라 달라질 수 있습니다.",
+          "세후 금액은 단순 추정치이므로 실제 정산 결과와 차이가 날 수 있습니다.",
+          "퇴직 직전 연봉 협상이나 이직 결정 전에는 연봉 계산기와 함께 보는 것이 좋습니다."
+        ]}
+        faq={[
+          { question: "보너스를 평균임금에 항상 넣어야 하나요?", answer: "항상 그런 것은 아닙니다. 지급 주기와 회사 규정에 따라 평균임금 반영 여부가 달라질 수 있어서, 비교용으로 포함/제외를 둘 다 보는 것이 좋습니다." },
+          { question: "근속연수는 소수점으로 넣어도 되나요?", answer: "네. 실제 퇴사 시점이 딱 정수 연수가 아닐 수 있으므로 대략적인 개월 수를 반영해 소수점으로 넣어볼 수 있습니다." },
+          { question: "세후 추정은 왜 대략치인가요?", answer: "퇴직소득세는 다양한 공제와 계산 단계가 있어서 페이지에서는 빠른 판단용 비율 입력 방식으로 단순화했습니다." }
+        ]}
+        related={[
+          { href: "/tools/salary/", label: "연봉 인상 계산기" },
+          { href: "/tools/negotiation/", label: "이직 계산기" },
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" }
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>

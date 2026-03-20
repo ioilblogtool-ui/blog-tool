@@ -97,7 +97,6 @@ function renderSalary() {
     };
   });
 
-
   const summaryIds = [
     ["raiseCase1Net", "raiseCase1Annual"],
     ["raiseCase2Net", "raiseCase2Annual"],
@@ -122,6 +121,7 @@ function renderSalary() {
     $("raiseBestLabel").textContent = `케이스 ${bestScenario.index + 1}`;
     $("raiseBestNet").textContent = `월 실수령 +${formatWon(bestScenario.item.monthlyNetIncrease)}`;
   }
+
   const rows = [
     { label: "연봉 인상액", current: 0, values: scenarios.map((item) => item.raiseAmount) },
     { label: "인상 후 연봉", current: currentAnnual, values: scenarios.map((item) => item.raisedAnnual) },
@@ -166,31 +166,6 @@ function renderRetirement() {
   $("retirementGross").textContent = formatWon(retirementGross);
   $("retirementNet").textContent = formatWon(retirementNet);
 
-
-  const summaryIds = [
-    ["raiseCase1Net", "raiseCase1Annual"],
-    ["raiseCase2Net", "raiseCase2Annual"],
-    ["raiseCase3Net", "raiseCase3Annual"]
-  ];
-
-  scenarios.forEach((item, index) => {
-    const ids = summaryIds[index];
-    if (!ids) return;
-    $(ids[0]).textContent = formatWon(item.monthlyNetIncrease);
-    $(ids[1]).textContent = `인상 후 ${formatWon(item.raisedAnnual)}`;
-  });
-
-  const bestScenario = scenarios.reduce((best, current, index) => {
-    if (!best || current.monthlyNetIncrease > best.item.monthlyNetIncrease) {
-      return { item: current, index };
-    }
-    return best;
-  }, null);
-
-  if (bestScenario) {
-    $("raiseBestLabel").textContent = `케이스 ${bestScenario.index + 1}`;
-    $("raiseBestNet").textContent = `월 실수령 +${formatWon(bestScenario.item.monthlyNetIncrease)}`;
-  }
   const rows = [
     ["월 기본 급여", salaryInfo.monthlyGross],
     ["월 보너스 반영분", includeBonus ? retirementBonus / 12 : 0],
@@ -228,31 +203,6 @@ function renderNegotiation() {
   $("negMonthlyGrossIncrease").textContent = formatWon(targetInfo.monthlyGross - currentInfo.monthlyGross);
   $("negMonthlyNetIncrease").textContent = formatWon(targetInfo.monthlyNet - currentInfo.monthlyNet);
 
-
-  const summaryIds = [
-    ["raiseCase1Net", "raiseCase1Annual"],
-    ["raiseCase2Net", "raiseCase2Annual"],
-    ["raiseCase3Net", "raiseCase3Annual"]
-  ];
-
-  scenarios.forEach((item, index) => {
-    const ids = summaryIds[index];
-    if (!ids) return;
-    $(ids[0]).textContent = formatWon(item.monthlyNetIncrease);
-    $(ids[1]).textContent = `인상 후 ${formatWon(item.raisedAnnual)}`;
-  });
-
-  const bestScenario = scenarios.reduce((best, current, index) => {
-    if (!best || current.monthlyNetIncrease > best.item.monthlyNetIncrease) {
-      return { item: current, index };
-    }
-    return best;
-  }, null);
-
-  if (bestScenario) {
-    $("raiseBestLabel").textContent = `케이스 ${bestScenario.index + 1}`;
-    $("raiseBestNet").textContent = `월 실수령 +${formatWon(bestScenario.item.monthlyNetIncrease)}`;
-  }
   const rows = [
     ["현재 연봉", currentAnnual],
     ["현재 월 실수령", currentInfo.monthlyNet],
@@ -297,31 +247,6 @@ function renderLeave() {
   $("leaveMonthlyGap").textContent = formatWon(monthlyGap);
   $("leaveBufferMonths").textContent = monthlyGap > 0 ? `${bufferMonths.toFixed(1)}개월` : "계산 불가";
 
-
-  const summaryIds = [
-    ["raiseCase1Net", "raiseCase1Annual"],
-    ["raiseCase2Net", "raiseCase2Annual"],
-    ["raiseCase3Net", "raiseCase3Annual"]
-  ];
-
-  scenarios.forEach((item, index) => {
-    const ids = summaryIds[index];
-    if (!ids) return;
-    $(ids[0]).textContent = formatWon(item.monthlyNetIncrease);
-    $(ids[1]).textContent = `인상 후 ${formatWon(item.raisedAnnual)}`;
-  });
-
-  const bestScenario = scenarios.reduce((best, current, index) => {
-    if (!best || current.monthlyNetIncrease > best.item.monthlyNetIncrease) {
-      return { item: current, index };
-    }
-    return best;
-  }, null);
-
-  if (bestScenario) {
-    $("raiseBestLabel").textContent = `케이스 ${bestScenario.index + 1}`;
-    $("raiseBestNet").textContent = `월 실수령 +${formatWon(bestScenario.item.monthlyNetIncrease)}`;
-  }
   const rows = [
     ["휴직 전 월 실수령", beforeNet],
     ["휴직 중 월 수령", leaveMonthlyIncome],
@@ -455,4 +380,3 @@ if (page === "salary") initSalaryPage();
 if (page === "retirement") initRetirementPage();
 if (page === "negotiation") initNegotiationPage();
 if (page === "leave") initLeavePage();
-

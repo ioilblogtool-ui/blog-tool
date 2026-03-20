@@ -5,6 +5,8 @@ import CalculatorHero from "../../components/CalculatorHero.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import TimelineToolShell from "../../components/TimelineToolShell.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -15,19 +17,35 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 <BaseLayout title="한 명만 육아휴직 총수령액 계산기" description="육아휴직 급여, 배우자 월급, 부모급여, 아동수당, 첫만남이용권을 합쳐 아이 두 돌까지 가구 총수령액을 계산하는 도구">
   <SiteHeader />
 
-  <main class="container page-shell calculator-page" data-calculator="single-parental-leave-total">
-    <CalculatorHero
-      eyebrow="가구 합산"
-      title="한 명만 육아휴직 총수령액 계산기"
-      description="엄마 또는 아빠 한 명만 육아휴직할 때, 육아휴직자 소득과 배우자 월급을 함께 반영해 아이 두 돌까지 가구 총액과 월 평균 소득을 계산합니다."
-    />
+  <TimelineToolShell calculatorId="single-parental-leave-total" pageClass="single-parental-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="가구 합산"
+        title="한 명만 육아휴직 총수령액 계산기"
+        description="엄마 또는 아빠 한 명만 육아휴직할 때, 육아휴직자 소득과 배우자 월급을 함께 반영해 아이 두 돌까지 가구 총액과 월 평균 소득을 계산합니다."
+      />
+    </Fragment>
 
-    <section class="calculator-grid content-section">
-      <div class="stack">
-        <article class="panel">
-          <h2 class="panel__title">가구 기준 입력</h2>
-          <p class="panel__intro">육아휴직자 소득과 배우자 월급을 함께 넣어두면 두 돌까지 가구 기준 총액을 한 번에 확인할 수 있습니다.</p>
-          <div class="form-grid">
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetSingleLeaveBtn" copyId="copySingleLeaveLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">가구 기준 필수 입력</h2>
+          </div>
+          <p class="panel-heading__summary">누가 육아휴직을 쓰는지와 두 사람의 월 소득만 먼저 넣고 계산해도 핵심 흐름을 바로 볼 수 있습니다.</p>
+        </div>
+
+        <div class="form-cluster">
+          <div class="form-cluster__header">
+            <strong>빠른 계산</strong>
+            <span>모바일에서는 이 항목들만 먼저 입력하고 결과를 확인한 뒤 세부 옵션을 여세요.</span>
+          </div>
+          <div class="form-grid form-grid--compact">
             <label class="field">
               <span>육아휴직 사용자</span>
               <select id="singleLeaveUser">
@@ -56,144 +74,180 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
                 <option value="18">18개월</option>
               </select>
             </label>
-            <label class="field">
-              <span>18개월 연장 조건</span>
-              <select id="singleExtensionType">
-                <option value="NONE" selected>기본 12개월</option>
-                <option value="SHARED_PARENT">부모 모두 3개월 이상 사용</option>
-                <option value="SINGLE_PARENT">한부모 가정</option>
-                <option value="DISABLED_CHILD">중증장애아동 양육</option>
-              </select>
-            </label>
-            <label class="field">
-              <span>자녀 순번</span>
-              <select id="singleChildOrder">
-                <option value="FIRST">첫째</option>
-                <option value="SECOND_PLUS">둘째 이상</option>
-              </select>
-            </label>
-            <label class="field">
-              <span>출생일</span>
-              <input id="singleBirthDate" type="date" />
-            </label>
-            <label class="field">
-              <span>현재 상태</span>
-              <select id="singleCurrentStatus">
-                <option value="BEFORE_BIRTH" selected>출생 전</option>
-                <option value="AFTER_BIRTH">출생 후</option>
-              </select>
-            </label>
-            <label class="check-field">
-              <input id="includeVoucherToggle" type="checkbox" checked />
-              <span>첫만남이용권 포함</span>
-            </label>
           </div>
-          <button id="calcSingleLeaveBtn" class="button button--primary" type="button">가구 총액 계산하기</button>
-        </article>
-      </div>
+        </div>
 
-      <div class="stack">
-        <SummaryCards
-          columns={4}
-          items={[
-            { label: "두 돌까지 가구 총액", id: "singleTotalSummary" },
-            { label: "월 평균 가구소득", id: "singleHouseholdAverage" },
-            { label: "육아휴직자 소득 합계", id: "singleLeaveUserIncomeSummary" },
-            { label: "배우자 급여 합계", id: "singleSpouseIncomeSummary" }
-          ]}
-        />
-
-        <InfoNotice
-          title="안내"
-          lines={[
-            "육아휴직 기간에는 육아휴직자 소득을 육아휴직 급여로 계산하고, 복직 후에는 다시 월 통상임금 기준으로 반영합니다.",
-            "배우자(직장인) 월급은 24개월 내내 계속 들어오는 가구 소득으로 반영합니다.",
-            "육아휴직 1년 6개월 연장은 2025년 2월 23일 시행된 조건 확대를 단순화한 입력입니다."
-          ]}
-        />
-
-        <article class="panel">
-          <div class="panel-heading">
-            <div>
-              <p class="panel-heading__eyebrow">가구 분해</p>
-              <h2 class="panel__title">항목별 총수령액 분해</h2>
+        <details class="detail-box detail-box--soft">
+          <summary>세부 조건 더 입력하기</summary>
+          <div class="detail-box__content detail-box__content--tight">
+            <div class="form-cluster form-cluster--nested">
+              <div class="form-cluster__header">
+                <strong>세부 조건</strong>
+                <span>연장 조건, 자녀 순번, 출생 상태, 첫만남이용권 포함 여부까지 추가로 설정할 수 있습니다.</span>
+              </div>
+              <div class="form-grid form-grid--compact">
+                <label class="field">
+                  <span>18개월 연장 조건</span>
+                  <select id="singleExtensionType">
+                    <option value="NONE" selected>기본 12개월</option>
+                    <option value="SHARED_PARENT">부모 모두 3개월 이상 사용</option>
+                    <option value="SINGLE_PARENT">한부모 가정</option>
+                    <option value="DISABLED_CHILD">중증장애아동 양육</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>자녀 순번</span>
+                  <select id="singleChildOrder">
+                    <option value="FIRST">첫째</option>
+                    <option value="SECOND_PLUS">둘째 이상</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>출생일</span>
+                  <input id="singleBirthDate" type="date" />
+                </label>
+                <label class="field">
+                  <span>현재 상태</span>
+                  <select id="singleCurrentStatus">
+                    <option value="BEFORE_BIRTH" selected>출생 전</option>
+                    <option value="AFTER_BIRTH">출생 후</option>
+                  </select>
+                </label>
+                <label class="check-field field-span-full">
+                  <input id="includeVoucherToggle" type="checkbox" checked />
+                  <span>첫만남이용권 포함</span>
+                </label>
+              </div>
             </div>
-            <p class="panel-heading__summary" id="singleSummaryNote">-</p>
           </div>
-          <div class="breakdown-grid">
-            <article class="breakdown-chip">
-              <span>육아휴직자 소득 합계</span>
-              <strong id="singleLeaveUserIncomeValue">-</strong>
-            </article>
-            <article class="breakdown-chip">
-              <span>배우자 급여 합계</span>
-              <strong id="singleSpouseIncomeValue">-</strong>
-            </article>
-            <article class="breakdown-chip">
-              <span>부모급여 + 아동수당</span>
-              <strong id="singleSupportValue">-</strong>
-            </article>
-            <article class="breakdown-chip">
-              <span>첫만남이용권</span>
-              <strong id="singleVoucherValue">-</strong>
-            </article>
-          </div>
-        </article>
+        </details>
 
-        <article class="panel">
-          <div class="panel-heading">
-            <div>
-              <p class="panel-heading__eyebrow">월별 흐름</p>
-              <h2 class="panel__title">월별 가구 소득 타임라인</h2>
-            </div>
-            <p class="panel-heading__summary">육아휴직자 소득, 배우자 월급, 지원금을 합친 가구 현금흐름입니다.</p>
-          </div>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th>개월</th>
-                  <th>육아휴직자 소득</th>
-                  <th>배우자 급여</th>
-                  <th>부모급여</th>
-                  <th>아동수당/기타</th>
-                  <th>월 합계</th>
-                </tr>
-              </thead>
-              <tbody id="singleLeaveTimelineTable"></tbody>
-            </table>
-          </div>
-        </article>
-      </div>
-    </section>
-    <SeoContent
-      introTitle="한 명만 육아휴직할 때 가구 총액을 왜 봐야 하나"
-      intro={[
-        "한 명만 육아휴직 총수령액 계산기는 엄마 또는 아빠 한 명이 육아휴직을 쓸 때, 육아휴직자 급여와 배우자 월급, 부모급여, 아동수당, 첫만남이용권을 합쳐 두 돌까지 가구 기준 총 현금흐름을 보여주는 페이지입니다.",
-        "실제로 많은 가정이 궁금한 것은 육아휴직 급여 단독 금액보다, 우리 집 통장에 두 돌까지 총 얼마가 들어오고 월 평균 소득이 어느 정도인지입니다. 이 페이지는 그 질문에 바로 답하도록 설계한 대표 계산기입니다."
-      ]}
-      inputPoints={[
-        "육아휴직자 월 통상임금과 배우자 월급을 함께 넣어 가구 기준으로 계산합니다.",
-        "육아휴직 기간에는 육아휴직 급여를, 복직 후에는 원래 월급을 반영합니다.",
-        "부모급여, 아동수당, 첫만남이용권까지 합산해 두 돌까지 총액과 월 평균 가구소득을 보여줍니다."
-      ]}
-      criteria={[
-        "이 계산기는 개인 급여가 아니라 가구 기준 총 현금흐름을 보는 데 초점을 둡니다.",
-        "배우자 급여는 24개월 동안 계속 들어오는 월 소득으로 반영합니다.",
-        "18개월 연장 조건과 첫째·둘째 차이를 함께 고려해 실전형 비교가 가능하도록 설계했습니다."
-      ]}
-      faq={[
-        { question: "엄마 육아휴직 + 남편 직장 급여 형태도 계산되나요?", answer: "네. 육아휴직 사용자를 엄마로 선택하고 배우자 월급을 입력하면 가구 기준으로 합산 계산됩니다." },
-        { question: "월 평균 가구소득은 무엇을 의미하나요?", answer: "두 돌까지 24개월 동안 들어오는 육아휴직자 소득, 배우자 급여, 부모급여, 아동수당, 첫만남이용권을 평균한 참고 지표입니다." },
-        { question: "6+6과는 어떻게 다른가요?", answer: "이 페이지는 한 명만 육아휴직할 때의 가구 총액을 보는 도구이고, 6+6 계산기는 부모가 모두 육아휴직을 쓸 때 특례 적용 차이를 비교하는 도구입니다." }
-      ]}
-      related={[
-        { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
-        { href: "/tools/six-plus-six/", label: "6+6 부모육아휴직제 계산기" },
-        { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" }
+        <button id="calcSingleLeaveBtn" class="button button--primary" type="button">가구 총액 계산하기</button>
+      </article>
+    </Fragment>
+
+    <SummaryCards
+      columns={4}
+      items={[
+        { label: "두 돌까지 가구 총액", id: "singleTotalSummary" },
+        { label: "월 평균 가구소득", id: "singleHouseholdAverage" },
+        { label: "육아휴직자 소득 합계", id: "singleLeaveUserIncomeSummary" },
+        { label: "배우자 급여 합계", id: "singleSpouseIncomeSummary" }
       ]}
     />
-  </main>
+
+    <section class="metrics metrics--three">
+      <article class="metric-card">
+        <p>실제 반영 육아휴직 기간</p>
+        <strong id="singleLeaveMonthsMetric">-</strong>
+        <span class="metric-sub">연장 조건을 반영한 실제 계산 개월 수</span>
+      </article>
+      <article class="metric-card">
+        <p>지원금 합계</p>
+        <strong id="singleSupportMetric">-</strong>
+        <span class="metric-sub">부모급여와 아동수당을 합산한 값</span>
+      </article>
+      <article class="metric-card">
+        <p>첫만남이용권</p>
+        <strong id="singleVoucherMetric">-</strong>
+        <span class="metric-sub">포함 여부에 따라 자동 반영됩니다.</span>
+      </article>
+    </section>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">가구 분해</p>
+          <h2 class="panel__title">항목별 총수령액 분해</h2>
+        </div>
+        <p class="panel-heading__summary" id="singleSummaryNote">-</p>
+      </div>
+      <div class="breakdown-grid">
+        <article class="breakdown-chip">
+          <span>육아휴직자 소득 합계</span>
+          <strong id="singleLeaveUserIncomeValue">-</strong>
+        </article>
+        <article class="breakdown-chip">
+          <span>배우자 급여 합계</span>
+          <strong id="singleSpouseIncomeValue">-</strong>
+        </article>
+        <article class="breakdown-chip">
+          <span>부모급여 + 아동수당</span>
+          <strong id="singleSupportValue">-</strong>
+        </article>
+        <article class="breakdown-chip">
+          <span>첫만남이용권</span>
+          <strong id="singleVoucherValue">-</strong>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "육아휴직 기간에는 육아휴직자 소득을 육아휴직 급여로 계산하고, 복직 후에는 다시 월 통상임금 기준으로 반영합니다.",
+        "배우자(직장인) 월급은 24개월 내내 계속 들어오는 가구 소득으로 반영합니다.",
+        "육아휴직 1년 6개월 연장은 2025년 2월 23일 시행된 조건 확대를 단순화한 입력입니다."
+      ]}
+    />
+
+    <Fragment slot="timeline">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">월별 흐름</p>
+            <h2 class="panel__title">월별 가구 소득 타임라인</h2>
+          </div>
+          <p class="panel-heading__summary">육아휴직자 소득, 배우자 월급, 지원금을 합친 가구 현금흐름입니다.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>개월</th>
+                <th>육아휴직자 소득</th>
+                <th>배우자 급여</th>
+                <th>부모급여</th>
+                <th>아동수당/기타</th>
+                <th>월 합계</th>
+              </tr>
+            </thead>
+            <tbody id="singleLeaveTimelineTable"></tbody>
+          </table>
+        </div>
+      </article>
+    </Fragment>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="한 명만 육아휴직할 때 가구 총액을 왜 봐야 하나"
+        intro={[
+          "한 명만 육아휴직 총수령액 계산기는 엄마 또는 아빠 한 명이 육아휴직을 쓸 때, 육아휴직자 급여와 배우자 월급, 부모급여, 아동수당, 첫만남이용권을 합쳐 두 돌까지 가구 기준 총 현금흐름을 보여주는 페이지입니다.",
+          "실제로 많은 가정이 궁금한 것은 육아휴직 급여 단독 금액보다, 우리 집 통장에 두 돌까지 총 얼마가 들어오고 월 평균 소득이 어느 정도인지입니다. 이 페이지는 그 질문에 바로 답하도록 설계한 대표 계산기입니다."
+        ]}
+        inputPoints={[
+          "육아휴직자 월 통상임금과 배우자 월급을 함께 넣어 가구 기준으로 계산합니다.",
+          "육아휴직 기간에는 육아휴직 급여를, 복직 후에는 원래 월급을 반영합니다.",
+          "부모급여, 아동수당, 첫만남이용권까지 합산해 두 돌까지 총액과 월 평균 가구소득을 보여줍니다."
+        ]}
+        criteria={[
+          "이 계산기는 개인 급여가 아니라 가구 기준 총 현금흐름을 보는 데 초점을 둡니다.",
+          "배우자 급여는 24개월 동안 계속 들어오는 월 소득으로 반영합니다.",
+          "18개월 연장 조건과 첫째·둘째 차이를 함께 고려해 실전형 비교가 가능하도록 설계했습니다."
+        ]}
+        faq={[
+          { question: "엄마 육아휴직 + 남편 직장 급여 형태도 계산되나요?", answer: "네. 육아휴직 사용자를 엄마로 선택하고 배우자 월급을 입력하면 가구 기준으로 합산 계산됩니다." },
+          { question: "월 평균 가구소득은 무엇을 의미하나요?", answer: "두 돌까지 24개월 동안 들어오는 육아휴직자 소득, 배우자 급여, 부모급여, 아동수당, 첫만남이용권을 평균한 참고 지표입니다." },
+          { question: "6+6과는 어떻게 다른가요?", answer: "이 페이지는 한 명만 육아휴직할 때의 가구 총액을 보는 도구이고, 6+6 계산기는 부모가 모두 육아휴직을 쓸 때 특례 적용 차이를 비교하는 도구입니다." }
+        ]}
+        related={[
+          { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+          { href: "/tools/six-plus-six/", label: "6+6 부모육아휴직제 계산기" },
+          { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" }
+        ]}
+      />
+    </Fragment>
+  </TimelineToolShell>
 
   <script type="module" src={withBase("/scripts/single-parental-leave-total.js")}></script>
 </BaseLayout>
