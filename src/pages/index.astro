@@ -2,6 +2,7 @@
 import { tools } from "../data/tools";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import TrustPanel from "../components/TrustPanel.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -12,13 +13,28 @@ const spotlight = orderedTools.find((tool) => tool.slug === "bonus-simulator") ?
 const featuredTools = orderedTools.slice(0, 6);
 
 const homeHighlights: Record<string, string> = {
-  salary: "인상률을 넣으면 월 실수령 변화까지 바로 비교합니다.",
-  retirement: "근속연수와 평균임금 기준으로 예상 퇴직금을 빠르게 확인합니다.",
-  negotiation: "현재 연봉과 이직 제안 연봉 차이를 한 번에 비교합니다.",
-  "parental-leave": "휴직 중 소득 공백과 복직 후 흐름을 같이 봅니다.",
-  "bonus-simulator": "삼성전자, SK하이닉스, 현대차 보상 시나리오를 나란히 비교합니다.",
-  "birth-support-total": "출산 직후부터 두 돌까지 받을 수 있는 지원금 총액을 정리합니다."
+  salary: "인상률을 넣으면 월 실수령 변화와 연 총보상 차이를 바로 비교합니다.",
+  retirement: "근속연수와 평균임금 기준으로 예상 퇴직금과 세후 추정액을 확인합니다.",
+  negotiation: "현재 연봉과 이직 제안 연봉 차이를 세전 기준으로 빠르게 비교합니다.",
+  "parental-leave": "휴직 중 소득 공백과 복직 후 흐름을 함께 보며 생활비 버퍼를 계산합니다.",
+  "bonus-simulator": "삼성전자, SK하이닉스, 현대차 보상 시나리오를 3개 회사 기준으로 나란히 봅니다.",
+  "birth-support-total": "출산 직후부터 두 돌까지 받을 수 있는 지원금 총액과 흐름을 정리합니다."
 };
+
+const homeTopics = [
+  {
+    label: "연봉 인상 후 실수령이 궁금하다면",
+    href: withBase("/tools/salary/")
+  },
+  {
+    label: "육아휴직 중 현금흐름이 걱정된다면",
+    href: withBase("/tools/parental-leave/")
+  },
+  {
+    label: "출산 후 2년 지원금 총액을 보고 싶다면",
+    href: withBase("/tools/birth-support-total/")
+  }
+];
 ---
 
 <BaseLayout title="비교계산소" description="비교해서 더 잘 판단하게 만드는 계산 도구">
@@ -27,22 +43,29 @@ const homeHighlights: Record<string, string> = {
   <main class="container page-shell home-page">
     <section class="hero hero--home hero--magazine">
       <p class="hero__eyebrow">비교계산소</p>
-      <h1 class="hero__title">계산은 빠르게, 비교는 명확하게</h1>
+      <h1 class="hero__title">연봉부터 육아휴직까지, 자주 비교하는 숫자를 더 빠르게</h1>
       <p class="hero__description">
-        자주 마주치는 숫자를 빠르게 계산하고,
-        상황별로 비교해볼 수 있게 만들었습니다.
+        연봉, 성과급, 육아휴직, 출산 지원금처럼 생활과 실무에서 자주 확인하는 숫자를
+        모바일에서 빠르게 계산하고 비교할 수 있게 정리했습니다.
       </p>
+      <div class="hero-quick-links" aria-label="대표 해결 질문">
+        {
+          homeTopics.map((topic) => (
+            <a class="hero-quick-links__item" href={topic.href}>{topic.label}</a>
+          ))
+        }
+      </div>
       <div class="home-actions">
-        <a class="button button--primary" href={withBase("/tools/")}>전체 도구 보기</a>
+        <a class="button button--primary" href={withBase("/tools/")}>내 상황에 맞는 계산기 찾기</a>
       </div>
     </section>
 
     <section class="home-spotlight content-section">
       <article class="panel home-spotlight__feature">
         <div class="section-header">
-          <p class="section-header__eyebrow">Featured Tool</p>
-          <h2>지금 바로 써보기 좋은 대표 도구</h2>
-          <p>빠르게 비교해보고 판단까지 이어질 수 있는 대표 페이지를 먼저 배치했습니다.</p>
+          <p class="section-header__eyebrow">대표 도구</p>
+          <h2>지금 바로 써보기 좋은 대표 계산기</h2>
+          <p>복잡한 선택지보다 먼저 눌러볼 만한 대표 페이지를 앞에 배치했습니다.</p>
         </div>
         <div class="tool-card__head">
           <p class="tool-card__eyebrow">{spotlight.eyebrow ?? "추천 도구"}</p>
@@ -56,26 +79,28 @@ const homeHighlights: Record<string, string> = {
         </div>
         <h2>{spotlight.title}</h2>
         <p>{spotlight.description}</p>
-        <a class="button button--secondary" href={withBase(`/tools/${spotlight.slug}/`)}>대표 도구 열기</a>
+        <a class="button button--secondary" href={withBase(`/tools/${spotlight.slug}/`)}>대표 도구 바로 열기</a>
       </article>
 
       <div class="home-spotlight__stats">
-        <article class="metric-card">
+        <article class="metric-card metric-card--compact">
           <p>등록 도구 수</p>
           <strong>{orderedTools.length}개</strong>
+          <span>연봉·성과급·육아휴직·출산 지원금 계산기 운영 중</span>
         </article>
-        <article class="metric-card">
-          <p>브랜드 포지션</p>
+        <article class="metric-card metric-card--compact">
+          <p>사이트 방향</p>
           <strong>판단 보조 도구</strong>
+          <span>숫자 계산에 그치지 않고 비교와 해석까지 이어지게 설계합니다.</span>
         </article>
       </div>
     </section>
 
     <section class="content-section">
       <div class="section-header">
-        <p class="section-header__eyebrow">Tool Library</p>
+        <p class="section-header__eyebrow">많이 찾는 계산기</p>
         <h2>많이 찾는 계산기부터 바로 눌러보세요</h2>
-        <p>각 페이지에서 무엇을 바로 확인할 수 있는지 먼저 보이고, 클릭 후 바로 입력할 수 있게 정리했습니다.</p>
+        <p>각 페이지에서 무엇을 바로 확인할 수 있는지 먼저 보여주고, 클릭 후 바로 입력할 수 있게 정리했습니다.</p>
       </div>
       <div class="tool-showcase tool-showcase--grid tool-showcase--magazine">
         {
@@ -102,5 +127,11 @@ const homeHighlights: Record<string, string> = {
         <a class="button button--ghost" href={withBase("/tools/")}>전체 도구 목록 더 보기</a>
       </div>
     </section>
+
+    <TrustPanel
+      eyebrow="신뢰 정보"
+      title="계산 전후로 함께 확인하면 좋은 안내"
+      description="사이트 운영 기준과 문의/면책 정보를 한 번 더 보여줘서 검색 유입 사용자도 바로 신뢰 정보를 찾을 수 있게 했습니다."
+    />
   </main>
 </BaseLayout>

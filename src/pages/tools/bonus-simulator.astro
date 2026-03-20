@@ -30,8 +30,8 @@ const initialCompany = companyConfigs[0];
 
     <ToolActionBar resetId="resetBonusBtn" copyId="copyBonusLinkBtn" />
 
-    <section class="bonus-dashboard-layout">
-      <aside class="bonus-dashboard-layout__aside">
+    <section class="bonus-dashboard-layout bonus-dashboard-layout--result-first">
+      <aside class="bonus-dashboard-layout__aside" id="bonus-inputs">
         <article class="panel bonus-input-panel">
           <div class="panel-heading">
             <div>
@@ -132,11 +132,25 @@ const initialCompany = companyConfigs[0];
             </div>
           </details>
 
-          <button id="calcBonusBtn" class="button button--primary" type="button">총보상 비교하기</button>
+          <button id="calcBonusBtn" class="button button--primary" type="button">올해 보상 먼저 보기</button>
         </article>
       </aside>
 
       <div class="bonus-dashboard-layout__main">
+        <article class="panel result-priority-panel" id="bonus-results">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+              <h2 class="panel__title">회사·직급·연봉만 입력해도 바로 읽히는 결과</h2>
+            </div>
+            <p class="panel-heading__summary">모바일에서는 올해 총보상, 3년 누적 흐름, 같은 직급 기준 3사 비교를 먼저 보여주고 세부 항목은 아래에서 이어서 펼쳐보게 했습니다.</p>
+          </div>
+          <div class="result-priority-panel__actions">
+            <a class="button button--secondary" href="#bonus-inputs">조건 다시 입력</a>
+            <a class="button button--ghost" href="#bonus-details">세부 항목 보기</a>
+          </div>
+        </article>
+
         <section class="bonus-primary-strip content-section">
           <SummaryCards
             columns={4}
@@ -209,113 +223,118 @@ const initialCompany = companyConfigs[0];
           </article>
         </section>
 
-        <section class="bonus-secondary-grid content-section">
-          <article class="panel scenario-panel">
-            <div class="panel-heading">
-              <div>
-                <p class="panel-heading__eyebrow">시나리오 비교</p>
-                <h2 class="panel__title">보수적 · 기준 · 공격적 비교</h2>
-              </div>
-              <p class="panel-heading__summary">같은 회사, 같은 직급에서 업황 가정만 바꿨을 때의 차이입니다.</p>
-            </div>
-            <div class="scenario-grid">
-              <article class="scenario-card" data-scenario-card="CONSERVATIVE">
-                <p class="scenario-card__label">보수적</p>
-                <strong id="scenarioBonusConservative">-</strong>
-                <span id="scenarioTotalConservative">-</span>
-              </article>
-              <article class="scenario-card" data-scenario-card="BASE">
-                <p class="scenario-card__label">기준</p>
-                <strong id="scenarioBonusBase">-</strong>
-                <span id="scenarioTotalBase">-</span>
-              </article>
-              <article class="scenario-card" data-scenario-card="AGGRESSIVE">
-                <p class="scenario-card__label">공격적</p>
-                <strong id="scenarioBonusAggressive">-</strong>
-                <span id="scenarioTotalAggressive">-</span>
-              </article>
-            </div>
-          </article>
-
-          <article class="panel bonus-breakdown-panel">
-            <div class="panel-heading">
-              <div>
-                <p class="panel-heading__eyebrow">성과급 분해</p>
-                <h2 class="panel__title">보상 구조 세부 항목</h2>
-              </div>
-              <p class="panel-heading__summary" id="companyTagline">-</p>
-            </div>
-            <div class="breakdown-grid">
-              <article class="breakdown-chip">
-                <span id="payoutLabel1">항목 1</span>
-                <strong id="payoutValue1">-</strong>
-              </article>
-              <article class="breakdown-chip">
-                <span id="payoutLabel2">항목 2</span>
-                <strong id="payoutValue2">-</strong>
-              </article>
-              <article class="breakdown-chip">
-                <span>기본 연봉</span>
-                <strong id="baseAnnualValue">-</strong>
-              </article>
-              <article class="breakdown-chip">
-                <span>주식/기타 보상</span>
-                <strong id="extrasValue">-</strong>
-              </article>
-            </div>
-          </article>
-        </section>
-
-        <section class="bonus-detail-grid content-section">
-          <details class="detail-box detail-box--soft bonus-detail-box" open>
-            <summary>세부 표 보기</summary>
-            <div class="detail-box__content detail-box__content--tight">
-              <div class="table-wrap">
-                <table class="result-table">
-                  <thead>
-                    <tr>
-                      <th>항목</th>
-                      <th>값</th>
-                    </tr>
-                  </thead>
-                  <tbody id="bonusBreakdownTable"></tbody>
-                </table>
-              </div>
-            </div>
-          </details>
-
-          <div class="compare-tool-card-stack">
-            <InfoNotice
-              title="안내"
-              lines={[
-                "공개 자료와 보도 내용을 바탕으로 단순화한 시뮬레이션입니다.",
-                "실제 지급액은 사업부, 평가, 재직기간, 노사합의, 연도별 정책에 따라 달라질 수 있습니다.",
-                "2027~2028 값은 예측이 아니라 가정 기반 시나리오입니다."
-              ]}
-            />
-
-            <details class="detail-box detail-box--soft bonus-notes-box">
-              <summary>기준값 메모 보기</summary>
-              <div class="detail-box__content">
-                <div class="note-stack note-stack--compact">
-                  <p class="note-chip">삼성전자: 2026년 1월 16일 기준 2025년분 OPI가 사업부별로 11%~50% 수준까지 공지된 보도 흐름을 반영했습니다.</p>
-                  <p class="note-chip">SK하이닉스: 2026년 1월 28일 FY2025 매출 97.1467조 원, 영업이익 47.2063조 원과 2026년 2월 PS 2964% 사례를 기준점으로 잡았습니다.</p>
-                  <p class="note-chip">현대자동차: 2025년 9월 9일 잠정합의안 기준 성과금 450% + 1,580만 원, 주식 30주, 상품권 20만 원 패키지를 반영했습니다.</p>
+        <details class="detail-box detail-box--soft detail-box--inline" id="bonus-details">
+          <summary>시나리오·세부 항목 이어서 보기</summary>
+          <div class="detail-box__content detail-box__content--tight">
+            <section class="bonus-secondary-grid content-section">
+              <article class="panel scenario-panel">
+                <div class="panel-heading">
+                  <div>
+                    <p class="panel-heading__eyebrow">시나리오 비교</p>
+                    <h2 class="panel__title">보수적 · 기준 · 공격적 비교</h2>
+                  </div>
+                  <p class="panel-heading__summary">같은 회사, 같은 직급에서 업황 가정만 바꿨을 때의 차이입니다.</p>
                 </div>
-              </div>
-            </details>
-
-            <article class="panel bonus-source-panel">
-              <div class="panel-heading">
-                <div>
-                  <p class="panel-heading__eyebrow">회사 메모</p>
-                  <h2 class="panel__title">공개 자료 기반 해석</h2>
+                <div class="scenario-grid">
+                  <article class="scenario-card" data-scenario-card="CONSERVATIVE">
+                    <p class="scenario-card__label">보수적</p>
+                    <strong id="scenarioBonusConservative">-</strong>
+                    <span id="scenarioTotalConservative">-</span>
+                  </article>
+                  <article class="scenario-card" data-scenario-card="BASE">
+                    <p class="scenario-card__label">기준</p>
+                    <strong id="scenarioBonusBase">-</strong>
+                    <span id="scenarioTotalBase">-</span>
+                  </article>
+                  <article class="scenario-card" data-scenario-card="AGGRESSIVE">
+                    <p class="scenario-card__label">공격적</p>
+                    <strong id="scenarioBonusAggressive">-</strong>
+                    <span id="scenarioTotalAggressive">-</span>
+                  </article>
                 </div>
+              </article>
+
+              <article class="panel bonus-breakdown-panel">
+                <div class="panel-heading">
+                  <div>
+                    <p class="panel-heading__eyebrow">성과급 분해</p>
+                    <h2 class="panel__title">보상 구조 세부 항목</h2>
+                  </div>
+                  <p class="panel-heading__summary" id="companyTagline">-</p>
+                </div>
+                <div class="breakdown-grid">
+                  <article class="breakdown-chip">
+                    <span id="payoutLabel1">항목 1</span>
+                    <strong id="payoutValue1">-</strong>
+                  </article>
+                  <article class="breakdown-chip">
+                    <span id="payoutLabel2">항목 2</span>
+                    <strong id="payoutValue2">-</strong>
+                  </article>
+                  <article class="breakdown-chip">
+                    <span>기본 연봉</span>
+                    <strong id="baseAnnualValue">-</strong>
+                  </article>
+                  <article class="breakdown-chip">
+                    <span>주식/기타 보상</span>
+                    <strong id="extrasValue">-</strong>
+                  </article>
+                </div>
+              </article>
+            </section>
+
+            <section class="bonus-detail-grid content-section">
+              <details class="detail-box detail-box--soft bonus-detail-box" open>
+                <summary>세부 표 보기</summary>
+                <div class="detail-box__content detail-box__content--tight">
+                  <div class="table-wrap">
+                    <table class="result-table">
+                      <thead>
+                        <tr>
+                          <th>항목</th>
+                          <th>값</th>
+                        </tr>
+                      </thead>
+                      <tbody id="bonusBreakdownTable"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </details>
+
+              <div class="compare-tool-card-stack">
+                <InfoNotice
+                  title="안내"
+                  lines={[
+                    "공개 자료와 보도 내용을 바탕으로 단순화한 시뮬레이션입니다.",
+                    "실제 지급액은 사업부, 평가, 재직기간, 노사합의, 연도별 정책에 따라 달라질 수 있습니다.",
+                    "2027~2028 값은 예측이 아니라 가정 기반 시나리오입니다."
+                  ]}
+                />
+
+                <details class="detail-box detail-box--soft bonus-notes-box">
+                  <summary>기준값 메모 보기</summary>
+                  <div class="detail-box__content">
+                    <div class="note-stack note-stack--compact">
+                      <p class="note-chip">삼성전자: 2026년 1월 16일 기준 2025년분 OPI가 사업부별로 11%~50% 수준까지 공지된 보도 흐름을 반영했습니다.</p>
+                      <p class="note-chip">SK하이닉스: 2026년 1월 28일 FY2025 매출 97.1467조 원, 영업이익 47.2063조 원과 2026년 2월 PS 2964% 사례를 기준점으로 잡았습니다.</p>
+                      <p class="note-chip">현대자동차: 2025년 9월 9일 잠정합의안 기준 성과금 450% + 1,580만 원, 주식 30주, 상품권 20만 원 패키지를 반영했습니다.</p>
+                    </div>
+                  </div>
+                </details>
+
+                <article class="panel bonus-source-panel">
+                  <div class="panel-heading">
+                    <div>
+                      <p class="panel-heading__eyebrow">회사 메모</p>
+                      <h2 class="panel__title">공개 자료 기반 해석</h2>
+                    </div>
+                  </div>
+                  <div class="note-stack" id="companyNotes"></div>
+                </article>
               </div>
-              <div class="note-stack" id="companyNotes"></div>
-            </article>
+            </section>
           </div>
-        </section>
+        </details>
       </div>
     </section>
 

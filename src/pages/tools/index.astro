@@ -3,13 +3,43 @@ import { tools } from "../../data/tools";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
+import TrustPanel from "../../components/TrustPanel.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 const orderedTools = [...tools].sort((a, b) => a.order - b.order);
-const categories = Array.from(new Set(orderedTools.map((tool) => tool.category ?? "tool")));
+
+const topicBySlug: Record<string, string> = {
+  salary: "연봉·이직",
+  retirement: "연봉·이직",
+  negotiation: "연봉·이직",
+  "parental-leave": "육아휴직·출산",
+  "bonus-simulator": "성과급 비교",
+  "birth-support-total": "육아휴직·출산",
+  "single-parental-leave-total": "육아휴직·출산",
+  "parental-leave-pay": "육아휴직·출산",
+  "six-plus-six": "육아휴직·출산"
+};
+
+const topicOrder = ["전체", "연봉·이직", "성과급 비교", "육아휴직·출산"];
+const categories = topicOrder.filter(
+  (category) => category === "전체" || orderedTools.some((tool) => topicBySlug[tool.slug] === category)
+);
+
+const toolHighlights: Record<string, string> = {
+  salary: "연봉 인상률별 월 실수령 차이와 연 총보상 흐름을 비교합니다.",
+  retirement: "평균임금 기준 예상 퇴직금과 세후 추정액을 빠르게 확인합니다.",
+  negotiation: "현재 연봉과 제안 연봉 차이를 세전 기준으로 한 번에 비교합니다.",
+  "parental-leave": "휴직 중 버틸 수 있는 현금흐름과 복직 후 변화를 같이 봅니다.",
+  "bonus-simulator": "삼성전자, SK하이닉스, 현대차의 보상 시나리오를 나란히 정리합니다.",
+  "birth-support-total": "출산 직후부터 두 돌까지 받을 수 있는 지원금 총액을 계산합니다.",
+  "single-parental-leave-total": "한 명만 육아휴직할 때 가구 총수령액을 합산해서 보여줍니다.",
+  "parental-leave-pay": "일반 육아휴직 급여 기준으로 월별 급여와 총액을 정리합니다.",
+  "six-plus-six": "6+6 특례와 일반 육아휴직 차이를 금액 기준으로 비교합니다."
+};
+
 const toolLibraryScript = `
   (() => {
     const searchInput = document.getElementById("toolSearchInput");
@@ -65,65 +95,74 @@ const toolLibraryScript = `
   <main class="container page-shell tool-library-page">
     <CalculatorHero
       eyebrow="도구 목록"
-      title="필요한 계산과 비교를 바로 찾을 수 있게"
-      description="생활, 재테크, 정책, 커리어까지 자주 쓰는 계산 도구를 한곳에 모았습니다. 검색과 필터로 필요한 페이지를 빠르게 찾을 수 있습니다."
+      title="필요한 계산기를 빠르게 찾고 바로 입력하세요"
+      description="연봉, 성과급, 육아휴직, 출산 지원금처럼 자주 비교하는 계산기를 주제별로 묶어 모바일에서도 빠르게 찾을 수 있게 정리했습니다."
     />
 
     <section class="library-toolbar panel content-section content-section--tight">
       <div class="section-header">
-        <p class="section-header__eyebrow">Tool Finder</p>
-        <h2>도구 찾기</h2>
-        <p>키워드와 카테고리로 필요한 계산 페이지를 바로 찾아보세요.</p>
+        <p class="section-header__eyebrow">도구 찾기</p>
+        <h2>주제와 키워드로 바로 찾기</h2>
+        <p>찾고 싶은 계산기를 검색하거나, 지금 필요한 주제부터 눌러서 빠르게 이동해보세요.</p>
       </div>
       <div class="library-toolbar__search field">
         <span>검색</span>
-        <input id="toolSearchInput" type="search" placeholder="도구 이름 또는 설명 검색" autocomplete="off" />
+        <input id="toolSearchInput" type="search" placeholder="예: 연봉, 육아휴직, 성과급" autocomplete="off" />
       </div>
       <div class="library-toolbar__filters">
-        <button class="tool-filter is-active" type="button" data-filter="all">전체</button>
         {
-          categories.map((category) => (
-            <button class="tool-filter" type="button" data-filter={category}>{category}</button>
+          categories.map((category, index) => (
+            <button class={`tool-filter${index === 0 ? " is-active" : ""}`} type="button" data-filter={category === "전체" ? "all" : category}>{category}</button>
           ))
         }
       </div>
-      <p class="library-count" id="toolLibraryCount">{orderedTools.length}개 결과</p>
+      <p class="library-count" id="toolLibraryCount" aria-live="polite">{orderedTools.length}개 결과</p>
     </section>
 
-    <section class="content-section">      <div class="section-header">
-        <p class="section-header__eyebrow">All Tools</p>
-        <h2>전체 도구 목록</h2>
-        <p>모든 도구는 모바일에서 바로 입력하고 결과를 확인할 수 있게 같은 구조로 정리하고 있습니다.</p>
+    <section class="content-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">전체 계산기</p>
+        <h2>무엇을 바로 확인할 수 있는지 먼저 보이게</h2>
+        <p>각 카드에서 이 페이지로 들어가면 어떤 결과를 바로 볼 수 있는지 한 줄씩 먼저 보여줍니다.</p>
       </div>
       <div class="tool-showcase tool-showcase--grid" id="toolLibraryGrid">
         {
-          orderedTools.map((tool) => (
-            <a
-              class="tool-card tool-card--feature"
-              href={withBase(`/tools/${tool.slug}/`)}
-              data-tool-card
-              data-category={tool.category ?? "tool"}
-            >
-              <div class="tool-card__head">
-                <p class="tool-card__eyebrow">{tool.category ?? "tool"}</p>
-                {
-                  tool.badges && tool.badges.length > 0 && (
-                    <div class="tool-badges">
-                      {tool.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
-                    </div>
-                  )
-                }
-              </div>
-              <h2>{tool.title}</h2>
-              <p>{tool.description}</p>
-              <span class="tool-card__meta">/{tool.slug}/</span>
-            </a>
-          ))
+          orderedTools.map((tool) => {
+            const topic = topicBySlug[tool.slug] ?? "기타";
+            return (
+              <a
+                class="tool-card tool-card--feature"
+                href={withBase(`/tools/${tool.slug}/`)}
+                data-tool-card
+                data-category={topic}
+              >
+                <div class="tool-card__head">
+                  <p class="tool-card__eyebrow">{topic}</p>
+                  {
+                    tool.badges && tool.badges.length > 0 && (
+                      <div class="tool-badges">
+                        {tool.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
+                      </div>
+                    )
+                  }
+                </div>
+                <h2>{tool.title}</h2>
+                <p>{tool.description}</p>
+                <span class="tool-card__meta">{toolHighlights[tool.slug] ?? "입력 후 결과를 바로 확인할 수 있게 구성했습니다."}</span>
+              </a>
+            );
+          })
         }
       </div>
     </section>
 
-    <p class="library-empty" id="toolLibraryEmpty" hidden>검색 결과가 없습니다. 다른 키워드나 필터를 선택해보세요.</p>
+    <TrustPanel
+      eyebrow="신뢰 정보"
+      title="검색 유입 사용자도 바로 확인할 수 있는 운영 안내"
+      description="계산기만 모아둔 사이트가 아니라는 점이 한 번에 보이도록, 소개·문의·면책 정보를 도구 목록 하단에도 함께 배치했습니다."
+    />
+
+    <p class="library-empty" id="toolLibraryEmpty" hidden>검색 결과가 없습니다. 다른 키워드나 주제를 선택해보세요.</p>
   </main>
 
   <script is:inline set:html={toolLibraryScript}></script>

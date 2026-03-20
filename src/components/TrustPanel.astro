@@ -1,0 +1,64 @@
+﻿---
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  note?: string;
+}
+
+const {
+  eyebrow = "신뢰 안내",
+  title = "계산 전후로 함께 확인하면 좋은 안내",
+  description = "사이트 소개, 이용 기준, 문의 안내를 한곳에 모아 계산 결과를 더 안심하고 해석할 수 있게 정리했습니다.",
+  note = "비교계산소의 계산 결과는 공개 기준과 입력값을 바탕으로 한 참고용 추정치입니다. 중요한 결정 전에는 원문 공지와 공식 자료를 함께 확인해주세요."
+} = Astro.props;
+
+const trustLinks = [
+  {
+    href: withBase("/about/"),
+    label: "비교계산소 소개",
+    summary: "사이트가 어떤 기준으로 계산기와 설명 페이지를 운영하는지 확인합니다."
+  },
+  {
+    href: withBase("/privacy/"),
+    label: "개인정보처리방침",
+    summary: "쿠키, 외부 서비스, 기본 수집 정보의 처리 원칙을 확인합니다."
+  },
+  {
+    href: withBase("/contact/"),
+    label: "문의 안내",
+    summary: "오류 제보, 기능 제안, 제휴 문의처럼 실제로 받을 수 있는 문의 범위를 봅니다."
+  },
+  {
+    href: withBase("/disclaimer/"),
+    label: "이용안내 및 면책",
+    summary: "결과를 어떻게 해석해야 하는지, 실제 지급액과 달라질 수 있는 이유를 확인합니다."
+  }
+];
+---
+
+<section class="trust-panel panel content-section content-section--tight">
+  <div class="section-header">
+    <p class="section-header__eyebrow">{eyebrow}</p>
+    <h2>{title}</h2>
+    <p>{description}</p>
+  </div>
+
+  <div class="trust-panel__grid">
+    {
+      trustLinks.map((link) => (
+        <a class="trust-panel__link" href={link.href}>
+          <strong>{link.label}</strong>
+          <span>{link.summary}</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <p class="trust-panel__note">{note}</p>
+</section>

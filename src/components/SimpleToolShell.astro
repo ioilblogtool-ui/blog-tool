@@ -2,16 +2,17 @@
 interface Props {
   calculatorId: string;
   pageClass?: string;
+  resultFirst?: boolean;
 }
 
-const { calculatorId, pageClass = "" } = Astro.props;
+const { calculatorId, pageClass = "", resultFirst = false } = Astro.props;
 ---
 
 <main class:list={["container", "page-shell", "calculator-page", pageClass]} data-calculator={calculatorId}>
   <slot name="hero" />
   <slot name="actions" />
 
-  <section class="simple-tool-shell content-section">
+  <section class:list={["simple-tool-shell", "content-section", resultFirst && "simple-tool-shell--result-first"]}>
     <aside class="simple-tool-shell__aside">
       <slot name="aside" />
     </aside>
