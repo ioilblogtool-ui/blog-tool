@@ -1,0 +1,27 @@
+﻿---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout title="페이지를 찾을 수 없습니다 | 비교계산소" description="요청한 페이지를 찾을 수 없습니다.">
+  <SiteHeader />
+
+  <main class="container page-shell">
+    <section class="hero hero--home">
+      <p class="hero__eyebrow">404</p>
+      <h1 class="hero__title">페이지를 찾을 수 없습니다</h1>
+      <p class="hero__description">
+        주소가 잘못되었거나, 페이지가 이동 또는 삭제되었을 수 있습니다.
+        필요한 계산 도구는 전체 목록에서 다시 찾아보실 수 있습니다.
+      </p>
+      <div class="home-actions">
+        <a class="button button--primary" href={withBase("/tools/")}>도구 목록 보기</a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
