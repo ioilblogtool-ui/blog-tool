@@ -1,0 +1,39 @@
+﻿---
+import { tools } from "../../data/tools";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import ToolTabs from "../../components/ToolTabs.astro";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const orderedTools = [...tools].sort((a, b) => a.order - b.order);
+---
+
+<BaseLayout title="ioil's Blog Tool" description="blog tool for ioil">
+  <SiteHeader />
+
+  <main class="container page-shell">
+    <CalculatorHero
+      eyebrow="Tool Library"
+      title="배포 가능한 도구형 웹페이지 목록"
+      description="도구 메타는 코드 설정으로 관리하고, 실제 페이지는 각 URL에서 독립적으로 동작하도록 구성했습니다."
+    />
+    <ToolTabs />
+
+    <section class="tool-showcase tool-showcase--grid">
+      {
+        orderedTools.map((tool) => (
+          <a class="tool-card" href={withBase(`/tools/${tool.slug}/`)}>
+            <p class="tool-card__eyebrow">{tool.category ?? "tool"}</p>
+            <h2>{tool.title}</h2>
+            <p>{tool.description}</p>
+            <span class="tool-card__meta">/{tool.slug}/</span>
+          </a>
+        ))
+      }
+    </section>
+  </main>
+</BaseLayout>

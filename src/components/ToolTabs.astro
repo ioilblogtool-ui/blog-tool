@@ -1,0 +1,23 @@
+﻿---
+import { tools } from "../data/tools";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const currentPath = Astro.url.pathname;
+const orderedTools = [...tools].sort((a, b) => a.order - b.order);
+---
+
+<nav class="tool-tabs" aria-label="도구 이동">
+  {
+    orderedTools.map((tool) => {
+      const href = withBase(`/tools/${tool.slug}/`);
+      return (
+        <a href={href} class:list={["tool-tabs__link", currentPath === href && "is-active"]}>
+          {tool.title}
+        </a>
+      );
+    })
+  }
+</nav>

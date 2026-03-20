@@ -2,7 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
-import CalculatorTabs from "../../components/CalculatorTabs.astro";
+import ToolTabs from "../../components/ToolTabs.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -10,16 +10,16 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 ---
 
-<BaseLayout title="이직 계산기 | Blog Tool">
+<BaseLayout title="이직 계산기" description="현재 연봉과 목표 연봉의 세전·실수령 차이를 비교하는 도구">
   <SiteHeader />
 
   <main class="container page-shell calculator-page" data-calculator="negotiation">
     <CalculatorHero
-      eyebrow="Job Change Calculator"
+      eyebrow="Negotiation Tool"
       title="이직 계산기"
       description="현재 연봉과 목표 연봉을 비교해 월 세전, 월 실수령, 인상률 변화를 빠르게 확인합니다."
     />
-    <CalculatorTabs />
+    <ToolTabs />
 
     <section class="calculator-grid">
       <div class="stack">
@@ -79,5 +79,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
     </section>
   </main>
 
-  <script type="module" src={withBase("/scripts/calculators.js")}></script>
+  <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
+
