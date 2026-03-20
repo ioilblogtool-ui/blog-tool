@@ -6,33 +6,72 @@ import SiteHeader from "../components/SiteHeader.astro";
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
-const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
-const featured = [...tools].sort((a, b) => a.order - b.order).slice(0, 4);
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const orderedTools = [...tools].sort((a, b) => a.order - b.order);
+const spotlight = orderedTools.find((tool) => tool.slug === "bonus-simulator") ?? orderedTools[0];
 ---
 
-<BaseLayout title="Web Pages" description="링크 또는 iframe으로 활용할 수 있는 독립 웹페이지 모음">
+<BaseLayout title="Web Pages" description="블로그형 카드 레이아웃으로 정리한 도구형 웹페이지 모음">
   <SiteHeader />
 
   <main class="container page-shell">
-    <section class="hero hero--home">
-      <p class="hero__eyebrow">Embedded Utilities</p>
-      <h1 class="hero__title">블로그 글에 바로 붙일 수 있는 도구형 웹페이지 저장소</h1>
+    <section class="hero hero--home hero--magazine">
+      <p class="hero__eyebrow">Tool Magazine</p>
+      <h1 class="hero__title">블로그 메인처럼 둘러보는 계산기와 시뮬레이터</h1>
       <p class="hero__description">
-        계산기, 비교 시뮬레이터, 간단한 인터랙티브 페이지를 주제별로 계속 추가하고,
-        링크 또는 iframe으로 바로 활용할 수 있도록 정리한 배포용 정적 프로젝트입니다.
+        실무형 계산기와 비교 시뮬레이터를 카드형으로 정리했습니다. 홈에서는 대표 도구를 바로 고를 수 있고,
+        전체 목록에서는 검색과 필터로 필요한 페이지를 빠르게 찾을 수 있습니다.
       </p>
       <div class="home-actions">
-        <a class="button button--primary" href={withBase("/tools/")}>도구 목록 보기</a>
+        <a class="button button--primary" href={withBase("/tools/")}>전체 도구 보기</a>
       </div>
     </section>
 
-    <section class="tool-showcase">
+    <section class="home-spotlight">
+      <article class="panel home-spotlight__feature">
+        <div class="tool-card__head">
+          <p class="tool-card__eyebrow">Featured</p>
+          {
+            spotlight.badges && spotlight.badges.length > 0 && (
+              <div class="tool-badges">
+                {spotlight.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
+              </div>
+            )
+          }
+        </div>
+        <h2>{spotlight.title}</h2>
+        <p>{spotlight.description}</p>
+        <a class="button button--secondary" href={withBase(`/tools/${spotlight.slug}/`)}>대표 도구 열기</a>
+      </article>
+      <div class="home-spotlight__stats">
+        <article class="metric-card">
+          <p>등록 도구 수</p>
+          <strong>{orderedTools.length}개</strong>
+        </article>
+        <article class="metric-card">
+          <p>형태</p>
+          <strong>카드형 탐색</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="tool-showcase tool-showcase--grid tool-showcase--magazine">
       {
-        featured.map((tool) => (
-          <a class="tool-card" href={withBase(`/tools/${tool.slug}/`)}>
-            <p class="tool-card__eyebrow">{tool.eyebrow ?? "Tool"}</p>
+        orderedTools.map((tool) => (
+          <a class="tool-card tool-card--feature" href={withBase(`/tools/${tool.slug}/`)}>
+            <div class="tool-card__head">
+              <p class="tool-card__eyebrow">{tool.eyebrow ?? "Tool"}</p>
+              {
+                tool.badges && tool.badges.length > 0 && (
+                  <div class="tool-badges">
+                    {tool.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
+                  </div>
+                )
+              }
+            </div>
             <h2>{tool.title}</h2>
             <p>{tool.description}</p>
+            <span class="tool-card__meta">바로 이동</span>
           </a>
         ))
       }

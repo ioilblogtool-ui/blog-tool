@@ -2,10 +2,8 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
-import ToolTabs from "../../components/ToolTabs.astro";
 import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
-import ToolActionBar from "../../components/ToolActionBar.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -22,9 +20,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       title="연봉 인상 계산기"
       description="현재 연봉과 보너스, 연차수당을 기준으로 인상 시나리오별 월 실수령 변화를 비교합니다."
     />
-    <ToolTabs />
-
-    <ToolActionBar resetId="resetSalaryBtn" copyId="copySalaryLinkBtn" />
 
     <section class="calculator-grid">
       <div class="stack">
@@ -119,3 +114,4 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
   <script type="module" src={withBase("/scripts/tools.js")}></script>
 </BaseLayout>
+

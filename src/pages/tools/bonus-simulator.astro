@@ -1,0 +1,270 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import { companyConfigs, growthModeOptions, rankOptions, scenarioOptions } from "../../data/bonusSimulator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const initialCompany = companyConfigs[0];
+---
+
+<BaseLayout
+  title="대기업 성과급 시뮬레이터 | 삼성전자·SK하이닉스·현대차 비교"
+  description="삼성전자, SK하이닉스, 현대자동차의 직급별 성과급과 2026~2028 총보상 시나리오를 빠르게 비교하는 정적 계산기"
+>
+  <SiteHeader />
+
+  <main class="container page-shell calculator-page bonus-page" data-calculator="bonus-simulator">
+    <CalculatorHero
+      eyebrow="Bonus Tool"
+      title="대기업 성과급 시뮬레이터"
+      description="삼성전자, SK하이닉스, 현대자동차의 직급별 보상 감각을 빠르게 비교하고 2026~2028 총보상 시나리오를 확인해보세요."
+    />
+
+    <section class="calculator-grid">
+      <div class="stack">
+        <article class="panel bonus-input-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Quick Input</p>
+              <h2 class="panel__title">빠른 입력</h2>
+            </div>
+            <p class="panel-heading__summary">3~4번 선택으로 올해 성과급과 3개년 총보상 흐름을 봅니다.</p>
+          </div>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>회사</span>
+              <select id="companySelect">
+                {
+                  companyConfigs.map((company) => (
+                    <option value={company.companyCode}>{company.companyName}</option>
+                  ))
+                }
+              </select>
+            </label>
+
+            <label class="field">
+              <span>직급</span>
+              <select id="rankSelect">
+                {
+                  rankOptions.map((rank) => (
+                    <option value={rank.code} selected={rank.code === initialCompany.defaultRank}>{rank.label}</option>
+                  ))
+                }
+              </select>
+            </label>
+
+            <label class="field">
+              <span>추천 연봉</span>
+              <input id="annualSalaryInput" type="number" value={initialCompany.baseSalaryByRank[initialCompany.defaultRank]} />
+              <small id="annualSalaryHint"></small>
+            </label>
+
+            <label class="field">
+              <span>시나리오</span>
+              <select id="scenarioSelect">
+                {
+                  scenarioOptions.map((scenario) => (
+                    <option value={scenario.code} selected={scenario.code === "BASE"}>{scenario.label}</option>
+                  ))
+                }
+              </select>
+              <small id="scenarioHint">최근 공개 흐름의 평균적 가정</small>
+            </label>
+
+            <label class="field">
+              <span id="presetHeading">{initialCompany.presetHeading}</span>
+              <select id="presetSelect"></select>
+              <small id="presetHint"></small>
+            </label>
+          </div>
+
+          <details class="detail-box">
+            <summary>상세 옵션</summary>
+            <div class="form-grid detail-box__content">
+              <label class="field">
+                <span>월 기준급/통상임금</span>
+                <input id="monthlyBaseInput" type="number" value="0" />
+                <small id="monthlyBaseHint"></small>
+              </label>
+
+              <label class="field">
+                <span>2026~2028 성장 기대</span>
+                <select id="growthModeSelect">
+                  {
+                    growthModeOptions.map((mode) => (
+                      <option value={mode.code} selected={mode.code === "NORMAL"}>{mode.label}</option>
+                    ))
+                  }
+                </select>
+                <small id="growthModeHint">기준 시나리오에 가까운 증가</small>
+              </label>
+
+              <label class="check-field check-field--vertical">
+                <input id="includeStockToggle" type="checkbox" />
+                <span>현대차 주식 포함 총보상 보기</span>
+                <small>현대차 선택 시 참고용 주식 가치를 합산합니다.</small>
+              </label>
+            </div>
+          </details>
+
+          <button id="calcBonusBtn" class="button button--primary" type="button">바로 계산하기</button>
+        </article>
+
+        <InfoNotice
+          title="안내"
+          lines={[
+            "공개 자료와 보도 내용을 바탕으로 단순화한 시뮬레이션입니다.",
+            "실제 지급액은 사업부, 평가, 재직기간, 노사합의, 연도별 정책에 따라 달라질 수 있습니다.",
+            "2027~2028 값은 예측이 아니라 가정 기반 시나리오입니다."
+          ]}
+        />
+
+        <article class="panel source-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Source Notes</p>
+              <h2 class="panel__title">기준값 메모</h2>
+            </div>
+            <p class="panel-heading__summary">Phase 1 튜닝에 반영한 최근 공개 포인트</p>
+          </div>
+          <div class="note-stack note-stack--compact">
+            <p class="note-chip">삼성전자: 2026년 1월 16일 기준 2025년분 OPI가 사업부별로 11%~50% 수준까지 공지된 보도 흐름을 반영했습니다.</p>
+            <p class="note-chip">SK하이닉스: 2026년 1월 28일 FY2025 매출 97.1467조 원, 영업이익 47.2063조 원과 2026년 2월 PS 2964% 사례를 기준점으로 잡았습니다.</p>
+            <p class="note-chip">현대자동차: 2025년 9월 9일 잠정합의안 기준 성과금 450% + 1,580만 원, 주식 30주, 상품권 20만 원 패키지를 반영했습니다.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="stack">
+        <SummaryCards
+          columns={4}
+          items={[
+            { label: "2026 예상 성과급", id: "bonusSummary" },
+            { label: "2026 예상 총보상", id: "totalCompSummary" },
+            { label: "2026~2028 누적 총보상", id: "threeYearSummary" },
+            { label: "회사 내 체감 포지션", id: "positionSummary" }
+          ]}
+        />
+
+        <section class="metrics metrics--three bonus-year-grid">
+          <article class="metric-card bonus-focus-card">
+            <p>2026 예상 총보상</p>
+            <strong id="year2026Total">-</strong>
+            <span class="metric-sub" id="year2026Note">-</span>
+          </article>
+          <article class="metric-card bonus-focus-card">
+            <p>2027 예상 총보상</p>
+            <strong id="year2027Total">-</strong>
+            <span class="metric-sub" id="year2027Note">-</span>
+          </article>
+          <article class="metric-card bonus-focus-card">
+            <p>2028 예상 총보상</p>
+            <strong id="year2028Total">-</strong>
+            <span class="metric-sub" id="year2028Note">-</span>
+          </article>
+        </section>
+
+        <article class="panel scenario-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Scenario Snapshot</p>
+              <h2 class="panel__title">시나리오 한눈 비교</h2>
+            </div>
+            <p class="panel-heading__summary">같은 프리셋과 직급 기준으로 보수적, 기준, 공격적 차이를 바로 봅니다.</p>
+          </div>
+          <div class="scenario-grid">
+            <article class="scenario-card" data-scenario-card="CONSERVATIVE">
+              <p class="scenario-card__label">보수적</p>
+              <strong id="scenarioBonusConservative">-</strong>
+              <span id="scenarioTotalConservative">-</span>
+            </article>
+            <article class="scenario-card" data-scenario-card="BASE">
+              <p class="scenario-card__label">기준</p>
+              <strong id="scenarioBonusBase">-</strong>
+              <span id="scenarioTotalBase">-</span>
+            </article>
+            <article class="scenario-card" data-scenario-card="AGGRESSIVE">
+              <p class="scenario-card__label">공격적</p>
+              <strong id="scenarioBonusAggressive">-</strong>
+              <span id="scenarioTotalAggressive">-</span>
+            </article>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">2026 Breakdown</p>
+              <h2 class="panel__title">성과급 분해</h2>
+            </div>
+            <p class="panel-heading__summary" id="companyTagline">-</p>
+          </div>
+          <div class="breakdown-grid">
+            <article class="breakdown-chip">
+              <span id="payoutLabel1">항목 1</span>
+              <strong id="payoutValue1">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span id="payoutLabel2">항목 2</span>
+              <strong id="payoutValue2">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span>기본 연봉</span>
+              <strong id="baseAnnualValue">-</strong>
+            </article>
+            <article class="breakdown-chip">
+              <span>주식/기타 보상</span>
+              <strong id="extrasValue">-</strong>
+            </article>
+          </div>
+
+          <div class="table-wrap">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>항목</th>
+                  <th>값</th>
+                </tr>
+              </thead>
+              <tbody id="bonusBreakdownTable"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Same Rank Snapshot</p>
+              <h2 class="panel__title">같은 직급 기준 3사 비교</h2>
+            </div>
+            <p class="panel-heading__summary">추천 연봉 기준으로 올해 총보상을 비교합니다.</p>
+          </div>
+          <div class="compare-list" id="companyCompareList"></div>
+        </article>
+
+        <article class="panel insight-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">Interpretation</p>
+              <h2 class="panel__title">한 줄 해석</h2>
+            </div>
+            <p class="panel-heading__summary" id="shareCopy">-</p>
+          </div>
+          <p class="insight-text" id="insightText">-</p>
+          <div class="note-stack" id="companyNotes"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script id="bonusSimulatorConfig" type="application/json" set:html={JSON.stringify({ companyConfigs, rankOptions, scenarioOptions, growthModeOptions })}></script>
+  <script type="module" src={withBase("/scripts/bonus-simulator.js")}></script>
+</BaseLayout>
+

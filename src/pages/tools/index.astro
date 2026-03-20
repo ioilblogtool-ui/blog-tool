@@ -3,31 +3,60 @@ import { tools } from "../../data/tools";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
-import ToolTabs from "../../components/ToolTabs.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
-const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 const orderedTools = [...tools].sort((a, b) => a.order - b.order);
+const categories = Array.from(new Set(orderedTools.map((tool) => tool.category ?? "tool")));
 ---
 
-<BaseLayout title="ioil's Blog Tool" description="blog tool for ioil">
+<BaseLayout title="ioil's Blog Tool" description="카드형 검색과 필터로 탐색하는 도구 목록">
   <SiteHeader />
 
-  <main class="container page-shell">
+  <main class="container page-shell tool-library-page">
     <CalculatorHero
       eyebrow="Tool Library"
-      title="배포 가능한 도구형 웹페이지 목록"
-      description="도구 메타는 코드 설정으로 관리하고, 실제 페이지는 각 URL에서 독립적으로 동작하도록 구성했습니다."
+      title="도구 목록"
+      description="카드형 목록에서 검색과 필터로 원하는 계산기와 시뮬레이터를 빠르게 찾을 수 있습니다."
     />
-    <ToolTabs />
 
-    <section class="tool-showcase tool-showcase--grid">
+    <section class="library-toolbar panel">
+      <div class="library-toolbar__search field">
+        <span>검색</span>
+        <input id="toolSearchInput" type="search" placeholder="도구 이름 또는 설명 검색" />
+      </div>
+      <div class="library-toolbar__filters">
+        <button class="tool-filter is-active" type="button" data-filter="all">전체</button>
+        {
+          categories.map((category) => (
+            <button class="tool-filter" type="button" data-filter={category}>{category}</button>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="tool-showcase tool-showcase--grid" id="toolLibraryGrid">
       {
         orderedTools.map((tool) => (
-          <a class="tool-card" href={withBase(`/tools/${tool.slug}/`)}>
-            <p class="tool-card__eyebrow">{tool.category ?? "tool"}</p>
+          <a
+            class="tool-card tool-card--feature"
+            href={withBase(`/tools/${tool.slug}/`)}
+            data-tool-card
+            data-category={tool.category ?? "tool"}
+            data-search={`${tool.title} ${tool.description} ${tool.slug}`.toLowerCase()}
+          >
+            <div class="tool-card__head">
+              <p class="tool-card__eyebrow">{tool.category ?? "tool"}</p>
+              {
+                tool.badges && tool.badges.length > 0 && (
+                  <div class="tool-badges">
+                    {tool.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
+                  </div>
+                )
+              }
+            </div>
             <h2>{tool.title}</h2>
             <p>{tool.description}</p>
             <span class="tool-card__meta">/{tool.slug}/</span>
@@ -35,5 +64,9 @@ const orderedTools = [...tools].sort((a, b) => a.order - b.order);
         ))
       }
     </section>
+
+    <p class="library-empty" id="toolLibraryEmpty" hidden>검색 결과가 없습니다. 다른 키워드나 필터를 선택해보세요.</p>
   </main>
+
+  <script type="module" src={withBase("/scripts/tool-library.js")}></script>
 </BaseLayout>

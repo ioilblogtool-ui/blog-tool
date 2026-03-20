@@ -6,6 +6,7 @@
   eyebrow?: string;
   category?: string;
   iframeReady?: boolean;
+  badges?: string[];
 };
 
 export const tools: ToolMeta[] = [
@@ -16,7 +17,8 @@ export const tools: ToolMeta[] = [
     order: 1,
     eyebrow: "Salary Tool",
     category: "calculator",
-    iframeReady: true
+    iframeReady: true,
+    badges: ["추천"]
   },
   {
     slug: "retirement",
@@ -34,7 +36,8 @@ export const tools: ToolMeta[] = [
     order: 3,
     eyebrow: "Negotiation Tool",
     category: "calculator",
-    iframeReady: true
+    iframeReady: true,
+    badges: ["추천"]
   },
   {
     slug: "parental-leave",
@@ -44,5 +47,15 @@ export const tools: ToolMeta[] = [
     eyebrow: "Parental Leave Tool",
     category: "calculator",
     iframeReady: true
+  },
+  {
+    slug: "bonus-simulator",
+    title: "대기업 성과급 시뮬레이터",
+    description: "삼성전자, SK하이닉스, 현대자동차의 직급별 성과급과 2026~2028 총보상 시나리오를 비교하는 페이지",
+    order: 5,
+    eyebrow: "Bonus Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추천"]
   }
 ];
