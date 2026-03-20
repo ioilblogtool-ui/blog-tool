@@ -4,7 +4,10 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import CalculatorTabs from "../../components/CalculatorTabs.astro";
 
-const base = import.meta.env.BASE_URL;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 ---
 
 <BaseLayout title="계산기 목록 | Blog Tool">
@@ -19,19 +22,19 @@ const base = import.meta.env.BASE_URL;
     <CalculatorTabs />
 
     <section class="card-grid">
-      <a class="info-card info-card--link" href={`${base}calculators/salary/`}>
+      <a class="info-card info-card--link" href={withBase("/calculators/salary/")}>
         <h2>연봉 인상 계산기</h2>
         <p>현재 연봉과 인상 시나리오별 실수령 변화 비교</p>
       </a>
-      <a class="info-card info-card--link" href={`${base}calculators/retirement/`}>
+      <a class="info-card info-card--link" href={withBase("/calculators/retirement/")}>
         <h2>퇴직금 계산기</h2>
         <p>평균임금 기준 퇴직금과 세후 추정액 계산</p>
       </a>
-      <a class="info-card info-card--link" href={`${base}calculators/negotiation/`}>
+      <a class="info-card info-card--link" href={withBase("/calculators/negotiation/")}>
         <h2>이직 계산기</h2>
         <p>현재 연봉과 목표 연봉의 실수령 차이 비교</p>
       </a>
-      <a class="info-card info-card--link" href={`${base}calculators/parental-leave/`}>
+      <a class="info-card info-card--link" href={withBase("/calculators/parental-leave/")}>
         <h2>육아휴직 계산기</h2>
         <p>휴직 중 급여와 복직 후 실수령을 비교해 버퍼 계산</p>
       </a>

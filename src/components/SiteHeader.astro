@@ -1,17 +1,20 @@
 ﻿---
-const base = import.meta.env.BASE_URL;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 const currentPath = Astro.url.pathname;
 
 const links = [
-  { href: `${base}`, label: "홈" },
-  { href: `${base}calculators/`, label: "계산기" },
-  { href: `${base}posts/`, label: "포스팅" }
+  { href: withBase("/"), label: "홈" },
+  { href: withBase("/calculators/"), label: "계산기" },
+  { href: withBase("/posts/"), label: "포스팅" }
 ];
 ---
 
 <header class="site-header">
   <div class="container site-header__inner">
-    <a class="site-logo" href={base}>Blog Tool</a>
+    <a class="site-logo" href={withBase("/")}>Blog Tool</a>
     <nav class="site-nav" aria-label="주요 메뉴">
       {
         links.map((link) => (
