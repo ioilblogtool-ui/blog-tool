@@ -49,7 +49,7 @@ const homeHighlights: Record<string, string> = {
 
 const featuredCalculator = {
   title: "가구 소득 계산기",
-  description: "우리집이 연·월 얼마 버는지, 평균·중위 대비 어디쯤인지 함께 계산합니다.",
+  description: "우리집 연·월 소득과 평균·중위 대비 위치를 함께 봅니다.",
   keywords: ["연 총소득", "월 체감", "소득 위치"],
   href: withBase("/tools/household-income/"),
   badge: "대표 계산기",
@@ -60,7 +60,7 @@ const featuredCalculator = {
 const recommendedCalculators = [
   {
     title: "연봉 인상 계산기",
-    description: "연봉이 오르면 월 실수령과 연 총차이가 어떻게 달라지는지 빠르게 확인합니다.",
+    description: "인상 후 월 실수령과 연 차이를 바로 봅니다.",
     keywords: ["인상률", "월 실수령", "연 총차이"],
     href: withBase("/tools/salary/"),
     badge: "추천 계산기",
@@ -69,7 +69,7 @@ const recommendedCalculators = [
   },
   {
     title: "한 명만 육아휴직 총수령액 계산기",
-    description: "육아휴직 급여와 부모급여, 아동수당을 합쳐 두 돌까지 가구 총수령액을 계산합니다.",
+    description: "육아휴직 급여와 부모급여 등을 합쳐 가구 총수령액을 봅니다.",
     keywords: ["가구 총수령액", "월 현금흐름"],
     href: withBase("/tools/single-parental-leave-total/"),
     badge: "추천 계산기",
@@ -78,7 +78,7 @@ const recommendedCalculators = [
   },
   {
     title: "대기업 성과급 시뮬레이터",
-    description: "삼성전자, SK하이닉스, 현대자동차의 성과급과 총보상을 시나리오로 비교합니다.",
+    description: "삼성전자, 하이닉스, 현대차 총보상을 시나리오로 비교합니다.",
     keywords: ["3사 비교", "총보상", "시나리오 계산"],
     href: withBase("/tools/bonus-simulator/"),
     badge: "추천 계산기",
@@ -90,19 +90,19 @@ const recommendedCalculators = [
 const trustItems = [
   {
     title: "공개 기준값과 입력값을 구분",
-    body: "평균 소득, 기준 중위소득, 공개 성과급 사례처럼 기준이 되는 값과 직접 입력하는 값을 나눠 보여줍니다."
+    body: "공개 기준값과 직접 넣는 값을 나눠 보여줍니다."
   },
   {
     title: "모바일에서 빠르게 계산",
-    body: "복잡한 표보다 먼저 봐야 할 숫자를 앞에 두고, 모바일에서도 바로 입력하고 결과를 볼 수 있게 구성했습니다."
+    body: "핵심 숫자를 먼저 보여주고 모바일에서도 바로 계산할 수 있게 구성했습니다."
   },
   {
     title: "실수령은 추정으로 표시",
-    body: "실수령액은 세금, 공제, 가족 구성에 따라 달라질 수 있어 참고용 추정값으로 분리해서 안내합니다."
+    body: "실수령은 세금과 공제에 따라 달라져 참고용 추정값으로 안내합니다."
   },
   {
     title: "비교까지 한 번에",
-    body: "총액만 보여주지 않고 월 체감, 평균 대비 수준, 시나리오 차이까지 같이 볼 수 있게 정리합니다."
+    body: "총액뿐 아니라 월 체감과 비교 기준도 함께 보여줍니다."
   }
 ];
 
@@ -163,7 +163,7 @@ const homeSearchScript = `
       <p class="hero__eyebrow">비교계산소</p>
       <h1 class="hero__title">세상의 궁금한 숫자, 한 번에 비교 계산하세요</h1>
       <p class="hero__description">
-        연봉, 성과급, 이직, 육아휴직, 출산 지원금까지 복잡한 숫자를 빠르게 계산하고 비교할 수 있게 정리했습니다.
+        연봉, 성과급, 육아휴직, 출산 지원금까지 자주 보는 숫자를 빠르게 계산하고 비교할 수 있게 정리했습니다.
       </p>
       <div class="home-actions">
         <a class="button button--primary" href={withBase("/tools/")}>지금 운영 중인 계산기 보기</a>
@@ -174,7 +174,7 @@ const homeSearchScript = `
       <div class="section-header">
         <p class="section-header__eyebrow">지금 많이 찾는 계산기</p>
         <h2>처음 방문했다면 여기부터 보세요</h2>
-        <p>처음 방문했다면 아래 계산기부터 보면 사이트 활용 방식이 가장 빠르게 이해됩니다.</p>
+        <p>먼저 눌러보기 좋은 계산기만 모았습니다.</p>
       </div>
       <div class="panel home-featured__panel">
         <div class="home-featured__layout">
@@ -227,7 +227,7 @@ const homeSearchScript = `
       <div class="section-header">
         <p class="section-header__eyebrow">왜 비교계산소로 먼저 확인하나요</p>
         <h2>계산 결과를 더 쉽게 읽을 수 있게 정리합니다</h2>
-        <p>공개 기준값은 기준값대로, 직접 넣는 값은 가정값대로 나눠 보여줘서 계산 결과를 더 쉽게 읽을 수 있게 정리했습니다.</p>
+        <p>기준값, 입력값, 추정값을 나눠 보여줘 결과를 더 쉽게 읽게 구성했습니다.</p>
       </div>
       <div class="home-trust__grid">
         {
@@ -245,7 +245,7 @@ const homeSearchScript = `
       <div class="section-header">
         <p class="section-header__eyebrow">지금 운영 중인 계산기</p>
         <h2><span id="homeToolCount">{orderedTools.length}개</span></h2>
-        <p>실생활과 커리어에서 자주 보는 숫자를 중심으로 필요한 계산기를 꾸준히 추가하고 있습니다.</p>
+        <p>실생활과 커리어에서 자주 보는 계산기를 꾸준히 추가하고 있습니다.</p>
       </div>
       <div class="library-toolbar__search field">
         <span>도구 검색</span>
@@ -269,7 +269,7 @@ const homeSearchScript = `
       <div class="section-header">
         <p class="section-header__eyebrow">도구 목록</p>
         <h2>필요한 계산기부터 바로 들어가세요</h2>
-        <p>각 도구에서 바로 어떤 결과를 볼 수 있는지 먼저 확인하고 선택할 수 있게 구성했습니다.</p>
+        <p>바로 어떤 결과를 볼 수 있는지 먼저 확인하고 선택할 수 있게 구성했습니다.</p>
       </div>
       <div class="tool-showcase tool-showcase--grid tool-showcase--magazine" id="homeToolGrid">
         {
@@ -307,5 +307,6 @@ const homeSearchScript = `
 
   <script is:inline set:html={homeSearchScript}></script>
 </BaseLayout>
+
 
 
