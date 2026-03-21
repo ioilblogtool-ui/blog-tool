@@ -1,0 +1,408 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  averageCompensation,
+  comparisonCards,
+  defaultBenefits,
+  divisions,
+  factAnchors,
+  opiModes,
+  rankPresets,
+  scenarioPresets,
+  yearOptions
+} from "../../data/samsungCompensation";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const config = {
+  rankPresets,
+  divisions,
+  yearOptions,
+  opiModes,
+  scenarioPresets,
+  comparisonCards,
+  defaultBenefits,
+  averageCompensation
+};
+---
+
+<BaseLayout
+  title="삼성전자 성과급 계산기 | 개인·부부 총보상 시뮬레이터"
+  description="삼성전자 사업부별 OPI 참고치와 TAI 시나리오를 바탕으로 개인·부부 총보상과 월 체감액을 계산하는 페이지"
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="samsung-bonus" pageClass="samsung-bonus-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="Samsung Electronics Compensation"
+        title="삼성전자 성과급 계산기"
+        description="OPI 참고치와 TAI 시나리오를 바탕으로 개인·부부 총보상, 월 체감값, 직급별 예시를 한 번에 확인합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetSamsungBonusBtn" copyId="copySamsungBonusLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="samsung-bonus-inputs">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">계산 모드</p>
+              <h2 class="panel__title">개인 또는 부부 선택</h2>
+            </div>
+            <p class="panel-heading__summary">개인과 부부 중 계산할 대상을 선택하세요.</p>
+          </div>
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input id="modeSingle" name="householdMode" type="radio" value="SINGLE" checked />
+              <span>개인 계산</span>
+            </label>
+            <label class="mode-chip">
+              <input id="modeCouple" name="householdMode" type="radio" value="COUPLE" />
+              <span>부부 계산</span>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">직급·사업부·연봉 먼저 입력</h2>
+            </div>
+          </div>
+
+          <div class="form-cluster form-cluster--nested">
+            <div class="form-cluster__header">
+              <strong>본인</strong>
+              <span>직급별 연봉은 예시값이며 수정할 수 있습니다.</span>
+            </div>
+            <div class="form-grid form-grid--compact">
+              <label class="field">
+                <span>직급</span>
+                <select id="selfRankSelect">
+                  {rankPresets.map((rank) => <option value={rank.code}>{rank.label}</option>)}
+                </select>
+              </label>
+              <label class="field">
+                <span>사업부</span>
+                <select id="selfDivisionSelect">
+                  {divisions.map((division) => <option value={division.code}>{division.label}</option>)}
+                </select>
+              </label>
+              <label class="field field-span-full">
+                <span>연봉</span>
+                <input id="selfSalaryInput" type="number" value="70000000" />
+                <small id="selfSalaryHint"></small>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-cluster form-cluster--nested" id="spouseBlock" hidden>
+            <div class="form-cluster__header">
+              <strong>배우자</strong>
+              <span>부부 계산 모드일 때만 합산됩니다.</span>
+            </div>
+            <div class="form-grid form-grid--compact">
+              <label class="field">
+                <span>직급</span>
+                <select id="spouseRankSelect">
+                  {rankPresets.map((rank) => <option value={rank.code}>{rank.label}</option>)}
+                </select>
+              </label>
+              <label class="field">
+                <span>사업부</span>
+                <select id="spouseDivisionSelect">
+                  {divisions.map((division) => <option value={division.code}>{division.label}</option>)}
+                </select>
+              </label>
+              <label class="field field-span-full">
+                <span>연봉</span>
+                <input id="spouseSalaryInput" type="number" value="90000000" />
+                <small id="spouseSalaryHint"></small>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-cluster form-cluster--nested">
+            <div class="form-cluster__header">
+              <strong>공통 가정</strong>
+            </div>
+            <div class="form-grid form-grid--compact">
+              <label class="field">
+                <span>연도</span>
+                <select id="targetYearSelect">
+                  {yearOptions.map((year) => <option value={year.code}>{year.label}</option>)}
+                </select>
+              </label>
+              <label class="field">
+                <span>OPI 모드</span>
+                <select id="opiModeSelect">
+                  {opiModes.map((mode) => <option value={mode.code}>{mode.label}</option>)}
+                </select>
+                <small id="opiModeHint"></small>
+              </label>
+              <label class="field">
+                <span>시나리오</span>
+                <select id="scenarioSelect">
+                  {scenarioPresets.map((scenario) => <option value={scenario.code}>{scenario.label}</option>)}
+                </select>
+                <small id="scenarioHint"></small>
+              </label>
+              <label class="field">
+                <span>복지 금액</span>
+                <input id="benefitsInput" type="number" value={defaultBenefits} />
+                <small id="benefitsHint"></small>
+              </label>
+              <label class="check-field">
+                <input id="includeOpiToggle" type="checkbox" checked />
+                <span>OPI 포함</span>
+              </label>
+              <label class="check-field">
+                <input id="includeTaiToggle" type="checkbox" checked />
+                <span>TAI 포함</span>
+              </label>
+              <label class="check-field">
+                <input id="includeBenefitsToggle" type="checkbox" checked />
+                <span>복지 포함</span>
+              </label>
+            </div>
+          </div>
+
+          <details class="detail-box detail-box--soft">
+            <summary>고급 설정 열기</summary>
+            <div class="detail-box__content detail-box__content--tight">
+              <div class="form-grid form-grid--compact">
+                <label class="field">
+                  <span>OPI 비율 직접 입력</span>
+                  <input id="customOpiRateInput" type="number" value="0" step="0.01" />
+                  <small>0이면 사업부/시나리오 기본값 사용</small>
+                </label>
+                <label class="field">
+                  <span>상반기 TAI</span>
+                  <input id="taiFirstHalfInput" type="number" value="0.5" step="0.01" />
+                </label>
+                <label class="field">
+                  <span>하반기 TAI</span>
+                  <input id="taiSecondHalfInput" type="number" value="0.5" step="0.01" />
+                </label>
+                <label class="check-field field-span-full">
+                  <input id="includeNetEstimateToggle" type="checkbox" checked />
+                  <span>월 실수령 추정 같이 보기</span>
+                </label>
+              </div>
+            </div>
+          </details>
+
+          <button id="calcSamsungBonusBtn" class="button button--primary" type="button">총보상 계산하기</button>
+        </article>
+      </div>
+    </Fragment>
+
+    <article class="panel result-priority-panel" id="samsung-bonus-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+          <h2 class="panel__title">연 총액과 월 체감값</h2>
+        </div>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#samsung-bonus-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#samsung-bonus-details">세부 보기</a>
+      </div>
+    </article>
+
+    <section class="content-section content-section--tight">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">팩트 앵커</p>
+        <h2>핵심 수치</h2>
+      </div>
+      <div class="fact-anchor-grid">
+        {factAnchors.map((item) => (
+          <article class="fact-anchor-card">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 KPI</p>
+        <h2 id="resultHeadline">개인 총보상 핵심 카드</h2>
+        <p id="resultSubcopy">2026 실제 기준 모드</p>
+      </div>
+      <div class="kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p id="salaryCardLabel">연봉</p>
+          <strong id="salarySummary">-</strong>
+          <span id="salarySummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>OPI</p>
+          <strong id="opiSummary">-</strong>
+          <span id="opiSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>TAI</p>
+          <strong id="taiSummary">-</strong>
+          <span id="taiSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>복지 포함 총보상</p>
+          <strong id="totalSummary">-</strong>
+          <span id="totalSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>월 체감 총액</p>
+          <strong id="monthlySummary">-</strong>
+          <span id="monthlySummaryNote">-</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section samsung-detail-grid" id="samsung-bonus-details">
+      <article class="panel summary-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">연 · 월 요약</p>
+            <h2 class="panel__title">핵심 금액</h2>
+          </div>
+        </div>
+        <div class="report-list" id="summaryReportList"></div>
+      </article>
+
+      <article class="panel net-panel" id="netPanel" hidden>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">월 실수령 추정</p>
+            <h2 class="panel__title">실수령 추정표</h2>
+          </div>
+        </div>
+        <div class="report-list report-list--compact" id="netReportList"></div>
+      </article>
+    </section>
+
+    <section class="content-section">
+      <article class="panel rank-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">직급별 예시</p>
+            <h2 class="panel__title">추천 연봉 기준 비교</h2>
+          </div>
+        </div>
+        <div class="matrix-list">
+          <div class="matrix-list__head">
+            <span>직급</span>
+            <span>추천 연봉</span>
+            <span>OPI</span>
+            <span>총보상</span>
+            <span>월 체감</span>
+          </div>
+          <div id="rankMatrixList"></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도 시나리오</p>
+        <h2>2026~2028 비교</h2>
+      </div>
+      <div class="scenario-year-grid" id="scenarioYearGrid"></div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">참고 비교</p>
+        <h2>재미로 보는 비교</h2>
+      </div>
+      <div class="comparison-grid" id="comparisonGrid"></div>
+    </section>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">값이 구성되는 방식</h2>
+        </div>
+      </div>
+      <div class="logic-grid">
+        <article class="logic-card">
+          <strong>OPI = 연봉 × 사업부 비율</strong>
+          <p>2026은 공개 지급률, 2027·2028은 시나리오 비율을 씁니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>TAI = 연봉 ÷ 12 × (상반기 + 하반기)</strong>
+          <p>상반기·하반기 TAI는 프리셋 또는 직접 입력값을 반영합니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>총보상 = 연봉 + OPI + TAI + 복지</strong>
+          <p>복지와 실수령 추정은 토글로 포함 여부를 바꿀 수 있습니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>실수령 추정은 참고값</strong>
+          <p>세금, 공제, 가족 구성, 성과급 과세 방식에 따라 달라질 수 있습니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "직급별 연봉과 복지 금액은 공식 수치가 아니라 추천값(수정 가능)입니다.",
+        "2026은 사업부 공개 OPI 참고치, 2027·2028은 시나리오 시뮬레이션입니다.",
+        "실수령 추정은 세금, 공제, 가족 구성, 성과급 과세 방식에 따라 달라질 수 있습니다."
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="삼성전자 성과급 계산기 활용 가이드"
+        intro={[
+          "이 페이지는 삼성전자 OPI와 TAI 구조를 개인 또는 부부 기준 총보상 시뮬레이터로 정리한 계산기형 랜딩입니다. 사업부, 연봉, 시나리오를 넣으면 연 총액과 월 체감값을 빠르게 볼 수 있습니다.",
+          "핵심은 2026 실제 참고치와 2027·2028 시뮬레이션을 분리해서 보여주는 것입니다. 공개 참고치가 있는 값은 앵커로 두고, 연봉·복지·TAI는 사용자가 수정 가능한 가정값으로 다룹니다."
+        ]}
+        inputPoints={[
+          "개인·부부 토글에 따라 입력 폼과 결과 문구가 함께 바뀝니다.",
+          "사업부별 OPI 차이를 먼저 반영하고, TAI는 프리셋 또는 직접 입력으로 조정할 수 있습니다.",
+          "연 총보상, 월 체감액, 실수령 추정, 직급별 예시 비교까지 한 화면에서 이어서 확인할 수 있습니다."
+        ]}
+        criteria={[
+          "2026 실제 기준 모드는 MX 50%, DS 47%, CSS 11%, 공통/지원 34~39%, VD·DA·네트워크·의료기기 12% 보도치를 참고했습니다.",
+          "TAI는 반기별 월 기준급 개념을 단순화해 상반기·하반기 비율 프리셋 또는 직접 입력으로 계산합니다.",
+          "직급별 추천 연봉과 복지 금액, 2027·2028 OPI 비율은 운영용 가정값이므로 사용자가 수정해서 보는 것이 전제입니다."
+        ]}
+        faq={[
+          { question: "삼성전자 OPI는 어떻게 계산하나요?", answer: "이 페이지에서는 연봉에 사업부별 OPI 비율을 곱해 계산합니다. 2026은 공개 참고 지급률, 2027·2028은 시나리오 비율을 씁니다." },
+          { question: "TAI는 왜 시나리오 또는 직접 입력인가요?", answer: "TAI는 반기별 업황과 조직 상황에 따라 달라질 수 있어, 단일 확정값보다 프리셋과 직접 수정 방식이 더 실용적입니다." },
+          { question: "직급별 연봉은 공식표인가요?", answer: "아닙니다. 직급별 연봉은 추천값(수정 가능)이며, 사용자가 자신의 상황에 맞게 바꾸는 것을 전제로 합니다." },
+          { question: "부부 계산은 어떤 값을 합산하나요?", answer: "두 사람의 연봉, OPI, TAI, 복지, 총보상을 합산하고 월 평균 총보상과 1인당 평균 체감값까지 함께 보여줍니다." },
+          { question: "실수령 추정은 정확한가요?", answer: "실수령 추정은 참고용입니다. 세금, 공제, 가족 구성, 성과급 과세 방식에 따라 실제 수령액은 달라질 수 있습니다." },
+          { question: "2027·2028은 왜 공식 전망이 아닌가요?", answer: "미래 연도는 확정 공개 지급률이 없어서 시나리오 시뮬레이션으로만 보여줘야 안전합니다." }
+        ]}
+        related={[
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+          { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
+          { href: "/tools/salary/", label: "연봉 인상 계산기" }
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="samsungCompensationConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/samsung-bonus.js")}></script>
+</BaseLayout>

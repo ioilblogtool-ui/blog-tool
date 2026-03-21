@@ -59,11 +59,31 @@ export const tools: ToolMeta[] = [
     badges: ["신규", "추천"]
   },
   {
+    slug: "samsung-bonus",
+    title: "삼성전자 성과급 계산기",
+    description: "개인·부부 모드로 삼성전자 OPI, TAI, 복지 포함 총보상과 월 체감액을 계산하는 페이지",
+    order: 6,
+    eyebrow: "Samsung Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추천"]
+  },
+  {
     slug: "sk-hynix-bonus",
     title: "SK하이닉스 성과급 계산기",
     description: "개인·부부 모드로 SK하이닉스의 PS, PI, 복지 포함 총보상과 월 체감액을 계산하는 페이지",
-    order: 6,
+    order: 7,
     eyebrow: "SK Hynix Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추천"]
+  },
+  {
+    slug: "hyundai-bonus",
+    title: "현대자동차 성과금 계산기",
+    description: "개인·부부 모드로 현대자동차 성과금 패키지와 자사주 포함 총보상, 월 체감액을 계산하는 페이지",
+    order: 8,
+    eyebrow: "Hyundai Tool",
     category: "simulator",
     iframeReady: true,
     badges: ["신규", "추천"]
@@ -72,7 +92,7 @@ export const tools: ToolMeta[] = [
     slug: "birth-support-total",
     title: "출산~2세 총지원금 계산기",
     description: "첫만남이용권, 부모급여, 아동수당을 합쳐 아이 두 돌 전까지 받을 수 있는 총액을 계산하는 페이지",
-    order: 7,
+    order: 9,
     eyebrow: "Birth Support Tool",
     category: "support",
     iframeReady: true,
@@ -82,7 +102,7 @@ export const tools: ToolMeta[] = [
     slug: "single-parental-leave-total",
     title: "한 명만 육아휴직 총수령액 계산기",
     description: "육아휴직 급여, 부모급여, 아동수당, 첫만남이용권을 합쳐 아이 두 돌까지 가구 총수령액을 계산하는 페이지",
-    order: 8,
+    order: 10,
     eyebrow: "Household Cashflow Tool",
     category: "support",
     iframeReady: true,
@@ -92,7 +112,7 @@ export const tools: ToolMeta[] = [
     slug: "parental-leave-pay",
     title: "육아휴직 급여 계산기",
     description: "월 통상임금 기준으로 일반 육아휴직 사용 시 월별 급여와 총액을 계산하는 페이지",
-    order: 9,
+    order: 11,
     eyebrow: "Parental Leave Pay Tool",
     category: "support",
     iframeReady: true
@@ -101,7 +121,7 @@ export const tools: ToolMeta[] = [
     slug: "six-plus-six",
     title: "6+6 부모육아휴직제 계산기",
     description: "부모 모두 육아휴직을 쓸 때 특례 적용 여부와 일반 육아휴직 대비 차액을 비교하는 페이지",
-    order: 10,
+    order: 12,
     eyebrow: "6+6 Tool",
     category: "support",
     iframeReady: true,
