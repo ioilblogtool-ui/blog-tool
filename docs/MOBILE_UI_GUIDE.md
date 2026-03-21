@@ -6,7 +6,7 @@
 ## 현재 화면에서 보이는 핵심 이슈
 
 ### 1. 모바일에서 여백과 카드 크기가 전반적으로 큼
-- `global.css` 기준으로 `panel`, `tool-card`, `notice-box`의 기본 패딩이 24px로 고정되어 있음
+- `scss/_legacy.scss` 기준으로 `panel`, `tool-card`, `notice-box`의 기본 패딩이 크게 잡혀 있음
 - `radius-xl` 30px, `radius-lg` 24px가 모바일에서는 과하게 둥글고 공간을 많이 차지함
 - 첫 화면에서 입력 카드와 결과 카드가 함께 보이지 않고 스크롤이 길어짐
 
@@ -177,7 +177,7 @@
 - Data Card
 
 ## 우선 수정 추천 순서
-1. `global.css`의 여백, 라운드, 브레이크포인트 재정리
+1. `app.scss`와 `scss/*`의 여백, 라운드, 브레이크포인트 재정리
 2. `calculator-grid`, `metrics`, `tool-showcase`, `home-spotlight`를 모바일 퍼스트 구조로 재설계
 3. `SummaryCards`, `ToolActionBar`, `CalculatorHero`의 공통 반응형 규칙 고정
 4. `salary`, `bonus-simulator` 같은 대표 페이지 2개 먼저 맞춤
@@ -198,3 +198,5 @@
 2. 홈과 도구 목록 정리
 3. 대표 도구 2개 정리
 4. 나머지 도구 확장 적용
+
+

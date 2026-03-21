@@ -19,7 +19,7 @@
 - `src/pages/tools/*.astro`: 실제 도구 페이지
 - `src/data/tools.ts`: 도구 메타 정보
 - `src/components/*`: 공통 컴포넌트
-- `src/styles/global.css`: 공통 스타일
+- `src/styles/app.scss` + `src/styles/scss/*`: 공통 스타일 진입점과 페이지별 스타일
 - `public/scripts/*.js`: 도구별 동작 스크립트
 - `docs/*`: 기획 / 운영 / 목표 문서
 
@@ -50,3 +50,4 @@
 - SEO: `docs/SEO_ADSENSE_ROADMAP.md`
 - 프로젝트 운영: `docs/PROJECT_MANAGEMENT.md`
 - 코드 생성 기준: `docs/CODE_SKILL.md`
+

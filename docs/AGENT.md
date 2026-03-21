@@ -11,7 +11,7 @@
 - `src/pages/tools/*.astro`: 실제 도구 페이지
 - `src/data/tools.ts`: 도구 메타 정보
 - `src/components/*`: 공통 UI 컴포넌트
-- `src/styles/global.css`: 공통 스타일
+- `src/styles/app.scss` + `src/styles/scss/*`: 공통 스타일 진입점과 페이지별 스타일
 - `public/scripts/*.js`: 클라이언트 계산 로직
 
 ## 작업 원칙
@@ -35,3 +35,4 @@
 - 계산 결과는 요약 카드 + 상세 비교 + 안내 박스 구조를 기본으로 한다.
 - 설명은 짧고 직관적으로, 숫자는 신뢰감 있게 보여준다.
 - 첫 화면에서 도구 목적과 핵심 입력이 바로 이해되어야 한다.
+

@@ -56,7 +56,7 @@
 
 ## 스타일 레이어
 ### 1. Legacy Layer
-- 기존 `global.css`에서 안정적으로 쓰이던 토큰, 카드, 버튼, 입력, 테이블 스타일을 보존한다.
+- 기존 `app.scss`와 `scss/_legacy.scss`에서 안정적으로 쓰이던 토큰, 카드, 버튼, 입력, 테이블 스타일을 보존한다.
 - 빠른 전면 교체보다 점진적 이전을 목표로 한다.
 
 ### 2. Layout Layer
@@ -95,3 +95,4 @@
 - `parental-leave`: simple 또는 timeline 후보 재분류
 - `tools/index`: 템플릿 분류 기반 카드 정보 강화
 - 공통 detail-box / table mobile 패턴 추가 정리
+

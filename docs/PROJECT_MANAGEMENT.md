@@ -12,7 +12,7 @@
 - `src/pages/tools/*.astro`: 실제 도구 페이지
 - `src/data/tools.ts`: 도구 메타 정보
 - `src/components/*`: 공통 UI 조각
-- `src/styles/global.css`: 공통 스타일
+- `src/styles/app.scss` + `src/styles/scss/*`: 공통 스타일 진입점과 페이지별 스타일
 - `public/scripts/*.js`: 계산 및 상호작용 스크립트
 - `docs/*`: 목표, SEO, 운영 문서
 
@@ -54,3 +54,4 @@
 - SEO / 광고 준비: `docs/SEO_ADSENSE_ROADMAP.md`
 - 코드 생성 기준: `docs/CODE_SKILL.md`
 - 에이전트 기준: `AGENT.md`
+
