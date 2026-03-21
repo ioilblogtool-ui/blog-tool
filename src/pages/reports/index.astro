@@ -1,0 +1,60 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import TrustPanel from "../../components/TrustPanel.astro";
+import { reports } from "../../data/reports";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const orderedReports = [...reports].sort((a, b) => a.order - b.order);
+---
+
+<BaseLayout title="비교계산소 리포트" description="계산기와 함께 보기 좋은 비교형 인터랙티브 리포트를 모아둔 페이지">
+  <SiteHeader />
+
+  <main class="container page-shell tool-library-page report-library-page">
+    <CalculatorHero
+      eyebrow="리포트 목록"
+      title="숫자를 읽는 비교 리포트"
+      description="계산기처럼 직접 입력하지 않아도, 공개 데이터를 선택하고 비교하며 읽을 수 있는 인터랙티브 리포트를 모았습니다."
+    />
+
+    <section class="content-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">리포트 시리즈</p>
+        <h2>계산기 다음으로 보기 좋은 비교 콘텐츠</h2>
+        <p>인물, 업종, 자산, 성장 패턴처럼 공개 데이터를 가볍게 비교하고 읽을 수 있게 구성합니다.</p>
+      </div>
+      <div class="report-hub-grid">
+        {
+          orderedReports.map((report) => (
+            <a class="tool-card tool-card--feature report-hub-card" href={withBase(`/reports/${report.slug}/`)}>
+              <div class="tool-card__head">
+                <p class="tool-card__eyebrow">인터랙티브 리포트</p>
+                {
+                  report.badges && (
+                    <div class="tool-badges">
+                      {report.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
+                    </div>
+                  )
+                }
+              </div>
+              <h2>{report.title}</h2>
+              <p>{report.description}</p>
+              <span class="tool-card__meta">인물 선택, 패턴 요약, 분포 비교를 한 화면에서 볼 수 있습니다.</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <TrustPanel
+      eyebrow="안내"
+      title="리포트는 팩트와 해석을 함께 봅니다"
+      description="자산·학력·업종 정보는 공개 기준으로 정리하고, 성향 태그와 패턴 해석은 참고용 설명으로 분리해서 보여줍니다."
+    />
+  </main>
+</BaseLayout>

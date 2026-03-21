@@ -106,6 +106,13 @@ const trustItems = [
   }
 ];
 
+const featuredReport = {
+  title: "미국 부자 TOP 10 성공 패턴 리포트",
+  description: "자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트입니다.",
+  href: withBase("/reports/us-rich-top10-patterns/"),
+  keywords: ["TOP 10", "업종 분포", "성공 패턴"],
+  badge: "추천 리포트"
+};
 const homeSearchScript = `
   (() => {
     const searchInput = document.getElementById("homeToolSearchInput");
@@ -241,6 +248,27 @@ const homeSearchScript = `
       </div>
     </section>
 
+    <section class="content-section home-report-spotlight">
+      <div class="section-header">
+        <p class="section-header__eyebrow">비교 리포트</p>
+        <h2>계산기 말고 읽는 콘텐츠도 같이 봅니다</h2>
+        <p>공개 데이터를 선택하고 비교하면서 읽을 수 있는 인터랙티브 리포트를 함께 확장하고 있습니다.</p>
+      </div>
+      <div class="panel home-report-spotlight__panel">
+        <a class="tool-card tool-card--feature home-report-card" href={featuredReport.href}>
+          <div class="tool-card__head">
+            <p class="tool-card__eyebrow">{featuredReport.badge}</p>
+          </div>
+          <h2>{featuredReport.title}</h2>
+          <p>{featuredReport.description}</p>
+          <div class="featured-calculator-card__keywords home-report-card__keywords">
+            {featuredReport.keywords.map((keyword) => <span>{keyword}</span>)}
+          </div>
+          <span class="button button--secondary featured-calculator-card__cta">리포트 보기</span>
+        </a>
+      </div>
+    </section>
+
     <section class="library-toolbar panel content-section content-section--tight">
       <div class="section-header">
         <p class="section-header__eyebrow">지금 운영 중인 계산기</p>
@@ -307,6 +335,7 @@ const homeSearchScript = `
 
   <script is:inline set:html={homeSearchScript}></script>
 </BaseLayout>
+
 
 
 

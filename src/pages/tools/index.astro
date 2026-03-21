@@ -1,5 +1,6 @@
 ﻿---
 import { tools } from "../../data/tools";
+import { reports } from "../../data/reports";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
@@ -10,6 +11,7 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 const orderedTools = [...tools].sort((a, b) => a.order - b.order);
+const orderedReports = [...reports].sort((a, b) => a.order - b.order);
 
 const topicBySlug: Record<string, string> = {
   salary: "연봉·이직",
@@ -164,6 +166,35 @@ const toolLibraryScript = `
       </div>
     </section>
 
+    <section class="content-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">비교 리포트</p>
+        <h2>계산기 외 콘텐츠도 같이 봐보세요</h2>
+        <p>직접 입력하지 않아도 공개 데이터를 선택하고 읽을 수 있는 인터랙티브 리포트도 함께 정리합니다.</p>
+      </div>
+      <div class="report-hub-grid">
+        {
+          orderedReports.map((report) => (
+            <a class="tool-card tool-card--feature report-hub-card" href={withBase(`/reports/${report.slug}/`)}>
+              <div class="tool-card__head">
+                <p class="tool-card__eyebrow">인터랙티브 리포트</p>
+                {
+                  report.badges && (
+                    <div class="tool-badges">
+                      {report.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
+                    </div>
+                  )
+                }
+              </div>
+              <h2>{report.title}</h2>
+              <p>{report.description}</p>
+              <span class="tool-card__meta">인물 선택, 패턴 요약, 분포 비교를 한 화면에서 볼 수 있습니다.</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
     <TrustPanel
       eyebrow="신뢰 정보"
       title="검색 유입 사용자도 바로 확인할 수 있는 운영 안내"
@@ -175,3 +206,5 @@ const toolLibraryScript = `
 
   <script is:inline set:html={toolLibraryScript}></script>
 </BaseLayout>
+
+

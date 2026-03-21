@@ -1,0 +1,251 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  reportMeta,
+  cautionNotes,
+  wealthProfiles,
+  sectorSummary,
+  educationSummary,
+  founderTypeSummary,
+  commonPatterns,
+  faqItems
+} from "../../data/usRichTop10Report";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const selectedProfile = wealthProfiles[0];
+const distributionGroups = [
+  { title: "업종 분포", items: sectorSummary },
+  { title: "학력 패턴", items: educationSummary },
+  { title: "창업 배경", items: founderTypeSummary }
+];
+---
+
+<BaseLayout title={reportMeta.title} description={reportMeta.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page us-rich-report-page">
+    <CalculatorHero
+      eyebrow="Interactive Report"
+      title="미국 부자 TOP 10 성공 패턴 리포트"
+      description="자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트"
+    />
+
+    <InfoNotice title="참고" lines={cautionNotes} />
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">TOP 10 개요</p>
+        <h2>한눈에 보는 상위 10명</h2>
+      </div>
+      <div class="report-overview-grid">
+        {
+          wealthProfiles.map((profile) => (
+            <article class="report-overview-card">
+              <p>{profile.rank}위</p>
+              <strong>{profile.name}</strong>
+              <span>{profile.netWorthDisplay}</span>
+              <em>{profile.sector}</em>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">인물 선택</p>
+        <h2>한 명씩 자세히 보기</h2>
+        <p>궁금한 인물을 선택하면 자산, 회사, 학력, 배경, 성향 태그를 자세히 볼 수 있습니다.</p>
+      </div>
+
+      <article class="panel report-control-panel">
+        <label class="field">
+          <span>인물 선택</span>
+          <select id="wealthProfileSelect">
+            {
+              wealthProfiles.map((profile) => (
+                <option value={profile.id} selected={profile.id === selectedProfile.id}>
+                  {profile.rank}위 · {profile.name}
+                </option>
+              ))
+            }
+          </select>
+        </label>
+      </article>
+
+      <article class="panel report-profile-card" id="wealthProfileDetail">
+        <div class="report-profile-card__hero">
+          <div class="report-profile-card__header">
+            <div>
+              <p class="panel-heading__eyebrow">선택 인물</p>
+              <h2 id="profileName">{selectedProfile.name}</h2>
+            </div>
+            <div class="report-rank-chip" id="profileRank">{selectedProfile.rank}위</div>
+          </div>
+
+          <figure class="report-profile-card__media" id="profileImageBlock" hidden={!selectedProfile.image}>
+            {selectedProfile.image && (
+              <>
+                <img
+                  id="profileImage"
+                  src={selectedProfile.image.src}
+                  alt={selectedProfile.image.alt}
+                  loading="lazy"
+                  decoding="async"
+                  referrerpolicy="no-referrer"
+                />
+                <figcaption class="report-profile-card__media-note">
+                  <a id="profileImageSourceLink" href={selectedProfile.image.sourceUrl} target="_blank" rel="noreferrer">
+                    {selectedProfile.image.sourceName}
+                  </a>
+                  <span id="profileImageLicense">{selectedProfile.image.licenseLabel}</span>
+                </figcaption>
+              </>
+            )}
+          </figure>
+        </div>
+
+        <div class="report-profile-card__summary">
+          <article class="report-stat-card">
+            <p>추정 자산</p>
+            <strong id="profileNetWorth">{selectedProfile.netWorthDisplay}</strong>
+          </article>
+          <article class="report-stat-card">
+            <p>대표 회사</p>
+            <strong id="profilePrimaryCompany">{selectedProfile.primaryCompany}</strong>
+          </article>
+          <article class="report-stat-card">
+            <p>업종</p>
+            <strong id="profileSector">{selectedProfile.sector}</strong>
+          </article>
+        </div>
+
+        <div class="report-profile-card__detail">
+          <div class="report-detail-list">
+            <div class="report-detail-row">
+              <span>학력</span>
+              <strong id="profileEducation">{selectedProfile.education.join(" · ")}</strong>
+            </div>
+            <div class="report-detail-row">
+              <span>유형</span>
+              <strong id="profileFounderType">{selectedProfile.founderType}</strong>
+            </div>
+            <div class="report-detail-row">
+              <span>부 축적 방식</span>
+              <strong id="profileStyle">{selectedProfile.selfMadeStyle}</strong>
+            </div>
+            <div class="report-detail-row">
+              <span>대표 회사군</span>
+              <strong id="profileCompanies">{selectedProfile.companies.join(" / ")}</strong>
+            </div>
+          </div>
+
+          <div class="report-profile-card__aside">
+            <div class="report-tag-block">
+              <span class="report-tag-block__label">성향 태그</span>
+              <div class="report-tag-list" id="profileTags">
+                {selectedProfile.personalityTags.map((tag) => <span>{tag}</span>)}
+              </div>
+            </div>
+
+            <div class="report-tag-block" id="mbtiBlock" hidden={!selectedProfile.mbtiEstimate}>
+              <span class="report-tag-block__label">MBTI 추정</span>
+              <div class="report-tag-list">
+                <span id="profileMbti">{selectedProfile.mbtiEstimate}</span>
+                <span class="is-muted" id="profileMbtiConfidence">{selectedProfile.mbtiConfidence}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-profile-card__footer">
+          <p id="profileSummary">{selectedProfile.summary}</p>
+          <ul class="report-highlight-list" id="profileHighlights">
+            {selectedProfile.highlights.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>공통적으로 많이 보이는 특징</h2>
+      </div>
+      <div class="pattern-grid">
+        {
+          commonPatterns.map((pattern) => (
+            <article class="pattern-card">
+              <strong>{pattern.title}</strong>
+              <p>{pattern.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">분포 비교</p>
+        <h2>업종·학력·창업 배경</h2>
+      </div>
+      <div class="distribution-grid">
+        {
+          distributionGroups.map((group) => {
+            const maxCount = Math.max(...group.items.map((item) => item.count));
+            return (
+              <article class="panel distribution-card">
+                <h3>{group.title}</h3>
+                <div class="distribution-list">
+                  {
+                    group.items.map((item) => (
+                      <div class="distribution-row">
+                        <div class="distribution-row__head">
+                          <span>{item.label}</span>
+                          <strong>{item.count}명</strong>
+                        </div>
+                        <div class="distribution-row__track">
+                          <span class="distribution-row__fill" style={`width:${(item.count / maxCount) * 100}%`}></span>
+                        </div>
+                      </div>
+                    ))
+                  }
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="미국 부자 TOP 10 리포트 읽는 법"
+      intro={[
+        "이 페이지는 미국 부자 TOP 10의 자산 규모, 업종, 학력, 창업 배경, 성향 태그를 한 화면에서 비교할 수 있게 정리한 인터랙티브 리포트입니다.",
+        "팩트 기반 정보와 해석 기반 패턴을 분리해서 보여주고, MBTI는 참고용 추정으로만 표시합니다."
+      ]}
+      criteria={[
+        "자산, 회사, 업종, 학력은 공개 프로필 기준으로 정리합니다.",
+        "성향 태그와 성공 패턴은 공개 행보와 경력 흐름을 바탕으로 해석한 요약입니다.",
+        "MBTI는 공식 공개가 아닌 경우가 많아 참고용 추정으로만 제공합니다."
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/reports/", label: "비교 리포트 모아보기" },
+        { href: "/tools/household-income/", label: "가구 소득 계산기" },
+        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" }
+      ]}
+    />
+  </main>
+
+  <script id="wealthProfilesData" type="application/json" set:html={JSON.stringify(wealthProfiles)}></script>
+  <script type="module" src={withBase("/scripts/us-rich-top10-report.js")}></script>
+</BaseLayout>
