@@ -1,0 +1,350 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  averageDisposableIncome,
+  averageHouseholdIncome,
+  deductionPresets,
+  factAnchors,
+  helperText,
+  householdSizeOptions,
+  ratioCards,
+  relatedLinks,
+  yearOptions
+} from "../../data/householdIncome";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const config = {
+  averageDisposableIncome,
+  averageHouseholdIncome,
+  deductionPresets,
+  householdSizeOptions,
+  ratioCards,
+  yearOptions
+};
+---
+
+<BaseLayout
+  title="가구 소득 계산기 | 총보상·월 체감·소득 위치 보기"
+  description="본인 연봉, 성과급, 배우자 소득, 기타 보상을 합쳐 가구 연 총소득과 월 체감 소득, 평균·기준 중위소득 대비 위치를 계산하는 페이지"
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="household-income" pageClass="household-income-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="Household Income Position Checker"
+        title="가구 소득 계산기"
+        description="연봉, 성과급, 배우자 소득, 기타 보상을 합쳐 우리집 연 총소득, 월 체감, 실수령 추정, 평균·중위 대비 위치를 한 번에 확인합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetHouseholdIncomeBtn" copyId="copyHouseholdIncomeLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="household-income-inputs">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">가구 소득 먼저 입력</h2>
+            </div>
+            <p class="panel-heading__summary">배우자 소득이 없으면 0으로 두고 계산하면 됩니다.</p>
+          </div>
+
+          <div class="form-cluster form-cluster--nested">
+            <div class="form-cluster__header">
+              <strong>본인 소득</strong>
+              <span>세전 기준으로 입력합니다.</span>
+            </div>
+            <div class="form-grid form-grid--compact">
+              <label class="field">
+                <span>본인 연봉(세전)</span>
+                <input id="mySalaryInput" type="number" value="52000000" />
+              </label>
+              <label class="field">
+                <span>본인 성과급(세전)</span>
+                <input id="myBonusInput" type="number" value="6000000" />
+              </label>
+            </div>
+          </div>
+
+          <div class="form-cluster form-cluster--nested">
+            <div class="form-cluster__header">
+              <strong>배우자 소득</strong>
+              <span>{helperText.spouse}</span>
+            </div>
+            <div class="form-grid form-grid--compact">
+              <label class="field">
+                <span>배우자 소득(세전)</span>
+                <input id="spouseSalaryInput" type="number" value="28000000" />
+              </label>
+              <label class="field">
+                <span>배우자 성과급(세전)</span>
+                <input id="spouseBonusInput" type="number" value="2000000" />
+              </label>
+            </div>
+          </div>
+
+          <div class="form-cluster form-cluster--nested">
+            <div class="form-cluster__header">
+              <strong>공통 가정</strong>
+              <span>{helperText.otherComp}</span>
+            </div>
+            <div class="form-grid form-grid--compact">
+              <label class="field">
+                <span>기타 보상</span>
+                <input id="otherAnnualCompInput" type="number" value="3000000" />
+              </label>
+              <label class="field">
+                <span>가구원 수</span>
+                <select id="householdSizeSelect">
+                  {householdSizeOptions.map((item) => <option value={item.code}>{item.label}</option>)}
+                </select>
+                <small id="householdSizeHint"></small>
+              </label>
+              <label class="field">
+                <span>연도</span>
+                <select id="targetYearSelect">
+                  {yearOptions.map((item) => <option value={item.code}>{item.label}</option>)}
+                </select>
+              </label>
+              <label class="check-field">
+                <input id="includeNetEstimateToggle" type="checkbox" checked />
+                <span>실수령 추정 보기</span>
+              </label>
+            </div>
+          </div>
+
+          <details class="detail-box detail-box--soft">
+            <summary>고급 설정 열기</summary>
+            <div class="detail-box__content detail-box__content--tight">
+              <div class="form-grid form-grid--compact">
+                <label class="check-field">
+                  <input id="includeNonTaxableToggle" type="checkbox" checked />
+                  <span>비과세 일부 반영</span>
+                </label>
+                <label class="field">
+                  <span>부양가족 수</span>
+                  <input id="dependentsInput" type="number" min="0" value="1" />
+                </label>
+                <label class="field field-span-full">
+                  <span>공제 옵션</span>
+                  <select id="deductionPresetSelect">
+                    {deductionPresets.map((item) => <option value={item.code}>{item.label}</option>)}
+                  </select>
+                  <small id="deductionPresetHint"></small>
+                </label>
+              </div>
+            </div>
+          </details>
+
+          <button id="calcHouseholdIncomeBtn" class="button button--primary" type="button">가구 소득 계산하기</button>
+        </article>
+      </div>
+    </Fragment>
+
+    <article class="panel result-priority-panel" id="household-income-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+          <h2 class="panel__title">가구 총소득과 위치</h2>
+        </div>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#household-income-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#household-income-position">위치 보기</a>
+      </div>
+    </article>
+
+    <section class="content-section content-section--tight">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">팩트 앵커</p>
+        <h2>공개 기준값</h2>
+      </div>
+      <div class="fact-anchor-grid">
+        {factAnchors.map((item) => (
+          <article class="fact-anchor-card">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 KPI</p>
+        <h2 id="resultHeadline">우리집 소득 핵심 카드</h2>
+        <p id="resultSubcopy">2026 가구 기준</p>
+      </div>
+      <div class="kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p>가구 연 총소득</p>
+          <strong id="householdAnnualSummary">-</strong>
+          <span id="householdAnnualSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>가구 월 체감 소득</p>
+          <strong id="householdMonthlySummary">-</strong>
+          <span id="householdMonthlySummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>가구 실수령 추정</p>
+          <strong id="takeHomeSummary">-</strong>
+          <span id="takeHomeSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>평균 대비 수준</p>
+          <strong id="averageRatioSummary">-</strong>
+          <span id="averageRatioSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>기준 중위소득 대비</p>
+          <strong id="medianRatioSummary">-</strong>
+          <span id="medianRatioSummaryNote">-</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section household-detail-grid">
+      <article class="panel summary-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">연 기준 요약</p>
+            <h2 class="panel__title">가구 총소득 구성</h2>
+          </div>
+        </div>
+        <div class="report-list" id="annualSummaryList"></div>
+      </article>
+
+      <article class="panel summary-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">월 기준 요약</p>
+            <h2 class="panel__title">월 체감과 실수령</h2>
+          </div>
+        </div>
+        <div class="report-list" id="monthlySummaryList"></div>
+      </article>
+    </section>
+
+    <section class="content-section" id="household-income-position">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">우리집 소득 위치 보기</p>
+        <h2>평균·중위 대비 위치</h2>
+        <p>공개 평균값과 가구원 수별 기준 중위소득을 기준으로 현재 입력값의 위치를 단순 비교합니다.</p>
+      </div>
+      <div class="position-grid">
+        <article class="panel position-panel">
+          <div class="panel-heading panel-heading--compact">
+            <div>
+              <p class="panel-heading__eyebrow">위치 바</p>
+              <h3 class="panel__title">한눈에 보는 비교</h3>
+            </div>
+          </div>
+          <div class="position-bars" id="positionBars"></div>
+        </article>
+
+        <article class="panel position-panel">
+          <div class="panel-heading panel-heading--compact">
+            <div>
+              <p class="panel-heading__eyebrow">소득 구간</p>
+              <h3 class="panel__title">우리집 소득 밴드</h3>
+            </div>
+          </div>
+          <div class="income-band-card" id="incomeBandCard"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교 카드</p>
+        <h2>비율로 보는 수준</h2>
+      </div>
+      <div class="comparison-grid" id="ratioCardGrid"></div>
+    </section>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">무엇을 어떤 기준으로 계산하나요?</h2>
+        </div>
+      </div>
+      <div class="logic-grid">
+        <article class="logic-card">
+          <strong>가구 총소득 = 본인 + 배우자 + 기타 보상</strong>
+          <p>연봉, 성과급, 기타 보상을 합친 세전 기준 총액입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>월 체감 = 가구 총소득 ÷ 12</strong>
+          <p>보너스와 기타 보상까지 포함한 단순 월 체감값입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>실수령 추정은 단순 추정</strong>
+          <p>세금, 공제, 부양가족, 비과세 항목에 따라 실제 급여명세서와 다를 수 있습니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>위치 비교는 평균·기준 중위소득 기준</strong>
+          <p>공개 가구소득 참고값과 가구원 수별 기준 중위소득으로 위치를 보여줍니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "평균 가구소득과 평균 처분가능소득, 기준 중위소득은 공개 참고값입니다.",
+        "가구 실수령 추정은 급여 소프트웨어가 아닌 단순 추정 로직입니다.",
+        "5인 이상 가구 비교는 화면 단순화를 위해 4인 기준 중위소득을 비교선으로 사용합니다."
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="가구 소득 계산기 활용 가이드"
+        intro={[
+          "이 페이지는 본인 연봉과 성과급, 배우자 소득, 기타 보상을 합쳐 가구 연 총소득과 월 체감 소득을 계산하는 가구 소득 계산기입니다. 평균 가구소득과 기준 중위소득을 함께 보여줘서 우리집 소득 위치를 직관적으로 확인할 수 있습니다.",
+          "핵심은 단순 합산에서 끝나지 않고, 가구원 수별 기준 중위소득과 평균 처분가능소득까지 같이 비교해 현재 위치를 읽기 쉽게 보여주는 점입니다."
+        ]}
+        inputPoints={[
+          "본인 연봉과 성과급, 배우자 소득, 기타 보상을 세전 기준으로 입력합니다.",
+          "가구원 수를 선택하면 해당 기준 중위소득 비교선이 함께 반영됩니다.",
+          "실수령 추정은 기본으로 표시하되, 고급 설정에서 비과세 항목과 부양가족 수를 단순 반영할 수 있습니다."
+        ]}
+        criteria={[
+          "2024 평균 가구소득 7,427만 원, 평균 처분가능소득 6,032만 원을 비교 기준으로 사용합니다.",
+          "2026 기준 중위소득은 1인 256만 원, 2인 419만 원, 3인 535만 원, 4인 649만 원의 월 기준값을 사용합니다.",
+          "실수령 추정은 세금, 공제, 가족 구성, 비과세 항목을 단순화한 참고용 계산입니다."
+        ]}
+        faq={[
+          { question: "가구 평균 소득과 기준 중위소득은 왜 다른가요?", answer: "평균은 전체 가구 소득을 단순 평균한 값이고, 기준 중위소득은 가구를 줄 세웠을 때 가운데 수준을 기준으로 정책에 활용하는 값이라 의미가 다릅니다." },
+          { question: "우리집 위치는 어떤 기준으로 계산하나요?", answer: "가구 연 총소득은 평균 가구소득과 비교하고, 가구 월 총소득은 선택한 가구원 수의 기준 중위소득과 비교합니다." },
+          { question: "실수령 추정은 왜 실제 급여명세서와 다를 수 있나요?", answer: "세금, 공제, 비과세 항목, 가족 구성, 지급 시점에 따라 달라지기 때문에 실제 급여명세서와 완전히 같을 수는 없습니다." },
+          { question: "성과급과 상여를 넣으면 왜 결과가 크게 달라지나요?", answer: "성과급과 상여는 연 총소득과 월 체감값을 동시에 크게 올릴 수 있어서 평균·중위 대비 비율도 함께 바뀝니다." },
+          { question: "1인 / 2인 / 4인 가구 기준이 왜 중요한가요?", answer: "기준 중위소득은 가구원 수별로 기준선이 다르기 때문에 같은 소득이라도 몇 인 가구인지에 따라 상대적 위치가 달라집니다." },
+          { question: "평균보다 높아도 상위권은 아닐 수 있나요?", answer: "그럴 수 있습니다. 평균은 일부 고소득 가구 영향으로 올라갈 수 있어서, 기준 중위소득이나 처분가능소득과 함께 보는 것이 더 직관적입니다." }
+        ]}
+        related={relatedLinks}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="householdIncomeConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/household-income.js")}></script>
+</BaseLayout>
+
+
