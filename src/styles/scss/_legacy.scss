@@ -139,7 +139,7 @@ code { font-family: "JetBrains Mono", monospace; }
 }
 
 .button--primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #1D9E75 100%);
+  background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-mid) 100%);
   color: #fdfefe;
   box-shadow: 0 12px 28px rgba(15, 110, 86, 0.22);
 }
@@ -151,8 +151,8 @@ code { font-family: "JetBrains Mono", monospace; }
 
 .button--secondary {
   background: #fff;
-  color: var(--text);
-  border: 1px solid var(--line-strong);
+  color: var(--color-brand-primary);
+  border: 1px solid var(--color-brand-primary);
 }
 
 .button--ghost {
@@ -345,13 +345,31 @@ code { font-family: "JetBrains Mono", monospace; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(15, 110, 86, 0.1);
-  color: var(--accent-strong);
+  padding: 4px 10px;
+  border-radius: var(--radius-chip, 20px);
+  background: var(--color-brand-tint);
+  color: var(--color-brand-primary);
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+}
+
+// 신규 — brand teal
+.tool-badge[data-badge="신규"] {
+  background: var(--color-brand-tint);
+  color: var(--color-brand-primary);
+}
+
+// 추천 — warning amber
+.tool-badge[data-badge="추천"] {
+  background: var(--color-warning-tint);
+  color: var(--color-warning);
+}
+
+// 대표 — accent purple
+.tool-badge[data-badge="대표"] {
+  background: var(--color-accent-tint);
+  color: var(--color-accent);
 }
 
 .home-page,
@@ -626,7 +644,7 @@ code { font-family: "JetBrains Mono", monospace; }
 
 .breakdown-chip {
   padding: 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-chip, 20px);
   background: var(--surface-soft);
 }
 

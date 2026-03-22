@@ -107,6 +107,10 @@ const config = {
                 <small id="selfSalaryHint"></small>
               </label>
             </div>
+            <div class="calc-slider-row">
+              <input type="range" id="selfSalarySlider" class="calc-slider" min="30000000" max="300000000" step="1000000" value="80000000" />
+              <span id="selfSalarySliderVal" class="calc-slider-val">8,000만원</span>
+            </div>
           </div>
 
           <div class="form-cluster form-cluster--nested couple-only" id="spouseBlock" hidden>
@@ -127,6 +131,10 @@ const config = {
                 <small id="spouseSalaryHint"></small>
               </label>
             </div>
+            <div class="calc-slider-row">
+              <input type="range" id="spouseSalarySlider" class="calc-slider" min="30000000" max="300000000" step="1000000" value="100000000" />
+              <span id="spouseSalarySliderVal" class="calc-slider-val">1억원</span>
+            </div>
           </div>
 
           <div class="form-cluster form-cluster--nested">
@@ -140,13 +148,20 @@ const config = {
                   {yearOptions.map((year) => <option value={year.code}>{year.label}</option>)}
                 </select>
               </label>
-              <label class="field">
+              <div class="field field-span-full">
                 <span>PS 방식</span>
-                <select id="payoutModeSelect">
-                  {payoutModes.map((mode) => <option value={mode.code}>{mode.label}</option>)}
-                </select>
+                <div class="toggle-grid">
+                  <label class="mode-chip" id="payoutActualChip">
+                    <input type="radio" name="payoutMode" value="ACTUAL" checked />
+                    <span>2026 실제값</span>
+                  </label>
+                  <label class="mode-chip">
+                    <input type="radio" name="payoutMode" value="SCENARIO" />
+                    <span>시나리오</span>
+                  </label>
+                </div>
                 <small id="payoutModeHint"></small>
-              </label>
+              </div>
               <label class="field">
                 <span>시나리오</span>
                 <select id="scenarioSelect">
@@ -251,6 +266,9 @@ const config = {
             <h2 class="panel__title">핵심 금액</h2>
           </div>
         </div>
+        <div class="sk-hynix-donut-wrap">
+          <canvas id="sk-hynix-donut-chart"></canvas>
+        </div>
         <div class="report-list" id="summaryReportList"></div>
       </article>
 
@@ -273,6 +291,9 @@ const config = {
             <h2 class="panel__title">추천 연봉 기준 비교</h2>
           </div>
         </div>
+        <div class="sk-hynix-rank-chart-wrap">
+          <canvas id="sk-hynix-rank-chart"></canvas>
+        </div>
         <div class="matrix-list">
           <div class="matrix-list__head">
             <span>직급</span>
@@ -290,6 +311,9 @@ const config = {
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">연도 시나리오</p>
         <h2>2026~2028 비교</h2>
+      </div>
+      <div class="sk-hynix-scenario-chart-wrap">
+        <canvas id="sk-hynix-scenario-chart"></canvas>
       </div>
       <div class="scenario-year-grid" id="scenarioYearGrid"></div>
     </section>
@@ -373,6 +397,7 @@ const config = {
   </SimpleToolShell>
 
   <script id="skHynixCompensationConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/sk-hynix-bonus.js")}></script>
 </BaseLayout>
 
