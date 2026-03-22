@@ -1,5 +1,6 @@
 ﻿---
 import { tools } from "../data/tools";
+import { reports } from "../data/reports";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import TrustPanel from "../components/TrustPanel.astro";
@@ -9,6 +10,9 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 const orderedTools = [...tools].sort((a, b) => a.order - b.order);
+const orderedReports = [...reports].sort((a, b) => a.order - b.order);
+const featuredReport = orderedReports[0];
+const secondaryReports = orderedReports.slice(1, 3);
 
 const topicBySlug: Record<string, string> = {
   salary: "연봉·이직",
@@ -105,14 +109,6 @@ const trustItems = [
     body: "총액뿐 아니라 월 체감과 비교 기준도 함께 보여줍니다."
   }
 ];
-
-const featuredReport = {
-  title: "미국 부자 TOP 10 성공 패턴 리포트",
-  description: "자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트입니다.",
-  href: withBase("/reports/us-rich-top10-patterns/"),
-  keywords: ["TOP 10", "업종 분포", "성공 패턴"],
-  badge: "추천 리포트"
-};
 const homeSearchScript = `
   (() => {
     const searchInput = document.getElementById("homeToolSearchInput");
@@ -255,17 +251,44 @@ const homeSearchScript = `
         <p>공개 데이터를 선택하고 비교하면서 읽을 수 있는 인터랙티브 리포트를 함께 확장하고 있습니다.</p>
       </div>
       <div class="panel home-report-spotlight__panel">
-        <a class="tool-card tool-card--feature home-report-card" href={featuredReport.href}>
-          <div class="tool-card__head">
-            <p class="tool-card__eyebrow">{featuredReport.badge}</p>
-          </div>
-          <h2>{featuredReport.title}</h2>
-          <p>{featuredReport.description}</p>
-          <div class="featured-calculator-card__keywords home-report-card__keywords">
-            {featuredReport.keywords.map((keyword) => <span>{keyword}</span>)}
-          </div>
-          <span class="button button--secondary featured-calculator-card__cta">리포트 보기</span>
-        </a>
+        {featuredReport && (
+          <a class="tool-card tool-card--feature home-report-card" href={withBase(`/reports/${featuredReport.slug}/`)}>
+            <div class="tool-card__head">
+              <p class="tool-card__eyebrow">추천 리포트</p>
+              {
+                featuredReport.badges && (
+                  <div class="tool-badges">
+                    {featuredReport.badges.map((badge) => <span class="tool-badge">{badge}</span>)}
+                  </div>
+                )
+              }
+            </div>
+            <h2>{featuredReport.title}</h2>
+            <p>{featuredReport.description}</p>
+            <div class="featured-calculator-card__keywords home-report-card__keywords">
+              <span>원화 기준</span>
+              <span>TOP 10</span>
+              <span>재미 환산</span>
+            </div>
+            <span class="button button--secondary featured-calculator-card__cta">리포트 보기</span>
+          </a>
+        )}
+        {
+          secondaryReports.map((report) => (
+            <a class="tool-card tool-card--feature home-report-card" href={withBase(`/reports/${report.slug}/`)}>
+              <div class="tool-card__head">
+                <p class="tool-card__eyebrow">인터랙티브 리포트</p>
+              </div>
+              <h2>{report.title}</h2>
+              <p>{report.description}</p>
+              <div class="featured-calculator-card__keywords home-report-card__keywords">
+                <span>비교 읽기</span>
+                <span>패턴 분석</span>
+              </div>
+              <span class="button button--secondary featured-calculator-card__cta">리포트 보기</span>
+            </a>
+          ))
+        }
       </div>
     </section>
 
@@ -335,7 +358,3 @@ const homeSearchScript = `
 
   <script is:inline set:html={homeSearchScript}></script>
 </BaseLayout>
-
-
-
-

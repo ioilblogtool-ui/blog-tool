@@ -23,7 +23,11 @@ if (dataNode && select) {
     imageBlock: document.getElementById("profileImageBlock"),
     image: document.getElementById("profileImage"),
     imageSourceLink: document.getElementById("profileImageSourceLink"),
-    imageLicense: document.getElementById("profileImageLicense")
+    imageLicense: document.getElementById("profileImageLicense"),
+    funNetWorthKrw: document.getElementById("funNetWorthKrw"),
+    funApartmentUnits: document.getElementById("funApartmentUnits"),
+    funGrandeurUnits: document.getElementById("funGrandeurUnits"),
+    funSalaryYears: document.getElementById("funSalaryYears")
   };
 
   const founderTypeMap = {
@@ -39,6 +43,36 @@ if (dataNode && select) {
     investment: "투자형",
     mixed: "혼합형"
   };
+
+  const funConversionConfig = {
+    usdToKrw: 1380,
+    apartmentPriceKrw: 1800000000,
+    grandeurPriceKrw: 50000000,
+    annualSalaryReferenceKrw: 100000000
+  };
+
+  function formatLargeKrw(value) {
+    const jo = 1000000000000;
+    const eok = 100000000;
+
+    if (value >= jo) {
+      return `약 ${(value / jo).toFixed(1)}조 원`;
+    }
+
+    if (value >= eok) {
+      return `약 ${(value / eok).toFixed(0)}억 원`;
+    }
+
+    return `약 ${Math.round(value).toLocaleString("ko-KR")}원`;
+  }
+
+  function formatLargeCount(value, unit) {
+    if (value >= 10000) {
+      return `약 ${Math.round(value).toLocaleString("ko-KR")}${unit}`;
+    }
+
+    return `약 ${value.toFixed(1)}${unit}`;
+  }
 
   function renderTags(tags) {
     if (!els.tags) return;
@@ -116,6 +150,29 @@ if (dataNode && select) {
     }
   }
 
+  function renderFunConversion(profile) {
+    const netWorthKrw = profile.netWorthUsdB * 1000000000 * funConversionConfig.usdToKrw;
+    const apartmentUnits = netWorthKrw / funConversionConfig.apartmentPriceKrw;
+    const grandeurUnits = netWorthKrw / funConversionConfig.grandeurPriceKrw;
+    const salaryYears = netWorthKrw / funConversionConfig.annualSalaryReferenceKrw;
+
+    if (els.funNetWorthKrw) {
+      els.funNetWorthKrw.textContent = formatLargeKrw(netWorthKrw);
+    }
+
+    if (els.funApartmentUnits) {
+      els.funApartmentUnits.textContent = formatLargeCount(apartmentUnits, "채 수준");
+    }
+
+    if (els.funGrandeurUnits) {
+      els.funGrandeurUnits.textContent = formatLargeCount(grandeurUnits, "대 수준");
+    }
+
+    if (els.funSalaryYears) {
+      els.funSalaryYears.textContent = formatLargeCount(salaryYears, "년치");
+    }
+  }
+
   function renderProfile(profile) {
     if (!profile) return;
 
@@ -133,6 +190,7 @@ if (dataNode && select) {
     renderTags(profile.personalityTags || []);
     renderHighlights(profile.highlights || []);
     renderImage(profile.image);
+    renderFunConversion(profile);
 
     const hasMbti = Boolean(profile.mbtiEstimate);
     if (els.mbtiBlock) els.mbtiBlock.hidden = !hasMbti;

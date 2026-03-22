@@ -26,6 +26,12 @@ const distributionGroups = [
   { title: "학력 패턴", items: educationSummary },
   { title: "창업 배경", items: founderTypeSummary }
 ];
+const funConversionConfig = {
+  usdToKrw: 1380,
+  apartmentPriceKrwLabel: "서울 국평 18억 원",
+  grandeurPriceKrwLabel: "그랜저 5,000만 원",
+  annualSalaryReferenceLabel: "연 1억 소득"
+};
 ---
 
 <BaseLayout title={reportMeta.title} description={reportMeta.description}>
@@ -172,6 +178,50 @@ const distributionGroups = [
             {selectedProfile.highlights.map((item) => <li>{item}</li>)}
           </ul>
         </div>
+      </article>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">재미 환산</p>
+        <h2>재미로 보는 자산 체감</h2>
+        <p>원화 환산과 생활 단위 비교로 보면 규모가 더 직관적으로 보입니다.</p>
+      </div>
+
+      <article class="panel fun-conversion-panel">
+        <div class="fun-conversion-panel__config">
+          <span>환율 {funConversionConfig.usdToKrw.toLocaleString("ko-KR")}원</span>
+          <span>{funConversionConfig.apartmentPriceKrwLabel}</span>
+          <span>{funConversionConfig.grandeurPriceKrwLabel}</span>
+        </div>
+
+        <div class="fun-conversion-grid">
+          <article class="fun-conversion-card">
+            <p>원화 환산</p>
+            <strong id="funNetWorthKrw"></strong>
+            <span>기준 환율 적용</span>
+          </article>
+
+          <article class="fun-conversion-card">
+            <p>서울 국평 아파트</p>
+            <strong id="funApartmentUnits"></strong>
+            <span>기준값 18억 원</span>
+          </article>
+
+          <article class="fun-conversion-card">
+            <p>그랜저</p>
+            <strong id="funGrandeurUnits"></strong>
+            <span>기준값 5,000만 원</span>
+          </article>
+
+          <article class="fun-conversion-card">
+            <p>{funConversionConfig.annualSalaryReferenceLabel} 기준</p>
+            <strong id="funSalaryYears"></strong>
+            <span>세전 기준 참고</span>
+          </article>
+        </div>
+
+        <p class="fun-conversion-panel__note">환율과 기준값에 따라 달라지는 참고용 환산입니다.</p>
       </article>
     </section>
 
