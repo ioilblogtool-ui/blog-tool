@@ -14,7 +14,22 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 ---
 
-<BaseLayout title="이직 계산기" description="현재 연봉과 목표 연봉의 세전·실수령 차이를 비교하는 도구">
+<BaseLayout
+  title="이직 계산기"
+  description="현재 연봉과 목표 연봉의 세전·실수령 차이를 비교하는 도구"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "이직 계산기",
+    "url": `${import.meta.env.SITE}/tools/negotiation/`,
+    "description": "현재 연봉과 목표 연봉의 세전·실수령 차이를 비교하는 도구",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
   <SiteHeader />
 
   <SimpleToolShell calculatorId="negotiation" pageClass="negotiation-page">
@@ -40,15 +55,25 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
           <p class="panel-heading__summary">현재 연봉과 목표 연봉만 넣으면 이직 전후의 연봉 증가액과 월 체감 차이를 바로 비교할 수 있습니다.</p>
         </div>
         <div class="form-grid form-grid--compact">
-          <label class="field">
+          <label class="field field-span-full">
             <span>현재 연봉</span>
             <input id="negCurrentAnnual" type="number" value="50000000" />
             <small id="negCurrentAnnualHint"></small>
+            <div class="calc-slider-row">
+              <input type="range" id="negCurrentAnnualSlider" class="calc-slider"
+                min="20000000" max="300000000" step="1000000" value="50000000" />
+              <span id="negCurrentAnnualSliderVal" class="calc-slider-val">5,000만원</span>
+            </div>
           </label>
-          <label class="field">
+          <label class="field field-span-full">
             <span>목표 연봉</span>
             <input id="negTargetAnnual" type="number" value="65000000" />
             <small id="negTargetAnnualHint"></small>
+            <div class="calc-slider-row">
+              <input type="range" id="negTargetAnnualSlider" class="calc-slider"
+                min="20000000" max="300000000" step="1000000" value="65000000" />
+              <span id="negTargetAnnualSliderVal" class="calc-slider-val">6,500만원</span>
+            </div>
           </label>
         </div>
         <button id="calcNegotiationBtn" class="button button--primary" type="button">비교하기</button>
@@ -64,6 +89,30 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         { label: "월 실수령 증가", id: "negMonthlyNetIncrease" }
       ]}
     />
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">핵심 비교</p>
+          <h2 class="panel__title">현재 vs 목표 월 실수령</h2>
+        </div>
+        <p class="panel-heading__summary">이직 전후 월 실수령 변화를 가로 바로 즉시 비교합니다.</p>
+      </div>
+      <div class="neg-compare-chart-wrap">
+        <canvas id="negotiation-compare-chart"></canvas>
+      </div>
+      <div class="neg-kpi-grid">
+        <article class="result-summary-card">
+          <p>현재 월 실수령</p>
+          <strong id="negCurrentNet">-</strong>
+        </article>
+        <article class="result-summary-card result-summary-card--highlight">
+          <p>목표 월 실수령</p>
+          <strong id="negTargetNet">-</strong>
+          <span class="result-card-sub" id="negNetIncreaseSub">-</span>
+        </article>
+      </div>
+    </article>
 
     <InfoNotice
       title="안내"
@@ -125,5 +174,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
     </Fragment>
   </SimpleToolShell>
 
-  <script type="module" src={withBase("/scripts/tools.js")}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/negotiation.js")}></script>
 </BaseLayout>

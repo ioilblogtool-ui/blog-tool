@@ -93,18 +93,15 @@ const selectedHistoryMaxUsd = selectedHistory
         <p class="section-header__eyebrow">상위 10명 개요</p>
         <h2>원화 기준으로 먼저 훑어보기</h2>
       </div>
-      <div class="korea-overview-grid" id="koreaTop10Overview">
-        {
-          overviewEntries.map((entry) => (
-            <article class="report-overview-card korea-overview-card" data-entry-card={entry.slug}>
-              <p>{entry.rank}위 · {entry.name}</p>
-              <strong>{formatKrwLarge(entry.krwValue)}</strong>
-              <span>{formatUsdB(entry.netWorthUsdB)}</span>
-              <em>{entry.sector}</em>
-            </article>
-          ))
-        }
+      <div class="korea-chart-wrap korea-chart-wrap--overview" id="koreaTop10Overview">
+        <canvas id="koreaOverviewCanvas"></canvas>
       </div>
+      <div class="korea-chart-legend">
+        <span class="is-self-made">자수성가</span>
+        <span class="is-inherited">상속형</span>
+        <span class="is-mixed">혼합형</span>
+      </div>
+      <p class="korea-chart-hint">바를 클릭하면 해당 인물 상세가 바로 열립니다</p>
     </section>
 
     <section class="content-section">
@@ -211,64 +208,10 @@ const selectedHistoryMaxUsd = selectedHistory
         <p>2016년부터 2025년까지 공개 앵커 기준으로 확인되는 자산 흐름을 정리했습니다.</p>
       </div>
       <article class="panel korea-history-panel">
-        <div class="korea-history-grid" id="koreaHistoryChart">
-          {
-            selectedHistory?.history.map((point) => {
-              const width = selectedHistoryMaxUsd > 0 && point.netWorthUsdB
-                ? (point.netWorthUsdB / selectedHistoryMaxUsd) * 100
-                : 0;
-              const krwValue = point.netWorthUsdB
-                ? formatKrwLarge(usdBillionToKrw(point.netWorthUsdB, defaults.usdKrwRate))
-                : "데이터 없음";
-              const usdValue = point.netWorthUsdB ? formatUsdB(point.netWorthUsdB) : "공개값 확인 어려움";
-              const statusLabel = point.inTop10 === true ? "TOP 10 진입" : "기준 확인 어려움";
-
-              return (
-                <article class={`korea-history-card${point.netWorthUsdB ? "" : " is-empty"}`}>
-                  <div class="korea-history-card__head">
-                    <strong>{point.year}</strong>
-                    <span>{statusLabel}</span>
-                  </div>
-                  <p class="korea-history-card__krw">{krwValue}</p>
-                  <p class="korea-history-card__usd">{usdValue}</p>
-                  <div class="korea-history-card__track">
-                    <span class="korea-history-card__fill" style={`width:${width}%`}></span>
-                  </div>
-                  <p class="korea-history-card__source">{point.sourceRef ?? "공개 앵커 데이터 미확보"}</p>
-                </article>
-              );
-            })
-          }
+        <div class="korea-chart-wrap korea-chart-wrap--history" id="koreaHistoryChart">
+          <canvas id="koreaHistoryCanvas"></canvas>
         </div>
-      </article>
-    </section>
-
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">자산 비교</p>
-        <h2>상위 10명 자산 규모를 한 줄로 비교</h2>
-        <p>원화 기준이 메인이고, 달러 값은 보조 기준으로 같이 보여줍니다.</p>
-      </div>
-      <article class="panel distribution-card korea-asset-chart-card">
-        <div class="distribution-list" id="koreaAssetChart">
-          {
-            overviewEntries.map((entry) => {
-              const width = (entry.netWorthUsdB / topEntry.netWorthUsdB) * 100;
-              return (
-                <div class="distribution-row">
-                  <div class="distribution-row__head distribution-row__head--stacked">
-                    <span>{entry.rank}위 · {entry.name}</span>
-                    <strong>{formatKrwLarge(entry.krwValue)}</strong>
-                  </div>
-                  <div class="distribution-row__track korea-asset-chart__track">
-                    <span class="distribution-row__fill" style={`width:${width}%`}></span>
-                  </div>
-                  <p class="korea-asset-chart__meta">{formatUsdB(entry.netWorthUsdB)} · {entry.sector}</p>
-                </div>
-              );
-            })
-          }
-        </div>
+        <p class="korea-chart-hint">데이터 없는 연도(2016–2021)는 회색으로 표시 · 바 호버 시 출처 확인</p>
       </article>
     </section>
 
@@ -352,5 +295,6 @@ const selectedHistoryMaxUsd = selectedHistory
 
   <script id="koreaRichTop10Data" type="application/json" set:html={JSON.stringify(koreaRichTop10Seed)}></script>
   <script id="koreaRichTop10HistoryData" type="application/json" set:html={JSON.stringify(koreaCurrentTop10HistorySeed)}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/korea-rich-top10-assets.js")}></script>
 </BaseLayout>

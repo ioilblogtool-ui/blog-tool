@@ -35,6 +35,18 @@ const config = {
 <BaseLayout
   title="가구 소득 계산기 | 총보상·월 체감·소득 위치 보기"
   description="본인 연봉, 성과급, 배우자 소득, 기타 보상을 합쳐 가구 연 총소득과 월 체감 소득, 평균·기준 중위소득 대비 위치를 계산하는 페이지"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "가구 소득 계산기",
+    "url": `${import.meta.env.SITE}/tools/household-income/`,
+    "description": "본인 연봉, 성과급, 배우자 소득, 기타 보상을 합쳐 가구 연 총소득과 월 체감 소득, 평균·기준 중위소득 대비 위치를 계산하는 페이지",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
 >
   <SiteHeader />
 
@@ -68,9 +80,15 @@ const config = {
               <span>세전 기준으로 입력합니다.</span>
             </div>
             <div class="form-grid form-grid--compact">
-              <label class="field">
+              <label class="field field-span-full">
                 <span>본인 연봉(세전)</span>
                 <input id="mySalaryInput" type="number" value="52000000" />
+                <small id="mySalaryHint"></small>
+                <div class="calc-slider-row">
+                  <input type="range" id="mySalarySlider" class="calc-slider"
+                    min="0" max="300000000" step="1000000" value="52000000" />
+                  <span id="mySalarySliderVal" class="calc-slider-val">5,200만원</span>
+                </div>
               </label>
               <label class="field">
                 <span>본인 성과급(세전)</span>
@@ -85,9 +103,15 @@ const config = {
               <span>{helperText.spouse}</span>
             </div>
             <div class="form-grid form-grid--compact">
-              <label class="field">
+              <label class="field field-span-full">
                 <span>배우자 소득(세전)</span>
                 <input id="spouseSalaryInput" type="number" value="28000000" />
+                <small id="spouseSalaryHint"></small>
+                <div class="calc-slider-row">
+                  <input type="range" id="spouseSalarySlider" class="calc-slider"
+                    min="0" max="200000000" step="1000000" value="28000000" />
+                  <span id="spouseSalarySliderVal" class="calc-slider-val">2,800만원</span>
+                </div>
               </label>
               <label class="field">
                 <span>배우자 성과급(세전)</span>
@@ -250,11 +274,13 @@ const config = {
         <article class="panel position-panel">
           <div class="panel-heading panel-heading--compact">
             <div>
-              <p class="panel-heading__eyebrow">위치 바</p>
-              <h3 class="panel__title">한눈에 보는 비교</h3>
+              <p class="panel-heading__eyebrow">소득 위치 차트</p>
+              <h3 class="panel__title">월 소득 위치 비교</h3>
             </div>
           </div>
-          <div class="position-bars" id="positionBars"></div>
+          <div class="household-position-chart-wrap">
+            <canvas id="household-position-chart"></canvas>
+          </div>
         </article>
 
         <article class="panel position-panel">
@@ -343,6 +369,7 @@ const config = {
     </Fragment>
   </SimpleToolShell>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script id="householdIncomeConfig" type="application/json" set:html={JSON.stringify(config)}></script>
   <script type="module" src={withBase("/scripts/household-income.js")}></script>
 </BaseLayout>

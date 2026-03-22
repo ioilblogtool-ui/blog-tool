@@ -6,12 +6,14 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  jsonLd?: object;
 }
 
 const {
   title,
   description = "비교해서 더 잘 판단하게 만드는 계산 도구",
-  image = "/og-default.png"
+  image = "/og-default.png",
+  jsonLd,
 } = Astro.props;
 
 const siteName = "비교계산소";
@@ -50,6 +52,16 @@ const faviconUrl = new URL("/favicon.svg", Astro.site);
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
+    <meta name="theme-color" content="#0F6E56" />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": siteName,
+      "url": String(new URL("/", Astro.site)),
+      "description": "비교해서 더 잘 판단하게 만드는 계산 도구",
+      "inLanguage": "ko-KR",
+    })} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
     <slot />

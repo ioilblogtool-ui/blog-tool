@@ -201,6 +201,18 @@ const initialCompany = companyConfigs[0];
               </div>
               <p class="panel-heading__summary">추천 연봉 기준으로 올해 총보상과 3년 누적 흐름을 함께 봅니다.</p>
             </div>
+
+            {/*
+              [STEP 3] Chart.js 3사 비교 가로 바 차트 삽입 위치
+              canvas id: 'bonus-compare-chart'
+              높이 120px 고정 → .bonus-compare-chart-wrap { height: 120px }
+              렌더링: public/scripts/bonus-simulator.js > renderCompareChart()
+              색상: 삼성(teal #1D9E75) / SK하이닉스(보라 #534AB7) / 현대차(amber #BA7517)
+            */}
+            <div class="bonus-compare-chart-wrap">
+              <canvas id="bonus-compare-chart"></canvas>
+            </div>
+
             <div class="compare-list" id="companyCompareList"></div>
           </article>
         </section>
@@ -368,5 +380,7 @@ const initialCompany = companyConfigs[0];
   </main>
 
   <script id="bonusSimulatorConfig" type="application/json" set:html={JSON.stringify({ companyConfigs, rankOptions, scenarioOptions, growthModeOptions })}></script>
+  <!-- Chart.js UMD: window.Chart 으로 노출 → bonus-simulator.js 보다 먼저 로드 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/bonus-simulator.js")}></script>
 </BaseLayout>

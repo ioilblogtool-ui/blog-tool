@@ -1,4 +1,4 @@
-﻿---
+---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
@@ -6,6 +6,7 @@ import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -13,129 +14,171 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 ---
 
-<BaseLayout title="육아휴직 계산기" description="육아휴직 급여와 복직 후 수입을 비교하는 도구">
+<BaseLayout
+  title="육아휴직 계산기"
+  description="육아휴직 급여와 복직 후 수입을 비교하는 도구"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "육아휴직 계산기",
+    "url": `${import.meta.env.SITE}/tools/parental-leave/`,
+    "description": "육아휴직 급여와 복직 후 수입을 비교하는 도구",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
   <SiteHeader />
 
-  <main class="container page-shell calculator-page" data-calculator="leave">
-    <CalculatorHero
-      eyebrow="현금흐름 비교"
-      title="육아휴직 계산기"
-      description="휴직 중 월 수령액과 복직 후 연봉 기준 실수령을 비교해 필요한 생활비 버퍼를 계산합니다."
+  <SimpleToolShell calculatorId="leave" pageClass="parental-leave-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="현금흐름 비교"
+        title="육아휴직 계산기"
+        description="휴직 중 월 수령액과 복직 후 연봉 기준 실수령을 비교해 필요한 생활비 버퍼를 계산합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetLeaveBtn" copyId="copyLeaveLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">휴직 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">휴직 중 소득과 복직 후 소득을 함께 넣어두면 월 차이와 버퍼 가능 기간을 바로 볼 수 있습니다.</p>
+        </div>
+        <div class="form-grid form-grid--compact">
+          <label class="field">
+            <span>휴직 전 월 실수령</span>
+            <input id="leaveBeforeNet" type="number" value="3200000" />
+          </label>
+          <label class="field">
+            <span>복직 후 연봉</span>
+            <input id="leaveAfterAnnual" type="number" value="52000000" />
+            <small id="leaveAfterAnnualHint"></small>
+          </label>
+          <label class="field">
+            <span>휴직 중 월 수령액</span>
+            <input id="leaveMonthlyIncome" type="number" value="1500000" />
+          </label>
+          <label class="field">
+            <span>휴직 개월 수</span>
+            <input id="leaveMonths" type="number" value="12" />
+          </label>
+          <label class="field">
+            <span>중간정산 금액</span>
+            <input id="leaveRetirementPayout" type="number" value="12000000" />
+            <small id="leaveRetirementPayoutHint"></small>
+          </label>
+          <label class="field">
+            <span>보너스</span>
+            <input id="leaveBonus" type="number" value="3000000" />
+            <small id="leaveBonusHint"></small>
+          </label>
+          <label class="field field-span-full">
+            <span>연차수당</span>
+            <input id="leaveAnnualLeavePay" type="number" value="1000000" />
+            <small id="leaveAnnualLeavePayHint"></small>
+          </label>
+          <label class="check-field field-span-full">
+            <input id="leaveIncludeBonus" type="checkbox" checked />
+            <span>복직 후 총보상에 보너스 포함</span>
+          </label>
+        </div>
+        <button id="calcLeaveBtn" class="button button--primary" type="button">비교하기</button>
+      </article>
+    </Fragment>
+
+    <SummaryCards
+      columns={4}
+      items={[
+        { label: "휴직 중 월 수령",    id: "leaveMonthlyIncomeCard" },
+        { label: "복직 후 월 실수령",  id: "leaveAfterMonthlyNet" },
+        { label: "월 차이",            id: "leaveMonthlyGap" },
+        { label: "버퍼 가능 개월",     id: "leaveBufferMonths" }
+      ]}
     />
 
-    <ToolActionBar resetId="resetLeaveBtn" copyId="copyLeaveLinkBtn" />
-
-    <section class="calculator-grid content-section">
-      <div class="stack">
-        <article class="panel">
-          <h2 class="panel__title">육아휴직 입력</h2>
-          <p class="panel__intro">휴직 중 소득과 복직 후 소득을 함께 넣어두면 월 차이와 버퍼 가능 기간을 바로 볼 수 있습니다.</p>
-          <div class="form-grid">
-            <label class="field">
-              <span>휴직 전 월 실수령</span>
-              <input id="leaveBeforeNet" type="number" value="3200000" />
-            </label>
-            <label class="field">
-              <span>복직 후 연봉</span>
-              <input id="leaveAfterAnnual" type="number" value="52000000" />
-              <small id="leaveAfterAnnualHint"></small>
-            </label>
-            <label class="field">
-              <span>휴직 중 월 수령액</span>
-              <input id="leaveMonthlyIncome" type="number" value="1500000" />
-            </label>
-            <label class="field">
-              <span>휴직 개월 수</span>
-              <input id="leaveMonths" type="number" value="12" />
-            </label>
-            <label class="field">
-              <span>중간정산 금액</span>
-              <input id="leaveRetirementPayout" type="number" value="12000000" />
-              <small id="leaveRetirementPayoutHint"></small>
-            </label>
-            <label class="field">
-              <span>보너스</span>
-              <input id="leaveBonus" type="number" value="3000000" />
-              <small id="leaveBonusHint"></small>
-            </label>
-            <label class="field">
-              <span>연차수당</span>
-              <input id="leaveAnnualLeavePay" type="number" value="1000000" />
-              <small id="leaveAnnualLeavePayHint"></small>
-            </label>
-            <label class="check-field">
-              <input id="leaveIncludeBonus" type="checkbox" checked />
-              <span>복직 후 총보상에 보너스 포함</span>
-            </label>
-          </div>
-          <button id="calcLeaveBtn" class="button button--primary" type="button">비교하기</button>
-        </article>
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">현금흐름 시각화</p>
+          <h2 class="panel__title">휴직 전·중·복직 후 월 수령</h2>
+        </div>
+        <p class="panel-heading__summary">휴직 중 소득 감소와 복직 후 회복 흐름을 한눈에 확인합니다.</p>
       </div>
+      <div class="leave-cashflow-chart-wrap">
+        <canvas id="leave-cashflow-chart"></canvas>
+      </div>
+    </article>
 
-      <div class="stack">
-        <SummaryCards
-          columns={4}
-          items={[
-            { label: "휴직 중 월 수령", id: "leaveMonthlyIncomeCard" },
-            { label: "복직 후 월 실수령", id: "leaveAfterMonthlyNet" },
-            { label: "월 차이", id: "leaveMonthlyGap" },
-            { label: "버퍼 가능 개월", id: "leaveBufferMonths" }
-          ]}
-        />
+    <InfoNotice
+      title="안내"
+      lines={[
+        "실수령과 휴직 급여는 간이 추정 기준이며 실제 제도와 차이가 있을 수 있습니다.",
+        "정책형 계산기는 연도별 제도 변경 여부를 함께 확인하는 것이 좋습니다.",
+        "복직 후 총보상은 보너스 포함 여부에 따라 크게 달라질 수 있습니다."
+      ]}
+    />
 
-        <InfoNotice
-          title="안내"
-          lines={[
-            "실수령과 휴직 급여는 간이 추정 기준이며 실제 제도와 차이가 있을 수 있습니다.",
-            "정책형 계산기는 연도별 제도 변경 여부를 함께 확인하는 것이 좋습니다.",
-            "복직 후 총보상은 보너스 포함 여부에 따라 크게 달라질 수 있습니다."
-          ]}
-        />
-
-        <article class="panel">
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">상세 비교</p>
           <h2 class="panel__title">비교 상세</h2>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th>항목</th>
-                  <th>값</th>
-                </tr>
-              </thead>
-              <tbody id="leaveTable"></tbody>
-            </table>
-          </div>
-        </article>
+        </div>
       </div>
-    </section>
-    <SeoContent
-      introTitle="육아휴직 계산기에서 보는 숫자"
-      intro={[
-        "육아휴직 계산기는 육아휴직을 쓰는 동안 급여가 얼마나 줄어드는지, 복직 후 다시 소득이 어떻게 회복되는지 빠르게 보는 페이지입니다. 출산 직후 현금흐름을 미리 점검하고 싶은 직장인에게 맞춘 계산기입니다.",
-        "정책 설명만 길게 읽기보다, 실제로 내 월급 기준에서 어느 구간부터 상한이 걸리는지를 보는 데 초점을 두었습니다."
-      ]}
-      inputPoints={[
-        "월 급여와 사용 개월 수를 기준으로 육아휴직 기간의 소득 변화를 볼 수 있습니다.",
-        "복직 이후 수입과 비교해 육아휴직 중 버퍼가 얼마나 필요한지 판단할 수 있습니다.",
-        "가구 총액이 궁금하면 한 명만 육아휴직 총수령액 계산기로 바로 이어서 볼 수 있습니다."
-      ]}
-      criteria={[
-        "이 페이지는 개인 소득 흐름 중심이고, 가구 전체 현금흐름까지 합치지는 않습니다.",
-        "정확한 가구 총액이 필요하면 배우자 급여와 부모급여를 합산하는 계산기로 확장해서 봐야 합니다.",
-        "18개월 확장 여부와 6+6 특례는 별도 계산기에서 함께 비교하는 편이 좋습니다."
-      ]}
-      faq={[
-        { question: "육아휴직 계산기와 육아휴직 급여 계산기의 차이는 뭔가요?", answer: "육아휴직 급여 계산기는 제도상 급여액을 더 직접적으로 계산하고, 이 페이지는 복직 전후 수입 흐름 비교에 조금 더 초점을 둡니다." },
-        { question: "가족 전체 수입도 볼 수 있나요?", answer: "이 페이지는 개인 기준 비교에 가깝습니다. 가구 기준 총액은 한 명만 육아휴직 총수령액 계산기를 이용하는 편이 맞습니다." },
-        { question: "출산 직후 지원금까지 한 번에 보고 싶어요.", answer: "출산~2세 총지원금 계산기와 함께 보면 부모급여, 아동수당, 첫만남이용권까지 포함한 현금흐름을 확인할 수 있습니다." }
-      ]}
-      related={[
-        { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
-        { href: "/tools/single-parental-leave-total/", label: "한 명만 육아휴직 총수령액 계산기" },
-        { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" }
-      ]}
-    />
-  </main>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>값</th>
+            </tr>
+          </thead>
+          <tbody id="leaveTable"></tbody>
+        </table>
+      </div>
+    </article>
 
-  <script type="module" src={withBase("/scripts/tools.js")}></script>
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="육아휴직 계산기에서 보는 숫자"
+        intro={[
+          "육아휴직 계산기는 육아휴직을 쓰는 동안 급여가 얼마나 줄어드는지, 복직 후 다시 소득이 어떻게 회복되는지 빠르게 보는 페이지입니다. 출산 직후 현금흐름을 미리 점검하고 싶은 직장인에게 맞춘 계산기입니다.",
+          "정책 설명만 길게 읽기보다, 실제로 내 월급 기준에서 어느 구간부터 상한이 걸리는지를 보는 데 초점을 두었습니다."
+        ]}
+        inputPoints={[
+          "월 급여와 사용 개월 수를 기준으로 육아휴직 기간의 소득 변화를 볼 수 있습니다.",
+          "복직 이후 수입과 비교해 육아휴직 중 버퍼가 얼마나 필요한지 판단할 수 있습니다.",
+          "가구 총액이 궁금하면 한 명만 육아휴직 총수령액 계산기로 바로 이어서 볼 수 있습니다."
+        ]}
+        criteria={[
+          "이 페이지는 개인 소득 흐름 중심이고, 가구 전체 현금흐름까지 합치지는 않습니다.",
+          "정확한 가구 총액이 필요하면 배우자 급여와 부모급여를 합산하는 계산기로 확장해서 봐야 합니다.",
+          "18개월 확장 여부와 6+6 특례는 별도 계산기에서 함께 비교하는 편이 좋습니다."
+        ]}
+        faq={[
+          { question: "육아휴직 계산기와 육아휴직 급여 계산기의 차이는 뭔가요?", answer: "육아휴직 급여 계산기는 제도상 급여액을 더 직접적으로 계산하고, 이 페이지는 복직 전후 수입 흐름 비교에 조금 더 초점을 둡니다." },
+          { question: "가족 전체 수입도 볼 수 있나요?", answer: "이 페이지는 개인 기준 비교에 가깝습니다. 가구 기준 총액은 한 명만 육아휴직 총수령액 계산기를 이용하는 편이 맞습니다." },
+          { question: "출산 직후 지원금까지 한 번에 보고 싶어요.", answer: "출산~2세 총지원금 계산기와 함께 보면 부모급여, 아동수당, 첫만남이용권까지 포함한 현금흐름을 확인할 수 있습니다." }
+        ]}
+        related={[
+          { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+          { href: "/tools/single-parental-leave-total/", label: "한 명만 육아휴직 총수령액 계산기" },
+          { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" }
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/parental-leave.js")}></script>
 </BaseLayout>

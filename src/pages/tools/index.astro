@@ -157,6 +157,17 @@ const toolLibraryScript = `
                   }
                 </div>
                 <h2>{tool.title}</h2>
+                {tool.previewStats && tool.previewStats.length > 0 && (
+                  <div class="tool-card__preview-stats">
+                    {tool.previewStats.map((stat) => (
+                      <span class="preview-stat">
+                        <span class="preview-stat__label">{stat.label}</span>
+                        <strong class="preview-stat__value">{stat.value}</strong>
+                        {stat.context && <span class="preview-stat__context">{stat.context}</span>}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <p>{tool.description}</p>
                 <span class="tool-card__meta">{toolHighlights[tool.slug] ?? "입력 후 결과를 바로 확인할 수 있게 구성했습니다."}</span>
               </a>

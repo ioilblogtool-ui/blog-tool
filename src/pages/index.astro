@@ -168,6 +168,23 @@ const homeSearchScript = `
       <p class="hero__description">
         연봉, 성과급, 육아휴직, 출산 지원금까지 자주 보는 숫자를 빠르게 계산하고 비교할 수 있게 정리했습니다.
       </p>
+      <div class="hero-stats">
+        <article class="hero-stat-card">
+          <strong class="hero-stat-card__number" data-count-to="13" data-suffix="개">13개</strong>
+          <p class="hero-stat-card__label">운영 중 계산기</p>
+          <span class="hero-stat-card__source">꾸준히 추가 중</span>
+        </article>
+        <article class="hero-stat-card">
+          <strong class="hero-stat-card__number" data-count-to="2.4" data-suffix="%" data-decimals="1">2.4%</strong>
+          <p class="hero-stat-card__label">2026 평균 임금 인상률</p>
+          <span class="hero-stat-card__source">고용노동부 기준</span>
+        </article>
+        <article class="hero-stat-card">
+          <strong class="hero-stat-card__number" data-count-to="5200" data-suffix="만" data-format="comma">5,200만</strong>
+          <p class="hero-stat-card__label">30대 직장인 평균 연봉</p>
+          <span class="hero-stat-card__source">통계청 2025 기준</span>
+        </article>
+      </div>
       <div class="home-actions">
         <a class="button button--primary" href={withBase("/tools/")}>지금 운영 중인 계산기 보기</a>
       </div>
@@ -357,4 +374,45 @@ const homeSearchScript = `
   </main>
 
   <script is:inline set:html={homeSearchScript}></script>
+  <script is:inline>
+    (() => {
+      function animateCount(el) {
+        const target   = parseFloat(el.dataset.countTo || "0");
+        const suffix   = el.dataset.suffix   || "";
+        const decimals = parseInt(el.dataset.decimals || "0", 10);
+        const useComma = el.dataset.format === "comma";
+        const duration = 1100;
+        const start    = performance.now();
+
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased    = 1 - Math.pow(1 - progress, 3);
+          const current  = target * eased;
+
+          let formatted;
+          if (useComma) {
+            formatted = Math.round(current).toLocaleString("ko-KR");
+          } else {
+            formatted = decimals > 0 ? current.toFixed(decimals) : String(Math.round(current));
+          }
+          el.textContent = formatted + suffix;
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      const heroStats = document.querySelector(".hero-stats");
+      if (!heroStats) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.querySelectorAll("[data-count-to]").forEach(animateCount);
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.4 });
+
+      observer.observe(heroStats);
+    })();
+  </script>
 </BaseLayout>

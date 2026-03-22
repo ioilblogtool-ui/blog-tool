@@ -1,4 +1,10 @@
-﻿export type ToolMeta = {
+export type PreviewStat = {
+  label: string;    // '월 실수령', '총보상' 등
+  value: string;    // '341만', '1.2억' 등
+  context?: string; // '5,000만 기준' 등 맥락
+};
+
+export type ToolMeta = {
   slug: string;
   title: string;
   description: string;
@@ -7,6 +13,7 @@
   category?: string;
   iframeReady?: boolean;
   badges?: string[];
+  previewStats?: PreviewStat[];
 };
 
 export const tools: ToolMeta[] = [
@@ -18,7 +25,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "Salary Tool",
     category: "calculator",
     iframeReady: true,
-    badges: ["추천"]
+    badges: ["추천"],
+    previewStats: [
+      { label: "월 실수령", value: "341만", context: "5천만 기준" },
+      { label: "+5% 후", value: "358만" }
+    ]
   },
   {
     slug: "retirement",
@@ -27,7 +38,11 @@ export const tools: ToolMeta[] = [
     order: 2,
     eyebrow: "Retirement Tool",
     category: "calculator",
-    iframeReady: true
+    iframeReady: true,
+    previewStats: [
+      { label: "퇴직금 세전", value: "4,166만", context: "5천만·10년" },
+      { label: "세후 추정", value: "약 3,950만" }
+    ]
   },
   {
     slug: "negotiation",
@@ -37,7 +52,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "Negotiation Tool",
     category: "calculator",
     iframeReady: true,
-    badges: ["추천"]
+    badges: ["추천"],
+    previewStats: [
+      { label: "월 실수령 차이", value: "+52만", context: "5→6천만 이직" },
+      { label: "인상률", value: "20%" }
+    ]
   },
   {
     slug: "parental-leave",
@@ -46,7 +65,11 @@ export const tools: ToolMeta[] = [
     order: 4,
     eyebrow: "Parental Leave Tool",
     category: "calculator",
-    iframeReady: true
+    iframeReady: true,
+    previewStats: [
+      { label: "가구 수령액", value: "월 200만+" },
+      { label: "버퍼 기간", value: "12개월" }
+    ]
   },
   {
     slug: "household-income",
@@ -56,7 +79,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "Household Income Tool",
     category: "calculator",
     iframeReady: true,
-    badges: ["신규", "추천"]
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "중위소득 대비", value: "138%", context: "4인·8천만" },
+      { label: "월 실수령", value: "약 560만" }
+    ]
   },
   {
     slug: "bonus-simulator",
@@ -66,7 +93,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "Bonus Tool",
     category: "simulator",
     iframeReady: true,
-    badges: ["신규", "추천"]
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "삼성 총보상", value: "1.1억" },
+      { label: "하이닉스", value: "1.8억" }
+    ]
   },
   {
     slug: "samsung-bonus",
@@ -76,7 +107,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "Samsung Tool",
     category: "simulator",
     iframeReady: true,
-    badges: ["신규", "추천"]
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "OPI+TAI", value: "3,600만", context: "사원 기준" },
+      { label: "월 체감", value: "+300만" }
+    ]
   },
   {
     slug: "sk-hynix-bonus",
@@ -86,7 +121,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "SK Hynix Tool",
     category: "simulator",
     iframeReady: true,
-    badges: ["신규", "추천"]
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "PS+PI", value: "6,000만", context: "사원 기준" },
+      { label: "월 체감", value: "+500만" }
+    ]
   },
   {
     slug: "hyundai-bonus",
@@ -96,7 +135,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "Hyundai Tool",
     category: "simulator",
     iframeReady: true,
-    badges: ["신규", "추천"]
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "성과금 총액", value: "2,800만", context: "책임 기준" },
+      { label: "월 체감", value: "+233만" }
+    ]
   },
   {
     slug: "birth-support-total",
@@ -106,7 +149,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "Birth Support Tool",
     category: "support",
     iframeReady: true,
-    badges: ["추천"]
+    badges: ["추천"],
+    previewStats: [
+      { label: "2세까지 총액", value: "약 2,100만" },
+      { label: "월 평균", value: "87만" }
+    ]
   },
   {
     slug: "single-parental-leave-total",
@@ -116,7 +163,11 @@ export const tools: ToolMeta[] = [
     eyebrow: "Household Cashflow Tool",
     category: "support",
     iframeReady: true,
-    badges: ["대표", "추천"]
+    badges: ["대표", "추천"],
+    previewStats: [
+      { label: "가구 총수령", value: "약 3,800만" },
+      { label: "월 평균", value: "158만" }
+    ]
   },
   {
     slug: "parental-leave-pay",
@@ -125,7 +176,11 @@ export const tools: ToolMeta[] = [
     order: 12,
     eyebrow: "Parental Leave Pay Tool",
     category: "support",
-    iframeReady: true
+    iframeReady: true,
+    previewStats: [
+      { label: "첫 3개월", value: "월 250만", context: "상한 기준" },
+      { label: "4개월~", value: "월 150만" }
+    ]
   },
   {
     slug: "six-plus-six",
@@ -135,6 +190,10 @@ export const tools: ToolMeta[] = [
     eyebrow: "6+6 Tool",
     category: "support",
     iframeReady: true,
-    badges: ["신규"]
+    badges: ["신규"],
+    previewStats: [
+      { label: "특례 총액", value: "약 900만", context: "부부 합산" },
+      { label: "일반 대비", value: "+300만" }
+    ]
   }
 ];

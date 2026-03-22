@@ -1,4 +1,6 @@
-﻿const $ = (id) => document.getElementById(id);
+﻿import { CHART_COLORS, formatKRW, buildDefaultOptions, makeLabelPlugin } from "./chart-config.js";
+
+const $ = (id) => document.getElementById(id);
 
 const configNode = $("bonusSimulatorConfig");
 
@@ -11,6 +13,9 @@ const companyMap = Object.fromEntries(companyConfigs.map((company) => [company.c
 const rankMap = Object.fromEntries(rankOptions.map((rank) => [rank.code, rank.label]));
 const scenarioMap = Object.fromEntries(scenarioOptions.map((scenario) => [scenario.code, scenario]));
 const growthMap = Object.fromEntries(growthModeOptions.map((mode) => [mode.code, mode]));
+
+// ── 3사 비교 차트 인스턴스 (renderCompare 내에서 생성·갱신) ──────────────────
+let bonusCompareChart = null;
 
 const companySelect = $("companySelect");
 const rankSelect = $("rankSelect");
@@ -248,6 +253,92 @@ function renderCompare(rankCode, scenarioCode, growthCode, includeStock) {
       `;
     })
     .join("");
+
+  // Chart.js 가로 바 차트 실시간 갱신
+  renderCompareChart(compareData);
+}
+
+// ── 3사 가로 바 차트 ─────────────────────────────────────────────────────────
+/**
+ * renderCompareChart(compareData)
+ *   최초 호출 시 Chart.js 인스턴스를 생성하고,
+ *   이후 호출 시에는 data만 갱신한 뒤 chart.update() 로 실시간 반영합니다.
+ *
+ *   compareData: [{ companyName, totalComp, companyCode }, ...]
+ *   companyCode 순서: SAMSUNG → brand(teal), SKHYNIX → accent(보라), HYUNDAI → warning(amber)
+ */
+function renderCompareChart(compareData) {
+  if (!window.Chart) return;
+
+  const canvas = $("bonus-compare-chart");
+  if (!canvas) return;
+
+  const labels = compareData.map((d) => d.companyName);
+  const values = compareData.map((d) => d.totalComp);
+
+  // 회사 코드 순서에 맞는 색상 매핑
+  const colorMap = {
+    SAMSUNG:  CHART_COLORS.brand,
+    SKHYNIX:  CHART_COLORS.accent,
+    HYUNDAI:  CHART_COLORS.warning,
+  };
+  const bgColors     = compareData.map((d) => (colorMap[d.companyCode] || CHART_COLORS.gray) + "CC"); // ~80% opacity
+  const borderColors = compareData.map((d) =>  colorMap[d.companyCode] || CHART_COLORS.gray);
+
+  // ── 기존 차트 갱신 ──────────────────────────────────────────────────────
+  if (bonusCompareChart) {
+    bonusCompareChart.data.datasets[0].data              = values;
+    bonusCompareChart.data.datasets[0].backgroundColor   = bgColors;
+    bonusCompareChart.data.datasets[0].borderColor       = borderColors;
+    bonusCompareChart.update();
+    return;
+  }
+
+  // ── 최초 생성 ──────────────────────────────────────────────────────────
+  const baseOpts = buildDefaultOptions();
+
+  bonusCompareChart = new window.Chart(canvas.getContext("2d"), {
+    type: "bar",
+    plugins: [makeLabelPlugin(formatKRW)],
+    data: {
+      labels,
+      datasets: [{
+        data:            values,
+        backgroundColor: bgColors,
+        borderColor:     borderColors,
+        borderWidth:     1.5,
+        borderRadius:    6,
+        borderSkipped:   false,
+      }],
+    },
+    options: {
+      ...baseOpts,
+      indexAxis: "y",                      // 가로 바
+      layout:    { padding: { right: 72 } }, // 인라인 레이블 공간
+      scales: {
+        x: {
+          display:     false,
+          beginAtZero: true,
+        },
+        y: {
+          grid:  { display: false },
+          ticks: {
+            font:  { size: 12, family: baseOpts.font.family },
+            color: "#5f6f8f",
+          },
+        },
+      },
+      plugins: {
+        ...baseOpts.plugins,
+        tooltip: {
+          ...baseOpts.plugins.tooltip,
+          callbacks: {
+            label: (ctx) => `총보상 ${formatKRW(ctx.raw)}`,
+          },
+        },
+      },
+    },
+  });
 }
 
 function renderScenarioCards(company, annualSalary, monthlyBase, presetKey, includeStock) {

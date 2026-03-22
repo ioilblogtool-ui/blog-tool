@@ -1,4 +1,57 @@
-﻿.home-featured {
+﻿// ── Hero 데이터 카드 ─────────────────────────────────────────────────────────
+// 모바일: 1열 3행 / 태블릿 이상(560px+): 3열 1행
+.hero-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 20px 0 24px;
+}
+
+.hero-stat-card {
+  background: var(--color-background-secondary, var(--surface-soft, #f7f9fc));
+  border: 0.5px solid var(--color-border-tertiary, var(--line, rgba(34, 56, 101, 0.10)));
+  border-radius: 10px;
+  padding: 16px;
+  display: grid;
+  gap: 3px;
+}
+
+// 숫자: 24px / weight 500
+.hero-stat-card__number {
+  display: block;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+// 레이블: 11px / secondary
+.hero-stat-card__label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+// 출처: 10px / tertiary
+.hero-stat-card__source {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  opacity: 0.72;
+  line-height: 1.4;
+}
+
+@media (min-width: 560px) {
+  .hero-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+.home-featured {
   gap: 18px;
 }
 
@@ -11,9 +64,9 @@
   overflow: hidden;
   padding: 20px;
   border-radius: 28px;
-  background: linear-gradient(135deg, rgba(242, 247, 255, 0.94) 0%, rgba(255, 255, 255, 0.96) 48%, rgba(247, 251, 255, 0.94) 100%);
-  border: 1px solid rgba(179, 205, 255, 0.55);
-  box-shadow: 0 20px 48px rgba(37, 99, 235, 0.08);
+  background: linear-gradient(135deg, rgba(232, 247, 241, 0.94) 0%, rgba(255, 255, 255, 0.96) 48%, rgba(242, 251, 246, 0.94) 100%);
+  border: 1px solid rgba(15, 110, 86, 0.18);
+  box-shadow: 0 20px 48px rgba(15, 110, 86, 0.08);
 }
 
 .home-featured__panel::before {
@@ -23,7 +76,7 @@
   width: 260px;
   height: 260px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0) 70%);
+  background: radial-gradient(circle, rgba(15, 110, 86, 0.10) 0%, rgba(15, 110, 86, 0) 70%);
   pointer-events: none;
 }
 
@@ -34,7 +87,7 @@
   width: 220px;
   height: 220px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(14, 165, 233, 0.10) 0%, rgba(14, 165, 233, 0) 72%);
+  background: radial-gradient(circle, rgba(29, 158, 117, 0.08) 0%, rgba(29, 158, 117, 0) 72%);
   pointer-events: none;
 }
 
@@ -65,9 +118,9 @@
   min-height: 100%;
   padding: 24px;
   border-radius: 24px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(238,244,255,0.96));
-  border: 1px solid rgba(37, 99, 235, 0.18);
-  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(232,246,240,0.96));
+  border: 1px solid rgba(15, 110, 86, 0.18);
+  box-shadow: 0 14px 32px rgba(15, 110, 86, 0.08);
 }
 
 .featured-calculator-card::before {
@@ -77,7 +130,7 @@
   width: 96px;
   height: 96px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0) 72%);
+  background: radial-gradient(circle, rgba(15, 110, 86, 0.10) 0%, rgba(15, 110, 86, 0) 72%);
   pointer-events: none;
 }
 
@@ -119,7 +172,7 @@
   gap: 12px;
   padding: 14px;
   border-radius: 18px;
-  border: 1px solid rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(15, 110, 86, 0.12);
   background: rgba(255,255,255,0.72);
 }
 
@@ -149,7 +202,7 @@
   min-height: 38px;
   padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(15, 110, 86, 0.12);
   background: rgba(255,255,255,0.92);
   color: var(--text);
   font-size: 0.86rem;
@@ -190,7 +243,7 @@
   width: 5px;
   height: 100%;
   border-radius: 0 999px 999px 0;
-  background: rgba(30, 64, 175, 0.22);
+  background: rgba(15, 110, 86, 0.28);
 }
 
 .recommended-calculator-card::after {
@@ -294,7 +347,7 @@
 .home-trust--boxed {
   padding: 22px;
   gap: 18px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(238,244,255,0.92));
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(232,245,240,0.92));
 }
 
 .home-trust__grid {

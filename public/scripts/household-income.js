@@ -1,4 +1,6 @@
-﻿const $ = (id) => document.getElementById(id);
+﻿import { formatKRW, buildDefaultOptions, makeLabelPlugin } from "./chart-config.js";
+
+const $ = (id) => document.getElementById(id);
 
 const configNode = $("householdIncomeConfig");
 
@@ -29,6 +31,10 @@ const includeNetEstimateToggle = $("includeNetEstimateToggle");
 const includeNonTaxableToggle = $("includeNonTaxableToggle");
 const dependentsInput = $("dependentsInput");
 const deductionPresetSelect = $("deductionPresetSelect");
+const mySalarySlider    = $("mySalarySlider");
+const mySalarySliderVal = $("mySalarySliderVal");
+const spouseSalarySlider    = $("spouseSalarySlider");
+const spouseSalarySliderVal = $("spouseSalarySliderVal");
 
 function formatWon(value) {
   return `${new Intl.NumberFormat("ko-KR").format(Math.round(Number(value || 0)))}원`;
@@ -45,6 +51,24 @@ function formatKoreanAmount(value) {
 
 function formatPercent(value) {
   return `${Math.round(Number(value || 0) * 100)}%`;
+}
+
+// ── 슬라이더 동기화 ───────────────────────────────────────────────────────────
+function syncMySalarySlider() {
+  const val = Math.min(Math.max(Math.round(Number(mySalaryInput.value) || 0), 0), 300_000_000);
+  if (mySalarySlider) mySalarySlider.value = val;
+  if (mySalarySliderVal) mySalarySliderVal.textContent = formatKoreanAmount(val);
+}
+
+function syncSpouseSalarySlider() {
+  const val = Math.min(Math.max(Math.round(Number(spouseSalaryInput.value) || 0), 0), 200_000_000);
+  if (spouseSalarySlider) spouseSalarySlider.value = val;
+  if (spouseSalarySliderVal) spouseSalarySliderVal.textContent = formatKoreanAmount(val);
+}
+
+function updateSalaryHints() {
+  const h1 = $("mySalaryHint");     if (h1) h1.textContent = formatKoreanAmount(mySalaryInput.value);
+  const h2 = $("spouseSalaryHint"); if (h2) h2.textContent = formatKoreanAmount(spouseSalaryInput.value);
 }
 
 function setText(id, value) {
@@ -217,6 +241,70 @@ function renderPositionBars(result) {
   `).join("");
 }
 
+// ── 소득 위치 차트 ─────────────────────────────────────────────────────────────
+let positionChart = null;
+
+function renderPositionChart(result) {
+  const canvas = $("household-position-chart");
+  if (!canvas || !window.Chart) return;
+
+  const labels = ["기준 중위소득", "평균 가구소득", "우리집 소득"];
+  const values = [
+    result.selectedHouseholdMedianIncome,
+    averageHouseholdIncome / 12,
+    result.householdGrossMonthly,
+  ];
+  const bgColors = [
+    "rgba(148,163,184,0.65)",
+    "rgba(148,163,184,0.85)",
+    "rgba(15,110,86,0.88)",
+  ];
+  const borderColors = ["rgba(148,163,184,1)", "rgba(148,163,184,1)", "rgba(15,110,86,1)"];
+  const baseOpts = buildDefaultOptions();
+
+  if (positionChart) {
+    positionChart.data.datasets[0].data = values;
+    positionChart.update("none");
+    return;
+  }
+
+  positionChart = new window.Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: bgColors,
+        borderColor: borderColors,
+        borderWidth: 1.5,
+        borderRadius: 6,
+        barThickness: 26,
+      }],
+    },
+    options: {
+      ...baseOpts,
+      indexAxis: "y",
+      layout: { padding: { right: 72 } },
+      plugins: {
+        ...baseOpts.plugins,
+        legend: { display: false },
+        tooltip: {
+          ...baseOpts.plugins.tooltip,
+          callbacks: { label: (c) => ` ${formatKRW(c.raw)} / 월` },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { callback: (v) => formatKRW(v), font: { size: 10 } },
+          grid: { color: "rgba(0,0,0,0.05)" },
+        },
+        y: { grid: { display: false } },
+      },
+    },
+    plugins: [makeLabelPlugin(formatKRW)],
+  });
+}
+
 function renderBand(result) {
   $("incomeBandCard").innerHTML = `
     <p>${result.band.label}</p>
@@ -249,11 +337,14 @@ function renderRatioCards(result) {
 
 function render() {
   updateHints();
+  updateSalaryHints();
+  syncMySalarySlider();
+  syncSpouseSalarySlider();
   const result = aggregateResults();
   renderSummary(result);
   renderAnnualSummary(result);
   renderMonthlySummary(result);
-  renderPositionBars(result);
+  renderPositionChart(result);
   renderBand(result);
   renderRatioCards(result);
 }
@@ -297,6 +388,19 @@ function resetPage() {
 ].forEach((element) => {
   element?.addEventListener(element.type === "checkbox" ? "change" : "input", render);
   element?.addEventListener("change", render);
+});
+
+// ── 슬라이더 이벤트 ──────────────────────────────────────────────────────────
+mySalarySlider?.addEventListener("input", () => {
+  if (mySalaryInput) mySalaryInput.value = mySalarySlider.value;
+  if (mySalarySliderVal) mySalarySliderVal.textContent = formatKoreanAmount(mySalarySlider.value);
+  render();
+});
+
+spouseSalarySlider?.addEventListener("input", () => {
+  if (spouseSalaryInput) spouseSalaryInput.value = spouseSalarySlider.value;
+  if (spouseSalarySliderVal) spouseSalarySliderVal.textContent = formatKoreanAmount(spouseSalarySlider.value);
+  render();
 });
 
 $("calcHouseholdIncomeBtn")?.addEventListener("click", render);
