@@ -1,4 +1,5 @@
 ﻿import { formatKRW, buildDefaultOptions, makeLabelPlugin } from "./chart-config.js";
+import { readParam, readBool, writeParams } from "./url-state.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -347,6 +348,16 @@ function render() {
   renderPositionChart(result);
   renderBand(result);
   renderRatioCards(result);
+  writeParams({
+    ms:  mySalaryInput?.value      || "",
+    mb:  myBonusInput?.value       || "",
+    ss:  spouseSalaryInput?.value  || "",
+    sb:  spouseBonusInput?.value   || "",
+    oc:  otherAnnualCompInput?.value || "",
+    hs:  householdSizeSelect?.value || "",
+    yr:  targetYearSelect?.value   || "",
+    net: includeNetEstimateToggle?.checked ? "1" : "0",
+  });
 }
 
 function flashButton(button, label) {
@@ -417,4 +428,29 @@ $("copyHouseholdIncomeLinkBtn")?.addEventListener("click", async () => {
   }
 });
 
-resetPage();
+// ── URL 파라미터 복원 후 초기 실행 ────────────────────────────────────────────
+(function applyUrlParams() {
+  const ms  = readParam("ms", "");
+  const mb  = readParam("mb", "");
+  const ss  = readParam("ss", "");
+  const sb  = readParam("sb", "");
+  const oc  = readParam("oc", "");
+  const hs  = readParam("hs", "");
+  const yr  = readParam("yr", "");
+  const net = readParam("net", "");
+  const hasParams = [ms, mb, ss, sb, oc, hs, yr, net].some((v) => v !== "");
+
+  if (hasParams) {
+    if (ms  && mySalaryInput)         mySalaryInput.value         = ms;
+    if (mb  && myBonusInput)          myBonusInput.value          = mb;
+    if (ss  && spouseSalaryInput)     spouseSalaryInput.value     = ss;
+    if (sb  && spouseBonusInput)      spouseBonusInput.value      = sb;
+    if (oc  && otherAnnualCompInput)  otherAnnualCompInput.value  = oc;
+    if (hs  && householdSizeSelect)   householdSizeSelect.value   = hs;
+    if (yr  && targetYearSelect)      targetYearSelect.value      = yr;
+    if (net !== "" && includeNetEstimateToggle) includeNetEstimateToggle.checked = net !== "0";
+    render();
+  } else {
+    resetPage();
+  }
+})();

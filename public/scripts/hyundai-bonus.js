@@ -1,4 +1,10 @@
-﻿const $ = (id) => document.getElementById(id);
+/**
+ * hyundai-bonus.js — 현대자동차 성과금 계산기 (ES 모듈)
+ * Chart.js 4.x UMD (window.Chart) 필요 — CDN <script> 먼저 로드 후 type="module".
+ */
+import { formatKRW, buildDefaultOptions, makeLabelPlugin } from "./chart-config.js";
+
+const $ = (id) => document.getElementById(id);
 
 const configNode = $("hyundaiCompensationConfig");
 
@@ -31,7 +37,6 @@ const spouseSalaryInput = $("spouseSalaryInput");
 const selfMonthlyBaseInput = $("selfMonthlyBaseInput");
 const spouseMonthlyBaseInput = $("spouseMonthlyBaseInput");
 const targetYearSelect = $("targetYearSelect");
-const packageModeSelect = $("packageModeSelect");
 const scenarioSelect = $("scenarioSelect");
 const stockPriceInput = $("stockPriceInput");
 const benefitsInput = $("benefitsInput");
@@ -100,6 +105,10 @@ function getMode() {
   return modeCouple.checked ? "COUPLE" : "SINGLE";
 }
 
+function getPackageMode() {
+  return document.querySelector('input[name="packageMode"]:checked')?.value || "ACTUAL";
+}
+
 function syncRecommendedValues(select, salaryInput, salaryHintId, monthlyInput, monthlyHintId) {
   const preset = rankMap[select.value] || rankPresets[0];
   salaryInput.value = String(preset.defaultSalary);
@@ -108,12 +117,27 @@ function syncRecommendedValues(select, salaryInput, salaryHintId, monthlyInput, 
   setText(monthlyHintId, `추천 월 기본급 예시: ${formatKoreanAmount(preset.defaultMonthlyBase)}`);
 }
 
+function syncSelfSalarySlider() {
+  const val = Math.min(Math.max(Math.round(Number(selfSalaryInput?.value) || 0), 20_000_000), 300_000_000);
+  const slider = $("selfSalarySlider");
+  const valEl  = $("selfSalarySliderVal");
+  if (slider) slider.value = val;
+  if (valEl)  valEl.textContent = formatKoreanAmount(val);
+}
+function syncSpouseSalarySlider() {
+  const val = Math.min(Math.max(Math.round(Number(spouseSalaryInput?.value) || 0), 20_000_000), 300_000_000);
+  const slider = $("spouseSalarySlider");
+  const valEl  = $("spouseSalarySliderVal");
+  if (slider) slider.value = val;
+  if (valEl)  valEl.textContent = formatKoreanAmount(val);
+}
+
 function updateHints() {
   const selfPreset = rankMap[selfRankSelect.value] || rankPresets[0];
   const spousePreset = rankMap[spouseRankSelect.value] || rankPresets[1] || rankPresets[0];
   const mode = getMode();
   const scenario = scenarioMap[scenarioSelect.value] || scenarioPresets[1];
-  const packageMode = packageModeMap[packageModeSelect.value] || packageModes[0];
+  const packageMode = packageModeMap[getPackageMode()] || packageModes[0];
   const stockPrice = toNumber(stockPriceInput);
   const benefits = toNumber(benefitsInput);
 
@@ -130,14 +154,20 @@ function updateHints() {
 function normalizeControls() {
   spouseBlock.hidden = getMode() !== "COUPLE";
 
-  if (targetYearSelect.value !== "2026" && packageModeSelect.value === "ACTUAL") {
-    packageModeSelect.value = "SCENARIO";
+  const actualInput = document.querySelector('input[name="packageMode"][value="ACTUAL"]');
+  const scenarioInput = document.querySelector('input[name="packageMode"][value="SCENARIO"]');
+  const actualChip  = $("packageActualChip");
+  const disable = targetYearSelect.value !== "2026";
+  if (actualInput) actualInput.disabled = disable;
+  if (actualChip) {
+    actualChip.style.opacity = disable ? "0.38" : "1";
+    actualChip.style.pointerEvents = disable ? "none" : "";
+  }
+  if (disable && actualInput?.checked && scenarioInput) {
+    scenarioInput.checked = true;
   }
 
-  const actualOption = packageModeSelect.querySelector('option[value="ACTUAL"]');
-  if (actualOption) actualOption.disabled = targetYearSelect.value !== "2026";
-
-  if (targetYearSelect.value === "2026" && packageModeSelect.value === "ACTUAL") {
+  if (targetYearSelect.value === "2026" && getPackageMode() === "ACTUAL") {
     if (document.activeElement !== bonusMultiplierInput) bonusMultiplierInput.value = String(actualBonusMultiplier);
     if (document.activeElement !== fixedCashInput) fixedCashInput.value = String(actualFixedCash);
     if (document.activeElement !== stockSharesInput) stockSharesInput.value = String(actualStockShares);
@@ -205,9 +235,9 @@ function aggregateResults() {
 function renderSummary(result) {
   const isCouple = result.mode === "COUPLE";
   const scenario = scenarioMap[scenarioSelect.value] || scenarioPresets[1];
-  const subtitle = targetYearSelect.value === "2026" && packageModeSelect.value === "ACTUAL"
+  const subtitle = targetYearSelect.value === "2026" && getPackageMode() === "ACTUAL"
     ? "2026 실제 패키지 기준"
-    : `${targetYearSelect.value} ${scenario.label} 시나리오`;
+    : `${targetYearSelect.value} ${scenarioMap[scenarioSelect.value]?.label || ""} 시나리오`;
 
   setText("resultHeadline", isCouple ? "부부 총보상 핵심 카드" : "개인 총보상 핵심 카드");
   setText("resultSubcopy", subtitle);
@@ -293,23 +323,22 @@ function renderRankMatrix() {
 
 function renderScenarioYears() {
   const currentYear = targetYearSelect.value;
-  const savedYear = targetYearSelect.value;
-  const savedPackageMode = packageModeSelect.value;
-  const savedScenario = scenarioSelect.value;
-
   $("scenarioYearGrid").innerHTML = yearOptions.map((year) => {
+    const savedYear = targetYearSelect.value;
     targetYearSelect.value = year.code;
-    if (year.code === "2026") {
-      packageModeSelect.value = "ACTUAL";
-    } else {
-      packageModeSelect.value = "SCENARIO";
+    const actualInput2 = document.querySelector('input[name="packageMode"][value="ACTUAL"]');
+    const scenarioInput2 = document.querySelector('input[name="packageMode"][value="SCENARIO"]');
+    const wasActualChecked = actualInput2?.checked;
+    if (year.code !== "2026" && actualInput2?.checked && scenarioInput2) {
+      scenarioInput2.checked = true;
     }
-
-    normalizeControls();
-    const rerun = aggregateResults();
-    const total = rerun.totals.totalComp;
-    const note = year.code === "2026" ? "실제 기준" : `${(scenarioMap[scenarioSelect.value] || scenarioPresets[1]).label} 시뮬레이션`;
-
+    const r = aggregateResults();
+    const total = r.totals.totalComp;
+    const note = year.code === "2026" && getPackageMode() === "ACTUAL" ? "실제 기준" : "시뮬레이션";
+    targetYearSelect.value = savedYear;
+    if (wasActualChecked && actualInput2 && scenarioInput2) {
+      actualInput2.checked = true;
+    }
     return `
       <article class="scenario-year-card${currentYear === year.code ? " is-active" : ""}">
         <p>${year.label}</p>
@@ -318,11 +347,132 @@ function renderScenarioYears() {
       </article>
     `;
   }).join("");
+}
 
-  targetYearSelect.value = savedYear;
-  packageModeSelect.value = savedPackageMode;
-  scenarioSelect.value = savedScenario;
-  normalizeControls();
+let _hyundaiDonutChart = null;
+function renderDonutChart(totals) {
+  const canvas = $("hyundai-donut-chart");
+  if (!canvas || !window.Chart) return;
+  const data = [
+    totals.annualSalary,
+    totals.bonus,
+    totals.cash + totals.giftValue,
+    totals.stockValue,
+    totals.benefitsAmount,
+  ];
+  const labels = ["연봉", "성과금", "정액현금·상품권", "자사주", "복지"];
+  const colors = [
+    "rgba(148,163,184,0.80)",
+    "rgba(15,110,86,0.82)",
+    "rgba(186,117,23,0.78)",
+    "rgba(99,102,241,0.75)",
+    "rgba(83,74,183,0.60)",
+  ];
+  if (_hyundaiDonutChart) { _hyundaiDonutChart.destroy(); _hyundaiDonutChart = null; }
+  const total = data.reduce((a, b) => a + b, 0);
+  const centerPlugin = {
+    id: "hyundaiDonutCenter",
+    afterDraw(chart) {
+      const { ctx, chartArea: { left, right, top, bottom } } = chart;
+      const cx = (left + right) / 2, cy = (top + bottom) / 2;
+      ctx.save();
+      ctx.font = "700 13px sans-serif";
+      ctx.fillStyle = "#475569";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("총보상", cx, cy - 11);
+      ctx.font = "700 16px sans-serif";
+      ctx.fillStyle = "#0f172a";
+      ctx.fillText(formatKoreanAmount(total), cx, cy + 11);
+      ctx.restore();
+    }
+  };
+  _hyundaiDonutChart = new window.Chart(canvas.getContext("2d"), {
+    type: "doughnut",
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 1, borderColor: "#fff" }] },
+    options: { ...buildDefaultOptions(), cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } } },
+    plugins: [centerPlugin],
+  });
+}
+
+let _hyundaiRankChart = null;
+function renderRankChart() {
+  const canvas = $("hyundai-rank-chart");
+  if (!canvas || !window.Chart) return;
+  const currentSalary = Number(selfSalaryInput?.value || 0);
+  const items = rankPresets.map((rank) => {
+    const row = calculatePerson(rank.defaultSalary, rank.defaultMonthlyBase);
+    const isCurrent = Math.abs(rank.defaultSalary - currentSalary) < 5_000_000;
+    return { label: rank.label, total: row.totalComp, isCurrent };
+  });
+  const bgColors = items.map((it) => it.isCurrent ? "rgba(15,110,86,0.88)" : "rgba(148,163,184,0.60)");
+  if (_hyundaiRankChart) { _hyundaiRankChart.destroy(); _hyundaiRankChart = null; }
+  _hyundaiRankChart = new window.Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: items.map((it) => it.label),
+      datasets: [{ label: "총보상", data: items.map((it) => it.total), backgroundColor: bgColors, borderRadius: 4 }],
+    },
+    options: {
+      ...buildDefaultOptions(),
+      indexAxis: "y",
+      layout: { padding: { right: 84 } },
+      plugins: { legend: { display: false } },
+      scales: { x: { display: false }, y: { grid: { display: false } } },
+    },
+    plugins: [makeLabelPlugin(formatKoreanAmount)],
+  });
+}
+
+let _hyundaiScenarioChart = null;
+function renderScenarioChart(result) {
+  const canvas = $("hyundai-scenario-chart");
+  if (!canvas || !window.Chart) return;
+  const years = yearOptions.map((year) => {
+    const savedYear = targetYearSelect.value;
+    targetYearSelect.value = year.code;
+    const actualInput2 = document.querySelector('input[name="packageMode"][value="ACTUAL"]');
+    const scenarioInput2 = document.querySelector('input[name="packageMode"][value="SCENARIO"]');
+    const wasActualChecked = actualInput2?.checked;
+    if (year.code !== "2026" && actualInput2?.checked && scenarioInput2) {
+      scenarioInput2.checked = true;
+    }
+    const r = aggregateResults();
+    targetYearSelect.value = savedYear;
+    if (wasActualChecked && actualInput2 && scenarioInput2) {
+      actualInput2.checked = true;
+    }
+    return {
+      label: year.label,
+      salary: r.totals.annualSalary,
+      bonus: r.totals.bonus,
+      cash: r.totals.cash + r.totals.giftValue,
+      stock: r.totals.stockValue,
+      benefits: r.totals.benefitsAmount,
+    };
+  });
+  if (_hyundaiScenarioChart) { _hyundaiScenarioChart.destroy(); _hyundaiScenarioChart = null; }
+  _hyundaiScenarioChart = new window.Chart($("hyundai-scenario-chart").getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: years.map((y) => y.label),
+      datasets: [
+        { label: "연봉",        data: years.map((y) => y.salary),   backgroundColor: "rgba(148,163,184,0.75)", stack: "s" },
+        { label: "성과금",      data: years.map((y) => y.bonus),    backgroundColor: "rgba(15,110,86,0.80)",  stack: "s" },
+        { label: "현금·상품권", data: years.map((y) => y.cash),     backgroundColor: "rgba(186,117,23,0.75)", stack: "s" },
+        { label: "자사주",      data: years.map((y) => y.stock),    backgroundColor: "rgba(99,102,241,0.75)", stack: "s" },
+        { label: "복지",        data: years.map((y) => y.benefits), backgroundColor: "rgba(83,74,183,0.60)",  stack: "s" },
+      ],
+    },
+    options: {
+      ...buildDefaultOptions(),
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, ticks: { callback: (v) => formatKRW(v) } },
+      },
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } },
+    },
+  });
 }
 
 function renderComparisons(result) {
@@ -343,10 +493,15 @@ function renderComparisons(result) {
 
 function render() {
   normalizeControls();
+  syncSelfSalarySlider();
+  syncSpouseSalarySlider();
   const result = aggregateResults();
   renderSummary(result);
   renderSummaryReport(result);
   renderNetReport(result);
+  renderDonutChart(result.totals);
+  renderRankChart();
+  renderScenarioChart(result);
   renderRankMatrix();
   renderScenarioYears();
   renderComparisons(result);
@@ -368,7 +523,8 @@ function resetPage() {
   syncRecommendedValues(selfRankSelect, selfSalaryInput, "selfSalaryHint", selfMonthlyBaseInput, "selfMonthlyBaseHint");
   syncRecommendedValues(spouseRankSelect, spouseSalaryInput, "spouseSalaryHint", spouseMonthlyBaseInput, "spouseMonthlyBaseHint");
   targetYearSelect.value = "2026";
-  packageModeSelect.value = "ACTUAL";
+  const pkgActual = document.querySelector('input[name="packageMode"][value="ACTUAL"]');
+  if (pkgActual) pkgActual.checked = true;
   scenarioSelect.value = "BASE";
   stockPriceInput.value = String(defaultStockPrice);
   benefitsInput.value = String(defaultBenefits);
@@ -400,7 +556,6 @@ function resetPage() {
   selfMonthlyBaseInput,
   spouseMonthlyBaseInput,
   targetYearSelect,
-  packageModeSelect,
   scenarioSelect,
   stockPriceInput,
   benefitsInput,
@@ -416,6 +571,20 @@ function resetPage() {
 ].forEach((element) => {
   element?.addEventListener(element.type === "checkbox" || element.type === "radio" ? "change" : "input", render);
   element?.addEventListener("change", render);
+});
+
+$("selfSalarySlider")?.addEventListener("input", () => {
+  if (selfSalaryInput) selfSalaryInput.value = $("selfSalarySlider").value;
+  syncSelfSalarySlider();
+  render();
+});
+$("spouseSalarySlider")?.addEventListener("input", () => {
+  if (spouseSalaryInput) spouseSalaryInput.value = $("spouseSalarySlider").value;
+  syncSpouseSalarySlider();
+  render();
+});
+document.querySelectorAll('input[name="packageMode"]').forEach((radio) => {
+  radio.addEventListener("change", render);
 });
 
 $("calcHyundaiBonusBtn")?.addEventListener("click", render);

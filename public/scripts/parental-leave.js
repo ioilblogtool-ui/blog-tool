@@ -3,6 +3,7 @@
  * Chart.js 4.x UMD (window.Chart) 필요 — CDN <script> 먼저 로드 후 type="module".
  */
 import { formatKRW, buildDefaultOptions } from "./chart-config.js";
+import { readParam, readBool, writeParams } from "./url-state.js";
 
 const $ = (id) => document.getElementById(id);
 const setText = (id, val) => { const el = $(id); if (el) el.textContent = val; };
@@ -203,6 +204,18 @@ function renderLeave() {
   // 차트
   renderCashFlowChart(beforeNet, leaveMonthlyIncome, afterInfo.monthlyNet);
   updateHints();
+
+  // URL 상태 저장
+  writeParams({
+    bn:  $("leaveBeforeNet")?.value          || "",
+    aa:  $("leaveAfterAnnual")?.value        || "",
+    mi:  $("leaveMonthlyIncome")?.value      || "",
+    lm:  $("leaveMonths")?.value             || "",
+    rp:  $("leaveRetirementPayout")?.value   || "",
+    lb:  $("leaveBonus")?.value              || "",
+    lp:  $("leaveAnnualLeavePay")?.value     || "",
+    ib:  includeBonus ? "1" : "0",
+  });
 }
 
 // ── 이벤트 바인딩 ─────────────────────────────────────────────────────────────
@@ -239,5 +252,30 @@ $("copyLeaveLinkBtn")?.addEventListener("click", async () => {
   }
 });
 
-// ── 초기 실행 ─────────────────────────────────────────────────────────────────
+// ── URL 파라미터 복원 후 초기 실행 ────────────────────────────────────────────
+(function applyUrlParams() {
+  const bn = readParam("bn", "");
+  const aa = readParam("aa", "");
+  const mi = readParam("mi", "");
+  const lm = readParam("lm", "");
+  const rp = readParam("rp", "");
+  const lb = readParam("lb", "");
+  const lp = readParam("lp", "");
+  const ib = readParam("ib", "");
+  const hasParams = [bn, aa, mi, lm, rp, lb, lp, ib].some((v) => v !== "");
+
+  if (hasParams) {
+    const set = (id, val) => { const el = $(id); if (el && val) el.value = val; };
+    set("leaveBeforeNet",        bn);
+    set("leaveAfterAnnual",      aa);
+    set("leaveMonthlyIncome",    mi);
+    set("leaveMonths",           lm);
+    set("leaveRetirementPayout", rp);
+    set("leaveBonus",            lb);
+    set("leaveAnnualLeavePay",   lp);
+    const ibEl = $("leaveIncludeBonus");
+    if (ib !== "" && ibEl) ibEl.checked = ib !== "0";
+  }
+})();
+
 renderLeave();
