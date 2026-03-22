@@ -54,6 +54,67 @@
 - PC에서는 상단 2컬럼, 하단 전체폭 구조를 사용한다.
 - 모바일에서는 상단과 하단이 자연스럽게 1열로 이어진다.
 
+## 디자인 토큰
+정의 위치: `src/styles/scss/_tokens.scss` → CSS Custom Properties로 선언 → JS에서도 `getComputedStyle`로 접근 가능.
+
+### 브랜드 컬러
+| 토큰 | 값 | 용도 |
+|------|----|------|
+| `--color-brand-primary` | `#0F6E56` | 메인 CTA, 주요 강조 |
+| `--color-brand-mid` | `#1D9E75` | hover, 보조 강조 |
+| `--color-brand-tint` | `#E1F5EE` | 배경 tint, 배지 배경 |
+| `--color-accent` | `#534AB7` | 리포트 페이지 전용 강조 |
+| `--color-accent-tint` | `rgba(83,74,183,0.10)` | accent 배지 배경 |
+| `--color-warning` | `#BA7517` | 추정값 배지, 주의 표시 |
+| `--color-warning-tint` | `rgba(186,117,23,0.12)` | warning 배지 배경 |
+
+### 반경
+| 토큰 | 값 | 용도 |
+|------|----|------|
+| `--radius-card` | `12px` | 일반 카드 / 패널 |
+| `--radius-btn` | `8px` | 버튼 |
+| `--radius-chip` | `20px` | 배지 / 칩 |
+
+---
+
+## 버튼 컴포넌트
+`_legacy.scss`에서 토큰 기반으로 통일. 하드코딩 금지.
+
+| 클래스 | 배경 | 텍스트/보더 |
+|--------|------|------------|
+| `.button--primary` | `linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-mid))` | white |
+| `.button--secondary` | `#fff` | `var(--color-brand-primary)`, border 동일 |
+| `.button--ghost` | transparent | muted |
+
+---
+
+## 배지 시스템 (tool-badge)
+배지 색상은 `data-badge` 속성으로 제어한다. 클래스 분기 없이 CSS 속성 선택자만 쓴다.
+
+**HTML**
+```html
+<span class="tool-badge" data-badge="신규">신규</span>
+<span class="tool-badge" data-badge="추천">추천</span>
+<span class="tool-badge" data-badge="대표">대표</span>
+```
+
+**CSS 분류 기준**
+| data-badge | 배경 | 텍스트 | 의미 |
+|-----------|------|--------|------|
+| `신규` | `--color-brand-tint` | `--color-brand-primary` | 새로 추가된 도구 |
+| `추천` | `--color-warning-tint` | `--color-warning` | 편집부 추천 |
+| `대표` | `--color-accent-tint` | `--color-accent` | 카테고리 대표 도구 |
+
+기본값(속성 없음)은 brand-tint + brand-primary.
+
+---
+
+## breakdown-chip
+배지와 동일한 반경 토큰 사용: `border-radius: var(--radius-chip, 20px)`.
+`--radius-md` 같은 별개 변수 금지.
+
+---
+
 ## 스타일 레이어
 ### 1. Legacy Layer
 - 기존 `app.scss`와 `scss/_legacy.scss`에서 안정적으로 쓰이던 토큰, 카드, 버튼, 입력, 테이블 스타일을 보존한다.
@@ -80,6 +141,7 @@
 - `src/styles/scss/pages/_bonus-simulator.scss`: 성과급 시뮬레이터 전용 조정
 - `src/styles/scss/pages/_single-parental-leave-total.scss`: 한 명만 육아휴직 총수령액 페이지 조정
 - `src/styles/scss/pages/_six-plus-six.scss`: 6+6 페이지 조정
+- `src/styles/scss/pages/_sk-hynix-bonus.scss`: SK하이닉스 성과급 계산기 전용 조정 (차트 래퍼, 슬라이더, 라디오칩 포함)
 
 ## 적용 상태
 - `salary`: simple calculator 템플릿 적용 완료
@@ -90,8 +152,11 @@
 - `parental-leave-pay`: timeline calculator 템플릿 적용 완료
 - `birth-support-total`: timeline calculator 템플릿 적용 완료
 - `six-plus-six`: comparison calculator 템플릿 2차 적용 완료
+- `sk-hynix-bonus`: Chart.js 3종 차트, 연봉 슬라이더, 라디오칩 PS 방식 적용 완료
 
 ## 다음 대상
+- `samsung-bonus`: sk-hynix-bonus 패턴 동일 적용 (차트·슬라이더)
+- `hyundai-bonus`: sk-hynix-bonus 패턴 동일 적용 (차트·슬라이더)
 - `parental-leave`: simple 또는 timeline 후보 재분류
 - `tools/index`: 템플릿 분류 기반 카드 정보 강화
 - 공통 detail-box / table mobile 패턴 추가 정리
