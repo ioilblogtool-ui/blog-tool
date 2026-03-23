@@ -433,7 +433,7 @@ function render() {
     .join("");
 
   setText("insightText", insight.body);
-  setText("shareCopy", insight.share);
+  setText("insightHeading", insight.share);
   $("companyNotes").innerHTML = company.notes.map((line) => `<p class="note-chip">${line}</p>`).join("");
 
   renderScenarioCards(company, annualSalary, monthlyBase, presetKey, includeStock);

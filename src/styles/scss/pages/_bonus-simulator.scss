@@ -1,100 +1,257 @@
-﻿// ── [STEP 3] 3사 비교 가로 바 차트 래퍼 ────────────────────────────────────
-// 높이 120px 고정: 3개 항목 × ~40px (Chart.js responsive: true + maintainAspectRatio: false)
-// margin-bottom으로 아래 compare-list와 자연스럽게 구분
-.bonus-compare-chart-wrap {
-  position: relative;
-  height: 120px;
-  margin-bottom: 12px;
-}
+// ── 성과급 시뮬레이터 페이지 ────────────────────────────────────────────────
 
-// ── 레이아웃 그리드 ───────────────────────────────────────────────────────────
-.bonus-dashboard-layout,
-.bonus-main-grid,
-.bonus-projection-grid,
-.bonus-secondary-grid,
-.bonus-detail-grid {
+// ── 전체 레이아웃 ──────────────────────────────────────────────────────────
+.bs-layout {
   display: grid;
   gap: 16px;
 }
 
-.bonus-dashboard-layout__aside,
-.bonus-dashboard-layout__main {
-  display: grid;
-  gap: 16px;
-  align-content: start;
-}
-
-.bonus-primary-strip .metrics--four,
-.bonus-projection-grid,
-.bonus-main-grid,
-.bonus-secondary-grid,
-.bonus-detail-grid {
-  grid-template-columns: 1fr;
-}
-
-.bonus-page .panel-heading {
+// ── 입력 panel ────────────────────────────────────────────────────────────
+.bs-input-panel .panel-heading {
   grid-template-columns: 1fr;
   align-items: start;
 }
 
-.bonus-page .panel-heading__summary {
+.bs-input-panel .panel-heading__summary {
   text-align: left;
   max-width: none;
 }
 
-.bonus-page .bonus-input-panel .panel-heading {
+// ── KPI strip ─────────────────────────────────────────────────────────────
+.bs-kpi-strip .metrics--four {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+// ── 3개년 흐름 ────────────────────────────────────────────────────────────
+.bs-projection-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.bs-projection-row .metric-card strong {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+// ── 3사 비교 ──────────────────────────────────────────────────────────────
+.bs-compare-chart-wrap {
+  position: relative;
+  height: 160px;
+  margin-bottom: 14px;
+}
+
+.bs-compare-panel .panel-heading {
   grid-template-columns: 1fr;
+  align-items: start;
 }
 
-.bonus-page .bonus-focus-card strong,
-.bonus-page .result-summary-card strong,
-.bonus-page .breakdown-chip strong {
-  font-size: clamp(1.18rem, 4vw, 1.6rem);
+// compare-list 행
+.compare-item {
+  display: grid;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid #F0EFED;
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
-.bonus-page .scenario-grid {
+.compare-item__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  strong {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1A1A18;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A18;
+  }
+}
+
+.compare-item__bar {
+  height: 6px;
+  background: #F2F1EF;
+  border-radius: 4px;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+}
+
+.compare-item--SAMSUNG  .compare-item__bar span { background: #1D9E75; }
+.compare-item--SKHYNIX  .compare-item__bar span { background: #534AB7; }
+.compare-item--HYUNDAI  .compare-item__bar span { background: #BA7517; }
+
+.compare-item__meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: #888780;
+}
+
+// ── 결론 + 시나리오 ────────────────────────────────────────────────────────
+.bs-insight-row {
+  display: grid;
+  gap: 12px;
+}
+
+.bs-insight-row .result-summary-card {
+  height: 100%;
+
+  strong {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  span {
+    font-size: 12px;
+    color: #5F5E5A;
+    line-height: 1.6;
+    display: block;
+    margin-top: 6px;
+  }
+}
+
+.bs-scenario-panel .panel-heading {
   grid-template-columns: 1fr;
+  align-items: start;
 }
 
-.bonus-page .bonus-detail-box {
-  margin-top: 0;
+.bs-scenario-panel .panel-heading__summary {
+  text-align: left;
+  max-width: none;
+}
+
+// 시나리오 카드 그리드
+.bs-scenario-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.scenario-card {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #CECDCA;
+  background: #FFFFFF;
+  transition: border-color 0.15s;
+
+  &.is-active {
+    border-color: #1D9E75;
+    border-width: 1.5px;
+    background: #F7FDF9;
+  }
+}
+
+.scenario-card__label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #888780;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 4px;
+}
+
+.scenario-card strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  color: #1A1A18;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.scenario-card span {
+  font-size: 11px;
+  color: #888780;
+}
+
+// ── 세부 항목 breakdown ────────────────────────────────────────────────────
+.bs-breakdown-section {
+  margin-bottom: 14px;
+}
+
+.bs-breakdown-label {
+  font-size: 11px;
+  color: #888780;
+  margin: 0 0 10px;
+}
+
+// breakdown-chip (공통 재사용 — legacy에서 가져옴)
+.breakdown-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.breakdown-chip {
+  padding: 10px 12px;
+  background: #F7F6F4;
+  border-radius: 8px;
+
+  span {
+    display: block;
+    font-size: 10px;
+    color: #888780;
+    margin-bottom: 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1;
+  }
+}
+
+// ── 반응형 ────────────────────────────────────────────────────────────────
+@media (max-width: 479px) {
+  .bs-projection-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (min-width: 560px) {
-  .bonus-primary-strip .metrics--four,
-  .bonus-projection-grid,
-  .bonus-page .scenario-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .bs-kpi-strip .metrics--four {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .bs-scenario-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .bs-insight-row {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
   }
 }
 
 @media (min-width: 1024px) {
-  .bonus-dashboard-layout {
-    grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
-    align-items: start;
-    gap: 22px;
+  .bs-layout {
+    gap: 20px;
   }
 
-  .bonus-main-grid,
-  .bonus-secondary-grid,
-  .bonus-detail-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
-  }
-
-  .bonus-projection-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .bonus-primary-strip .metrics--four {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .bonus-page .scenario-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .bonus-page .bonus-focus-card strong {
-    font-size: 1.45rem;
+  .bs-compare-chart-wrap {
+    height: 180px;
   }
 }
