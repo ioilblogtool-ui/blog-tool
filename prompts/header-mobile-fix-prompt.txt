@@ -1,0 +1,262 @@
+src/components/SiteHeader.astro 와 관련 SCSS를 아래 스펙으로 수정해줘.
+
+## 작업 1 — 로고 SVG 추가 + 헤더 높이 68px
+
+site-logo 링크 안에 SVG 심볼을 텍스트 앞에 추가:
+
+<a class="site-logo" href={withBase("/")}>
+  <svg class="site-logo__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <rect x="2" y="2" width="9" height="9" rx="2" fill="#1D9E75"/>
+    <rect x="13" y="2" width="9" height="9" rx="2" fill="none" stroke="#1D9E75" stroke-width="1.2"/>
+    <rect x="2" y="13" width="9" height="9" rx="2" fill="none" stroke="#1D9E75" stroke-width="1.2"/>
+    <rect x="13" y="13" width="9" height="9" rx="2" fill="#0F6E56"/>
+    <line x1="15.5" y1="17.5" x2="19.5" y2="17.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="17.5" y1="15.5" x2="17.5" y2="19.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <span class="site-logo__text">비교계산소</span>
+</a>
+
+SCSS 추가:
+.site-logo
+  display: flex
+  align-items: center
+  gap: 8px
+  text-decoration: none
+
+.site-logo__icon
+  flex-shrink: 0
+  display: block
+
+.site-logo__text
+  font-size: 15px
+  font-weight: 500
+  color: var(--color-text-primary)
+  letter-spacing: -0.02em
+
+헤더 높이:
+.site-header         height: 68px
+.site-header.is-scrolled  height: 56px
+
+
+## 작업 2 — 모바일 메뉴 가시성 전면 수정
+
+### 문제
+모바일 메뉴가 열렸을 때 링크 텍스트가 흐려서 안 보임.
+배경색과 텍스트 색상 대비가 너무 낮은 것이 원인.
+
+### HTML 수정
+모바일 메뉴 영역 전체를 아래처럼 수정:
+
+<div class="site-header__mobile-menu" id="mobile-menu" aria-hidden="true">
+  <div class="site-header__mobile-inner">
+
+    <div class="site-header__mobile-section">
+      <p class="site-header__mobile-label">계산기</p>
+      <div class="site-header__mobile-links">
+        <a href={withBase("/tools/salary/")}>
+          <span>연봉 인상 계산기</span>
+          <span class="site-header__mobile-cat">연봉·이직</span>
+        </a>
+        <a href={withBase("/tools/negotiation/")}>
+          <span>이직 계산기</span>
+          <span class="site-header__mobile-cat">연봉·이직</span>
+        </a>
+        <a href={withBase("/tools/retirement/")}>
+          <span>퇴직금 계산기</span>
+          <span class="site-header__mobile-cat">연봉·이직</span>
+        </a>
+        <a href={withBase("/tools/household-income/")}>
+          <span>가구 소득 계산기</span>
+          <span class="site-header__mobile-badge">신규</span>
+        </a>
+        <a href={withBase("/tools/bonus-simulator/")}>
+          <span>성과급 시뮬레이터</span>
+          <span class="site-header__mobile-cat">성과급</span>
+        </a>
+        <a href={withBase("/tools/samsung-bonus/")}>
+          <span>삼성전자 성과급</span>
+          <span class="site-header__mobile-cat">성과급</span>
+        </a>
+        <a href={withBase("/tools/parental-leave/")}>
+          <span>육아휴직 계산기</span>
+          <span class="site-header__mobile-cat">육아휴직</span>
+        </a>
+        <a href={withBase("/tools/single-parental-leave-total/")}>
+          <span>한 명만 육아휴직</span>
+          <span class="site-header__mobile-badge site-header__mobile-badge--rec">추천</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="site-header__mobile-section">
+      <p class="site-header__mobile-label">리포트</p>
+      <div class="site-header__mobile-links">
+        <a href={withBase("/reports/korea-rich-top10-assets/")}>
+          <span>한국 부자 TOP 10</span>
+        </a>
+        <a href={withBase("/reports/us-rich-top10-patterns/")}>
+          <span>미국 부자 TOP 10</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="site-header__mobile-section">
+      <p class="site-header__mobile-label">사이트</p>
+      <div class="site-header__mobile-links">
+        <a href={withBase("/about/")}><span>소개</span></a>
+        <a href={withBase("/contact/")}><span>문의</span></a>
+      </div>
+    </div>
+
+    <a class="site-header__mobile-cta" href={withBase("/tools/")}>
+      전체 계산기 보기 →
+    </a>
+
+  </div>
+</div>
+
+### SCSS 수정 — 모바일 메뉴 전면 교체
+
+.site-header__mobile-menu
+  display: none
+  position: absolute
+  top: 100%
+  left: 0
+  right: 0
+  z-index: 99
+  background: #ffffff          ← 흰색 고정 (투명/변수 사용 금지)
+  border-bottom: 1px solid #E5E5E3
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08)
+
+  &.is-open
+    display: block
+
+  @media (min-width: 769px)
+    display: none !important
+
+.site-header__mobile-inner
+  padding: 16px 20px 20px
+  max-height: calc(100vh - 68px)
+  overflow-y: auto
+
+.site-header__mobile-section
+  margin-bottom: 20px
+  padding-bottom: 16px
+  border-bottom: 1px solid #F0EFED
+
+  &:last-of-type
+    border-bottom: none
+    margin-bottom: 12px
+
+.site-header__mobile-label
+  font-size: 10px
+  font-weight: 600                ← 굵게
+  color: #888780
+  letter-spacing: 0.08em
+  text-transform: uppercase
+  margin-bottom: 8px
+
+.site-header__mobile-links
+  display: flex
+  flex-direction: column
+  gap: 0
+
+  a
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 10px 0              ← 충분한 터치 영역
+    border-bottom: 1px solid #F7F6F4
+    text-decoration: none
+    transition: background 0.1s
+
+    &:last-child
+      border-bottom: none
+
+    &:active
+      background: #F7F6F4
+
+    span:first-child              ← 링크 텍스트
+      font-size: 15px             ← 크게 (가시성 핵심)
+      font-weight: 500
+      color: #2C2C2A              ← 진한 색 고정 (변수 사용 금지)
+      line-height: 1.4
+
+.site-header__mobile-cat
+  font-size: 10px
+  color: #B4B2A9
+  font-weight: 400
+  flex-shrink: 0
+  margin-left: 8px
+
+.site-header__mobile-badge
+  font-size: 9px
+  font-weight: 500
+  color: #0F6E56
+  background: #E1F5EE
+  padding: 2px 6px
+  border-radius: 8px
+  flex-shrink: 0
+  margin-left: 8px
+
+  &--rec
+    color: #534AB7
+    background: #EEEDFE
+
+.site-header__mobile-cta
+  display: block
+  text-align: center
+  font-size: 14px
+  font-weight: 500
+  color: #0F6E56                  ← 진한 색 고정
+  border: 1.5px solid #1D9E75
+  padding: 12px
+  border-radius: 8px
+  text-decoration: none
+  margin-top: 4px
+
+  &:active
+    background: #E1F5EE
+
+
+## 작업 3 — 모바일 메뉴 오버레이 (선택)
+메뉴 열릴 때 뒤 배경 어둡게 처리:
+
+HTML: <header> 다음에 추가
+<div class="site-header__overlay" id="menu-overlay" aria-hidden="true"></div>
+
+SCSS:
+.site-header__overlay
+  display: none
+  position: fixed
+  inset: 0
+  background: rgba(0,0,0,0.3)
+  z-index: 98
+  &.is-open
+    display: block
+
+JS 수정 (기존 햄버거 토글에 오버레이 추가):
+const overlay = document.getElementById('menu-overlay')
+
+hamburger?.addEventListener('click', () => {
+  const isOpen = hamburger.classList.toggle('is-open')
+  hamburger.setAttribute('aria-expanded', String(isOpen))
+  mobileMenu?.classList.toggle('is-open', isOpen)
+  mobileMenu?.setAttribute('aria-hidden', String(!isOpen))
+  overlay?.classList.toggle('is-open', isOpen)   ← 추가
+})
+
+// 오버레이 클릭 시 메뉴 닫기
+overlay?.addEventListener('click', () => {
+  hamburger?.classList.remove('is-open')
+  hamburger?.setAttribute('aria-expanded', 'false')
+  mobileMenu?.classList.remove('is-open')
+  mobileMenu?.setAttribute('aria-hidden', 'true')
+  overlay?.classList.remove('is-open')
+})
+
+
+## 유지할 것
+- withBase 로직 완전 유지
+- PC 드롭다운 / 스크롤 is-scrolled 로직 유지
+- npm run build 통과 확인

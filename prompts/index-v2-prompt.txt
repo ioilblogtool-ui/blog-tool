@@ -1,0 +1,531 @@
+src/pages/index.astro 를 아래 스펙으로 전면 수정해줘.
+
+## 현재 코드
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const toToolPath = (tool) => tool.data.slug ?? tool.id.replace(/\.md$/, "");
+const tools = (await getCollection("tools")).sort((a, b) => a.data.order - b.data.order);
+const featured = tools.slice(0, 4);
+---
+
+## frontmatter 수정
+
+기존 로직 유지하면서 아래 추가:
+
+// 전체 카운트
+const toolCount = tools.length;
+
+// 카테고리 unique 추출
+const categories = [...new Set(tools.map((t) => t.data.eyebrow).filter(Boolean))];
+
+// 리포트 (없으면 빈 배열)
+let reports = [];
+try { reports = await getCollection("reports"); } catch { reports = []; }
+const reportCount = reports.length || 2;
+
+// featured: data.featured === true 우선, 없으면 slice(0,4)
+const showcaseTools = tools.filter((t) => t.data.featured).slice(0, 4);
+const finalShowcase = showcaseTools.length >= 2 ? showcaseTools : tools.slice(0, 4);
+
+// BaseLayout title/description 수정
+// title: "비교계산소 — 연봉·성과급·육아휴직 계산기"
+// description: "연봉, 퇴직금, 성과급, 육아휴직처럼 자주 확인하는 수치를 빠르게 계산하고 비교할 수 있도록 정리한 정보형 계산 사이트입니다."
+
+// trustLinks 배열 추가
+const trustLinks = [
+  { href: withBase("/about/"),      title: "비교계산소 소개",    desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
+  { href: withBase("/privacy/"),    title: "개인정보처리방침",   desc: "쿠키·외부 서비스·수집 정보 처리 원칙" },
+  { href: withBase("/contact/"),    title: "문의 안내",          desc: "오류 제보·기능 제안·제휴 문의 범위" },
+  { href: withBase("/disclaimer/"), title: "이용안내 및 면책",   desc: "결과 해석 방법과 실제 지급액 차이 안내" },
+];
+
+
+## HTML 구조 (섹션 순서대로)
+
+---
+
+### ① hero 섹션
+class: hero hero--home (기존 유지)
+
+<section class="hero hero--home">
+  <p class="hero__eyebrow">비교계산소</p>
+  <h1 class="hero__title">세상의 궁금한 숫자,<br>한 번에 비교 계산하세요</h1>
+  <p class="hero__description">연봉·성과급·육아휴직·출산지원금까지 자주 보는 숫자를 빠르게 계산하고 비교합니다.</p>
+  <div class="home-actions">
+    <a class="button button--primary" href={withBase("/tools/")}>운영 중인 계산기 보기</a>
+  </div>
+</section>
+
+---
+
+### ② stats 섹션
+class: home-stats
+
+<section class="home-stats">
+  <div class="home-stats__card home-stats__card--hl">
+    <p class="home-stats__num">{toolCount}</p>
+    <p class="home-stats__label">운영 중 계산기</p>
+    <p class="home-stats__source">계속 추가 중</p>
+  </div>
+  <div class="home-stats__card">
+    <p class="home-stats__num">{categories.length}</p>
+    <p class="home-stats__label">카테고리</p>
+    <p class="home-stats__source">{categories.slice(0,2).join("·")} 등</p>
+  </div>
+  <div class="home-stats__card">
+    <p class="home-stats__num">{reportCount}</p>
+    <p class="home-stats__label">비교 리포트</p>
+    <p class="home-stats__source">인터랙티브 리포트</p>
+  </div>
+</section>
+
+---
+
+### ③ 추천 계산기 섹션
+class: home-section
+
+<section class="home-section">
+  <div class="home-section__head">
+    <h2>처음이라면 여기부터</h2>
+  </div>
+  <div class="home-showcase">
+    {finalShowcase.map((tool, i) => (
+      <a
+        class={`home-tool-card${i === 0 ? " home-tool-card--feat" : ""}`}
+        href={withBase(`/tools/${toToolPath(tool)}/`)}
+      >
+        <p class="home-tool-card__cat">{tool.data.eyebrow ?? "도구"}</p>
+        <h3 class="home-tool-card__title">{tool.data.title}</h3>
+        {tool.data.tags && (
+          <div class="home-tool-card__chips">
+            {tool.data.tags.slice(0,3).map((tag) => (
+              <span class="home-tool-card__chip">{tag}</span>
+            ))}
+          </div>
+        )}
+        <p class="home-tool-card__desc">{tool.data.description}</p>
+      </a>
+    ))}
+  </div>
+</section>
+
+---
+
+### ④ 전체 계산기 섹션
+class: home-section
+
+<section class="home-section">
+  <div class="home-section__head">
+    <h2>전체 계산기 <span class="home-section__count">{toolCount}개</span></h2>
+    <a href={withBase("/tools/")}>전체 보기 →</a>
+  </div>
+
+  <div class="home-filter">
+    <button class="home-filter__chip is-active" data-cat="전체">전체</button>
+    {categories.map((cat) => (
+      <button class="home-filter__chip" data-cat={cat}>{cat}</button>
+    ))}
+  </div>
+
+  <div class="home-tools-list">
+    {tools.map((tool) => (
+      <a
+        class="home-tool-row"
+        href={withBase(`/tools/${toToolPath(tool)}/`)}
+        data-category={tool.data.eyebrow}
+      >
+        <div class="home-tool-row__info">
+          <span class="home-tool-row__title">{tool.data.title}</span>
+          <span class="home-tool-row__cat">{tool.data.eyebrow}</span>
+        </div>
+        <span class="home-tool-row__arrow">→</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+필터 JS (섹션 바로 아래 인라인 script):
+<script>
+  document.querySelectorAll('.home-filter__chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.home-filter__chip').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.home-tool-row').forEach(row => {
+        row.style.display = (cat === '전체' || row.dataset.category === cat) ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+---
+
+### ⑤ 리포트 섹션
+class: home-section
+
+리포트 컬렉션 있으면 동적으로, 없으면 하드코딩:
+
+<section class="home-section">
+  <div class="home-section__head">
+    <h2>비교 리포트</h2>
+  </div>
+  <div class="home-reports">
+    <a class="home-report-card" href={withBase("/reports/korea-rich-top10-assets/")}>
+      <span class="home-report-card__badge">인터랙티브 리포트</span>
+      <p class="home-report-card__title">한국 부자 TOP 10 자산 비교 리포트</p>
+      <p class="home-report-card__desc">원화 기준 TOP 10 · 서울 국평·그랜저 환산값</p>
+    </a>
+    <a class="home-report-card" href={withBase("/reports/us-rich-top10-patterns/")}>
+      <span class="home-report-card__badge">인터랙티브 리포트</span>
+      <p class="home-report-card__title">미국 부자 TOP 10 성공 패턴 리포트</p>
+      <p class="home-report-card__desc">자산·학력·업종·창업 배경 비교 읽기</p>
+    </a>
+  </div>
+</section>
+
+---
+
+### ⑥ 이용안내 섹션
+class: home-section
+
+<section class="home-section">
+  <div class="home-section__head">
+    <h2>이용 안내</h2>
+  </div>
+  <div class="home-trust">
+    {trustLinks.map((link) => (
+      <a class="home-trust-card" href={link.href}>
+        <p class="home-trust-card__title">{link.title}</p>
+        <p class="home-trust-card__desc">{link.desc}</p>
+      </a>
+    ))}
+  </div>
+  <p class="home-trust__notice">
+    계산 결과는 공개 기준과 입력값을 바탕으로 한 참고용 추정치입니다.
+    중요한 결정 전에는 원문 공지와 공식 자료를 함께 확인해주세요.
+  </p>
+</section>
+
+
+## SCSS (기존 home 클래스 유지, 신규 추가)
+중요: CSS 변수 대신 명시적 고정 색상 사용 (가시성 문제 방지)
+
+/* hero */
+.hero--home
+  padding: 52px 0 44px
+  border-bottom: 1px solid #E8E7E4
+  margin-bottom: 44px
+
+.hero__eyebrow
+  font-size: 11px
+  font-weight: 500
+  color: #0F6E56
+  letter-spacing: 0.06em
+  text-transform: uppercase
+  margin-bottom: 10px
+
+.hero__title
+  font-size: 28px
+  font-weight: 500
+  color: #1A1A18
+  line-height: 1.3
+  margin-bottom: 10px
+
+.hero__description
+  font-size: 15px
+  color: #5F5E5A
+  line-height: 1.7
+  margin-bottom: 22px
+
+/* stats */
+.home-stats
+  display: grid
+  grid-template-columns: repeat(3, 1fr)
+  gap: 12px
+  margin-bottom: 44px
+
+.home-stats__card
+  background: #F2F1EF       ← 고정값 (변수 사용 금지)
+  border-radius: 10px
+  padding: 18px 16px
+
+  &--hl
+    background: #E1F5EE
+
+.home-stats__num
+  font-size: 30px
+  font-weight: 500
+  color: #1A1A18
+  line-height: 1
+
+  .home-stats__card--hl &
+    color: #0F6E56
+
+.home-stats__label
+  font-size: 12px
+  color: #5F5E5A
+  margin-top: 5px
+
+.home-stats__source
+  font-size: 10px
+  color: #B4B2A9
+  margin-top: 3px
+
+/* 섹션 공통 */
+.home-section
+  margin-bottom: 48px
+
+.home-section__head
+  display: flex
+  justify-content: space-between
+  align-items: baseline
+  margin-bottom: 16px
+
+  h2
+    font-size: 18px
+    font-weight: 500
+    color: #1A1A18
+
+  a
+    font-size: 12px
+    color: #0F6E56
+    text-decoration: none
+
+.home-section__count
+  font-size: 13px
+  color: #B4B2A9
+  font-weight: 400
+  margin-left: 4px
+
+/* 추천 계산기 카드 */
+.home-showcase
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 10px
+
+.home-tool-card
+  border: 1px solid #E0DFDB    ← 고정값
+  border-radius: 10px
+  padding: 16px
+  text-decoration: none
+  display: block
+  transition: border-color 0.15s
+  background: #FFFFFF
+
+  &:hover
+    border-color: #1D9E75
+
+  &--feat
+    border-color: #1D9E75
+    border-width: 1.5px
+
+.home-tool-card__cat
+  font-size: 10px
+  font-weight: 500
+  color: #0F6E56
+  text-transform: uppercase
+  letter-spacing: 0.04em
+  margin-bottom: 6px
+
+.home-tool-card__title
+  font-size: 14px
+  font-weight: 500
+  color: #1A1A18             ← 고정값 (진하게)
+  margin-bottom: 6px
+  line-height: 1.35
+
+.home-tool-card__chips
+  display: flex
+  gap: 4px
+  flex-wrap: wrap
+  margin-bottom: 8px
+
+.home-tool-card__chip
+  font-size: 9px
+  color: #888780
+  background: #F0EFED        ← 고정값
+  padding: 2px 7px
+  border-radius: 10px
+
+.home-tool-card__desc
+  font-size: 11px
+  color: #888780
+  line-height: 1.5
+
+/* 필터 */
+.home-filter
+  display: flex
+  gap: 6px
+  flex-wrap: wrap
+  margin-bottom: 12px
+
+.home-filter__chip
+  font-size: 12px
+  padding: 5px 13px
+  border-radius: 20px
+  border: 1px solid #E0DFDB  ← 고정값
+  color: #888780
+  cursor: pointer
+  background: #FFFFFF
+  transition: all 0.15s
+
+  &.is-active
+    background: #0F6E56
+    border-color: #0F6E56
+    color: #FFFFFF
+
+  &:hover:not(.is-active)
+    border-color: #B4B2A9
+    color: #1A1A18
+
+/* 전체 계산기 리스트 */
+.home-tools-list
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 6px
+
+.home-tool-row
+  display: flex
+  justify-content: space-between
+  align-items: center
+  border: 1px solid #E0DFDB  ← 고정값
+  border-radius: 8px
+  padding: 12px 14px
+  text-decoration: none
+  background: #FFFFFF
+  transition: border-color 0.15s
+
+  &:hover
+    border-color: #B4B2A9
+
+.home-tool-row__title
+  display: block
+  font-size: 13px
+  font-weight: 500
+  color: #1A1A18             ← 고정값 (진하게)
+
+.home-tool-row__cat
+  display: block
+  font-size: 10px
+  color: #B4B2A9
+  margin-top: 2px
+
+.home-tool-row__arrow
+  font-size: 13px
+  color: #C8C7C3
+  flex-shrink: 0
+
+/* 리포트 */
+.home-reports
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 10px
+
+.home-report-card
+  border: 1px solid #E0DFDB
+  border-radius: 10px
+  padding: 16px
+  text-decoration: none
+  display: block
+  background: #FAFAF8        ← 고정값 (살짝 다른 배경)
+  transition: border-color 0.15s
+
+  &:hover
+    border-color: #534AB7
+
+.home-report-card__badge
+  font-size: 9px
+  font-weight: 500
+  color: #534AB7
+  background: #EEEDFE
+  padding: 2px 8px
+  border-radius: 10px
+  display: inline-block
+  margin-bottom: 10px
+
+.home-report-card__title
+  font-size: 14px
+  font-weight: 500
+  color: #1A1A18             ← 고정값
+  line-height: 1.4
+  margin-bottom: 6px
+
+.home-report-card__desc
+  font-size: 11px
+  color: #888780
+  line-height: 1.5
+
+/* 이용안내 */
+.home-trust
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 8px
+  margin-bottom: 14px
+
+.home-trust-card
+  border: 1px solid #E0DFDB  ← 고정값
+  border-radius: 8px
+  padding: 14px
+  text-decoration: none
+  background: #FFFFFF
+  display: block
+  transition: border-color 0.15s
+
+  &:hover
+    border-color: #B4B2A9
+
+.home-trust-card__title
+  font-size: 13px
+  font-weight: 500
+  color: #1A1A18             ← 고정값
+  margin-bottom: 4px
+
+.home-trust-card__desc
+  font-size: 11px
+  color: #888780
+  line-height: 1.5
+
+.home-trust__notice
+  font-size: 11px
+  color: #B4B2A9
+  line-height: 1.8
+  padding: 12px 14px
+  background: #F2F1EF        ← 고정값
+  border-radius: 8px
+
+/* 모바일 (max-width: 768px) */
+@media (max-width: 768px)
+  .hero__title
+    font-size: 22px
+
+  .home-stats
+    gap: 8px
+
+  .home-stats__num
+    font-size: 24px
+
+  .home-showcase
+    grid-template-columns: 1fr
+
+  .home-tools-list
+    grid-template-columns: 1fr
+
+  .home-reports
+    grid-template-columns: 1fr
+
+  .home-trust
+    grid-template-columns: 1fr
+
+
+## 유지할 것
+- withBase / toToolPath / getCollection 로직 완전 유지
+- BaseLayout / SiteHeader import 유지
+- button button--primary 클래스 유지 (기존 SCSS 그대로)
+- npm run build 통과 확인

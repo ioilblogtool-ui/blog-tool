@@ -1,0 +1,353 @@
+src/components/SiteHeader.astro 와 관련 SCSS를 리디자인해줘.
+
+## 현재 코드
+---
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="site-logo" href={withBase("/")}>비교계산소</a>
+    <a class="site-header__link" href={withBase("/tools/")}>도구 보기</a>
+  </div>
+</header>
+
+## 변경 스펙
+
+### HTML 구조
+
+<header class="site-header">
+  <div class="container site-header__inner">
+
+    <!-- 로고 -->
+    <a class="site-logo" href={withBase("/")}>비교계산소</a>
+
+    <!-- PC 네비 -->
+    <nav class="site-nav" aria-label="주요 메뉴">
+
+      <!-- 계산기 드롭다운 -->
+      <div class="site-nav__item site-nav__item--has-dropdown">
+        <button class="site-nav__btn" aria-expanded="false" aria-haspopup="true">
+          계산기
+          <span class="site-nav__arrow" aria-hidden="true">▾</span>
+        </button>
+        <div class="site-nav__dropdown" role="menu">
+          <div class="site-nav__dropdown-section">
+            <p class="site-nav__dropdown-label">연봉·이직</p>
+            <a href={withBase("/tools/salary/")} role="menuitem">연봉 인상 계산기</a>
+            <a href={withBase("/tools/negotiation/")} role="menuitem">이직 계산기</a>
+            <a href={withBase("/tools/retirement/")} role="menuitem">퇴직금 계산기</a>
+            <a href={withBase("/tools/household-income/")} role="menuitem">
+              가구 소득 계산기
+              <span class="site-nav__badge">신규</span>
+            </a>
+          </div>
+          <div class="site-nav__dropdown-section">
+            <p class="site-nav__dropdown-label">성과급 비교</p>
+            <a href={withBase("/tools/bonus-simulator/")} role="menuitem">성과급 시뮬레이터</a>
+            <a href={withBase("/tools/samsung-bonus/")} role="menuitem">삼성전자 성과급</a>
+            <a href={withBase("/tools/sk-hynix-bonus/")} role="menuitem">SK하이닉스 성과급</a>
+            <a href={withBase("/tools/hyundai-bonus/")} role="menuitem">현대차 성과금</a>
+          </div>
+          <div class="site-nav__dropdown-section">
+            <p class="site-nav__dropdown-label">육아휴직·출산</p>
+            <a href={withBase("/tools/parental-leave/")} role="menuitem">육아휴직 계산기</a>
+            <a href={withBase("/tools/single-parental-leave-total/")} role="menuitem">
+              한 명만 육아휴직
+              <span class="site-nav__badge site-nav__badge--rec">추천</span>
+            </a>
+            <a href={withBase("/tools/birth-support-total/")} role="menuitem">출산 지원금</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 리포트 -->
+      <a class="site-nav__link" href={withBase("/reports/")}>리포트</a>
+
+      <!-- 소개 -->
+      <a class="site-nav__link" href={withBase("/about/")}>소개</a>
+
+    </nav>
+
+    <!-- CTA -->
+    <a class="site-header__cta" href={withBase("/tools/")}>전체 보기</a>
+
+    <!-- 모바일 햄버거 -->
+    <button class="site-header__hamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- 모바일 메뉴 -->
+  <div class="site-header__mobile-menu" id="mobile-menu" aria-hidden="true">
+    <div class="container">
+      <div class="site-header__mobile-section">
+        <p class="site-header__mobile-label">계산기</p>
+        <a href={withBase("/tools/salary/")}>연봉 인상 계산기</a>
+        <a href={withBase("/tools/negotiation/")}>이직 계산기</a>
+        <a href={withBase("/tools/retirement/")}>퇴직금 계산기</a>
+        <a href={withBase("/tools/household-income/")}>가구 소득 계산기</a>
+        <a href={withBase("/tools/bonus-simulator/")}>성과급 시뮬레이터</a>
+        <a href={withBase("/tools/parental-leave/")}>육아휴직 계산기</a>
+      </div>
+      <div class="site-header__mobile-section">
+        <p class="site-header__mobile-label">리포트</p>
+        <a href={withBase("/reports/korea-rich-top10-assets/")}>한국 부자 TOP 10</a>
+        <a href={withBase("/reports/us-rich-top10-patterns/")}>미국 부자 TOP 10</a>
+      </div>
+      <a class="site-header__mobile-cta" href={withBase("/tools/")}>전체 계산기 보기 →</a>
+    </div>
+  </div>
+</header>
+
+### SCSS (기존 파일 위치에 맞게)
+
+.site-header
+  position: sticky
+  top: 0
+  z-index: 100
+  background: white
+  border-bottom: 0.5px solid var(--color-border-tertiary)
+  transition: height 0.2s
+  height: 52px
+
+  &.is-scrolled
+    height: 44px
+
+.site-header__inner
+  display: flex
+  align-items: center
+  height: 100%
+  gap: 0
+
+.site-logo
+  font-size: 14px
+  font-weight: 500
+  color: var(--color-text-primary)
+  text-decoration: none
+  margin-right: auto
+
+.site-nav
+  display: flex
+  align-items: center
+  gap: 2px
+  margin-right: 12px
+
+  @media (max-width: 768px)
+    display: none
+
+.site-nav__link
+  font-size: 13px
+  color: var(--color-text-secondary)
+  padding: 5px 10px
+  border-radius: 6px
+  text-decoration: none
+  transition: all 0.15s
+  &:hover
+    background: var(--color-background-secondary)
+    color: var(--color-text-primary)
+
+.site-nav__item--has-dropdown
+  position: relative
+
+  &:hover .site-nav__dropdown,
+  &:focus-within .site-nav__dropdown
+    opacity: 1
+    pointer-events: auto
+    transform: translateY(0)
+
+.site-nav__btn
+  font-size: 13px
+  color: var(--color-text-secondary)
+  padding: 5px 10px
+  border-radius: 6px
+  background: none
+  border: none
+  cursor: pointer
+  display: flex
+  align-items: center
+  gap: 3px
+  transition: all 0.15s
+  &:hover
+    background: var(--color-background-secondary)
+    color: var(--color-text-primary)
+
+.site-nav__dropdown
+  position: absolute
+  top: calc(100% + 8px)
+  left: 0
+  background: white
+  border: 0.5px solid var(--color-border-tertiary)
+  border-radius: 10px
+  padding: 10px
+  min-width: 480px
+  display: grid
+  grid-template-columns: 1fr 1fr 1fr
+  gap: 0 8px
+  opacity: 0
+  pointer-events: none
+  transform: translateY(-4px)
+  transition: all 0.15s
+
+.site-nav__dropdown-section
+  padding: 4px 0
+
+.site-nav__dropdown-label
+  font-size: 9px
+  font-weight: 500
+  color: var(--color-text-tertiary)
+  letter-spacing: 0.06em
+  text-transform: uppercase
+  padding: 4px 8px 4px
+  margin-bottom: 2px
+
+.site-nav__dropdown a
+  display: flex
+  align-items: center
+  justify-content: space-between
+  font-size: 12px
+  color: var(--color-text-secondary)
+  padding: 5px 8px
+  border-radius: 6px
+  text-decoration: none
+  transition: all 0.15s
+  &:hover
+    background: var(--color-background-secondary)
+    color: var(--color-text-primary)
+
+.site-nav__badge
+  font-size: 8px
+  color: #0F6E56
+  background: #E1F5EE
+  padding: 1px 5px
+  border-radius: 8px
+  font-weight: 500
+
+  &--rec
+    color: #534AB7
+    background: #EEEDFE
+
+.site-header__cta
+  font-size: 11px
+  font-weight: 500
+  color: #0F6E56
+  border: 0.5px solid #1D9E75
+  padding: 5px 12px
+  border-radius: 6px
+  text-decoration: none
+  transition: all 0.15s
+  white-space: nowrap
+  &:hover
+    background: #E1F5EE
+
+  @media (max-width: 768px)
+    display: none
+
+.site-header__hamburger
+  display: none
+  flex-direction: column
+  gap: 4px
+  background: none
+  border: none
+  cursor: pointer
+  padding: 4px
+
+  span
+    display: block
+    width: 18px
+    height: 1.5px
+    background: var(--color-text-primary)
+    border-radius: 1px
+    transition: all 0.2s
+
+  &.is-open span:nth-child(1)
+    transform: translateY(5.5px) rotate(45deg)
+  &.is-open span:nth-child(2)
+    opacity: 0
+  &.is-open span:nth-child(3)
+    transform: translateY(-5.5px) rotate(-45deg)
+
+  @media (max-width: 768px)
+    display: flex
+
+.site-header__mobile-menu
+  display: none
+  border-top: 0.5px solid var(--color-border-tertiary)
+  padding: 16px 0
+
+  &.is-open
+    display: block
+
+  @media (min-width: 769px)
+    display: none !important
+
+.site-header__mobile-section
+  padding: 0 0 16px
+  margin-bottom: 8px
+  border-bottom: 0.5px solid var(--color-border-tertiary)
+
+  a
+    display: block
+    font-size: 13px
+    color: var(--color-text-secondary)
+    padding: 7px 0
+    text-decoration: none
+    &:hover
+      color: var(--color-text-primary)
+
+.site-header__mobile-label
+  font-size: 9px
+  font-weight: 500
+  color: var(--color-text-tertiary)
+  letter-spacing: 0.06em
+  text-transform: uppercase
+  margin-bottom: 4px
+
+.site-header__mobile-cta
+  display: block
+  text-align: center
+  font-size: 13px
+  font-weight: 500
+  color: #0F6E56
+  border: 0.5px solid #1D9E75
+  padding: 10px
+  border-radius: 7px
+  text-decoration: none
+  margin-top: 12px
+
+### JS (public/scripts/site-header.js 로 저장)
+
+// 스크롤 시 .is-scrolled 토글
+window.addEventListener('scroll', () => {
+  document.querySelector('.site-header')
+    ?.classList.toggle('is-scrolled', window.scrollY > 10)
+})
+
+// 햄버거 토글
+const hamburger = document.querySelector('.site-header__hamburger')
+const mobileMenu = document.querySelector('.site-header__mobile-menu')
+hamburger?.addEventListener('click', () => {
+  const isOpen = hamburger.classList.toggle('is-open')
+  hamburger.setAttribute('aria-expanded', String(isOpen))
+  mobileMenu?.classList.toggle('is-open', isOpen)
+  mobileMenu?.setAttribute('aria-hidden', String(!isOpen))
+})
+
+// 드롭다운 버튼 aria-expanded
+document.querySelectorAll('.site-nav__btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') === 'true'
+    btn.setAttribute('aria-expanded', String(!expanded))
+  })
+})
+
+## 유지할 것
+- withBase 로직 완전 유지
+- 기존 site-logo 클래스명 유지
+- JS는 SiteHeader.astro 하단 <script> 태그 안에 인라인으로 넣거나
+  public/scripts/site-header.js 로 분리 후 <script src> 로 불러오기
+  (기존 프로젝트 방식에 맞게 판단해줘)
+- npm run build 통과 확인

@@ -1,18 +1,19 @@
-﻿---
+---
 import { tools } from "../data/tools";
 import { reports } from "../data/reports";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import TrustPanel from "../components/TrustPanel.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
 const orderedTools = [...tools].sort((a, b) => a.order - b.order);
 const orderedReports = [...reports].sort((a, b) => a.order - b.order);
-const featuredReport = orderedReports[0];
-const secondaryReports = orderedReports.slice(1, 3);
+
+const toolCount = orderedTools.length;
+const reportCount = orderedReports.length || 2;
 
 const topicBySlug: Record<string, string> = {
   salary: "연봉·이직",
@@ -30,389 +31,173 @@ const topicBySlug: Record<string, string> = {
   "six-plus-six": "육아휴직·출산"
 };
 
-const topicOrder = ["전체", "연봉·이직", "성과급 비교", "육아휴직·출산"];
-const categories = topicOrder.filter(
-  (category) => category === "전체" || orderedTools.some((tool) => topicBySlug[tool.slug] === category)
-);
+const categories = [...new Set(orderedTools.map(t => topicBySlug[t.slug]).filter(Boolean))];
+const finalShowcase = orderedTools.slice(0, 4);
 
-const homeHighlights: Record<string, string> = {
-  salary: "인상률 기준으로 월 실수령과 연 총보상 차이를 바로 봅니다.",
-  retirement: "근속연수와 평균임금 기준으로 퇴직금과 세후 추정액을 확인합니다.",
-  negotiation: "현재 연봉과 이직 제안 연봉 차이를 세전 기준으로 비교합니다.",
-  "household-income": "가구 연 총소득, 월 체감, 평균·중위 대비 위치를 함께 계산합니다.",
-  "parental-leave": "휴직 중 소득 공백과 복직 후 흐름을 함께 계산합니다.",
-  "bonus-simulator": "삼성전자, SK하이닉스, 현대차 보상 시나리오를 나란히 봅니다.",
-  "samsung-bonus": "개인·부부 기준 삼성전자 총보상과 월 체감값을 계산합니다.",
-  "sk-hynix-bonus": "개인·부부 기준 하이닉스 총보상과 월 체감값을 계산합니다.",
-  "hyundai-bonus": "개인·부부 기준 현대차 성과금 패키지와 월 체감값을 계산합니다.",
-  "birth-support-total": "출산 직후부터 두 돌까지 지원금 총액과 흐름을 정리합니다.",
-  "single-parental-leave-total": "한 명만 육아휴직할 때 가구 총수령액을 합산해서 보여줍니다.",
-  "parental-leave-pay": "일반 육아휴직 급여 기준으로 월별 급여와 총액을 정리합니다.",
-  "six-plus-six": "6+6 특례와 일반 육아휴직 차이를 금액 기준으로 비교합니다."
-};
-
-const featuredCalculator = {
-  title: "가구 소득 계산기",
-  description: "우리집 연·월 소득과 평균·중위 대비 위치를 함께 봅니다.",
-  keywords: ["연 총소득", "월 체감", "소득 위치"],
-  href: withBase("/tools/household-income/"),
-  badge: "대표 계산기",
-  ctaLabel: "바로 계산하기",
-  badges: ["신규", "추천"]
-};
-
-const recommendedCalculators = [
-  {
-    title: "연봉 인상 계산기",
-    description: "인상 후 월 실수령과 연 차이를 바로 봅니다.",
-    keywords: ["인상률", "월 실수령", "연 총차이"],
-    href: withBase("/tools/salary/"),
-    badge: "추천 계산기",
-    ctaLabel: "열어보기",
-    tone: "navy"
-  },
-  {
-    title: "한 명만 육아휴직 총수령액 계산기",
-    description: "육아휴직 급여와 부모급여 등을 합쳐 가구 총수령액을 봅니다.",
-    keywords: ["가구 총수령액", "월 현금흐름"],
-    href: withBase("/tools/single-parental-leave-total/"),
-    badge: "추천 계산기",
-    ctaLabel: "열어보기",
-    tone: "peach"
-  },
-  {
-    title: "대기업 성과급 시뮬레이터",
-    description: "삼성전자, 하이닉스, 현대차 총보상을 시나리오로 비교합니다.",
-    keywords: ["3사 비교", "총보상", "시나리오 계산"],
-    href: withBase("/tools/bonus-simulator/"),
-    badge: "추천 계산기",
-    ctaLabel: "열어보기",
-    tone: "mint"
-  }
+const trustLinks = [
+  { href: withBase("/about/"),      title: "비교계산소 소개",    desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
+  { href: withBase("/privacy/"),    title: "개인정보처리방침",   desc: "쿠키·외부 서비스·수집 정보 처리 원칙" },
+  { href: withBase("/contact/"),    title: "문의 안내",          desc: "오류 제보·기능 제안·제휴 문의 범위" },
+  { href: withBase("/disclaimer/"), title: "이용안내 및 면책",   desc: "결과 해석 방법과 실제 지급액 차이 안내" },
 ];
-
-const trustItems = [
-  {
-    title: "공개 기준값과 입력값을 구분",
-    body: "공개 기준값과 직접 넣는 값을 나눠 보여줍니다."
-  },
-  {
-    title: "모바일에서 빠르게 계산",
-    body: "핵심 숫자를 먼저 보여주고 모바일에서도 바로 계산할 수 있게 구성했습니다."
-  },
-  {
-    title: "실수령은 추정으로 표시",
-    body: "실수령은 세금과 공제에 따라 달라져 참고용 추정값으로 안내합니다."
-  },
-  {
-    title: "비교까지 한 번에",
-    body: "총액뿐 아니라 월 체감과 비교 기준도 함께 보여줍니다."
-  }
-];
-const homeSearchScript = `
-  (() => {
-    const searchInput = document.getElementById("homeToolSearchInput");
-    const emptyState = document.getElementById("homeToolEmpty");
-    const countNode = document.getElementById("homeToolCount");
-    const cards = Array.from(document.querySelectorAll("[data-home-tool-card]"));
-    const filters = Array.from(document.querySelectorAll("[data-home-filter]"));
-
-    if (!searchInput || cards.length === 0) return;
-
-    let activeFilter = "all";
-
-    const render = () => {
-      const query = String(searchInput.value || "").trim().toLowerCase();
-      let visibleCount = 0;
-
-      cards.forEach((card) => {
-        const category = card.getAttribute("data-category") || "";
-        const text = String(card.textContent || "").toLowerCase();
-        const slug = String(card.getAttribute("href") || "").toLowerCase();
-        const matchesFilter = activeFilter === "all" || category === activeFilter;
-        const matchesQuery = query.length === 0 || text.includes(query) || slug.includes(query);
-        const visible = matchesFilter && matchesQuery;
-
-        card.hidden = !visible;
-        if (visible) visibleCount += 1;
-      });
-
-      if (emptyState) emptyState.hidden = visibleCount > 0;
-      if (countNode) countNode.textContent = visibleCount + "개";
-    };
-
-    filters.forEach((button) => {
-      button.addEventListener("click", () => {
-        activeFilter = button.getAttribute("data-home-filter") || "all";
-        filters.forEach((item) => item.classList.toggle("is-active", item === button));
-        render();
-      });
-    });
-
-    searchInput.addEventListener("input", render);
-    searchInput.addEventListener("keyup", render);
-    searchInput.addEventListener("search", render);
-    searchInput.addEventListener("compositionend", render);
-    render();
-  })();
-`;
 ---
 
-<BaseLayout title="비교계산소" description="연봉, 성과급, 육아휴직, 출산 지원금까지 복잡한 숫자를 빠르게 계산하고 비교하는 도구 모음">
+<BaseLayout
+  title="비교계산소 — 연봉·성과급·육아휴직 계산기"
+  description="연봉, 퇴직금, 성과급, 육아휴직처럼 자주 확인하는 수치를 빠르게 계산하고 비교할 수 있도록 정리한 정보형 계산 사이트입니다."
+>
   <SiteHeader />
 
-  <main class="container page-shell home-page">
-    <section class="hero hero--home hero--magazine">
+  <main class="container page-shell">
+
+    <!-- ① hero -->
+    <section class="hero hero--home">
       <p class="hero__eyebrow">비교계산소</p>
-      <h1 class="hero__title">세상의 궁금한 숫자, 한 번에 비교 계산하세요</h1>
-      <p class="hero__description">
-        연봉, 성과급, 육아휴직, 출산 지원금까지 자주 보는 숫자를 빠르게 계산하고 비교할 수 있게 정리했습니다.
-      </p>
-      <div class="hero-stats">
-        <article class="hero-stat-card">
-          <strong class="hero-stat-card__number" data-count-to="13" data-suffix="개">13개</strong>
-          <p class="hero-stat-card__label">운영 중 계산기</p>
-          <span class="hero-stat-card__source">꾸준히 추가 중</span>
-        </article>
-        <article class="hero-stat-card">
-          <strong class="hero-stat-card__number" data-count-to="2.4" data-suffix="%" data-decimals="1">2.4%</strong>
-          <p class="hero-stat-card__label">2026 평균 임금 인상률</p>
-          <span class="hero-stat-card__source">고용노동부 기준</span>
-        </article>
-        <article class="hero-stat-card">
-          <strong class="hero-stat-card__number" data-count-to="5200" data-suffix="만" data-format="comma">5,200만</strong>
-          <p class="hero-stat-card__label">30대 직장인 평균 연봉</p>
-          <span class="hero-stat-card__source">통계청 2025 기준</span>
-        </article>
-      </div>
+      <h1 class="hero__title">세상의 궁금한 숫자,<br>한 번에 비교 계산하세요</h1>
+      <p class="hero__description">연봉·성과급·육아휴직·출산지원금까지 자주 보는 숫자를 빠르게 계산하고 비교합니다.</p>
       <div class="home-actions">
-        <a class="button button--primary" href={withBase("/tools/")}>지금 운영 중인 계산기 보기</a>
+        <a class="button button--primary" href={withBase("/tools/")}>운영 중인 계산기 보기</a>
       </div>
     </section>
 
-    <section class="content-section home-featured">
-      <div class="section-header">
-        <p class="section-header__eyebrow">지금 많이 찾는 계산기</p>
-        <h2>처음 방문했다면 여기부터 보세요</h2>
-        <p>먼저 눌러보기 좋은 계산기만 모았습니다.</p>
+    <!-- ② stats -->
+    <section class="home-stats">
+      <div class="home-stats__card home-stats__card--hl">
+        <p class="home-stats__num">{toolCount}</p>
+        <p class="home-stats__label">운영 중 계산기</p>
+        <p class="home-stats__source">계속 추가 중</p>
       </div>
-      <div class="panel home-featured__panel">
-        <div class="home-featured__layout">
-          <a class="tool-card tool-card--feature featured-calculator-card" href={featuredCalculator.href}>
-            <div class="featured-calculator-card__header">
-              <p class="tool-card__eyebrow">{featuredCalculator.badge}</p>
-              <div class="tool-badges">
-                {featuredCalculator.badges.map((badge) => <span class="tool-badge" data-badge={badge}>{badge}</span>)}
+      <div class="home-stats__card">
+        <p class="home-stats__num">{categories.length}</p>
+        <p class="home-stats__label">카테고리</p>
+        <p class="home-stats__source">{categories.slice(0, 2).join("·")} 등</p>
+      </div>
+      <div class="home-stats__card">
+        <p class="home-stats__num">{reportCount}</p>
+        <p class="home-stats__label">비교 리포트</p>
+        <p class="home-stats__source">인터랙티브 리포트</p>
+      </div>
+    </section>
+
+    <!-- ③ 추천 계산기 -->
+    <section class="home-section">
+      <div class="home-section__head">
+        <h2>처음이라면 여기부터</h2>
+      </div>
+      <div class="home-showcase">
+        {finalShowcase.map((tool, i) => (
+          <a
+            class={`home-tool-card${i === 0 ? " home-tool-card--feat" : ""}`}
+            href={withBase(`/tools/${tool.slug}/`)}
+          >
+            <p class="home-tool-card__cat">{topicBySlug[tool.slug] ?? "도구"}</p>
+            <h3 class="home-tool-card__title">{tool.title}</h3>
+            {tool.badges && tool.badges.length > 0 && (
+              <div class="home-tool-card__chips">
+                {tool.badges.slice(0, 3).map(tag => (
+                  <span class="home-tool-card__chip">{tag}</span>
+                ))}
               </div>
-            </div>
-            <div class="featured-calculator-card__body">
-              <div class="featured-calculator-card__content">
-                <h2>{featuredCalculator.title}</h2>
-                <p>{featuredCalculator.description}</p>
-              </div>
-              <div class="featured-calculator-card__summary" aria-label="대표 계산기 핵심 결과">
-                <span class="featured-calculator-card__summary-label">빠르게 보는 결과</span>
-                <div class="featured-calculator-card__keywords">
-                  {featuredCalculator.keywords.map((keyword) => <span>{keyword}</span>)}
-                </div>
-              </div>
-            </div>
-            <span class="button button--primary featured-calculator-card__cta">{featuredCalculator.ctaLabel}</span>
+            )}
+            <p class="home-tool-card__desc">{tool.description}</p>
           </a>
-
-          <div class="recommended-calculator-list">
-            {
-              recommendedCalculators.map((item) => (
-                <a class={`tool-card tool-card--feature recommended-calculator-card is-${item.tone}`} href={item.href}>
-                  <div class="recommended-calculator-card__header">
-                    <p class="tool-card__eyebrow">{item.badge}</p>
-                  </div>
-                  <div class="recommended-calculator-card__body">
-                    <h2>{item.title}</h2>
-                    <div class="recommended-calculator-card__keywords">
-                      {item.keywords.map((keyword) => <span>{keyword}</span>)}
-                    </div>
-                    <p>{item.description}</p>
-                  </div>
-                  <span class="button button--secondary recommended-calculator-card__cta">{item.ctaLabel}</span>
-                </a>
-              ))
-            }
-          </div>
-        </div>
+        ))}
       </div>
     </section>
 
-    <section class="panel content-section home-trust home-trust--boxed">
-      <div class="section-header">
-        <p class="section-header__eyebrow">왜 비교계산소로 먼저 확인하나요</p>
-        <h2>계산 결과를 더 쉽게 읽을 수 있게 정리합니다</h2>
-        <p>기준값, 입력값, 추정값을 나눠 보여줘 결과를 더 쉽게 읽게 구성했습니다.</p>
+    <!-- ④ 전체 계산기 -->
+    <section class="home-section">
+      <div class="home-section__head">
+        <h2>전체 계산기 <span class="home-section__count">{toolCount}개</span></h2>
+        <a href={withBase("/tools/")}>전체 보기 →</a>
       </div>
-      <div class="home-trust__grid">
-        {
-          trustItems.map((item) => (
-            <article class="home-trust__card">
-              <strong>{item.title}</strong>
-              <p>{item.body}</p>
-            </article>
-          ))
-        }
-      </div>
-    </section>
 
-    <section class="content-section home-report-spotlight">
-      <div class="section-header">
-        <p class="section-header__eyebrow">비교 리포트</p>
-        <h2>계산기 말고 읽는 콘텐츠도 같이 봅니다</h2>
-        <p>공개 데이터를 선택하고 비교하면서 읽을 수 있는 인터랙티브 리포트를 함께 확장하고 있습니다.</p>
+      <div class="home-filter">
+        <button class="home-filter__chip is-active" data-cat="전체">전체</button>
+        {categories.map(cat => (
+          <button class="home-filter__chip" data-cat={cat}>{cat}</button>
+        ))}
       </div>
-      <div class="panel home-report-spotlight__panel">
-        {featuredReport && (
-          <a class="tool-card tool-card--feature home-report-card" href={withBase(`/reports/${featuredReport.slug}/`)}>
-            <div class="tool-card__head">
-              <p class="tool-card__eyebrow">추천 리포트</p>
-              {
-                featuredReport.badges && (
-                  <div class="tool-badges">
-                    {featuredReport.badges.map((badge) => <span class="tool-badge" data-badge={badge}>{badge}</span>)}
-                  </div>
-                )
-              }
+
+      <div class="home-tools-list">
+        {orderedTools.map(tool => (
+          <a
+            class="home-tool-row"
+            href={withBase(`/tools/${tool.slug}/`)}
+            data-category={topicBySlug[tool.slug] ?? "기타"}
+          >
+            <div class="home-tool-row__info">
+              <span class="home-tool-row__title">{tool.title}</span>
+              <span class="home-tool-row__cat">{topicBySlug[tool.slug] ?? "기타"}</span>
             </div>
-            <h2>{featuredReport.title}</h2>
-            <p>{featuredReport.description}</p>
-            <div class="featured-calculator-card__keywords home-report-card__keywords">
-              <span>원화 기준</span>
-              <span>TOP 10</span>
-              <span>재미 환산</span>
-            </div>
-            <span class="button button--secondary featured-calculator-card__cta">리포트 보기</span>
+            <span class="home-tool-row__arrow">→</span>
           </a>
-        )}
-        {
-          secondaryReports.map((report) => (
-            <a class="tool-card tool-card--feature home-report-card" href={withBase(`/reports/${report.slug}/`)}>
-              <div class="tool-card__head">
-                <p class="tool-card__eyebrow">인터랙티브 리포트</p>
-              </div>
-              <h2>{report.title}</h2>
-              <p>{report.description}</p>
-              <div class="featured-calculator-card__keywords home-report-card__keywords">
-                <span>비교 읽기</span>
-                <span>패턴 분석</span>
-              </div>
-              <span class="button button--secondary featured-calculator-card__cta">리포트 보기</span>
+        ))}
+      </div>
+    </section>
+
+    <!-- ⑤ 리포트 -->
+    <section class="home-section">
+      <div class="home-section__head">
+        <h2>비교 리포트</h2>
+      </div>
+      <div class="home-reports">
+        {orderedReports.length > 0 ? orderedReports.map(report => (
+          <a class="home-report-card" href={withBase(`/reports/${report.slug}/`)}>
+            <span class="home-report-card__badge">인터랙티브 리포트</span>
+            <p class="home-report-card__title">{report.title}</p>
+            <p class="home-report-card__desc">{report.description}</p>
+          </a>
+        )) : (
+          <Fragment>
+            <a class="home-report-card" href={withBase("/reports/korea-rich-top10-assets/")}>
+              <span class="home-report-card__badge">인터랙티브 리포트</span>
+              <p class="home-report-card__title">한국 부자 TOP 10 자산 비교 리포트</p>
+              <p class="home-report-card__desc">원화 기준 TOP 10 · 서울 국평·그랜저 환산값</p>
             </a>
-          ))
-        }
+            <a class="home-report-card" href={withBase("/reports/us-rich-top10-patterns/")}>
+              <span class="home-report-card__badge">인터랙티브 리포트</span>
+              <p class="home-report-card__title">미국 부자 TOP 10 성공 패턴 리포트</p>
+              <p class="home-report-card__desc">자산·학력·업종·창업 배경 비교 읽기</p>
+            </a>
+          </Fragment>
+        )}
       </div>
     </section>
 
-    <section class="library-toolbar panel content-section content-section--tight">
-      <div class="section-header">
-        <p class="section-header__eyebrow">지금 운영 중인 계산기</p>
-        <h2><span id="homeToolCount">{orderedTools.length}개</span></h2>
-        <p>실생활과 커리어에서 자주 보는 계산기를 꾸준히 추가하고 있습니다.</p>
+    <!-- ⑥ 이용안내 -->
+    <section class="home-section">
+      <div class="home-section__head">
+        <h2>이용 안내</h2>
       </div>
-      <div class="library-toolbar__search field">
-        <span>도구 검색</span>
-        <input
-          id="homeToolSearchInput"
-          type="search"
-          placeholder="어떤 계산이 필요하신가요? 예: 연봉 실수령, 성과급, 육아휴직"
-          autocomplete="off"
-        />
+      <div class="home-trust">
+        {trustLinks.map(link => (
+          <a class="home-trust-card" href={link.href}>
+            <p class="home-trust-card__title">{link.title}</p>
+            <p class="home-trust-card__desc">{link.desc}</p>
+          </a>
+        ))}
       </div>
-      <div class="library-toolbar__filters" aria-label="바로가기 주제">
-        {
-          categories.map((category, index) => (
-            <button class={`tool-filter${index === 0 ? " is-active" : ""}`} type="button" data-home-filter={category === "전체" ? "all" : category}>{category}</button>
-          ))
-        }
-      </div>
+      <p class="home-trust__notice">
+        계산 결과는 공개 기준과 입력값을 바탕으로 한 참고용 추정치입니다.
+        중요한 결정 전에는 원문 공지와 공식 자료를 함께 확인해주세요.
+      </p>
     </section>
 
-    <section class="content-section">
-      <div class="section-header">
-        <p class="section-header__eyebrow">도구 목록</p>
-        <h2>필요한 계산기부터 바로 들어가세요</h2>
-        <p>바로 어떤 결과를 볼 수 있는지 먼저 확인하고 선택할 수 있게 구성했습니다.</p>
-      </div>
-      <div class="tool-showcase tool-showcase--grid tool-showcase--magazine" id="homeToolGrid">
-        {
-          orderedTools.map((tool) => {
-            const topic = topicBySlug[tool.slug] ?? "기타";
-            return (
-              <a class="tool-card tool-card--feature" href={withBase(`/tools/${tool.slug}/`)} data-home-tool-card data-category={topic}>
-                <div class="tool-card__head">
-                  <p class="tool-card__eyebrow">{topic}</p>
-                  {
-                    tool.badges && tool.badges.length > 0 && (
-                      <div class="tool-badges">
-                        {tool.badges.map((badge) => <span class="tool-badge" data-badge={badge}>{badge}</span>)}
-                      </div>
-                    )
-                  }
-                </div>
-                <h2>{tool.title}</h2>
-                <p>{tool.description}</p>
-                <span class="tool-card__meta">{homeHighlights[tool.slug] ?? "입력값을 넣고 결과를 바로 확인해보세요."}</span>
-              </a>
-            );
-          })
-        }
-      </div>
-      <p class="library-empty" id="homeToolEmpty" hidden>검색 결과가 없습니다. 다른 키워드나 주제를 선택해보세요.</p>
-    </section>
-
-    <TrustPanel
-      eyebrow="신뢰 정보"
-      title="계산 전후로 함께 확인하면 좋은 안내"
-      description="운영 기준과 문의·면책 정보를 한 번에 확인할 수 있게 정리했습니다."
-    />
   </main>
 
-  <script is:inline set:html={homeSearchScript}></script>
   <script is:inline>
-    (() => {
-      function animateCount(el) {
-        const target   = parseFloat(el.dataset.countTo || "0");
-        const suffix   = el.dataset.suffix   || "";
-        const decimals = parseInt(el.dataset.decimals || "0", 10);
-        const useComma = el.dataset.format === "comma";
-        const duration = 1100;
-        const start    = performance.now();
-
-        function tick(now) {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased    = 1 - Math.pow(1 - progress, 3);
-          const current  = target * eased;
-
-          let formatted;
-          if (useComma) {
-            formatted = Math.round(current).toLocaleString("ko-KR");
-          } else {
-            formatted = decimals > 0 ? current.toFixed(decimals) : String(Math.round(current));
-          }
-          el.textContent = formatted + suffix;
-          if (progress < 1) requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
-      }
-
-      const heroStats = document.querySelector(".hero-stats");
-      if (!heroStats) return;
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.querySelectorAll("[data-count-to]").forEach(animateCount);
-          observer.unobserve(entry.target);
+    document.querySelectorAll('.home-filter__chip').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.home-filter__chip').forEach(function(b) {
+          b.classList.remove('is-active');
         });
-      }, { threshold: 0.4 });
-
-      observer.observe(heroStats);
-    })();
+        btn.classList.add('is-active');
+        var cat = btn.getAttribute('data-cat');
+        document.querySelectorAll('.home-tool-row').forEach(function(row) {
+          row.style.display = (cat === '전체' || row.getAttribute('data-category') === cat) ? '' : 'none';
+        });
+      });
+    });
   </script>
 </BaseLayout>
