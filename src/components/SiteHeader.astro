@@ -60,8 +60,30 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </div>
       </div>
 
-      <!-- 리포트 -->
-      <a class="site-nav__link" href={withBase("/reports/")}>리포트</a>
+      <!-- 리포트 드롭다운 -->
+      <div class="site-nav__item site-nav__item--has-dropdown">
+        <button class="site-nav__btn" aria-expanded="false" aria-haspopup="true">
+          리포트
+          <span class="site-nav__arrow" aria-hidden="true">▾</span>
+        </button>
+        <div class="site-nav__dropdown" role="menu">
+          <div class="site-nav__dropdown-section">
+            <p class="site-nav__dropdown-label">연봉 리포트</p>
+            <a href={withBase("/reports/new-employee-salary-2026/")} role="menuitem">
+              2026 신입 초봉 비교
+              <span class="site-nav__badge">신규</span>
+            </a>
+          </div>
+          <div class="site-nav__dropdown-section">
+            <p class="site-nav__dropdown-label">자산 리포트</p>
+            <a href={withBase("/reports/korea-rich-top10-assets/")} role="menuitem">한국 부자 TOP 10</a>
+            <a href={withBase("/reports/us-rich-top10-patterns/")} role="menuitem">미국 부자 TOP 10</a>
+          </div>
+          <div class="site-nav__dropdown-section">
+            <a href={withBase("/reports/")} role="menuitem" style="color:#64748b;font-size:0.82rem;">전체 리포트 보기 →</a>
+          </div>
+        </div>
+      </div>
 
       <!-- 소개 -->
       <a class="site-nav__link" href={withBase("/about/")}>소개</a>
@@ -122,6 +144,10 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       <div class="site-header__mobile-section">
         <p class="site-header__mobile-label">리포트</p>
         <div class="site-header__mobile-links">
+          <a href={withBase("/reports/new-employee-salary-2026/")}>
+            <span>2026 신입 초봉 비교</span>
+            <span class="site-header__mobile-badge">신규</span>
+          </a>
           <a href={withBase("/reports/korea-rich-top10-assets/")}>
             <span>한국 부자 TOP 10</span>
           </a>
@@ -150,11 +176,13 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 <div class="site-header__overlay" id="menu-overlay" aria-hidden="true"></div>
 
 <script>
-  // 스크롤 시 .is-scrolled 토글
+  // 스크롤 시 .is-scrolled 토글 (하이스테리시스: 30px 넘으면 추가, 5px 미만이면 제거)
+  const header = document.querySelector('.site-header')
   window.addEventListener('scroll', () => {
-    document.querySelector('.site-header')
-      ?.classList.toggle('is-scrolled', window.scrollY > 10)
-  })
+    if (!header) return
+    if (window.scrollY > 30) header.classList.add('is-scrolled')
+    else if (window.scrollY < 5) header.classList.remove('is-scrolled')
+  }, { passive: true })
 
   // 햄버거 토글
   const hamburger = document.querySelector('.site-header__hamburger')

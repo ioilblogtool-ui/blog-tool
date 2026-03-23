@@ -1,0 +1,406 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { newEmployeeSalary2026, formatKrwM } from "../../data/newEmployeeSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const seed = newEmployeeSalary2026;
+const entries = seed.entries;
+const tiers = seed.tiers;
+const selected = entries[0];
+
+const topEntry = entries[0];
+const itEntries = entries.filter((e) => e.sectorType === "it");
+const itAvg = Math.round(itEntries.reduce((s, e) => s + e.annualKrwM, 0) / itEntries.length);
+const publicEntries = entries.filter((e) => e.sectorType === "public");
+const publicAvg = Math.round(publicEntries.reduce((s, e) => s + e.annualKrwM, 0) / publicEntries.length);
+const totalCompanyCount = tiers.reduce((s, t) => s + t.companies.length, 0);
+
+const faqItems = seed.faq.map((item) => ({ question: item.q, answer: item.a }));
+
+const NOTE_LABEL: Record<string, string> = {
+  it:     "IT",
+  public: "공기업",
+  sub:    "하단",
+};
+---
+
+<BaseLayout title={seed.meta.title} description={seed.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page us-rich-report-page salary-report-page">
+    <CalculatorHero
+      eyebrow="Interactive Report"
+      title={seed.meta.title}
+      description={seed.meta.subtitle}
+    />
+
+    <InfoNotice
+      title="기준 안내"
+      lines={[seed.meta.methodology, seed.meta.caution, seed.meta.updatedAt]}
+    />
+
+    <!-- ① KPI -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>2026년 신입 초봉 요약</h2>
+      </div>
+      <div class="report-kpi-grid salary-kpi-grid">
+        <article class="report-stat-card">
+          <p>최고 초봉 기업</p>
+          <strong>{topEntry.name}</strong>
+          <span>{formatKrwM(topEntry.annualKrwM)} · 기본급 기준 추정</span>
+        </article>
+        <article class="report-stat-card">
+          <p>IT 평균</p>
+          <strong>{formatKrwM(itAvg)}</strong>
+          <span>IT·게임 계열 평균</span>
+        </article>
+        <article class="report-stat-card">
+          <p>공기업·공무원 평균</p>
+          <strong>{formatKrwM(publicAvg)}</strong>
+          <span>공기업·9급 공무원 평균</span>
+        </article>
+        <article class="report-stat-card">
+          <p>리포트 기업 수</p>
+          <strong>{totalCompanyCount}개+</strong>
+          <span>{tiers.length}개 티어로 구분</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ② 인터랙티브 영끌 연봉 바 차트 -->
+    <section class="content-section salary-interactive-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">영끌 연봉 비교</p>
+        <h2>기업별 신입 영끌 연봉 한눈에 보기</h2>
+        <p>계약연봉 + 성과급 현금성 기준 · 야근·특수수당 제외 · 커뮤니티 기반 추정치</p>
+      </div>
+
+      <div class="salary-my-input-row">
+        <label for="mySalInput">내 연봉 (만원)</label>
+        <input type="number" id="mySalInput" placeholder="예: 7500" min="0" max="20000" step="100" />
+        <span id="mySalHint" class="salary-my-hint">입력하면 차트에 위치를 표시해드려요</span>
+      </div>
+
+      <div class="salary-result-card" id="salaryResultCard">
+        <p id="salaryResultTitle" class="salary-result-title"></p>
+        <div class="salary-result-grid">
+          <div class="salary-result-cell"><strong id="r-pct">—</strong><span>전체 상위 %</span></div>
+          <div class="salary-result-cell"><strong id="r-diff">—</strong><span>평균 대비</span></div>
+          <div class="salary-result-cell"><strong id="r-tier">—</strong><span>연봉 티어</span></div>
+        </div>
+        <p id="similarText" class="salary-similar-text"></p>
+      </div>
+
+      <div class="salary-summary-bar" id="salarySummaryBar"></div>
+
+      <div class="salary-filter-row">
+        <button class="salary-ftab is-active" data-filter="all">전체</button>
+        <button class="salary-ftab" data-filter="semi">반도체</button>
+        <button class="salary-ftab" data-filter="car">완성차·조선·방산</button>
+        <button class="salary-ftab" data-filter="it">IT·플랫폼</button>
+        <button class="salary-ftab" data-filter="chem">화학·에너지·철강</button>
+        <button class="salary-ftab" data-filter="fin">금융·유통</button>
+        <button class="salary-ftab" data-filter="for">외국계</button>
+        <select id="salarySort" class="salary-sort-sel">
+          <option value="desc">높은순</option>
+          <option value="asc">낮은순</option>
+          <option value="name">가나다순</option>
+        </select>
+      </div>
+
+      <div id="salaryInteractiveChart"></div>
+
+      <p class="salary-chart-hint">커뮤니티 기반 추정치 · 성과급 포함 영끌 기준 · 야근·특수수당 제외</p>
+    </section>
+
+    <!-- ③ 업종별 인사이트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">업종별 인사이트</p>
+        <h2>업종별 영끌 연봉 범위와 특징</h2>
+      </div>
+      <div class="salary-insight-grid">
+        <article class="salary-insight-card">
+          <div class="salary-insight-industry">
+            <span class="salary-insight-dot" style="background:#5E9CFF;"></span>반도체
+          </div>
+          <div class="salary-insight-range">8,000 — 15,000만</div>
+          <p class="salary-insight-note">SK하이닉스가 1.5억으로 전 업종 압도적 1위. 삼성전자는 사업부마다 성과급 비율이 달라 지원 전 사업부 확인이 중요합니다.</p>
+          <span class="salary-insight-avg">업종 평균 9,500만 추정</span>
+        </article>
+        <article class="salary-insight-card">
+          <div class="salary-insight-industry">
+            <span class="salary-insight-dot" style="background:#F5A623;"></span>완성차·조선·방산
+          </div>
+          <div class="salary-insight-range">6,000 — 9,500만</div>
+          <p class="salary-insight-note">현대차·기아·모비스가 9,500만으로 묶임. 조선 3사도 수주 호황으로 8,500~9,000만 수준. K-방산(한화에어로·LIG넥스원)도 약진 중.</p>
+          <span class="salary-insight-avg">업종 평균 7,800만 추정</span>
+        </article>
+        <article class="salary-insight-card">
+          <div class="salary-insight-industry">
+            <span class="salary-insight-dot" style="background:#10B981;"></span>IT·플랫폼
+          </div>
+          <div class="salary-insight-range">6,000 — 8,000만</div>
+          <p class="salary-insight-note">네이버·넥슨·KT가 7,000만대. 스톡옵션·RSU·유연근무 등 비현금 복지 고려 시 체감 총보상은 더 높아집니다.</p>
+          <span class="salary-insight-avg">업종 평균 6,800만 추정</span>
+        </article>
+        <article class="salary-insight-card">
+          <div class="salary-insight-industry">
+            <span class="salary-insight-dot" style="background:#6366F1;"></span>화학·에너지·철강
+          </div>
+          <div class="salary-insight-range">5,000 — 8,000만</div>
+          <p class="salary-insight-note">S-OIL·GS칼텍스 등 정유사가 8,000만 수준. LG화학·롯데케미칼은 6,000만 수준. 동일 그룹사 내에서도 계열사별 격차가 큰 업종.</p>
+          <span class="salary-insight-avg">업종 평균 6,500만 추정</span>
+        </article>
+        <article class="salary-insight-card">
+          <div class="salary-insight-industry">
+            <span class="salary-insight-dot" style="background:#EC4899;"></span>금융·유통
+          </div>
+          <div class="salary-insight-range">5,500 — 7,500만</div>
+          <p class="salary-insight-note">KB국민은행·현대해상이 7,500만. 성과급 구조가 연차 비중이 높아 초봉보다 5년차 이후 격차가 크게 벌어지는 특징.</p>
+          <span class="salary-insight-avg">업종 평균 6,500만 추정</span>
+        </article>
+        <article class="salary-insight-card">
+          <div class="salary-insight-industry">
+            <span class="salary-insight-dot" style="background:#8B5CF6;"></span>외국계
+          </div>
+          <div class="salary-insight-range">9,500 — 13,000만</div>
+          <p class="salary-insight-note">ASML이 1.3억으로 외국계 최고. 채용 규모가 작아 진입장벽이 높지만 초봉 자체는 국내 대기업 대비 30~50% 높은 수준.</p>
+          <span class="salary-insight-avg">업종 평균 11,000만 추정</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ④ 티어별 전체 기업 목록 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">티어별 비교</p>
+        <h2>초봉 기준 티어별 기업 목록</h2>
+        <p>
+          기본급 기준 연봉 티어로 구분한 목록입니다.
+          <span class="salary-legend-inline">
+            <span class="salary-note-tag is-it">IT</span> IT 계열 ·
+            <span class="salary-note-tag is-public">공기업</span> 공공기관 ·
+            <span class="salary-note-tag is-sub">하단</span> 해당 티어 하단 추정
+          </span>
+        </p>
+      </div>
+
+      <div class="salary-tier-list">
+        {
+          tiers.map((tier) => (
+            <div class="salary-tier-row">
+              <div class="salary-tier-row__level">
+                <strong>{tier.label}</strong>
+                <span class="salary-tier-row__net">
+                  월 실수령 약 {Math.round(tier.salaryKrwM / 12 * 0.82)}만원 추정
+                </span>
+              </div>
+              <div class="salary-tier-row__companies">
+                {tier.companies.map((c) => (
+                  <span
+                    class={`salary-note-tag${c.note ? " is-" + c.note : ""}`}
+                  >
+                    {c.note && NOTE_LABEL[c.note] ? (
+                      <em>{NOTE_LABEL[c.note]}</em>
+                    ) : null}
+                    {c.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- ③ 바 차트 비교 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">대표 기업 비교</p>
+        <h2>티어별 대표 기업 연봉 차트</h2>
+        <p>바를 클릭하면 해당 기업 상세 정보가 열립니다.</p>
+      </div>
+      <div class="salary-chart-wrap" id="salaryChartWrap">
+        <canvas id="salaryOverviewCanvas"></canvas>
+      </div>
+      <div class="salary-chart-legend">
+        <span class="is-it">IT·플랫폼·게임</span>
+        <span class="is-semiconductor">반도체</span>
+        <span class="is-auto">자동차</span>
+        <span class="is-battery">배터리·소재</span>
+        <span class="is-logistics">물류·유통</span>
+        <span class="is-food">식품</span>
+        <span class="is-public">공공</span>
+      </div>
+      <p class="salary-chart-hint">기본급 기준 추정치 · 성과급 포함 총보상은 기업별 상세에서 확인하세요</p>
+    </section>
+
+    <!-- ④ 기업 선택 + 상세 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">기업 상세</p>
+        <h2>대표 기업 한 곳씩 자세히 보기</h2>
+        <p>기업을 선택하면 초봉·월 실수령·성과급 포함 총보상·복리후생을 확인할 수 있습니다.</p>
+      </div>
+
+      <article class="panel salary-control-panel">
+        <label class="field">
+          <span>기업 선택</span>
+          <select id="salaryCompanySelect">
+            {
+              entries.map((e) => (
+                <option value={e.slug} selected={e.slug === selected.slug}>
+                  {e.rank}위 · {e.name} ({formatKrwM(e.annualKrwM)})
+                </option>
+              ))
+            }
+          </select>
+        </label>
+      </article>
+
+      <article class="panel salary-profile-card" id="salaryProfileCard">
+        <div class="salary-profile-card__header">
+          <div>
+            <p class="panel-heading__eyebrow">선택 기업</p>
+            <h2 id="profileName">{selected.name}</h2>
+            <p class="salary-profile-card__sub" id="profileNameEn">{selected.nameEn}</p>
+          </div>
+          <div class="report-rank-chip" id="profileRank">{selected.rank}위</div>
+        </div>
+
+        <div class="salary-profile-card__summary">
+          <article class="report-stat-card report-stat-card--primary">
+            <p>연봉 (기본급 기준 추정)</p>
+            <strong id="profileAnnual">{formatKrwM(selected.annualKrwM)}</strong>
+            <span id="profileSector">{selected.sector}</span>
+          </article>
+          <article class="report-stat-card">
+            <p>월 실수령 추정</p>
+            <strong id="profileMonthlyNet">약 {selected.monthlyNetKrwM}만원</strong>
+            <span>4대보험+소득세 공제 추정</span>
+          </article>
+          <article class="report-stat-card">
+            <p>성과급 포함 총보상 추정</p>
+            <strong id="profileTotal">{selected.totalCompM ? `약 ${formatKrwM(selected.totalCompM)}` : "–"}</strong>
+            <span>연도별 실적에 따라 변동</span>
+          </article>
+        </div>
+
+        <div class="salary-profile-card__detail">
+          <div class="report-detail-list">
+            <div class="report-detail-row">
+              <span>업종</span>
+              <strong id="profileSectorDetail">{selected.sector}</strong>
+            </div>
+            <div class="report-detail-row">
+              <span>월 세전 환산</span>
+              <strong id="profileMonthlyGross">{Math.round(selected.annualKrwM / 12)}만원</strong>
+            </div>
+          </div>
+          <div class="report-profile-card__aside">
+            <div class="report-tag-block">
+              <span class="report-tag-block__label">태그</span>
+              <div class="report-tag-list" id="profileTags">
+                {selected.tags.map((tag) => <span>{tag}</span>)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="salary-benefits-block">
+          <p class="salary-benefits-block__label">주요 복리후생</p>
+          <ul class="salary-benefits-list" id="profileBenefits">
+            {selected.benefits.map((b) => <li>{b}</li>)}
+          </ul>
+        </div>
+
+        <div class="report-profile-card__footer">
+          <p id="profileSummary">{selected.summary}</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ⑤ 월 실수령 비교 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">월 실수령 비교</p>
+        <h2>세후 기준으로 보면 얼마나 다를까?</h2>
+        <p>세전 연봉 격차보다 월 실수령 격차는 누진세 효과로 상대적으로 줄어듭니다.</p>
+      </div>
+      <div class="salary-net-chart-wrap" id="salaryNetChartWrap">
+        <canvas id="salaryNetCanvas"></canvas>
+      </div>
+      <p class="salary-chart-hint">4대보험 + 소득세 공제 후 추정치 · 부양가족·비과세 항목에 따라 실제와 다를 수 있습니다</p>
+    </section>
+
+    <!-- ⑥ 패턴 요약 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>초봉 데이터로 읽는 2026 트렌드</h2>
+      </div>
+      <div class="pattern-grid">
+        {
+          seed.patternPoints.map((item) => (
+            <article class="pattern-card">
+              <strong>{item.title}</strong>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="distribution-grid salary-sector-grid">
+        {
+          seed.sectorSummaries.map((item) => (
+            <article class="panel distribution-card">
+              <h3>{item.label}</h3>
+              <p>{item.description}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 신입사원 초봉 비교 리포트 읽는 법"
+      intro={[
+        "이 페이지는 2026년 현재 잡플래닛·블라인드 집계, 공개 채용 공고, 언론 보도를 바탕으로 국내 주요 기업의 신입사원 초봉(기본급 기준 연봉)을 티어별로 비교하는 인터랙티브 리포트입니다.",
+        "IT·반도체·배터리·자동차·물류·식품·공기업까지 약 50개 이상 기업·기관을 8개 티어로 분류하고, 대표 기업 12곳의 개별 프로필을 함께 제공합니다.",
+      ]}
+      inputPoints={[
+        "티어별 기업 목록으로 어느 분야·기업이 어느 초봉 구간에 있는지 한눈에 볼 수 있습니다.",
+        "바 차트로 대표 기업의 초봉을 시각적으로 비교할 수 있습니다.",
+        "기업 선택 시 초봉·월 실수령·성과급 포함 총보상·복리후생·요약 설명을 상세히 볼 수 있습니다.",
+      ]}
+      criteria={[
+        "잡플래닛·블라인드 집계, 공개 채용 공고, 언론 보도 기반의 추정치입니다.",
+        "기본급 중심 연봉 기준이며, 성과급·각종 수당은 별도 표기합니다.",
+        "월 실수령은 4대보험 및 근로소득세 공제 적용 추정치로, 개인 상황에 따라 다릅니다.",
+        "모든 수치는 참고용이며 채용·처우 협상의 공식 근거로 사용하지 마세요.",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/salary/", label: "연봉 인상 계산기" },
+        { href: "/tools/negotiation/", label: "이직 계산기" },
+        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+        { href: "/reports/", label: "비교 리포트 모아보기" },
+      ]}
+    />
+  </main>
+
+  <script id="salaryReportData" type="application/json" set:html={JSON.stringify(newEmployeeSalary2026)}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/new-employee-salary-2026.js")}></script>
+</BaseLayout>
