@@ -60,10 +60,10 @@ function renderCompareChart(nets) {
 
   const labels = ["현재", "케이스 1", "케이스 2", "케이스 3"];
   const colors = [
-    CHART_COLORS.gray,
-    "rgba(29,158,117,0.58)",
-    "rgba(29,158,117,0.80)",
-    "rgba(15,110,86,0.96)",
+    "#B4B2A9",
+    "#5DCAA5",
+    "#1D9E75",
+    "#0F6E56",
   ];
   const baseOpts = buildDefaultOptions();
 
@@ -94,11 +94,12 @@ function renderCompareChart(nets) {
             callback: (v) => formatKRW(v),
             font: { size: 10 },
             maxTicksLimit: 5,
+            color: "#888780",
           },
-          grid: { color: "rgba(0,0,0,0.06)" },
+          grid: { color: "#F0EFED" },
         },
         y: {
-          ticks: { font: { size: 11 } },
+          ticks: { font: { size: 11 }, color: "#888780" },
           grid: { display: false },
         },
       },
@@ -353,3 +354,12 @@ $("copySalaryLinkBtn")?.addEventListener("click", async () => {
 // ── 초기 실행 ─────────────────────────────────────────────────────────────────
 updateHints();
 renderSalary();
+
+// URL 파라미터 있으면 자동 계산 (Chart.js CDN 로드 완료 후 재실행)
+const _urlParams = new URLSearchParams(window.location.search);
+if (_urlParams.has('sal') || _urlParams.has('r1')) {
+  setTimeout(() => {
+    const calcBtn = document.getElementById('calcBtn');
+    if (calcBtn) calcBtn.click();
+  }, 100);
+}

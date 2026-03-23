@@ -7,39 +7,83 @@
   margin-bottom: 16px;
 }
 
-// ── 케이스 카드 하이라이트 (인상 후 월 실수령) ──────────────────────────────
+// ── SummaryCards KPI (수정 2) ─────────────────────────────────────────────────
+.salary-page .summary-card {
+  background: #E1F5EE;
+  border-radius: 10px;
+  padding: 16px 14px;
+  border: none;
+}
+
+.salary-page .summary-card p {
+  font-size: 11px;
+  color: #5F5E5A;
+  margin-bottom: 4px;
+}
+
+.salary-page .summary-card strong {
+  font-size: 22px;
+  font-weight: 500;
+  color: #0F6E56;
+  line-height: 1;
+  display: block;
+}
+
+.salary-page .summary-card .metric-sub {
+  font-size: 10px;
+  color: #B4B2A9;
+  margin-top: 3px;
+}
+
+// ── 케이스 카드 하이라이트 (수정 3) ──────────────────────────────────────────
 .salary-page .result-summary-card--highlight {
-  background: var(--color-brand-tint, #e1f5ee);
-  border: 1px solid rgba(15, 110, 86, 0.18);
+  background: #FFFFFF;
+  border: 1.5px solid #1D9E75;
 }
 
 .salary-page .result-summary-card--highlight strong {
-  color: var(--color-brand-primary, #0f6e56);
+  color: #0F6E56;
+}
+
+.salary-page .result-summary-card--highlight span {
+  color: #1D9E75;
 }
 
 // ── 월 증가액 sub 텍스트 ─────────────────────────────────────────────────────
 .salary-page .result-card-sub {
   display: block;
   margin-top: 5px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-brand-mid, #1d9e75);
-  letter-spacing: 0.01em;
+  font-size: 10px;
+  color: #B4B2A9;
 }
 
-// ── result-summary-grid 반응형 ────────────────────────────────────────────────
+// ── result-summary-grid (수정 3) ─────────────────────────────────────────────
 .salary-page .result-summary-grid {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 560px) {
-  .salary-page .result-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 16px;
 }
 
 @media (min-width: 1024px) {
   .salary-page .result-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, 1fr);
   }
+}
+
+// ── panel-heading 스타일 통일 (수정 5) ───────────────────────────────────────
+.salary-page .panel-heading__eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: #0F6E56;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.salary-page .panel-heading__summary {
+  font-size: 13px;
+  color: #888780;
+  line-height: 1.6;
+  margin-top: 6px;
+  text-align: left;
 }
