@@ -1,0 +1,202 @@
+// ── KPI 카드 — 첫 두 개 브랜드 그린 (③) ─────────────────────────────────────
+.parental-leave-pay-page .timeline-tool-shell__summary .metrics--four {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 1024px) {
+  .parental-leave-pay-page .timeline-tool-shell__summary .metrics--four {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.parental-leave-pay-page .timeline-tool-shell__summary .metric-card.summary-card:nth-child(1),
+.parental-leave-pay-page .timeline-tool-shell__summary .metric-card.summary-card:nth-child(2) {
+  background: #E1F5EE;
+  border: none;
+}
+
+.parental-leave-pay-page .timeline-tool-shell__summary .metric-card.summary-card:nth-child(1) strong,
+.parental-leave-pay-page .timeline-tool-shell__summary .metric-card.summary-card:nth-child(2) strong {
+  color: #0F6E56;
+}
+
+// ── 구간별 급여 구조 바 (④) ──────────────────────────────────────────────────
+.plp-phase-bar {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.plp-phase-bar__title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #5F5E5A;
+  margin: 0 0 10px;
+}
+
+.plp-phase-bar__track {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 32px;
+  margin-bottom: 10px;
+}
+
+.plp-phase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+
+  span {
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  strong {
+    font-size: 9px;
+    color: white;
+    font-weight: 500;
+  }
+
+  &--1 {
+    background: #1D9E75;
+    flex: 3;
+  }
+
+  &--2 {
+    background: #5DCAA5;
+    flex: 3;
+  }
+
+  &--3 {
+    background: #9FE1CB;
+    flex: 6;
+
+    span,
+    strong {
+      color: #085041;
+    }
+  }
+}
+
+.plp-phase-bar__legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.plp-legend-item {
+  font-size: 9px;
+  color: #888780;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 2px;
+  }
+
+  &--1::before { background: #1D9E75; }
+  &--2::before { background: #5DCAA5; }
+  &--3::before { background: #9FE1CB; }
+}
+
+// ── 월별 급여 바 차트 (⑤) ────────────────────────────────────────────────────
+.plp-chart-wrap {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+  height: 180px;
+}
+
+// ── 상한 적용 뱃지 (⑥) ───────────────────────────────────────────────────────
+.plp-limit-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.plp-limit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.plp-limit-label {
+  font-size: 11px;
+  color: #888780;
+  min-width: 60px;
+}
+
+.plp-limit-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 10px;
+
+  &.is-hit {
+    background: #FAEEDA;
+    color: #854F0B;
+  }
+
+  &.is-ok {
+    background: #E1F5EE;
+    color: #0F6E56;
+  }
+}
+
+.plp-limit-note {
+  font-size: 11px;
+  color: #888780;
+}
+
+// ── 월별 상세 표 (⑦) ─────────────────────────────────────────────────────────
+.parental-leave-pay-page .result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+
+  th {
+    background: #F2F1EF;
+    color: #5F5E5A;
+    font-weight: 500;
+    padding: 9px 11px;
+    border-bottom: 1px solid #E8E7E4;
+    text-align: left;
+  }
+
+  td {
+    padding: 9px 11px;
+    border-bottom: 1px solid #F0EFED;
+    color: #1A1A18;
+
+    strong {
+      color: #0F6E56;
+      font-weight: 500;
+    }
+
+    .hit {
+      font-size: 9px;
+      background: #FAEEDA;
+      color: #854F0B;
+      padding: 1px 5px;
+      border-radius: 6px;
+    }
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}

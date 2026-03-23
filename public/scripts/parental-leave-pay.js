@@ -1,5 +1,83 @@
 ﻿const $ = (id) => document.getElementById(id);
 
+// ── 월별 차트 ─────────────────────────────────────────────────────────────────
+function initOrUpdateChart(monthlyData) {
+  const ctx = document.getElementById('plp-monthly-chart');
+  if (!ctx || !window.Chart) return;
+
+  const colors = monthlyData.map((_, i) => {
+    if (i < 3) return '#1D9E75';
+    if (i < 6) return '#5DCAA5';
+    return '#9FE1CB';
+  });
+  const labels = monthlyData.map((_, i) => `${i + 1}개월`);
+  const values = monthlyData.map(d => Math.round(d / 10000));
+
+  if (window.plpChart) {
+    window.plpChart.data.labels = labels;
+    window.plpChart.data.datasets[0].data = values;
+    window.plpChart.data.datasets[0].backgroundColor = colors;
+    window.plpChart.update();
+    return;
+  }
+
+  window.plpChart = new window.Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: (c) => `${c.parsed.y}만원` }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#888780', font: { size: 10 } }
+        },
+        y: {
+          grid: { color: '#F0EFED' },
+          ticks: { color: '#888780', font: { size: 10 }, callback: (v) => v + '만' }
+        }
+      },
+      animation: { duration: 400 }
+    }
+  });
+}
+
+// ── 상한 뱃지 ─────────────────────────────────────────────────────────────────
+function updateLimitBadges(wage) {
+  const limits = [2500000, 2000000, 1600000];
+  const rates  = [1.0, 1.0, 0.8];
+
+  ['1', '2', '3'].forEach((n, i) => {
+    const badge = $(`limitBadge${n}`);
+    const note  = $(`limitNote${n}`);
+    if (!badge || !note) return;
+
+    const calculated = wage * rates[i];
+    const isHit = calculated > limits[i];
+    const actual = Math.min(calculated, limits[i]);
+
+    badge.textContent = isHit ? `상한 ${limits[i] / 10000}만 적용` : '상한 미적용';
+    badge.className = `plp-limit-badge ${isHit ? 'is-hit' : 'is-ok'}`;
+    note.textContent = isHit
+      ? `월 ${Math.round(wage / 10000)}만 → ${Math.round(actual / 10000)}만 수령`
+      : `월 ${Math.round(actual / 10000)}만 그대로 수령`;
+  });
+}
+
 function formatWon(value) {
   return `${new Intl.NumberFormat("ko-KR").format(Math.round(Number(value || 0)))}원`;
 }
@@ -86,6 +164,9 @@ function renderParentalLeavePay() {
   $("leavePayAllowanceSummary").textContent = allowanceLabel;
   $("leavePaySummaryNote").textContent = `${leaveUser === "MOTHER" ? "엄마" : "아빠"} 기준 · 요청 ${requestedLeaveMonths}개월 / 반영 ${effectiveMonths}개월 · 상한 적용 ${cappedCount}개월`;
 
+  initOrUpdateChart(rows.map(r => r.pay));
+  updateLimitBadges(monthlyWage);
+
   $("leavePayTable").innerHTML = rows
     .map((row) => `
       <tr>
@@ -124,4 +205,15 @@ if (page === "parental-leave-pay") {
   });
 
   renderParentalLeavePay();
+
+  // URL 파라미터 있으면 자동 계산
+  const urlParams = new URLSearchParams(window.location.search);
+  const hasParams = urlParams.has('wage') || urlParams.has('months') || urlParams.has('w');
+  if (hasParams) {
+    setTimeout(() => {
+      const calcBtn = $("calcLeavePayBtn") ||
+                      document.querySelector('.button--primary[type="button"]');
+      if (calcBtn) calcBtn.click();
+    }, 150);
+  }
 }

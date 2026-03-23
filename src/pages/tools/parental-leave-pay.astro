@@ -98,6 +98,54 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
       ]}
     />
 
+    <!-- ④ 구간별 급여 구조 바 -->
+    <div class="plp-phase-bar">
+      <p class="plp-phase-bar__title">구간별 급여 구조</p>
+      <div class="plp-phase-bar__track">
+        <div class="plp-phase plp-phase--1" id="phase1Bar">
+          <span>1~3개월</span>
+          <strong id="phase1Label">100% · 상한 250만</strong>
+        </div>
+        <div class="plp-phase plp-phase--2" id="phase2Bar">
+          <span>4~6개월</span>
+          <strong id="phase2Label">100% · 상한 200만</strong>
+        </div>
+        <div class="plp-phase plp-phase--3" id="phase3Bar">
+          <span>7개월~</span>
+          <strong id="phase3Label">80% · 상한 160만</strong>
+        </div>
+      </div>
+      <div class="plp-phase-bar__legend">
+        <span class="plp-legend-item plp-legend-item--1">1~3개월 (100%, 상한 250만)</span>
+        <span class="plp-legend-item plp-legend-item--2">4~6개월 (100%, 상한 200만)</span>
+        <span class="plp-legend-item plp-legend-item--3">7개월~ (80%, 상한 160만)</span>
+      </div>
+    </div>
+
+    <!-- ⑤ 월별 급여 바 차트 -->
+    <div class="plp-chart-wrap">
+      <canvas id="plp-monthly-chart"></canvas>
+    </div>
+
+    <!-- ⑥ 상한 적용 뱃지 -->
+    <div class="plp-limit-summary" id="plpLimitSummary">
+      <div class="plp-limit-row" id="limitRow1">
+        <span class="plp-limit-label">1~3개월</span>
+        <span class="plp-limit-badge" id="limitBadge1">—</span>
+        <span class="plp-limit-note" id="limitNote1"></span>
+      </div>
+      <div class="plp-limit-row" id="limitRow2">
+        <span class="plp-limit-label">4~6개월</span>
+        <span class="plp-limit-badge" id="limitBadge2">—</span>
+        <span class="plp-limit-note" id="limitNote2"></span>
+      </div>
+      <div class="plp-limit-row" id="limitRow3">
+        <span class="plp-limit-label">7개월~</span>
+        <span class="plp-limit-badge" id="limitBadge3">—</span>
+        <span class="plp-limit-note" id="limitNote3"></span>
+      </div>
+    </div>
+
     <InfoNotice
       title="안내"
       lines={[
@@ -164,5 +212,6 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
     </Fragment>
   </TimelineToolShell>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/parental-leave-pay.js")}></script>
 </BaseLayout>
