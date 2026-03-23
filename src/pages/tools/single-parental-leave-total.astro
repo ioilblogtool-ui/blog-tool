@@ -154,6 +154,58 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
       </article>
     </section>
 
+    <!-- ④ 도넛 차트 + 분해 카드 -->
+    <div class="spl-donut-wrap">
+      <div class="spl-donut-canvas-box">
+        <canvas id="spl-donut-chart"></canvas>
+      </div>
+      <div class="spl-donut-legend" id="splDonutLegend">
+        <div class="spl-legend-item">
+          <span class="spl-legend-dot spl-legend-dot--leave"></span>
+          <span class="spl-legend-label">육아휴직자 소득</span>
+          <span class="spl-legend-pct" id="legendPctLeave">—%</span>
+        </div>
+        <div class="spl-legend-item">
+          <span class="spl-legend-dot spl-legend-dot--spouse"></span>
+          <span class="spl-legend-label">배우자 급여</span>
+          <span class="spl-legend-pct" id="legendPctSpouse">—%</span>
+        </div>
+        <div class="spl-legend-item">
+          <span class="spl-legend-dot spl-legend-dot--support"></span>
+          <span class="spl-legend-label">부모급여+아동수당</span>
+          <span class="spl-legend-pct" id="legendPctSupport">—%</span>
+        </div>
+        <div class="spl-legend-item">
+          <span class="spl-legend-dot spl-legend-dot--welcome"></span>
+          <span class="spl-legend-label">첫만남이용권</span>
+          <span class="spl-legend-pct" id="legendPctWelcome">—%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="spl-breakdown">
+      <div class="spl-bk-card spl-bk-card--accent" id="bkLeave">
+        <p class="spl-bk-label">육아휴직자 소득 합계</p>
+        <strong class="spl-bk-val" id="bkLeaveVal">—</strong>
+        <span class="spl-bk-sub">급여 기간 + 복직 후 월급</span>
+      </div>
+      <div class="spl-bk-card" id="bkSpouse">
+        <p class="spl-bk-label">배우자 급여 합계</p>
+        <strong class="spl-bk-val" id="bkSpouseVal">—</strong>
+        <span class="spl-bk-sub">24개월 × 배우자 월급</span>
+      </div>
+      <div class="spl-bk-card" id="bkSupport">
+        <p class="spl-bk-label">부모급여 + 아동수당</p>
+        <strong class="spl-bk-val" id="bkSupportVal">—</strong>
+        <span class="spl-bk-sub">자녀 순번·개월 수 반영</span>
+      </div>
+      <div class="spl-bk-card" id="bkWelcome">
+        <p class="spl-bk-label">첫만남이용권</p>
+        <strong class="spl-bk-val" id="bkWelcomeVal">—</strong>
+        <span class="spl-bk-sub">포함 여부 설정 기준</span>
+      </div>
+    </div>
+
     <article class="panel">
       <div class="panel-heading">
         <div>
@@ -192,6 +244,21 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
     />
 
     <Fragment slot="timeline">
+      <!-- ⑤ 월별 스택 바 차트 -->
+      <div class="spl-timeline-wrap">
+        <p class="spl-timeline-title">월별 가구 소득 타임라인</p>
+        <p class="spl-timeline-sub" id="splTimelineSub">—</p>
+        <div class="spl-timeline-chart-box">
+          <canvas id="spl-timeline-chart"></canvas>
+        </div>
+        <div class="spl-timeline-legend">
+          <div class="spl-tl-item"><span class="spl-tl-dot" style="background:#1D9E75"></span>육아휴직 급여</div>
+          <div class="spl-tl-item"><span class="spl-tl-dot" style="background:#0F6E56"></span>복직 후 월급</div>
+          <div class="spl-tl-item"><span class="spl-tl-dot" style="background:#5DCAA5"></span>배우자 급여</div>
+          <div class="spl-tl-item"><span class="spl-tl-dot" style="background:#9FE1CB"></span>부모급여+아동수당</div>
+        </div>
+      </div>
+
       <article class="panel">
         <div class="panel-heading">
           <div>
@@ -249,5 +316,6 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
     </Fragment>
   </TimelineToolShell>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/single-parental-leave-total.js")}></script>
 </BaseLayout>

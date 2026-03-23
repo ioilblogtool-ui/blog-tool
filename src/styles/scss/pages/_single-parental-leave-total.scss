@@ -1,9 +1,254 @@
-﻿.single-parental-page .timeline-tool-shell__summary .metrics--three {
-  grid-template-columns: 1fr;
+// ── KPI 카드 — 3열 레이아웃 + 상위 2개 브랜드 그린 (③) ────────────────────────
+.single-parental-page .timeline-tool-shell__summary .metrics--four {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
-@media (min-width: 560px) {
-  .single-parental-page .timeline-tool-shell__summary .metrics--three {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (max-width: 768px) {
+  .single-parental-page .timeline-tool-shell__summary .metrics--four {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(1),
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(2) {
+  background: #E1F5EE;
+  border: none;
+  padding: 16px 14px;
+}
+
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(1) p,
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(2) p {
+  font-size: 10px;
+  color: #5F5E5A;
+  margin-bottom: 4px;
+}
+
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(1) strong,
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(2) strong {
+  font-size: 22px;
+  font-weight: 500;
+  color: #0F6E56;
+  line-height: 1;
+}
+
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(3),
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(4) {
+  background: #F7F6F4;
+  border: none;
+  padding: 14px 12px;
+}
+
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(3) p,
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(4) p {
+  font-size: 10px;
+  color: #888780;
+  margin-bottom: 4px;
+}
+
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(3) strong,
+.single-parental-page .timeline-tool-shell__summary .metrics--four .summary-card:nth-child(4) strong {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1A1A18;
+  line-height: 1;
+}
+
+.single-parental-page .timeline-tool-shell__summary .metrics--three {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .single-parental-page .timeline-tool-shell__summary .metrics--three {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// ── 도넛 차트 (④) ────────────────────────────────────────────────────────────
+.spl-donut-wrap {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.spl-donut-canvas-box {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+}
+
+.spl-donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+}
+
+.spl-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spl-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+
+  &--leave   { background: #1D9E75; }
+  &--spouse  { background: #5DCAA5; }
+  &--support { background: #9FE1CB; }
+  &--welcome { background: #E1F5EE; border: 1px solid #9FE1CB; }
+}
+
+.spl-legend-label {
+  font-size: 11px;
+  color: #5F5E5A;
+  flex: 1;
+}
+
+.spl-legend-pct {
+  font-size: 11px;
+  font-weight: 500;
+  color: #1A1A18;
+}
+
+// ── 분해 카드 (④) ────────────────────────────────────────────────────────────
+.spl-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.spl-bk-card {
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #FFFFFF;
+
+  &--accent {
+    border-color: #1D9E75;
+    border-width: 1.5px;
+  }
+}
+
+.spl-bk-label {
+  font-size: 10px;
+  color: #888780;
+  margin: 0 0 4px;
+}
+
+.spl-bk-val {
+  font-size: 17px;
+  font-weight: 500;
+  color: #1A1A18;
+  display: block;
+
+  .spl-bk-card--accent & {
+    color: #0F6E56;
+  }
+}
+
+.spl-bk-sub {
+  font-size: 9px;
+  color: #B4B2A9;
+  margin-top: 2px;
+  display: block;
+}
+
+// ── 스택 바 타임라인 차트 (⑤) ────────────────────────────────────────────────
+.spl-timeline-wrap {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.spl-timeline-chart-box {
+  position: relative;
+  height: 160px;
+}
+
+.spl-timeline-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #5F5E5A;
+  margin: 0 0 2px;
+}
+
+.spl-timeline-sub {
+  font-size: 10px;
+  color: #B4B2A9;
+  margin: 0 0 10px;
+}
+
+.spl-timeline-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.spl-tl-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #888780;
+}
+
+.spl-tl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+// ── 월별 표 태그 (⑥) ─────────────────────────────────────────────────────────
+.spl-month-tag {
+  font-size: 8px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  margin-left: 3px;
+
+  &--leave  { background: #E1F5EE; color: #0F6E56; }
+  &--return { background: #F2F1EF; color: #888780; }
+}
+
+// ── 표 스타일 (⑥) ────────────────────────────────────────────────────────────
+.single-parental-page .result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+
+  th {
+    background: #F2F1EF;
+    color: #5F5E5A;
+    font-weight: 500;
+    padding: 9px 11px;
+    border-bottom: 1px solid #E8E7E4;
+    text-align: left;
+  }
+
+  td {
+    padding: 9px 11px;
+    border-bottom: 1px solid #F0EFED;
+    color: #1A1A18;
+
+    strong { color: #0F6E56; font-weight: 500; }
+  }
+
+  tr:last-child td { border-bottom: none; }
 }
