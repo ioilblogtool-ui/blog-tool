@@ -1,4 +1,4 @@
-﻿---
+---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
@@ -26,17 +26,9 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 const config = {
-  rankPresets,
-  yearOptions,
-  payoutModes,
-  scenarioOptions,
-  psMultipliersByYear,
-  comparisonBenchmarks,
-  welfareDefault,
-  actualPsMultiplier,
-  immediatePsRatio,
-  deferredPsRatio,
-  averageCompensation
+  rankPresets, yearOptions, payoutModes, scenarioOptions,
+  psMultipliersByYear, comparisonBenchmarks, welfareDefault,
+  actualPsMultiplier, immediatePsRatio, deferredPsRatio, averageCompensation
 };
 ---
 
@@ -84,21 +76,21 @@ const config = {
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="panel-heading__eyebrow">입력</p>
-              <h2 class="panel__title">직급·연봉·가정값 설정</h2>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">직급·연봉 먼저 입력</h2>
             </div>
           </div>
 
           <div class="form-cluster form-cluster--nested">
             <div class="form-cluster__header">
               <strong>본인</strong>
-              <span>기본 추천 연봉은 편집 가능한 예시값입니다.</span>
+              <span>직급별 연봉은 예시값이며 수정할 수 있습니다.</span>
             </div>
             <div class="form-grid form-grid--compact">
               <label class="field">
                 <span>직급</span>
                 <select id="selfRankSelect">
-                  {rankPresets.map((rank) => <option value={rank.code}>{rank.label}</option>)}
+                  {rankPresets.map((r) => <option value={r.code}>{r.label}</option>)}
                 </select>
               </label>
               <label class="field">
@@ -113,7 +105,7 @@ const config = {
             </div>
           </div>
 
-          <div class="form-cluster form-cluster--nested couple-only" id="spouseBlock" hidden>
+          <div class="form-cluster form-cluster--nested" id="spouseBlock" hidden>
             <div class="form-cluster__header">
               <strong>배우자</strong>
               <span>부부 계산 모드일 때만 합산됩니다.</span>
@@ -122,7 +114,7 @@ const config = {
               <label class="field">
                 <span>직급</span>
                 <select id="spouseRankSelect">
-                  {rankPresets.map((rank) => <option value={rank.code}>{rank.label}</option>)}
+                  {rankPresets.map((r) => <option value={r.code}>{r.label}</option>)}
                 </select>
               </label>
               <label class="field">
@@ -145,18 +137,18 @@ const config = {
               <label class="field">
                 <span>연도</span>
                 <select id="targetYearSelect">
-                  {yearOptions.map((year) => <option value={year.code}>{year.label}</option>)}
+                  {yearOptions.map((y) => <option value={y.code}>{y.label}</option>)}
                 </select>
               </label>
               <div class="field field-span-full">
                 <span>PS 방식</span>
                 <div class="toggle-grid">
                   <label class="mode-chip" id="payoutActualChip">
-                    <input type="radio" name="payoutMode" value="ACTUAL" checked />
+                    <input id="payoutActual" type="radio" name="payoutMode" value="ACTUAL" checked />
                     <span>2026 실제값</span>
                   </label>
                   <label class="mode-chip">
-                    <input type="radio" name="payoutMode" value="SCENARIO" />
+                    <input id="payoutScenario" type="radio" name="payoutMode" value="SCENARIO" />
                     <span>시나리오</span>
                   </label>
                 </div>
@@ -165,7 +157,7 @@ const config = {
               <label class="field">
                 <span>시나리오</span>
                 <select id="scenarioSelect">
-                  {scenarioOptions.map((scenario) => <option value={scenario.code}>{scenario.label}</option>)}
+                  {scenarioOptions.map((s) => <option value={s.code}>{s.label}</option>)}
                 </select>
                 <small id="scenarioHint"></small>
               </label>
@@ -203,13 +195,13 @@ const config = {
       </div>
       <div class="result-priority-panel__actions">
         <a class="button button--secondary" href="#sk-hynix-inputs">조건 다시 입력</a>
-        <a class="button button--ghost" href="#sk-hynix-detail-sections">세부 보기</a>
+        <a class="button button--ghost" href="#sk-hynix-bonus-details">세부 보기</a>
       </div>
     </article>
 
-    <section class="content-section content-section--tight">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">팩트 앵커</p>
+    <section class="sb-section">
+      <div class="sb-section__head">
+        <p class="sb-section__eyebrow">팩트 앵커</p>
         <h2>핵심 수치</h2>
       </div>
       <div class="fact-anchor-grid">
@@ -223,11 +215,11 @@ const config = {
       </div>
     </section>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">핵심 KPI</p>
+    <section class="sb-section">
+      <div class="sb-section__head">
+        <p class="sb-section__eyebrow">핵심 KPI</p>
         <h2 id="resultHeadline">개인 총보상 핵심 카드</h2>
-        <p id="resultSubcopy">2026 실제 지급 모드 기준</p>
+        <p class="sb-section__sub" id="resultSubcopy">2026 실제 지급 모드 기준</p>
       </div>
       <div class="kpi-grid">
         <article class="kpi-card kpi-card--accent">
@@ -258,7 +250,7 @@ const config = {
       </div>
     </section>
 
-    <section class="content-section sk-hynix-detail-grid" id="sk-hynix-detail-sections">
+    <section class="content-section sk-hynix-detail-grid" id="sk-hynix-bonus-details">
       <article class="panel summary-panel">
         <div class="panel-heading">
           <div>
@@ -307,9 +299,9 @@ const config = {
       </article>
     </section>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">연도 시나리오</p>
+    <section class="sb-section">
+      <div class="sb-section__head">
+        <p class="sb-section__eyebrow">연도 시나리오</p>
         <h2>2026~2028 비교</h2>
       </div>
       <div class="sk-hynix-scenario-chart-wrap">
@@ -318,10 +310,10 @@ const config = {
       <div class="scenario-year-grid" id="scenarioYearGrid"></div>
     </section>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">참고 비교</p>
-        <h2>비교 카드</h2>
+    <section class="sb-section">
+      <div class="sb-section__head">
+        <p class="sb-section__eyebrow">참고 비교</p>
+        <h2>재미로 보는 비교</h2>
       </div>
       <div class="comparison-grid" id="comparisonGrid"></div>
     </section>
@@ -330,7 +322,7 @@ const config = {
       <div class="panel-heading">
         <div>
           <p class="panel-heading__eyebrow">계산 기준</p>
-          <h2 class="panel__title">핵심 로직</h2>
+          <h2 class="panel__title">계산 기준 요약</h2>
         </div>
       </div>
       <div class="logic-grid">
@@ -358,7 +350,7 @@ const config = {
       lines={[
         "2026 실제 모드는 사용자가 제공한 공개 실적·PS 지급 사례를 기준으로 계산합니다.",
         "2027~2028의 PS 배수와 비교 직군 금액은 서비스 운영용 시나리오 가정값입니다.",
-        "월 실수령 추정은 실제 원천징수와 차이가 있을 수 있는 참고값입니다."
+        "월 실수령 추정은 실제 원천징수와 차이가 있을 수 있는 참고값입니다.",
       ]}
     />
 
@@ -367,17 +359,17 @@ const config = {
         introTitle="SK하이닉스 성과급 계산기를 이렇게 설계했습니다"
         intro={[
           "이 페이지는 기사형 설명에 머무르지 않고, 사용자가 개인 또는 부부 모드를 선택한 뒤 직급과 연봉을 넣으면 PS, PI, 복지 포함 총보상을 바로 계산하는 계산기형 랜딩으로 설계했습니다.",
-          "핵심은 2026 실제 지급 사례와 2027~2028 시나리오를 분리해 보여주는 것입니다. 공개된 팩트 앵커를 먼저 제시하고, 그 위에 사용자가 수정 가능한 연봉과 복지 가정을 얹어 해석하도록 구성했습니다."
+          "핵심은 2026 실제 지급 사례와 2027~2028 시나리오를 분리해 보여주는 것입니다. 공개된 팩트 앵커를 먼저 제시하고, 그 위에 사용자가 수정 가능한 연봉과 복지 가정을 얹어 해석하도록 구성했습니다.",
         ]}
         inputPoints={[
           "개인·부부 토글에 따라 입력 폼과 결과 문구가 함께 바뀝니다.",
           "직급별 추천 연봉은 예시값으로 제시하되 사용자가 바로 수정할 수 있습니다.",
-          "연 기준 총액, 월 체감 총액, 월 실수령 추정표를 한 페이지 안에서 이어서 확인할 수 있습니다."
+          "연 기준 총액, 월 체감 총액, 월 실수령 추정표를 한 페이지 안에서 이어서 확인할 수 있습니다.",
         ]}
         criteria={[
           "PS 계산은 기준급을 연봉의 20분의 1로 두고, 2026 실제 모드에서는 29.64배를 적용합니다.",
           "PI는 실제 지급 최대치 대신 보수적·기준·공격적 프리셋으로 단순화해 사용자가 업황 가정을 빠르게 바꿔볼 수 있게 했습니다.",
-          "직급별 연봉, 복지 금액, 미래연도 PS 배수, 비교 직군 금액은 모두 편집 가능 또는 운영 가정값으로 해석해야 합니다."
+          "직급별 연봉, 복지 금액, 미래연도 PS 배수, 비교 직군 금액은 모두 편집 가능 또는 운영 가정값으로 해석해야 합니다.",
         ]}
         faq={[
           { question: "PS 2964%는 무슨 뜻인가요?", answer: "기준급의 2,964%라는 뜻이며, 이 페이지에서는 기준급을 연봉의 20분의 1로 두고 29.64배를 곱해 계산합니다." },
@@ -385,12 +377,12 @@ const config = {
           { question: "PI는 항상 최대치로 받나요?", answer: "아니며, 실제 조직과 반기 성과에 따라 달라질 수 있습니다. 그래서 이 페이지에서는 보수적·기준·공격적 프리셋을 선택하게 했습니다." },
           { question: "2027과 2028은 왜 시나리오인가요?", answer: "미래 실적은 아직 확정 공개값이 없기 때문에, 팩트가 아닌 서비스 운영용 시나리오 가정으로 분리해 보여줘야 안전합니다." },
           { question: "부부 총보상과 월 실수령은 세전인가요?", answer: "기본 결과는 세전 기준입니다. 월 실수령 추정표는 별도 토글을 켰을 때만 참고용으로 보여줍니다." },
-          { question: "복지 금액은 왜 수정 가능한가요?", answer: "복지 체감은 개인별로 크게 다를 수 있어, 공식 확정값처럼 고정하지 않고 운영 기본값을 제시한 뒤 수정 가능하게 설계했습니다." }
+          { question: "복지 금액은 왜 수정 가능한가요?", answer: "복지 체감은 개인별로 크게 다를 수 있어, 공식 확정값처럼 고정하지 않고 운영 기본값을 제시한 뒤 수정 가능하게 설계했습니다." },
         ]}
         related={[
           { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
           { href: "/tools/salary/", label: "연봉 인상 계산기" },
-          { href: "/tools/negotiation/", label: "이직 계산기" }
+          { href: "/tools/negotiation/", label: "이직 계산기" },
         ]}
       />
     </Fragment>
@@ -400,4 +392,3 @@ const config = {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/sk-hynix-bonus.js")}></script>
 </BaseLayout>
-

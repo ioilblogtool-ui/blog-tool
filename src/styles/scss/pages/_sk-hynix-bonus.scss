@@ -1,4 +1,362 @@
-﻿// ── 차트 래퍼 ──────────────────────────────────────────────────────────────────
+// ── 슬라이더 ──────────────────────────────────────────────────────────────────
+.sk-hynix-page .calc-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.sk-hynix-page .calc-slider {
+  flex: 1;
+  accent-color: #0F6E56;
+}
+
+.sk-hynix-page .calc-slider-val {
+  min-width: 5em;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0F6E56;
+  text-align: right;
+  white-space: nowrap;
+}
+
+// ── 모드 필드 ─────────────────────────────────────────────────────────────────
+.sk-hynix-page .field-span-full {
+  grid-column: 1 / -1;
+}
+
+.sk-hynix-page .field-span-full > span:first-child {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5F5E5A;
+}
+
+.sk-hynix-page .field-span-full .toggle-grid {
+  margin-bottom: 0;
+}
+
+// ── 모드 칩 ───────────────────────────────────────────────────────────────────
+.sk-hynix-page .mode-chip {
+  display: flex;
+}
+
+.sk-hynix-page .mode-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sk-hynix-page .mode-chip span {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  background: #F7F6F4;
+  color: #5F5E5A;
+}
+
+.sk-hynix-page .mode-chip input:checked + span {
+  border-color: #1D9E75;
+  background: #E1F5EE;
+  color: #0F6E56;
+}
+
+// ── 그리드 공통 ───────────────────────────────────────────────────────────────
+.sk-hynix-page .toggle-grid,
+.sk-hynix-page .fact-anchor-grid,
+.sk-hynix-page .kpi-grid,
+.sk-hynix-page .sk-hynix-detail-grid,
+.sk-hynix-page .scenario-year-grid,
+.sk-hynix-page .comparison-grid,
+.sk-hynix-page .logic-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.sk-hynix-page .toggle-grid,
+.sk-hynix-page .fact-anchor-grid,
+.sk-hynix-page .kpi-grid,
+.sk-hynix-page .scenario-year-grid,
+.sk-hynix-page .comparison-grid,
+.sk-hynix-page .logic-grid,
+.sk-hynix-page .sk-hynix-detail-grid,
+.sk-hynix-page .form-grid--compact {
+  grid-template-columns: 1fr;
+}
+
+// ── 팩트 앵커 카드 ────────────────────────────────────────────────────────────
+.sk-hynix-page .fact-anchor-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+    line-height: 1.4;
+  }
+
+  strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+
+  span {
+    display: block;
+    font-size: 9px;
+    color: #B4B2A9;
+  }
+}
+
+// ── KPI 카드 ──────────────────────────────────────────────────────────────────
+.sk-hynix-page .kpi-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 9px;
+    color: #B4B2A9;
+  }
+}
+
+.sk-hynix-page .kpi-card--accent {
+  background: #E1F5EE;
+
+  p { color: #5F5E5A; }
+  strong { font-size: 20px; color: #0F6E56; }
+  span { color: #1D9E75; }
+}
+
+// ── 상세 그리드 ───────────────────────────────────────────────────────────────
+.sk-hynix-page .sk-hynix-detail-grid {
+  gap: 10px;
+}
+
+.sk-hynix-page .summary-panel,
+.sk-hynix-page .net-panel,
+.sk-hynix-page .rank-panel {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 16px;
+  background: #FFFFFF;
+}
+
+// ── 리포트 리스트 ─────────────────────────────────────────────────────────────
+.sk-hynix-page .report-list {
+  border-top: 1px solid #F0EFED;
+  margin-top: 4px;
+}
+
+.sk-hynix-page .report-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #F0EFED;
+  gap: 12px;
+}
+
+.sk-hynix-page .report-row__label {
+  font-size: 12px;
+  color: #5F5E5A;
+}
+
+.sk-hynix-page .report-row__value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A1A18;
+  white-space: nowrap;
+}
+
+.sk-hynix-page .report-row.is-highlight .report-row__label {
+  color: #1A1A18;
+  font-weight: 500;
+}
+
+.sk-hynix-page .report-row.is-highlight .report-row__value {
+  color: #0F6E56;
+  font-size: 14px;
+}
+
+// ── 직급 매트릭스 ─────────────────────────────────────────────────────────────
+.sk-hynix-page .matrix-list {
+  border-top: 1px solid #F0EFED;
+  margin-top: 8px;
+}
+
+.sk-hynix-page .matrix-list__head,
+.sk-hynix-page .matrix-row {
+  display: grid;
+  grid-template-columns: 0.8fr 1.1fr 1fr 1.15fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.sk-hynix-page .matrix-list__head {
+  padding: 8px 0;
+  color: #888780;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.sk-hynix-page .matrix-row {
+  padding: 10px 0;
+  border-top: 1px solid #F0EFED;
+}
+
+.sk-hynix-page .matrix-row__cell {
+  font-size: 12px;
+  color: #5F5E5A;
+}
+
+.sk-hynix-page .matrix-row__cell--label {
+  font-weight: 500;
+  color: #1A1A18;
+}
+
+.sk-hynix-page .matrix-row__cell--strong {
+  font-weight: 500;
+  color: #0F6E56;
+}
+
+// ── 연도 시나리오 카드 ────────────────────────────────────────────────────────
+.sk-hynix-page .scenario-year-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 9px;
+    color: #B4B2A9;
+  }
+
+  &.is-active {
+    background: #E1F5EE;
+    border: 1.5px solid #1D9E75;
+
+    strong { color: #0F6E56; }
+    span { color: #1D9E75; }
+  }
+}
+
+// ── 비교 카드 ─────────────────────────────────────────────────────────────────
+.sk-hynix-page .comparison-card {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 16px 14px;
+  background: #FFFFFF;
+
+  p {
+    font-size: 11px;
+    color: #888780;
+    margin: 0 0 6px;
+  }
+
+  strong {
+    display: block;
+    font-size: 20px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 10px;
+    color: #B4B2A9;
+  }
+
+  em {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 500;
+    color: #888780;
+  }
+
+  &.is-positive {
+    border-color: #1D9E75;
+    border-width: 1.5px;
+
+    strong { color: #0F6E56; }
+    em { color: #0F6E56; }
+  }
+
+  &.is-muted em {
+    color: #854F0B;
+  }
+}
+
+// ── 계산 기준 로직 카드 ───────────────────────────────────────────────────────
+.sk-hynix-page .logic-card {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 12px 14px;
+
+  strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 11px;
+    color: #888780;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// ── 차트 래퍼 ─────────────────────────────────────────────────────────────────
 .sk-hynix-donut-wrap {
   position: relative;
   height: 220px;
@@ -17,265 +375,7 @@
   margin-bottom: 16px;
 }
 
-// ── 슬라이더 행 ────────────────────────────────────────────────────────────────
-.sk-hynix-page .calc-slider-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.sk-hynix-page .calc-slider {
-  flex: 1;
-  accent-color: var(--color-brand-primary, #0f6e56);
-}
-
-.sk-hynix-page .calc-slider-val {
-  min-width: 5em;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--color-brand-primary, #0f6e56);
-  text-align: right;
-  white-space: nowrap;
-}
-
-// ── PS 방식 필드 ───────────────────────────────────────────────────────────────
-.sk-hynix-page .field-span-full {
-  grid-column: 1 / -1;
-}
-
-.sk-hynix-page .field > span:first-child,
-.sk-hynix-page .field-span-full > span:first-child {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: #475569;
-}
-
-.sk-hynix-page .field-span-full .toggle-grid {
-  margin-bottom: 0;
-}
-
-.sk-hynix-page .toggle-grid,
-.sk-hynix-page .fact-anchor-grid,
-.sk-hynix-page .kpi-grid,
-.sk-hynix-page .sk-hynix-detail-grid,
-.sk-hynix-page .scenario-year-grid,
-.sk-hynix-page .comparison-grid,
-.sk-hynix-page .logic-grid {
-  display: grid;
-  gap: 16px;
-}
-
-.sk-hynix-page .toggle-grid,
-.sk-hynix-page .fact-anchor-grid,
-.sk-hynix-page .kpi-grid,
-.sk-hynix-page .scenario-year-grid,
-.sk-hynix-page .comparison-grid,
-.sk-hynix-page .logic-grid,
-.sk-hynix-page .sk-hynix-detail-grid,
-.sk-hynix-page .form-grid--compact {
-  grid-template-columns: 1fr;
-}
-
-.sk-hynix-page .mode-chip {
-  display: flex;
-}
-
-.sk-hynix-page .mode-chip input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.sk-hynix-page .mode-chip span,
-.sk-hynix-page .fact-anchor-card,
-.sk-hynix-page .kpi-card,
-.sk-hynix-page .scenario-year-card,
-.sk-hynix-page .comparison-card,
-.sk-hynix-page .logic-card {
-  border: 1px solid rgba(20, 33, 61, 0.08);
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 247, 252, 0.96));
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
-}
-
-.sk-hynix-page .mode-chip span {
-  width: 100%;
-  padding: 14px 16px;
-  font-weight: 700;
-  text-align: center;
-  cursor: pointer;
-}
-
-.sk-hynix-page .mode-chip input:checked + span {
-  border-color: rgba(8, 126, 139, 0.22);
-  background: linear-gradient(135deg, rgba(8, 126, 139, 0.16), rgba(15, 23, 42, 0.08));
-  color: #083344;
-}
-
-.sk-hynix-page .field,
-.sk-hynix-page .check-field {
-  align-content: start;
-}
-
-.sk-hynix-page .field {
-  min-width: 0;
-}
-
-.sk-hynix-page .field small {
-  min-height: 2.3em;
-}
-
-.sk-hynix-page .check-field {
-  min-height: 54px;
-}
-
-.sk-hynix-page .panel-heading__summary,
-.sk-hynix-page .panel__title,
-.sk-hynix-page .section-header h2,
-.sk-hynix-page .section-header p {
-  word-break: keep-all;
-}
-
-.sk-hynix-page .summary-panel,
-.sk-hynix-page .net-panel,
-.sk-hynix-page .rank-panel {
-  padding: 20px;
-}
-
-.sk-hynix-page .report-list {
-  border-top: 1px solid rgba(20, 33, 61, 0.08);
-}
-
-.sk-hynix-page .report-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(20, 33, 61, 0.08);
-}
-
-.sk-hynix-page .report-row__label {
-  color: #475569;
-  font-weight: 700;
-}
-
-.sk-hynix-page .report-row__value {
-  text-align: right;
-  font-size: clamp(1.02rem, 2.2vw, 1.24rem);
-  line-height: 1.2;
-}
-
-.sk-hynix-page .report-row.is-highlight .report-row__label,
-.sk-hynix-page .report-row.is-highlight .report-row__value {
-  color: #0f172a;
-  font-weight: 800;
-}
-
-.sk-hynix-page .matrix-list {
-  border-top: 1px solid rgba(20, 33, 61, 0.08);
-}
-
-.sk-hynix-page .matrix-list__head,
-.sk-hynix-page .matrix-row {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr 1.1fr 1.2fr 1.1fr;
-  gap: 12px;
-  align-items: center;
-}
-
-.sk-hynix-page .matrix-list__head {
-  padding: 0 0 12px;
-  color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 800;
-}
-
-.sk-hynix-page .matrix-row {
-  padding: 14px 0;
-  border-top: 1px solid rgba(20, 33, 61, 0.08);
-}
-
-.sk-hynix-page .matrix-row__cell {
-  font-size: 0.98rem;
-  color: #334155;
-}
-
-.sk-hynix-page .matrix-row__cell--label {
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.sk-hynix-page .matrix-row__cell--strong {
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.sk-hynix-page .fact-anchor-card,
-.sk-hynix-page .kpi-card,
-.sk-hynix-page .scenario-year-card,
-.sk-hynix-page .comparison-card,
-.sk-hynix-page .logic-card {
-  padding: 18px;
-}
-
-.sk-hynix-page .fact-anchor-card p,
-.sk-hynix-page .kpi-card p,
-.sk-hynix-page .scenario-year-card p,
-.sk-hynix-page .comparison-card p {
-  margin: 0 0 10px;
-  font-size: 0.92rem;
-  color: var(--muted-text, #5b6475);
-}
-
-.sk-hynix-page .fact-anchor-card strong,
-.sk-hynix-page .kpi-card strong,
-.sk-hynix-page .scenario-year-card strong,
-.sk-hynix-page .comparison-card strong,
-.sk-hynix-page .logic-card strong {
-  display: block;
-  font-size: clamp(1.15rem, 4vw, 1.65rem);
-  line-height: 1.2;
-}
-
-.sk-hynix-page .fact-anchor-card span,
-.sk-hynix-page .kpi-card span,
-.sk-hynix-page .scenario-year-card span,
-.sk-hynix-page .comparison-card span,
-.sk-hynix-page .logic-card p {
-  display: block;
-  margin-top: 8px;
-  color: var(--muted-text, #5b6475);
-}
-
-.sk-hynix-page .kpi-card--accent,
-.sk-hynix-page .scenario-year-card.is-active {
-  background: linear-gradient(135deg, rgba(8, 126, 139, 0.18), rgba(15, 23, 42, 0.08));
-  border-color: rgba(8, 126, 139, 0.2);
-}
-
-.sk-hynix-page .comparison-card em {
-  display: block;
-  margin-top: 14px;
-  font-style: normal;
-  font-weight: 700;
-}
-
-.sk-hynix-page .comparison-card.is-positive em {
-  color: #0f766e;
-}
-
-.sk-hynix-page .comparison-card.is-muted em {
-  color: #92400e;
-}
-
-.sk-hynix-page .logic-card p {
-  margin-bottom: 0;
-}
-
+// ── 반응형 ────────────────────────────────────────────────────────────────────
 @media (max-width: 767px) {
   .sk-hynix-page .matrix-list__head {
     display: none;
@@ -283,19 +383,17 @@
 
   .sk-hynix-page .matrix-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px 16px;
+    gap: 6px 12px;
   }
 
   .sk-hynix-page .matrix-row__cell--label {
     grid-column: 1 / -1;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
   }
 }
 
-@media (min-width: 640px) {
+@media (min-width: 560px) {
   .sk-hynix-page .toggle-grid,
-  .sk-hynix-page .scenario-year-grid,
-  .sk-hynix-page .logic-grid,
   .sk-hynix-page .form-grid--compact {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -304,17 +402,25 @@
   .sk-hynix-page .comparison-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .sk-hynix-page .logic-grid,
+  .sk-hynix-page .scenario-year-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-@media (min-width: 960px) {
-  .sk-hynix-page .fact-anchor-grid,
+@media (min-width: 768px) {
   .sk-hynix-page .comparison-grid,
   .sk-hynix-page .logic-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .sk-hynix-page .fact-anchor-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .sk-hynix-page .kpi-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .sk-hynix-page .scenario-year-grid {
@@ -322,8 +428,12 @@
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
+  .sk-hynix-page .kpi-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
   .sk-hynix-page .sk-hynix-detail-grid {
-    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
   }
 }
