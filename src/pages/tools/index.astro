@@ -1,10 +1,8 @@
-﻿---
+---
 import { tools } from "../../data/tools";
 import { reports } from "../../data/reports";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
-import CalculatorHero from "../../components/CalculatorHero.astro";
-import TrustPanel from "../../components/TrustPanel.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -97,125 +95,158 @@ const toolLibraryScript = `
     render();
   })();
 `;
+
+const trustLinks = [
+  { href: withBase("/about/"),      title: "비교계산소 소개",    desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
+  { href: withBase("/privacy/"),    title: "개인정보처리방침",   desc: "쿠키·외부 서비스·수집 정보 처리 원칙" },
+  { href: withBase("/contact/"),    title: "문의 안내",          desc: "오류 제보·기능 제안·제휴 문의 범위" },
+  { href: withBase("/disclaimer/"), title: "이용안내 및 면책",   desc: "결과 해석 방법과 실제 지급액 차이 안내" },
+];
 ---
 
-<BaseLayout title="비교계산소 도구 목록" description="생활과 실무에서 자주 마주치는 숫자를 빠르게 계산하고 비교해볼 수 있는 도구 목록">
+<BaseLayout title="비교계산소 도구 목록" description="연봉·성과급·육아휴직·출산지원금까지 자주 비교하는 계산기를 주제별로 묶어 모바일에서도 빠르게 찾을 수 있게 정리했습니다.">
   <SiteHeader />
 
   <main class="container page-shell tool-library-page">
-    <CalculatorHero
-      eyebrow="도구 목록"
-      title="필요한 계산기를 빠르게 찾고 바로 입력하세요"
-      description="연봉, 성과급, 육아휴직, 출산 지원금처럼 자주 비교하는 계산기를 주제별로 묶어 모바일에서도 빠르게 찾을 수 있게 정리했습니다."
-    />
 
-    <section class="library-toolbar panel content-section content-section--tight">
-      <div class="section-header">
-        <p class="section-header__eyebrow">도구 찾기</p>
-        <h2>주제와 키워드로 바로 찾기</h2>
-        <p>찾고 싶은 계산기를 검색하거나, 지금 필요한 주제부터 눌러서 빠르게 이동해보세요.</p>
-      </div>
-      <div class="library-toolbar__search field">
-        <span>검색</span>
-        <input id="toolSearchInput" type="search" placeholder="예: 연봉, 육아휴직, 성과급" autocomplete="off" />
-      </div>
-      <div class="library-toolbar__filters">
-        {
-          categories.map((category, index) => (
-            <button class={`tool-filter${index === 0 ? " is-active" : ""}`} type="button" data-filter={category === "전체" ? "all" : category}>{category}</button>
-          ))
-        }
-      </div>
-      <p class="library-count" id="toolLibraryCount" aria-live="polite">{orderedTools.length}개 결과</p>
+    <!-- ① hero -->
+    <section class="tl-hero">
+      <p class="tl-hero__eyebrow">도구 목록</p>
+      <h1 class="tl-hero__title">필요한 계산기를<br>바로 찾고 입력하세요</h1>
+      <p class="tl-hero__desc">연봉·성과급·육아휴직·출산지원금까지 주제별로 묶어 빠르게 찾을 수 있게 정리했습니다.</p>
     </section>
 
-    <section class="content-section">
-      <div class="section-header">
-        <p class="section-header__eyebrow">전체 계산기</p>
-        <h2>무엇을 바로 확인할 수 있는지 먼저 보이게</h2>
-        <p>각 카드에서 이 페이지로 들어가면 어떤 결과를 바로 볼 수 있는지 한 줄씩 먼저 보여줍니다.</p>
+    <!-- ② 검색 + 필터 툴바 -->
+    <section class="tl-toolbar">
+      <div class="tl-toolbar__search">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <circle cx="6" cy="6" r="4.5" stroke="#B4B2A9" stroke-width="1.2"/>
+          <line x1="9.5" y1="9.5" x2="12.5" y2="12.5" stroke="#B4B2A9" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <input
+          id="toolSearchInput"
+          type="search"
+          placeholder="예: 연봉, 육아휴직, 성과급"
+          autocomplete="off"
+        />
       </div>
-      <div class="tool-showcase tool-showcase--grid" id="toolLibraryGrid">
-        {
-          orderedTools.map((tool) => {
-            const topic = topicBySlug[tool.slug] ?? "기타";
-            return (
-              <a
-                class="tool-card tool-card--feature"
-                href={withBase(`/tools/${tool.slug}/`)}
-                data-tool-card
-                data-category={topic}
-              >
-                <div class="tool-card__head">
-                  <p class="tool-card__eyebrow">{topic}</p>
-                  {
-                    tool.badges && tool.badges.length > 0 && (
-                      <div class="tool-badges">
-                        {tool.badges.map((badge) => <span class="tool-badge" data-badge={badge}>{badge}</span>)}
-                      </div>
-                    )
-                  }
-                </div>
-                <h2>{tool.title}</h2>
-                {tool.previewStats && tool.previewStats.length > 0 && (
-                  <div class="tool-card__preview-stats">
-                    {tool.previewStats.map((stat) => (
-                      <span class="preview-stat">
-                        <span class="preview-stat__label">{stat.label}</span>
-                        <strong class="preview-stat__value">{stat.value}</strong>
-                        {stat.context && <span class="preview-stat__context">{stat.context}</span>}
-                      </span>
+      <div class="tl-toolbar__filters">
+        {categories.map((category, index) => (
+          <button
+            class={`tl-filter${index === 0 ? " is-active" : ""}`}
+            type="button"
+            data-filter={category === "전체" ? "all" : category}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+      <p class="tl-toolbar__count" id="toolLibraryCount" aria-live="polite">
+        {orderedTools.length}개 결과
+      </p>
+    </section>
+
+    <!-- ③ 전체 계산기 그리드 -->
+    <section class="tl-section">
+      <div class="tl-section__head">
+        <h2>전체 계산기 <span class="tl-section__count">{orderedTools.length}개</span></h2>
+      </div>
+
+      <div class="tl-cards" id="toolLibraryGrid">
+        {orderedTools.map((tool) => {
+          const topic = topicBySlug[tool.slug] ?? "기타";
+          return (
+            <a
+              class="tl-card"
+              href={withBase(`/tools/${tool.slug}/`)}
+              data-tool-card
+              data-category={topic}
+            >
+              <div class="tl-card__head">
+                <span class="tl-card__cat">{topic}</span>
+                {tool.badges && tool.badges.length > 0 && (
+                  <div class="tl-card__badges">
+                    {tool.badges.map((badge) => (
+                      <span class="tl-badge" data-badge={badge}>{badge}</span>
                     ))}
                   </div>
                 )}
-                <p>{tool.description}</p>
-                <span class="tool-card__meta">{toolHighlights[tool.slug] ?? "입력 후 결과를 바로 확인할 수 있게 구성했습니다."}</span>
-              </a>
-            );
-          })
-        }
-      </div>
-    </section>
-
-    <section class="content-section">
-      <div class="section-header">
-        <p class="section-header__eyebrow">비교 리포트</p>
-        <h2>계산기 외 콘텐츠도 같이 봐보세요</h2>
-        <p>직접 입력하지 않아도 공개 데이터를 선택하고 읽을 수 있는 인터랙티브 리포트도 함께 정리합니다.</p>
-      </div>
-      <div class="report-hub-grid">
-        {
-          orderedReports.map((report) => (
-            <a class="tool-card tool-card--feature report-hub-card" href={withBase(`/reports/${report.slug}/`)}>
-              <div class="tool-card__head">
-                <p class="tool-card__eyebrow">인터랙티브 리포트</p>
-                {
-                  report.badges && (
-                    <div class="tool-badges">
-                      {report.badges.map((badge) => <span class="tool-badge" data-badge={badge}>{badge}</span>)}
-                    </div>
-                  )
-                }
               </div>
-              <h2>{report.title}</h2>
-              <p>{report.description}</p>
-              <span class="tool-card__meta">인물 선택, 패턴 요약, 분포 비교를 한 화면에서 볼 수 있습니다.</span>
+
+              <p class="tl-card__title">{tool.title}</p>
+
+              {tool.previewStats && tool.previewStats.length > 0 && (
+                <div class="tl-card__stats">
+                  {tool.previewStats.map((stat) => (
+                    <div class="tl-stat">
+                      <span class="tl-stat__label">{stat.label}</span>
+                      <strong class="tl-stat__value">{stat.value}</strong>
+                      {stat.context && <span class="tl-stat__ctx">{stat.context}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <p class="tl-card__desc">{tool.description}</p>
+              <p class="tl-card__meta">
+                {toolHighlights[tool.slug] ?? "입력 후 결과를 바로 확인할 수 있게 구성했습니다."}
+              </p>
             </a>
-          ))
-        }
+          );
+        })}
+      </div>
+
+      <p class="tl-empty" id="toolLibraryEmpty" hidden>
+        검색 결과가 없습니다. 다른 키워드나 주제를 선택해보세요.
+      </p>
+    </section>
+
+    <!-- ④ 리포트 섹션 -->
+    <section class="tl-section">
+      <div class="tl-section__head">
+        <h2>비교 리포트</h2>
+      </div>
+      <div class="tl-reports">
+        {orderedReports.map((report) => (
+          <a class="tl-report-card" href={withBase(`/reports/${report.slug}/`)}>
+            <div class="tl-report-card__head">
+              <span class="tl-report-badge">인터랙티브 리포트</span>
+              {report.badges && (
+                <div class="tl-card__badges">
+                  {report.badges.map((badge) => (
+                    <span class="tl-badge" data-badge={badge}>{badge}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <p class="tl-report-card__title">{report.title}</p>
+            <p class="tl-report-card__desc">{report.description}</p>
+            <p class="tl-report-card__meta">인물 선택, 패턴 요약, 분포 비교를 한 화면에서 볼 수 있습니다.</p>
+          </a>
+        ))}
       </div>
     </section>
 
-    <TrustPanel
-      eyebrow="신뢰 정보"
-      title="검색 유입 사용자도 바로 확인할 수 있는 운영 안내"
-      description="계산기만 모아둔 사이트가 아니라는 점이 한 번에 보이도록, 소개·문의·면책 정보를 도구 목록 하단에도 함께 배치했습니다."
-    />
+    <!-- ⑤ 이용안내 섹션 -->
+    <section class="tl-section">
+      <div class="tl-section__head">
+        <h2>이용 안내</h2>
+      </div>
+      <div class="tl-trust">
+        {trustLinks.map((link) => (
+          <a class="tl-trust-card" href={link.href}>
+            <p class="tl-trust-card__title">{link.title}</p>
+            <p class="tl-trust-card__desc">{link.desc}</p>
+          </a>
+        ))}
+      </div>
+      <p class="tl-notice">
+        계산 결과는 공개 기준과 입력값을 바탕으로 한 참고용 추정치입니다.
+        중요한 결정 전에는 원문 공지와 공식 자료를 함께 확인해주세요.
+      </p>
+    </section>
 
-    <p class="library-empty" id="toolLibraryEmpty" hidden>검색 결과가 없습니다. 다른 키워드나 주제를 선택해보세요.</p>
   </main>
 
   <script is:inline set:html={toolLibraryScript}></script>
 </BaseLayout>
-
-
