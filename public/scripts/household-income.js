@@ -255,12 +255,8 @@ function renderPositionChart(result) {
     averageHouseholdIncome / 12,
     result.householdGrossMonthly,
   ];
-  const bgColors = [
-    "rgba(148,163,184,0.65)",
-    "rgba(148,163,184,0.85)",
-    "rgba(15,110,86,0.88)",
-  ];
-  const borderColors = ["rgba(148,163,184,1)", "rgba(148,163,184,1)", "rgba(15,110,86,1)"];
+  const bgColors = ["#9FE1CB", "#5DCAA5", "#0F6E56"];
+  const borderColors = ["#9FE1CB", "#5DCAA5", "#0F6E56"];
   const baseOpts = buildDefaultOptions();
 
   if (positionChart) {
@@ -296,10 +292,10 @@ function renderPositionChart(result) {
       },
       scales: {
         x: {
-          ticks: { callback: (v) => formatKRW(v), font: { size: 10 } },
-          grid: { color: "rgba(0,0,0,0.05)" },
+          ticks: { callback: (v) => formatKRW(v), font: { size: 10 }, color: "#888780" },
+          grid: { color: "#F0EFED" },
         },
-        y: { grid: { display: false } },
+        y: { grid: { display: false }, ticks: { color: "#888780", font: { size: 11 } } },
       },
     },
     plugins: [makeLabelPlugin(formatKRW)],

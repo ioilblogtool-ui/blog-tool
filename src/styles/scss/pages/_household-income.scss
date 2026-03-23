@@ -1,215 +1,367 @@
-﻿.household-income-page .fact-anchor-grid,
-.household-income-page .kpi-grid,
-.household-income-page .household-detail-grid,
-.household-income-page .position-grid,
-.household-income-page .comparison-grid,
-.household-income-page .logic-grid,
-.household-income-page .form-grid--compact {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: 1fr;
+// ── 섹션 헤더 ────────────────────────────────────────────────────────────────
+.hi-section {
+  margin-bottom: 32px;
 }
 
+.hi-section__head {
+  margin-bottom: 14px;
+
+  h2 {
+    font-size: 17px;
+    font-weight: 500;
+    color: #1A1A18;
+    margin: 0;
+  }
+}
+
+.hi-section__eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: #0F6E56;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+}
+
+.hi-section__sub {
+  font-size: 12px;
+  color: #888780;
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+// ── 팩트 앵커 그리드 ──────────────────────────────────────────────────────────
+.household-income-page .fact-anchor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.household-income-page .fact-anchor-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+    line-height: 1.4;
+  }
+
+  strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+
+  span {
+    display: block;
+    font-size: 9px;
+    color: #B4B2A9;
+  }
+}
+
+// ── KPI 그리드 ────────────────────────────────────────────────────────────────
+.household-income-page .kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.household-income-page .kpi-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 9px;
+    color: #B4B2A9;
+  }
+}
+
+.household-income-page .kpi-card--accent {
+  background: #E1F5EE;
+
+  p { color: #5F5E5A; }
+  strong { font-size: 20px; color: #0F6E56; }
+  span { color: #1D9E75; }
+}
+
+// ── 상세 그리드 (연간 + 월별 요약) ────────────────────────────────────────────
+.household-income-page .household-detail-grid {
+  display: grid;
+  gap: 10px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.household-income-page .summary-panel {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 16px;
+  background: #FFFFFF;
+}
+
+.household-income-page .report-list {
+  border-top: 1px solid #F0EFED;
+  margin-top: 4px;
+}
+
+.household-income-page .report-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #F0EFED;
+  gap: 12px;
+}
+
+.household-income-page .report-row__label {
+  font-size: 12px;
+  color: #5F5E5A;
+}
+
+.household-income-page .report-row__value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A1A18;
+  white-space: nowrap;
+}
+
+.household-income-page .report-row.is-highlight .report-row__label {
+  color: #1A1A18;
+  font-weight: 500;
+}
+
+.household-income-page .report-row.is-highlight .report-row__value {
+  color: #0F6E56;
+  font-size: 14px;
+}
+
+// ── 위치 섹션 (차트 + 소득 밴드) ──────────────────────────────────────────────
+.household-income-page .position-grid {
+  display: grid;
+  gap: 10px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.household-income-page .position-panel {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 16px;
+  background: #FFFFFF;
+}
+
+.household-position-chart-wrap {
+  position: relative;
+  height: 130px;
+  margin-top: 8px;
+}
+
+.household-income-page .income-band-card {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 8px;
+
+  p {
+    font-size: 11px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 10px;
+    color: #B4B2A9;
+  }
+
+  em {
+    display: inline-block;
+    margin-top: 10px;
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 10px;
+    background: #E1F5EE;
+    color: #0F6E56;
+  }
+}
+
+// ── 비교 카드 그리드 ──────────────────────────────────────────────────────────
+.household-income-page .comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.household-income-page .comparison-card {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 16px 14px;
+  background: #FFFFFF;
+
+  p {
+    font-size: 11px;
+    color: #888780;
+    margin: 0 0 6px;
+  }
+
+  strong {
+    display: block;
+    font-size: 24px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 10px;
+    color: #B4B2A9;
+  }
+
+  em {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 500;
+    color: #888780;
+  }
+
+  &.is-positive {
+    border-color: #1D9E75;
+    border-width: 1.5px;
+
+    strong { color: #0F6E56; }
+    em { color: #0F6E56; }
+  }
+
+  &.is-muted {
+    background: #FAFAF8;
+
+    em { color: #854F0B; }
+  }
+}
+
+// ── 계산 기준 로직 패널 ───────────────────────────────────────────────────────
+.household-income-page .logic-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.household-income-page .logic-card {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 12px 14px;
+
+  strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 11px;
+    color: #888780;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// ── 입력 폼 ───────────────────────────────────────────────────────────────────
 .household-income-page .field,
 .household-income-page .check-field {
   align-content: start;
 }
 
 .household-income-page .field small {
-  min-height: 2.2em;
+  min-height: 1.6em;
 }
 
-.household-income-page .summary-panel,
-.household-income-page .position-panel {
-  padding: 20px;
-}
-
-.household-income-page .fact-anchor-card,
-.household-income-page .kpi-card,
-.household-income-page .comparison-card,
-.household-income-page .logic-card,
-.household-income-page .income-band-card {
-  padding: 18px;
-  border: 1px solid rgba(20, 33, 61, 0.08);
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 247, 252, 0.96));
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
-}
-
-.household-income-page .fact-anchor-card p,
-.household-income-page .kpi-card p,
-.household-income-page .comparison-card p,
-.household-income-page .income-band-card p {
-  margin: 0 0 10px;
-  font-size: 0.92rem;
-  color: var(--muted-text, #5b6475);
-}
-
-.household-income-page .fact-anchor-card strong,
-.household-income-page .kpi-card strong,
-.household-income-page .comparison-card strong,
-.household-income-page .logic-card strong,
-.household-income-page .income-band-card strong {
-  display: block;
-  font-size: clamp(1.15rem, 4vw, 1.65rem);
-  line-height: 1.2;
-}
-
-.household-income-page .fact-anchor-card span,
-.household-income-page .kpi-card span,
-.household-income-page .comparison-card span,
-.household-income-page .logic-card p,
-.household-income-page .income-band-card span {
-  display: block;
-  margin-top: 8px;
-  color: var(--muted-text, #5b6475);
-}
-
-.household-income-page .kpi-card--accent {
-  background: linear-gradient(135deg, rgba(15, 110, 86, 0.14), rgba(15, 23, 42, 0.04));
-  border-color: rgba(15, 110, 86, 0.18);
-}
-
-.household-income-page .report-list {
-  border-top: 1px solid rgba(20, 33, 61, 0.08);
-}
-
-.household-income-page .report-row {
+.household-income-page .form-grid--compact {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(20, 33, 61, 0.08);
-}
+  gap: 10px;
+  grid-template-columns: 1fr;
 
-.household-income-page .report-row__label {
-  color: #475569;
-  font-weight: 700;
-}
-
-.household-income-page .report-row__value {
-  text-align: right;
-  font-size: clamp(1.02rem, 2.2vw, 1.24rem);
-  line-height: 1.2;
-}
-
-.household-income-page .report-row.is-highlight .report-row__label,
-.household-income-page .report-row.is-highlight .report-row__value {
-  color: #0f172a;
-  font-weight: 800;
-}
-
-.household-income-page .position-bars {
-  display: grid;
-  gap: 18px;
-}
-
-.household-income-page .position-bar-row__head {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.household-income-page .position-bar-row__head span {
-  color: #334155;
-  font-weight: 700;
-}
-
-.household-income-page .position-bar-row__head strong {
-  font-size: 1rem;
-}
-
-.household-income-page .position-bar-track {
-  height: 12px;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.18);
-  overflow: hidden;
-}
-
-.household-income-page .position-bar-fill {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(15, 110, 86, 0.7), rgba(29, 158, 117, 0.5));
-}
-
-.household-income-page .position-bar-row p {
-  margin: 8px 0 0;
-  color: #64748b;
-  font-size: 0.92rem;
-}
-
-.household-income-page .position-bar-row.is-accent .position-bar-fill {
-  background: linear-gradient(90deg, rgba(15, 110, 86, 0.92), rgba(29, 158, 117, 0.88));
-}
-
-// ── 소득 위치 차트 래퍼 ─────────────────────────────────────────────────────
-.household-position-chart-wrap {
-  position: relative;
-  height: 130px;
-  margin-bottom: 4px;
-}
-
-.household-income-page .income-band-card em,
-.household-income-page .comparison-card em {
-  display: block;
-  margin-top: 14px;
-  font-style: normal;
-  font-weight: 700;
-}
-
-.household-income-page .comparison-card.is-positive em {
-  color: #0f766e;
-}
-
-.household-income-page .comparison-card.is-muted em {
-  color: #92400e;
-}
-
-@media (min-width: 640px) {
-  .household-income-page .form-grid--compact,
-  .household-income-page .household-detail-grid,
-  .household-income-page .position-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .household-income-page .fact-anchor-grid,
-  .household-income-page .comparison-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 960px) {
-  .household-income-page .fact-anchor-grid,
-  .household-income-page .comparison-grid,
-  .household-income-page .logic-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .household-income-page .kpi-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-}
-.household-income-page .logic-card {
+// ── result-priority-panel ────────────────────────────────────────────────────
+.household-income-page .result-priority-panel {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
   padding: 16px;
+  background: #FFFFFF;
+  margin-bottom: 24px;
 }
 
-.household-income-page .logic-card strong {
-  font-size: clamp(0.96rem, 2vw, 1.08rem);
-  line-height: 1.4;
+.household-income-page .result-priority-panel__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
 }
-
-.household-income-page .logic-card p {
-  margin-top: 6px;
-  font-size: 0.84rem;
-  line-height: 1.55;
-}
-
-.household-income-page .logic-grid + .info-notice,
-.household-income-page .panel .logic-grid {
-  margin-top: 0;
-}
-
