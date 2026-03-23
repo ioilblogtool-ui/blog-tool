@@ -1,5 +1,50 @@
 ﻿const $ = (id) => document.getElementById(id);
 
+// ── Chart.js 가로 바 차트 ────────────────────────────────────────────────
+let sixCompareChart = null;
+
+function initChart() {
+  const canvas = document.getElementById('six-compare-chart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  sixCompareChart = new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['엄마 6+6', '엄마 일반', '아빠 6+6', '아빠 일반'],
+      datasets: [{
+        data: [0, 0, 0, 0],
+        backgroundColor: ['#5DCAA5', '#B4B2A9', '#1D9E75', '#B4B2A9'],
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 400 },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x.toFixed(0)}만원` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#888780', font: { size: 11 } } },
+        y: { grid: { display: false }, ticks: { color: '#888780', font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function updateChart(mS, mN, fS, fN) {
+  if (!sixCompareChart) return;
+  sixCompareChart.data.datasets[0].data = [
+    Math.round(mS / 10000),
+    Math.round(mN / 10000),
+    Math.round(fS / 10000),
+    Math.round(fN / 10000)
+  ];
+  sixCompareChart.update();
+}
+
 function formatWon(value) {
   return `${new Intl.NumberFormat("ko-KR").format(Math.round(Number(value || 0)))}원`;
 }
@@ -128,6 +173,21 @@ function renderSixPlusSix() {
   setText("sixDecisionCopy", decisionCopy);
   setText("sixDifferenceCopy", differenceCopy);
 
+  // ── KPI 카드 색상 분기 ─────────────────────────────────────────────────
+  const eligibilityCard = document.getElementById('sixEligibilitySummary')?.closest('.metric-card');
+  if (eligibilityCard) {
+    if (specialEligible) {
+      eligibilityCard.classList.add('kpi-card--ok');
+      eligibilityCard.classList.remove('kpi-card--warn');
+    } else {
+      eligibilityCard.classList.add('kpi-card--warn');
+      eligibilityCard.classList.remove('kpi-card--ok');
+    }
+  }
+
+  // ── 차트 업데이트 ──────────────────────────────────────────────────────
+  updateChart(motherSpecial.total, motherNormal.total, fatherSpecial.total, fatherNormal.total);
+
   const maxMonths = Math.max(motherSpecial.effectiveMonths, fatherSpecial.effectiveMonths, 6);
   const rows = [];
 
@@ -186,5 +246,16 @@ if (page === "six-plus-six") {
     }
   });
 
+  initChart();
   renderSixPlusSix();
+
+  // ── URL 파라미터 자동 계산 ────────────────────────────────────────────
+  const urlParams = new URLSearchParams(window.location.search);
+  const hasParams = urlParams.has('mom') || urlParams.has('dad') || urlParams.has('m1') || urlParams.has('child');
+  if (hasParams) {
+    setTimeout(() => {
+      const calcBtn = document.getElementById('calcSixPlusSixBtn');
+      if (calcBtn) calcBtn.click();
+    }, 150);
+  }
 }
