@@ -106,6 +106,26 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       ]}
     />
 
+    <!-- ④ 구간별 요약 카드 -->
+    <div class="pl-breakdown-grid">
+      <div class="pl-bk-card">
+        <p class="pl-bk-label">휴직 기간 총 수령</p>
+        <strong class="pl-bk-val" id="plTotalLeaveIncome">–</strong>
+        <span class="pl-bk-sub">월수령 × 휴직 개월</span>
+      </div>
+      <div class="pl-bk-card pl-bk-card--accent">
+        <p class="pl-bk-label">중간정산 버퍼 활용</p>
+        <strong class="pl-bk-val" id="plBufferDetail">–</strong>
+        <span class="pl-bk-sub">월 차이 기준 커버 가능 기간</span>
+      </div>
+      <div class="pl-bk-card">
+        <p class="pl-bk-label">복직 후 총보상 (연간)</p>
+        <strong class="pl-bk-val" id="plTotalComp">–</strong>
+        <span class="pl-bk-sub">연봉 + 보너스 + 연차수당 포함</span>
+      </div>
+    </div>
+
+    <!-- ⑤ 현금흐름 시각화 -->
     <article class="panel">
       <div class="panel-heading">
         <div>
@@ -119,15 +139,7 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       </div>
     </article>
 
-    <InfoNotice
-      title="안내"
-      lines={[
-        "실수령과 휴직 급여는 간이 추정 기준이며 실제 제도와 차이가 있을 수 있습니다.",
-        "정책형 계산기는 연도별 제도 변경 여부를 함께 확인하는 것이 좋습니다.",
-        "복직 후 총보상은 보너스 포함 여부에 따라 크게 달라질 수 있습니다."
-      ]}
-    />
-
+    <!-- ⑥ 상세 비교 테이블 -->
     <article class="panel">
       <div class="panel-heading">
         <div>
@@ -136,7 +148,7 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </div>
       </div>
       <div class="table-wrap">
-        <table class="result-table">
+        <table class="parental-leave-page result-table">
           <thead>
             <tr>
               <th>항목</th>
@@ -147,6 +159,15 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </table>
       </div>
     </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "실수령과 휴직 급여는 간이 추정 기준이며 실제 제도와 차이가 있을 수 있습니다.",
+        "정책형 계산기는 연도별 제도 변경 여부를 함께 확인하는 것이 좋습니다.",
+        "복직 후 총보상은 보너스 포함 여부에 따라 크게 달라질 수 있습니다."
+      ]}
+    />
 
     <Fragment slot="seo">
       <SeoContent

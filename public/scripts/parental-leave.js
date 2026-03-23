@@ -82,10 +82,10 @@ function renderCashFlowChart(beforeNet, leaveMonthlyIncome, afterMonthlyNet) {
         {
           label: "휴직 중 수령",
           data: leaveData,
-          borderColor:          "rgba(186,117,23,0.88)",
-          backgroundColor:      "rgba(186,117,23,0.07)",
-          pointBackgroundColor: "rgba(186,117,23,0.92)",
-          borderWidth: 2.5,
+          borderColor:          "#B4B2A9",
+          backgroundColor:      "rgba(180,178,169,0.08)",
+          pointBackgroundColor: "#B4B2A9",
+          borderWidth: 2,
           pointRadius: 4,
           tension: 0,
           fill: true,
@@ -94,10 +94,10 @@ function renderCashFlowChart(beforeNet, leaveMonthlyIncome, afterMonthlyNet) {
         {
           label: "복직 후 실수령",
           data: returnData,
-          borderColor:          "rgba(15,110,86,0.88)",
+          borderColor:          "#0F6E56",
           backgroundColor:      "rgba(15,110,86,0.07)",
-          pointBackgroundColor: "rgba(15,110,86,0.92)",
-          borderWidth: 2.5,
+          pointBackgroundColor: "#0F6E56",
+          borderWidth: 2,
           pointRadius: 4,
           tension: 0,
           fill: true,
@@ -106,7 +106,7 @@ function renderCashFlowChart(beforeNet, leaveMonthlyIncome, afterMonthlyNet) {
         {
           label: "휴직 전 기준",
           data: baseData,
-          borderColor:     "rgba(148,163,184,0.6)",
+          borderColor:     "#E0DFDB",
           backgroundColor: "transparent",
           pointRadius: 0,
           borderWidth: 1.5,
@@ -123,7 +123,7 @@ function renderCashFlowChart(beforeNet, leaveMonthlyIncome, afterMonthlyNet) {
         legend: {
           display: true,
           position: "top",
-          labels: { font: { size: 11 }, boxWidth: 12, padding: 12 },
+          labels: { font: { size: 11 }, color: "#888780", boxWidth: 12, padding: 12 },
         },
         tooltip: {
           ...baseOpts.plugins.tooltip,
@@ -133,14 +133,29 @@ function renderCashFlowChart(beforeNet, leaveMonthlyIncome, afterMonthlyNet) {
         },
       },
       scales: {
-        x: { grid: { color: "rgba(0,0,0,0.05)" } },
+        x: {
+          ticks: { color: "#888780" },
+          grid:  { color: "#F0EFED" },
+        },
         y: {
-          ticks: { callback: (v) => formatKRW(v), font: { size: 10 } },
-          grid:  { color: "rgba(0,0,0,0.05)" },
+          ticks: { callback: (v) => formatKRW(v), font: { size: 10 }, color: "#888780" },
+          grid:  { color: "#F0EFED" },
         },
       },
     },
   });
+}
+
+// ── Breakdown 카드 업데이트 ───────────────────────────────────────────────────
+function updateBreakdownCards(totalLeaveIncome, bufferMonths, totalComp, monthlyGap) {
+  const set = (id, val) => { const el = $(id); if (el) el.textContent = val; };
+  set("plTotalLeaveIncome", formatKoreanAmount(totalLeaveIncome));
+  if (monthlyGap > 0) {
+    set("plBufferDetail", `${bufferMonths.toFixed(1)}개월`);
+  } else {
+    set("plBufferDetail", "계산 불가");
+  }
+  set("plTotalComp", formatKoreanAmount(totalComp));
 }
 
 // ── 힌트 업데이트 ─────────────────────────────────────────────────────────────
@@ -200,6 +215,14 @@ function renderLeave() {
       return `<tr><td>${label}</td><td>${display}</td></tr>`;
     }).join("");
   }
+
+  // Breakdown 카드
+  updateBreakdownCards(
+    leaveMonthlyIncome * leaveMonths,
+    bufferMonths,
+    totalComp,
+    monthlyGap
+  );
 
   // 차트
   renderCashFlowChart(beforeNet, leaveMonthlyIncome, afterInfo.monthlyNet);

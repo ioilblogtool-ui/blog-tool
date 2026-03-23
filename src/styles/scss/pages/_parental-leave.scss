@@ -1,3 +1,83 @@
+// ── SummaryCards KPI 스타일 ───────────────────────────────────────────────────
+.parental-leave-page .metrics--four {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+// 카드 2 (복직 후 월 실수령) — 그린 액센트
+.parental-leave-page .metrics--four .summary-card:nth-child(2) {
+  background: #E1F5EE;
+  border: none;
+
+  p { font-size: 10px; color: #5F5E5A; margin-bottom: 4px; }
+  strong { font-size: 22px; font-weight: 500; color: #0F6E56; line-height: 1; }
+}
+
+// 나머지 카드 — 플랫 그레이
+.parental-leave-page .metrics--four .summary-card:nth-child(1),
+.parental-leave-page .metrics--four .summary-card:nth-child(3),
+.parental-leave-page .metrics--four .summary-card:nth-child(4) {
+  background: #F7F6F4;
+  border: none;
+
+  p { font-size: 10px; color: #888780; margin-bottom: 4px; }
+  strong { font-size: 18px; font-weight: 500; color: #1A1A18; line-height: 1; }
+}
+
+// ── 구간별 요약 카드 그리드 ───────────────────────────────────────────────────
+.pl-breakdown-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pl-bk-card {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 16px 14px;
+  background: #FFFFFF;
+
+  &--accent {
+    border-color: #1D9E75;
+    border-width: 1.5px;
+  }
+}
+
+.pl-bk-label {
+  font-size: 10px;
+  color: #888780;
+  margin: 0 0 4px;
+}
+
+.pl-bk-val {
+  display: block;
+  font-size: 20px;
+  font-weight: 500;
+  color: #1A1A18;
+  line-height: 1.1;
+  margin-bottom: 4px;
+
+  .pl-bk-card--accent & {
+    color: #0F6E56;
+  }
+}
+
+.pl-bk-sub {
+  display: block;
+  font-size: 10px;
+  color: #B4B2A9;
+  margin-top: 2px;
+}
+
 // ── 현금흐름 라인 차트 래퍼 ──────────────────────────────────────────────────
 .leave-cashflow-chart-wrap {
   position: relative;
@@ -5,13 +85,33 @@
   margin-bottom: 4px;
 }
 
-// ── SummaryCards 반응형 ──────────────────────────────────────────────────────
-.parental-leave-page .metrics--four {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
+// ── 상세 비교 테이블 ──────────────────────────────────────────────────────────
+.parental-leave-page.result-table,
+.parental-leave-page .result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
 
-@media (min-width: 768px) {
-  .parental-leave-page .metrics--four {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  th {
+    background: #F2F1EF;
+    color: #5F5E5A;
+    font-weight: 500;
+    padding: 9px 12px;
+    border-bottom: 1px solid #E8E7E4;
+    text-align: left;
   }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #F0EFED;
+    color: #1A1A18;
+
+    &:last-child {
+      font-weight: 500;
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
+
+  tr:last-child td { border-bottom: none; }
 }
