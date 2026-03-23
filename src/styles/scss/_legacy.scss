@@ -430,6 +430,39 @@ code { font-family: "JetBrains Mono", monospace; }
   width: min(920px, 100%);
 }
 
+/* ── 계산기 상세 페이지 hero 오버라이드 ─────────────────────────────────── */
+.calculator-page .hero {
+  padding: 44px 0 36px;
+  border-bottom: 1px solid #E8E7E4;
+  margin-bottom: 36px;
+}
+
+.calculator-page .hero__eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  color: #0F6E56;
+  letter-spacing: 0.06em;
+  margin: 0 0 8px;
+}
+
+.calculator-page .hero__title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #1A1A18;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  width: auto;
+  margin: 0 0 8px;
+}
+
+.calculator-page .hero__description {
+  font-size: 14px;
+  color: #5F5E5A;
+  line-height: 1.7;
+  margin: 0 0 20px;
+  width: auto;
+}
+
 .home-actions {
   margin-top: var(--space-5);
 }
@@ -449,20 +482,36 @@ code { font-family: "JetBrains Mono", monospace; }
 }
 
 .button--primary {
-  background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-mid) 100%);
-  color: #fdfefe;
-  box-shadow: 0 12px 28px rgba(15, 110, 86, 0.22);
+  background: #0F6E56;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 0;
+  box-shadow: none;
 }
 
 .button--primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 32px rgba(15, 110, 86, 0.28);
+  background: #085041;
+  transform: none;
+  box-shadow: none;
 }
 
 .button--secondary {
-  background: #fff;
-  color: var(--color-brand-primary);
-  border: 1px solid var(--color-brand-primary);
+  background: #FFFFFF;
+  color: #0F6E56;
+  border: 1.5px solid #1D9E75;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 0;
+}
+
+.button--secondary:hover {
+  background: #E1F5EE;
 }
 
 .button--ghost {
@@ -496,6 +545,26 @@ code { font-family: "JetBrains Mono", monospace; }
   margin: 0;
   color: var(--muted);
   line-height: 1.7;
+}
+
+/* ── 계산기 상세 페이지 section-header 오버라이드 ──────────────────────── */
+.calculator-page .section-header__eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: #0F6E56;
+  letter-spacing: 0.06em;
+}
+
+.calculator-page .section-header h2 {
+  font-size: 17px;
+  font-weight: 500;
+  color: #1A1A18;
+  letter-spacing: -0.01em;
+}
+
+.calculator-page .section-header p {
+  font-size: 13px;
+  color: #888780;
 }
 
 .tool-tabs {
@@ -741,27 +810,38 @@ code { font-family: "JetBrains Mono", monospace; }
   gap: 8px;
 }
 
-.field span,
+.field span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #5F5E5A;
+  display: block;
+  margin-bottom: 4px;
+}
+
 .check-field span {
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 400;
+  color: #5F5E5A;
 }
 
 .field input,
 .field select {
   width: 100%;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--line-strong);
-  background: var(--surface-strong);
-  padding: 13px 14px;
-  color: var(--text);
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #E0DFDB;
+  background: #FFFFFF;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #1A1A18;
   font: inherit;
+  font-size: 14px;
 }
 
 .field input:focus,
 .field select:focus {
-  outline: 3px solid var(--accent-soft);
-  border-color: rgba(15, 110, 86, 0.28);
+  outline: none;
+  border-color: #1D9E75;
 }
 
 .field small {
@@ -794,24 +874,38 @@ code { font-family: "JetBrains Mono", monospace; }
   grid-template-columns: 1fr;
 }
 
+.metric-card {
+  background: #F7F6F4;
+  border: none;
+  box-shadow: none;
+  border-radius: 10px;
+  padding: 16px 14px;
+  backdrop-filter: none;
+}
+
 .metric-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
+  margin: 0 0 4px;
+  color: #888780;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .metric-card strong {
   display: block;
-  margin-top: 10px;
-  font-size: clamp(1.5rem, 3vw, 1.85rem);
-  letter-spacing: -0.04em;
+  margin-top: 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1A1A18;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .metric-sub {
   display: block;
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 0.9rem;
+  margin-top: 3px;
+  color: #B4B2A9;
+  font-size: 10px;
   line-height: 1.5;
 }
 
@@ -826,54 +920,74 @@ code { font-family: "JetBrains Mono", monospace; }
 }
 
 .result-summary-card {
-  padding: 16px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.82);
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #E0DFDB;
+  background: #FFFFFF;
 }
 
 .result-summary-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.88rem;
+  margin: 0 0 4px;
+  color: #888780;
+  font-size: 11px;
 }
 
 .result-summary-card strong {
   display: block;
-  margin-top: 8px;
-  font-size: clamp(1.5rem, 3vw, 1.85rem);
-  letter-spacing: -0.04em;
+  margin-top: 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1A1A18;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .result-summary-card span {
   display: block;
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 0.9rem;
+  margin-top: 3px;
+  color: #B4B2A9;
+  font-size: 10px;
   line-height: 1.5;
 }
 
 .result-summary-card--accent {
-  background: linear-gradient(180deg, rgba(15, 110, 86, 0.08), rgba(255, 255, 255, 0.96));
+  background: #E1F5EE;
+  border-color: rgba(15, 110, 86, 0.18);
+}
+
+.result-summary-card--accent strong {
+  color: #0F6E56;
+}
+
+.result-summary-card.is-best {
+  border-color: #1D9E75;
+  border-width: 1.5px;
 }
 
 .notice-box {
-  background: linear-gradient(180deg, rgba(15, 110, 86, 0.07), rgba(255,255,255,0.94));
+  background: #F2F1EF;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  border-radius: 8px;
+  padding: 14px 16px;
 }
 
 .notice-box__title {
-  margin: 0 0 10px;
-  font-weight: 800;
-  color: var(--text);
+  margin: 0 0 8px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #5F5E5A;
 }
 
 .notice-box__list {
   margin: 0;
-  padding-left: 18px;
-  color: var(--muted);
+  padding-left: 16px;
+  color: #888780;
   display: grid;
-  gap: 8px;
-  line-height: 1.6;
+  gap: 6px;
+  line-height: 1.8;
+  font-size: 12px;
 }
 
 .table-wrap {
@@ -885,18 +999,24 @@ code { font-family: "JetBrains Mono", monospace; }
   width: 100%;
   min-width: 440px;
   border-collapse: collapse;
+  font-size: 13px;
 }
 
 .result-table thead th {
-  color: var(--muted);
-  font-size: 0.88rem;
-  font-weight: 700;
+  background: #F2F1EF;
+  color: #5F5E5A;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #E8E7E4;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .result-table th,
 .result-table td {
-  padding: 10px 8px;
-  border-bottom: 1px solid rgba(23, 32, 51, 0.08);
+  padding: 10px 12px;
+  border-bottom: 1px solid #F0EFED;
   text-align: right;
   white-space: nowrap;
 }
@@ -906,8 +1026,21 @@ code { font-family: "JetBrains Mono", monospace; }
   text-align: left;
 }
 
+.result-table td {
+  color: #1A1A18;
+}
+
+.result-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 .result-table tbody tr:nth-child(odd) {
-  background: rgba(247, 249, 252, 0.8);
+  background: transparent;
+}
+
+.result-table td strong {
+  color: #0F6E56;
+  font-weight: 500;
 }
 
 .detail-box {
@@ -1144,49 +1277,66 @@ code { font-family: "JetBrains Mono", monospace; }
   margin: 0;
 }
 
+.seo-copy p {
+  font-size: 13px;
+  color: #5F5E5A;
+  line-height: 1.8;
+}
+
 .seo-list {
   padding-left: 1.2rem;
   display: grid;
   gap: 0.7rem;
   line-height: 1.7;
+  font-size: 13px;
+  color: #5F5E5A;
 }
 
 .faq-item {
-  border-radius: 18px;
-  padding: 0.9rem 1rem;
-  background: rgba(15, 23, 42, 0.03);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 6px;
+  border: 1px solid #E0DFDB;
+  background: #FFFFFF;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .faq-item summary {
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 500;
+  font-size: 13px;
+  color: #1A1A18;
 }
 
 .faq-item p {
-  margin: 0.85rem 0 0;
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #888780;
   line-height: 1.7;
 }
 
 .related-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
 .related-link {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.7rem 1rem;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 110, 86, 0.22);
-  background: rgba(15, 110, 86, 0.08);
-  color: var(--text-color);
+  display: block;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #E0DFDB;
+  background: #FFFFFF;
+  color: #1A1A18;
   text-decoration: none;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .related-link:hover {
-  background: rgba(15, 110, 86, 0.14);
+  border-color: #1D9E75;
+  background: #FFFFFF;
 }
 
 .site-footer {
@@ -1267,6 +1417,17 @@ code { font-family: "JetBrains Mono", monospace; }
 }
 
 
+/* ── 모바일 (max-width: 768px) calculator detail 오버라이드 ─────────────── */
+@media (max-width: 768px) {
+  .calculator-page .hero__title {
+    font-size: 20px;
+  }
+
+  .related-links {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (min-width: 560px) {
   .metrics--three,
   .metrics--four,
@@ -1294,10 +1455,16 @@ code { font-family: "JetBrains Mono", monospace; }
   }
 
   .panel,
-  .tool-card,
-  .notice-box,
-  .metric-card {
+  .tool-card {
     padding: 20px;
+  }
+
+  .notice-box {
+    padding: 14px 16px;
+  }
+
+  .metric-card {
+    padding: 16px 14px;
   }
 
   .home-actions .button,
@@ -1361,13 +1528,16 @@ code { font-family: "JetBrains Mono", monospace; }
   }
 
   .panel,
-  .tool-card,
-  .notice-box {
+  .tool-card {
     padding: 24px;
   }
 
+  .notice-box {
+    padding: 14px 16px;
+  }
+
   .metric-card {
-    padding: 22px;
+    padding: 16px 14px;
   }
 
   .calculator-grid {

@@ -1,0 +1,532 @@
+src/pages/tools/index.astro 를 아래 스펙으로 전면 수정해줘.
+
+## 현재 코드 참고사항
+- tools 데이터: import { tools } from "../../data/tools"
+- reports 데이터: import { reports } from "../../data/reports"
+- 기존 검색/필터 JS 로직 (toolLibraryScript) 완전 유지
+- CalculatorHero, TrustPanel 컴포넌트는 제거하고 인라인으로 대체
+- topicBySlug, toolHighlights 객체 완전 유지
+- withBase 로직 완전 유지
+
+## frontmatter 유지 항목
+---
+import { tools } from "../../data/tools";
+import { reports } from "../../data/reports";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+
+(나머지 기존 로직 모두 유지:
+  normalizedBase, withBase, orderedTools, orderedReports,
+  topicBySlug, topicOrder, categories, toolHighlights, toolLibraryScript)
+
+trustLinks 배열 추가:
+const trustLinks = [
+  { href: withBase("/about/"),      title: "비교계산소 소개",    desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
+  { href: withBase("/privacy/"),    title: "개인정보처리방침",   desc: "쿠키·외부 서비스·수집 정보 처리 원칙" },
+  { href: withBase("/contact/"),    title: "문의 안내",          desc: "오류 제보·기능 제안·제휴 문의 범위" },
+  { href: withBase("/disclaimer/"), title: "이용안내 및 면책",   desc: "결과 해석 방법과 실제 지급액 차이 안내" },
+];
+---
+
+
+## HTML 구조 (섹션 순서대로)
+
+### ① hero 섹션
+<main class="container page-shell tool-library-page">
+
+  <section class="tl-hero">
+    <p class="tl-hero__eyebrow">도구 목록</p>
+    <h1 class="tl-hero__title">필요한 계산기를<br>바로 찾고 입력하세요</h1>
+    <p class="tl-hero__desc">연봉·성과급·육아휴직·출산지원금까지 주제별로 묶어 빠르게 찾을 수 있게 정리했습니다.</p>
+  </section>
+
+---
+
+### ② 검색 + 필터 툴바 (기존 library-toolbar 대체)
+<section class="tl-toolbar">
+  <div class="tl-toolbar__search">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <circle cx="6" cy="6" r="4.5" stroke="#B4B2A9" stroke-width="1.2"/>
+      <line x1="9.5" y1="9.5" x2="12.5" y2="12.5" stroke="#B4B2A9" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    <input
+      id="toolSearchInput"
+      type="search"
+      placeholder="예: 연봉, 육아휴직, 성과급"
+      autocomplete="off"
+    />
+  </div>
+  <div class="tl-toolbar__filters">
+    {categories.map((category, index) => (
+      <button
+        class={`tl-filter${index === 0 ? " is-active" : ""}`}
+        type="button"
+        data-filter={category === "전체" ? "all" : category}
+      >
+        {category}
+      </button>
+    ))}
+  </div>
+  <p class="tl-toolbar__count" id="toolLibraryCount" aria-live="polite">
+    {orderedTools.length}개 결과
+  </p>
+</section>
+
+---
+
+### ③ 전체 계산기 그리드
+<section class="tl-section">
+  <div class="tl-section__head">
+    <h2>전체 계산기 <span class="tl-section__count">{orderedTools.length}개</span></h2>
+  </div>
+
+  <div class="tl-cards" id="toolLibraryGrid">
+    {orderedTools.map((tool) => {
+      const topic = topicBySlug[tool.slug] ?? "기타";
+      return (
+        <a
+          class="tl-card"
+          href={withBase(`/tools/${tool.slug}/`)}
+          data-tool-card
+          data-category={topic}
+        >
+          <div class="tl-card__head">
+            <span class="tl-card__cat">{topic}</span>
+            {tool.badges && tool.badges.length > 0 && (
+              <div class="tl-card__badges">
+                {tool.badges.map((badge) => (
+                  <span class="tl-badge" data-badge={badge}>{badge}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <p class="tl-card__title">{tool.title}</p>
+
+          {tool.previewStats && tool.previewStats.length > 0 && (
+            <div class="tl-card__stats">
+              {tool.previewStats.map((stat) => (
+                <div class="tl-stat">
+                  <span class="tl-stat__label">{stat.label}</span>
+                  <strong class="tl-stat__value">{stat.value}</strong>
+                  {stat.context && <span class="tl-stat__ctx">{stat.context}</span>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <p class="tl-card__desc">{tool.description}</p>
+          <p class="tl-card__meta">
+            {toolHighlights[tool.slug] ?? "입력 후 결과를 바로 확인할 수 있게 구성했습니다."}
+          </p>
+        </a>
+      );
+    })}
+  </div>
+
+  <p class="tl-empty" id="toolLibraryEmpty" hidden>
+    검색 결과가 없습니다. 다른 키워드나 주제를 선택해보세요.
+  </p>
+</section>
+
+---
+
+### ④ 리포트 섹션
+<section class="tl-section">
+  <div class="tl-section__head">
+    <h2>비교 리포트</h2>
+  </div>
+  <div class="tl-reports">
+    {orderedReports.map((report) => (
+      <a class="tl-report-card" href={withBase(`/reports/${report.slug}/`)}>
+        <div class="tl-report-card__head">
+          <span class="tl-report-badge">인터랙티브 리포트</span>
+          {report.badges && (
+            <div class="tl-card__badges">
+              {report.badges.map((badge) => (
+                <span class="tl-badge" data-badge={badge}>{badge}</span>
+              ))}
+            </div>
+          )}
+        </div>
+        <p class="tl-report-card__title">{report.title}</p>
+        <p class="tl-report-card__desc">{report.description}</p>
+        <p class="tl-report-card__meta">인물 선택, 패턴 요약, 분포 비교를 한 화면에서 볼 수 있습니다.</p>
+      </a>
+    ))}
+  </div>
+</section>
+
+---
+
+### ⑤ 이용안내 섹션
+<section class="tl-section">
+  <div class="tl-section__head">
+    <h2>이용 안내</h2>
+  </div>
+  <div class="tl-trust">
+    {trustLinks.map((link) => (
+      <a class="tl-trust-card" href={link.href}>
+        <p class="tl-trust-card__title">{link.title}</p>
+        <p class="tl-trust-card__desc">{link.desc}</p>
+      </a>
+    ))}
+  </div>
+  <p class="tl-notice">
+    계산 결과는 공개 기준과 입력값을 바탕으로 한 참고용 추정치입니다.
+    중요한 결정 전에는 원문 공지와 공식 자료를 함께 확인해주세요.
+  </p>
+</section>
+
+</main>
+
+<script is:inline set:html={toolLibraryScript}></script>
+
+
+## SCSS (기존 tool-library 관련 클래스 유지하면서 신규 클래스 추가)
+중요: CSS 변수 대신 고정 hex 사용 (가시성 문제 방지)
+
+/* hero */
+.tl-hero
+  padding: 44px 0 36px
+  border-bottom: 1px solid #E8E7E4
+  margin-bottom: 32px
+
+.tl-hero__eyebrow
+  font-size: 11px
+  font-weight: 500
+  color: #0F6E56
+  letter-spacing: 0.06em
+  text-transform: uppercase
+  margin-bottom: 8px
+
+.tl-hero__title
+  font-size: 24px
+  font-weight: 500
+  color: #1A1A18
+  line-height: 1.3
+  margin-bottom: 8px
+
+.tl-hero__desc
+  font-size: 14px
+  color: #5F5E5A
+  line-height: 1.7
+
+
+/* toolbar */
+.tl-toolbar
+  background: #F2F1EF
+  border-radius: 10px
+  padding: 14px
+  margin-bottom: 32px
+
+.tl-toolbar__search
+  display: flex
+  align-items: center
+  gap: 8px
+  background: #FFFFFF
+  border: 1px solid #E0DFDB
+  border-radius: 8px
+  padding: 0 12px
+  height: 40px
+  margin-bottom: 10px
+
+  input
+    flex: 1
+    border: none
+    outline: none
+    font-size: 13px
+    color: #1A1A18
+    background: transparent
+    &::placeholder
+      color: #B4B2A9
+
+.tl-toolbar__filters
+  display: flex
+  gap: 6px
+  flex-wrap: wrap
+  margin-bottom: 8px
+
+.tl-filter
+  font-size: 12px
+  padding: 5px 12px
+  border-radius: 20px
+  border: 1px solid #E0DFDB
+  color: #888780
+  cursor: pointer
+  background: #FFFFFF
+  transition: all 0.15s
+
+  &.is-active
+    background: #0F6E56
+    border-color: #0F6E56
+    color: #FFFFFF
+
+  &:hover:not(.is-active)
+    border-color: #B4B2A9
+    color: #1A1A18
+
+.tl-toolbar__count
+  font-size: 11px
+  color: #B4B2A9
+
+
+/* 섹션 공통 */
+.tl-section
+  margin-bottom: 48px
+
+.tl-section__head
+  display: flex
+  align-items: baseline
+  gap: 6px
+  margin-bottom: 16px
+
+  h2
+    font-size: 18px
+    font-weight: 500
+    color: #1A1A18
+
+.tl-section__count
+  font-size: 13px
+  color: #B4B2A9
+  font-weight: 400
+
+
+/* 계산기 카드 */
+.tl-cards
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 10px
+
+.tl-card
+  border: 1px solid #E0DFDB
+  border-radius: 10px
+  padding: 16px
+  text-decoration: none
+  display: block
+  background: #FFFFFF
+  transition: border-color 0.15s
+
+  &:hover
+    border-color: #1D9E75
+
+.tl-card__head
+  display: flex
+  justify-content: space-between
+  align-items: flex-start
+  margin-bottom: 6px
+
+.tl-card__cat
+  font-size: 10px
+  font-weight: 500
+  color: #0F6E56
+  text-transform: uppercase
+  letter-spacing: 0.04em
+
+.tl-card__badges
+  display: flex
+  gap: 3px
+  flex-wrap: wrap
+
+.tl-badge
+  font-size: 8px
+  font-weight: 500
+  padding: 2px 6px
+  border-radius: 8px
+
+  &[data-badge="신규"]
+    background: #FAEEDA
+    color: #854F0B
+
+  &[data-badge="추천"]
+    background: #EEEDFE
+    color: #534AB7
+
+  &[data-badge="대표"]
+    background: #E1F5EE
+    color: #0F6E56
+
+  &[data-badge="KRW 기준"]
+    background: #F2F1EF
+    color: #888780
+
+  &[data-badge="리포트"]
+    background: #EEEDFE
+    color: #534AB7
+
+.tl-card__title
+  font-size: 14px
+  font-weight: 500
+  color: #1A1A18
+  margin-bottom: 8px
+  line-height: 1.35
+
+/* previewStats 박스 — 핵심 */
+.tl-card__stats
+  display: flex
+  gap: 8px
+  margin-bottom: 10px
+  padding: 8px 10px
+  background: #F7F6F4
+  border-radius: 6px
+
+.tl-stat
+  flex: 1
+  min-width: 0
+
+.tl-stat__label
+  display: block
+  font-size: 9px
+  color: #B4B2A9
+  margin-bottom: 2px
+
+.tl-stat__value
+  display: block
+  font-size: 13px
+  font-weight: 500
+  color: #0F6E56
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.tl-stat__ctx
+  display: block
+  font-size: 8px
+  color: #B4B2A9
+  margin-top: 1px
+
+.tl-card__desc
+  font-size: 11px
+  color: #888780
+  line-height: 1.5
+  margin-bottom: 8px
+
+.tl-card__meta
+  font-size: 10px
+  color: #B4B2A9
+  line-height: 1.5
+  border-top: 1px solid #F0EFED
+  padding-top: 8px
+
+
+/* 리포트 카드 */
+.tl-reports
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 10px
+
+.tl-report-card
+  border: 1px solid #E0DFDB
+  border-radius: 10px
+  padding: 16px
+  text-decoration: none
+  display: block
+  background: #FAFAF8
+  transition: border-color 0.15s
+
+  &:hover
+    border-color: #534AB7
+
+.tl-report-card__head
+  display: flex
+  align-items: center
+  gap: 6px
+  margin-bottom: 10px
+
+.tl-report-badge
+  font-size: 9px
+  font-weight: 500
+  color: #534AB7
+  background: #EEEDFE
+  padding: 2px 8px
+  border-radius: 10px
+  display: inline-block
+
+.tl-report-card__title
+  font-size: 14px
+  font-weight: 500
+  color: #1A1A18
+  line-height: 1.4
+  margin-bottom: 6px
+
+.tl-report-card__desc
+  font-size: 11px
+  color: #888780
+  line-height: 1.5
+  margin-bottom: 8px
+
+.tl-report-card__meta
+  font-size: 10px
+  color: #B4B2A9
+  border-top: 1px solid #F0EFED
+  padding-top: 8px
+
+
+/* 이용안내 */
+.tl-trust
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 8px
+  margin-bottom: 12px
+
+.tl-trust-card
+  border: 1px solid #E0DFDB
+  border-radius: 8px
+  padding: 12px 14px
+  text-decoration: none
+  background: #FFFFFF
+  display: block
+  transition: border-color 0.15s
+
+  &:hover
+    border-color: #B4B2A9
+
+.tl-trust-card__title
+  font-size: 13px
+  font-weight: 500
+  color: #1A1A18
+  margin-bottom: 3px
+
+.tl-trust-card__desc
+  font-size: 11px
+  color: #888780
+  line-height: 1.5
+
+.tl-notice
+  font-size: 11px
+  color: #B4B2A9
+  line-height: 1.8
+  padding: 12px 14px
+  background: #F2F1EF
+  border-radius: 8px
+
+.tl-empty
+  font-size: 13px
+  color: #B4B2A9
+  text-align: center
+  padding: 32px 0
+
+
+/* 모바일 (max-width: 768px) */
+@media (max-width: 768px)
+  .tl-hero__title
+    font-size: 20px
+
+  .tl-cards
+    grid-template-columns: 1fr
+
+  .tl-reports
+    grid-template-columns: 1fr
+
+  .tl-trust
+    grid-template-columns: 1fr
+
+
+## 유지할 것
+- toolLibraryScript JS 로직 완전 유지 (검색/필터 동작)
+- data-tool-card, data-category, data-filter 속성 유지
+- id="toolLibraryGrid", id="toolLibraryCount", id="toolLibraryEmpty" 유지
+- topicBySlug / toolHighlights 객체 유지
+- withBase 로직 유지
+- <script is:inline set:html={toolLibraryScript}> 유지
+- npm run build 통과 확인

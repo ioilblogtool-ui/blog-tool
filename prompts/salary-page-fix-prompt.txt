@@ -1,0 +1,240 @@
+연봉 인상 계산기 상세 페이지를 아래 스펙으로 수정해줘.
+대상 파일: src/pages/tools/salary.astro, public/scripts/salary.js, 관련 SCSS
+
+먼저 아래 파일들을 읽어줘:
+- src/pages/tools/salary.astro
+- public/scripts/salary.js
+- src/styles/scss/ 폴더 구조 확인
+- src/components/SummaryCards.astro
+- src/components/SimpleToolShell.astro
+
+파악 후 아래 순서로 수정해줘.
+
+
+## 수정 1 — [P1] URL 파라미터 자동 계산 (salary.js)
+
+현재 문제:
+URL에 ?sal=50000000&bon=3000000&r1=2000000 등 파라미터가 있어도
+페이지 로드 시 결과가 "-" 상태로 표시됨.
+사용자가 버튼을 직접 눌러야만 계산이 실행됨.
+
+수정 방법:
+salary.js 초기화 코드 맨 아래에 아래 로직 추가:
+
+// URL 파라미터 있으면 자동 계산
+const urlParams = new URLSearchParams(window.location.search);
+const hasParams = urlParams.has('sal') || urlParams.has('r1');
+if (hasParams) {
+  // 짧은 딜레이 후 실행 (DOM 렌더링 완료 보장)
+  setTimeout(() => {
+    const calcBtn = document.getElementById('calcBtn');
+    if (calcBtn) calcBtn.click();
+  }, 100);
+}
+
+주의: 기존 URL 파라미터 파싱 로직이 이미 있으면 중복 추가 금지.
+있는 경우 해당 위치에 if (hasParams) calcBtn.click() 만 추가.
+
+
+## 수정 2 — [P1] SummaryCards KPI 카드 스타일 (SCSS)
+
+SummaryCards 컴포넌트 또는 .summary-cards 관련 SCSS 찾아서 수정:
+
+.summary-cards 또는 .summary-card-grid (실제 클래스명 확인):
+  display: grid
+  grid-template-columns: repeat(4, 1fr)  ← PC
+  gap: 10px
+
+  @media (max-width: 768px)
+    grid-template-columns: repeat(2, 1fr)
+
+각 카드 (.summary-card 또는 실제 클래스명):
+  background: #E1F5EE          ← 고정값
+  border-radius: 10px
+  padding: 16px 14px
+
+카드 레이블:
+  font-size: 11px
+  color: #5F5E5A
+  margin-bottom: 4px
+
+카드 숫자 (strong 또는 .value):
+  font-size: 22px
+  font-weight: 500
+  color: #0F6E56               ← 고정값
+  line-height: 1
+  display: block
+
+카드 보조 텍스트:
+  font-size: 10px
+  color: #B4B2A9
+  margin-top: 3px
+
+
+## 수정 3 — [P1] 케이스 결과 카드 스타일 (SCSS)
+
+.result-summary-card 클래스 수정:
+
+기본 카드:
+  border: 1px solid #E0DFDB
+  border-radius: 10px
+  padding: 14px 16px
+  background: #FFFFFF
+
+  p (레이블):
+    font-size: 11px
+    color: #888780
+    margin-bottom: 6px
+
+  strong (핵심 숫자):
+    font-size: 22px
+    font-weight: 500
+    color: #1A1A18
+    display: block
+    line-height: 1
+
+  span (보조 텍스트):
+    font-size: 11px
+    color: #B4B2A9
+    display: block
+    margin-top: 3px
+
+  .result-card-sub:
+    font-size: 10px
+    color: #B4B2A9
+
+highlight 카드 (.result-summary-card--highlight):
+  border: 1.5px solid #1D9E75  ← 진한 테두리
+  background: #FFFFFF
+
+  strong (핵심 숫자):
+    color: #0F6E56             ← 브랜드 색상
+
+  span (보조 텍스트):
+    color: #1D9E75
+
+결과 카드 그리드 (.result-summary-grid):
+  display: grid
+  grid-template-columns: repeat(4, 1fr)
+  gap: 10px
+  margin-top: 16px
+
+  @media (max-width: 768px)
+    grid-template-columns: repeat(2, 1fr)
+
+
+## 수정 4 — [P2] Chart.js 색상 브랜드 통일 (salary.js)
+
+salary.js 안에서 Chart.js 색상 설정 부분 찾아서 수정:
+
+차트 색상:
+  현재(기준): '#B4B2A9'        ← 회색
+  케이스 1:   '#5DCAA5'        ← 연한 teal
+  케이스 2:   '#1D9E75'        ← 중간 teal
+  케이스 3:   '#0F6E56'        ← 진한 teal (가장 큰 인상)
+
+차트 옵션 추가/수정:
+  plugins.legend.display: false  (범례 숨김, 카드로 대체)
+  plugins.tooltip.callbacks.label: 값 뒤에 '만원' 단위 표시
+  scales.x.grid.display: false
+  scales.y.grid.color: '#F0EFED'
+  scales.x.ticks.color: '#888780'
+  scales.y.ticks.color: '#888780'
+  animation.duration: 400
+
+
+## 수정 5 — [P2] panel / section-header 스타일 통일 (SCSS)
+
+메인/도구목록과 동일한 스타일로 통일:
+
+.panel-heading__eyebrow:
+  font-size: 10px
+  font-weight: 500
+  color: #0F6E56
+  text-transform: uppercase
+  letter-spacing: 0.06em
+
+.panel__title 또는 .panel-heading h2:
+  font-size: 17px
+  font-weight: 500
+  color: #1A1A18
+  margin-top: 2px
+
+.panel-heading__summary:
+  font-size: 13px
+  color: #888780
+  line-height: 1.6
+  margin-top: 6px
+
+.section-header__eyebrow:
+  font-size: 10px
+  font-weight: 500
+  color: #0F6E56
+  text-transform: uppercase
+  letter-spacing: 0.06em
+
+.section-header h2:
+  font-size: 17px
+  font-weight: 500
+  color: #1A1A18
+
+.section-header p:
+  font-size: 13px
+  color: #888780
+  line-height: 1.6
+
+
+## 수정 6 — [P3] 관련 계산기 링크 카드 스타일 (SCSS)
+
+SeoContent 컴포넌트 또는 관련 계산기 영역 SCSS 찾아서 수정:
+
+관련 계산기 그리드:
+  display: grid
+  grid-template-columns: repeat(3, 1fr)
+  gap: 8px
+
+  @media (max-width: 768px)
+    grid-template-columns: 1fr
+
+각 링크 카드:
+  border: 1px solid #E0DFDB
+  border-radius: 8px
+  padding: 12px 14px
+  text-decoration: none
+  background: #FFFFFF
+  display: block
+  transition: border-color 0.15s
+
+  &:hover
+    border-color: #1D9E75
+
+  제목: font-size 13px, font-weight 500, color #1A1A18
+  카테고리: font-size 10px, color #B4B2A9, margin-top 2px
+
+
+## 수정 7 — [P2] InfoNotice / 안내 박스 스타일 (SCSS)
+
+.info-notice 또는 InfoNotice 컴포넌트 관련 SCSS:
+  background: #F2F1EF
+  border-radius: 8px
+  padding: 14px 16px
+  border: none
+
+  제목: font-size 12px, font-weight 500, color #5F5E5A
+  항목: font-size 12px, color #888780, line-height 1.8
+  bullet: color #B4B2A9
+
+
+## 작업 순서
+1. 파일들 먼저 읽기 (위 목록)
+2. 실제 클래스명 파악
+3. P1 → P2 → P3 순서로 수정
+4. npm run build 통과 확인
+
+## 유지할 것
+- salary.astro HTML 구조 변경 없음
+- salary.js 계산 로직 변경 없음 (색상·초기화만 수정)
+- 기존 클래스명 변경 없음
+- Chart.js CDN 유지
+- withBase 로직 유지
+- npm run build 통과 확인
