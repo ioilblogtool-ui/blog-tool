@@ -361,13 +361,7 @@ function renderDonutChart(totals) {
     totals.benefitsAmount,
   ];
   const labels = ["연봉", "성과금", "정액현금·상품권", "자사주", "복지"];
-  const colors = [
-    "rgba(148,163,184,0.80)",
-    "rgba(15,110,86,0.82)",
-    "rgba(186,117,23,0.78)",
-    "rgba(99,102,241,0.75)",
-    "rgba(83,74,183,0.60)",
-  ];
+  const colors = ["#B4B2A9", "#1D9E75", "#5DCAA5", "#9FE1CB", "#E1F5EE"];
   if (_hyundaiDonutChart) { _hyundaiDonutChart.destroy(); _hyundaiDonutChart = null; }
   const total = data.reduce((a, b) => a + b, 0);
   const centerPlugin = {
@@ -376,13 +370,13 @@ function renderDonutChart(totals) {
       const { ctx, chartArea: { left, right, top, bottom } } = chart;
       const cx = (left + right) / 2, cy = (top + bottom) / 2;
       ctx.save();
-      ctx.font = "700 13px sans-serif";
-      ctx.fillStyle = "#475569";
+      ctx.font = "500 12px sans-serif";
+      ctx.fillStyle = "#888780";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText("총보상", cx, cy - 11);
-      ctx.font = "700 16px sans-serif";
-      ctx.fillStyle = "#0f172a";
+      ctx.font = "500 15px sans-serif";
+      ctx.fillStyle = "#1A1A18";
       ctx.fillText(formatKoreanAmount(total), cx, cy + 11);
       ctx.restore();
     }
@@ -390,7 +384,7 @@ function renderDonutChart(totals) {
   _hyundaiDonutChart = new window.Chart(canvas.getContext("2d"), {
     type: "doughnut",
     data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 1, borderColor: "#fff" }] },
-    options: { ...buildDefaultOptions(), cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } } },
+    options: { ...buildDefaultOptions(), cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 }, color: "#888780" } } } },
     plugins: [centerPlugin],
   });
 }
@@ -405,7 +399,7 @@ function renderRankChart() {
     const isCurrent = Math.abs(rank.defaultSalary - currentSalary) < 5_000_000;
     return { label: rank.label, total: row.totalComp, isCurrent };
   });
-  const bgColors = items.map((it) => it.isCurrent ? "rgba(15,110,86,0.88)" : "rgba(148,163,184,0.60)");
+  const bgColors = items.map((it) => it.isCurrent ? "#0F6E56" : "#B4B2A9");
   if (_hyundaiRankChart) { _hyundaiRankChart.destroy(); _hyundaiRankChart = null; }
   _hyundaiRankChart = new window.Chart(canvas.getContext("2d"), {
     type: "bar",
@@ -418,7 +412,7 @@ function renderRankChart() {
       indexAxis: "y",
       layout: { padding: { right: 84 } },
       plugins: { legend: { display: false } },
-      scales: { x: { display: false }, y: { grid: { display: false } } },
+      scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: "#888780" } } },
     },
     plugins: [makeLabelPlugin(formatKoreanAmount)],
   });
@@ -457,20 +451,20 @@ function renderScenarioChart(result) {
     data: {
       labels: years.map((y) => y.label),
       datasets: [
-        { label: "연봉",        data: years.map((y) => y.salary),   backgroundColor: "rgba(148,163,184,0.75)", stack: "s" },
-        { label: "성과금",      data: years.map((y) => y.bonus),    backgroundColor: "rgba(15,110,86,0.80)",  stack: "s" },
-        { label: "현금·상품권", data: years.map((y) => y.cash),     backgroundColor: "rgba(186,117,23,0.75)", stack: "s" },
-        { label: "자사주",      data: years.map((y) => y.stock),    backgroundColor: "rgba(99,102,241,0.75)", stack: "s" },
-        { label: "복지",        data: years.map((y) => y.benefits), backgroundColor: "rgba(83,74,183,0.60)",  stack: "s" },
+        { label: "연봉",        data: years.map((y) => y.salary),   backgroundColor: "#B4B2A9", stack: "s" },
+        { label: "성과금",      data: years.map((y) => y.bonus),    backgroundColor: "#0F6E56", stack: "s" },
+        { label: "현금·상품권", data: years.map((y) => y.cash),     backgroundColor: "#5DCAA5", stack: "s" },
+        { label: "자사주",      data: years.map((y) => y.stock),    backgroundColor: "#9FE1CB", stack: "s" },
+        { label: "복지",        data: years.map((y) => y.benefits), backgroundColor: "#E1F5EE", stack: "s" },
       ],
     },
     options: {
       ...buildDefaultOptions(),
       scales: {
-        x: { stacked: true, grid: { display: false } },
-        y: { stacked: true, ticks: { callback: (v) => formatKRW(v) } },
+        x: { stacked: true, grid: { display: false }, ticks: { color: "#888780" } },
+        y: { stacked: true, ticks: { callback: (v) => formatKRW(v), color: "#888780" }, grid: { color: "#F0EFED" } },
       },
-      plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } },
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 }, color: "#888780" } } },
     },
   });
 }
