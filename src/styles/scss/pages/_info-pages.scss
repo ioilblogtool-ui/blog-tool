@@ -1,0 +1,155 @@
+// ─── Info Pages (about / contact / disclaimer / privacy) ─────────────────────
+// Flat design override — no glassmorphism, no box-shadow.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.info-page {
+  padding-bottom: 64px;
+}
+
+// ── Section head (replaces legacy .section-header) ─────────────────────────
+.ip-section__head {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.ip-section__eyebrow {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0F6E56;
+}
+
+.ip-section__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #1A1A18;
+}
+
+// ── Layout ──────────────────────────────────────────────────────────────────
+.info-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.info-panel--wide {
+  grid-column: 1 / -1;
+}
+
+// ── Panel (flat override) ────────────────────────────────────────────────────
+.info-page .panel {
+  background: #F7F6F4;
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding: 20px;
+}
+
+// ── Text content ─────────────────────────────────────────────────────────────
+.info-copy {
+  display: grid;
+  gap: 12px;
+}
+
+.info-copy p {
+  margin: 0;
+  font-size: 14px;
+  color: #5F5E5A;
+  line-height: 1.8;
+}
+
+.info-copy a {
+  color: #0F6E56;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.info-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.info-list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 14px;
+  color: #5F5E5A;
+  line-height: 1.75;
+}
+
+.info-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #1D9E75;
+}
+
+// ── Info-card grid (about page 3-col) ────────────────────────────────────────
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.info-card {
+  padding: 16px;
+  background: #F0EFED;
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+}
+
+.info-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1A1A18;
+}
+
+.info-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #888780;
+  line-height: 1.7;
+}
+
+// ── Email link block ─────────────────────────────────────────────────────────
+.info-email-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 10px 16px;
+  background: #E1F5EE;
+  border: 1px solid #1D9E75;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0F6E56;
+  text-decoration: none;
+}
+
+.info-email-block:hover {
+  background: #d0f0e5;
+}
+
+// ── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 767px) {
+  .info-layout,
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
