@@ -1,25 +1,26 @@
-﻿---
+---
 import "../styles/app.scss";
 import SiteFooter from "../components/SiteFooter.astro";
 
 interface Props {
   title: string;
   description?: string;
-  image?: string;
+  ogImage?: string;
   jsonLd?: object;
 }
 
 const {
   title,
   description = "비교해서 더 잘 판단하게 만드는 계산 도구",
-  image = "/og-default.png",
+  ogImage,
   jsonLd,
 } = Astro.props;
 
 const siteName = "비교계산소";
+const siteUrl = import.meta.env.SITE ?? "https://bigyocalc.com";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
-const imageUrl = new URL(image, Astro.site);
-const faviconUrl = new URL("/favicon.svg", Astro.site);
+const defaultOg = `${siteUrl}/og/og-home.svg`;
+const ogImageUrl = ogImage ? `${siteUrl}${ogImage}` : defaultOg;
 ---
 
 <!doctype html>
@@ -32,7 +33,8 @@ const faviconUrl = new URL("/favicon.svg", Astro.site);
     <meta name="robots" content="index,follow" />
     <meta name="naver-site-verification" content="a177d0cd0c6167245dd21c3cb73a59c838f6d978" />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" type="image/svg+xml" href={faviconUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;800&display=swap" />
@@ -42,16 +44,14 @@ const faviconUrl = new URL("/favicon.svg", Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={imageUrl} />
-    <meta property="og:image:secure_url" content={imageUrl} />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={`${siteName} 대표 이미지`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image" content={ogImageUrl} />
     <meta name="theme-color" content="#0F6E56" />
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
@@ -68,4 +68,3 @@ const faviconUrl = new URL("/favicon.svg", Astro.site);
     <SiteFooter />
   </body>
 </html>
-
