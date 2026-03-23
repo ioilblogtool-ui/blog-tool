@@ -337,7 +337,7 @@ function renderDonutChart(totals) {
     totals.benefitsAmount,
   ];
   const labels = ["연봉", "OPI", "TAI", "복지"];
-  const colors = ["#B4B2A9", "#1D9E75", "#5DCAA5", "#9FE1CB"];
+  const colors = ["rgba(148,163,184,0.80)", "rgba(15,110,86,0.82)", "rgba(186,117,23,0.78)", "rgba(83,74,183,0.65)"];
   if (_samsungDonutChart) { _samsungDonutChart.destroy(); _samsungDonutChart = null; }
   const total = data.reduce((a, b) => a + b, 0);
   const centerPlugin = {
@@ -346,13 +346,13 @@ function renderDonutChart(totals) {
       const { ctx, chartArea: { left, right, top, bottom } } = chart;
       const cx = (left + right) / 2, cy = (top + bottom) / 2;
       ctx.save();
-      ctx.font = "500 12px sans-serif";
-      ctx.fillStyle = "#888780";
+      ctx.font = "700 13px sans-serif";
+      ctx.fillStyle = "#475569";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText("총보상", cx, cy - 11);
-      ctx.font = "500 15px sans-serif";
-      ctx.fillStyle = "#1A1A18";
+      ctx.font = "700 16px sans-serif";
+      ctx.fillStyle = "#0f172a";
       ctx.fillText(formatKoreanAmount(total), cx, cy + 11);
       ctx.restore();
     }
@@ -360,7 +360,7 @@ function renderDonutChart(totals) {
   _samsungDonutChart = new window.Chart(canvas.getContext("2d"), {
     type: "doughnut",
     data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 1, borderColor: "#fff" }] },
-    options: { ...buildDefaultOptions(), cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 }, color: "#888780" } } } },
+    options: { ...buildDefaultOptions(), cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } } },
     plugins: [centerPlugin],
   });
 }
@@ -376,7 +376,7 @@ function renderRankChart() {
     const isCurrent = Math.abs(rank.defaultSalary - currentSalary) < 5_000_000;
     return { label: rank.label, total: row.totalComp, isCurrent };
   });
-  const bgColors = items.map((it) => it.isCurrent ? "#0F6E56" : "#B4B2A9");
+  const bgColors = items.map((it) => it.isCurrent ? "rgba(15,110,86,0.88)" : "rgba(148,163,184,0.60)");
   if (_samsungRankChart) { _samsungRankChart.destroy(); _samsungRankChart = null; }
   _samsungRankChart = new window.Chart(canvas.getContext("2d"), {
     type: "bar",
@@ -389,10 +389,7 @@ function renderRankChart() {
       indexAxis: "y",
       layout: { padding: { right: 84 } },
       plugins: { legend: { display: false } },
-      scales: {
-        x: { display: false },
-        y: { grid: { display: false }, ticks: { color: "#888780" } },
-      },
+      scales: { x: { display: false }, y: { grid: { display: false } } },
     },
     plugins: [makeLabelPlugin(formatKoreanAmount)],
   });
@@ -424,19 +421,19 @@ function renderScenarioChart(result) {
     data: {
       labels: years.map((y) => y.label),
       datasets: [
-        { label: "연봉",  data: years.map((y) => y.salary),   backgroundColor: "#B4B2A9", stack: "s" },
-        { label: "OPI",   data: years.map((y) => y.opi),      backgroundColor: "#0F6E56", stack: "s" },
-        { label: "TAI",   data: years.map((y) => y.tai),      backgroundColor: "#5DCAA5", stack: "s" },
-        { label: "복지",  data: years.map((y) => y.benefits), backgroundColor: "#9FE1CB", stack: "s" },
+        { label: "연봉",  data: years.map((y) => y.salary),   backgroundColor: "rgba(148,163,184,0.75)", stack: "s" },
+        { label: "OPI",   data: years.map((y) => y.opi),      backgroundColor: "rgba(15,110,86,0.80)",  stack: "s" },
+        { label: "TAI",   data: years.map((y) => y.tai),      backgroundColor: "rgba(186,117,23,0.75)", stack: "s" },
+        { label: "복지",  data: years.map((y) => y.benefits), backgroundColor: "rgba(83,74,183,0.60)",  stack: "s" },
       ],
     },
     options: {
       ...buildDefaultOptions(),
       scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { color: "#888780" } },
-        y: { stacked: true, ticks: { callback: (v) => formatKRW(v), color: "#888780" }, grid: { color: "#F0EFED" } },
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, ticks: { callback: (v) => formatKRW(v) } },
       },
-      plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 }, color: "#888780" } } },
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } },
     },
   });
 }
