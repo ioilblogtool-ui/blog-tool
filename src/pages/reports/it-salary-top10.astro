@@ -1,0 +1,360 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { IT_TOP10, IT_TOP10_META, IT_TOP10_FAQ, AFFILIATE_BOXES } from "../../data/itSalaryTop10";
+
+const itAvg   = Math.round(IT_TOP10.reduce((s, e) => s + e.baseKrwM, 0) / IT_TOP10.length);
+const itMax   = Math.max(...IT_TOP10.map((e) => e.totalCompM));
+const avgNet  = Math.round(IT_TOP10.reduce((s, e) => s + e.monthlyNetKrwM, 0) / IT_TOP10.length);
+const avgBenefit = (IT_TOP10.reduce((s, e) => s + e.benefitScore, 0) / IT_TOP10.length).toFixed(1);
+
+const top5    = IT_TOP10.slice(0, 5);
+const bottom5 = IT_TOP10.slice(5);
+
+const faqItems = IT_TOP10_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+---
+
+<BaseLayout title={IT_TOP10_META.title} description={IT_TOP10_META.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page it-salary-page">
+    <CalculatorHero
+      eyebrow="2026 IT 취업 가이드"
+      title="IT 업계 신입 초봉 TOP 10"
+      description="네이버·SK텔레콤·카카오·현대오토에버 등 주요 IT 기업의 2026년 신입 연봉과 복지를 한눈에 비교합니다."
+    />
+
+    <InfoNotice
+      title="기준 안내"
+      lines={[IT_TOP10_META.methodology, IT_TOP10_META.caution, IT_TOP10_META.updatedAt]}
+    />
+
+    <!-- ① KPI 요약 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>2026 IT 업계 신입 초봉 요약</h2>
+      </div>
+      <div class="report-kpi-grid it-kpi-grid">
+        <article class="report-stat-card report-stat-card--primary">
+          <p>TOP 10 평균 기본급</p>
+          <strong>{itAvg.toLocaleString("ko-KR")}만원</strong>
+          <span>IT 업계 평균 기본급 추정</span>
+        </article>
+        <article class="report-stat-card">
+          <p>최고 영끌 연봉 (성과급 포함)</p>
+          <strong>{itMax.toLocaleString("ko-KR")}만원</strong>
+          <span>네이버 RSU·성과급 포함 추정</span>
+        </article>
+        <article class="report-stat-card">
+          <p>평균 월 실수령 추정</p>
+          <strong>약 {avgNet}만원</strong>
+          <span>4대보험+소득세 공제 후</span>
+        </article>
+        <article class="report-stat-card">
+          <p>평균 복지 점수</p>
+          <strong>{avgBenefit} / 10</strong>
+          <span>복리후생 종합 평가</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ② TOP 5 랭킹 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">1위 — 5위</p>
+        <h2>IT 신입 초봉 TOP 5 — 연봉·복지 상세 비교</h2>
+        <p>기본급 기준 상위 5개 기업의 연봉과 복리후생을 자세히 살펴봅니다.</p>
+      </div>
+
+      <div class="it-rank-list">
+        {top5.map((co) => (
+          <article class="it-rank-card">
+            <div class="it-rank-card__header">
+              <div class="it-rank-badge">{co.rank}위</div>
+              <div>
+                <h3>{co.name}</h3>
+                <p class="it-rank-card__en">{co.nameEn} · {co.category}</p>
+              </div>
+              <div class="it-rank-card__score">
+                복지 {co.benefitScore}<span>/10</span>
+              </div>
+            </div>
+
+            <div class="it-salary-row">
+              <div class="it-salary-cell">
+                <span>기본급 기준</span>
+                <strong>{co.baseKrwM.toLocaleString("ko-KR")}만원</strong>
+              </div>
+              <div class="it-salary-cell">
+                <span>성과급 포함 영끌</span>
+                <strong>약 {co.totalCompM.toLocaleString("ko-KR")}만원</strong>
+              </div>
+              <div class="it-salary-cell">
+                <span>월 실수령 추정</span>
+                <strong>약 {co.monthlyNetKrwM}만원</strong>
+              </div>
+            </div>
+
+            <div class="it-highlights-row">
+              {co.highlights.map((h) => (
+                <span class="it-highlight-tag">{h}</span>
+              ))}
+            </div>
+
+            <div class="it-rank-card__detail">
+              <div class="it-benefits-block">
+                <p class="it-block-label">주요 복리후생</p>
+                <ul class="it-benefits-list">
+                  {co.benefits.map((b) => <li>{b}</li>)}
+                </ul>
+              </div>
+              <div class="it-pros-cons">
+                <div>
+                  <p class="it-block-label">장점</p>
+                  <ul class="it-pros-list">
+                    {co.pros.map((p) => <li>{p}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <p class="it-block-label">단점</p>
+                  <ul class="it-cons-list">
+                    {co.cons.map((c) => <li>{c}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <p class="it-rank-card__summary">{co.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ③ 쿠팡파트너스 — IT 취업 도서 -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">📚</span>
+          <div>
+            <h3 class="affiliate-box__title">{AFFILIATE_BOXES.itBooks.title}</h3>
+            <p class="affiliate-box__context">{AFFILIATE_BOXES.itBooks.context}</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {AFFILIATE_BOXES.itBooks.products.map((prod) => (
+            <a
+              href={prod.url}
+              class="affiliate-product-card"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- ④ 6위 — 10위 랭킹 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">6위 — 10위</p>
+        <h2>IT 신입 초봉 6~10위 — 연봉·복지 상세 비교</h2>
+      </div>
+
+      <div class="it-rank-list">
+        {bottom5.map((co) => (
+          <article class="it-rank-card">
+            <div class="it-rank-card__header">
+              <div class="it-rank-badge">{co.rank}위</div>
+              <div>
+                <h3>{co.name}</h3>
+                <p class="it-rank-card__en">{co.nameEn} · {co.category}</p>
+              </div>
+              <div class="it-rank-card__score">
+                복지 {co.benefitScore}<span>/10</span>
+              </div>
+            </div>
+
+            <div class="it-salary-row">
+              <div class="it-salary-cell">
+                <span>기본급 기준</span>
+                <strong>{co.baseKrwM.toLocaleString("ko-KR")}만원</strong>
+              </div>
+              <div class="it-salary-cell">
+                <span>성과급 포함 영끌</span>
+                <strong>약 {co.totalCompM.toLocaleString("ko-KR")}만원</strong>
+              </div>
+              <div class="it-salary-cell">
+                <span>월 실수령 추정</span>
+                <strong>약 {co.monthlyNetKrwM}만원</strong>
+              </div>
+            </div>
+
+            <div class="it-highlights-row">
+              {co.highlights.map((h) => (
+                <span class="it-highlight-tag">{h}</span>
+              ))}
+            </div>
+
+            <div class="it-rank-card__detail">
+              <div class="it-benefits-block">
+                <p class="it-block-label">주요 복리후생</p>
+                <ul class="it-benefits-list">
+                  {co.benefits.map((b) => <li>{b}</li>)}
+                </ul>
+              </div>
+              <div class="it-pros-cons">
+                <div>
+                  <p class="it-block-label">장점</p>
+                  <ul class="it-pros-list">
+                    {co.pros.map((p) => <li>{p}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <p class="it-block-label">단점</p>
+                  <ul class="it-cons-list">
+                    {co.cons.map((c) => <li>{c}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <p class="it-rank-card__summary">{co.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ⑤ 복지 비교 인사이트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">복지 인사이트</p>
+        <h2>연봉 외에 꼭 비교해야 할 IT 기업 복지 3가지</h2>
+      </div>
+      <div class="it-insight-grid">
+        <article class="it-insight-card">
+          <div class="it-insight-icon">💰</div>
+          <h3>RSU·스톡옵션</h3>
+          <p>네이버·카카오·넥슨 등은 기본급 외 RSU(양도제한조건부주식) 또는 스톡옵션을 제공합니다. 3~4년 베스팅 후 수천만 원의 추가 수익으로 이어질 수 있어, 초봉만큼 중요한 요소입니다. 입사 시 RSU 규모를 반드시 확인하세요.</p>
+        </article>
+        <article class="it-insight-card">
+          <div class="it-insight-icon">🏠</div>
+          <h3>재택근무·유연근무</h3>
+          <p>카카오·네이버는 사실상 상시 재택 또는 완전 자율 근무를 운영합니다. 서울 출퇴근 기준 교통비·시간 절약 효과는 연간 200~400만 원 수준. 통신 3사는 하이브리드 근무가 일반화됐고, 삼성SDS·LG CNS는 프로젝트에 따라 상이합니다.</p>
+        </article>
+        <article class="it-insight-card">
+          <div class="it-insight-icon">📈</div>
+          <h3>자기계발비·교육 지원</h3>
+          <p>네이버·카카오는 연간 수백만 원의 교육비·도서비를 지원합니다. LG CNS·삼성SDS는 그룹사 교육 과정이 체계적으로 운영됩니다. 개발자로서 성장 속도를 높이려면 교육 지원 규모를 초봉 못지않게 중요하게 봐야 합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ⑥ 쿠팡파트너스 — 개발자 업무 효율 아이템 -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">⌨️</span>
+          <div>
+            <h3 class="affiliate-box__title">{AFFILIATE_BOXES.devTools.title}</h3>
+            <p class="affiliate-box__context">{AFFILIATE_BOXES.devTools.context}</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {AFFILIATE_BOXES.devTools.products.map((prod) => (
+            <a
+              href={prod.url}
+              class="affiliate-product-card"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- ⑦ 연봉 비교 요약 테이블 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한눈에 비교</p>
+        <h2>IT 신입 초봉 TOP 10 빠른 비교표</h2>
+      </div>
+      <div class="it-compare-table-wrap">
+        <table class="it-compare-table">
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>기업명</th>
+              <th>카테고리</th>
+              <th>기본급</th>
+              <th>영끌 (성과급 포함)</th>
+              <th>월 실수령</th>
+              <th>복지 점수</th>
+            </tr>
+          </thead>
+          <tbody>
+            {IT_TOP10.map((co) => (
+              <tr>
+                <td class="it-table-rank">{co.rank}위</td>
+                <td class="it-table-name">{co.name}</td>
+                <td><span class="it-category-tag">{co.category}</span></td>
+                <td class="it-table-num">{co.baseKrwM.toLocaleString("ko-KR")}만</td>
+                <td class="it-table-num it-table-num--total">약 {co.totalCompM.toLocaleString("ko-KR")}만</td>
+                <td class="it-table-num">약 {co.monthlyNetKrwM}만</td>
+                <td>
+                  <div class="it-score-bar">
+                    <div class="it-score-bar__fill" style={`width:${co.benefitScore * 10}%`}></div>
+                    <span>{co.benefitScore}</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  
+
+    <SeoContent
+      introTitle="IT 업계 신입 초봉 TOP 10 리포트 읽는 법"
+      intro={[
+        "이 페이지는 2026년 현재 잡플래닛·블라인드 집계, 공개 채용 공고, 언론 보도를 바탕으로 네이버·SK텔레콤·카카오·현대오토에버·넥슨·KT·LG유플러스·LG CNS·삼성SDS·엔씨소프트 등 국내 주요 IT 기업 신입 초봉과 복리후생을 비교하는 인터랙티브 리포트입니다.",
+        "IT 취업 준비생이 기업을 선택할 때 연봉 외에도 RSU·재택근무·교육 지원 등 비현금 복지를 함께 고려할 수 있도록 항목별 상세 정보를 제공합니다.",
+      ]}
+      inputPoints={[
+        "TOP 10 기업별 기본급·영끌 연봉·월 실수령을 한눈에 비교할 수 있습니다.",
+        "RSU·스톡옵션·재택근무·교육 지원 등 복리후생 항목을 기업별로 확인할 수 있습니다.",
+        "장단점·한줄 요약으로 각 기업의 특징을 빠르게 파악할 수 있습니다.",
+      ]}
+      criteria={[
+        "잡플래닛·블라인드 집계, 공개 채용 공고, 언론 보도 기반의 추정치입니다.",
+        "기본급 기준 연봉과 성과급 포함 영끌 연봉을 구분해 표기합니다.",
+        "월 실수령은 4대보험 및 근로소득세 공제 적용 추정치입니다.",
+        "모든 수치는 참고용이며 채용·처우 협상의 공식 근거로 사용하지 마세요.",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/reports/new-employee-salary-2026/", label: "2026 신입 초봉 비교 리포트 (전 업종)" },
+        { href: "/tools/salary/", label: "연봉 인상 계산기" },
+        { href: "/tools/negotiation/", label: "이직 계산기" },
+        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+      ]}
+    />
+  </main>
+</BaseLayout>

@@ -1,0 +1,543 @@
+.it-salary-page {
+  // ── KPI 그리드 (카드형 2×2 → 4열) ─────────────────────────────────────────
+  .it-kpi-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // ── KPI stat card 스타일 ──────────────────────────────────────────────────
+  .report-stat-card {
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.15s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.76rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    strong {
+      display: block;
+      font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    span {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    &--primary {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-color: rgba(29, 158, 117, 0.25);
+
+      strong {
+        color: #0F6E56;
+      }
+    }
+  }
+
+  // ── 랭킹 목록 ────────────────────────────────────────────────────────────
+  .it-rank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .it-rank-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: box-shadow 0.15s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  .it-rank-card__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 2px;
+    }
+  }
+
+  .it-rank-badge {
+    background: #1e293b;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 4px 10px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .it-rank-card__en {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .it-rank-card__score {
+    margin-left: auto;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1D9E75;
+    flex-shrink: 0;
+
+    span {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+  }
+
+  // ── 연봉 행 ──────────────────────────────────────────────────────────────
+  .it-salary-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .it-salary-cell {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    span {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    strong {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+  }
+
+  // ── 하이라이트 태그 ──────────────────────────────────────────────────────
+  .it-highlights-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .it-highlight-tag {
+    background: rgba(29, 158, 117, 0.1);
+    color: #0F6E56;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  // ── 상세 (복지 + 장단점) ──────────────────────────────────────────────────
+  .it-rank-card__detail {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .it-block-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 8px;
+  }
+
+  .it-benefits-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    li {
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: 0.82rem;
+      color: #334155;
+    }
+  }
+
+  .it-pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .it-pros-list,
+  .it-cons-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    li {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      padding-left: 14px;
+      position: relative;
+      color: #475569;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .it-pros-list li::before  { background: #1D9E75; }
+  .it-cons-list li::before  { background: #f87171; }
+
+  .it-rank-card__summary {
+    font-size: 0.84rem;
+    color: #64748b;
+    line-height: 1.7;
+    margin: 0;
+    padding-top: 10px;
+    border-top: 1px solid #f8fafc;
+  }
+
+  // ── 인사이트 그리드 ──────────────────────────────────────────────────────
+  .it-insight-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .it-insight-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px;
+
+    .it-insight-icon {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 8px;
+    }
+
+    p {
+      font-size: 0.84rem;
+      color: #64748b;
+      line-height: 1.7;
+      margin: 0;
+    }
+  }
+
+  // ── 비교 테이블 ──────────────────────────────────────────────────────────
+  .it-compare-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .it-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+
+    thead tr {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.1s;
+
+      &:last-child { border-bottom: none; }
+      &:hover { background: #fafafa; }
+    }
+
+    td {
+      padding: 10px 14px;
+      color: #334155;
+      white-space: nowrap;
+    }
+  }
+
+  .it-table-rank {
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .it-table-name {
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .it-category-tag {
+    background: #f1f5f9;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 0.76rem;
+    color: #64748b;
+  }
+
+  .it-table-num {
+    font-weight: 500;
+    color: #334155;
+
+    &--total {
+      color: #1D9E75;
+      font-weight: 700;
+    }
+  }
+
+  .it-score-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 80px;
+
+    &__fill {
+      height: 6px;
+      background: linear-gradient(90deg, #1D9E75, #34d399);
+      border-radius: 3px;
+      flex: 1;
+      max-width: 60px;
+    }
+
+    span {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #1D9E75;
+    }
+  }
+  // ── 반응형 ──────────────────────────────────────────────────────────────
+  @media (min-width: 640px) {
+    .it-salary-row {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .it-rank-card__detail {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .it-insight-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .it-kpi-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .it-insight-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+// ── 제휴 박스 (쿠팡파트너스) ─────────────────────────────────────────────────
+.affiliate-section {
+  padding-top: 0;
+}
+
+.affiliate-box {
+  background: #fafafa;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px;
+
+  &--alt {
+    background: #f0fdf4;
+    border-color: rgba(29, 158, 117, 0.2);
+  }
+}
+
+.affiliate-box__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.affiliate-box__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.affiliate-box__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.affiliate-box__context {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.affiliate-product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+
+  &--2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.affiliate-product-card {
+  display: block;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: #1D9E75;
+    box-shadow: 0 2px 8px rgba(29, 158, 117, 0.12);
+  }
+}
+
+.affiliate-product-tag {
+  display: inline-block;
+  background: rgba(29, 158, 117, 0.1);
+  color: #0F6E56;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 2px 7px;
+  margin-bottom: 6px;
+}
+
+.affiliate-product-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+.affiliate-product-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.affiliate-product-cta {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #E4352B;
+  letter-spacing: 0.01em;
+}
+
+.affiliate-disclosure {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+// ── 반응형 ──────────────────────────────────────────────────────────────────
+@media (min-width: 640px) {
+  .it-salary-page {
+    .it-kpi-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .it-salary-row {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .it-rank-card__detail {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .it-insight-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .affiliate-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    &--2col {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (min-width: 960px) {
+  .it-salary-page {
+    .it-kpi-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .affiliate-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,430 @@
+// ── 2026 신입 연봉 비교 페이지 ─────────────────────────────────────────────
+
+.salary-compare-page {
+
+  // ── KPI 그리드 ───────────────────────────────────────────────────────────
+  .sc-kpi-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  // ── 내 연봉 입력 섹션 ─────────────────────────────────────────────────────
+  .sc-my-salary-section {
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 16px;
+    padding: 24px 20px;
+  }
+
+  .sc-input-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0 4px;
+
+    label {
+      font-size: 0.82rem;
+      color: var(--color-text-secondary, #64748b);
+      white-space: nowrap;
+    }
+
+    input {
+      max-width: 160px;
+    }
+  }
+
+  .sc-hint {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary, #64748b);
+
+    strong {
+      color: #1D9E75;
+      font-weight: 500;
+    }
+  }
+
+  .sc-result-card {
+    display: none;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .sc-result-title {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary, #64748b);
+    margin-bottom: 12px;
+  }
+
+  .sc-result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .sc-res-cell {
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .sc-res-num {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #1e293b);
+  }
+
+  .sc-res-label {
+    font-size: 0.72rem;
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 3px;
+  }
+
+  .sc-similar-box {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary, #64748b);
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 8px;
+    padding: 10px 12px;
+    line-height: 1.7;
+
+    strong {
+      color: var(--color-text-primary, #1e293b);
+      font-weight: 500;
+    }
+  }
+
+  // ── 요약 바 ──────────────────────────────────────────────────────────────
+  .sc-summary-bar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .sc-sum-cell {
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+
+  .sc-sum-num {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #1e293b);
+  }
+
+  .sc-sum-label {
+    font-size: 0.72rem;
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 2px;
+  }
+
+  // ── 필터 행 ──────────────────────────────────────────────────────────────
+  .sc-filter-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .sc-ftab {
+    font-size: 0.78rem;
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-text-secondary, #64748b);
+    transition: background 0.12s, color 0.12s;
+
+    &:hover {
+      background: #f1f5f9;
+    }
+
+    &.sc-ftab--on {
+      background: var(--color-text-primary, #1e293b);
+      color: #fff;
+      border-color: var(--color-text-primary, #1e293b);
+    }
+  }
+
+  .sc-sort-sel {
+    font-size: 0.78rem;
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 5px 8px;
+    color: var(--color-text-secondary, #64748b);
+    cursor: pointer;
+  }
+
+  // ── 티어 레이블 ──────────────────────────────────────────────────────────
+  .sc-tier-label {
+    font-size: 0.72rem;
+    color: var(--color-text-secondary, #64748b);
+    margin: 16px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #f1f5f9;
+    }
+  }
+
+  // ── 바 차트 행 ───────────────────────────────────────────────────────────
+  .sc-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    padding: 3px 4px;
+    transition: background 0.12s;
+
+    &:hover {
+      background: var(--color-background-secondary, #f8fafc);
+    }
+  }
+
+  .sc-bar-company {
+    width: 130px;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    color: var(--color-text-secondary, #64748b);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sc-bar-track {
+    flex: 1;
+    height: 26px;
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .sc-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .sc-bar-val {
+    font-size: 0.72rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .sc-bar-tag {
+    font-size: 0.65rem;
+    margin-left: 6px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+  }
+
+  .sc-my-line {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    background: #E24B4A;
+    opacity: 0.8;
+    border-radius: 1px;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  // ── 업종별 인사이트 ──────────────────────────────────────────────────────
+  .sc-insight-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sc-ins-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .sc-ins-industry {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #64748b);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sc-ins-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+
+  .sc-ins-range {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #1e293b);
+    margin-bottom: 6px;
+  }
+
+  .sc-ins-note {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary, #64748b);
+    line-height: 1.65;
+  }
+
+  .sc-ins-avg {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--color-background-secondary, #f8fafc);
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 8px;
+  }
+
+  // ── FAQ ──────────────────────────────────────────────────────────────────
+  .sc-faq-block {
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .sc-faq-item {
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .sc-faq-q {
+    width: 100%;
+    padding: 14px 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: none;
+    border: none;
+    text-align: left;
+    color: var(--color-text-primary, #1e293b);
+
+    &:hover {
+      color: var(--color-text-secondary, #64748b);
+    }
+  }
+
+  .sc-faq-chevron {
+    font-size: 0.78rem;
+    color: var(--color-text-tertiary, #94a3b8);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .sc-faq-a {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary, #64748b);
+    line-height: 1.7;
+    padding: 0 4px 14px;
+    display: none;
+
+    &.sc-faq-a--open {
+      display: block;
+    }
+  }
+
+  // ── 관련 계산기 그리드 ───────────────────────────────────────────────────
+  .sc-related-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .sc-rel-card {
+    display: block;
+    text-decoration: none;
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover {
+      background: #fff;
+      border-color: #e2e8f0;
+    }
+  }
+
+  .sc-rel-label {
+    font-size: 0.72rem;
+    color: var(--color-text-tertiary, #94a3b8);
+    margin-bottom: 4px;
+  }
+
+  .sc-rel-title {
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #1e293b);
+  }
+
+  .sc-rel-desc {
+    font-size: 0.76rem;
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  // ── 반응형: 태블릿 이상 ──────────────────────────────────────────────────
+  @media (min-width: 640px) {
+    .sc-kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sc-summary-bar {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .sc-bar-company {
+      width: 150px;
+    }
+
+    .sc-insight-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .sc-kpi-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .sc-insight-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
