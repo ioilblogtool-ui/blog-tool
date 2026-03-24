@@ -1,60 +1,233 @@
-﻿---
+---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
-import TrustPanel from "../../components/TrustPanel.astro";
-import { reports } from "../../data/reports";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
-const orderedReports = [...reports].sort((a, b) => a.order - b.order);
+
+// 연봉·초봉 시리즈
+const salarySeries = [
+  {
+    slug: "new-employee-salary-2026",
+    eyebrow: "연봉 비교",
+    title: "2026 신입 연봉 비교 — 70개 기업 초봉 순위 총정리",
+    desc: "반도체·완성차·IT·금융·외국계 70개 기업의 신입 영끌 연봉을 업종별 바 차트로 비교하고 내 위치를 바로 확인합니다.",
+    tags: [{ label: "신규", mod: "new" }, { label: "70개 기업", mod: "salary" }, { label: "바 차트", mod: "salary" }],
+    category: "salary",
+    isNew: true,
+  },
+  {
+    slug: "it-salary-top10",
+    eyebrow: "IT 초봉",
+    title: "IT 업계 신입 초봉 TOP 10 — 연봉·복지 완벽 비교 [2026]",
+    desc: "네이버·카카오·SK텔레콤·현대오토에버 등 주요 IT 기업 신입 연봉과 복리후생을 랭킹 카드로 상세 비교합니다.",
+    tags: [{ label: "IT", mod: "salary" }, { label: "TOP10", mod: "salary" }],
+    category: "salary",
+    isNew: false,
+  },
+];
+
+// 자산·부자 시리즈
+const assetSeries = [
+  {
+    slug: "korea-rich-top10-assets",
+    eyebrow: "한국 자산",
+    title: "한국 부자 TOP 10 자산 비교 리포트",
+    desc: "2026년 현재 최신 공개 기준으로 한국 상위 10명 자산과 서울 국평·그랜저 환산값을 함께 보는 인터랙티브 리포트.",
+    tags: [{ label: "KRW", mod: "asset" }, { label: "자산", mod: "asset" }],
+    category: "asset",
+    isNew: false,
+  },
+  {
+    slug: "us-rich-top10-patterns",
+    eyebrow: "미국 자산",
+    title: "미국 부자 TOP 10 성공 패턴 리포트",
+    desc: "자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트.",
+    tags: [{ label: "USD", mod: "asset" }, { label: "패턴 분석", mod: "asset" }],
+    category: "asset",
+    isNew: false,
+  },
+];
+
+const totalReports = salarySeries.length + assetSeries.length;
 ---
 
-<BaseLayout title="비교계산소 리포트" description="계산기와 함께 보기 좋은 비교형 인터랙티브 리포트를 모아둔 페이지">
+<BaseLayout
+  title="비교 리포트 — 비교계산소"
+  description="직접 입력 없이 공개 데이터를 선택하고 비교하며 읽는 인터랙티브 리포트. 연봉·자산·부자 데이터를 한눈에 비교합니다."
+  ogImage="/og/reports-index.png"
+>
   <SiteHeader />
 
-  <main class="container page-shell tool-library-page report-library-page">
-    <CalculatorHero
-      eyebrow="리포트 목록"
-      title="숫자를 읽는 비교 리포트"
-      description="계산기처럼 직접 입력하지 않아도, 공개 데이터를 선택하고 비교하며 읽을 수 있는 인터랙티브 리포트를 모았습니다."
-    />
+  <main class="container page-shell report-library-page">
 
-    <section class="content-section">
-      <div class="section-header">
-        <p class="section-header__eyebrow">리포트 시리즈</p>
-        <h2>계산기 다음으로 보기 좋은 비교 콘텐츠</h2>
-        <p>인물, 업종, 자산, 성장 패턴처럼 공개 데이터를 가볍게 비교하고 읽을 수 있게 구성합니다.</p>
+    <!-- ① Hero -->
+    <CalculatorHero
+      eyebrow="인터랙티브 리포트"
+      title="숫자를 읽는 비교 리포트"
+      description="직접 입력 없이 공개 데이터를 선택하고 비교하며 읽는 리포트. 계산기와 함께 보면 맥락이 더 잘 보입니다."
+    />
+    <div class="reports-hero-stats">
+      <div class="reports-hero-stat">
+        <span class="reports-hero-stat__num">{totalReports}</span>
+        <span class="reports-hero-stat__label">리포트</span>
       </div>
-      <div class="report-hub-grid">
-        {
-          orderedReports.map((report) => (
-            <a class="tool-card tool-card--feature report-hub-card" href={withBase(`/reports/${report.slug}/`)}>
-              <div class="tool-card__head">
-                <p class="tool-card__eyebrow">인터랙티브 리포트</p>
-                {
-                  report.badges && (
-                    <div class="tool-badges">
-                      {report.badges.map((badge) => <span class="tool-badge" data-badge={badge}>{badge}</span>)}
-                    </div>
-                  )
-                }
+      <div class="reports-hero-stat">
+        <span class="reports-hero-stat__num">3</span>
+        <span class="reports-hero-stat__label">시리즈</span>
+      </div>
+      <div class="reports-hero-stat">
+        <span class="reports-hero-stat__num">계속</span>
+        <span class="reports-hero-stat__label">추가 중</span>
+      </div>
+    </div>
+
+    <!-- ② 필터 칩 -->
+    <div class="reports-filter-bar" id="reportsFilterBar">
+      <button class="reports-filter-chip is-active" data-filter="all">전체</button>
+      <button class="reports-filter-chip" data-filter="salary">연봉·초봉</button>
+      <button class="reports-filter-chip" data-filter="asset">자산·부자</button>
+      <button class="reports-filter-chip" data-filter="new">신규</button>
+    </div>
+
+    <!-- ③ Featured 카드 (최신 리포트) -->
+    <a href={withBase("/reports/new-employee-salary-2026/")} class="reports-featured-card" data-category="salary" data-tag="new">
+      <div class="reports-featured-card__top">
+        <p class="reports-featured-card__eyebrow">연봉 리포트 · 신규</p>
+        <h2 class="reports-featured-card__title">2026 신입 연봉 비교<br>70개 기업 초봉 순위 총정리</h2>
+        <p class="reports-featured-card__desc">
+          반도체·완성차·IT·금융·외국계 70개 기업의 신입 연봉을 업종별 바 차트로 비교하고
+          내 위치를 바로 확인합니다.
+        </p>
+        <div class="reports-featured-card__tags">
+          <span class="reports-featured-tag reports-featured-tag--new">신규</span>
+          <span class="reports-featured-tag">70개 기업</span>
+          <span class="reports-featured-tag">바 차트</span>
+          <span class="reports-featured-tag">인터랙티브</span>
+        </div>
+      </div>
+      <div class="reports-featured-card__bottom">
+        <span class="reports-featured-card__meta">2026년 3월 최신 업데이트</span>
+        <span class="reports-featured-card__cta">리포트 보기 →</span>
+      </div>
+    </a>
+
+    <!-- ④ 연봉·초봉 시리즈 -->
+    <section class="reports-series" data-series="salary">
+      <h3 class="reports-series__label">연봉·초봉 시리즈</h3>
+      <div class="reports-card-grid">
+        {salarySeries.map((r) => (
+          <a
+            href={withBase(`/reports/${r.slug}/`)}
+            class="report-card-item"
+            data-category={r.category}
+            data-tag={r.isNew ? "new" : ""}
+          >
+            <p class="rc-eyebrow">{r.eyebrow}</p>
+            <p class="rc-title">{r.title}</p>
+            <p class="rc-desc">{r.desc}</p>
+            <div class="rc-footer">
+              <div class="rc-tags">
+                {r.tags.map((t) => (
+                  <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                ))}
               </div>
-              <h2>{report.title}</h2>
-              <p>{report.description}</p>
-              <span class="tool-card__meta">인물 선택, 패턴 요약, 분포 비교를 한 화면에서 볼 수 있습니다.</span>
-            </a>
-          ))
-        }
+              <span class="rc-arrow">→</span>
+            </div>
+          </a>
+        ))}
       </div>
     </section>
 
-    <TrustPanel
-      eyebrow="안내"
-      title="리포트는 팩트와 해석을 함께 봅니다"
-      description="자산·학력·업종 정보는 공개 기준으로 정리하고, 성향 태그와 패턴 해석은 참고용 설명으로 분리해서 보여줍니다."
-    />
+    <!-- ④ 자산·부자 시리즈 -->
+    <section class="reports-series" data-series="asset">
+      <h3 class="reports-series__label">자산·부자 시리즈</h3>
+      <div class="reports-card-grid">
+        {assetSeries.map((r) => (
+          <a
+            href={withBase(`/reports/${r.slug}/`)}
+            class="report-card-item"
+            data-category={r.category}
+            data-tag={r.isNew ? "new" : ""}
+          >
+            <p class="rc-eyebrow">{r.eyebrow}</p>
+            <p class="rc-title">{r.title}</p>
+            <p class="rc-desc">{r.desc}</p>
+            <div class="rc-footer">
+              <div class="rc-tags">
+                {r.tags.map((t) => (
+                  <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                ))}
+              </div>
+              <span class="rc-arrow">→</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ⑤ 준비 중 -->
+    <div class="reports-coming">
+      <h3 class="reports-coming__title">다음에 추가될 리포트</h3>
+      <div class="reports-coming__grid">
+        <div class="reports-coming__card">
+          <p class="reports-coming__cat">연봉</p>
+          <p class="reports-coming__name">대기업 연차별 연봉 성장 비교</p>
+          <span class="reports-coming__badge">준비 중</span>
+        </div>
+        <div class="reports-coming__card">
+          <p class="reports-coming__cat">부동산</p>
+          <p class="reports-coming__name">서울 아파트 평균 가격 비교</p>
+          <span class="reports-coming__badge">준비 중</span>
+        </div>
+        <div class="reports-coming__card">
+          <p class="reports-coming__cat">복지</p>
+          <p class="reports-coming__name">대기업 복지포인트 비교</p>
+          <span class="reports-coming__badge">준비 중</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑥ 안내 박스 -->
+    <div class="tl-notice">
+      리포트의 자산·연봉 정보는 공개 기준으로 정리하고, 성향 태그와 패턴 해석은 참고용 설명으로 분리해서 보여줍니다.
+      수치는 공개 보도·집계 기반 추정치이며 공식 데이터가 아닙니다.
+    </div>
+
   </main>
 </BaseLayout>
+
+<script>
+  document.querySelectorAll('.reports-filter-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.reports-filter-chip').forEach(b => b.classList.remove('is-active'));
+      (btn as HTMLElement).classList.add('is-active');
+      const filter = (btn as HTMLElement).dataset.filter;
+
+      // featured 카드
+      const featured = document.querySelector('.reports-featured-card') as HTMLElement | null;
+      if (featured) {
+        if (filter === 'all' || featured.dataset.category === filter || featured.dataset.tag === filter) {
+          featured.style.display = '';
+        } else {
+          featured.style.display = 'none';
+        }
+      }
+
+      // 시리즈 섹션
+      document.querySelectorAll<HTMLElement>('.reports-series').forEach(series => {
+        const seriesType = series.dataset.series;
+        let hasVisible = false;
+        series.querySelectorAll<HTMLElement>('.report-card-item').forEach(card => {
+          const show = filter === 'all' || card.dataset.category === filter || card.dataset.tag === filter;
+          card.style.display = show ? '' : 'none';
+          if (show) hasVisible = true;
+        });
+        series.style.display = hasVisible ? '' : 'none';
+      });
+    });
+  });
+</script>

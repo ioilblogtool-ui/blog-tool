@@ -1,4 +1,4 @@
----
+﻿---
 import "../styles/app.scss";
 import SiteFooter from "../components/SiteFooter.astro";
 
@@ -17,10 +17,15 @@ const {
 } = Astro.props;
 
 const siteName = "비교계산소";
-const siteUrl = import.meta.env.SITE ?? "https://bigyocalc.com";
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const rawSiteUrl = import.meta.env.SITE ?? "https://bigyocalc.com";
+const siteUrl = rawSiteUrl.replace(/\/$/, "");
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? siteUrl);
 const defaultOg = `${siteUrl}/og/og-home.svg`;
-const ogImageUrl = ogImage ? `${siteUrl}${ogImage}` : defaultOg;
+const ogImageUrl = ogImage
+  ? ogImage.startsWith("http")
+    ? ogImage
+    : `${siteUrl}${ogImage}`
+  : defaultOg;
 ---
 
 <!doctype html>

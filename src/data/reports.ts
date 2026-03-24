@@ -8,24 +8,17 @@ export type ReportMeta = {
 
 export const reports: ReportMeta[] = [
   {
-    slug: "salary-compare-2026",
-    title: "2026 신입 연봉 비교 — 70개 기업 초봉 순위 총정리",
-    description: "반도체·완성차·IT·금융·외국계 70개 기업의 신입 영끌 연봉을 업종별 바 차트로 비교하고, 내 연봉 위치를 바로 확인하는 인터랙티브 리포트",
-    order: 1,
-    badges: ["신규", "비교"]
-  },
-  {
     slug: "it-salary-top10",
     title: "IT 업계 신입 초봉 TOP 10 — 연봉·복지 완벽 비교 [2026]",
     description: "네이버·카카오·SK텔레콤·현대오토에버 등 주요 IT 기업 신입 연봉과 복리후생을 랭킹 카드로 상세 비교하는 2026년 최신 리포트",
-    order: 2,
+    order: 1,
     badges: ["IT", "TOP10"]
   },
   {
     slug: "new-employee-salary-2026",
     title: "2026 신입사원 초봉 비교 리포트",
     description: "IT·반도체·자동차·금융·공공 분야 주요 기업의 2026년 신입사원 초봉을 바 차트와 상세 카드로 비교하는 인터랙티브 리포트",
-    order: 3,
+    order: 2,
     badges: ["2026"]
   },
   {

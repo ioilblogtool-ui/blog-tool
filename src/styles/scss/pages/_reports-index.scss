@@ -1,0 +1,312 @@
+// ── reports/index 전용 스타일 ─────────────────────────────────────────────────
+// 리포트 목록 페이지. 계산기(Teal)와 다른 Purple accent 사용.
+// accent: #534AB7 / tint: #EEEDFE
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ① hero eyebrow 색상 override (CalculatorHero 컴포넌트 재활용)
+.report-library-page .hero__eyebrow {
+  color: #534AB7;
+}
+
+// hero 하단 구분선 + 통계
+.reports-hero-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.reports-hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reports-hero-stat__num {
+  font-size: 20px;
+  font-weight: 500;
+  color: #534AB7;
+  line-height: 1;
+}
+
+.reports-hero-stat__label {
+  font-size: 11px;
+  color: #888780;
+}
+
+// ② 필터 칩 바
+.reports-filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.reports-filter-chip {
+  font-size: 12px;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 0.5px solid #E0DFDB;
+  color: #888780;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &.is-active {
+    background: #534AB7;
+    border-color: #534AB7;
+    color: #EEEDFE;
+  }
+
+  &:hover:not(.is-active) {
+    border-color: #B4B2A9;
+  }
+}
+
+// ③ Featured 카드
+.reports-featured-card {
+  border: 0.5px solid #CECDCA;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  text-decoration: none;
+  display: block;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: #534AB7;
+  }
+}
+
+.reports-featured-card__top {
+  background: #18181A;
+  padding: 28px 28px 24px;
+}
+
+.reports-featured-card__eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: #9FE1CB;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.reports-featured-card__title {
+  font-size: 20px;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.reports-featured-card__desc {
+  font-size: 13px;
+  color: #9A9895;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.reports-featured-card__tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.reports-featured-tag {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: #222220;
+  color: #9FE1CB;
+  font-weight: 500;
+
+  &--new {
+    background: #534AB7;
+    color: #EEEDFE;
+  }
+}
+
+.reports-featured-card__bottom {
+  padding: 14px 28px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 0.5px solid #CECDCA;
+}
+
+.reports-featured-card__meta {
+  font-size: 12px;
+  color: #888780;
+}
+
+.reports-featured-card__cta {
+  font-size: 12px;
+  font-weight: 500;
+  color: #534AB7;
+}
+
+// ④ 시리즈별 카드 그리드
+.reports-series {
+  margin-bottom: 24px;
+}
+
+.reports-series__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #888780;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 0.5px solid #E8E7E4;
+}
+
+.reports-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 개별 리포트 카드
+.report-card-item {
+  border: 0.5px solid #CECDCA;
+  border-radius: 10px;
+  padding: 16px 18px;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: #534AB7;
+  }
+
+  .rc-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    color: #534AB7;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .rc-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.35;
+  }
+
+  .rc-desc {
+    font-size: 12px;
+    color: #888780;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .rc-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 0.5px solid #F0EFED;
+  }
+
+  .rc-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .rc-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: #EEEDFE;
+    color: #3C3489;
+    font-weight: 500;
+
+    &.rc-tag--salary {
+      background: #E1F5EE;
+      color: #085041;
+    }
+
+    &.rc-tag--asset {
+      background: #FAEEDA;
+      color: #633806;
+    }
+
+    &.rc-tag--new {
+      background: #EEEDFE;
+      color: #3C3489;
+    }
+  }
+
+  .rc-arrow {
+    font-size: 12px;
+    color: #B4B2A9;
+  }
+}
+
+// ⑤ 준비 중 섹션
+.reports-coming {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.reports-coming__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A1A18;
+  margin-bottom: 12px;
+}
+
+.reports-coming__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reports-coming__card {
+  border: 0.5px dashed #CECDCA;
+  border-radius: 8px;
+  padding: 12px;
+  background: #FFFFFF;
+}
+
+.reports-coming__cat {
+  font-size: 9px;
+  font-weight: 500;
+  color: #B4B2A9;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.reports-coming__name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #5F5E5A;
+}
+
+.reports-coming__badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #F2F1EF;
+  color: #888780;
+  display: inline-block;
+  margin-top: 6px;
+}

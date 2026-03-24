@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **비교계산소** (bigyocalc.com) — A Korean-language financial calculator platform. Users input values and get real-time comparisons. Built with Astro SSG; deploys to Cloudflare Pages on push to `main` (treat every push as production).
 
+> **콘텐츠·UX·수익화·SEO 기준**: [`CONTENT_GUIDE.md`](./CONTENT_GUIDE.md) 를 반드시 먼저 확인하세요. 새 페이지 작성 및 기존 페이지 수정 시 모두 적용됩니다.
+
 ## Commands
 
 ```bash
