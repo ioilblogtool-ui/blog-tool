@@ -1,0 +1,295 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PAGE_META,
+  BRANDS,
+  MONTHLY_USAGE_RANGES,
+  AFFILIATE_PRODUCTS,
+  PAGE_FAQ,
+  relatedLinks,
+} from "../../data/formulaCost";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = { BRANDS, MONTHLY_USAGE_RANGES };
+---
+
+<BaseLayout
+  title={PAGE_META.title}
+  description={PAGE_META.subtitle}
+  ogImage="/og/tools/formula-cost.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "돌까지 분유값 계산기",
+    "url": `${import.meta.env.SITE}/tools/formula-cost/`,
+    "description": PAGE_META.subtitle,
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="formula-cost" pageClass="formula-cost-page">
+
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="육아 소모품 계산기"
+        title="돌까지 분유값 계산기"
+        description="신생아부터 돌까지 월령별 분유 사용량을 자동 계산하고, 브랜드별 총비용을 한눈에 비교합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetFormulaCostBtn" copyId="copyFormulaCostLinkBtn" />
+    </Fragment>
+
+    <!-- ① 입력 영역 -->
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기간 설정</p>
+            <h2 class="panel__title">계산 기간</h2>
+          </div>
+          <p class="panel-heading__summary">분유를 사용할 기간을 선택하세요.</p>
+        </div>
+
+        <div class="fc-duration-wrap">
+          <div class="calc-slider-row">
+            <input
+              type="range"
+              id="fcDurationSlider"
+              class="calc-slider"
+              min="1"
+              max="18"
+              step="1"
+              value="12"
+            />
+            <span id="fcDurationLabel" class="calc-slider-val">12개월</span>
+          </div>
+          <div class="fc-duration-shortcuts">
+            <button class="fc-shortcut-btn" data-months="6" type="button">6개월</button>
+            <button class="fc-shortcut-btn is-active" data-months="12" type="button">돌까지</button>
+            <button class="fc-shortcut-btn" data-months="18" type="button">18개월</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">브랜드 선택</p>
+            <h2 class="panel__title">비교할 브랜드</h2>
+          </div>
+          <p class="panel-heading__summary">최대 5개까지 동시에 비교할 수 있습니다.</p>
+        </div>
+
+        <div class="fc-brand-list">
+          {BRANDS.map((brand) => (
+            <label class="fc-brand-row">
+              <div class="fc-brand-row__left">
+                <input
+                  type="checkbox"
+                  class="fc-brand-checkbox"
+                  data-brand-id={brand.id}
+                  data-default-price={brand.defaultPricePer100g}
+                  checked={["absoluteMungjak", "imperialDreamXO", "aptamil"].includes(brand.id)}
+                />
+                <div>
+                  <span class="fc-brand-name">{brand.name}</span>
+                  <span class="fc-brand-tag">{brand.tag}</span>
+                </div>
+              </div>
+              <div class="fc-brand-row__right">
+                <span class="fc-brand-price-label">100g당</span>
+                <input
+                  type="number"
+                  class="fc-price-input"
+                  id={`price-${brand.id}`}
+                  value={brand.defaultPricePer100g}
+                  min="500"
+                  max="20000"
+                  step="50"
+                />
+                <span class="fc-brand-price-unit">원</span>
+              </div>
+            </label>
+          ))}
+        </div>
+
+        <p class="fc-price-hint">100g당 가격을 직접 수정하면 쿠팡 최저가 기준으로 더 정확하게 계산됩니다.</p>
+      </article>
+    </Fragment>
+
+    <!-- ② KPI 카드 -->
+    <section class="fc-section">
+      <div class="fc-section__head">
+        <p class="fc-section__eyebrow">계산 결과</p>
+        <h2 id="fc-result-headline">분유 총비용 요약</h2>
+        <p class="fc-section__sub" id="fc-result-subcopy">기간과 브랜드를 선택하면 바로 계산됩니다.</p>
+      </div>
+      <div class="fc-kpi-grid">
+        <article class="fc-kpi-card fc-kpi-card--accent">
+          <p>총 사용량 추정 (g)</p>
+          <strong id="fc-total-grams">-</strong>
+          <span id="fc-total-grams-note">-</span>
+        </article>
+        <article class="fc-kpi-card">
+          <p>최저 총비용</p>
+          <strong id="fc-min-cost">-</strong>
+          <span id="fc-min-brand">-</span>
+        </article>
+        <article class="fc-kpi-card">
+          <p>최고 총비용</p>
+          <strong id="fc-max-cost">-</strong>
+          <span id="fc-max-brand">-</span>
+        </article>
+        <article class="fc-kpi-card fc-kpi-card--save">
+          <p>절약 가능액</p>
+          <strong id="fc-save-amount">-</strong>
+          <span id="fc-save-note">최고가 vs 최저가 차이</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ③ 브랜드 비교표 -->
+    <section class="fc-section">
+      <div class="fc-section__head">
+        <p class="fc-section__eyebrow">브랜드 비교</p>
+        <h2>브랜드별 상세 비교</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="fc-compare-table">
+          <thead>
+            <tr>
+              <th>브랜드</th>
+              <th>100g당</th>
+              <th>월 평균</th>
+              <th>총비용</th>
+              <th>쿠팡</th>
+            </tr>
+          </thead>
+          <tbody id="fc-compare-tbody">
+            <tr>
+              <td colspan="5" class="fc-empty-row">브랜드를 선택하면 비교표가 나타납니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ④ 월별 비용 차트 -->
+    <section class="fc-section">
+      <div class="fc-section__head">
+        <p class="fc-section__eyebrow">월별 흐름</p>
+        <h2>월별 분유 비용</h2>
+        <p class="fc-section__sub">이유식이 시작되는 6개월 이후 분유 소비가 줄어 월 비용도 함께 내려갑니다.</p>
+      </div>
+      <article class="panel">
+        <div class="fc-chart-wrap">
+          <canvas id="fc-monthly-chart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <!-- ⑤ 월령별 사용량 기준 -->
+    <section class="fc-section">
+      <div class="fc-section__head">
+        <p class="fc-section__eyebrow">계산 기준</p>
+        <h2>월령별 하루 평균 사용량</h2>
+        <p class="fc-section__sub">완전 분유 수유 기준 추정값입니다. 혼합 수유 시 실제 사용량은 더 적습니다.</p>
+      </div>
+      <div class="fc-usage-grid">
+        {MONTHLY_USAGE_RANGES.map((range) => (
+          <article class="fc-usage-card">
+            <p class="fc-usage-card__label">{range.label}</p>
+            <strong class="fc-usage-card__count">{range.dailyGrams}<small>g/일</small></strong>
+            <span class="fc-usage-card__note">{range.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ⑥ InfoNotice -->
+    <InfoNotice
+      title="안내"
+      lines={[
+        "월령별 사용량은 완전 분유 수유 기준 평균 추정값입니다. 모유·혼합 수유 시 실제 소비량이 크게 줄어듭니다.",
+        "브랜드 100g당 가격은 쿠팡 기준 추정값으로, 구매 시점·단계·옵션에 따라 달라질 수 있습니다.",
+        `데이터 기준: ${PAGE_META.updatedAt}`,
+      ]}
+    />
+
+    <!-- ⑦ 제휴 마케팅 (CONTENT_GUIDE §6 — 계산기 페이지 최대 1개) -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">🍼</span>
+          <div>
+            <h3 class="affiliate-box__title">분유 추천 상품</h3>
+            <p class="affiliate-box__context">계산에 사용된 브랜드, 쿠팡에서 최저가 확인</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {AFFILIATE_PRODUCTS.map((prod) => (
+            <a
+              href={prod.url}
+              class="affiliate-product-card"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">
+          이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- ⑧ SeoContent -->
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="돌까지 분유값 계산기를 보는 방법"
+        intro={[
+          "돌까지 분유값 계산기는 신생아부터 돌까지 월령별 분유 사용량을 자동으로 계산하고, 매일 앱솔루트·남양 임페리얼·일동후디스 등 브랜드별 총비용을 한눈에 비교하는 계산기입니다. 총 몇 g을 쓰는지, 브랜드에 따라 얼마나 차이가 나는지 숫자로 바로 확인할 수 있습니다.",
+          "기간을 6개월·돌·18개월 중 선택할 수 있고, 100g당 가격을 직접 수정하면 쿠팡 최저가 기준으로 더 정확하게 계산됩니다. 브랜드를 바꾸는 것만으로 1년에 30~60만원 이상 차이가 날 수 있으니 비교해보세요."
+        ]}
+        inputPoints={[
+          "계산 기간을 1~18개월 슬라이더로 설정하고, 6개월·돌·18개월 버튼으로 빠르게 선택할 수 있습니다.",
+          "매일 앱솔루트·남양 임페리얼·파스퇴르·일동후디스 중 원하는 브랜드를 골라 동시에 비교할 수 있습니다.",
+          "각 브랜드의 100g당 가격을 직접 수정하면 현재 쿠팡 최저가 기준으로 총비용을 더 정확하게 계산할 수 있습니다."
+        ]}
+        criteria={[
+          "월령별 하루 평균 사용량: 0~1개월 약 80g, 2~3개월 약 120g, 4~6개월 약 140g, 7~9개월 약 100g, 10~12개월 약 70g 기준.",
+          "완전 분유 수유 기준 추정값입니다. 모유 병행 시 실제 소비량은 이보다 적을 수 있습니다.",
+          "브랜드 100g당 가격은 2026년 3월 기준 쿠팡 추정값입니다. 구매 시점과 단계에 따라 달라질 수 있습니다."
+        ]}
+        faq={PAGE_FAQ}
+        related={relatedLinks}
+      />
+    </Fragment>
+
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script id="formulaCostConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/formula-cost.js")}></script>
+</BaseLayout>

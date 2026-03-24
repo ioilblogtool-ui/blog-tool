@@ -183,6 +183,34 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "diaper-cost",
+    title: "아기 기저귀 값 계산기",
+    description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 하기스·팸퍼스·보솜이 등 브랜드별 총비용을 비교하는 페이지",
+    order: 14,
+    eyebrow: "육아 소모품",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규"],
+    previewStats: [
+      { label: "돌까지 총 사용량", value: "약 2,700개" },
+      { label: "브랜드 절약액", value: "최대 50만원" },
+    ],
+  },
+  {
+    slug: "formula-cost",
+    title: "아기 분유 값 계산기",
+    description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 매일 앱솔루트·남양 임페리얼·일동후디스 등 브랜드별 총비용을 비교하는 페이지",
+    order: 15,
+    eyebrow: "육아 소모품",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규"],
+    previewStats: [
+      { label: "돌까지 총 사용량", value: "약 40,000g" },
+      { label: "브랜드 절약액", value: "최대 60만원" },
+    ],
+  },
+  {
     slug: "six-plus-six",
     title: "6+6 부모육아휴직제 계산기",
     description: "부모 모두 육아휴직을 쓸 때 특례 적용 여부와 일반 육아휴직 대비 차액을 비교하는 페이지",
