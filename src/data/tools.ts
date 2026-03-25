@@ -18,6 +18,20 @@ export type ToolMeta = {
 
 export const tools: ToolMeta[] = [
   {
+    slug: "salary-tier",
+    title: "연봉 티어 계산기",
+    description: "내 연봉을 입력하면 S·A·B·C 티어와 전체 상위 %를 즉시 확인. 70개+ 기업 영끌 연봉 비교.",
+    order: 0,
+    eyebrow: "연봉 티어",
+    category: "compare",
+    iframeReady: false,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "비교 기업", value: "70개+" },
+      { label: "티어 분류", value: "S·A·B·C" }
+    ]
+  },
+  {
     slug: "salary",
     title: "연봉 인상 계산기",
     description: "현재 연봉과 인상 시나리오별 월 실수령 변화를 비교하는 계산 페이지",
@@ -194,6 +208,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "돌까지 총 사용량", value: "약 2,700개" },
       { label: "브랜드 절약액", value: "최대 50만원" },
+    ],
+  },
+  {
+    slug: "home-purchase-fund",
+    title: "내집마련 자금 계산기",
+    description: "매매가·지역 유형·주택 보유 수를 입력하면 LTV 기반 최대 대출 가능액, 취득세·중개보수 포함 총 필요 현금, 월 상환액을 계산하는 페이지",
+    order: 16,
+    eyebrow: "부동산 계산기",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규"],
+    previewStats: [
+      { label: "LTV 기준 대출", value: "최대 7억", context: "10억·무주택 기준" },
+      { label: "총 필요 현금", value: "약 3.6억" },
     ],
   },
   {

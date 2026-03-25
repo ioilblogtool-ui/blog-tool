@@ -2,7 +2,9 @@
 
 // ── 섹션 헤더 ─────────────────────────────────────────────────────────────────
 .fc-section {
-  margin-bottom: 32px;
+  // margin 대신 simple-tool-shell__main의 gap(28px)으로 간격 처리
+  margin-bottom: 0;
+  min-width: 0;
 }
 
 .fc-section__head {
@@ -102,14 +104,27 @@
   gap: 10px;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+
+  > div {
+    min-width: 0;
+    overflow: hidden;
+  }
 }
 
 .fc-brand-name {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #1A1A18;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (min-width: 480px) {
+    font-size: 13px;
+  }
 }
 
 .fc-brand-tag {
@@ -133,6 +148,11 @@
   font-size: 10px;
   color: #B4B2A9;
   white-space: nowrap;
+  display: none;
+
+  @media (min-width: 420px) {
+    display: inline;
+  }
 }
 
 .fc-price-input {
@@ -305,11 +325,15 @@
 // ── 차트 ──────────────────────────────────────────────────────────────────────
 .fc-chart-wrap {
   position: relative;
-  height: 200px;
+  height: 280px;
   padding: 8px 0;
 
+  @media (min-width: 480px) {
+    height: 340px;
+  }
+
   @media (min-width: 768px) {
-    height: 240px;
+    height: 380px;
   }
 }
 

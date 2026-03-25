@@ -2,7 +2,9 @@
 
 // ── 섹션 헤더 ─────────────────────────────────────────────────────────────────
 .dc-section {
-  margin-bottom: 32px;
+  // margin 대신 simple-tool-shell__main의 gap(28px)으로 간격 처리
+  margin-bottom: 0;
+  min-width: 0;
 }
 
 .dc-section__head {
@@ -102,14 +104,27 @@
   gap: 10px;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+
+  > div {
+    min-width: 0;
+    overflow: hidden;
+  }
 }
 
 .dc-brand-name {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #1A1A18;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (min-width: 480px) {
+    font-size: 13px;
+  }
 }
 
 .dc-brand-tag {
@@ -132,6 +147,11 @@
 .dc-brand-price-label {
   font-size: 10px;
   color: #B4B2A9;
+  display: none;
+
+  @media (min-width: 400px) {
+    display: inline;
+  }
 }
 
 .dc-price-input {
@@ -309,11 +329,15 @@
 // ── 차트 ──────────────────────────────────────────────────────────────────────
 .dc-chart-wrap {
   position: relative;
-  height: 200px;
+  height: 280px;
   padding: 8px 0;
 
+  @media (min-width: 480px) {
+    height: 340px;
+  }
+
   @media (min-width: 768px) {
-    height: 240px;
+    height: 380px;
   }
 }
 

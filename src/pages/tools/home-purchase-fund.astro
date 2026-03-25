@@ -1,0 +1,367 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PAGE_META,
+  PRESETS,
+  AFFILIATE_PRODUCTS,
+  PAGE_FAQ,
+  relatedLinks,
+} from "../../data/homePurchaseFund";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title={PAGE_META.title}
+  description={PAGE_META.subtitle}
+  ogImage="/og/tools/home-purchase-fund.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "내집마련 자금 계산기",
+    "url": `${import.meta.env.SITE}/tools/home-purchase-fund/`,
+    "description": PAGE_META.subtitle,
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="home-purchase-fund" pageClass="home-purchase-fund-page">
+
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="부동산 계산기"
+        title="내집마련 자금 계산기"
+        description="매매가, 지역 유형, 주택 보유 수를 입력하면 LTV 기반 최대 대출액과 취득세·중개보수 포함 총 필요 현금을 바로 계산합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetHpfBtn" copyId="copyHpfLinkBtn" />
+    </Fragment>
+
+    <!-- ① 입력 영역 -->
+    <Fragment slot="aside">
+
+      <!-- 프리셋 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 선택</p>
+            <h2 class="panel__title">시나리오 프리셋</h2>
+          </div>
+          <p class="panel-heading__summary">클릭 시 아래 입력값이 자동으로 채워집니다.</p>
+        </div>
+        <div class="hpf-presets">
+          {PRESETS.map((preset) => (
+            <button
+              class="hpf-preset-btn"
+              type="button"
+              data-preset={JSON.stringify(preset)}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <!-- 매매가 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">매매 희망가</p>
+            <h2 class="panel__title">매매 희망가</h2>
+          </div>
+        </div>
+        <div class="hpf-price-row">
+          <div class="calc-slider-row">
+            <input type="range" id="hpfPriceSlider" class="calc-slider"
+              min="10000" max="350000" step="1000" value="100000" />
+            <span id="hpfPriceLabel" class="calc-slider-val">10억원</span>
+          </div>
+          <div class="hpf-price-direct">
+            <input type="number" id="hpfPriceInput" class="hpf-num-input"
+              min="1" max="35000000" step="100" value="100000" />
+            <span class="hpf-unit">만원</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 지역 유형 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">지역 설정</p>
+            <h2 class="panel__title">지역 유형</h2>
+          </div>
+        </div>
+        <div class="hpf-radio-group">
+          <label class="hpf-radio-row">
+            <input type="radio" name="hpfRegion" value="overheated" />
+            <span class="hpf-radio-label">투기과열지구 + 토허제</span>
+            <span class="hpf-radio-hint">서울 전역 등 · LTV 50%</span>
+          </label>
+          <label class="hpf-radio-row">
+            <input type="radio" name="hpfRegion" value="regulated" checked />
+            <span class="hpf-radio-label">조정대상지역</span>
+            <span class="hpf-radio-hint">서울·경기 12개 지역 등 · LTV 70%</span>
+          </label>
+          <label class="hpf-radio-row">
+            <input type="radio" name="hpfRegion" value="unregulated" />
+            <span class="hpf-radio-label">비규제지역</span>
+            <span class="hpf-radio-hint">그 외 지역 · LTV 70%</span>
+          </label>
+        </div>
+        <!-- 토허제 경고 박스 -->
+        <div id="hpfToheojeWarning" class="hpf-toheoje-warning" hidden>
+          <p class="hpf-toheoje-warning__title">⚠️ 토지거래허가구역 주의</p>
+          <ul class="hpf-toheoje-warning__list">
+            <li>계약 전 구청 허가 필요</li>
+            <li>매수 후 실거주 의무가 붙을 수 있음</li>
+            <li>전세·임대 활용 매수 제한 가능</li>
+            <li>잔금대출 심사 시 실거주 계획 확인 가능</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- 주택 보유 수 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">보유 현황</p>
+            <h2 class="panel__title">현재 주택 보유 수</h2>
+          </div>
+        </div>
+        <div class="hpf-radio-group">
+          <label class="hpf-radio-row">
+            <input type="radio" name="hpfOwnership" value="none" checked />
+            <span class="hpf-radio-label">무주택</span>
+          </label>
+          <label class="hpf-radio-row">
+            <input type="radio" name="hpfOwnership" value="one" />
+            <span class="hpf-radio-label">1주택</span>
+          </label>
+          <label class="hpf-radio-row">
+            <input type="radio" name="hpfOwnership" value="two_plus" />
+            <span class="hpf-radio-label">2주택 이상</span>
+          </label>
+        </div>
+      </article>
+
+      <!-- 보유 현금 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">보유 현금</p>
+            <h2 class="panel__title">보유 현금</h2>
+          </div>
+        </div>
+        <div class="hpf-price-row">
+          <div class="calc-slider-row">
+            <input type="range" id="hpfCashSlider" class="calc-slider"
+              min="0" max="200000" step="1000" value="30000" />
+            <span id="hpfCashLabel" class="calc-slider-val">3억원</span>
+          </div>
+          <div class="hpf-price-direct">
+            <input type="number" id="hpfCashInput" class="hpf-num-input"
+              min="0" max="20000000" step="100" value="30000" />
+            <span class="hpf-unit">만원</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 대출 조건 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대출 조건</p>
+            <h2 class="panel__title">금리 · 기간 · 등기비</h2>
+          </div>
+        </div>
+        <div class="hpf-loan-fields">
+          <div class="hpf-field">
+            <span class="hpf-field__label">연 금리</span>
+            <div class="calc-slider-row">
+              <input type="range" id="hpfRateSlider" class="calc-slider"
+                min="2.0" max="8.0" step="0.1" value="4.0" />
+              <span id="hpfRateLabel" class="calc-slider-val">4.0%</span>
+            </div>
+          </div>
+          <div class="hpf-field">
+            <span class="hpf-field__label">대출 기간</span>
+            <select id="hpfTerm" class="hpf-select">
+              <option value="10">10년</option>
+              <option value="20">20년</option>
+              <option value="30" selected>30년</option>
+              <option value="40">40년</option>
+            </select>
+          </div>
+          <div class="hpf-field">
+            <span class="hpf-field__label">등기 비용 (추정)</span>
+            <div class="hpf-price-direct">
+              <input type="number" id="hpfRegCost" class="hpf-num-input hpf-num-input--sm"
+                min="0" max="500" step="10" value="80" />
+              <span class="hpf-unit">만원</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </Fragment>
+
+    <!-- ② KPI 카드 -->
+    <section class="hpf-section">
+      <div class="hpf-section__head">
+        <p class="hpf-section__eyebrow">계산 결과</p>
+        <h2>자금 계획 요약</h2>
+        <p class="hpf-section__sub" id="hpf-result-sub">조건을 입력하면 바로 계산됩니다.</p>
+      </div>
+      <div class="hpf-kpi-grid">
+        <article class="hpf-kpi-card">
+          <p>최대 대출 가능액</p>
+          <strong id="hpf-max-loan">-</strong>
+          <span id="hpf-max-loan-note">LTV·정책 한도 기준</span>
+        </article>
+        <article class="hpf-kpi-card hpf-kpi-card--primary">
+          <p>총 필요 현금</p>
+          <strong id="hpf-min-cash">-</strong>
+          <span id="hpf-min-cash-note">부대비용 포함</span>
+        </article>
+        <article class="hpf-kpi-card" id="hpf-diff-card">
+          <p>현금 여유·부족</p>
+          <strong id="hpf-cash-diff">-</strong>
+          <span id="hpf-cash-diff-note">보유현금 - 필요현금</span>
+        </article>
+        <article class="hpf-kpi-card">
+          <p>월 원리금 상환액</p>
+          <strong id="hpf-monthly">-</strong>
+          <span id="hpf-monthly-note">원리금균등상환 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ③ 비용 상세 내역 -->
+    <section class="hpf-section">
+      <div class="hpf-section__head">
+        <p class="hpf-section__eyebrow">비용 내역</p>
+        <h2>자금 상세 내역</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="hpf-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody id="hpf-breakdown-tbody">
+            <tr>
+              <td colspan="3" class="hpf-empty-row">조건을 입력하면 내역이 표시됩니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ④ LTV·DSR 안내 -->
+    <section class="hpf-section">
+      <div id="hpf-ltv-info" class="hpf-info-box">
+        <p class="hpf-info-box__title">📋 현재 조건 LTV 안내</p>
+        <p id="hpf-ltv-detail">조건을 선택하면 적용 LTV 비율을 안내합니다.</p>
+        <p class="hpf-info-box__warn">⚠️ 실제 대출 가능액은 스트레스 DSR 3단계 시행으로 LTV 기준보다 더 낮아질 수 있습니다. 금융기관에서 반드시 확인하세요.</p>
+      </div>
+    </section>
+
+    <!-- ⑤ 금리 비교 CTA (비제휴) -->
+    <section class="hpf-section">
+      <div class="hpf-rate-cta">
+        <p class="hpf-rate-cta__text">같은 조건으로 금리 낮은 은행 찾기</p>
+        <a href="https://loan.pay.naver.com/n/mortgage" class="hpf-rate-cta__link"
+           target="_blank" rel="noopener noreferrer">네이버에서 금리 비교 →</a>
+        <p class="hpf-rate-cta__note">외부 서비스 링크입니다. 광고·제휴 아님.</p>
+      </div>
+    </section>
+
+    <!-- ⑥ InfoNotice -->
+    <InfoNotice
+      title="안내"
+      lines={[
+        "LTV·취득세율·중개보수 요율은 2026년 3월 기준 정책 참고값입니다. 수시 변경될 수 있습니다.",
+        "실제 대출 가능액은 스트레스 DSR·소득 심사 결과에 따라 이 계산기 결과보다 낮을 수 있습니다.",
+        "중요한 결정 전에는 반드시 금융기관, 세무 전문가, 공인중개사를 통해 확인하세요.",
+      ]}
+    />
+
+    <!-- ⑦ 제휴 마케팅 -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">🏡</span>
+          <div>
+            <h3 class="affiliate-box__title">이사 준비, 미리 챙기면 비용 줄어요</h3>
+            <p class="affiliate-box__context">매매 결정 후 이사 준비 필수품, 쿠팡에서 확인</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {AFFILIATE_PRODUCTS.map((prod) => (
+            <a
+              href={prod.url}
+              class="affiliate-product-card"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">
+          이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- ⑧ SeoContent -->
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="내집마련 자금 계산기를 보는 방법"
+        intro={[
+          "내집마련 자금 계산기는 매매 희망가, 지역 유형(투기과열지구·조정대상지역·비규제지역), 주택 보유 수를 입력하면 LTV 기반 최대 대출 가능액과 취득세·중개보수·등기비 포함 총 필요 현금을 바로 계산하는 계산기입니다.",
+          "서울 30억·15억·10억, 비규제 5억 등 4가지 프리셋으로 빠르게 시나리오를 비교할 수 있고, 금리와 대출 기간을 조정하면 월 원리금 상환액도 즉시 확인할 수 있습니다."
+        ]}
+        inputPoints={[
+          "매매 희망가를 슬라이더 또는 직접 입력으로 설정할 수 있습니다 (1억~35억).",
+          "지역 유형 3종(투기과열+토허제 / 조정대상지역 / 비규제지역)과 주택 보유 수에 따라 LTV 비율이 자동으로 적용됩니다.",
+          "대출 금리와 기간을 조정하면 월 원리금 상환액이 원리금균등상환 기준으로 계산됩니다."
+        ]}
+        criteria={[
+          "LTV 비율: 투기과열+토허제 무주택 50%, 조정대상지역 무주택 70%, 비규제지역 무주택 70% 기준.",
+          "정책상 주담대 한도: 수도권·규제지역 15억 이하 6억, 25억 이하 4억, 25억 초과 2억 기준.",
+          "취득세는 지방교육세 포함 추정값입니다. 6억 이하 1.1%, 9억 초과 3.3%, 조정지역 2주택 8.8% 기준."
+        ]}
+        faq={PAGE_FAQ}
+        related={relatedLinks}
+      />
+    </Fragment>
+
+  </SimpleToolShell>
+
+  <script id="hpfConfig" type="application/json" set:html={JSON.stringify({ PRESETS })}></script>
+  <script type="module" src={withBase("/scripts/home-purchase-fund.js")}></script>
+</BaseLayout>

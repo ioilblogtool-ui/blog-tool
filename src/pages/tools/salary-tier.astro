@@ -1,0 +1,301 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SALARY_TIER_META,
+  SALARY_TIER_DATA,
+  SALARY_TIER_FAQ,
+  SALARY_TIER_AFFILIATE,
+  TIER_META,
+  CAT_LABEL,
+  OVERALL_AVG,
+} from "../../data/salaryTierData";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+// KPI 요약 수치
+const totalCount = SALARY_TIER_DATA.length;
+const sCount = SALARY_TIER_DATA.filter((c) => c.tier === "s").length;
+const aCount = SALARY_TIER_DATA.filter((c) => c.tier === "a").length;
+const maxSal  = Math.max(...SALARY_TIER_DATA.map((c) => c.sal));
+const minSal  = Math.min(...SALARY_TIER_DATA.map((c) => c.sal));
+
+const faqItems = SALARY_TIER_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+---
+
+<BaseLayout title={SALARY_TIER_META.title} description={SALARY_TIER_META.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page salary-tier-page">
+
+    <CalculatorHero
+      eyebrow="연봉 티어 계산기"
+      title="내 연봉은 몇 티어? — S·A·B·C 기업 비교"
+      description="현직자 커뮤니티 기반 70개+ 기업의 영끌 연봉을 S/A/B/C 티어로 분류. 내 연봉을 입력하면 전체 상위 %와 비슷한 연봉의 기업을 바로 확인합니다."
+    />
+
+    <InfoNotice
+      title="기준 안내"
+      lines={[SALARY_TIER_META.methodology, SALARY_TIER_META.caution, SALARY_TIER_META.updatedAt]}
+    />
+
+    <!-- ① KPI 요약 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>2026 전 업종 영끌 연봉 요약</h2>
+      </div>
+      <div class="report-kpi-grid st-kpi-grid">
+        <article class="report-stat-card report-stat-card--primary">
+          <p>비교 기업 수</p>
+          <strong>{totalCount}개</strong>
+          <span>6개 업종 · S/A/B/C 4티어</span>
+        </article>
+        <article class="report-stat-card">
+          <p>전체 평균 영끌</p>
+          <strong>{OVERALL_AVG.toLocaleString("ko-KR")}만원</strong>
+          <span>71개 기업 단순 평균 추정</span>
+        </article>
+        <article class="report-stat-card">
+          <p>최고 영끌 (S티어)</p>
+          <strong>{maxSal.toLocaleString("ko-KR")}만원</strong>
+          <span>SK하이닉스 OPI 포함 추정</span>
+        </article>
+        <article class="report-stat-card">
+          <p>S·A티어 기업 수</p>
+          <strong>{sCount + aCount}개</strong>
+          <span>S: {sCount}개 · A: {aCount}개</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ② 내 연봉 입력 → 결과 카드 -->
+    <section class="content-section st-input-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">내 연봉 계산기</p>
+        <h2>내 연봉은 몇 티어? 상위 몇 %?</h2>
+        <p>영끌 연봉(야근수당 제외, 성과급 포함 현금성 기준)을 입력하세요.</p>
+      </div>
+
+      <div class="st-my-input-row">
+        <label for="stMySalInput">내 연봉 (만원)</label>
+        <input
+          type="number"
+          id="stMySalInput"
+          placeholder="예: 7500"
+          min="0"
+          max="20000"
+          step="100"
+          autocomplete="off"
+        />
+        <span id="stMySalHint" class="st-my-hint">입력하면 위치를 바로 보여드려요</span>
+      </div>
+
+      <div class="st-result-card" id="stResultCard" hidden>
+        <p id="stResultTitle" class="st-result-title"></p>
+        <div class="st-result-grid">
+          <div class="st-result-cell">
+            <strong id="stRPct">—</strong>
+            <span>전체 상위 %</span>
+          </div>
+          <div class="st-result-cell">
+            <strong id="stRDiff">—</strong>
+            <span>평균 대비</span>
+          </div>
+          <div class="st-result-cell st-result-cell--tier">
+            <strong id="stRTier">—</strong>
+            <span>연봉 티어</span>
+          </div>
+        </div>
+        <p id="stSimilarText" class="st-similar-text"></p>
+        <div class="st-share-row">
+          <button class="st-share-btn" id="stCopyBtn">링크 복사</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ③ 전체 기업 영끌 연봉 비교 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">영끌 연봉 비교</p>
+        <h2>기업별 영끌 연봉 — S/A/B/C 티어 바 차트</h2>
+        <p>계약연봉 + 현금성 성과급(OPI) 기준 · 야근수당·현장수당 제외 · 커뮤니티 기반 추정</p>
+      </div>
+
+      <div class="st-summary-bar" id="stSummaryBar"></div>
+
+      <div class="st-filter-row">
+        <button class="st-ftab is-active" data-filter="all">전체</button>
+        <button class="st-ftab" data-filter="semi">반도체</button>
+        <button class="st-ftab" data-filter="car">완성차·조선·방산</button>
+        <button class="st-ftab" data-filter="it">IT·플랫폼</button>
+        <button class="st-ftab" data-filter="chem">화학·에너지</button>
+        <button class="st-ftab" data-filter="fin">금융·유통</button>
+        <button class="st-ftab" data-filter="for">외국계</button>
+        <select id="stSortSel" class="st-sort-sel">
+          <option value="desc">높은순</option>
+          <option value="asc">낮은순</option>
+          <option value="name">가나다순</option>
+        </select>
+      </div>
+
+      <div id="stChartArea"></div>
+
+      <p class="st-chart-hint">커뮤니티 기반 추정치 · 야근·특수수당 제외 · 영끌 기준</p>
+    </section>
+
+    <!-- ④ 업종별 인사이트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">업종별 인사이트</p>
+        <h2>업종별 영끌 연봉 범위와 특징</h2>
+      </div>
+      <div class="st-insight-grid">
+        <article class="st-insight-card">
+          <div class="st-insight-industry">
+            <span class="st-insight-dot" style="background:#9FE1CB;"></span>반도체
+          </div>
+          <div class="st-insight-range">8,000 — 15,000만</div>
+          <p class="st-insight-note">SK하이닉스가 1.5억으로 전 업종 압도적 1위. 삼성전자는 사업부마다 성과급 비율이 달라 지원 전 사업부 확인이 중요합니다.</p>
+          <span class="st-insight-avg">업종 평균 9,500만 추정</span>
+        </article>
+        <article class="st-insight-card">
+          <div class="st-insight-industry">
+            <span class="st-insight-dot" style="background:#C0DD97;"></span>완성차·조선·방산
+          </div>
+          <div class="st-insight-range">6,000 — 9,500만</div>
+          <p class="st-insight-note">현대차·기아·모비스가 9,500만으로 묶임. 조선·방산도 수주 호황으로 빠르게 올라가는 중. 고정OT 제외 기준이라 체감은 더 높을 수 있습니다.</p>
+          <span class="st-insight-avg">업종 평균 7,800만 추정</span>
+        </article>
+        <article class="st-insight-card">
+          <div class="st-insight-industry">
+            <span class="st-insight-dot" style="background:#B5D4F4;"></span>IT·플랫폼
+          </div>
+          <div class="st-insight-range">6,000 — 8,000만</div>
+          <p class="st-insight-note">네이버·넥슨·KT가 7,000만대. 스톡옵션·RSU·유연근무 등 비현금 복지 고려 시 체감 총보상은 더 높습니다. 대기업 제조업 대비 낮아 보일 수 있어요.</p>
+          <span class="st-insight-avg">업종 평균 6,800만 추정</span>
+        </article>
+        <article class="st-insight-card">
+          <div class="st-insight-industry">
+            <span class="st-insight-dot" style="background:#FAC775;"></span>화학·에너지
+          </div>
+          <div class="st-insight-range">5,000 — 8,000만</div>
+          <p class="st-insight-note">S-OIL·GS칼텍스 등 정유사가 8,000만 수준. LG화학·롯데케미칼은 6,000만대. 동일 그룹사 내에서도 계열사별 격차가 큰 업종입니다.</p>
+          <span class="st-insight-avg">업종 평균 6,500만 추정</span>
+        </article>
+        <article class="st-insight-card">
+          <div class="st-insight-industry">
+            <span class="st-insight-dot" style="background:#ED93B1;"></span>금융·유통
+          </div>
+          <div class="st-insight-range">5,500 — 7,500만</div>
+          <p class="st-insight-note">KB은행·현대해상이 7,500만. 성과급 구조가 연차 비중이 높아 초봉보다 5년차 이후 격차가 크게 벌어지는 특징. 초봉만으로 비교하기 불리한 업종입니다.</p>
+          <span class="st-insight-avg">업종 평균 6,500만 추정</span>
+        </article>
+        <article class="st-insight-card">
+          <div class="st-insight-industry">
+            <span class="st-insight-dot" style="background:#AFA9EC;"></span>외국계
+          </div>
+          <div class="st-insight-range">9,500 — 13,000만</div>
+          <p class="st-insight-note">ASML이 1.3억으로 외국계 최고. 채용 규모가 작아 진입장벽이 높지만 초봉 자체는 국내 대기업 대비 30~50% 높은 수준입니다.</p>
+          <span class="st-insight-avg">업종 평균 11,000만 추정</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ⑤ 쿠팡파트너스 — 이직·연봉 협상 도서 -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">📖</span>
+          <div>
+            <h3 class="affiliate-box__title">{SALARY_TIER_AFFILIATE.career.title}</h3>
+            <p class="affiliate-box__context">{SALARY_TIER_AFFILIATE.career.context}</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {SALARY_TIER_AFFILIATE.career.products.map((prod) => (
+            <a
+              href={prod.url}
+              class="affiliate-product-card"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- ⑥ 티어별 전체 기업 목록 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">티어 전체 목록</p>
+        <h2>S·A·B·C 티어별 기업 한눈에 보기</h2>
+        <p>영끌 연봉(야근 제외, 성과급 포함) 기준으로 분류한 전체 기업 목록입니다.</p>
+      </div>
+      <div class="st-tier-list">
+        {(["s","a","b","c"] as const).map((t) => {
+          const companies = SALARY_TIER_DATA.filter((c) => c.tier === t);
+          const meta = TIER_META[t];
+          return (
+            <div class="st-tier-row">
+              <div class="st-tier-row__level" style={`border-left: 3px solid ${meta.color}`}>
+                <strong>{meta.label}</strong>
+                <span class="st-tier-row__range">{meta.range}</span>
+              </div>
+              <div class="st-tier-row__companies">
+                {companies.map((c) => (
+                  <span class="st-company-tag">
+                    {c.name}
+                    {c.note ? <em class="st-company-note">{c.note}</em> : null}
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="연봉 티어 계산기 읽는 법 — S·A·B·C 티어 기준 안내"
+      intro={[
+        "이 페이지는 2026년 현직자 커뮤니티·블라인드·잡플래닛 집계를 바탕으로 국내 주요 기업 70개+ 의 영끌 연봉(야근수당 제외, 현금성 성과급 포함)을 S·A·B·C 4개 티어로 분류하는 인터랙티브 계산기입니다.",
+        "내 연봉을 입력하면 전체 기업 대비 상위 %, 평균 대비 차이, 해당 티어, 비슷한 연봉의 기업을 바로 확인할 수 있습니다. 업종별 필터로 특정 산업의 연봉 분포도 볼 수 있습니다.",
+      ]}
+      inputPoints={[
+        "내 연봉 입력 → 상위 %, 평균 대비, 해당 티어 즉시 확인",
+        "반도체·완성차·IT·화학·금융·외국계 업종별 필터링 가능",
+        "S/A/B/C 티어별 전체 기업 목록을 한눈에 비교",
+      ]}
+      criteria={[
+        "현직자 커뮤니티·블라인드·잡플래닛 기반 추정치이며, 공식 자료가 아닙니다.",
+        "야근·고정 OT·특수수당·현장수당을 제외한 계약연봉+현금성 성과급(OPI) 기준입니다.",
+        "삼성전자처럼 사업부별로 성과급이 다른 경우 대표값 또는 주요 부문 기준으로 표기했습니다.",
+        "모든 수치는 참고용이며 채용·처우 협상의 공식 근거로 사용하지 마세요.",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/reports/new-employee-salary-2026/", label: "2026 신입 초봉 비교 리포트 (전 업종)" },
+        { href: "/reports/it-salary-top10/", label: "IT 업계 초봉 TOP 10" },
+        { href: "/tools/salary/", label: "연봉 인상 계산기" },
+        { href: "/tools/negotiation/", label: "이직 계산기" },
+        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+      ]}
+    />
+  </main>
+
+  <script id="salaryTierData" type="application/json" set:html={JSON.stringify({ data: SALARY_TIER_DATA, avg: OVERALL_AVG })}></script>
+  <script type="module" src={withBase("/scripts/salary-tier.js")}></script>
+</BaseLayout>

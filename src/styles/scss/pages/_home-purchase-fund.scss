@@ -1,0 +1,384 @@
+// ── 내집마련 자금 계산기 페이지 스타일 (prefix: hpf-) ──────────────────────────
+
+.hpf-section {
+  margin-bottom: 32px;
+}
+
+.hpf-section__head {
+  margin-bottom: 14px;
+
+  h2 {
+    font-size: 17px;
+    font-weight: 500;
+    color: #1A1A18;
+    margin: 0;
+  }
+}
+
+.hpf-section__eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: #0F6E56;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+}
+
+.hpf-section__sub {
+  font-size: 12px;
+  color: #888780;
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+// ── 프리셋 ────────────────────────────────────────────────────────────────────
+.hpf-presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.hpf-preset-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #E0DFDB;
+  background: #FFFFFF;
+  font-size: 12px;
+  color: #5F5E5A;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: #0F6E56;
+    color: #0F6E56;
+  }
+
+  &.is-active {
+    background: #0F6E56;
+    border-color: #0F6E56;
+    color: #FFFFFF;
+    font-weight: 500;
+  }
+}
+
+// ── 가격 입력 행 ──────────────────────────────────────────────────────────────
+.hpf-price-row {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hpf-price-direct {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hpf-num-input {
+  width: 100px;
+  padding: 5px 8px;
+  border: 1px solid #E0DFDB;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: right;
+  color: #1A1A18;
+
+  &:focus {
+    outline: none;
+    border-color: #0F6E56;
+  }
+}
+
+.hpf-num-input--sm {
+  width: 72px;
+}
+
+.hpf-unit {
+  font-size: 12px;
+  color: #888780;
+}
+
+// ── 라디오 그룹 ───────────────────────────────────────────────────────────────
+.hpf-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.hpf-radio-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:has(input:checked) {
+    border-color: #0F6E56;
+    background: #F5FBF8;
+  }
+
+  &:hover {
+    border-color: #0F6E56;
+  }
+}
+
+.hpf-radio-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A1A18;
+  flex: 1;
+}
+
+.hpf-radio-hint {
+  font-size: 10px;
+  color: #888780;
+}
+
+// ── 토허제 경고 박스 ──────────────────────────────────────────────────────────
+.hpf-toheoje-warning {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #FFF1F0;
+  border: 1px solid #FFCCC7;
+}
+
+.hpf-toheoje-warning__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #CF1322;
+  margin: 0 0 8px;
+}
+
+.hpf-toheoje-warning__list {
+  margin: 0;
+  padding-left: 16px;
+
+  li {
+    font-size: 12px;
+    color: #5F5E5A;
+    line-height: 1.8;
+  }
+}
+
+// ── 대출 조건 입력 ────────────────────────────────────────────────────────────
+.hpf-loan-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.hpf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hpf-field__label {
+  font-size: 12px;
+  color: #5F5E5A;
+  font-weight: 500;
+}
+
+.hpf-select {
+  padding: 6px 10px;
+  border: 1px solid #E0DFDB;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1A1A18;
+  background: #FFFFFF;
+  width: fit-content;
+
+  &:focus {
+    outline: none;
+    border-color: #0F6E56;
+  }
+}
+
+// ── KPI 카드 그리드 ───────────────────────────────────────────────────────────
+.hpf-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.hpf-kpi-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 10px;
+    color: #B4B2A9;
+    line-height: 1.4;
+  }
+}
+
+.hpf-kpi-card--primary {
+  background: #E1F5EE;
+
+  p {
+    color: #5F5E5A;
+  }
+
+  strong {
+    font-size: 18px;
+    color: #0F6E56;
+  }
+
+  span {
+    color: #1D9E75;
+  }
+}
+
+.hpf-kpi-card--surplus {
+  background: #F6FFED;
+
+  strong {
+    color: #389E0D;
+  }
+}
+
+.hpf-kpi-card--deficit {
+  background: #FFF1F0;
+
+  strong {
+    color: #CF1322;
+  }
+}
+
+// ── 상세 내역 테이블 ──────────────────────────────────────────────────────────
+.hpf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #888780;
+    border-bottom: 1px solid #E0DFDB;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 10px;
+    border-bottom: 1px solid #F0EFED;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.hpf-row--total {
+  td {
+    background: #F5FBF8;
+    font-weight: 500;
+    color: #0F6E56;
+  }
+}
+
+.hpf-empty-row {
+  text-align: center;
+  color: #B4B2A9;
+  padding: 20px;
+  font-size: 12px;
+}
+
+// ── LTV 안내 박스 ─────────────────────────────────────────────────────────────
+.hpf-info-box {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.hpf-info-box__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A1A18;
+  margin: 0 0 8px;
+}
+
+.hpf-info-box__warn {
+  font-size: 11px;
+  color: #888780;
+  margin: 8px 0 0;
+  line-height: 1.6;
+}
+
+#hpf-ltv-detail {
+  font-size: 13px;
+  color: #0F6E56;
+  margin: 0;
+}
+
+// ── 금리 비교 CTA ─────────────────────────────────────────────────────────────
+.hpf-rate-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  background: #FFFFFF;
+}
+
+.hpf-rate-cta__text {
+  font-size: 13px;
+  color: #5F5E5A;
+  margin: 0;
+  flex: 1;
+  min-width: 140px;
+}
+
+.hpf-rate-cta__link {
+  font-size: 13px;
+  color: #0F6E56;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.hpf-rate-cta__note {
+  font-size: 10px;
+  color: #B4B2A9;
+  width: 100%;
+  margin: 0;
+}

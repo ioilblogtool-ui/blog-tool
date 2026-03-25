@@ -1,0 +1,501 @@
+.salary-tier-page {
+
+  // ── KPI 그리드 ──────────────────────────────────────────────────────────
+  .st-kpi-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  // ── 내 연봉 입력 영역 ────────────────────────────────────────────────────
+  .st-input-section {
+    background: var(--color-background-secondary, #f9fafb);
+    border-radius: 16px;
+    padding: 24px 20px;
+  }
+
+  .st-my-input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 16px 0 4px;
+
+    label {
+      font-size: 0.82rem;
+      color: var(--color-text-secondary, #64748b);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    input {
+      max-width: 160px;
+    }
+  }
+
+  .st-my-hint {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary, #64748b);
+
+    strong {
+      color: #1D9E75;
+      font-weight: 600;
+    }
+  }
+
+  // ── 결과 카드 ────────────────────────────────────────────────────────────
+  .st-result-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
+    margin: 20px 0 0;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .st-result-title {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary, #64748b);
+    margin-bottom: 14px;
+  }
+
+  .st-result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .st-result-cell {
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    strong {
+      font-size: clamp(1.1rem, 4vw, 1.4rem);
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    span {
+      font-size: 0.7rem;
+      color: var(--color-text-secondary, #64748b);
+    }
+
+    &--tier strong {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+  }
+
+  .st-similar-text {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary, #64748b);
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 8px;
+    padding: 10px 12px;
+    line-height: 1.7;
+
+    strong {
+      color: #0f172a;
+      font-weight: 600;
+    }
+  }
+
+  .st-above-note {
+    font-size: 0.72rem;
+    color: var(--color-text-tertiary, #94a3b8);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .st-share-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .st-share-btn {
+    flex: 1;
+    font-size: 0.78rem;
+    padding: 8px 0;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    background: transparent;
+    color: var(--color-text-secondary, #64748b);
+    transition: background 0.12s;
+
+    &:hover {
+      background: var(--color-background-secondary, #f8fafc);
+    }
+  }
+
+  // ── 요약 바 ──────────────────────────────────────────────────────────────
+  .st-summary-bar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 16px 0;
+
+    @media (min-width: 480px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .st-sum-cell {
+    background: var(--color-background-secondary, #f8fafc);
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+
+  .st-sum-num {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+
+    span {
+      font-size: 0.72rem;
+      color: var(--color-text-secondary, #64748b);
+      font-weight: 400;
+      margin-left: 1px;
+    }
+
+    &--high { color: #1D9E75; }
+    &--low  { color: #BA7517; }
+  }
+
+  .st-sum-label {
+    font-size: 0.7rem;
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 3px;
+  }
+
+  // ── 필터 탭 ──────────────────────────────────────────────────────────────
+  .st-filter-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .st-ftab {
+    font-size: 0.75rem;
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-text-secondary, #64748b);
+    transition: all 0.12s;
+
+    &.is-active,
+    &:hover {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+    }
+  }
+
+  .st-sort-sel {
+    font-size: 0.75rem;
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 5px 10px;
+    color: var(--color-text-secondary, #64748b);
+    cursor: pointer;
+  }
+
+  // ── 바 차트 영역 ─────────────────────────────────────────────────────────
+  .st-tier-label {
+    font-size: 0.72rem;
+    color: var(--color-text-tertiary, #94a3b8);
+    margin: 18px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: #e2e8f0;
+    }
+  }
+
+  .st-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    padding: 3px 4px;
+    transition: background 0.12s;
+    cursor: default;
+
+    &:hover {
+      background: var(--color-background-secondary, #f8fafc);
+    }
+  }
+
+  .st-bar-company {
+    width: 130px;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #64748b);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .st-bar-track {
+    flex: 1;
+    height: 26px;
+    background: var(--color-background-secondary, #f1f5f9);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .st-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .st-bar-val {
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .st-bar-note {
+    font-size: 0.65rem;
+    margin-left: 6px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+    color: inherit;
+  }
+
+  .st-my-line {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    background: #E24B4A;
+    opacity: 0.8;
+    border-radius: 1px;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .st-chart-hint {
+    font-size: 0.7rem;
+    color: var(--color-text-tertiary, #94a3b8);
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  // ── 업종별 인사이트 ──────────────────────────────────────────────────────
+  .st-insight-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .st-insight-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .st-insight-industry {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-text-tertiary, #94a3b8);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .st-insight-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+
+  .st-insight-range {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+  }
+
+  .st-insight-note {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary, #64748b);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .st-insight-avg {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: var(--color-background-secondary, #f8fafc);
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 4px;
+  }
+
+  // ── 티어별 기업 목록 ─────────────────────────────────────────────────────
+  .st-tier-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .st-tier-row {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .st-tier-row__level {
+    width: 180px;
+    flex-shrink: 0;
+    padding-left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    strong {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+  }
+
+  .st-tier-row__range {
+    font-size: 0.72rem;
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  .st-tier-row__companies {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-content: flex-start;
+  }
+
+  .st-company-tag {
+    font-size: 0.75rem;
+    background: var(--color-background-secondary, #f8fafc);
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 3px 8px;
+    color: #334155;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .st-company-note {
+    font-size: 0.65rem;
+    color: var(--color-text-tertiary, #94a3b8);
+    font-style: normal;
+    background: #fff;
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+
+  // ── KPI stat card (공통 override) ────────────────────────────────────────
+  .report-stat-card {
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.15s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.76rem;
+      color: #64748b;
+    }
+
+    strong {
+      display: block;
+      font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    span {
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+
+    &--primary {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-color: rgba(29, 158, 117, 0.25);
+
+      strong {
+        color: #0F6E56;
+      }
+    }
+  }
+}
