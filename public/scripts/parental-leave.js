@@ -161,6 +161,7 @@ function updateBreakdownCards(totalLeaveIncome, bufferMonths, totalComp, monthly
 // ── 힌트 업데이트 ─────────────────────────────────────────────────────────────
 function updateHints() {
   [
+    ["leaveBeforeNet",         "leaveBeforeNetHint"],
     ["leaveAfterAnnual",      "leaveAfterAnnualHint"],
     ["leaveRetirementPayout", "leaveRetirementPayoutHint"],
     ["leaveBonus",            "leaveBonusHint"],

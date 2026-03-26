@@ -147,17 +147,21 @@
 - `salary`: simple calculator 템플릿 적용 완료
 - `retirement`: simple calculator 템플릿 적용 완료
 - `negotiation`: simple calculator 템플릿 적용 완료
-- `bonus-simulator`: comparison calculator 템플릿 1차 적용 완료
+- `bonus-simulator`: comparison calculator 템플릿 적용 완료
 - `single-parental-leave-total`: timeline calculator 템플릿 적용 완료
 - `parental-leave-pay`: timeline calculator 템플릿 적용 완료
 - `birth-support-total`: timeline calculator 템플릿 적용 완료
-- `six-plus-six`: comparison calculator 템플릿 2차 적용 완료
+- `six-plus-six`: comparison calculator 템플릿 적용 완료
 - `sk-hynix-bonus`: Chart.js 3종 차트, 연봉 슬라이더, 라디오칩 PS 방식 적용 완료
+- `samsung-bonus`: sk-hynix-bonus 패턴 적용 완료
+- `hyundai-bonus`: sk-hynix-bonus 패턴 적용 완료
+- `parental-leave`: simple calculator 템플릿 적용 완료
+- `household-income`: simple calculator 템플릿 적용 완료
+- `diaper-cost`: simple calculator 템플릿 적용 완료
+- `formula-cost`: simple calculator 템플릿 적용 완료
+- `home-purchase-fund`: simple calculator 템플릿 적용 완료
 
 ## 다음 대상
-- `samsung-bonus`: sk-hynix-bonus 패턴 동일 적용 (차트·슬라이더)
-- `hyundai-bonus`: sk-hynix-bonus 패턴 동일 적용 (차트·슬라이더)
-- `parental-leave`: simple 또는 timeline 후보 재분류
-- `tools/index`: 템플릿 분류 기반 카드 정보 강화
 - 공통 detail-box / table mobile 패턴 추가 정리
+- `tools/index`: 템플릿 분류 기반 카드 정보 강화
 

@@ -77,8 +77,7 @@ Sitemap: https://bigyocalc.com/sitemap.xml
 - [x] 404 페이지 별도 존재
 
 ### 진행 기록
-- 상태: 진행 중
-- 작업일: 2026-03-20
+- 상태: **완료** (2026-03-20)
 - 메모:
   - `robots.txt` 실접속 확인 완료
   - `sitemap.xml` 실접속 확인 완료
@@ -302,11 +301,11 @@ google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
 - AdSense 심사도 승인 보장 아님
 
 ### 체크리스트
-- [ ] AdSense 사이트 등록
-- [ ] ads.txt 반영
+- [x] AdSense 사이트 등록
+- [x] ads.txt 반영
+- [x] 자동 광고 적용
 - [ ] 정책 페이지 완료
 - [ ] 콘텐츠 볼륨 확보
-- [ ] 공사중 페이지 정리
 
 ### 진행 기록
 - 상태:
@@ -388,14 +387,14 @@ google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
 - [ ] 404 처리 미흡
 
 ### 콘텐츠
-- [ ] 계산기 설명 페이지 부족
+- [ ] 계산기 설명 가이드 페이지 부족
 - [ ] 정책 / 문의 / 소개 페이지 부족
 - [ ] 내부 링크 부족
 
 ### 광고 준비
-- [ ] ads.txt 없음
-- [ ] 정책 페이지 부족
-- [ ] 심사 전 콘텐츠량 부족
+- [x] ads.txt 등록 완료
+- [x] AdSense 자동 광고 적용 완료
+- [ ] 정책 페이지 보완 필요
 
 ---
 
