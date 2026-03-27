@@ -22,6 +22,12 @@ export interface YearScenario {
   aggressive: number;
 }
 
+export interface YearSummaryRow {
+  payoutLabel: string;
+  conservativePsRange: string;
+  conservativeTotalRange: string;
+}
+
 export const rankPresets: RankPreset[] = [
   { code: "STAFF", label: "사원", defaultSalary: 80000000 },
   { code: "ASSISTANT_MANAGER", label: "대리", defaultSalary: 100000000 },
@@ -49,8 +55,13 @@ export const scenarioOptions: ScenarioOption[] = [
 
 export const psMultipliersByYear: Record<TargetYear, YearScenario> = {
   "2026": { conservative: 24, base: 29.64, aggressive: 33 },
-  "2027": { conservative: 16, base: 22, aggressive: 28 },
-  "2028": { conservative: 14, base: 20, aggressive: 26 }
+  "2027": { conservative: 53.38, base: 58.09, aggressive: 62.8 },
+  "2028": { conservative: 50.24, base: 54.95, aggressive: 59.66 }
+};
+
+export const futurePiRatioByYear: Partial<Record<TargetYear, number>> = {
+  "2027": 1.5,
+  "2028": 1.5
 };
 
 export const factAnchors = [
@@ -103,8 +114,23 @@ export const comparisonBenchmarks = [
   }
 ];
 
+export const yearSummaryRows: YearSummaryRow[] = [
+  {
+    payoutLabel: "2027년 지급분",
+    conservativePsRange: "5338% ~ 6280%",
+    conservativeTotalRange: "5488% ~ 6430%"
+  },
+  {
+    payoutLabel: "2028년 지급분",
+    conservativePsRange: "5024% ~ 5966%",
+    conservativeTotalRange: "5174% ~ 6116%"
+  }
+];
+
 export const welfareDefault = 12000000;
 export const actualPsMultiplier = 29.64;
 export const immediatePsRatio = 0.8;
 export const deferredPsRatio = 0.2;
 export const averageCompensation = 185000000;
+
+
