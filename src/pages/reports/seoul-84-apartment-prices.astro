@@ -1,0 +1,437 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  seoul84ApartmentPrices,
+  formatEok,
+  formatYears,
+} from "../../data/seoul84ApartmentPrices";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const seed = seoul84ApartmentPrices;
+const entries = seed.entries;
+const faqItems = seed.faq.map((item) => ({ question: item.q, answer: item.a }));
+const avgEntries = entries.filter((item) => item.avgPriceEok !== null);
+const topAvgEntry = avgEntries.slice().sort((a, b) => (b.avgPriceEok ?? 0) - (a.avgPriceEok ?? 0))[0];
+const entryFloor = avgEntries.slice().sort((a, b) => (a.avgPriceEok ?? 0) - (b.avgPriceEok ?? 0))[0];
+const districtAvgValues = seed.districtSummaries
+  .map((item) => item.avgOfAvgPriceEok)
+  .filter((value): value is number => value !== null);
+const avgRangeMin = Math.min(...districtAvgValues);
+const avgRangeMax = Math.max(...districtAvgValues);
+const medianYears = avgEntries
+  .map((item) => item.salaryYearsAvgWorker)
+  .filter((value): value is number => value !== null)
+  .sort((a, b) => a - b);
+const medianSalaryYears = medianYears[Math.floor(medianYears.length / 2)];
+const initialCompareEntries = avgEntries.slice().sort((a, b) => (b.avgPriceEok ?? 0) - (a.avgPriceEok ?? 0)).slice(0, 3);
+const focusEntry = initialCompareEntries[0] ?? topAvgEntry;
+const focusGap = focusEntry.highPriceEok !== null && focusEntry.avgPriceEok !== null
+  ? Math.max(0, focusEntry.highPriceEok - focusEntry.avgPriceEok)
+  : null;
+---
+
+<BaseLayout title={seed.meta.title} description={seed.meta.description}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="seoul-84-apartment-prices" pageClass="seoul-apartment-report-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="부동산 비교 리포트"
+        title="서울 신축·준신축 국평 아파트 가격 비교"
+        description="강남·서초·송파·마포·성동·강동 대표 단지의 전용 84㎡ 가격과 체감 진입 장벽을 같은 화면에서 비교합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="saprResetBtn" copyId="saprCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">검색 조건</p>
+            <h2 class="panel__title">지역과 단지 필터</h2>
+          </div>
+          <p class="panel-heading__summary">필터를 바꾸면 비교 카드, 시장 요약, 체감 비교가 함께 갱신됩니다.</p>
+        </div>
+
+        <div class="sapr-control-stack">
+          <label class="field">
+            <span>지역</span>
+            <select id="saprDistrictSelect">
+              <option value="all">전체</option>
+              {seed.filterOptions.districts.map((item) => (
+                <option value={item.value}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>단지명 검색</span>
+            <input id="saprSearchInput" type="search" placeholder="예: 래미안, 헬리오시티" />
+          </label>
+
+          <label class="field">
+            <span>정렬</span>
+            <select id="saprSortSelect">
+              {seed.filterOptions.sortOptions.map((item) => (
+                <option value={item.value}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">비교 기준</p>
+            <h2 class="panel__title">가격과 등급 선택</h2>
+          </div>
+        </div>
+
+        <div class="sapr-chip-block">
+          <div class="sapr-chip-group" aria-label="가격 기준">
+            <span class="sapr-chip-group__label">가격 기준</span>
+            {seed.filterOptions.priceModes.map((item, index) => (
+              <label class="sapr-chip-radio">
+                <input type="radio" name="saprPriceMode" value={item.value} checked={index === 0} />
+                <span>{item.label}</span>
+              </label>
+            ))}
+          </div>
+
+          <div class="sapr-chip-group" aria-label="등급 필터">
+            <span class="sapr-chip-group__label">등급</span>
+            <label class="sapr-chip-check is-active">
+              <input type="radio" name="saprGrade" value="all" checked />
+              <span>전체</span>
+            </label>
+            {seed.filterOptions.grades.map((grade) => (
+              <label class="sapr-chip-check">
+                <input type="radio" name="saprGrade" value={grade} />
+                <span>{grade}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </article>
+
+      <article class="panel sapr-aside-summary">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">시장 포커스</p>
+            <h2 class="panel__title" id="saprFocusName">{focusEntry.apartmentName}</h2>
+          </div>
+          <p class="panel-heading__summary" id="saprFocusMeta">평균가 기준으로 가장 먼저 비교할 대표 단지입니다.</p>
+        </div>
+
+        <div class="sapr-mini-kpi-grid">
+          <article class="sapr-mini-kpi sapr-mini-kpi--primary">
+            <p>평균가</p>
+            <strong id="saprFocusPrice">{formatEok(focusEntry.avgPriceEok)}</strong>
+            <span id="saprFocusDistrict">{focusEntry.districtLabel}</span>
+          </article>
+          <article class="sapr-mini-kpi">
+            <p>직장인 체감</p>
+            <strong id="saprFocusYears">{formatYears(focusEntry.salaryYearsAvgWorker)}</strong>
+            <span>평균 직장인 기준</span>
+          </article>
+          <article class="sapr-mini-kpi sapr-mini-kpi--warm">
+            <p>최고가 격차</p>
+            <strong id="saprFocusGap">{focusGap !== null ? formatEok(focusGap) : "-"}</strong>
+            <span>최고가 대비</span>
+          </article>
+        </div>
+
+        <div class="sapr-tag-row" id="saprFocusTags">
+          {(focusEntry.tags || []).map((tag) => <span>{tag}</span>)}
+        </div>
+      </article>
+
+      <article class="panel sapr-aside-summary">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Live Brief</p>
+            <h2 class="panel__title">지금 읽어야 할 포인트</h2>
+          </div>
+          <p class="panel-heading__summary" id="saprLiveNarrative">반포권이 시장 상단을 끌어올리고, 송파·마포·성동은 비교군이 풍부해 체감 차이를 읽기 좋습니다.</p>
+        </div>
+
+        <div class="sapr-mini-kpi-grid sapr-mini-kpi-grid--brief">
+          <article class="sapr-mini-kpi">
+            <p>현재 비교군</p>
+            <strong id="saprLiveCount">{entries.length}개</strong>
+            <span id="saprResultsSummary">전체 단지 기준</span>
+          </article>
+          <article class="sapr-mini-kpi">
+            <p>가격 범위</p>
+            <strong id="saprLiveRange">{formatEok(avgRangeMin)} ~ {formatEok(avgRangeMax)}</strong>
+            <span id="saprPriceModeNotice">평균가 기준</span>
+          </article>
+          <article class="sapr-mini-kpi">
+            <p>가장 강한 구간</p>
+            <strong id="saprLiveDistrict">{topAvgEntry.districtLabel}</strong>
+            <span id="saprCompareStatus">비교 선택 0개</span>
+          </article>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="sapr-section">
+      <div class="sapr-section__head">
+        <p class="sapr-section__eyebrow">핵심 요약</p>
+        <h2>서울 국평 시장을 먼저 숫자로 읽기</h2>
+        <p class="sapr-section__sub">기존 계산기 페이지와 같은 KPI 카드 톤으로 핵심 지표만 먼저 정리했습니다.</p>
+      </div>
+      <div class="sapr-kpi-grid">
+        <article class="sapr-kpi-card sapr-kpi-card--primary">
+          <p>최고 평균가 단지</p>
+          <strong>{topAvgEntry.apartmentName}</strong>
+          <span>{topAvgEntry.districtLabel} · 평균가 {formatEok(topAvgEntry.avgPriceEok)}</span>
+        </article>
+        <article class="sapr-kpi-card">
+          <p>가장 낮은 평균가 구간</p>
+          <strong>{entryFloor.apartmentName}</strong>
+          <span>{entryFloor.districtLabel} · 평균가 {formatEok(entryFloor.avgPriceEok)}</span>
+        </article>
+        <article class="sapr-kpi-card">
+          <p>서울 6개 구 평균가 범위</p>
+          <strong>{formatEok(avgRangeMin)} ~ {formatEok(avgRangeMax)}</strong>
+          <span>구별 평균가 기준</span>
+        </article>
+        <article class="sapr-kpi-card sapr-kpi-card--warm">
+          <p>평균 직장인 체감 중앙값</p>
+          <strong>{formatYears(medianSalaryYears)}</strong>
+          <span>평균가 기준 단순 환산</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="sapr-section">
+      <div class="sapr-section__head">
+        <p class="sapr-section__eyebrow">단지 비교</p>
+        <h2>선택한 단지를 계산기 카드 톤으로 비교</h2>
+        <p class="sapr-section__sub" id="saprCompareLead">원하는 만큼 선택할 수 있고, 첫 번째 선택 단지를 기준점으로 간극을 읽도록 구성했습니다.</p>
+      </div>
+      <div class="sapr-compare-grid" id="saprCompareGrid">
+        {initialCompareEntries.map((entry, index) => (
+          <article class={`sapr-compare-card${index === 0 ? " is-featured" : ""}`}>
+            <div class="sapr-compare-card__head">
+              <div>
+                <p class="sapr-compare-card__eyebrow">{entry.districtLabel}</p>
+                <h3>{entry.apartmentName}</h3>
+              </div>
+              <span class="sapr-compare-card__chip">{entry.grade}</span>
+            </div>
+            <div class="sapr-compare-card__price">
+              <strong>{formatEok(entry.avgPriceEok)}</strong>
+              <span>{entry.pricePerPyeongMan?.toLocaleString("ko-KR")}만원/평</span>
+            </div>
+            <div class="sapr-compare-card__meta">
+              <span>최고가 {formatEok(entry.highPriceEok)}</span>
+              <span>체감 {formatYears(entry.salaryYearsAvgWorker)}</span>
+            </div>
+            <a class="sapr-compare-card__cta" href={withBase("/tools/home-purchase-fund/")}>자금 계산기로 이어보기</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sapr-section">
+      <div class="sapr-section__head">
+        <p class="sapr-section__eyebrow">원본 숫자 확인</p>
+        <h2>최종 검토용 가격 표</h2>
+      </div>
+      <div class="table-wrap sapr-table-wrap">
+        <table class="sapr-compare-table">
+          <thead>
+            <tr>
+              <th class="sapr-col-compare">비교</th>
+              <th>지역</th>
+              <th>단지명</th>
+              <th>세대수</th>
+              <th>등급</th>
+              <th>최고가</th>
+              <th>평균가</th>
+              <th>평당가</th>
+              <th>실거래가</th>
+            </tr>
+          </thead>
+          <tbody id="saprResultsBody">
+            {entries.map((entry) => (
+              <tr>
+                <td class="sapr-col-compare">
+                  <input
+                    type="checkbox"
+                    data-compare-id={entry.id}
+                    checked={initialCompareEntries.some((item) => item.id === entry.id)}
+                    disabled={!entry.compareEnabled}
+                  />
+                </td>
+                <td>{entry.districtLabel}</td>
+                <td>{entry.apartmentName}</td>
+                <td>{entry.householdCount.toLocaleString("ko-KR")}</td>
+                <td>{entry.grade}</td>
+                <td>{formatEok(entry.highPriceEok)}</td>
+                <td>{formatEok(entry.avgPriceEok)}</td>
+                <td>{entry.pricePerPyeongMan !== null ? `${entry.pricePerPyeongMan.toLocaleString("ko-KR")}만원` : "-"}</td>
+                <td class="sapr-col-link">
+                  <a href={entry.hogangnonoUrl} target="_blank" rel="noreferrer" class="fc-coupang-btn">보기 →</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sapr-section">
+      <div class="sapr-section__head">
+        <p class="sapr-section__eyebrow">연봉 대비 체감</p>
+        <h2>누구 기준으로 보면 몇 년치 연봉인가</h2>
+      </div>
+      <div class="sapr-salary-tabs sapr-chip-group" aria-label="연봉 기준 선택">
+        <label class="sapr-chip-radio">
+          <input type="radio" name="saprSalaryMode" value="avgWorker" checked />
+          <span>평균 직장인</span>
+        </label>
+        <label class="sapr-chip-radio">
+          <input type="radio" name="saprSalaryMode" value="samsung" />
+          <span>삼성전자</span>
+        </label>
+        <label class="sapr-chip-radio">
+          <input type="radio" name="saprSalaryMode" value="hynix" />
+          <span>SK하이닉스</span>
+        </label>
+      </div>
+      <div class="sapr-salary-list" id="saprSalaryCompare"></div>
+    </section>
+    
+    <section class="sapr-section">
+      <div class="sapr-section__head">
+        <p class="sapr-section__eyebrow">해석 포인트</p>
+        <h2>숫자만 보면 놓치기 쉬운 패턴</h2>
+      </div>
+      <div class="sapr-insight-grid">
+        {seed.insights.map((item) => (
+          <article class="sapr-insight-card">
+            <p class="sapr-insight-card__eyebrow">Insight</p>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <InfoNotice
+      title="기준 안내"
+      lines={[seed.meta.methodology, seed.meta.caution, seed.meta.updatedAt]}
+    />
+
+    <section class="content-section">
+      <div class="sapr-cta-panel">
+        <div>
+          <p class="sapr-section__eyebrow">다음 계산</p>
+          <h2>선택 단지 기준으로 매매 자금 계산기로 이어집니다</h2>
+          <p id="saprCtaText">선택한 단지 가격을 기준으로 매매 자금 계산기로 바로 이어집니다.</p>
+        </div>
+        <a class="button button--primary" id="saprCtaLink" href={withBase("/tools/home-purchase-fund/")}>부동산 매매 자금 계산기 열기</a>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="panel sapr-reference-links">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">실거래가와 대출·세금 정보 다시 확인하기</h2>
+          </div>
+          <p class="panel-heading__summary">매수 판단 직전에는 공식 또는 대표 서비스에서 최신 정보를 한 번 더 확인해야 합니다.</p>
+        </div>
+        <div class="sapr-link-grid">
+          <div>
+            <h3>가격 참고</h3>
+            <div class="sapr-link-list">
+              {seed.referenceLinks.price.map((item) => (
+                <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h3>대출·세금 참고</h3>
+            <div class="sapr-link-list">
+              {seed.referenceLinks.loanTax.map((item) => (
+                <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box sapr-affiliate-box">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">📦</span>
+          <div>
+            <h3 class="affiliate-box__title">같이 보면 좋은 입주 준비 체크 상품</h3>
+            <p class="affiliate-box__context">계약 이후 바로 이어지는 이사·수납·청소 준비용 아이템만 최소 구성으로 정리했습니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {seed.affiliateProducts.map((prod) => (
+            <a href={prod.url} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 섹션의 링크에는 제휴 링크가 포함될 수 있으며, 가격과 재고는 판매처 사정에 따라 바뀔 수 있습니다.</p>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="서울 국평 시세를 읽는 가장 빠른 방법"
+        intro={[
+          "이 페이지는 서울 6개 구의 신축·준신축 대단지 아파트 중 전용 84㎡ 계열만 모아 가격과 체감 진입 장벽을 비교하는 인터랙티브 리포트입니다.",
+          "단순히 비싼 순으로 정렬하는 대신 구별 평균, 최고가와 평균가 차이, 연봉 대비 몇 년치 수준인지까지 같이 보여줘서 다음 계산 행동으로 이어지게 설계했습니다.",
+        ]}
+        inputPoints={[
+          "관심 지역과 단지를 빠르게 필터링해서 비교할 수 있습니다.",
+          "최고가와 평균가를 같이 보며 과열 여부를 읽을 수 있습니다.",
+          "연봉 대비 체감값과 자금 계산기 흐름을 한 번에 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "서울 6개 구, 1000세대 이상, 입주 완료 단지 기준입니다.",
+          "전용 84㎡ 계열 국평 기준으로 비교합니다.",
+          "재건축 예정 단지는 제외했습니다.",
+          "최근 1년 기준 정리값과 공개 정보 기반 참고용 수치입니다.",
+        ]}
+        faq={faqItems}
+        related={seed.relatedLinks}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="seoul84ApartmentPricesData" type="application/json" set:html={JSON.stringify(seed)}></script>
+  <script type="module" src={withBase("/scripts/seoul-84-apartment-prices.js")}></script>
+</BaseLayout>
+
+
+
+

@@ -4,6 +4,8 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
 import {
   reportMeta,
   cautionNotes,
@@ -21,10 +23,30 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
 const selectedProfile = wealthProfiles[0];
+const totalNetWorthUsdB = wealthProfiles.reduce((sum, profile) => sum + profile.netWorthUsdB, 0);
+const founderCount = wealthProfiles.filter((profile) => profile.founderType === "founder" || profile.founderType === "cofounder").length;
+const techFocusedCount = wealthProfiles.filter((profile) =>
+  ["전기차 · 우주 · AI", "소프트웨어", "소셜 플랫폼", "검색 · 플랫폼", "반도체 · AI 인프라", "하드웨어 · 인프라"].includes(profile.sector)
+).length;
+const topThreeShare = Math.round(
+  (wealthProfiles.slice(0, 3).reduce((sum, profile) => sum + profile.netWorthUsdB, 0) / totalNetWorthUsdB) * 100
+);
 const distributionGroups = [
-  { title: "업종 분포", items: sectorSummary },
-  { title: "학력 패턴", items: educationSummary },
-  { title: "창업 배경", items: founderTypeSummary }
+  {
+    title: "업종 분포",
+    summary: "기술 자산 쏠림이 가장 강하게 보입니다.",
+    items: sectorSummary
+  },
+  {
+    title: "학력 패턴",
+    summary: "명문대 학위와 중퇴 사례가 함께 반복됩니다.",
+    items: educationSummary
+  },
+  {
+    title: "창업 배경",
+    summary: "운영형보다 창업형이 훨씬 많이 보입니다.",
+    items: founderTypeSummary
+  }
 ];
 const funConversionConfig = {
   usdToKrw: 1380,
@@ -37,44 +59,31 @@ const funConversionConfig = {
 <BaseLayout title={reportMeta.title} description={reportMeta.description}>
   <SiteHeader />
 
-  <main class="container page-shell report-page us-rich-report-page">
-    <CalculatorHero
-      eyebrow="Interactive Report"
-      title="미국 부자 TOP 10 성공 패턴 리포트"
-      description="자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트"
-    />
+  <SimpleToolShell calculatorId="us-rich-top10-patterns" pageClass="us-rich-report-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="Interactive Report"
+        title="미국 부자 TOP 10 성공 패턴 리포트"
+        description="자산, 업종, 학력, 창업 배경을 한 화면에서 비교해보는 인터랙티브 리포트"
+      />
+    </Fragment>
 
-    <InfoNotice title="참고" lines={cautionNotes} />
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetUsRichProfileBtn" copyId="copyUsRichProfileLinkBtn" />
+    </Fragment>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">TOP 10 개요</p>
-        <h2>한눈에 보는 상위 10명</h2>
-      </div>
-      <div class="report-overview-grid">
-        {
-          wealthProfiles.map((profile) => (
-            <article class="report-overview-card">
-              <p>{profile.rank}위</p>
-              <strong>{profile.name}</strong>
-              <span>{profile.netWorthDisplay}</span>
-              <em>{profile.sector}</em>
-            </article>
-          ))
-        }
-      </div>
-    </section>
+    <Fragment slot="aside">
+      <article class="panel usr-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">선택 패널</p>
+            <h2 class="panel__title">인물 선택</h2>
+          </div>
+          <p class="panel-heading__summary">셀렉트, 카드, 차트가 서로 연결됩니다.</p>
+        </div>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">인물 선택</p>
-        <h2>한 명씩 자세히 보기</h2>
-        <p>궁금한 인물을 선택하면 자산, 회사, 학력, 배경, 성향 태그를 자세히 볼 수 있습니다.</p>
-      </div>
-
-      <article class="panel report-control-panel">
-        <label class="field">
-          <span>인물 선택</span>
+        <label class="field usr-field">
+          <span>한 명씩 자세히 보기</span>
           <select id="wealthProfileSelect">
             {
               wealthProfiles.map((profile) => (
@@ -87,17 +96,80 @@ const funConversionConfig = {
         </label>
       </article>
 
-      <article class="panel report-profile-card" id="wealthProfileDetail">
-        <div class="report-profile-card__hero">
-          <div class="report-profile-card__header">
+      <article class="panel usr-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">TOP 10</p>
+            <h2 class="panel__title">빠른 비교 카드</h2>
+          </div>
+          <p class="panel-heading__summary">왼쪽 카드에서 바로 인물을 바꿔볼 수 있습니다.</p>
+        </div>
+
+        <div class="usr-overview-list">
+          {
+            wealthProfiles.map((profile) => (
+              <article class="usr-overview-card" data-profile-trigger={profile.id} tabindex="0" role="button" aria-label={`${profile.name} 상세 보기`}>
+                <p>{profile.rank}위</p>
+                <strong>{profile.name}</strong>
+                <span>{profile.netWorthDisplay}</span>
+                <em>{profile.sector}</em>
+              </article>
+            ))
+          }
+        </div>
+      </article>
+
+      <InfoNotice title="참고" lines={cautionNotes} />
+    </Fragment>
+
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">핵심 수치</p>
+        <h2>미국 부자 TOP 10에서 먼저 읽을 숫자</h2>
+        <p class="usr-section__sub">전체 규모, 창업형 비중, 기술 업종 집중도를 먼저 보여줍니다.</p>
+      </div>
+      <div class="usr-kpi-grid">
+        <article class="usr-kpi-card usr-kpi-card--primary">
+          <p>TOP 10 합산 자산</p>
+          <strong>${totalNetWorthUsdB.toLocaleString("en-US")}B</strong>
+          <span>선정된 10명 자산 합계 기준</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>창업형 비중</p>
+          <strong>{founderCount}명</strong>
+          <span>Founder + Cofounder 합산</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>기술 중심 업종</p>
+          <strong>{techFocusedCount}명</strong>
+          <span>플랫폼·소프트웨어·AI·인프라 중심</span>
+        </article>
+        <article class="usr-kpi-card usr-kpi-card--soft">
+          <p>상위 3명 집중도</p>
+          <strong>{topThreeShare}%</strong>
+          <span>TOP 10 전체 자산 대비</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">선택 결과</p>
+        <h2>선택 인물 상세 카드</h2>
+        <p class="usr-section__sub">자산, 회사, 학력, 창업 배경, 성향 태그를 한 카드에 정리했습니다.</p>
+      </div>
+
+      <article class="panel usr-profile-card" id="wealthProfileDetail">
+        <div class="usr-profile-card__hero">
+          <div class="usr-profile-card__header">
             <div>
               <p class="panel-heading__eyebrow">선택 인물</p>
               <h2 id="profileName">{selectedProfile.name}</h2>
             </div>
-            <div class="report-rank-chip" id="profileRank">{selectedProfile.rank}위</div>
+            <div class="usr-rank-chip" id="profileRank">{selectedProfile.rank}위</div>
           </div>
 
-          <figure class="report-profile-card__media" id="profileImageBlock" hidden={!selectedProfile.image}>
+          <figure class="usr-profile-card__media" id="profileImageBlock" hidden={!selectedProfile.image}>
             {selectedProfile.image && (
               <>
                 <img
@@ -108,7 +180,7 @@ const funConversionConfig = {
                   decoding="async"
                   referrerpolicy="no-referrer"
                 />
-                <figcaption class="report-profile-card__media-note">
+                <figcaption class="usr-profile-card__media-note">
                   <a id="profileImageSourceLink" href={selectedProfile.image.sourceUrl} target="_blank" rel="noreferrer">
                     {selectedProfile.image.sourceName}
                   </a>
@@ -119,52 +191,55 @@ const funConversionConfig = {
           </figure>
         </div>
 
-        <div class="report-profile-card__summary">
-          <article class="report-stat-card">
+        <div class="usr-profile-card__summary">
+          <article class="usr-kpi-card usr-kpi-card--primary usr-kpi-card--wide">
             <p>추정 자산</p>
             <strong id="profileNetWorth">{selectedProfile.netWorthDisplay}</strong>
+            <span id="profileShareOfTop10">TOP 10 합산 대비 비중 계산</span>
           </article>
-          <article class="report-stat-card">
+          <article class="usr-kpi-card">
             <p>대표 회사</p>
             <strong id="profilePrimaryCompany">{selectedProfile.primaryCompany}</strong>
+            <span>핵심 자산이 연결된 회사</span>
           </article>
-          <article class="report-stat-card">
+          <article class="usr-kpi-card">
             <p>업종</p>
             <strong id="profileSector">{selectedProfile.sector}</strong>
+            <span>성공 패턴을 읽는 기준 업종</span>
           </article>
         </div>
 
-        <div class="report-profile-card__detail">
-          <div class="report-detail-list">
-            <div class="report-detail-row">
+        <div class="usr-profile-card__detail">
+          <div class="usr-detail-list">
+            <div class="usr-detail-row">
               <span>학력</span>
               <strong id="profileEducation">{selectedProfile.education.join(" · ")}</strong>
             </div>
-            <div class="report-detail-row">
+            <div class="usr-detail-row">
               <span>유형</span>
               <strong id="profileFounderType">{selectedProfile.founderType}</strong>
             </div>
-            <div class="report-detail-row">
+            <div class="usr-detail-row">
               <span>부 축적 방식</span>
               <strong id="profileStyle">{selectedProfile.selfMadeStyle}</strong>
             </div>
-            <div class="report-detail-row">
+            <div class="usr-detail-row">
               <span>대표 회사군</span>
               <strong id="profileCompanies">{selectedProfile.companies.join(" / ")}</strong>
             </div>
           </div>
 
-          <div class="report-profile-card__aside">
-            <div class="report-tag-block">
-              <span class="report-tag-block__label">성향 태그</span>
-              <div class="report-tag-list" id="profileTags">
+          <div class="usr-profile-card__aside">
+            <div class="usr-tag-block">
+              <span class="usr-tag-block__label">성향 태그</span>
+              <div class="usr-tag-list" id="profileTags">
                 {selectedProfile.personalityTags.map((tag) => <span>{tag}</span>)}
               </div>
             </div>
 
-            <div class="report-tag-block" id="mbtiBlock" hidden={!selectedProfile.mbtiEstimate}>
-              <span class="report-tag-block__label">MBTI 추정</span>
-              <div class="report-tag-list">
+            <div class="usr-tag-block" id="mbtiBlock" hidden={!selectedProfile.mbtiEstimate}>
+              <span class="usr-tag-block__label">MBTI 추정</span>
+              <div class="usr-tag-list">
                 <span id="profileMbti">{selectedProfile.mbtiEstimate}</span>
                 <span class="is-muted" id="profileMbtiConfidence">{selectedProfile.mbtiConfidence}</span>
               </div>
@@ -172,68 +247,77 @@ const funConversionConfig = {
           </div>
         </div>
 
-        <div class="report-profile-card__footer">
+        <div class="usr-profile-card__footer">
           <p id="profileSummary">{selectedProfile.summary}</p>
-          <ul class="report-highlight-list" id="profileHighlights">
+          <ul class="usr-highlight-list" id="profileHighlights">
             {selectedProfile.highlights.map((item) => <li>{item}</li>)}
           </ul>
         </div>
       </article>
     </section>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">재미 환산</p>
-        <h2>재미로 보는 자산 체감</h2>
-        <p>원화 환산과 생활 단위 비교로 보면 규모가 더 직관적으로 보입니다.</p>
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">자산 차트</p>
+        <h2>순위별 자산 규모 비교</h2>
+        <p class="usr-section__sub">상위권 자산 집중도를 가로 바 차트로 바로 읽을 수 있습니다.</p>
       </div>
-
-      <article class="panel fun-conversion-panel">
-        <div class="fun-conversion-panel__config">
-          <span>환율 {funConversionConfig.usdToKrw.toLocaleString("ko-KR")}원</span>
-          <span>{funConversionConfig.apartmentPriceKrwLabel}</span>
-          <span>{funConversionConfig.grandeurPriceKrwLabel}</span>
+      <article class="panel usr-chart-panel">
+        <div class="usr-chart-wrap" id="usRichTop10Overview">
+          <canvas id="usRichOverviewCanvas"></canvas>
         </div>
-
-        <div class="fun-conversion-grid">
-          <article class="fun-conversion-card">
-            <p>원화 환산</p>
-            <strong id="funNetWorthKrw"></strong>
-            <span>기준 환율 적용</span>
-          </article>
-
-          <article class="fun-conversion-card">
-            <p>서울 국평 아파트</p>
-            <strong id="funApartmentUnits"></strong>
-            <span>기준값 18억 원</span>
-          </article>
-
-          <article class="fun-conversion-card">
-            <p>그랜저</p>
-            <strong id="funGrandeurUnits"></strong>
-            <span>기준값 5,000만 원</span>
-          </article>
-
-          <article class="fun-conversion-card">
-            <p>{funConversionConfig.annualSalaryReferenceLabel} 기준</p>
-            <strong id="funSalaryYears"></strong>
-            <span>세전 기준 참고</span>
-          </article>
+        <div class="usr-chart-insights">
+          <div class="usr-chart-insight">
+            <strong>기술 업종 쏠림</strong>
+            <p>상위권 대부분이 플랫폼, 소프트웨어, AI 인프라처럼 확장성이 큰 자산에 몰려 있습니다.</p>
+          </div>
+          <div class="usr-chart-insight">
+            <strong>지분 장기 보유</strong>
+            <p>급여보다 창업 지분 가치 상승이 핵심이고, 오래 들고 간 사례가 반복됩니다.</p>
+          </div>
         </div>
-
-        <p class="fun-conversion-panel__note">환율과 기준값에 따라 달라지는 참고용 환산입니다.</p>
       </article>
     </section>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">패턴 요약</p>
-        <h2>공통적으로 많이 보이는 특징</h2>
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">재미 환산</p>
+        <h2>원화와 생활 단위로 보면 얼마나 큰가</h2>
+        <p class="usr-section__sub">달러 자산을 원화와 생활 단위로 바꿔서 체감 규모를 보여줍니다.</p>
       </div>
-      <div class="pattern-grid">
+      <div class="usr-kpi-grid usr-kpi-grid--fun">
+        <article class="usr-kpi-card usr-kpi-card--soft">
+          <p>원화 환산</p>
+          <strong id="funNetWorthKrw"></strong>
+          <span>환율 {funConversionConfig.usdToKrw.toLocaleString("ko-KR")}원 기준</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>서울 국평 아파트</p>
+          <strong id="funApartmentUnits"></strong>
+          <span>{funConversionConfig.apartmentPriceKrwLabel}</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>그랜저</p>
+          <strong id="funGrandeurUnits"></strong>
+          <span>{funConversionConfig.grandeurPriceKrwLabel}</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>{funConversionConfig.annualSalaryReferenceLabel} 기준</p>
+          <strong id="funSalaryYears"></strong>
+          <span>세전 기준 참고</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">패턴 요약</p>
+        <h2>공통적으로 반복되는 성공 패턴</h2>
+      </div>
+      <div class="usr-pattern-grid">
         {
           commonPatterns.map((pattern) => (
-            <article class="pattern-card">
+            <article class="usr-pattern-card">
               <strong>{pattern.title}</strong>
               <p>{pattern.body}</p>
             </article>
@@ -242,28 +326,29 @@ const funConversionConfig = {
       </div>
     </section>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">분포 비교</p>
-        <h2>업종·학력·창업 배경</h2>
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">분포 비교</p>
+        <h2>업종, 학력, 창업 배경 분포</h2>
       </div>
-      <div class="distribution-grid">
+      <div class="usr-distribution-grid">
         {
           distributionGroups.map((group) => {
             const maxCount = Math.max(...group.items.map((item) => item.count));
             return (
-              <article class="panel distribution-card">
+              <article class="panel usr-distribution-card">
                 <h3>{group.title}</h3>
-                <div class="distribution-list">
+                <p class="usr-distribution-card__summary">{group.summary}</p>
+                <div class="usr-distribution-list">
                   {
                     group.items.map((item) => (
-                      <div class="distribution-row">
-                        <div class="distribution-row__head">
+                      <div class="usr-distribution-row">
+                        <div class="usr-distribution-row__head">
                           <span>{item.label}</span>
                           <strong>{item.count}명</strong>
                         </div>
-                        <div class="distribution-row__track">
-                          <span class="distribution-row__fill" style={`width:${(item.count / maxCount) * 100}%`}></span>
+                        <div class="usr-distribution-row__track">
+                          <span class="usr-distribution-row__fill" style={`width:${(item.count / maxCount) * 100}%`}></span>
                         </div>
                       </div>
                     ))
@@ -276,26 +361,29 @@ const funConversionConfig = {
       </div>
     </section>
 
-    <SeoContent
-      introTitle="미국 부자 TOP 10 리포트 읽는 법"
-      intro={[
-        "이 페이지는 미국 부자 TOP 10의 자산 규모, 업종, 학력, 창업 배경, 성향 태그를 한 화면에서 비교할 수 있게 정리한 인터랙티브 리포트입니다.",
-        "팩트 기반 정보와 해석 기반 패턴을 분리해서 보여주고, MBTI는 참고용 추정으로만 표시합니다."
-      ]}
-      criteria={[
-        "자산, 회사, 업종, 학력은 공개 프로필 기준으로 정리합니다.",
-        "성향 태그와 성공 패턴은 공개 행보와 경력 흐름을 바탕으로 해석한 요약입니다.",
-        "MBTI는 공식 공개가 아닌 경우가 많아 참고용 추정으로만 제공합니다."
-      ]}
-      faq={faqItems}
-      related={[
-        { href: "/reports/", label: "비교 리포트 모아보기" },
-        { href: "/tools/household-income/", label: "가구 소득 계산기" },
-        { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" }
-      ]}
-    />
-  </main>
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="미국 부자 TOP 10 리포트 읽는 법"
+        intro={[
+          "이 페이지는 미국 부자 TOP 10의 자산 규모, 업종, 학력, 창업 배경, 성향 태그를 한 화면에서 비교할 수 있게 정리한 인터랙티브 리포트입니다.",
+          "팩트 기반 정보와 해석 기반 패턴을 분리해서 보여주고, MBTI는 참고용 추정으로만 표시합니다."
+        ]}
+        criteria={[
+          "자산, 회사, 업종, 학력은 공개 프로필 기준으로 정리합니다.",
+          "성향 태그와 성공 패턴은 공개 행보와 경력 흐름을 바탕으로 해석한 요약입니다.",
+          "MBTI는 공식 공개가 아닌 경우가 많아 참고용 추정으로만 제공합니다."
+        ]}
+        faq={faqItems}
+        related={[
+          { href: "/reports/", label: "비교 리포트 모아보기" },
+          { href: "/tools/household-income/", label: "가구 소득 계산기" },
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" }
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
 
   <script id="wealthProfilesData" type="application/json" set:html={JSON.stringify(wealthProfiles)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/us-rich-top10-report.js")}></script>
 </BaseLayout>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * salary.js — 연봉 인상 계산기 (전용 ES 모듈)
  *
  * Chart.js 4.x UMD (window.Chart) 필요.
@@ -133,7 +133,7 @@ function syncRaisePctSlider(n) {
   if (!raiseInput || !pctSlider) return;
   const annual   = Math.round(Number($("currentAnnualInput")?.value) || 0);
   const raiseAmt = Math.round(Number(raiseInput.value) || 0);
-  const pct      = annual > 0 ? Math.min(30, Math.max(0, (raiseAmt / annual) * 100)) : 0;
+  const pct      = annual > 0 ? Math.min(50, Math.max(0, (raiseAmt / annual) * 100)) : 0;
   pctSlider.value = pct.toFixed(1);
   if (pctValEl) pctValEl.textContent = `${Number(pctSlider.value).toFixed(1)}%`;
 }

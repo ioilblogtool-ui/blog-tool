@@ -1,13 +1,22 @@
-﻿const dataNode = document.getElementById("wealthProfilesData");
+﻿import { buildDefaultOptions, makeLabelPlugin } from "./chart-config.js";
+
+const dataNode = document.getElementById("wealthProfilesData");
 const select = document.getElementById("wealthProfileSelect");
+const resetButton = document.getElementById("resetUsRichProfileBtn");
+const copyButton = document.getElementById("copyUsRichProfileLinkBtn");
 
 if (dataNode && select) {
   const profiles = JSON.parse(dataNode.textContent || "[]");
+  const overviewCards = Array.from(document.querySelectorAll("[data-profile-trigger]"));
+  const totalNetWorthUsdB = profiles.reduce((sum, profile) => sum + (Number(profile.netWorthUsdB) || 0), 0);
+  const defaultProfileId = profiles[0]?.id || "";
+  let overviewChartInstance = null;
 
   const els = {
     name: document.getElementById("profileName"),
     rank: document.getElementById("profileRank"),
     netWorth: document.getElementById("profileNetWorth"),
+    shareOfTop10: document.getElementById("profileShareOfTop10"),
     primaryCompany: document.getElementById("profilePrimaryCompany"),
     sector: document.getElementById("profileSector"),
     education: document.getElementById("profileEducation"),
@@ -72,6 +81,16 @@ if (dataNode && select) {
     }
 
     return `약 ${value.toFixed(1)}${unit}`;
+  }
+
+  function updateUrl(profileId) {
+    const url = new URL(window.location.href);
+    if (profileId && profileId !== defaultProfileId) {
+      url.searchParams.set("profile", profileId);
+    } else {
+      url.searchParams.delete("profile");
+    }
+    window.history.replaceState({}, "", url);
   }
 
   function renderTags(tags) {
@@ -173,12 +192,100 @@ if (dataNode && select) {
     }
   }
 
+  function renderOverviewCards(selectedId) {
+    overviewCards.forEach((card) => {
+      const isActive = card.getAttribute("data-profile-trigger") === selectedId;
+      card.classList.toggle("is-active", isActive);
+      card.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+  }
+
+  function renderOverviewChart(selectedId) {
+    const canvas = document.getElementById("usRichOverviewCanvas");
+    if (!canvas || !window.Chart) return;
+
+    if (overviewChartInstance) {
+      overviewChartInstance.destroy();
+      overviewChartInstance = null;
+    }
+
+    const selectedIndex = profiles.findIndex((profile) => profile.id === selectedId);
+    const backgroundColors = profiles.map((_, index) =>
+      index === selectedIndex ? "rgba(15, 110, 86, 0.88)" : "rgba(15, 110, 86, 0.16)"
+    );
+    const borderColors = profiles.map((_, index) =>
+      index === selectedIndex ? "rgba(15, 110, 86, 1)" : "rgba(15, 110, 86, 0.28)"
+    );
+
+    overviewChartInstance = new window.Chart(canvas.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: profiles.map((profile) => `${profile.rank}위 ${profile.name}`),
+        datasets: [
+          {
+            data: profiles.map((profile) => profile.netWorthUsdB),
+            backgroundColor: backgroundColors,
+            borderColor: borderColors,
+            borderWidth: 1.5,
+            borderRadius: 8,
+            borderSkipped: false,
+            maxBarThickness: 26
+          }
+        ]
+      },
+      options: buildDefaultOptions({
+        indexAxis: "y",
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            displayColors: false,
+            callbacks: {
+              label(context) {
+                const profile = profiles[context.dataIndex];
+                const share = Math.round((profile.netWorthUsdB / totalNetWorthUsdB) * 100);
+                return [`$${profile.netWorthUsdB}B`, `${profile.sector}`, `TOP 10 대비 ${share}%`];
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: "rgba(148, 163, 184, 0.15)" },
+            ticks: {
+              callback: (value) => `$${value}B`
+            }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { font: { size: 12 } }
+          }
+        },
+        onHover(event, elements) {
+          canvas.style.cursor = elements.length > 0 ? "pointer" : "default";
+        },
+        onClick(event, elements) {
+          if (!elements.length) return;
+          const nextProfile = profiles[elements[0].index];
+          if (!nextProfile) return;
+          select.value = nextProfile.id;
+          renderProfile(nextProfile);
+        }
+      }),
+      plugins: [makeLabelPlugin((value) => `$${value}B`)]
+    });
+  }
+
   function renderProfile(profile) {
     if (!profile) return;
 
     if (els.name) els.name.textContent = profile.name;
     if (els.rank) els.rank.textContent = `${profile.rank}위`;
     if (els.netWorth) els.netWorth.textContent = profile.netWorthDisplay;
+    if (els.shareOfTop10) {
+      const share = Math.round((profile.netWorthUsdB / totalNetWorthUsdB) * 100);
+      els.shareOfTop10.textContent = `TOP 10 합산 자산의 약 ${share}%`;
+    }
     if (els.primaryCompany) els.primaryCompany.textContent = profile.primaryCompany;
     if (els.sector) els.sector.textContent = profile.sector;
     if (els.education) els.education.textContent = profile.education.join(" · ");
@@ -191,6 +298,9 @@ if (dataNode && select) {
     renderHighlights(profile.highlights || []);
     renderImage(profile.image);
     renderFunConversion(profile);
+    renderOverviewCards(profile.id);
+    renderOverviewChart(profile.id);
+    updateUrl(profile.id);
 
     const hasMbti = Boolean(profile.mbtiEstimate);
     if (els.mbtiBlock) els.mbtiBlock.hidden = !hasMbti;
@@ -202,12 +312,61 @@ if (dataNode && select) {
     }
   }
 
+  function handleCardSelection(id) {
+    const nextProfile = profiles.find((profile) => profile.id === id);
+    if (!nextProfile) return;
+    select.value = nextProfile.id;
+    renderProfile(nextProfile);
+  }
+
+  overviewCards.forEach((card) => {
+    const id = card.getAttribute("data-profile-trigger");
+    if (!id) return;
+
+    card.addEventListener("click", () => {
+      handleCardSelection(id);
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      handleCardSelection(id);
+    });
+  });
+
   select.addEventListener("change", (event) => {
     const nextId = event.target.value;
     const nextProfile = profiles.find((profile) => profile.id === nextId);
     renderProfile(nextProfile);
   });
 
-  const initialProfile = profiles.find((profile) => profile.id === select.value) || profiles[0];
+  resetButton?.addEventListener("click", () => {
+    const nextProfile = profiles.find((profile) => profile.id === defaultProfileId) || profiles[0];
+    if (!nextProfile) return;
+    select.value = nextProfile.id;
+    renderProfile(nextProfile);
+  });
+
+  copyButton?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      copyButton.textContent = "링크 복사 완료";
+      window.setTimeout(() => {
+        copyButton.textContent = "링크 복사";
+      }, 1600);
+    } catch {
+      copyButton.textContent = "복사 실패";
+      window.setTimeout(() => {
+        copyButton.textContent = "링크 복사";
+      }, 1600);
+    }
+  });
+
+  const url = new URL(window.location.href);
+  const initialProfileId = url.searchParams.get("profile") || select.value || defaultProfileId;
+  const initialProfile = profiles.find((profile) => profile.id === initialProfileId) || profiles[0];
+  if (initialProfile) {
+    select.value = initialProfile.id;
+  }
   renderProfile(initialProfile);
 }

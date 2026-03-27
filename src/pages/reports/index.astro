@@ -1,4 +1,4 @@
----
+﻿---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
@@ -8,35 +8,45 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
-// 연봉·초봉 시리즈
 const salarySeries = [
   {
     slug: "new-employee-salary-2026",
     eyebrow: "연봉 비교",
-    title: "2026 신입 연봉 비교 — 70개 기업 초봉 순위 총정리",
-    desc: "반도체·완성차·IT·금융·외국계 70개 기업의 신입 영끌 연봉을 업종별 바 차트로 비교하고 내 위치를 바로 확인합니다.",
-    tags: [{ label: "신규", mod: "new" }, { label: "70개 기업", mod: "salary" }, { label: "바 차트", mod: "salary" }],
+    title: "2026 신입 연봉 비교 70개 기업 초봉 총정리",
+    desc: "반도체, 제조, IT, 금융, 공공 등 70개 기업의 신입 초봉을 비교하고 내 위치를 바로 확인하는 리포트입니다.",
+    tags: [{ label: "신규", mod: "new" }, { label: "70개 기업", mod: "salary" }, { label: "연봉", mod: "salary" }],
     category: "salary",
     isNew: true,
   },
   {
     slug: "it-salary-top10",
     eyebrow: "IT 초봉",
-    title: "IT 업계 신입 초봉 TOP 10 — 연봉·복지 완벽 비교 [2026]",
-    desc: "네이버·카카오·SK텔레콤·현대오토에버 등 주요 IT 기업 신입 연봉과 복리후생을 랭킹 카드로 상세 비교합니다.",
+    title: "IT 업계 신입 초봉 TOP 10 연봉·복지 비교 [2026]",
+    desc: "네이버, 카카오, SK텔레콤, 현대오토에버 등 주요 IT 기업의 초봉과 복지 포인트를 비교합니다.",
     tags: [{ label: "IT", mod: "salary" }, { label: "TOP10", mod: "salary" }],
     category: "salary",
     isNew: false,
   },
 ];
 
-// 자산·부자 시리즈
+const estateSeries = [
+  {
+    slug: "seoul-84-apartment-prices",
+    eyebrow: "부동산 비교",
+    title: "서울 국평 아파트 가격 비교 리포트",
+    desc: "강남, 서초, 송파, 마포, 성동, 강동의 대단지 84㎡ 아파트 가격과 연봉 대비 체감까지 한 번에 비교합니다.",
+    tags: [{ label: "서울", mod: "asset" }, { label: "84㎡", mod: "asset" }, { label: "부동산", mod: "asset" }],
+    category: "estate",
+    isNew: true,
+  },
+];
+
 const assetSeries = [
   {
     slug: "korea-rich-top10-assets",
-    eyebrow: "한국 자산",
+    eyebrow: "자산 비교",
     title: "한국 부자 TOP 10 자산 비교 리포트",
-    desc: "2026년 현재 최신 공개 기준으로 한국 상위 10명 자산과 서울 국평·그랜저 환산값을 함께 보는 인터랙티브 리포트.",
+    desc: "2026년 최신 공개 기준으로 한국 상위 10명의 자산과 환산값을 함께 보는 인터랙티브 리포트입니다.",
     tags: [{ label: "KRW", mod: "asset" }, { label: "자산", mod: "asset" }],
     category: "asset",
     isNew: false,
@@ -45,31 +55,30 @@ const assetSeries = [
     slug: "us-rich-top10-patterns",
     eyebrow: "미국 자산",
     title: "미국 부자 TOP 10 성공 패턴 리포트",
-    desc: "자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트.",
+    desc: "자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트입니다.",
     tags: [{ label: "USD", mod: "asset" }, { label: "패턴 분석", mod: "asset" }],
     category: "asset",
     isNew: false,
   },
 ];
 
-const totalReports = salarySeries.length + assetSeries.length;
+const totalReports = salarySeries.length + estateSeries.length + assetSeries.length;
 ---
 
 <BaseLayout
-  title="비교 리포트 — 비교계산소"
-  description="직접 입력 없이 공개 데이터를 선택하고 비교하며 읽는 인터랙티브 리포트. 연봉·자산·부자 데이터를 한눈에 비교합니다."
+  title="비교 리포트 모음 | 비교계산소"
+  description="직접 입력 없이 공개 데이터를 선택하고 비교해서 읽는 인터랙티브 리포트 모음입니다. 연봉, 자산, 부동산 데이터를 빠르게 비교할 수 있습니다."
   ogImage="/og/reports-index.png"
 >
   <SiteHeader />
 
   <main class="container page-shell report-library-page">
-
-    <!-- ① Hero -->
     <CalculatorHero
       eyebrow="인터랙티브 리포트"
       title="숫자를 읽는 비교 리포트"
-      description="직접 입력 없이 공개 데이터를 선택하고 비교하며 읽는 리포트. 계산기와 함께 보면 맥락이 더 잘 보입니다."
+      description="직접 입력 없이 공개 데이터를 선택하고 비교해서 읽는 리포트 모음입니다. 연봉, 자산, 부동산 비교를 한 흐름에서 이어서 볼 수 있습니다."
     />
+
     <div class="reports-hero-stats">
       <div class="reports-hero-stat">
         <span class="reports-hero-stat__num">{totalReports}</span>
@@ -80,52 +89,44 @@ const totalReports = salarySeries.length + assetSeries.length;
         <span class="reports-hero-stat__label">시리즈</span>
       </div>
       <div class="reports-hero-stat">
-        <span class="reports-hero-stat__num">계속</span>
-        <span class="reports-hero-stat__label">추가 중</span>
+        <span class="reports-hero-stat__num">확장중</span>
+        <span class="reports-hero-stat__label">업데이트</span>
       </div>
     </div>
 
-    <!-- ② 필터 칩 -->
-    <div class="reports-filter-bar" id="reportsFilterBar">
+    <div class="reports-filter-bar">
       <button class="reports-filter-chip is-active" data-filter="all">전체</button>
-      <button class="reports-filter-chip" data-filter="salary">연봉·초봉</button>
-      <button class="reports-filter-chip" data-filter="asset">자산·부자</button>
+      <button class="reports-filter-chip" data-filter="salary">연봉</button>
+      <button class="reports-filter-chip" data-filter="estate">부동산</button>
+      <button class="reports-filter-chip" data-filter="asset">자산</button>
       <button class="reports-filter-chip" data-filter="new">신규</button>
     </div>
 
-    <!-- ③ Featured 카드 (최신 리포트) -->
-    <a href={withBase("/reports/new-employee-salary-2026/")} class="reports-featured-card" data-category="salary" data-tag="new">
+    <a href={withBase("/reports/seoul-84-apartment-prices/")} class="reports-featured-card" data-category="estate" data-tag="new">
       <div class="reports-featured-card__top">
-        <p class="reports-featured-card__eyebrow">연봉 리포트 · 신규</p>
-        <h2 class="reports-featured-card__title">2026 신입 연봉 비교<br>70개 기업 초봉 순위 총정리</h2>
+        <p class="reports-featured-card__eyebrow">부동산 리포트 · 신규</p>
+        <h2 class="reports-featured-card__title">서울 국평 아파트 가격 비교<br />강남·서초·송파·마포·성동·강동</h2>
         <p class="reports-featured-card__desc">
-          반도체·완성차·IT·금융·외국계 70개 기업의 신입 연봉을 업종별 바 차트로 비교하고
-          내 위치를 바로 확인합니다.
+          서울 6개 구 대단지 84㎡ 아파트를 최고가, 평균가, 연봉 대비 체감 기준으로 바로 비교하고 매매 자금 계산기로 이어집니다.
         </p>
         <div class="reports-featured-card__tags">
           <span class="reports-featured-tag reports-featured-tag--new">신규</span>
-          <span class="reports-featured-tag">70개 기업</span>
-          <span class="reports-featured-tag">바 차트</span>
-          <span class="reports-featured-tag">인터랙티브</span>
+          <span class="reports-featured-tag">부동산</span>
+          <span class="reports-featured-tag">84㎡</span>
+          <span class="reports-featured-tag">체감 비교</span>
         </div>
       </div>
       <div class="reports-featured-card__bottom">
-        <span class="reports-featured-card__meta">2026년 3월 최신 업데이트</span>
+        <span class="reports-featured-card__meta">2026년 3월 업데이트</span>
         <span class="reports-featured-card__cta">리포트 보기 →</span>
       </div>
     </a>
 
-    <!-- ④ 연봉·초봉 시리즈 -->
     <section class="reports-series" data-series="salary">
       <h3 class="reports-series__label">연봉·초봉 시리즈</h3>
       <div class="reports-card-grid">
         {salarySeries.map((r) => (
-          <a
-            href={withBase(`/reports/${r.slug}/`)}
-            class="report-card-item"
-            data-category={r.category}
-            data-tag={r.isNew ? "new" : ""}
-          >
+          <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
             <p class="rc-eyebrow">{r.eyebrow}</p>
             <p class="rc-title">{r.title}</p>
             <p class="rc-desc">{r.desc}</p>
@@ -142,17 +143,32 @@ const totalReports = salarySeries.length + assetSeries.length;
       </div>
     </section>
 
-    <!-- ④ 자산·부자 시리즈 -->
+    <section class="reports-series" data-series="estate">
+      <h3 class="reports-series__label">부동산 시리즈</h3>
+      <div class="reports-card-grid">
+        {estateSeries.map((r) => (
+          <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
+            <p class="rc-eyebrow">{r.eyebrow}</p>
+            <p class="rc-title">{r.title}</p>
+            <p class="rc-desc">{r.desc}</p>
+            <div class="rc-footer">
+              <div class="rc-tags">
+                {r.tags.map((t) => (
+                  <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                ))}
+              </div>
+              <span class="rc-arrow">→</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
     <section class="reports-series" data-series="asset">
       <h3 class="reports-series__label">자산·부자 시리즈</h3>
       <div class="reports-card-grid">
         {assetSeries.map((r) => (
-          <a
-            href={withBase(`/reports/${r.slug}/`)}
-            class="report-card-item"
-            data-category={r.category}
-            data-tag={r.isNew ? "new" : ""}
-          >
+          <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
             <p class="rc-eyebrow">{r.eyebrow}</p>
             <p class="rc-title">{r.title}</p>
             <p class="rc-desc">{r.desc}</p>
@@ -169,46 +185,41 @@ const totalReports = salarySeries.length + assetSeries.length;
       </div>
     </section>
 
-    <!-- ⑤ 준비 중 -->
     <div class="reports-coming">
-      <h3 class="reports-coming__title">다음에 추가될 리포트</h3>
+      <h3 class="reports-coming__title">다음으로 확장할 리포트</h3>
       <div class="reports-coming__grid">
+        <div class="reports-coming__card">
+          <p class="reports-coming__cat">부동산</p>
+          <p class="reports-coming__name">강남·서초·송파 구별 단독 국평 리포트</p>
+          <span class="reports-coming__badge">준비 중</span>
+        </div>
         <div class="reports-coming__card">
           <p class="reports-coming__cat">연봉</p>
           <p class="reports-coming__name">대기업 연차별 연봉 성장 비교</p>
           <span class="reports-coming__badge">준비 중</span>
         </div>
         <div class="reports-coming__card">
-          <p class="reports-coming__cat">부동산</p>
-          <p class="reports-coming__name">서울 아파트 평균 가격 비교</p>
-          <span class="reports-coming__badge">준비 중</span>
-        </div>
-        <div class="reports-coming__card">
-          <p class="reports-coming__cat">복지</p>
-          <p class="reports-coming__name">대기업 복지포인트 비교</p>
+          <p class="reports-coming__cat">자산</p>
+          <p class="reports-coming__name">서울 국평 환산 자산 리포트 확장판</p>
           <span class="reports-coming__badge">준비 중</span>
         </div>
       </div>
     </div>
 
-    <!-- ⑥ 안내 박스 -->
     <div class="tl-notice">
-      리포트의 자산·연봉 정보는 공개 기준으로 정리하고, 성향 태그와 패턴 해석은 참고용 설명으로 분리해서 보여줍니다.
-      수치는 공개 보도·집계 기반 추정치이며 공식 데이터가 아닙니다.
+      리포트의 수치와 해석은 공개 자료를 기준으로 정리한 참고용 정보입니다. 실제 의사결정 전에는 원출처 데이터를 다시 확인해 주세요.
     </div>
-
   </main>
 </BaseLayout>
 
 <script>
-  document.querySelectorAll('.reports-filter-chip').forEach(btn => {
+  document.querySelectorAll('.reports-filter-chip').forEach((btn) => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.reports-filter-chip').forEach(b => b.classList.remove('is-active'));
-      (btn as HTMLElement).classList.add('is-active');
-      const filter = (btn as HTMLElement).dataset.filter;
+      document.querySelectorAll('.reports-filter-chip').forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const filter = btn.dataset.filter;
 
-      // featured 카드
-      const featured = document.querySelector('.reports-featured-card') as HTMLElement | null;
+      const featured = document.querySelector('.reports-featured-card');
       if (featured) {
         if (filter === 'all' || featured.dataset.category === filter || featured.dataset.tag === filter) {
           featured.style.display = '';
@@ -217,11 +228,9 @@ const totalReports = salarySeries.length + assetSeries.length;
         }
       }
 
-      // 시리즈 섹션
-      document.querySelectorAll<HTMLElement>('.reports-series').forEach(series => {
-        const seriesType = series.dataset.series;
+      document.querySelectorAll('.reports-series').forEach((series) => {
         let hasVisible = false;
-        series.querySelectorAll<HTMLElement>('.report-card-item').forEach(card => {
+        series.querySelectorAll('.report-card-item').forEach((card) => {
           const show = filter === 'all' || card.dataset.category === filter || card.dataset.tag === filter;
           card.style.display = show ? '' : 'none';
           if (show) hasVisible = true;

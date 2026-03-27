@@ -205,3 +205,21 @@ if (disable && actualInput.checked) { scenarioInput.checked = true; }
 - SEO: `docs/SEO_ADSENSE_ROADMAP.md`
 - 운영: `docs/PROJECT_MANAGEMENT.md`
 - 에이전트 기준: `AGENT.md`
+
+## OG 이미지 생성 스크립트
+
+비교계산소는 OG 이미지를 `public/og/` 아래 PNG로 관리한다.
+
+### 스크립트
+- 홈: `scripts/generate-og-home.py`
+- 계산기/리포트: `scripts/generate-og-tools.py`
+
+### 출력 경로
+- 홈: `public/og/og-home.png`
+- 계산기: `public/og/tools/<slug>.png`
+- 리포트: `public/og/reports/<slug>.png`
+
+### 실행
+```bash
+python scripts/generate-og-home.py
+python scripts/generate-og-tools.py
