@@ -123,8 +123,8 @@ function renderResultsTable(filteredEntries) {
           return `
             <tr>
               <td class="sapr-col-compare"><input type="checkbox" data-compare-id="${entry.id}" ${checked} ${disabled} /></td>
-              <td>${entry.districtLabel}</td>
-              <td><strong>${entry.apartmentName}</strong></td>
+              <td class="sapr-col-district">${entry.districtLabel}</td>
+              <td class="sapr-col-name"><strong>${entry.apartmentName}</strong></td>
               <td>${entry.householdCount.toLocaleString("ko-KR")}</td>
               <td>${entry.grade}</td>
               <td>${formatEok(entry.highPriceEok)}</td>
@@ -438,6 +438,7 @@ if (!state.compareIds.length) {
   state.compareIds = data.entries.filter((entry) => entry.compareEnabled && entry.avgPriceEok !== null).slice(0, 3).map((entry) => entry.id);
 }
 render();
+
 
 
 

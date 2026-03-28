@@ -83,18 +83,42 @@ const faqItems = SALARY_TIER_FAQ.map((f) => ({ question: f.q, answer: f.a }));
         <p>영끌 연봉(야근수당 제외, 성과급 포함 현금성 기준)을 입력하세요.</p>
       </div>
 
-      <div class="st-my-input-row">
-        <label for="stMySalInput">내 연봉 (만원)</label>
-        <input
-          type="number"
-          id="stMySalInput"
-          placeholder="예: 7500"
-          min="0"
-          max="20000"
-          step="100"
-          autocomplete="off"
-        />
-        <span id="stMySalHint" class="st-my-hint">입력하면 위치를 바로 보여드려요</span>
+      <div class="st-input-shell">
+        <div class="st-input-copy">
+          <p class="st-input-kicker">빠르게 확인</p>
+          <h3>입력하면 바로 내 위치를 보여드려요</h3>
+          <p class="st-input-desc">상위 퍼센트, 평균 대비 차이, 연봉 티어를 한 번에 확인하고 비슷한 기업까지 바로 비교할 수 있습니다.</p>
+          <div class="st-input-points">
+            <span>상위 % 즉시 계산</span>
+            <span>평균 대비 차이 확인</span>
+            <span>비슷한 기업 바로 비교</span>
+          </div>
+        </div>
+
+        <div class="st-input-panel">
+          <label for="stMySalInput" class="st-input-label">내 연봉</label>
+          <div class="st-input-field">
+            <span class="st-input-prefix">연봉</span>
+            <input
+              type="number"
+              id="stMySalInput"
+              placeholder="예: 7500"
+              min="0"
+              max="20000"
+              step="100"
+              autocomplete="off"
+            />
+            <span class="st-input-suffix">만원</span>
+          </div>
+          <p id="stMySalHint" class="st-my-hint">입력하면 위치를 바로 보여드려요</p>
+
+          <div class="st-quick-row" aria-label="빠른 금액 선택">
+            <button type="button" class="st-quick-chip" data-salary-preset="6000">6,000</button>
+            <button type="button" class="st-quick-chip" data-salary-preset="7500">7,500</button>
+            <button type="button" class="st-quick-chip" data-salary-preset="9000">9,000</button>
+            <button type="button" class="st-quick-chip" data-salary-preset="12000">1.2억</button>
+          </div>
+        </div>
       </div>
 
       <div class="st-result-card" id="stResultCard" hidden>

@@ -1,4 +1,4 @@
----
+﻿---
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
@@ -7,8 +7,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
 <header class="site-header">
   <div class="container site-header__inner">
-
-    <!-- 로고 -->
     <a class="site-logo" href={withBase("/")}>
       <svg class="site-logo__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <rect x="2" y="2" width="9" height="9" rx="2" fill="#1D9E75"/>
@@ -21,63 +19,62 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       <span class="site-logo__text">비교계산소</span>
     </a>
 
-    <!-- PC 네비 -->
     <nav class="site-nav" aria-label="주요 메뉴">
-
-      <!-- 계산기 드롭다운 -->
       <div class="site-nav__item site-nav__item--has-dropdown">
         <button class="site-nav__btn" aria-expanded="false" aria-haspopup="true">
-          계산기
-          <span class="site-nav__arrow" aria-hidden="true">▾</span>
+          계산기 <span class="site-nav__arrow" aria-hidden="true">▾</span>
         </button>
         <div class="site-nav__dropdown" role="menu">
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">연봉·이직</p>
+            <a href={withBase("/tools/salary-tier/")} role="menuitem">연봉 티어 계산기 <span class="site-nav__badge">신규</span></a>
             <a href={withBase("/tools/salary/")} role="menuitem">연봉 인상 계산기</a>
             <a href={withBase("/tools/negotiation/")} role="menuitem">이직 계산기</a>
             <a href={withBase("/tools/retirement/")} role="menuitem">퇴직금 계산기</a>
-            <a href={withBase("/tools/household-income/")} role="menuitem">
-              가구 소득 계산기
-              <span class="site-nav__badge">신규</span>
-            </a>
+            <a href={withBase("/tools/household-income/")} role="menuitem">가구 소득 계산기 <span class="site-nav__badge">신규</span></a>
           </div>
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label site-nav__dropdown-label--bonus">성과급 비교</p>
-            <a href={withBase("/tools/bonus-simulator/")} role="menuitem">성과급 시뮬레이터</a>
-            <a href={withBase("/tools/samsung-bonus/")} role="menuitem">삼성전자 성과급</a>
-            <a href={withBase("/tools/sk-hynix-bonus/")} role="menuitem">SK하이닉스 성과급</a>
-            <a href={withBase("/tools/hyundai-bonus/")} role="menuitem">현대차 성과금</a>
+            <a href={withBase("/tools/bonus-simulator/")} role="menuitem">대기업 성과급 시뮬레이터</a>
+            <a href={withBase("/tools/samsung-bonus/")} role="menuitem">삼성전자 성과급 계산기</a>
+            <a href={withBase("/tools/sk-hynix-bonus/")} role="menuitem">SK하이닉스 성과급 계산기</a>
+            <a href={withBase("/tools/hyundai-bonus/")} role="menuitem">현대자동차 성과급 계산기</a>
           </div>
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">육아휴직·출산</p>
             <a href={withBase("/tools/parental-leave/")} role="menuitem">육아휴직 계산기</a>
-            <a href={withBase("/tools/single-parental-leave-total/")} role="menuitem">
-              한 명만 육아휴직
-              <span class="site-nav__badge site-nav__badge--rec">추천</span>
-            </a>
-            <a href={withBase("/tools/birth-support-total/")} role="menuitem">출산 지원금</a>
+            <a href={withBase("/tools/parental-leave-pay/")} role="menuitem">육아휴직 급여 계산기</a>
+            <a href={withBase("/tools/six-plus-six/")} role="menuitem">6+6 부모육아휴직제 계산기</a>
+            <a href={withBase("/tools/single-parental-leave-total/")} role="menuitem">한 명만 육아휴직 총수령액 <span class="site-nav__badge site-nav__badge--rec">추천</span></a>
+            <a href={withBase("/tools/birth-support-total/")} role="menuitem">출산~2세 총지원금 계산기</a>
+          </div>
+          <div class="site-nav__dropdown-section">
+            <p class="site-nav__dropdown-label">육아·생활·부동산</p>
+            <a href={withBase("/tools/diaper-cost/")} role="menuitem">아기 기저귀 값 계산기</a>
+            <a href={withBase("/tools/formula-cost/")} role="menuitem">아기 분유 값 계산기</a>
+            <a href={withBase("/tools/home-purchase-fund/")} role="menuitem">내집마련 자금 계산기</a>
           </div>
         </div>
       </div>
 
-      <!-- 리포트 드롭다운 -->
       <div class="site-nav__item site-nav__item--has-dropdown">
         <button class="site-nav__btn" aria-expanded="false" aria-haspopup="true">
-          리포트
-          <span class="site-nav__arrow" aria-hidden="true">▾</span>
+          리포트 <span class="site-nav__arrow" aria-hidden="true">▾</span>
         </button>
         <div class="site-nav__dropdown" role="menu">
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">연봉 리포트</p>
-            <a href={withBase("/reports/new-employee-salary-2026/")} role="menuitem">
-              2026 신입 초봉 비교
-              <span class="site-nav__badge">신규</span>
-            </a>
+            <a href={withBase("/reports/new-employee-salary-2026/")} role="menuitem">2026 신입사원 초봉 비교 <span class="site-nav__badge">신규</span></a>
+            <a href={withBase("/reports/it-salary-top10/")} role="menuitem">IT 업계 신입 초봉 TOP 10</a>
+          </div>
+          <div class="site-nav__dropdown-section">
+            <p class="site-nav__dropdown-label">부동산 리포트</p>
+            <a href={withBase("/reports/seoul-84-apartment-prices/")} role="menuitem">서울 국평 아파트 가격 비교</a>
           </div>
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">자산 리포트</p>
-            <a href={withBase("/reports/korea-rich-top10-assets/")} role="menuitem">한국 부자 TOP 10</a>
-            <a href={withBase("/reports/us-rich-top10-patterns/")} role="menuitem">미국 부자 TOP 10</a>
+            <a href={withBase("/reports/korea-rich-top10-assets/")} role="menuitem">한국 부자 TOP 10 자산 비교</a>
+            <a href={withBase("/reports/us-rich-top10-patterns/")} role="menuitem">미국 부자 TOP 10 성공 패턴</a>
           </div>
           <div class="site-nav__dropdown-section">
             <a href={withBase("/reports/")} role="menuitem" style="color:#64748b;font-size:0.82rem;">전체 리포트 보기 →</a>
@@ -85,27 +82,25 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </div>
       </div>
 
-      <!-- 소개 -->
       <a class="site-nav__link" href={withBase("/about/")}>소개</a>
-
     </nav>
 
-    <!-- CTA -->
     <a class="site-header__cta" href={withBase("/tools/")}>전체 보기</a>
 
-    <!-- 모바일 햄버거 -->
     <button class="site-header__hamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 
-  <!-- 모바일 메뉴 -->
   <div class="site-header__mobile-menu" id="mobile-menu" aria-hidden="true">
     <div class="site-header__mobile-inner">
-
       <div class="site-header__mobile-section">
         <p class="site-header__mobile-label">계산기</p>
         <div class="site-header__mobile-links">
+          <a href={withBase("/tools/salary-tier/")}>
+            <span>연봉 티어 계산기</span>
+            <span class="site-header__mobile-badge">신규</span>
+          </a>
           <a href={withBase("/tools/salary/")}>
             <span>연봉 인상 계산기</span>
             <span class="site-header__mobile-cat">연봉·이직</span>
@@ -123,20 +118,52 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
             <span class="site-header__mobile-badge">신규</span>
           </a>
           <a href={withBase("/tools/bonus-simulator/")}>
-            <span>성과급 시뮬레이터</span>
+            <span>대기업 성과급 시뮬레이터</span>
             <span class="site-header__mobile-cat">성과급</span>
           </a>
           <a href={withBase("/tools/samsung-bonus/")}>
-            <span>삼성전자 성과급</span>
+            <span>삼성전자 성과급 계산기</span>
+            <span class="site-header__mobile-cat">성과급</span>
+          </a>
+          <a href={withBase("/tools/sk-hynix-bonus/")}>
+            <span>SK하이닉스 성과급 계산기</span>
+            <span class="site-header__mobile-cat">성과급</span>
+          </a>
+          <a href={withBase("/tools/hyundai-bonus/")}>
+            <span>현대자동차 성과급 계산기</span>
             <span class="site-header__mobile-cat">성과급</span>
           </a>
           <a href={withBase("/tools/parental-leave/")}>
             <span>육아휴직 계산기</span>
             <span class="site-header__mobile-cat">육아휴직</span>
           </a>
+          <a href={withBase("/tools/parental-leave-pay/")}>
+            <span>육아휴직 급여 계산기</span>
+            <span class="site-header__mobile-cat">육아휴직</span>
+          </a>
+          <a href={withBase("/tools/six-plus-six/")}>
+            <span>6+6 부모육아휴직제 계산기</span>
+            <span class="site-header__mobile-cat">육아휴직</span>
+          </a>
           <a href={withBase("/tools/single-parental-leave-total/")}>
-            <span>한 명만 육아휴직</span>
+            <span>한 명만 육아휴직 총수령액</span>
             <span class="site-header__mobile-badge site-header__mobile-badge--rec">추천</span>
+          </a>
+          <a href={withBase("/tools/birth-support-total/")}>
+            <span>출산~2세 총지원금 계산기</span>
+            <span class="site-header__mobile-cat">육아휴직</span>
+          </a>
+          <a href={withBase("/tools/diaper-cost/")}>
+            <span>아기 기저귀 값 계산기</span>
+            <span class="site-header__mobile-cat">육아·생활</span>
+          </a>
+          <a href={withBase("/tools/formula-cost/")}>
+            <span>아기 분유 값 계산기</span>
+            <span class="site-header__mobile-cat">육아·생활</span>
+          </a>
+          <a href={withBase("/tools/home-purchase-fund/")}>
+            <span>내집마련 자금 계산기</span>
+            <span class="site-header__mobile-cat">부동산</span>
           </a>
         </div>
       </div>
@@ -145,14 +172,20 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         <p class="site-header__mobile-label">리포트</p>
         <div class="site-header__mobile-links">
           <a href={withBase("/reports/new-employee-salary-2026/")}>
-            <span>2026 신입 초봉 비교</span>
+            <span>2026 신입사원 초봉 비교</span>
             <span class="site-header__mobile-badge">신규</span>
           </a>
+          <a href={withBase("/reports/it-salary-top10/")}>
+            <span>IT 업계 신입 초봉 TOP 10</span>
+          </a>
+          <a href={withBase("/reports/seoul-84-apartment-prices/")}>
+            <span>서울 국평 아파트 가격 비교</span>
+          </a>
           <a href={withBase("/reports/korea-rich-top10-assets/")}>
-            <span>한국 부자 TOP 10</span>
+            <span>한국 부자 TOP 10 자산 비교</span>
           </a>
           <a href={withBase("/reports/us-rich-top10-patterns/")}>
-            <span>미국 부자 TOP 10</span>
+            <span>미국 부자 TOP 10 성공 패턴</span>
           </a>
         </div>
       </div>
@@ -165,10 +198,7 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </div>
       </div>
 
-      <a class="site-header__mobile-cta" href={withBase("/tools/")}>
-        전체 계산기 보기 →
-      </a>
-
+      <a class="site-header__mobile-cta" href={withBase("/tools/")}>전체 계산기 보기 →</a>
     </div>
   </div>
 </header>
@@ -176,7 +206,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
 <div class="site-header__overlay" id="menu-overlay" aria-hidden="true"></div>
 
 <script>
-  // 스크롤 시 .is-scrolled 토글 (하이스테리시스: 30px 넘으면 추가, 5px 미만이면 제거)
   const header = document.querySelector('.site-header')
   window.addEventListener('scroll', () => {
     if (!header) return
@@ -184,7 +213,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
     else if (window.scrollY < 5) header.classList.remove('is-scrolled')
   }, { passive: true })
 
-  // 햄버거 토글
   const hamburger = document.querySelector('.site-header__hamburger')
   const mobileMenu = document.querySelector('.site-header__mobile-menu')
   const overlay = document.getElementById('menu-overlay')
@@ -197,7 +225,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
     overlay?.classList.toggle('is-open', isOpen)
   })
 
-  // 오버레이 클릭 시 메뉴 닫기
   overlay?.addEventListener('click', () => {
     hamburger?.classList.remove('is-open')
     hamburger?.setAttribute('aria-expanded', 'false')
@@ -206,7 +233,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
     overlay?.classList.remove('is-open')
   })
 
-  // 드롭다운 버튼 aria-expanded
   document.querySelectorAll('.site-nav__btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const expanded = btn.getAttribute('aria-expanded') === 'true'

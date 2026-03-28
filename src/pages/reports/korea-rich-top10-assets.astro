@@ -4,6 +4,8 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
 import {
   koreaRichTop10Seed,
   koreaCurrentTop10HistorySeed,
@@ -20,12 +22,15 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
 const selectedEntry = koreaRichTop10Seed.entries[0];
-const selectedHistory = koreaCurrentTop10HistorySeed.find((item) => item.slug === selectedEntry.slug);
 const defaults = koreaRichTop10Seed.conversionDefaults;
 const overviewEntries = koreaRichTop10Seed.entries.map((entry) => ({
   ...entry,
   krwValue: usdBillionToKrw(entry.netWorthUsdB, defaults.usdKrwRate)
 }));
+const totalKrwValue = overviewEntries.reduce((sum, entry) => sum + entry.krwValue, 0);
+const topThreeShare = Math.round(
+  (overviewEntries.slice(0, 3).reduce((sum, entry) => sum + entry.krwValue, 0) / totalKrwValue) * 100
+);
 const wealthTypeCounts = koreaRichTop10Seed.entries.reduce(
   (acc, entry) => {
     acc[entry.wealthType] += 1;
@@ -34,86 +39,53 @@ const wealthTypeCounts = koreaRichTop10Seed.entries.reduce(
   { inherited: 0, "self-made": 0, mixed: 0 }
 );
 const selectedKrwValue = usdBillionToKrw(selectedEntry.netWorthUsdB, defaults.usdKrwRate);
-const topEntry = overviewEntries[0];
 const faqItems = koreaRichTop10Seed.faq.map((item) => ({ question: item.q, answer: item.a }));
-const selectedHistoryMaxUsd = selectedHistory
-  ? Math.max(...selectedHistory.history.map((item) => item.netWorthUsdB ?? 0), 0)
-  : 0;
+const cautionNotes = [
+  koreaRichTop10Seed.meta.methodology,
+  koreaRichTop10Seed.meta.caution
+];
+const distributionGroups = [
+  {
+    title: "업종 분포",
+    summary: "금융, 재벌, 플랫폼, 바이오가 같이 섞여 있는 한국형 상위 부자 구성을 보여줍니다.",
+    items: koreaRichTop10Seed.sectorSummaries.map((item) => ({ label: item.label, body: item.description }))
+  },
+  {
+    title: "부의 형성 방식",
+    summary: "상속형과 자수성가형이 함께 상위권을 구성하는 점이 핵심입니다.",
+    items: koreaRichTop10Seed.wealthTypeSummaries.map((item) => ({ label: item.label, body: item.description }))
+  }
+];
 ---
 
 <BaseLayout title={koreaRichTop10Seed.meta.title} description={koreaRichTop10Seed.meta.subtitle}>
   <SiteHeader />
 
-  <main class="container page-shell report-page us-rich-report-page korea-rich-report-page">
-    <CalculatorHero
-      eyebrow="Interactive Report"
-      title={koreaRichTop10Seed.meta.title}
-      description={koreaRichTop10Seed.meta.subtitle}
-    />
+  <SimpleToolShell calculatorId="korea-rich-top10-assets" pageClass="us-rich-report-page korea-rich-report-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="Interactive Report"
+        title={koreaRichTop10Seed.meta.title}
+        description={koreaRichTop10Seed.meta.subtitle}
+      />
+    </Fragment>
 
-    <InfoNotice
-      title="기준 안내"
-      lines={[
-        koreaRichTop10Seed.meta.methodology,
-        koreaRichTop10Seed.meta.caution
-      ]}
-    />
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetKoreaRichProfileBtn" copyId="copyKoreaRichProfileLinkBtn" />
+    </Fragment>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">현재 TOP 10</p>
-        <h2>2026년 현재 볼 수 있는 최신 공개 기준</h2>
-      </div>
-      <div class="report-kpi-grid">
-        <article class="report-stat-card">
-          <p>현재 1위 자산</p>
-          <strong>{formatKrwLarge(topEntry.krwValue)}</strong>
-          <span>{topEntry.name} · {formatUsdB(topEntry.netWorthUsdB)}</span>
-        </article>
-        <article class="report-stat-card">
-          <p>상위 10명 합산</p>
-          <strong>{formatKrwLarge(overviewEntries.reduce((sum, item) => sum + item.krwValue, 0))}</strong>
-          <span>환율 {defaults.usdKrwRate.toLocaleString("ko-KR")}원 기준</span>
-        </article>
-        <article class="report-stat-card">
-          <p>상속형 인원</p>
-          <strong>{wealthTypeCounts.inherited}명</strong>
-          <span>재벌·승계형 비중</span>
-        </article>
-        <article class="report-stat-card">
-          <p>자수성가형 인원</p>
-          <strong>{wealthTypeCounts["self-made"]}명</strong>
-          <span>금융·바이오·플랫폼 중심</span>
-        </article>
-      </div>
-    </section>
+    <Fragment slot="aside">
+      <article class="panel usr-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">선택 패널</p>
+            <h2 class="panel__title">인물 선택</h2>
+          </div>
+          <p class="panel-heading__summary">인물과 환산 기준을 같이 조정하면 본문 카드와 차트가 함께 바뀝니다.</p>
+        </div>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">상위 10명 개요</p>
-        <h2>원화 기준으로 먼저 훑어보기</h2>
-      </div>
-      <div class="korea-chart-wrap korea-chart-wrap--overview" id="koreaTop10Overview">
-        <canvas id="koreaOverviewCanvas"></canvas>
-      </div>
-      <div class="korea-chart-legend">
-        <span class="is-self-made">자수성가</span>
-        <span class="is-inherited">상속형</span>
-        <span class="is-mixed">혼합형</span>
-      </div>
-      <p class="korea-chart-hint">바를 클릭하면 해당 인물 상세가 바로 열립니다</p>
-    </section>
-
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">인물 선택</p>
-        <h2>한 명씩 자세히 보기</h2>
-        <p>김병주부터 정의선까지, 선택한 인물의 자산 규모와 환산값을 자세히 확인할 수 있습니다.</p>
-      </div>
-
-      <article class="panel report-control-panel korea-report-controls">
-        <label class="field">
-          <span>인물 선택</span>
+        <label class="field usr-field">
+          <span>한 명씩 자세히 보기</span>
           <select id="koreaRichProfileSelect">
             {
               koreaRichTop10Seed.entries.map((entry) => (
@@ -125,7 +97,7 @@ const selectedHistoryMaxUsd = selectedHistory
           </select>
         </label>
 
-        <div class="korea-report-controls__config">
+        <div class="kr-config-grid">
           <label class="field">
             <span>환율</span>
             <input id="usdKrwRateInput" type="number" min="1000" step="10" value={defaults.usdKrwRate} />
@@ -141,157 +113,283 @@ const selectedHistoryMaxUsd = selectedHistory
         </div>
       </article>
 
-      <article class="panel report-profile-card korea-report-profile-card">
-        <div class="report-profile-card__header">
+      <article class="panel usr-panel">
+        <div class="panel-heading">
           <div>
-            <p class="panel-heading__eyebrow">선택 인물</p>
-            <h2 id="koreaProfileName">{selectedEntry.name}</h2>
-            <p class="korea-report-profile-card__sub" id="koreaProfileNameEn">{selectedEntry.nameEn}</p>
+            <p class="panel-heading__eyebrow">TOP 10</p>
+            <h2 class="panel__title">빠른 비교 카드</h2>
           </div>
-          <div class="report-rank-chip" id="koreaProfileRank">{selectedEntry.rank}위</div>
+          <p class="panel-heading__summary">왼쪽 카드에서 바로 선택하고, 우측 상세 카드와 차트를 이어서 읽을 수 있습니다.</p>
         </div>
 
-        <div class="report-profile-card__summary korea-report-profile-card__summary">
-          <article class="report-stat-card report-stat-card--primary">
+        <div class="usr-overview-list">
+          {
+            koreaRichTop10Seed.entries.map((entry) => (
+              <article class="usr-overview-card" data-profile-trigger={entry.slug} tabindex="0" role="button" aria-label={`${entry.name} 상세 보기`}>
+                <p>{entry.rank}위</p>
+                <strong>{entry.name}</strong>
+                <span>{formatUsdB(entry.netWorthUsdB)}</span>
+                <em>{entry.sector}</em>
+              </article>
+            ))
+          }
+        </div>
+      </article>
+
+      <InfoNotice title="기준 안내" lines={cautionNotes} />
+    </Fragment>
+
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">핵심 수치</p>
+        <h2>한국 부자 TOP 10에서 먼저 읽을 숫자</h2>
+        <p class="usr-section__sub">원화 환산 총량, 상위 집중도, 상속형과 자수성가형 비중을 먼저 보여줍니다.</p>
+      </div>
+      <div class="usr-kpi-grid">
+        <article class="usr-kpi-card usr-kpi-card--primary">
+          <p>현재 1위 자산</p>
+          <strong>{formatKrwLarge(overviewEntries[0].krwValue)}</strong>
+          <span>{overviewEntries[0].name} · {formatUsdB(overviewEntries[0].netWorthUsdB)}</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>TOP 10 합산 자산</p>
+          <strong>{formatKrwLarge(totalKrwValue)}</strong>
+          <span>환율 {defaults.usdKrwRate.toLocaleString("ko-KR")}원 기준</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>자수성가형</p>
+          <strong>{wealthTypeCounts["self-made"]}명</strong>
+          <span>금융·바이오·플랫폼 중심</span>
+        </article>
+        <article class="usr-kpi-card usr-kpi-card--soft">
+          <p>상위 3명 집중도</p>
+          <strong>{topThreeShare}%</strong>
+          <span>TOP 10 합산 자산 대비</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">선택 결과</p>
+        <h2>선택 인물 상세 카드</h2>
+        <p class="usr-section__sub">원화 환산 자산과 체감 환산, 업종, 부의 원천, 태그를 한 카드에 정리했습니다.</p>
+      </div>
+
+      <article class="panel usr-profile-card kr-profile-card">
+        <div class="usr-profile-card__hero">
+          <div class="usr-profile-card__header">
+            <div>
+              <p class="panel-heading__eyebrow">선택 인물</p>
+              <h2 id="koreaProfileName">{selectedEntry.name}</h2>
+              <p class="kr-profile-card__sub" id="koreaProfileNameEn">{selectedEntry.nameEn}</p>
+            </div>
+            <div class="usr-rank-chip" id="koreaProfileRank">{selectedEntry.rank}위</div>
+          </div>
+        </div>
+
+        <div class="usr-profile-card__summary">
+          <article class="usr-kpi-card usr-kpi-card--primary usr-kpi-card--wide">
             <p>원화 환산 자산</p>
             <strong id="koreaProfileKrwValue">{formatKrwLarge(selectedKrwValue)}</strong>
             <span id="koreaProfileUsdValue">{formatUsdB(selectedEntry.netWorthUsdB)}</span>
           </article>
-          <article class="report-stat-card">
+          <article class="usr-kpi-card">
             <p>서울 국평 환산</p>
             <strong id="koreaProfileSeoulCount">약 {Math.round(krwToSeoul84Count(selectedKrwValue, defaults.seoul84PriceKrw)).toLocaleString("ko-KR")}채</strong>
-            <span>참고 비교</span>
+            <span>체감 비교용 참고값</span>
           </article>
-          <article class="report-stat-card">
+          <article class="usr-kpi-card">
             <p>그랜저 환산</p>
             <strong id="koreaProfileGrandeurCount">약 {Math.round(krwToGrandeurCount(selectedKrwValue, defaults.grandeurPriceKrw)).toLocaleString("ko-KR")}대</strong>
-            <span>참고 비교</span>
+            <span>체감 비교용 참고값</span>
           </article>
         </div>
 
-        <div class="report-profile-card__detail">
-          <div class="report-detail-list">
-            <div class="report-detail-row">
+        <div class="usr-profile-card__detail">
+          <div class="usr-detail-list">
+            <div class="usr-detail-row">
               <span>부의 원천</span>
               <strong id="koreaProfileSource">{selectedEntry.sourceOfWealth}</strong>
             </div>
-            <div class="report-detail-row">
+            <div class="usr-detail-row">
               <span>업종</span>
               <strong id="koreaProfileSector">{selectedEntry.sector}</strong>
             </div>
-            <div class="report-detail-row">
+            <div class="usr-detail-row">
               <span>유형</span>
               <strong id="koreaProfileWealthType">{selectedEntry.wealthType}</strong>
             </div>
           </div>
 
-          <div class="report-profile-card__aside">
-            <div class="report-tag-block">
-              <span class="report-tag-block__label">태그</span>
-              <div class="report-tag-list" id="koreaProfileTags">
+          <div class="usr-profile-card__aside">
+            <div class="usr-tag-block">
+              <span class="usr-tag-block__label">태그</span>
+              <div class="usr-tag-list" id="koreaProfileTags">
                 {selectedEntry.tags.map((tag) => <span>{tag}</span>)}
               </div>
             </div>
           </div>
         </div>
 
-        <div class="report-profile-card__footer">
+        <div class="usr-profile-card__footer">
           <p id="koreaProfileSummary">{selectedEntry.summary}</p>
         </div>
       </article>
     </section>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">최근 10년 흐름</p>
-        <h2>선택 인물 기준 자산 변화</h2>
-        <p>2016년부터 2025년까지 공개 앵커 기준으로 확인되는 자산 흐름을 정리했습니다.</p>
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">자산 차트</p>
+        <h2>순위별 자산 규모 비교</h2>
+        <p class="usr-section__sub">상위권 자산 집중도를 가로 바 차트로 먼저 읽고, 색상으로 부의 형성 유형을 구분합니다.</p>
       </div>
-      <article class="panel korea-history-panel">
-        <div class="korea-chart-wrap korea-chart-wrap--history" id="koreaHistoryChart">
+      <article class="panel usr-chart-panel">
+        <div class="usr-chart-wrap kr-chart-wrap--overview" id="koreaTop10Overview">
+          <canvas id="koreaOverviewCanvas"></canvas>
+        </div>
+        <div class="kr-chart-legend">
+          <span class="is-self-made">자수성가형</span>
+          <span class="is-inherited">상속형</span>
+          <span class="is-mixed">혼합형</span>
+        </div>
+        <div class="usr-chart-insights">
+          {
+            koreaRichTop10Seed.interpretationPoints.slice(0, 2).map((item) => (
+              <div class="usr-chart-insight">
+                <strong>{item.title}</strong>
+                <p>{item.body}</p>
+              </div>
+            ))
+          }
+        </div>
+      </article>
+    </section>
+
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">최근 10년 흐름</p>
+        <h2>선택 인물 기준 자산 변화</h2>
+        <p class="usr-section__sub">2016년부터 2025년까지 공개 자료 기준으로 확인되는 자산 흐름을 정리했습니다.</p>
+      </div>
+      <article class="panel usr-chart-panel">
+        <div class="usr-chart-wrap kr-chart-wrap--history" id="koreaHistoryChart">
           <canvas id="koreaHistoryCanvas"></canvas>
         </div>
-        <p class="korea-chart-hint">데이터 없는 연도(2016–2021)는 회색으로 표시 · 바 호버 시 출처 확인</p>
-      </article>
-    </section>
-
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">참고 비교</p>
-        <h2>서울 국평과 그랜저로 보면 더 직관적입니다</h2>
-        <p>숫자 자체보다 어느 정도 체감 규모인지 같이 보면 자산 격차가 더 잘 보입니다.</p>
-      </div>
-      <article class="panel fun-conversion-panel korea-fun-panel">
-        <div class="fun-conversion-grid">
-          <article class="fun-conversion-card">
-            <p>서울 국평 아파트</p>
-            <strong id="koreaFunSeoulCount">약 {Math.round(krwToSeoul84Count(selectedKrwValue, defaults.seoul84PriceKrw)).toLocaleString("ko-KR")}채</strong>
-            <span>기준값 {defaults.seoul84PriceKrw.toLocaleString("ko-KR")}원</span>
-          </article>
-          <article class="fun-conversion-card">
-            <p>그랜저</p>
-            <strong id="koreaFunGrandeurCount">약 {Math.round(krwToGrandeurCount(selectedKrwValue, defaults.grandeurPriceKrw)).toLocaleString("ko-KR")}대</strong>
-            <span>기준값 {defaults.grandeurPriceKrw.toLocaleString("ko-KR")}원</span>
-          </article>
+        <div class="usr-chart-insights">
+          <div class="usr-chart-insight">
+            <strong>연도별 공개 편차</strong>
+            <p>초기 연도는 공개 데이터가 비어 있는 경우가 있어 회색 막대로 구분해 보여줍니다.</p>
+          </div>
+          <div class="usr-chart-insight">
+            <strong>환율 조정 연동</strong>
+            <p>히스토리 툴팁에서도 현재 입력한 환율 기준 원화 환산값을 함께 확인할 수 있습니다.</p>
+          </div>
         </div>
-        <p class="fun-conversion-panel__note">가격과 환율은 바뀔 수 있어 참고용 기준값으로 제공합니다.</p>
       </article>
     </section>
 
-    <section class="content-section">
-      <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">패턴 요약</p>
-        <h2>업종과 유형으로 보면 더 잘 보이는 흐름</h2>
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">재미 환산</p>
+        <h2>서울 국평과 그랜저로 보면 체감이 더 쉽습니다</h2>
+        <p class="usr-section__sub">현재 입력한 환율과 기준 가격을 바탕으로 생활 단위 환산값을 바로 보여줍니다.</p>
       </div>
-      <div class="pattern-grid">
-        {koreaRichTop10Seed.interpretationPoints.map((item) => (
-          <article class="pattern-card">
-            <strong>{item.title}</strong>
-            <p>{item.body}</p>
-          </article>
-        ))}
-      </div>
-      <div class="distribution-grid korea-distribution-grid">
-        {koreaRichTop10Seed.sectorSummaries.map((item) => (
-          <article class="panel distribution-card">
-            <h3>{item.label}</h3>
-            <p>{item.description}</p>
-          </article>
-        ))}
-        {koreaRichTop10Seed.wealthTypeSummaries.map((item) => (
-          <article class="panel distribution-card">
-            <h3>{item.label}</h3>
-            <p>{item.description}</p>
-          </article>
-        ))}
+      <div class="usr-kpi-grid usr-kpi-grid--fun">
+        <article class="usr-kpi-card usr-kpi-card--soft">
+          <p>원화 환산</p>
+          <strong id="koreaFunKrwValue">{formatKrwLarge(selectedKrwValue)}</strong>
+          <span>환율 {defaults.usdKrwRate.toLocaleString("ko-KR")}원 기준</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>서울 국평 아파트</p>
+          <strong id="koreaFunSeoulCount">약 {Math.round(krwToSeoul84Count(selectedKrwValue, defaults.seoul84PriceKrw)).toLocaleString("ko-KR")}채</strong>
+          <span>기준값 {defaults.seoul84PriceKrw.toLocaleString("ko-KR")}원</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>그랜저</p>
+          <strong id="koreaFunGrandeurCount">약 {Math.round(krwToGrandeurCount(selectedKrwValue, defaults.grandeurPriceKrw)).toLocaleString("ko-KR")}대</strong>
+          <span>기준값 {defaults.grandeurPriceKrw.toLocaleString("ko-KR")}원</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>달러 기준 자산</p>
+          <strong id="koreaFunUsdValue">{formatUsdB(selectedEntry.netWorthUsdB)}</strong>
+          <span>공개 순위 원자료 기준</span>
+        </article>
       </div>
     </section>
 
-    <SeoContent
-      introTitle="한국 부자 TOP 10 리포트 읽는 법"
-      intro={[
-        "이 페이지는 2026년 현재 공개된 최신 Forbes Korea 순위(2025 발표본)를 기준으로 한국 부자 TOP 10의 자산 규모를 비교해보는 인터랙티브 리포트입니다.",
-        "원화 환산을 메인으로 보여주고, 서울 국평과 그랜저 환산값을 재미 요소로 함께 배치해 체감 규모를 더 쉽게 읽을 수 있게 구성했습니다."
-      ]}
-      inputPoints={[
-        "상위 10명 자산을 원화 기준으로 먼저 비교할 수 있습니다.",
-        "인물을 선택하면 업종, 부의 원천, 유형, 태그를 함께 볼 수 있습니다.",
-        "환율과 기준 가격을 바꾸면 재미 환산 결과도 같이 바뀝니다."
-      ]}
-      criteria={[
-        "2026년 현재 공개된 최신 Forbes Korea 순위(2025 발표본)를 기준으로 정리합니다.",
-        "원화 환산은 기준 환율을 적용한 참고값입니다.",
-        "서울 국평과 그랜저 환산은 재미를 위한 비교이며 투자나 재무 판단 기준이 아닙니다.",
-        "가격과 환율은 시장 상황에 따라 달라질 수 있어 직접 조정할 수 있게 구성했습니다."
-      ]}
-      faq={faqItems}
-      related={[
-        { href: "/reports/us-rich-top10-patterns/", label: "미국 부자 TOP 10 성공 패턴 리포트" },
-        { href: "/reports/", label: "비교 리포트 모아보기" },
-        { href: "/tools/household-income/", label: "가구 소득 계산기" }
-      ]}
-    />
-  </main>
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">패턴 요약</p>
+        <h2>한국 상위 부자 구성을 읽을 때 보이는 흐름</h2>
+      </div>
+      <div class="usr-pattern-grid">
+        {
+          koreaRichTop10Seed.interpretationPoints.map((pattern) => (
+            <article class="usr-pattern-card">
+              <strong>{pattern.title}</strong>
+              <p>{pattern.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">분포 비교</p>
+        <h2>업종과 부의 형성 방식 분포</h2>
+      </div>
+      <div class="usr-distribution-grid kr-distribution-grid">
+        {
+          distributionGroups.map((group) => (
+            <article class="panel usr-distribution-card kr-distribution-card">
+              <h3>{group.title}</h3>
+              <p class="usr-distribution-card__summary">{group.summary}</p>
+              <div class="kr-distribution-copy">
+                {
+                  group.items.map((item) => (
+                    <div class="kr-distribution-copy__item">
+                      <strong>{item.label}</strong>
+                      <p>{item.body}</p>
+                    </div>
+                  ))
+                }
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="한국 부자 TOP 10 리포트 읽는 법"
+        intro={[
+          "이 페이지는 2026년 현재 공개된 최신 Forbes Korea 순위(2025 발표본)를 기준으로 한국 부자 TOP 10의 자산 규모를 비교해보는 인터랙티브 리포트입니다.",
+          "미국 부자 TOP 10 성공 패턴 리포트와 같은 레이아웃 체계를 적용해, 선택 패널과 상세 카드, 차트, 패턴 요약을 한 흐름으로 읽을 수 있게 구성했습니다."
+        ]}
+        inputPoints={[
+          "왼쪽 패널에서 인물을 선택하면 상세 카드와 차트가 함께 바뀝니다.",
+          "환율, 서울 국평 가격, 그랜저 가격을 직접 바꾸면 환산값도 즉시 다시 계산됩니다.",
+          "빠른 비교 카드와 가로 바 차트로 상위권 자산 격차를 먼저 훑을 수 있습니다."
+        ]}
+        criteria={[
+          "2026년 현재 공개된 최신 Forbes Korea 순위(2025 발표본)를 기준으로 정리합니다.",
+          "원화 환산은 입력한 환율을 적용한 참고값입니다.",
+          "서울 국평과 그랜저 환산은 체감 비교용이며 투자나 재무 판단 기준이 아닙니다.",
+          "업종과 유형 분류는 공개된 기업 배경과 부의 원천을 바탕으로 단순화했습니다."
+        ]}
+        faq={faqItems}
+        related={[
+          { href: "/reports/us-rich-top10-patterns/", label: "미국 부자 TOP 10 성공 패턴 리포트" },
+          { href: "/reports/", label: "비교 리포트 모아보기" },
+          { href: "/tools/household-income/", label: "가구 소득 계산기" }
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
 
   <script id="koreaRichTop10Data" type="application/json" set:html={JSON.stringify(koreaRichTop10Seed)}></script>
   <script id="koreaRichTop10HistoryData" type="application/json" set:html={JSON.stringify(koreaCurrentTop10HistorySeed)}></script>

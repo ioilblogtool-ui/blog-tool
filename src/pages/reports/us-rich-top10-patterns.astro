@@ -21,6 +21,19 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const USD_TO_KRW = 1500;
+
+function formatKrwFromUsdB(usdB: number) {
+  const krw = usdB * 1000000000 * USD_TO_KRW;
+  const jo = Math.floor(krw / 1000000000000);
+  const eok = Math.round((krw % 1000000000000) / 100000000);
+
+  if (jo > 0) {
+    return `약 ${jo.toLocaleString("ko-KR")}조 ${eok.toLocaleString("ko-KR")}억 원`;
+  }
+
+  return `약 ${Math.round(krw / 100000000).toLocaleString("ko-KR")}억 원`;
+}
 
 const selectedProfile = wealthProfiles[0];
 const totalNetWorthUsdB = wealthProfiles.reduce((sum, profile) => sum + profile.netWorthUsdB, 0);
@@ -49,7 +62,7 @@ const distributionGroups = [
   }
 ];
 const funConversionConfig = {
-  usdToKrw: 1380,
+  usdToKrw: USD_TO_KRW,
   apartmentPriceKrwLabel: "서울 국평 18억 원",
   grandeurPriceKrwLabel: "그랜저 5,000만 원",
   annualSalaryReferenceLabel: "연 1억 소득"
@@ -112,6 +125,7 @@ const funConversionConfig = {
                 <p>{profile.rank}위</p>
                 <strong>{profile.name}</strong>
                 <span>{profile.netWorthDisplay}</span>
+                <small>{formatKrwFromUsdB(profile.netWorthUsdB)}</small>
                 <em>{profile.sector}</em>
               </article>
             ))
@@ -132,7 +146,7 @@ const funConversionConfig = {
         <article class="usr-kpi-card usr-kpi-card--primary">
           <p>TOP 10 합산 자산</p>
           <strong>${totalNetWorthUsdB.toLocaleString("en-US")}B</strong>
-          <span>선정된 10명 자산 합계 기준</span>
+          <span>{formatKrwFromUsdB(totalNetWorthUsdB)} · 선정된 10명 자산 합계 기준</span>
         </article>
         <article class="usr-kpi-card">
           <p>창업형 비중</p>
@@ -195,7 +209,7 @@ const funConversionConfig = {
           <article class="usr-kpi-card usr-kpi-card--primary usr-kpi-card--wide">
             <p>추정 자산</p>
             <strong id="profileNetWorth">{selectedProfile.netWorthDisplay}</strong>
-            <span id="profileShareOfTop10">TOP 10 합산 대비 비중 계산</span>
+            <span id="profileShareOfTop10">원화 환산 + TOP 10 비중 계산</span>
           </article>
           <article class="usr-kpi-card">
             <p>대표 회사</p>
@@ -387,3 +401,6 @@ const funConversionConfig = {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/us-rich-top10-report.js")}></script>
 </BaseLayout>
+
+
+

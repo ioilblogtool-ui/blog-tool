@@ -812,22 +812,22 @@ export const seoul84ApartmentPrices: Seoul84ApartmentReportData = {
   },
   affiliateProducts: [
     {
-      tag: "입주 준비",
-      title: "이사 체크리스트 노트",
-      desc: "계약, 이사, 입주 후 해야 할 일을 한 번에 정리할 수 있는 준비용 아이템",
-      url: "https://www.coupang.com/",
+      tag: "실측 준비",
+      title: "줄자·거리 측정 도구",
+      desc: "방 크기, 가구 배치, 수납 가능 공간을 직접 확인할 때 유용한 기본 준비물",
+      url: "https://link.coupang.com/a/edfts2",
     },
     {
-      tag: "수납",
+      tag: "정리 계획",
       title: "이사 박스·정리함 세트",
-      desc: "입주 직후 정리 동선을 줄이는 기본 수납 세트",
-      url: "https://www.coupang.com/",
+      desc: "입주 직후 자주 쓰는 물건부터 빠르게 정리할 수 있는 기본 수납 아이템",
+      url: "https://link.coupang.com/a/edft4X",
     },
     {
-      tag: "청소",
+      tag: "생활 준비",
       title: "입주 청소 용품 모음",
-      desc: "새집 청소와 기본 정리에 바로 쓸 수 있는 생활 소모품 구성",
-      url: "https://www.coupang.com/",
+      desc: "새집 청소와 주방·욕실 기본 정리를 시작할 때 바로 쓰기 좋은 구성",
+      url: "https://link.coupang.com/a/edfuQA",
     },
   ],
 };

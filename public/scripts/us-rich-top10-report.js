@@ -54,7 +54,7 @@ if (dataNode && select) {
   };
 
   const funConversionConfig = {
-    usdToKrw: 1380,
+    usdToKrw: 1500,
     apartmentPriceKrw: 1800000000,
     grandeurPriceKrw: 50000000,
     annualSalaryReferenceKrw: 100000000
@@ -81,6 +81,10 @@ if (dataNode && select) {
     }
 
     return `약 ${value.toFixed(1)}${unit}`;
+  }
+
+  function formatKrwFromUsdB(usdB) {
+    return formatLargeKrw((Number(usdB) || 0) * 1000000000 * funConversionConfig.usdToKrw);
   }
 
   function updateUrl(profileId) {
@@ -284,7 +288,7 @@ if (dataNode && select) {
     if (els.netWorth) els.netWorth.textContent = profile.netWorthDisplay;
     if (els.shareOfTop10) {
       const share = Math.round((profile.netWorthUsdB / totalNetWorthUsdB) * 100);
-      els.shareOfTop10.textContent = `TOP 10 합산 자산의 약 ${share}%`;
+      els.shareOfTop10.textContent = `${formatKrwFromUsdB(profile.netWorthUsdB)} · TOP 10 합산의 약 ${share}%`;
     }
     if (els.primaryCompany) els.primaryCompany.textContent = profile.primaryCompany;
     if (els.sector) els.sector.textContent = profile.sector;
@@ -370,3 +374,5 @@ if (dataNode && select) {
   }
   renderProfile(initialProfile);
 }
+
+

@@ -259,8 +259,8 @@ const focusGap = focusEntry.highPriceEok !== null && focusEntry.avgPriceEok !== 
           <thead>
             <tr>
               <th class="sapr-col-compare">비교</th>
-              <th>지역</th>
-              <th>단지명</th>
+              <th class="sapr-col-district">지역</th>
+              <th class="sapr-col-name">단지명</th>
               <th>세대수</th>
               <th>등급</th>
               <th>최고가</th>
@@ -280,8 +280,8 @@ const focusGap = focusEntry.highPriceEok !== null && focusEntry.avgPriceEok !== 
                     disabled={!entry.compareEnabled}
                   />
                 </td>
-                <td>{entry.districtLabel}</td>
-                <td>{entry.apartmentName}</td>
+                <td class="sapr-col-district">{entry.districtLabel}</td>
+                <td class="sapr-col-name"><strong>{entry.apartmentName}</strong></td>
                 <td>{entry.householdCount.toLocaleString("ko-KR")}</td>
                 <td>{entry.grade}</td>
                 <td>{formatEok(entry.highPriceEok)}</td>
@@ -386,8 +386,8 @@ const focusGap = focusEntry.highPriceEok !== null && focusEntry.avgPriceEok !== 
         <div class="affiliate-box__header">
           <span class="affiliate-box__icon">📦</span>
           <div>
-            <h3 class="affiliate-box__title">같이 보면 좋은 입주 준비 체크 상품</h3>
-            <p class="affiliate-box__context">계약 이후 바로 이어지는 이사·수납·청소 준비용 아이템만 최소 구성으로 정리했습니다.</p>
+            <h3 class="affiliate-box__title">같이 보면 좋은 실거주 준비 아이템</h3>
+            <p class="affiliate-box__context">국평 가격 비교 뒤 실제 집을 볼 때나 입주를 준비할 때 도움이 되는 기본 아이템만 간단히 정리했습니다.</p>
           </div>
         </div>
         <div class="affiliate-product-grid">
@@ -431,6 +431,7 @@ const focusGap = focusEntry.highPriceEok !== null && focusEntry.avgPriceEok !== 
   <script id="seoul84ApartmentPricesData" type="application/json" set:html={JSON.stringify(seed)}></script>
   <script type="module" src={withBase("/scripts/seoul-84-apartment-prices.js")}></script>
 </BaseLayout>
+
 
 
 

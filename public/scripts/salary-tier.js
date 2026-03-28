@@ -175,6 +175,16 @@
   const salInput = document.getElementById('stMySalInput');
   if (salInput) salInput.addEventListener('input', updateMyPos);
 
+  document.querySelectorAll('[data-salary-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = parseInt(btn.getAttribute('data-salary-preset') || '', 10);
+      if (!value || !salInput) return;
+      salInput.value = String(value);
+      updateMyPos();
+      salInput.focus();
+    });
+  });
+
   document.querySelectorAll('.st-ftab').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.st-ftab').forEach(b => b.classList.remove('is-active'));
