@@ -368,26 +368,33 @@ const reportHighlights = [
       </div>
     </section>
 
-    <section class="content-section">
+    <section class="content-section salary-pattern-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">패턴 요약</p>
         <h2>초봉 데이터로 읽는 2026 채용 시장 흐름</h2>
+        <p>핵심 흐름을 먼저 카드로 읽고, 아래 업종 스냅샷으로 각 시장의 결을 비교할 수 있게 구성했습니다.</p>
       </div>
-      <div class="pattern-grid">
+
+      <div class="salary-pattern-grid">
         {
-          seed.patternPoints.map((item) => (
-            <article class="pattern-card">
-              <strong>{item.title}</strong>
+          seed.patternPoints.map((item, index) => (
+            <article class="panel salary-pattern-card">
+              <div class="salary-pattern-card__head">
+                <span class="salary-pattern-card__index">0{index + 1}</span>
+                <strong>{item.title}</strong>
+              </div>
               <p>{item.body}</p>
+              <span class="salary-pattern-card__foot">Market Note</span>
             </article>
           ))
         }
       </div>
 
-      <div class="distribution-grid salary-sector-grid">
+      <div class="salary-sector-grid salary-sector-grid--report">
         {
           seed.sectorSummaries.map((item) => (
-            <article class="panel distribution-card">
+            <article class="panel salary-sector-card">
+              <span class="salary-sector-card__eyebrow">Sector Snapshot</span>
               <h3>{item.label}</h3>
               <p>{item.description}</p>
             </article>
@@ -427,3 +434,4 @@ const reportHighlights = [
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script type="module" src={withBase("/scripts/new-employee-salary-2026.js")}></script>
 </BaseLayout>
+
