@@ -1,0 +1,504 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  formatKrwM,
+  getStarterMidM,
+  getTierLabel,
+  itSiSmSalaryComparison2026,
+} from "../../data/itSiSmSalaryComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const seed = itSiSmSalaryComparison2026;
+const companies = [...seed.companies].sort((a, b) => b.avgSalaryM - a.avgSalaryM);
+const selected = companies[0];
+const top3 = companies.slice(0, 3);
+const topEntry = companies[0];
+const secondEntry = companies[1];
+const avgSalary = Math.round(companies.reduce((sum, company) => sum + company.avgSalaryM, 0) / companies.length);
+const avgStarter = Math.round(
+  companies.reduce((sum, company) => sum + getStarterMidM(company), 0) / companies.length,
+);
+const salaryRange = `${formatKrwM(companies[companies.length - 1].avgSalaryM)} ~ ${formatKrwM(companies[0].avgSalaryM)}`;
+const topGap = topEntry.avgSalaryM - secondEntry.avgSalaryM;
+const faqItems = seed.faq.map((item) => ({ question: item.q, answer: item.a }));
+const groupLabelMap: Record<string, string> = {
+  top: "상단권",
+  stable: "안정형",
+  ops: "운영형",
+  growth: "성장형",
+};
+const tierRows = seed.tierBuckets.map((bucket) => {
+  const list = companies.filter((company) => {
+    if (typeof bucket.maxM === "number") {
+      return company.avgSalaryM >= bucket.minM && company.avgSalaryM <= bucket.maxM;
+    }
+    return company.avgSalaryM >= bucket.minM;
+  });
+
+  return {
+    ...bucket,
+    companies: list,
+  };
+});
+---
+
+<BaseLayout title={seed.meta.title} description={seed.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page si-report-page">
+    <CalculatorHero
+      eyebrow="Interactive Report"
+      title={seed.meta.title}
+      description={seed.meta.subtitle}
+    />
+
+    <InfoNotice
+      title="기준 안내"
+      lines={[seed.meta.methodology, seed.meta.caution, seed.meta.updatedAt]}
+    />
+
+    <section class="content-section si-report-hero-board">
+      <div class="si-report-lead">
+        <p class="si-report-lead__eyebrow">Editor&apos;s Brief</p>
+        <h2>대형 SI와 그룹 IT는 절대 연봉보다 보상 구조와 사업 축을 함께 봐야 합니다</h2>
+        <p class="si-report-lead__body">
+          이 리포트는 평균 연봉만 나열하는 페이지가 아니라, 초봉과 성과급 체감,
+          회사 규모, 업무 축을 함께 읽게 만드는 비교 리포트입니다.
+          상단에서 시장을 요약하고, 중단에서는 차트와 필터로 분포를 읽고,
+          하단에서는 내 연봉 기준선과 기업 상세 카드로 탐색을 이어갑니다.
+        </p>
+        <div class="si-report-lead__chips">
+          <span>평균 연봉 범위 {salaryRange}</span>
+          <span>상단권은 대형 SI·제조 DX 중심</span>
+          <span>하단은 운영형 그룹 IT 성격</span>
+        </div>
+      </div>
+
+      <div class="si-highlight-grid">
+        <article class="si-highlight-card">
+          <p>가장 높은 평균 연봉</p>
+          <strong>{topEntry.name}</strong>
+          <span>{formatKrwM(topEntry.avgSalaryM)} · 대형 SI 상단권</span>
+        </article>
+        <article class="si-highlight-card">
+          <p>1위와 2위 격차</p>
+          <strong>{formatKrwM(topGap)}</strong>
+          <span>{topEntry.name}와 {secondEntry.name}의 평균 연봉 차이</span>
+        </article>
+        <article class="si-highlight-card">
+          <p>리포트 범위</p>
+          <strong>{companies.length}개 기업</strong>
+          <span>평균 연봉, 초봉, 성과급 체감, 회사 규모를 함께 비교</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>2026 IT서비스 대기업 보상 구조를 숫자로 먼저 보기</h2>
+      </div>
+      <div class="report-kpi-grid si-kpi-grid">
+        <article class="report-stat-card report-stat-card--primary">
+          <p>최고 평균 연봉 기업</p>
+          <strong>{topEntry.name}</strong>
+          <span>{formatKrwM(topEntry.avgSalaryM)}</span>
+        </article>
+        <article class="report-stat-card">
+          <p>시장 평균 연봉</p>
+          <strong>{formatKrwM(avgSalary)}</strong>
+          <span>비교 대상 9개 기업 평균</span>
+        </article>
+        <article class="report-stat-card">
+          <p>초봉 중앙값 평균</p>
+          <strong>{formatKrwM(avgStarter)}</strong>
+          <span>신입 개발 직군 추정 중앙값 평균</span>
+        </article>
+        <article class="report-stat-card">
+          <p>1억 이상 기업 수</p>
+          <strong>{companies.filter((company) => company.avgSalaryM >= 10000).length}개</strong>
+          <span>평균 연봉 기준 상단권</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section si-podium-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상위권 포디움</p>
+        <h2>평균 연봉 상단을 형성하는 대표 기업 3곳</h2>
+        <p>절대 수치만이 아니라 상단 형성 배경까지 함께 읽을 수 있도록 카드형으로 정리했습니다.</p>
+      </div>
+
+      <div class="si-podium-grid">
+        {
+          top3.map((entry, index) => (
+            <article class={`si-podium-card si-podium-card--${index + 1}`}>
+              <span class="si-podium-card__rank">TOP {index + 1}</span>
+              <h3>{entry.name}</h3>
+              <p class="si-podium-card__value">{formatKrwM(entry.avgSalaryM)}</p>
+              <p class="si-podium-card__meta">{entry.businessFocus.join(" · ")}</p>
+              <p class="si-podium-card__body">{entry.summary}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section si-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리포트 차트</p>
+        <h2>평균 연봉과 회사 규모를 분리해서 읽기</h2>
+        <p>왼쪽은 평균 연봉 수준, 오른쪽은 매출 기준 회사 규모입니다. 막대를 선택하면 아래 상세 카드가 함께 바뀝니다.</p>
+      </div>
+
+      <div class="si-chart-board">
+        <article class="si-chart-panel">
+          <div class="si-chart-panel__head">
+            <h3>기업별 평균 연봉 비교</h3>
+            <p>연봉 상단을 형성하는 기업을 빠르게 확인합니다.</p>
+          </div>
+          <div class="si-chart-wrap">
+            <canvas id="siSalaryChart"></canvas>
+          </div>
+        </article>
+
+        <article class="si-chart-panel si-chart-panel--soft">
+          <div class="si-chart-panel__head">
+            <h3>회사 규모 비교</h3>
+            <p>매출 규모와 평균 연봉이 반드시 비례하는지 같이 읽습니다.</p>
+          </div>
+          <div class="si-chart-wrap">
+            <canvas id="siRevenueChart"></canvas>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section si-explorer-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리포트 탐색</p>
+        <h2>내 연봉 기준선과 시장 맵으로 더 깊게 보기</h2>
+        <p>이 영역은 메인 계산기보다 해석 보조 도구에 가깝습니다. 내 위치를 확인한 뒤 기업별 상세 카드로 탐색을 이어갈 수 있습니다.</p>
+      </div>
+
+      <div class="si-explorer-grid">
+        <div class="si-lab-column">
+          <article class="si-benchmark-panel">
+            <div class="si-benchmark-panel__head">
+              <p class="si-benchmark-panel__eyebrow">Benchmark</p>
+              <h3>내 연봉을 비교선으로 올려보기</h3>
+              <p>9개 기업 평균 연봉 배열 안에서 상대 위치를 보여주는 보조 기능입니다.</p>
+            </div>
+
+            <div class="si-my-input-row">
+              <label for="siMySalaryInput">내 연봉 (만원)</label>
+              <input type="number" id="siMySalaryInput" placeholder="예: 8200" min="0" max="30000" step="100" />
+              <span id="siMySalaryHint" class="si-my-hint">입력하면 시장 맵에 내 연봉 기준선이 표시됩니다.</span>
+            </div>
+
+            <div class="si-result-card" id="siResultCard">
+              <p id="siResultTitle" class="si-result-title"></p>
+              <div class="si-result-grid">
+                <div class="si-result-cell"><strong id="siPct">-</strong><span>상위 %</span></div>
+                <div class="si-result-cell"><strong id="siDiff">-</strong><span>평균 대비</span></div>
+                <div class="si-result-cell"><strong id="siTier">-</strong><span>연봉 티어</span></div>
+              </div>
+              <p id="siSimilarText" class="si-similar-text"></p>
+            </div>
+          </article>
+
+          <article class="si-market-panel">
+            <div class="si-market-panel__head">
+              <h3>시장 맵</h3>
+              <p>비교 기준, 기업군, 정렬을 바꿔가며 분포를 읽을 수 있습니다.</p>
+            </div>
+
+            <div class="si-summary-bar" id="siSummaryBar"></div>
+
+            <div class="si-filter-stack">
+              <div class="si-filter-tabs" id="siModeTabs">
+                <button class="si-tab is-active" data-mode="salary">평균 연봉</button>
+                <button class="si-tab" data-mode="starter">초봉</button>
+                <button class="si-tab" data-mode="companySize">회사 규모</button>
+              </div>
+
+              <div class="si-chip-row" id="siGroupTabs">
+                <button class="si-chip is-active" data-group="all">전체</button>
+                <button class="si-chip" data-group="top">상단권</button>
+                <button class="si-chip" data-group="stable">안정형</button>
+                <button class="si-chip" data-group="ops">운영형</button>
+              </div>
+
+              <label class="field">
+                <span>정렬</span>
+                <select id="siSortSelect">
+                  <option value="desc">높은순</option>
+                  <option value="asc">낮은순</option>
+                  <option value="name">가나다순</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="siInteractiveChart" class="si-market-chart"></div>
+            <p class="si-chart-hint">평균 연봉·초봉은 만원 기준, 회사 규모는 매출(억원) 기준입니다.</p>
+          </article>
+        </div>
+
+        <div class="si-profile-column">
+          <article class="panel si-control-panel">
+            <label class="field">
+              <span>기업 선택</span>
+              <select id="siCompanySelect">
+                {
+                  companies.map((entry, index) => (
+                    <option value={entry.slug} selected={index === 0}>
+                      {index + 1}위 · {entry.name} ({formatKrwM(entry.avgSalaryM)})
+                    </option>
+                  ))
+                }
+              </select>
+            </label>
+          </article>
+
+          <article class="panel si-profile-card" id="siProfileCard">
+            <div class="si-profile-card__header">
+              <div>
+                <p class="panel-heading__eyebrow">선택 기업</p>
+                <h2 id="siProfileName">{selected.name}</h2>
+                <p class="si-profile-card__sub" id="siProfileNameEn">{selected.nameEn}</p>
+              </div>
+              <div class="report-rank-chip" id="siProfileRank">1위</div>
+            </div>
+
+            <div class="si-profile-card__summary">
+              <article class="report-stat-card report-stat-card--primary">
+                <p>평균 연봉</p>
+                <strong id="siProfileSalary">{formatKrwM(selected.avgSalaryM)}</strong>
+                <span id="siProfileTier">{getTierLabel(selected.avgSalaryM)}</span>
+              </article>
+              <article class="report-stat-card">
+                <p>초봉 구간</p>
+                <strong id="siProfileStarter">
+                  {formatKrwM(selected.starterSalaryMinM)} ~ {formatKrwM(selected.starterSalaryMaxM)}
+                </strong>
+                <span id="siProfileStarterNote">{selected.starterSalaryNote}</span>
+              </article>
+              <article class="report-stat-card">
+                <p>성과급 체감</p>
+                <strong id="siProfileBonusLabel">{selected.bonusLabel}</strong>
+                <span id="siProfileBonusSummary">{selected.bonusSummary}</span>
+              </article>
+            </div>
+
+            <div class="si-profile-card__detail">
+              <div class="si-mini-fact-grid">
+                <article class="si-mini-fact-card">
+                  <span>매출 규모</span>
+                  <strong id="siProfileRevenue">{selected.revenueEok.toLocaleString("ko-KR")}억원</strong>
+                </article>
+                <article class="si-mini-fact-card">
+                  <span>직원 수</span>
+                  <strong id="siProfileHeadcount">{selected.headcount.toLocaleString("ko-KR")}명</strong>
+                </article>
+                <article class="si-mini-fact-card">
+                  <span>회사 성격</span>
+                  <strong id="siProfileGroup">{groupLabelMap[selected.groupType]}</strong>
+                </article>
+              </div>
+
+              <div class="report-tag-block">
+                <span class="report-tag-block__label">태그</span>
+                <div class="report-tag-list" id="siProfileTags">
+                  {selected.tags.map((tag) => <span>{tag}</span>)}
+                </div>
+              </div>
+            </div>
+
+            <div class="si-profile-list-block">
+              <div>
+                <p class="si-profile-list-block__label">핵심 사업</p>
+                <ul id="siBusinessFocus">
+                  {selected.businessFocus.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+              <div>
+                <p class="si-profile-list-block__label">추천 대상</p>
+                <ul id="siRecommendedFor">
+                  {selected.recommendedFor.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+            </div>
+
+            <div class="report-profile-card__footer">
+              <p id="siProfileSummary">{selected.summary}</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section si-tier-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">티어 보드</p>
+        <h2>평균 연봉 기준으로 보면 어느 구간에 몰려 있는가</h2>
+      </div>
+
+      <div class="si-tier-board">
+        {
+          tierRows.map((bucket) => (
+            <div class="si-tier-row">
+              <div class="si-tier-row__level">
+                <strong>{bucket.label}</strong>
+                <span>{bucket.companies.length}개 기업</span>
+              </div>
+              <div class="si-tier-row__companies">
+                {bucket.companies.map((company) => <span class={`si-tag is-${company.groupType}`}>{company.name}</span>)}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section si-pattern-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>이 리포트에서 먼저 읽히는 4가지 구조</h2>
+        <p>숫자 자체보다 어떤 기업군이 어떤 보상 구조를 갖는지 빠르게 해석할 수 있도록 정리했습니다.</p>
+      </div>
+
+      <div class="si-pattern-grid">
+        {
+          seed.patternPoints.map((item, index) => (
+            <article class="si-pattern-card">
+              <div class="si-pattern-card__head">
+                <span class="si-pattern-card__index">0{index + 1}</span>
+                <strong>{item.title}</strong>
+              </div>
+              <p>{item.body}</p>
+              <span class="si-pattern-card__foot">Research Note</span>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section si-reference-section">
+      <div class="panel si-reference-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">공식 정보와 연봉 참고 자료 다시 확인하기</h2>
+          </div>
+          <p class="panel-heading__summary">실제 지원이나 처우 협상 전에는 공식 채용 페이지와 대표 연봉 서비스를 한 번 더 교차 확인하는 편이 안전합니다.</p>
+        </div>
+
+        <div class="si-reference-grid">
+          <div class="si-reference-card">
+            <div class="si-reference-card__head">
+              <h3>공식 정보</h3>
+              <span>기업 기본 정보 · 채용</span>
+            </div>
+            <div class="si-reference-list">
+              {
+                seed.referenceLinks.official.map((link) => (
+                  <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
+                ))
+              }
+            </div>
+          </div>
+          <div class="si-reference-card">
+            <div class="si-reference-card__head">
+              <h3>연봉 참고</h3>
+              <span>공시 외 비교용 자료</span>
+            </div>
+            <div class="si-reference-list">
+              {
+                seed.referenceLinks.salary.map((link) => (
+                  <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">추천</span>
+          <div>
+            <h3 class="affiliate-box__title">이직·업무 환경에 같이 보면 좋은 아이템</h3>
+            <p class="affiliate-box__context">리포트 흐름을 방해하지 않도록 3개만 가볍게 정리했습니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {
+            seed.affiliateProducts.map((product) => (
+              <a
+                href={product.url}
+                class="affiliate-product-card"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+              >
+                <span class="affiliate-product-tag">{product.tag}</span>
+                <p class="affiliate-product-title">{product.title}</p>
+                <p class="affiliate-product-desc">{product.desc}</p>
+                <span class="affiliate-product-cta">자세히 보기</span>
+              </a>
+            ))
+          }
+        </div>
+        <p class="affiliate-disclosure">
+          이 섹션에는 제휴 링크가 포함될 수 있으며, 구매 시 소정의 수수료를 받을 수 있습니다.
+        </p>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="IT SI·SM 대기업 연봉 비교 리포트 읽는 법"
+      intro={[
+        "이 페이지는 삼성SDS, LG CNS, 현대오토에버, 한화시스템 ICT, KT ds 등 국내 주요 IT서비스 기업의 평균 연봉과 초봉, 성과급 체감, 회사 규모를 하나의 맥락 안에서 비교하도록 설계한 인터랙티브 리포트입니다.",
+        "단순한 연봉 순위표에 머물지 않고, 상단에서는 시장 판도를 요약하고, 중단에서는 차트로 분포를 읽고, 하단에서는 내 연봉 기준선과 기업 상세 카드로 해석을 이어갈 수 있게 설계했습니다."
+      ]}
+      inputPoints={[
+        "상위권 기업과 평균 연봉 격차를 먼저 요약해서 읽을 수 있습니다.",
+        "평균 연봉, 초봉, 회사 규모를 필터와 정렬로 비교할 수 있습니다.",
+        "내 연봉 기준선을 넣어 유사 구간 기업과 평균 대비 차이를 확인할 수 있습니다."
+      ]}
+      criteria={[
+        "사업보고서, 채용 페이지, 보도자료, 커뮤니티 추정치를 교차 참고해 구성한 비교용 지표입니다.",
+        "평균 연봉과 초봉은 일부 추정치가 포함됩니다.",
+        "성과급은 정량 확정값보다 체감 지표 중심으로 해석하는 것이 적절합니다.",
+        "실제 처우 협상이나 입사 조건은 공식 채용 정보로 다시 확인해야 합니다."
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/reports/new-employee-salary-2026/", label: "2026 신입사원 초봉 비교 리포트" },
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/tools/salary/", label: "연봉 인상 계산기" },
+        { href: "/reports/", label: "비교 리포트 모아보기" }
+      ]}
+    />
+  </main>
+
+  <script
+    id="itSiSmSalaryComparisonData"
+    type="application/json"
+    set:html={JSON.stringify(seed)}
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/it-si-sm-salary-comparison-2026.js")}></script>
+</BaseLayout>
+
+
+
