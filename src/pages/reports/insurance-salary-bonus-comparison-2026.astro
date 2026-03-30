@@ -1,0 +1,505 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  formatBonusRate,
+  formatManwon,
+  getInsuranceTypeLabel,
+  insuranceSalaryBonusComparison2026,
+} from "../../data/insuranceSalaryBonusComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const seed = insuranceSalaryBonusComparison2026;
+const entries = [...seed.entries].sort((a, b) => b.avgSalaryManwon - a.avgSalaryManwon);
+const selected = entries[0];
+const avgTop = entries[0];
+const secondAvg = entries[1];
+const bonusTop = [...entries].sort((a, b) => b.bonusRateBase - a.bonusRateBase)[0];
+const totalTop3 = [...entries].sort((a, b) => b.estTotalCompBase - a.estTotalCompBase).slice(0, 3);
+const newHireTop = [...entries].sort((a, b) => b.newHireSalaryManwon - a.newHireSalaryManwon)[0];
+const avgSalary = Math.round(entries.reduce((sum, entry) => sum + entry.avgSalaryManwon, 0) / entries.length);
+const avgTotalComp = Math.round(entries.reduce((sum, entry) => sum + entry.estTotalCompBase, 0) / entries.length);
+const salaryRange = `${formatManwon(entries[entries.length - 1].avgSalaryManwon)} ~ ${formatManwon(entries[0].avgSalaryManwon)}`;
+const topGap = avgTop.avgSalaryManwon - secondAvg.avgSalaryManwon;
+const faqItems = seed.faq.map((item) => ({ question: item.q, answer: item.a }));
+const typeAverages = {
+  life: Math.round(
+    entries.filter((entry) => entry.insuranceType === "life").reduce((sum, entry) => sum + entry.avgSalaryManwon, 0) /
+      entries.filter((entry) => entry.insuranceType === "life").length,
+  ),
+  nonlife: Math.round(
+    entries.filter((entry) => entry.insuranceType === "nonlife").reduce((sum, entry) => sum + entry.avgSalaryManwon, 0) /
+      entries.filter((entry) => entry.insuranceType === "nonlife").length,
+  ),
+};
+---
+
+<BaseLayout title={seed.meta.title} description={seed.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page insurance-report-page">
+    <CalculatorHero
+      eyebrow="Interactive Report"
+      title={seed.meta.title}
+      description={seed.meta.subtitle}
+    />
+
+    <InfoNotice
+      title="기준 안내"
+      lines={[seed.meta.methodology, seed.meta.caution, seed.meta.updatedAt]}
+    />
+
+    <section class="content-section ins-report-hero-board">
+      <div class="ins-report-lead">
+        <p class="ins-report-lead__eyebrow">Insurance Brief</p>
+        <h2>보험사는 평균 연봉보다 성과급과 총보상 구조를 같이 봐야 판단이 쉬워집니다</h2>
+        <p class="ins-report-lead__body">
+          이 페이지는 단순 연봉 순위표가 아니라, 국내 주요 보험사의 평균 연봉과 신입 초봉,
+          성과급 영향력, 총보상을 한 흐름에서 읽는 비교 리포트입니다.
+          상단에서는 업계 판도를 요약하고, 중간에서는 차트와 표로 분포를 비교하고,
+          하단에서는 내 연봉 기준 총보상 계산과 회사별 상세 구조를 함께 볼 수 있게 구성했습니다.
+        </p>
+        <div class="ins-report-lead__chips">
+          <span>평균 연봉 범위 {salaryRange}</span>
+          <span>손보 상위권이 총보상 경쟁력 우세</span>
+          <span>생보는 안정형 보상 해석이 중요</span>
+        </div>
+      </div>
+
+      <div class="ins-highlight-grid">
+        <article class="ins-highlight-card">
+          <p>평균 연봉 상위권</p>
+          <strong>{avgTop.companyName}</strong>
+          <span>{formatManwon(avgTop.avgSalaryManwon)} · {getInsuranceTypeLabel(avgTop.insuranceType)}</span>
+        </article>
+        <article class="ins-highlight-card">
+          <p>성과급 강세</p>
+          <strong>{bonusTop.companyName}</strong>
+          <span>기준 시나리오 {formatBonusRate(bonusTop.bonusRateBase)} · 총보상 관점에서 재해석 필요</span>
+        </article>
+        <article class="ins-highlight-card">
+          <p>생보 vs 손보 평균</p>
+          <strong>{formatManwon(typeAverages.nonlife)} / {formatManwon(typeAverages.life)}</strong>
+          <span>손보 평균이 더 높게 형성되지만 보상 구조는 회사별 편차가 큽니다.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>보험사 보상 구조를 숫자로 먼저 읽기</h2>
+      </div>
+      <div class="report-kpi-grid ins-kpi-grid">
+        <article class="report-stat-card report-stat-card--primary">
+          <p>평균 연봉 1위</p>
+          <strong>{avgTop.companyName}</strong>
+          <span>{formatManwon(avgTop.avgSalaryManwon)}</span>
+        </article>
+        <article class="report-stat-card">
+          <p>성과급 강세 1위</p>
+          <strong>{bonusTop.companyName}</strong>
+          <span>기준 시나리오 {formatBonusRate(bonusTop.bonusRateBase)}</span>
+        </article>
+        <article class="report-stat-card">
+          <p>신입 초봉 상위권</p>
+          <strong>{newHireTop.companyName}</strong>
+          <span>{formatManwon(newHireTop.newHireSalaryManwon)}</span>
+        </article>
+        <article class="report-stat-card">
+          <p>비교 대상 보험사</p>
+          <strong>{entries.length}개</strong>
+          <span>평균 연봉 평균 {formatManwon(avgSalary)} · 총보상 평균 {formatManwon(avgTotalComp)}</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section ins-podium-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상위권 포디움</p>
+        <h2>기준 총보상 상단을 형성하는 대표 보험사</h2>
+        <p>연봉만이 아니라 성과급과 총보상을 함께 보며 상단 기업을 읽을 수 있도록 카드형으로 정리했습니다.</p>
+      </div>
+
+      <div class="ins-podium-grid">
+        {
+          totalTop3.map((entry, index) => (
+            <article class={`ins-podium-card ins-podium-card--${index + 1}`}>
+              <span class="ins-podium-card__rank">TOP {index + 1}</span>
+              <h3>{entry.companyName}</h3>
+              <p class="ins-podium-card__value">{formatManwon(entry.estTotalCompBase)}</p>
+              <p class="ins-podium-card__meta">{getInsuranceTypeLabel(entry.insuranceType)} · 기준 성과급 {formatBonusRate(entry.bonusRateBase)}</p>
+              <p class="ins-podium-card__body">{entry.summary}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section ins-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리포트 차트</p>
+        <h2>평균 연봉과 총보상을 분리해서 읽기</h2>
+        <p>왼쪽은 평균 연봉, 오른쪽은 기준 총보상입니다. 막대를 클릭하면 아래 상세 카드가 같이 바뀝니다.</p>
+      </div>
+
+      <div class="ins-chart-board">
+        <article class="ins-chart-panel">
+          <div class="ins-chart-panel__head">
+            <h3>보험사별 평균 연봉 비교</h3>
+            <p>손보와 생보의 상단 구간 차이를 먼저 확인합니다.</p>
+          </div>
+          <div class="ins-chart-wrap">
+            <canvas id="insuranceAvgSalaryChart"></canvas>
+          </div>
+        </article>
+
+        <article class="ins-chart-panel ins-chart-panel--soft">
+          <div class="ins-chart-panel__head">
+            <h3>기준 총보상 비교</h3>
+            <p>성과급 반영 후 체감이 어떻게 달라지는지 같이 봅니다.</p>
+          </div>
+          <div class="ins-chart-wrap">
+            <canvas id="insuranceTotalCompChart"></canvas>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section ins-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">보험사 비교 테이블</p>
+        <h2>핵심 보상 항목을 한 표에서 비교하기</h2>
+        <p>정렬과 보험 유형 필터를 바꿔가며 표 전체를 다시 읽을 수 있게 구성했습니다.</p>
+      </div>
+
+      <div class="ins-filter-panel">
+        <div class="ins-filter-tabs" id="insuranceModeTabs">
+          <button class="ins-tab is-active" data-mode="avgSalary">평균 연봉</button>
+          <button class="ins-tab" data-mode="bonus">성과급</button>
+          <button class="ins-tab" data-mode="newHire">신입 초봉</button>
+          <button class="ins-tab" data-mode="totalComp">총보상</button>
+        </div>
+        <div class="ins-chip-row" id="insuranceTypeTabs">
+          <button class="ins-chip is-active" data-type="all">전체</button>
+          <button class="ins-chip" data-type="nonlife">손해보험</button>
+          <button class="ins-chip" data-type="life">생명보험</button>
+        </div>
+        <label class="field">
+          <span>정렬</span>
+          <select id="insuranceSortSelect">
+            <option value="desc">높은순</option>
+            <option value="asc">낮은순</option>
+            <option value="name">가나다순</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="ins-summary-bar" id="insuranceSummaryBar"></div>
+
+      <div class="ins-compare-table-wrap">
+        <table class="ins-compare-table">
+          <thead>
+            <tr>
+              <th>회사명</th>
+              <th>구분</th>
+              <th>평균 연봉</th>
+              <th>신입 초봉</th>
+              <th>과장급</th>
+              <th>성과급</th>
+              <th>기준 총보상</th>
+              <th>특징</th>
+            </tr>
+          </thead>
+          <tbody id="insuranceCompareTableBody">
+            {
+              entries.map((entry) => (
+                <tr data-company={entry.slug}>
+                  <td>{entry.companyName}</td>
+                  <td>{getInsuranceTypeLabel(entry.insuranceType)}</td>
+                  <td>{formatManwon(entry.avgSalaryManwon)}</td>
+                  <td>{formatManwon(entry.newHireSalaryManwon)}</td>
+                  <td>{formatManwon(entry.managerSalaryManwon)}</td>
+                  <td>{formatBonusRate(entry.bonusRateBase)}</td>
+                  <td>{formatManwon(entry.estTotalCompBase)}</td>
+                  <td>{entry.companyTag}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section ins-explorer-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">총보상 계산기</p>
+        <h2>내 연봉 기준으로 보험사 총보상을 가볍게 계산하기</h2>
+        <p>세후 계산이 아니라 비교용 추정치입니다. 같은 기본 연봉이라도 회사별 시나리오에 따라 총보상 체감이 어떻게 달라지는지 빠르게 볼 수 있습니다.</p>
+      </div>
+
+      <div class="ins-explorer-grid">
+        <div class="ins-calc-column">
+          <article class="ins-calculator-panel">
+            <div class="ins-calculator-panel__head">
+              <p class="ins-calculator-panel__eyebrow">Compensation Lab</p>
+              <h3>보험사별 총보상 시나리오</h3>
+              <p>연봉과 성과급을 단순화한 추정 계산으로, 회사별 보상 체감 차이를 빠르게 비교하는 용도입니다.</p>
+            </div>
+
+            <div class="ins-form-grid">
+              <label class="field">
+                <span>회사 선택</span>
+                <select id="insuranceCompanySelect">
+                  {
+                    entries.map((entry) => (
+                      <option value={entry.slug} selected={entry.slug === selected.slug}>{entry.companyName}</option>
+                    ))
+                  }
+                </select>
+              </label>
+
+              <label class="field">
+                <span>기본 연봉 (만원)</span>
+                <input type="number" id="insuranceBaseSalaryInput" min="0" max="30000" step="100" value="7000" />
+              </label>
+            </div>
+
+            <div class="ins-scenario-row" id="insuranceScenarioTabs">
+              <button class="ins-pill is-active" data-scenario="base">기준</button>
+              <button class="ins-pill" data-scenario="conservative">보수적</button>
+              <button class="ins-pill" data-scenario="aggressive">공격적</button>
+            </div>
+
+            <label class="ins-toggle-row">
+              <input type="checkbox" id="insuranceExtraBonusToggle" checked />
+              <span>기타 보너스 포함</span>
+            </label>
+
+            <div class="ins-result-card" id="insuranceResultCard">
+              <p class="ins-result-title" id="insuranceResultTitle">기준 시나리오 결과</p>
+              <div class="ins-result-grid">
+                <div class="ins-result-cell"><strong id="insuranceExpectedBonus">-</strong><span>예상 성과급</span></div>
+                <div class="ins-result-cell"><strong id="insuranceExpectedTotal">-</strong><span>예상 총보상</span></div>
+                <div class="ins-result-cell"><strong id="insuranceTotalLevel">-</strong><span>업계 평균 대비</span></div>
+              </div>
+              <p class="ins-similar-text" id="insuranceResultComment"></p>
+            </div>
+          </article>
+        </div>
+
+        <div class="ins-profile-column">
+          <article class="panel ins-profile-card" id="insuranceProfileCard">
+            <div class="ins-profile-card__header">
+              <div>
+                <p class="panel-heading__eyebrow">선택 보험사</p>
+                <h2 id="insuranceProfileName">{selected.companyName}</h2>
+                <p class="ins-profile-card__sub" id="insuranceProfileNameEn">{selected.nameEn}</p>
+              </div>
+              <div class="report-rank-chip" id="insuranceProfileType">{getInsuranceTypeLabel(selected.insuranceType)}</div>
+            </div>
+
+            <div class="ins-profile-card__summary">
+              <article class="report-stat-card report-stat-card--primary">
+                <p>평균 연봉</p>
+                <strong id="insuranceProfileAvgSalary">{formatManwon(selected.avgSalaryManwon)}</strong>
+                <span id="insuranceProfileTagline">{selected.companyTag}</span>
+              </article>
+              <article class="report-stat-card">
+                <p>신입 초봉</p>
+                <strong id="insuranceProfileNewHire">{formatManwon(selected.newHireSalaryManwon)}</strong>
+                <span>신입 입사 기준 추정</span>
+              </article>
+              <article class="report-stat-card">
+                <p>기준 총보상</p>
+                <strong id="insuranceProfileTotalComp">{formatManwon(selected.estTotalCompBase)}</strong>
+                <span id="insuranceProfileBonus">기준 성과급 {formatBonusRate(selected.bonusRateBase)}</span>
+              </article>
+            </div>
+
+            <div class="ins-profile-card__detail">
+              <div class="ins-mini-fact-grid">
+                <article class="ins-mini-fact-card">
+                  <span>과장급 추정 연봉</span>
+                  <strong id="insuranceProfileManager">{formatManwon(selected.managerSalaryManwon)}</strong>
+                </article>
+                <article class="ins-mini-fact-card">
+                  <span>임직원 수</span>
+                  <strong id="insuranceProfileHeadcount">{selected.employeeCount.toLocaleString("ko-KR")}명</strong>
+                </article>
+                <article class="ins-mini-fact-card">
+                  <span>사업 규모</span>
+                  <strong id="insuranceProfileRevenue">{selected.revenueText}</strong>
+                </article>
+              </div>
+
+              <div class="report-tag-block">
+                <span class="report-tag-block__label">태그</span>
+                <div class="report-tag-list" id="insuranceProfileTags">
+                  {selected.tags.map((tag) => <span>{tag}</span>)}
+                </div>
+              </div>
+            </div>
+
+            <div class="ins-profile-list-block">
+              <div>
+                <p class="ins-profile-list-block__label">성과급 설명</p>
+                <p id="insuranceProfileBonusComment">{selected.bonusComment}</p>
+              </div>
+              <div>
+                <p class="ins-profile-list-block__label">한 줄 요약</p>
+                <p id="insuranceProfileSummary">{selected.summary}</p>
+              </div>
+            </div>
+
+            <div class="ins-profile-links" id="insuranceProfileLinks">
+              {selected.hiringUrl ? <a href={selected.hiringUrl} target="_blank" rel="noopener noreferrer">채용</a> : null}
+              {selected.officialUrl ? <a href={selected.officialUrl} target="_blank" rel="noopener noreferrer">공식 사이트</a> : null}
+              {selected.irUrl ? <a href={selected.irUrl} target="_blank" rel="noopener noreferrer">IR</a> : null}
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section ins-pattern-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>보험업 보상 구조에서 먼저 읽히는 흐름</h2>
+        <p>숫자만 나열하지 않고 손보/생보 차이와 총보상 해석 포인트를 카드로 먼저 읽을 수 있게 정리했습니다.</p>
+      </div>
+
+      <div class="ins-pattern-grid">
+        {
+          seed.patternPoints.map((item, index) => (
+            <article class="ins-pattern-card">
+              <div class="ins-pattern-card__head">
+                <span class="ins-pattern-card__index">0{index + 1}</span>
+                <strong>{item.title}</strong>
+              </div>
+              <p>{item.body}</p>
+              <span class="ins-pattern-card__foot">Market Note</span>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="ins-feature-grid">
+        {
+          seed.featureCards.map((item) => (
+            <article class="ins-feature-card">
+              <strong>{item.company}</strong>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section ins-reference-section">
+      <div class="panel ins-reference-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">공식 채용·회사 소개·IR 정보 다시 확인하기</h2>
+          </div>
+          <p class="panel-heading__summary">실제 지원이나 처우 협상 전에는 공식 채용 페이지와 IR 자료를 한 번 더 교차 확인하는 편이 안전합니다.</p>
+        </div>
+
+        <div class="ins-reference-grid">
+          <div class="ins-reference-card">
+            <div class="ins-reference-card__head">
+              <h3>공식 채용</h3>
+              <span>지원·이직 탐색용</span>
+            </div>
+            <div class="ins-reference-list">
+              {seed.referenceLinks.hiring.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}
+            </div>
+          </div>
+
+          <div class="ins-reference-card">
+            <div class="ins-reference-card__head">
+              <h3>공식 사이트</h3>
+              <span>회사 이해용</span>
+            </div>
+            <div class="ins-reference-list">
+              {seed.referenceLinks.official.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}
+            </div>
+          </div>
+
+          <div class="ins-reference-card">
+            <div class="ins-reference-card__head">
+              <h3>IR / 공시</h3>
+              <span>원출처 확인용</span>
+            </div>
+            <div class="ins-reference-list">
+              {seed.referenceLinks.ir.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">추천</span>
+          <div>
+            <h3 class="affiliate-box__title">이직·업무 환경에 같이 보면 좋은 아이템</h3>
+            <p class="affiliate-box__context">리포트 흐름을 해치지 않도록 3개만 가볍게 정리했습니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {
+            seed.affiliateProducts.map((product) => (
+              <a href={product.url} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+                <span class="affiliate-product-tag">{product.tag}</span>
+                <p class="affiliate-product-title">{product.title}</p>
+                <p class="affiliate-product-desc">{product.desc}</p>
+                <span class="affiliate-product-cta">자세히 보기</span>
+              </a>
+            ))
+          }
+        </div>
+        <p class="affiliate-disclosure">이 섹션에는 제휴 링크가 포함될 수 있으며, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="보험사 연봉 비교 리포트 읽는 법"
+      intro={[
+        "이 페이지는 삼성화재, 삼성생명, 메리츠화재, 현대해상, DB손해보험, KB손해보험 등 국내 주요 보험사의 평균 연봉과 신입 초봉, 성과급, 기준 총보상을 함께 비교하도록 설계한 인터랙티브 리포트입니다.",
+        "보험업은 평균 연봉만으로 읽으면 판단이 왜곡되기 쉬워, 이 리포트에서는 성과급과 총보상을 별도로 분리해 보여주고 간단한 총보상 계산기까지 함께 배치했습니다."
+      ]}
+      inputPoints={[
+        "평균 연봉, 성과급, 총보상 중 어떤 기준으로 읽어야 하는지 상단에서 빠르게 파악할 수 있습니다.",
+        "보험사 유형 필터와 정렬을 바꿔가며 비교표와 차트를 다시 읽을 수 있습니다.",
+        "내 기본 연봉을 넣어 회사별 총보상 추정 차이를 가볍게 비교할 수 있습니다."
+      ]}
+      criteria={[
+        "사업보고서, 기사, 채용 정보, 연봉 플랫폼 공개 수치를 교차 참고해 재구성한 비교용 자료입니다.",
+        "성과급과 총보상은 단일 연도 실적에 따라 크게 달라질 수 있는 추정치입니다.",
+        "신입 초봉과 과장급 연봉은 공개 자료와 추정치를 함께 사용했습니다.",
+        "실제 처우 협상 전에는 공식 채용 페이지와 IR 자료를 다시 확인해야 합니다."
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/reports/it-si-sm-salary-comparison-2026/", label: "IT SI·SM 대기업 평균 연봉 비교" },
+        { href: "/reports/new-employee-salary-2026/", label: "2026 신입사원 초봉 비교 리포트" },
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/", label: "비교 리포트 모아보기" }
+      ]}
+    />
+  </main>
+
+  <script id="insuranceSalaryBonusComparisonData" type="application/json" set:html={JSON.stringify(seed)}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/insurance-salary-bonus-comparison-2026.js")}></script>
+</BaseLayout>
