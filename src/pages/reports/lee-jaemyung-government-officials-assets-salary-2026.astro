@@ -1,0 +1,418 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  formatManwon,
+  formatPercent,
+  formatRatio,
+  getGroupLabel,
+  leeGovernmentOfficialsAssetsSalary2026,
+} from "../../data/leeGovernmentOfficialsAssetsSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const seed = leeGovernmentOfficialsAssetsSalary2026;
+const entries = [...seed.entries].sort((a, b) => b.totalAssetsManwon - a.totalAssetsManwon);
+const selected = entries[0];
+const top3 = entries.slice(0, 3);
+const richest = entries[0];
+const highestComp = [...entries].sort((a, b) => b.annualCompManwon - a.annualCompManwon)[0];
+const highestRatio = [...entries].sort((a, b) => b.assetToComp - a.assetToComp)[0];
+const detailedCount = entries.filter((entry) => entry.hasPartialBreakdown).length;
+const avgAssets = Math.round(entries.reduce((sum, entry) => sum + entry.totalAssetsManwon, 0) / entries.length);
+const assetRange = `${formatManwon(entries[entries.length - 1].totalAssetsManwon)} ~ ${formatManwon(entries[0].totalAssetsManwon)}`;
+const faqItems = seed.faq.map((item) => ({ question: item.q, answer: item.a }));
+const groupCards = seed.groupInsights
+  .filter((group) => entries.some((entry) => entry.group === group.key))
+  .map((group) => {
+    const list = entries.filter((entry) => entry.group === group.key);
+    const avg = Math.round(list.reduce((sum, entry) => sum + entry.totalAssetsManwon, 0) / list.length);
+    return { ...group, count: list.length, avg };
+  });
+---
+
+<BaseLayout title={seed.meta.title} description={seed.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page gov-report-page">
+    <CalculatorHero eyebrow="Interactive Report" title={seed.meta.title} description={seed.meta.subtitle} />
+
+    <InfoNotice title="기준 안내" lines={[seed.meta.methodology, seed.meta.caution, seed.meta.updatedAt]} />
+
+    <section class="content-section gov-report-hero-board">
+      <div class="gov-report-lead">
+        <p class="gov-report-lead__eyebrow">Public Data Brief</p>
+        <h2>핵심 공직자 재산 공개는 총액보다 구성과 보수 대비 배수를 같이 봐야 읽기가 쉬워집니다</h2>
+        <p class="gov-report-lead__body">
+          이 페이지는 2026년 정기 재산변동 공개 기준 핵심 공직자 15명의 총재산과 건물, 토지, 전세권, 예금, 증권, 채무,
+          공직 보수를 한 흐름에서 비교하는 리포트입니다. 상단에서는 상위권과 그룹별 흐름을 요약하고,
+          중단에서는 차트와 비교표로 분포를 읽고, 하단에서는 내 기준 벤치마크와 선택 인물 상세 카드로 탐색을 이어갑니다.
+        </p>
+        <div class="gov-report-lead__chips">
+          <span>핵심 공직자 15명 비교</span>
+          <span>공개 재산 범위 {assetRange}</span>
+          <span>정기 재산변동 공개 2026-03-26 기준</span>
+        </div>
+      </div>
+
+      <div class="gov-highlight-grid">
+        <article class="gov-highlight-card">
+          <p>총재산 상단</p>
+          <strong>{richest.personName}</strong>
+          <span>{formatManwon(richest.totalAssetsManwon)} · {richest.roleTitle}</span>
+        </article>
+        <article class="gov-highlight-card">
+          <p>연 보수 상단</p>
+          <strong>{highestComp.personName}</strong>
+          <span>{formatManwon(highestComp.annualCompManwon)} · {highestComp.roleTitle}</span>
+        </article>
+        <article class="gov-highlight-card">
+          <p>재산/보수 배수 상단</p>
+          <strong>{highestRatio.personName}</strong>
+          <span>{formatRatio(highestRatio.assetToComp)} · 보수보다 자산 구조 해석이 크게 읽히는 구간</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>공개 재산과 공직 보수를 숫자로 먼저 보기</h2>
+      </div>
+      <div class="report-kpi-grid gov-kpi-grid">
+        <article class="report-stat-card report-stat-card--primary">
+          <p>총재산 1위</p>
+          <strong>{richest.personName}</strong>
+          <span>{formatManwon(richest.totalAssetsManwon)}</span>
+        </article>
+        <article class="report-stat-card">
+          <p>연 보수 1위</p>
+          <strong>{highestComp.roleTitle}</strong>
+          <span>{formatManwon(highestComp.annualCompManwon)}</span>
+        </article>
+        <article class="report-stat-card">
+          <p>비교 대상</p>
+          <strong>{entries.length}명</strong>
+          <span>세부 자산 분해값 확인 가능 {detailedCount}명</span>
+        </article>
+        <article class="report-stat-card">
+          <p>평균 총재산</p>
+          <strong>{formatManwon(avgAssets)}</strong>
+          <span>기사 요약 기준 1차 공개 평균</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section gov-podium-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상위권 포디움</p>
+        <h2>총재산 상단을 형성하는 핵심 공직자 3명</h2>
+        <p>직위보다 자산 구조를 먼저 읽을 수 있도록 상단 3명을 카드형 리포트 보드로 정리했습니다.</p>
+      </div>
+      <div class="gov-podium-grid">
+        {
+          top3.map((entry, index) => (
+            <article class={`gov-podium-card gov-podium-card--${index + 1}`}>
+              <span class="gov-podium-card__rank">TOP {index + 1}</span>
+              <h3>{entry.personName}</h3>
+              <p class="gov-podium-card__value">{formatManwon(entry.totalAssetsManwon)}</p>
+              <p class="gov-podium-card__meta">{entry.roleTitle} · {getGroupLabel(entry.group)}</p>
+              <p class="gov-podium-card__body">{entry.summary}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section gov-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리포트 차트</p>
+        <h2>총재산과 재산/보수 배수를 분리해서 읽기</h2>
+        <p>왼쪽은 총재산 절대액, 오른쪽은 연 보수 대비 자산 배수입니다. 필터와 정렬을 바꾸면 차트와 표가 함께 다시 그려집니다.</p>
+      </div>
+      <div class="gov-chart-board">
+        <article class="gov-chart-panel">
+          <div class="gov-chart-panel__head">
+            <h3>공직자별 총재산 비교</h3>
+            <p>공개 재산 절대액을 먼저 확인합니다.</p>
+          </div>
+          <div class="gov-chart-wrap"><canvas id="govAssetsChart"></canvas></div>
+        </article>
+        <article class="gov-chart-panel gov-chart-panel--soft">
+          <div class="gov-chart-panel__head">
+            <h3>연 보수 대비 자산 배수</h3>
+            <p>공직 보수와 자산 규모가 어느 정도 떨어져 있는지 같이 봅니다.</p>
+          </div>
+          <div class="gov-chart-wrap"><canvas id="govAssetRatioChart"></canvas></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section gov-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교 테이블</p>
+        <h2>비교 기준과 자산 구성 필드를 바꿔가며 읽기</h2>
+        <p>총재산, 연 보수, 월 보수, 재산배수를 기준으로 정렬하고, 실물자산·금융자산·채무 구간을 따로 읽을 수 있게 구성했습니다.</p>
+      </div>
+
+      <div class="gov-filter-panel">
+        <div class="gov-filter-tabs" id="govModeTabs">
+          <button class="gov-tab is-active" data-mode="asset">총재산</button>
+          <button class="gov-tab" data-mode="annualComp">연 보수</button>
+          <button class="gov-tab" data-mode="monthlyComp">월 보수</button>
+          <button class="gov-tab" data-mode="assetToComp">재산배수</button>
+        </div>
+        <div class="gov-chip-row" id="govGroupTabs">
+          <button class="gov-chip is-active" data-group="all">전체</button>
+          <button class="gov-chip" data-group="presidential-office">대통령실</button>
+          <button class="gov-chip" data-group="prime-minister-office">국무총리실</button>
+          <button class="gov-chip" data-group="cabinet">내각</button>
+        </div>
+        <div class="gov-chip-row gov-chip-row--soft" id="govBreakdownTabs">
+          <button class="gov-chip is-active" data-breakdown="all">전체 자산</button>
+          <button class="gov-chip" data-breakdown="real-estate">실물자산</button>
+          <button class="gov-chip" data-breakdown="financial">금융자산</button>
+          <button class="gov-chip" data-breakdown="debt">채무</button>
+        </div>
+        <label class="field">
+          <span>정렬</span>
+          <select id="govSortSelect">
+            <option value="desc">높은순</option>
+            <option value="asc">낮은순</option>
+            <option value="name">가나다순</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="gov-summary-bar" id="govSummaryBar"></div>
+
+      <article class="gov-breakdown-panel">
+        <div class="gov-breakdown-panel__head">
+          <h3>자산 구성 맵</h3>
+          <p id="govBreakdownLabel">전체 자산 기준으로 길이를 비교합니다.</p>
+        </div>
+        <div id="govBreakdownBoard" class="gov-breakdown-board"></div>
+      </article>
+
+      <div class="gov-compare-table-wrap">
+        <table class="gov-compare-table">
+          <thead>
+            <tr>
+              <th>인물</th>
+              <th>직책</th>
+              <th>그룹</th>
+              <th>총재산</th>
+              <th>순자산(추정)</th>
+              <th>금융자산 비중</th>
+              <th>건물</th>
+              <th>예금</th>
+              <th>증권</th>
+              <th>채무</th>
+              <th>연 보수</th>
+              <th>재산배수</th>
+            </tr>
+          </thead>
+          <tbody id="govCompareTableBody">
+            {
+              entries.map((entry) => (
+                <tr data-official={entry.slug}>
+                  <td>{entry.personName}</td>
+                  <td>{entry.roleTitle}</td>
+                  <td>{getGroupLabel(entry.group)}</td>
+                  <td>{formatManwon(entry.totalAssetsManwon)}</td>
+                  <td>{formatManwon(entry.estimatedNetWorthManwon)}</td>
+                  <td>{formatPercent(entry.financialAssetShareKnown)}</td>
+                  <td>{formatManwon(entry.buildingManwon)}</td>
+                  <td>{formatManwon(entry.depositsManwon)}</td>
+                  <td>{formatManwon(entry.securitiesManwon)}</td>
+                  <td>{formatManwon(entry.debtsManwon)}</td>
+                  <td>{formatManwon(entry.annualCompManwon)}</td>
+                  <td>{formatRatio(entry.assetToComp)}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section gov-explorer-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">벤치마크</p>
+        <h2>내 연봉과 내 자산 기준으로 공직자 공개 수치를 환산해보기</h2>
+        <p>정치 해석이 아니라 비교 보조용 계산입니다. 내 기준에서 몇 배인지, 선택 인물의 자산이 공직 보수 몇 년치인지 바로 읽을 수 있습니다.</p>
+      </div>
+
+      <div class="gov-explorer-grid">
+        <div class="gov-lab-column">
+          <article class="gov-calculator-panel">
+            <div class="gov-calculator-panel__head">
+              <p class="gov-calculator-panel__eyebrow">Benchmark Lab</p>
+              <h3>내 기준 환산 패널</h3>
+              <p>내 연봉과 내 순자산을 넣으면 선택 인물의 공개 재산과 공직 보수가 몇 배인지 계산합니다.</p>
+            </div>
+            <div class="gov-form-grid">
+              <label class="field">
+                <span>비교 인물</span>
+                <select id="govOfficialSelect">
+                  {
+                    entries.map((entry) => (
+                      <option value={entry.slug} selected={entry.slug === selected.slug}>{entry.personName} · {entry.roleTitle}</option>
+                    ))
+                  }
+                </select>
+              </label>
+              <label class="field"><span>내 연봉 (만원)</span><input id="govMySalaryInput" type="number" min="0" step="100" value="8000" /></label>
+              <label class="field"><span>내 순자산 (만원)</span><input id="govMyNetWorthInput" type="number" min="0" step="1000" value="10000" /></label>
+            </div>
+            <div class="gov-result-card" id="govResultCard">
+              <p id="govResultTitle" class="gov-result-title"></p>
+              <div class="gov-result-grid">
+                <div class="gov-result-cell"><strong id="govSalaryMultiple">-</strong><span>내 연봉 대비</span></div>
+                <div class="gov-result-cell"><strong id="govAssetMultiple">-</strong><span>내 자산 대비</span></div>
+                <div class="gov-result-cell"><strong id="govYearsOfComp">-</strong><span>공직 보수 몇 년치</span></div>
+              </div>
+              <p id="govResultComment" class="gov-result-comment"></p>
+            </div>
+          </article>
+
+          <div class="gov-group-grid">
+            {
+              groupCards.map((group) => (
+                <article class="gov-group-card">
+                  <p>{group.title}</p>
+                  <strong>{group.count}명</strong>
+                  <span>평균 총재산 {formatManwon(group.avg)}</span>
+                  <em>{group.body}</em>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="gov-profile-column">
+          <article class="gov-profile-card">
+            <div class="gov-profile-card__hero">
+              <div class="gov-profile-card__header">
+                <div>
+                  <p class="gov-profile-card__eyebrow">선택 인물</p>
+                  <h3 id="govProfileName">{selected.personName}</h3>
+                  <p id="govProfileRole" class="gov-profile-card__role">{selected.roleTitle}</p>
+                </div>
+                <div class="gov-rank-chip" id="govProfileGroup">{getGroupLabel(selected.group)}</div>
+              </div>
+              <p id="govProfileSummary" class="gov-profile-card__summary">{selected.summary}</p>
+            </div>
+
+            <div class="gov-profile-summary-grid">
+              <article class="gov-mini-card gov-mini-card--primary"><p>총재산</p><strong id="govProfileAssets">{formatManwon(selected.totalAssetsManwon)}</strong></article>
+              <article class="gov-mini-card"><p>연 보수</p><strong id="govProfileAnnualComp">{formatManwon(selected.annualCompManwon)}</strong></article>
+              <article class="gov-mini-card"><p>월 보수 환산</p><strong id="govProfileMonthlyComp">{formatManwon(selected.monthlyCompManwon)}</strong></article>
+              <article class="gov-mini-card"><p>재산배수</p><strong id="govProfileAssetRatio">{formatRatio(selected.assetToComp)}</strong></article>
+              <article class="gov-mini-card"><p>순자산(추정)</p><strong id="govProfileNetWorth">{formatManwon(selected.estimatedNetWorthManwon)}</strong></article>
+              <article class="gov-mini-card"><p>금융자산 비중</p><strong id="govProfileFinancialShare">{formatPercent(selected.financialAssetShareKnown)}</strong></article>
+            </div>
+
+            <div class="gov-tag-block">
+              <span class="gov-tag-block__label">태그</span>
+              <div class="gov-tag-list" id="govProfileTags">{selected.tags.map((tag) => <span>{tag}</span>)}</div>
+            </div>
+
+            <div class="gov-asset-grid">
+              <article class="gov-asset-card"><p>건물</p><strong id="govProfileBuilding">{formatManwon(selected.buildingManwon)}</strong></article>
+              <article class="gov-asset-card"><p>토지</p><strong id="govProfileLand">{formatManwon(selected.landManwon)}</strong></article>
+              <article class="gov-asset-card"><p>전세권</p><strong id="govProfileJeonse">{formatManwon(selected.jeonseRightManwon)}</strong></article>
+              <article class="gov-asset-card"><p>예금</p><strong id="govProfileDeposits">{formatManwon(selected.depositsManwon)}</strong></article>
+              <article class="gov-asset-card"><p>증권</p><strong id="govProfileSecurities">{formatManwon(selected.securitiesManwon)}</strong></article>
+              <article class="gov-asset-card gov-asset-card--debt"><p>채무</p><strong id="govProfileDebts">{formatManwon(selected.debtsManwon)}</strong></article>
+            </div>
+
+            <div class="gov-profile-note-grid">
+              <article class="gov-note-card"><p class="gov-note-card__label">운영 메모</p><strong id="govProfileMemo">{selected.memo}</strong></article>
+              <article class="gov-note-card"><p class="gov-note-card__label">원출처</p><a id="govProfileSource" href={selected.sourceUrl} target="_blank" rel="noopener noreferrer">{selected.sourceLabel}</a></article>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section gov-pattern-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>2026 공직자 재산 공개에서 먼저 읽히는 흐름</h2>
+        <p>숫자를 장문 서술로 풀기보다, 자산 규모와 구성 차이를 카드형 노트로 먼저 읽을 수 있게 정리했습니다.</p>
+      </div>
+      <div class="gov-pattern-grid">
+        {
+          seed.patternPoints.map((item, index) => (
+            <article class="gov-pattern-card">
+              <div class="gov-pattern-card__head"><span class="gov-pattern-card__index">0{index + 1}</span><strong>{item.title}</strong></div>
+              <p>{item.body}</p>
+              <span class="gov-pattern-card__foot">Research Note</span>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section gov-reference-section">
+      <div class="panel gov-reference-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">정기 재산공개 원출처와 기사 다시 보기</h2>
+          </div>
+          <p class="panel-heading__summary">실제 검증이나 후속 보강 작업 전에는 정책브리핑과 원문 기사 링크를 다시 교차 확인하는 편이 안전합니다.</p>
+        </div>
+        <div class="gov-reference-grid">
+          <div class="gov-reference-card">
+            <div class="gov-reference-card__head"><h3>공식 공개 자료</h3><span>정기 재산변동 기준</span></div>
+            <div class="gov-reference-list">{seed.referenceLinks.official.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}</div>
+          </div>
+          <div class="gov-reference-card">
+            <div class="gov-reference-card__head"><h3>기사 요약 출처</h3><span>1차 공개용 데이터 참고</span></div>
+            <div class="gov-reference-list">{seed.referenceLinks.media.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="이재명 정부 핵심 공직자 재산·보수 비교 리포트 읽는 법"
+      intro={[
+        "이 페이지는 2026년 3월 26일 정기 재산변동 공개 기준으로 이재명 정부 핵심 공직자 15명의 총재산, 세부 자산, 공직 보수를 한 번에 비교하도록 설계한 인터랙티브 리포트입니다.",
+        "정치 기사형 페이지가 아니라 숫자 비교 페이지로 읽는 것이 핵심입니다. 총재산, 건물, 토지, 전세권, 예금, 증권, 채무와 함께 공직 연 보수와 재산배수, 알려진 세부 자산 기준 추정 순자산과 금융자산 비중까지 보여 주기 때문에 절대액과 구조를 같이 해석할 수 있습니다."
+      ]}
+      inputPoints={[
+        "총재산, 연 보수, 월 보수, 재산배수 기준으로 정렬과 비교 흐름을 바꿔볼 수 있습니다.",
+        "실물자산, 금융자산, 채무 중심 필터를 통해 같은 인물도 다른 관점으로 읽을 수 있습니다.",
+        "내 연봉과 내 순자산을 넣어 공개 재산과 공직 보수를 내 기준으로 환산할 수 있습니다."
+      ]}
+      criteria={[
+        "세부 자산 값은 2026년 3월 26일 정기 재산변동 공개 기사 요약 기준으로 1차 반영했습니다.",
+        "기사에 명시되지 않은 세부 항목은 공란 또는 미공개로 처리했고, 2차에서는 관보 원문 기준 보강이 필요합니다.",
+        "공직 연 보수는 2026년 정무직 보수 기사 기준 직위별 연봉을 비교용으로 단순화한 값입니다.",
+        "순자산과 금융자산 비중은 알려진 세부 자산 항목 기준 추정치입니다.",
+        "정치적 평가가 아니라 공개 수치 비교와 구조 해석을 위한 페이지로 사용하는 것이 적절합니다."
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/reports/korea-rich-top10-assets/", label: "한국 부자 TOP 10 자산 비교 리포트" },
+        { href: "/reports/seoul-84-apartment-prices/", label: "서울 국평 아파트 가격 비교 리포트" },
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/", label: "비교 리포트 모아보기" }
+      ]}
+    />
+  </main>
+
+  <script id="leeGovernmentOfficialsAssetsSalary2026Data" type="application/json" set:html={JSON.stringify(seed)}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/lee-jaemyung-government-officials-assets-salary-2026.js")}></script>
+</BaseLayout>
+
