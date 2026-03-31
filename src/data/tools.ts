@@ -1,4 +1,4 @@
-export type PreviewStat = {
+﻿export type PreviewStat = {
   label: string;    // '월 실수령', '총보상' 등
   value: string;    // '341만', '1.2억' 등
   context?: string; // '5,000만 기준' 등 맥락
@@ -32,10 +32,52 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "bonus-simulator",
+    title: "대기업 성과급 시뮬레이터",
+    description: "삼성전자, SK하이닉스, 현대자동차의 직급별 성과급과 2026~2028 총보상 시나리오를 비교하는 페이지",
+    order: 1,
+    eyebrow: "Bonus Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "삼성 총보상", value: "1.1억" },
+      { label: "하이닉스", value: "1.8억" }
+    ]
+  },
+  {
+    slug: "household-income",
+    title: "가구 소득 계산기",
+    description: "가구 연 총소득, 월 체감, 실수령 추정, 평균·기준 중위소득 대비 위치를 계산하는 페이지",
+    order: 2,
+    eyebrow: "Household Income Tool",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "중위소득 대비", value: "138%", context: "4인·8천만" },
+      { label: "월 실수령", value: "약 560만" }
+    ]
+  },
+  {
+    slug: "diaper-cost",
+    title: "아기 기저귀 값 계산기",
+    description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 하기스·팸퍼스·보솜이 등 브랜드별 총비용을 비교하는 페이지",
+    order: 3,
+    eyebrow: "육아 소모품",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규"],
+    previewStats: [
+      { label: "돌까지 총 사용량", value: "약 2,700개" },
+      { label: "브랜드 절약액", value: "최대 50만원" },
+    ],
+  },
+  {
     slug: "salary",
     title: "연봉 인상 계산기",
     description: "현재 연봉과 인상 시나리오별 월 실수령 변화를 비교하는 계산 페이지",
-    order: 1,
+    order: 4,
     eyebrow: "Salary Tool",
     category: "calculator",
     iframeReady: true,
@@ -49,7 +91,7 @@ export const tools: ToolMeta[] = [
     slug: "retirement",
     title: "퇴직금 계산기",
     description: "평균임금 기준 퇴직금과 세후 추정액을 계산하는 페이지",
-    order: 2,
+    order: 5,
     eyebrow: "Retirement Tool",
     category: "calculator",
     iframeReady: true,
@@ -62,7 +104,7 @@ export const tools: ToolMeta[] = [
     slug: "negotiation",
     title: "이직 계산기",
     description: "현재 연봉과 목표 연봉의 세전 실수령 차이를 비교하는 페이지",
-    order: 3,
+    order: 6,
     eyebrow: "Negotiation Tool",
     category: "calculator",
     iframeReady: true,
@@ -76,7 +118,7 @@ export const tools: ToolMeta[] = [
     slug: "parental-leave",
     title: "육아휴직 계산기",
     description: "육아휴직 급여와 복직 후 수입을 비교해 버퍼를 계산하는 페이지",
-    order: 4,
+    order: 7,
     eyebrow: "Parental Leave Tool",
     category: "calculator",
     iframeReady: true,
@@ -86,38 +128,10 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
-    slug: "household-income",
-    title: "가구 소득 계산기",
-    description: "가구 연 총소득, 월 체감, 실수령 추정, 평균·기준 중위소득 대비 위치를 계산하는 페이지",
-    order: 5,
-    eyebrow: "Household Income Tool",
-    category: "calculator",
-    iframeReady: true,
-    badges: ["신규", "추천"],
-    previewStats: [
-      { label: "중위소득 대비", value: "138%", context: "4인·8천만" },
-      { label: "월 실수령", value: "약 560만" }
-    ]
-  },
-  {
-    slug: "bonus-simulator",
-    title: "대기업 성과급 시뮬레이터",
-    description: "삼성전자, SK하이닉스, 현대자동차의 직급별 성과급과 2026~2028 총보상 시나리오를 비교하는 페이지",
-    order: 6,
-    eyebrow: "Bonus Tool",
-    category: "simulator",
-    iframeReady: true,
-    badges: ["신규", "추천"],
-    previewStats: [
-      { label: "삼성 총보상", value: "1.1억" },
-      { label: "하이닉스", value: "1.8억" }
-    ]
-  },
-  {
     slug: "samsung-bonus",
     title: "삼성전자 성과급 계산기",
     description: "개인·부부 모드로 삼성전자 OPI, TAI, 복지 포함 총보상과 월 체감액을 계산하는 페이지",
-    order: 7,
+    order: 8,
     eyebrow: "Samsung Tool",
     category: "simulator",
     iframeReady: true,
@@ -131,7 +145,7 @@ export const tools: ToolMeta[] = [
     slug: "sk-hynix-bonus",
     title: "SK하이닉스 성과급 계산기",
     description: "개인·부부 모드로 SK하이닉스의 PS, PI, 복지 포함 총보상과 월 체감액을 계산하는 페이지",
-    order: 8,
+    order: 9,
     eyebrow: "SK Hynix Tool",
     category: "simulator",
     iframeReady: true,
@@ -145,7 +159,7 @@ export const tools: ToolMeta[] = [
     slug: "hyundai-bonus",
     title: "현대자동차 성과금 계산기",
     description: "개인·부부 모드로 현대자동차 성과금 패키지와 자사주 포함 총보상, 월 체감액을 계산하는 페이지",
-    order: 9,
+    order: 10,
     eyebrow: "Hyundai Tool",
     category: "simulator",
     iframeReady: true,
@@ -159,7 +173,7 @@ export const tools: ToolMeta[] = [
     slug: "birth-support-total",
     title: "출산~2세 총지원금 계산기",
     description: "첫만남이용권, 부모급여, 아동수당을 합쳐 아이 두 돌 전까지 받을 수 있는 총액을 계산하는 페이지",
-    order: 10,
+    order: 11,
     eyebrow: "Birth Support Tool",
     category: "support",
     iframeReady: true,
@@ -173,7 +187,7 @@ export const tools: ToolMeta[] = [
     slug: "single-parental-leave-total",
     title: "한 명만 육아휴직 총수령액 계산기",
     description: "육아휴직 급여, 부모급여, 아동수당, 첫만남이용권을 합쳐 아이 두 돌까지 가구 총수령액을 계산하는 페이지",
-    order: 11,
+    order: 12,
     eyebrow: "Household Cashflow Tool",
     category: "support",
     iframeReady: true,
@@ -187,7 +201,7 @@ export const tools: ToolMeta[] = [
     slug: "parental-leave-pay",
     title: "육아휴직 급여 계산기",
     description: "월 통상임금 기준으로 일반 육아휴직 사용 시 월별 급여와 총액을 계산하는 페이지",
-    order: 12,
+    order: 13,
     eyebrow: "Parental Leave Pay Tool",
     category: "support",
     iframeReady: true,
@@ -197,24 +211,10 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
-    slug: "diaper-cost",
-    title: "아기 기저귀 값 계산기",
-    description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 하기스·팸퍼스·보솜이 등 브랜드별 총비용을 비교하는 페이지",
-    order: 14,
-    eyebrow: "육아 소모품",
-    category: "parenting",
-    iframeReady: true,
-    badges: ["신규"],
-    previewStats: [
-      { label: "돌까지 총 사용량", value: "약 2,700개" },
-      { label: "브랜드 절약액", value: "최대 50만원" },
-    ],
-  },
-  {
     slug: "home-purchase-fund",
     title: "내집마련 자금 계산기",
     description: "매매가·지역 유형·주택 보유 수를 입력하면 LTV 기반 최대 대출 가능액, 취득세·중개보수 포함 총 필요 현금, 월 상환액을 계산하는 페이지",
-    order: 16,
+    order: 14,
     eyebrow: "부동산 계산기",
     category: "realestate",
     iframeReady: true,
@@ -242,7 +242,7 @@ export const tools: ToolMeta[] = [
     slug: "six-plus-six",
     title: "6+6 부모육아휴직제 계산기",
     description: "부모 모두 육아휴직을 쓸 때 특례 적용 여부와 일반 육아휴직 대비 차액을 비교하는 페이지",
-    order: 13,
+    order: 16,
     eyebrow: "6+6 Tool",
     category: "support",
     iframeReady: true,
@@ -251,5 +251,20 @@ export const tools: ToolMeta[] = [
       { label: "특례 총액", value: "약 900만", context: "부부 합산" },
       { label: "일반 대비", value: "+300만" }
     ]
+  },
+  {
+    slug: "wedding-budget-calculator",
+    title: "결혼 준비 예산 계산기",
+    description: "지역·티어·하객 수·식대·분담 비율을 기준으로 웨딩홀, 스드메, 예물, 신혼여행까지 한 번에 계산하는 예산 도구",
+    order: 17,
+    eyebrow: "Wedding Budget Tool",
+    category: "lifestyle",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "기본 카테고리", value: "6개" },
+      { label: "분담 방식", value: "3가지" }
+    ]
   }
 ];
+

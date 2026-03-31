@@ -1,0 +1,360 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PAGE_META,
+  REGION_LABELS,
+  TIER_LABELS,
+  SHARE_MODE_LABELS,
+  CATEGORY_DEFINITIONS,
+  CATEGORY_OWNER_OPTIONS,
+  DEFAULT_CATEGORY_OWNERS,
+  HERO_METRICS,
+  PAGE_FAQ,
+  relatedLinks,
+  REGION_PRESETS,
+  TIER_PRESETS,
+  HONEYMOON_PRESETS,
+  DEFAULT_REGION,
+  DEFAULT_TIER,
+  DEFAULT_HONEYMOON_PRESET,
+  buildPreset,
+  calcPresetTotal,
+  formatKoreanLarge,
+} from "../../data/weddingBudget";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const defaultPreset = buildPreset(DEFAULT_REGION, DEFAULT_TIER, DEFAULT_HONEYMOON_PRESET);
+const defaultTotal = calcPresetTotal(defaultPreset);
+const regionOptions = Object.entries(REGION_LABELS);
+const tierOptions = Object.entries(TIER_LABELS);
+const shareModeOptions = Object.entries(SHARE_MODE_LABELS);
+const honeymoonOptions = Object.entries(HONEYMOON_PRESETS);
+const faqItems = PAGE_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+---
+
+<BaseLayout
+  title={PAGE_META.title}
+  description={PAGE_META.subtitle}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "결혼 준비 예산 계산기",
+    url: `${import.meta.env.SITE}/tools/wedding-budget-calculator/`,
+    description: PAGE_META.subtitle,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    inLanguage: "ko-KR",
+    isAccessibleForFree: true,
+    provider: { "@type": "Organization", name: "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="wedding-budget-calculator" pageClass="wedding-budget-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="결혼 준비 예산 계산기"
+        title="결혼 준비 예산 계산기"
+        description="웨딩홀, 스드메, 신혼여행 비용을 지역과 티어 기준으로 빠르게 계산합니다."
+      />
+
+      <section class="content-section wedding-hero-strip">
+        <div class="wedding-hero-strip__grid">
+          {HERO_METRICS.map((metric) => (
+            <article class="wedding-hero-strip__card">
+              <p>{metric.label}</p>
+              <strong>{metric.value}</strong>
+            </article>
+          ))}
+          <article class="wedding-hero-strip__card wedding-hero-strip__card--emphasis">
+            <p>서울 평균 티어 기준</p>
+            <strong>{formatKoreanLarge(defaultTotal)}</strong>
+          </article>
+        </div>
+      </section>
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetWeddingBudgetBtn" copyId="copyWeddingBudgetLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel wedding-panel wedding-panel--setup">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">결혼 비용 기준값 설정</h2>
+          </div>
+          <p class="panel-heading__summary">지역, 티어, 여행지 기준값으로 바로 계산합니다.</p>
+        </div>
+
+        <div class="wedding-field-grid wedding-field-grid--two">
+          <label class="wedding-field">
+            <span>지역</span>
+            <select id="weddingRegionSelect">
+              {regionOptions.map(([value, label]) => <option value={value}>{label}</option>)}
+            </select>
+          </label>
+          <label class="wedding-field">
+            <span>티어</span>
+            <select id="weddingTierSelect">
+              {tierOptions.map(([value, label]) => <option value={value}>{label}</option>)}
+            </select>
+          </label>
+          <label class="wedding-field wedding-field--full">
+            <span>신혼여행 지역</span>
+            <select id="weddingHoneymoonPresetSelect">
+              {honeymoonOptions.map(([value, preset]) => <option value={value}>{preset.label}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <div class="wedding-note-box">
+          <strong id="weddingPresetGuideTitle">결혼 비용 기준 안내</strong>
+          <p id="weddingPresetGuideText">선택값에 맞춰 웨딩홀, 식대, 스드메, 신혼여행 기본값이 다시 계산됩니다.</p>
+        </div>
+
+        <div class="wedding-field-grid wedding-field-grid--two">
+          <label class="wedding-field">
+            <span>신랑 하객 수</span>
+            <input id="weddingGuestCountGroomInput" type="number" min="0" step="1" />
+          </label>
+          <label class="wedding-field">
+            <span>신부 하객 수</span>
+            <input id="weddingGuestCountBrideInput" type="number" min="0" step="1" />
+          </label>
+          <label class="wedding-field">
+            <span>신랑 측 식대</span>
+            <div class="wedding-inline-input">
+              <input id="weddingMealPriceGroomInput" type="number" min="0" step="0.1" />
+              <em>만원</em>
+            </div>
+          </label>
+          <label class="wedding-field">
+            <span>신부 측 식대</span>
+            <div class="wedding-inline-input">
+              <input id="weddingMealPriceBrideInput" type="number" min="0" step="0.1" />
+              <em>만원</em>
+            </div>
+          </label>
+        </div>
+
+        <div class="wedding-share-panel">
+          <div class="wedding-share-panel__head">
+            <h3>분담 방식</h3>
+            <p>반반, 비율 입력, 카테고리별 분담 중 하나를 선택합니다.</p>
+          </div>
+          <div class="wedding-tab-row" id="weddingShareModeTabs">
+            {shareModeOptions.map(([value, label], index) => (
+              <button type="button" class:list={["wedding-tab", index === 0 && "is-active"]} data-share-mode={value}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <label class="wedding-field wedding-field--ratio" id="weddingRatioField" hidden>
+            <span>신랑 부담 비율</span>
+            <div class="wedding-inline-input wedding-inline-input--wide">
+              <input id="weddingGroomShareRatioInput" type="range" min="0" max="100" step="1" />
+              <strong id="weddingGroomShareRatioLabel">50%</strong>
+            </div>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel wedding-panel wedding-panel--custom">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기타 비용</p>
+            <h2 class="panel__title">플래너에 없는 항목 추가</h2>
+          </div>
+        </div>
+        <div id="weddingCustomItems" class="wedding-custom-list"></div>
+        <button id="weddingAddCustomItemBtn" class="wedding-outline-btn" type="button">추가 항목 넣기</button>
+      </article>
+    </Fragment>
+
+    <section class="wedding-section wedding-section--summary">
+      <div class="wedding-section__head">
+        <p class="wedding-section__eyebrow">실시간 결과</p>
+        <h2>총예산 요약</h2>
+        <p id="weddingSummaryLine" class="wedding-section__sub">입력값 변경 시 즉시 반영됩니다.</p>
+      </div>
+
+      <div class="wedding-summary-grid">
+        <article class="wedding-summary-card wedding-summary-card--primary">
+          <p>총예산</p>
+          <strong id="weddingTotalBudget">-</strong>
+          <span id="weddingTotalBudgetSub">전체 카테고리 합계</span>
+        </article>
+        <article class="wedding-summary-card">
+          <p>웨딩홀 합계</p>
+          <strong id="weddingHallBudget">-</strong>
+          <span id="weddingHallBudgetSub">식대 포함</span>
+        </article>
+        <article class="wedding-summary-card">
+          <p>신랑 부담액</p>
+          <strong id="weddingGroomShare">-</strong>
+          <span id="weddingGroomShareSub">반반 기준</span>
+        </article>
+        <article class="wedding-summary-card">
+          <p>신부 부담액</p>
+          <strong id="weddingBrideShare">-</strong>
+          <span id="weddingBrideShareSub">반반 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="wedding-section wedding-section--editorial">
+      <div class="wedding-editorial-board">
+        <article class="wedding-editorial-card">
+          <span class="wedding-editorial-card__label">Hall Signal</span>
+          <strong id="weddingMealInsight">식대 비중 계산 중</strong>
+          <p id="weddingMealInsightText">하객 수와 식대 단가에 따라 웨딩홀 비중이 크게 달라집니다.</p>
+        </article>
+        <article class="wedding-editorial-card">
+          <span class="wedding-editorial-card__label">Tier Signal</span>
+          <strong id="weddingTierInsight">티어 비교 계산 중</strong>
+          <p id="weddingTierInsightText">현재 예산이 어느 티어에 가까운지 비교해 볼 수 있습니다.</p>
+        </article>
+        <article class="wedding-editorial-card">
+          <span class="wedding-editorial-card__label">Travel Note</span>
+          <strong id="weddingTravelInsight">여행지 기준 적용 중</strong>
+          <p id="weddingTravelInsightText">선택한 신혼여행 지역 기준으로 항공과 숙박 비중을 다시 계산합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wedding-section wedding-section--categories">
+      <div class="wedding-section__head">
+        <p class="wedding-section__eyebrow">항목 입력</p>
+        <h2>상세 비용 조정</h2>
+      </div>
+      <div class="wedding-category-stack">
+        {CATEGORY_DEFINITIONS.map((category) => (
+          <article class="wedding-category-card" data-category={category.key}>
+            <div class="wedding-category-card__head">
+              <div>
+                <p class="wedding-category-card__eyebrow" style={`color:${category.accent}`}>{category.label}</p>
+                <h3>{category.description}</h3>
+              </div>
+              <strong id={`category-total-${category.key}`}>-</strong>
+            </div>
+
+            <div class="wedding-category-grid">
+              {category.items.map((item) => (
+                <label class:list={["wedding-field", item.defaultVisible === false && "wedding-field--optional"]}>
+                  <span>{item.label}</span>
+                  <div class="wedding-inline-input">
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      data-category-input={category.key}
+                      data-item-key={item.key}
+                      data-auto={item.auto ? "true" : "false"}
+                      readonly={item.auto}
+                    />
+                    <em>만원</em>
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            {category.key === "hall" && (
+              <div class="wedding-auto-box">
+                <p>식대 자동 계산</p>
+                <strong id="weddingMealCostTotal">-</strong>
+                <span>신랑 측 식대 + 신부 측 식대를 분리해 합산합니다.</span>
+              </div>
+            )}
+
+            <div class="wedding-owner-row" data-owner-row={category.key} hidden>
+              <span>카테고리 분담</span>
+              <div class="wedding-chip-group">
+                {CATEGORY_OWNER_OPTIONS.map((option) => (
+                  <button type="button" class="wedding-chip" data-owner-category={category.key} data-owner-value={option.value}>
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="wedding-section wedding-section--mix">
+      <div class="wedding-section__head">
+        <p class="wedding-section__eyebrow">카테고리 비중</p>
+        <h2>비용 비중 비교</h2>
+      </div>
+      <div id="weddingCategoryBoard" class="wedding-share-board"></div>
+    </section>
+
+    <section class="wedding-section wedding-section--tier">
+      <div class="wedding-section__head">
+        <p class="wedding-section__eyebrow">티어 비교</p>
+        <h2>티어 비교</h2>
+      </div>
+      <div id="weddingTierCompareBoard" class="wedding-tier-board"></div>
+    </section>
+
+    <InfoNotice title="안내" lines={[PAGE_META.methodology, PAGE_META.caution, PAGE_META.updatedAt]} />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="결혼 준비 예산 계산기를 보는 방법"
+        intro={[
+          "예식 준비, 웨딩홀, 스드메, 신혼여행 비용을 한 화면에서 비교할 수 있게 구성했습니다.",
+          "서울, 수도권, 지방 기준값과 티어를 나눠 현실적인 범위에서 비교하고, 식대는 양가 하객 수 기준으로 자동 계산합니다.",
+        ]}
+        inputPoints={[
+          "지역과 티어를 고르면 웨딩홀, 식대, 스드메, 신혼여행 기본값이 다시 채워집니다.",
+          "신혼여행 지역을 바꾸면 항공, 숙박, 현지비 구성이 함께 바뀝니다.",
+          "실제 견적이 나온 항목은 직접 수정하고, 없는 항목만 기본값을 참고하는 방식이 가장 정확합니다.",
+        ]}
+        criteria={[
+          "모든 금액은 만원 단위입니다.",
+          "식대는 양가 하객 수와 식대 단가 입력값으로 자동 계산합니다.",
+          "카테고리별 분담은 실제 협의 구조를 숫자로 확인하기 위한 시뮬레이션입니다.",
+        ]}
+        faq={faqItems}
+        related={relatedLinks}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script
+    id="weddingBudgetConfig"
+    type="application/json"
+    set:html={JSON.stringify({
+      regionPresets: REGION_PRESETS,
+      tierPresets: TIER_PRESETS,
+      honeymoonPresets: HONEYMOON_PRESETS,
+      categoryDefinitions: CATEGORY_DEFINITIONS,
+      regionLabels: REGION_LABELS,
+      tierLabels: TIER_LABELS,
+      shareModeLabels: SHARE_MODE_LABELS,
+      ownerOptions: CATEGORY_OWNER_OPTIONS,
+      defaultCategoryOwners: DEFAULT_CATEGORY_OWNERS,
+      defaultRegion: DEFAULT_REGION,
+      defaultTier: DEFAULT_TIER,
+      defaultHoneymoonPreset: DEFAULT_HONEYMOON_PRESET,
+    })}
+  ></script>
+  <script type="module" src={withBase("/scripts/wedding-budget-calculator.js")}></script>
+</BaseLayout>
+
+
+
+
