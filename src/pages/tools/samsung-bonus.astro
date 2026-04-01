@@ -15,7 +15,11 @@ import {
   opiModes,
   rankPresets,
   scenarioPresets,
-  yearOptions
+  yearOptions,
+  SAMSUNG_NEXT_CALCULATOR,
+  SAMSUNG_RELATED_CALCULATORS,
+  SAMSUNG_EXTERNAL_REFERENCE_LINKS,
+  SAMSUNG_AFFILIATE_PRODUCTS,
 } from "../../data/samsungCompensation";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
@@ -394,6 +398,82 @@ const config = {
         "실수령 추정은 세금과 공제 조건에 따라 달라질 수 있습니다."
       ]}
     />
+
+    <!-- ── 다음 계산기 열기 ─────────────────────────────────────────── -->
+    <section class="content-section sb-next-section">
+      <div class="panel sb-next-card">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{SAMSUNG_NEXT_CALCULATOR.title}</p>
+            <h2 class="panel__title">{SAMSUNG_NEXT_CALCULATOR.headline}</h2>
+          </div>
+          <p class="panel-heading__summary">{SAMSUNG_NEXT_CALCULATOR.desc}</p>
+        </div>
+        <a href={SAMSUNG_NEXT_CALCULATOR.href} class="button button--secondary">{SAMSUNG_NEXT_CALCULATOR.cta}</a>
+      </div>
+    </section>
+
+    <!-- ── 관련 계산기 ──────────────────────────────────────────────── -->
+    <section class="content-section sb-section">
+      <div class="sb-section__head">
+        <p class="sb-section__eyebrow">관련 계산기</p>
+        <h2>다른 대기업 성과급 계산기</h2>
+        <p class="sb-section__sub">삼성전자 결과를 다른 대기업과 나란히 비교해보세요.</p>
+      </div>
+      <div class="sb-related-grid">
+        {SAMSUNG_RELATED_CALCULATORS.map((item) => (
+          <a href={item.href} class="sb-related-link">
+            <strong>{item.label}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 외부 참고 링크 ───────────────────────────────────────────── -->
+    <section class="content-section sb-reference-section">
+      <div class="panel sb-reference-links">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">삼성전자 성과급 공식 참고 자료</h2>
+          </div>
+          <p class="panel-heading__summary">OPI·TAI 계산 결과를 공식 수치와 비교하거나, 세금 구조를 확인할 때 함께 보면 좋은 링크입니다.</p>
+        </div>
+        <div class="sb-link-grid">
+          {SAMSUNG_EXTERNAL_REFERENCE_LINKS.map((item) => (
+            <a href={item.url} target="_blank" rel="noreferrer" class="sb-reference-link">
+              <strong>{item.title}</strong>
+              <span>{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 추천 상품 (제휴) ─────────────────────────────────────────── -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">💼</span>
+          <div>
+            <h3 class="affiliate-box__title">성과급·커리어 관련 추천 상품</h3>
+            <p class="affiliate-box__context">연봉과 성과급을 자산으로 연결하는 데 도움 되는 도서와 아이템을 모았습니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {SAMSUNG_AFFILIATE_PRODUCTS.map((prod) => (
+            <a href={prod.url} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
 
     <Fragment slot="seo">
       <SeoContent

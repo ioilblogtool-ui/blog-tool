@@ -70,4 +70,11 @@ export const reports: ReportMeta[] = [
     order: 9,
     badges: ["리포트"],
   },
+  {
+    slug: "wedding-cost-2016-vs-2026",
+    title: "결혼비용 2016 vs 2026 리포트",
+    description: "웨딩홀, 스드메, 신혼여행, 예식 준비 비용을 같은 항목 체계로 다시 묶어 10년 사이 결혼 총예산 변화를 비교하는 리포트입니다.",
+    order: 10,
+    badges: ["결혼", "예산"],
+  },
 ];

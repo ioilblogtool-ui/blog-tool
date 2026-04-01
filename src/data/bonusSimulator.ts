@@ -200,3 +200,111 @@ export const companyConfigs: CompanyConfig[] = [
     }
   }
 ];
+
+// ── 다음 리포트 ───────────────────────────────────────────────────────────────
+export const BS_NEXT_REPORTS = {
+  main: {
+    href: "/reports/new-employee-salary-2026/",
+    eyebrow: "이어서 보면 좋은 리포트",
+    title: "2026 신입 연봉 비교 — 70개 기업 초봉 총정리",
+    desc: "반도체, 제조, IT, 금융, 공공 등 70개 기업의 신입 초봉을 비교하고 내 위치를 바로 확인하는 리포트입니다. 성과급 계산 다음 단계로 보기 좋습니다.",
+    badges: ["70개 기업", "연봉", "2026"],
+    cta: "70개 기업 초봉 비교 보기",
+  },
+  sub: [
+    {
+      href: "/reports/it-si-sm-salary-comparison-2026/",
+      title: "IT SI·SM 대기업 평균 연봉·성과급 비교",
+      desc: "삼성SDS, LG CNS, 현대오토에버, 한화시스템 ICT 등 주요 IT서비스 기업의 평균 연봉과 성과급을 비교합니다.",
+      badges: ["IT서비스", "평균 연봉"],
+      cta: "IT서비스 연봉·성과급 비교 보기",
+    },
+    {
+      href: "/reports/it-salary-top10/",
+      title: "IT 업계 신입 초봉 TOP 10 연봉·복지 비교",
+      desc: "네이버, 카카오, SK텔레콤, 현대오토에버 등 주요 IT 기업의 초봉과 복지 포인트를 비교합니다.",
+      badges: ["IT", "TOP 10"],
+      cta: "IT 업계 초봉 리포트 보기",
+    },
+    {
+      href: "/reports/insurance-salary-bonus-comparison-2026/",
+      title: "국내 TOP 보험사 평균 연봉·성과급 비교",
+      desc: "삼성화재, 삼성생명, 메리츠화재, 현대해상 등 주요 보험사의 평균 연봉과 총보상을 비교합니다.",
+      badges: ["보험", "총보상"],
+      cta: "보험사 총보상 비교 보기",
+    },
+    {
+      href: "/reports/construction-salary-bonus-comparison-2026/",
+      title: "국내 TOP 대형 건설사 평균 연봉·성과급 비교",
+      desc: "현대건설, GS건설, 대우건설, 롯데건설 등 주요 대형 건설사의 총보상과 성과급 구조를 비교합니다.",
+      badges: ["건설", "총보상"],
+      cta: "대형 건설사 총보상 비교 보기",
+    },
+  ],
+};
+
+// ── 외부 참고 링크 ────────────────────────────────────────────────────────────
+export const BS_EXTERNAL_REFERENCE_LINKS = [
+  {
+    title: "삼성전자 DART 사업보고서",
+    desc: "직원 평균 급여, OPI·TAI 지급 근거, 사업부별 실적과 연간 재무 현황을 공식 수치로 확인",
+    source: "금융감독원 DART",
+    href: "https://dart.fss.or.kr/dsab002/main.do?autoSearch=true&textCrpNm=%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90",
+  },
+  {
+    title: "SK하이닉스 DART 사업보고서",
+    desc: "직원 평균 보수, PI·PS 지급 체계, FY2025 영업이익과 보상 지급 흐름을 공시 기준으로 확인",
+    source: "금융감독원 DART",
+    href: "https://dart.fss.or.kr/dsab002/main.do?autoSearch=true&textCrpNm=SK%ED%95%98%EC%9D%B4%EB%8B%89%EC%8A%A4",
+  },
+  {
+    title: "현대자동차 DART 사업보고서",
+    desc: "직원 평균 보수, 임단협 패키지 내역, 연간 실적과 보상 구조를 공시 기준으로 확인",
+    source: "금융감독원 DART",
+    href: "https://dart.fss.or.kr/dsab002/main.do?autoSearch=true&textCrpNm=%ED%98%84%EB%8C%80%EC%9E%90%EB%8F%99%EC%B0%A8",
+  },
+  {
+    title: "국세청 근로소득 원천징수 안내",
+    desc: "성과급 과세 방식과 근로소득 세율 구조를 공식 기준으로 확인할 때 참고",
+    source: "국세청",
+    href: "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=2227&cntntsId=7708",
+  },
+  {
+    title: "고용노동부 임금정보 시스템",
+    desc: "직종·업종·규모별 평균 임금 현황을 비교하고 싶을 때 참고하는 공공 임금 통계 서비스",
+    source: "고용노동부",
+    href: "https://www.wage.go.kr/",
+  },
+];
+
+// ── 추천 상품 (쿠팡파트너스 제휴) ────────────────────────────────────────────
+export const BS_AFFILIATE_PRODUCTS = [
+  {
+    tag: "재테크",
+    title: "세이노의 가르침",
+    desc: "성과급을 자산으로 키우는 전략을 다루는 국내 대표 재테크 베스트셀러",
+    cta: "쿠팡에서 보기 →",
+    href: "https://link.coupang.com/a/efD3Lx",
+  },
+  {
+    tag: "가계부",
+    title: "자산 관리 가계부 플래너",
+    desc: "성과급 수령 후 지출 계획과 자산 배분을 직접 기록하는 연간 플래너형 가계부",
+    cta: "쿠팡에서 보기 →",
+    href: "https://www.coupang.com/np/search?q=%EA%B0%80%EA%B3%84%EB%B6%80+%EC%9E%90%EC%82%B0%EA%B4%80%EB%A6%AC",
+  },
+  {
+    tag: "투자 입문",
+    title: "존 리의 금융문맹 탈출",
+    desc: "연봉·성과급을 어떻게 운용할지 고민하는 직장인에게 추천하는 투자 기초 도서",
+    cta: "쿠팡에서 보기 →",
+    href: "https://link.coupang.com/a/efD6PQ",
+  },
+  {
+    tag: "커리어",
+    title: "직장인 커리어·연봉 협상 가이드",
+    desc: "대기업 커리어 전략, 이직·연봉 협상 흐름을 정리한 직장인 실용 도서",
+    cta: "쿠팡에서 보기 →",
+    href: "https://link.coupang.com/a/efD9qx",
+  },
+];

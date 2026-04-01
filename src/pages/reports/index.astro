@@ -67,6 +67,18 @@ const estateSeries = [
   },
 ];
 
+const lifeSeries = [
+  {
+    slug: "wedding-cost-2016-vs-2026",
+    eyebrow: "결혼 비용",
+    title: "결혼비용 2016 vs 2026, 10년 만에 얼마나 올랐나",
+    desc: "웨딩홀, 스드메, 신혼여행, 예식 준비 비용을 같은 구조로 다시 묶어 10년 사이 총예산 변화를 비교합니다.",
+    tags: [{ label: "결혼", mod: "asset" }, { label: "10년 비교", mod: "asset" }, { label: "예산", mod: "asset" }],
+    category: "life",
+    isNew: true,
+  },
+];
+
 const assetSeries = [
   {
     slug: "lee-jaemyung-government-officials-assets-salary-2026",
@@ -97,7 +109,7 @@ const assetSeries = [
   },
 ];
 
-const totalReports = salarySeries.length + estateSeries.length + assetSeries.length;
+const totalReports = salarySeries.length + estateSeries.length + lifeSeries.length + assetSeries.length;
 ---
 
 <BaseLayout
@@ -120,7 +132,7 @@ const totalReports = salarySeries.length + estateSeries.length + assetSeries.len
         <span class="reports-hero-stat__label">리포트</span>
       </div>
       <div class="reports-hero-stat">
-        <span class="reports-hero-stat__num">3</span>
+        <span class="reports-hero-stat__num">4</span>
         <span class="reports-hero-stat__label">시리즈</span>
       </div>
       <div class="reports-hero-stat">
@@ -161,6 +173,27 @@ const totalReports = salarySeries.length + estateSeries.length + assetSeries.len
       <h3 class="reports-series__label">연봉·초봉 시리즈</h3>
       <div class="reports-card-grid">
         {salarySeries.map((r) => (
+          <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
+            <p class="rc-eyebrow">{r.eyebrow}</p>
+            <p class="rc-title">{r.title}</p>
+            <p class="rc-desc">{r.desc}</p>
+            <div class="rc-footer">
+              <div class="rc-tags">
+                {r.tags.map((t) => (
+                  <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                ))}
+              </div>
+              <span class="rc-arrow">→</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="reports-series" data-series="life">
+      <h3 class="reports-series__label">생활·결혼 시리즈</h3>
+      <div class="reports-card-grid">
+        {lifeSeries.map((r) => (
           <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
             <p class="rc-eyebrow">{r.eyebrow}</p>
             <p class="rc-title">{r.title}</p>
@@ -301,6 +334,11 @@ const totalReports = salarySeries.length + estateSeries.length + assetSeries.len
     });
   });
 </script>
+
+
+
+
+
 
 
 

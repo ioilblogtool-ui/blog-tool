@@ -6,7 +6,15 @@ import SummaryCards from "../../components/SummaryCards.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
-import { companyConfigs, growthModeOptions, rankOptions, scenarioOptions } from "../../data/bonusSimulator";
+import {
+  companyConfigs,
+  growthModeOptions,
+  rankOptions,
+  scenarioOptions,
+  BS_NEXT_REPORTS,
+  BS_EXTERNAL_REFERENCE_LINKS,
+  BS_AFFILIATE_PRODUCTS,
+} from "../../data/bonusSimulator";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -200,7 +208,7 @@ const initialCompany = companyConfigs[0];
       </section>
 
       <!-- ── 세부 항목 ───────────────────────────────────────────────── -->
-      <details class="detail-box detail-box--soft">
+      <details class="detail-box detail-box--soft" open>
         <summary>성과급 분해 · 세부 표 보기</summary>
         <div class="detail-box__content detail-box__content--tight">
 
@@ -273,6 +281,86 @@ const initialCompany = companyConfigs[0];
 
     </div><!-- /.bs-layout -->
 
+    <!-- ── 다음 리포트 열기 ──────────────────────────────────────────── -->
+    <section class="bs-report-next-section">
+      <div class="bs-report-main panel">
+        <div class="bs-report-main__badges">
+          {BS_NEXT_REPORTS.main.badges.map((b) => (
+            <span class="bs-report-main__badge">{b}</span>
+          ))}
+        </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{BS_NEXT_REPORTS.main.eyebrow}</p>
+            <h2 class="panel__title">{BS_NEXT_REPORTS.main.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{BS_NEXT_REPORTS.main.desc}</p>
+        </div>
+        <a href={BS_NEXT_REPORTS.main.href} class="button button--secondary">{BS_NEXT_REPORTS.main.cta}</a>
+      </div>
+
+      <div class="bs-report-sub-grid">
+        {BS_NEXT_REPORTS.sub.map((report) => (
+          <a href={report.href} class="bs-report-sub-card">
+            <div class="bs-report-sub-card__badges">
+              {report.badges.map((b) => (
+                <span class="bs-report-sub-card__badge">{b}</span>
+              ))}
+            </div>
+            <strong class="bs-report-sub-card__title">{report.title}</strong>
+            <p class="bs-report-sub-card__desc">{report.desc}</p>
+            <span class="bs-report-sub-card__cta">{report.cta}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 외부 참고 링크 ─────────────────────────────────────────────── -->
+    <section class="bs-reference-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">대기업 성과급 참고 자료</h2>
+          </div>
+          <p class="panel-heading__summary">이 페이지는 공개 자료 기반의 단순화된 시뮬레이션입니다. 실제 보상 구조는 아래 공시·공공 자료와 함께 보는 것이 좋습니다.</p>
+        </div>
+        <div class="bs-link-grid">
+          {BS_EXTERNAL_REFERENCE_LINKS.map((item) => (
+            <a href={item.href} target="_blank" rel="noreferrer" class="bs-reference-link">
+              <span class="bs-reference-link__source">{item.source}</span>
+              <strong class="bs-reference-link__title">{item.title}</strong>
+              <span class="bs-reference-link__desc">{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 추천 상품 (제휴) ───────────────────────────────────────────── -->
+    <section class="affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">💼</span>
+          <div>
+            <h3 class="affiliate-box__title">성과급 이후 계획에 도움 되는 아이템</h3>
+            <p class="affiliate-box__context">성과급은 받는 것보다 기록하고 배분 계획을 세울 때 체감 차이가 큽니다. 자금관리·커리어 흐름에 맞는 아이템을 골랐습니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {BS_AFFILIATE_PRODUCTS.map((prod) => (
+            <a href={prod.href} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">{prod.cta}</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
     <SeoContent
       introTitle="대기업 성과급 시뮬레이터를 보는 관점"
       intro={[
@@ -295,6 +383,8 @@ const initialCompany = companyConfigs[0];
         { question: "어느 회사가 가장 유리한지 판단할 수 있나요?", answer: "가능하지만 정답처럼 보기보다는 보상 구조의 성격 차이를 보는 용도로 활용하는 것이 좋습니다. 안정성, 업황 민감도, 패키지 보상 구조가 서로 다릅니다." },
       ]}
       related={[
+        { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
+        { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
         { href: "/tools/salary/", label: "연봉 인상 계산기" },
         { href: "/tools/negotiation/", label: "이직 계산기" },
         { href: "/tools/retirement/", label: "퇴직금 계산기" },

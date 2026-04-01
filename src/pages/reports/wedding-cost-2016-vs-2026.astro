@@ -1,0 +1,375 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { weddingCost2016Vs2026, formatManwon, formatEokFromManwon } from "../../data/weddingCost2016Vs2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = weddingCost2016Vs2026;
+const [base2016, base2026] = report.yearRows;
+const totalGap = base2026.totalManwon - base2016.totalManwon;
+const totalGrowthRate = Math.round((totalGap / base2016.totalManwon) * 100);
+const maxTimeline = Math.max(...report.timeline.map((item) => item.amount));
+const maxItemValue = Math.max(...report.itemRows.map((item) => item.value2026));
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+const seoParagraphs = [
+  "이 리포트는 결혼비용 2016 vs 2026 변화를 같은 항목 체계로 다시 묶어 비교하는 페이지입니다.",
+  "웨딩홀 비용, 식대, 스드메 비용, 신혼여행 비용을 한 구조로 정리해 10년 동안 총예산이 얼마나 커졌는지 읽을 수 있게 구성했습니다.",
+  "더 자세한 개인 예산 계산은 결혼 준비 예산 계산기에서 지역, 티어, 하객 수, 신혼여행 지역을 직접 바꿔 확인할 수 있습니다.",
+];
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page wedding-cost-report-page">
+    <CalculatorHero
+      eyebrow="10년 비교 리포트"
+      title="결혼비용 2016 vs 2026"
+      description="웨딩홀, 식대, 스드메, 신혼여행까지. 10년 전과 지금의 평균 비용 차이를 한눈에 비교합니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, report.meta.updatedAt]}
+    />
+
+    <!-- ① 에디터 리드 -->
+    <section class="content-section wedding-report-hero-board">
+      <div class="wedding-report-lead">
+        <p class="wedding-report-lead__eyebrow">Editor&apos;s Brief</p>
+        <h2>10년 만에 결혼 총비용은 얼마나 올랐나</h2>
+        <p class="wedding-report-lead__body">{report.reportLead}</p>
+        <div class="wedding-report-lead__chips">
+          <span>2016 {formatEokFromManwon(base2016.totalManwon)}</span>
+          <span>2026 {formatEokFromManwon(base2026.totalManwon)}</span>
+          <span class="is-accent">상승률 {totalGrowthRate}%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② 핵심 KPI -->
+    <section class="content-section wedding-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>숫자로 먼저 보는 결혼 비용 변화</h2>
+      </div>
+      <div class="wedding-kpi-grid">
+        {report.kpis.map((item) => (
+          <article class={`wedding-kpi-card ${item.accent === "up" ? "is-up" : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ③ 연도별 타임라인 -->
+    <section class="content-section wedding-timeline-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도별 총비용 추이</p>
+        <h2>2016에서 2026까지 총예산 타임라인</h2>
+        <p>{report.timelineNote}</p>
+      </div>
+      <div class="wedding-timeline-wrap">
+        <div class="wedding-timeline">
+          {report.timeline.map((item, index) => (
+            <article class="wedding-timeline-col">
+              <p class="wedding-timeline-year">{item.year}</p>
+              <div class="wedding-timeline-track">
+                <div
+                  class={`wedding-timeline-bar ${item.year === 2026 ? "is-current" : item.year >= 2021 ? "is-accent" : ""}`}
+                  style={`height:${Math.max(18, Math.round((item.amount / maxTimeline) * 100))}%`}
+                ></div>
+              </div>
+              <strong>{item.amount.toLocaleString("ko-KR")}만원</strong>
+              {index > 0 && (
+                <span class="wedding-timeline-growth">
+                  +{Math.round(((item.amount - report.timeline[index - 1].amount) / report.timeline[index - 1].amount) * 100)}%
+                </span>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ④ 항목별 상세 비교 (미니바 포함) -->
+    <section class="content-section wedding-item-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">항목별 상세 비교</p>
+        <h2>어느 항목이 가장 크게 올랐는지 보기</h2>
+        <p>{report.itemTableNote}</p>
+      </div>
+      <div class="wedding-table-wrap">
+        <table class="wedding-item-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>2016</th>
+              <th>2026</th>
+              <th>상승률</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.itemRows.map((item) => {
+              const rate = Math.round(((item.value2026 - item.value2016) / item.value2016) * 100);
+              const bar2016 = Math.round((item.value2016 / maxItemValue) * 100);
+              const bar2026 = Math.round((item.value2026 / maxItemValue) * 100);
+              return (
+                <tr>
+                  <td>
+                    <div class="wedding-item-name">{item.label}</div>
+                    <div class="wedding-item-sub">{item.sublabel}</div>
+                  </td>
+                  <td class="is-2016">
+                    <span>{item.value2016.toLocaleString("ko-KR")}만원</span>
+                    <div class="wedding-minibar-track">
+                      <div class="wedding-minibar-fill wedding-minibar-fill--blue" style={`width:${bar2016}%`}></div>
+                    </div>
+                  </td>
+                  <td class="is-2026">
+                    <span>{item.value2026.toLocaleString("ko-KR")}만원</span>
+                    <div class="wedding-minibar-track">
+                      <div class="wedding-minibar-fill wedding-minibar-fill--red" style={`width:${bar2026}%`}></div>
+                    </div>
+                  </td>
+                  <td><span class="wedding-change-pill">+{rate}%</span></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ⑤ 핵심 인사이트 -->
+    <section class="content-section wedding-pattern-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 인사이트</p>
+        <h2>원본 리포트에서 읽히는 상승 포인트</h2>
+      </div>
+      <div class="wedding-pattern-grid wedding-pattern-grid--four">
+        {report.patternNotes.map((note) => (
+          <article class="wedding-pattern-card">
+            <span class="wedding-pattern-card__metric">{note.title}</span>
+            <p>{note.body}</p>
+          </article>
+        ))}
+      </div>
+      <div class="wedding-analysis-box">
+        <strong>왜 이렇게 빨리 올랐나</strong>
+        <p>{report.analysisNote}</p>
+      </div>
+    </section>
+
+    <!-- ⑥ 체감 계산기 -->
+    <section class="content-section wedding-feel-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">내 연봉 기준 체감 비교</p>
+        <h2>연봉을 넣으면 체감 부담도를 바로 보기</h2>
+        <p>내 연봉 기준으로 보면 결혼비용 부담이 어느 정도인지 바로 확인할 수 있습니다.</p>
+      </div>
+      <div class="wedding-feel-box">
+        <div class="wedding-feel-input-row">
+          <label for="weddingSalaryInput">연봉 (만원)</label>
+          <input type="number" id="weddingSalaryInput" value="4000" min="1000" step="100" />
+          <span>만원</span>
+        </div>
+        <div class="wedding-feel-grid">
+          <article class="wedding-feel-card">
+            <p>2016 결혼비용 부담</p>
+            <strong id="feel2016">-</strong>
+            <span id="feel2016Sub">-</span>
+          </article>
+          <article class="wedding-feel-card">
+            <p>2026 결혼비용 부담</p>
+            <strong id="feel2026" class="is-up">-</strong>
+            <span id="feel2026Sub">-</span>
+          </article>
+          <article class="wedding-feel-card">
+            <p>10년간 추가 부담액</p>
+            <strong id="feelDiff">-</strong>
+          </article>
+          <article class="wedding-feel-card">
+            <p>월 50만원 저축 기준</p>
+            <strong id="feelSave">-</strong>
+            <span>추가 저축 기간</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑦ 지역별 비교 -->
+    <section class="content-section wedding-region-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역별 평균</p>
+        <h2>2026 지역별 스드메 + 웨딩홀 평균</h2>
+        <p>{report.regionNote}</p>
+      </div>
+      <div class="wedding-table-wrap">
+        <table class="wedding-item-table">
+          <thead>
+            <tr>
+              <th>지역</th>
+              <th>웨딩홀 (식대 별도)</th>
+              <th>스드메 기본</th>
+              <th>합산 추정</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.regionRows.map((row) => (
+              <tr>
+                <td><div class="wedding-item-name">{row.region}</div></td>
+                <td class="is-2026">{row.hall}</td>
+                <td>{row.sdm}</td>
+                <td><span class="wedding-change-pill">{row.estimate}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ⑧ 예산 절약 가이드 (신규) -->
+    <section class="content-section wedding-saving-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">예산 절약 가이드</p>
+        <h2>결혼비용 줄이는 현실적인 방법</h2>
+        <p>전체 비용을 한 번에 줄이기보다, 변동폭이 큰 항목부터 관리하는 것이 효과적입니다.</p>
+      </div>
+      <div class="wedding-saving-list">
+        {report.savingGuide.map((tip) => (
+          <article class="wedding-saving-item">
+            <div class="wedding-saving-item__head">
+              <span class="wedding-saving-item__step">{tip.step}</span>
+              <div>
+                <h3>{tip.title}</h3>
+                <span class="wedding-saving-item__tag">{tip.tag}</span>
+              </div>
+            </div>
+            <p>{tip.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ⑨ 관련 서비스·제휴 -->
+    <section class="content-section wedding-affiliate-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 서비스</p>
+        <h2>다음 단계에서 같이 많이 보는 흐름</h2>
+      </div>
+      <div class="wedding-aff-grid">
+        {report.affiliateCards.map((card) => (
+          <article class="wedding-aff-card">
+            <span class="wedding-aff-tag">{card.tag}</span>
+            <h3>{card.title}</h3>
+            <p>{card.desc}</p>
+            <a href={card.href} class="wedding-aff-link" target="_blank" rel="noopener noreferrer nofollow">{card.button}</a>
+          </article>
+        ))}
+      </div>
+      <p class="wedding-aff-disclosure">이 섹션에는 제휴 링크가 포함될 수 있으며, 판매처 사정에 따라 가격과 구성은 달라질 수 있습니다.</p>
+    </section>
+
+    <!-- ⑩ 관련 계산기 (신규) -->
+    <section class="content-section wedding-related-calc-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 계산기</p>
+        <h2>같이 보면 좋은 계산기</h2>
+        <p>리포트로 평균 흐름을 확인했다면, 이제는 내 상황 기준으로 계산해보는 단계입니다.</p>
+      </div>
+      <div class="wedding-related-calc-grid">
+        {report.relatedCalculators.map((calc) => (
+          <a class="wedding-related-calc-card" href={withBase(calc.href)}>
+            <span class="wedding-related-calc-card__tag">{calc.tag}</span>
+            <h3>{calc.title}</h3>
+            <p>{calc.desc}</p>
+            <span class="wedding-related-calc-card__cta">계산기 열기 →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ⑪ 메인 CTA -->
+    <section class="content-section wedding-cta-section">
+      <div class="wedding-cta-card">
+        <div>
+          <p class="wedding-cta-card__eyebrow">연결 계산기</p>
+          <h2>내 조건으로 결혼 예산 다시 계산하기</h2>
+          <p>이 리포트는 시장 비교용입니다. 실제로는 지역, 티어, 하객 수, 신혼여행 지역에 따라 총액이 크게 달라지므로 계산기에서 바로 다시 확인하는 편이 정확합니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/wedding-budget-calculator/")}>결혼 준비 예산 계산기 보기</a>
+      </div>
+    </section>
+
+    <!-- ⑫ 10년 비교 시리즈 (신규) -->
+    <section class="content-section wedding-series-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">10년 비교 시리즈</p>
+        <h2>결혼비용 외에도 달라진 것들</h2>
+        <p>같은 10년 동안 집값과 연봉은 어떻게 바뀌었는지 함께 확인해보세요.</p>
+      </div>
+      <div class="wedding-series-grid">
+        {report.seriesLinks.map((link) => (
+          <a class="wedding-series-card" href={withBase(link.href)}>
+            <span class="wedding-series-card__tag">{link.tag}</span>
+            <h3>{link.title}</h3>
+            <p>{link.desc}</p>
+            <span class="wedding-series-card__arrow">리포트 보기 →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="결혼비용 2016 vs 2026 리포트 요약"
+      intro={seoParagraphs}
+      faq={faqItems}
+      related={[
+        { href: "/tools/wedding-budget-calculator/", label: "결혼 준비 예산 계산기" },
+        { href: "/reports/seoul-84-apartment-prices/", label: "서울 집값 2016 vs 2026" },
+        { href: "/reports/new-employee-salary-2026/", label: "신입 연봉 2026 리포트" },
+        { href: "/reports/", label: "비교 리포트 모음" },
+      ]}
+    />
+  </main>
+
+  <script is:inline>
+    const salaryInput = document.getElementById('weddingSalaryInput');
+    const feel2016El = document.getElementById('feel2016');
+    const feel2016Sub = document.getElementById('feel2016Sub');
+    const feel2026El = document.getElementById('feel2026');
+    const feel2026Sub = document.getElementById('feel2026Sub');
+    const feelDiff = document.getElementById('feelDiff');
+    const feelSave = document.getElementById('feelSave');
+    const COST_2016 = 2476;
+    const COST_2026 = 4413;
+
+    function renderWeddingFeel() {
+      const salary = Math.max(Number(salaryInput?.value || 0), 1);
+      const ratio2016 = Math.round((COST_2016 / salary) * 100);
+      const ratio2026 = Math.round((COST_2026 / salary) * 100);
+      const diff = COST_2026 - COST_2016;
+      const saveMonths = Math.round(diff / 50);
+
+      if (feel2016El) feel2016El.textContent = `${ratio2016}%`;
+      if (feel2016Sub) feel2016Sub.textContent = `약 ${Math.round((COST_2016 / salary) * 12)}개월치 월급`;
+      if (feel2026El) feel2026El.textContent = `${ratio2026}%`;
+      if (feel2026Sub) feel2026Sub.textContent = `약 ${Math.round((COST_2026 / salary) * 12)}개월치 월급`;
+      if (feelDiff) feelDiff.textContent = `${diff.toLocaleString('ko-KR')}만원`;
+      if (feelSave) feelSave.textContent = `+${saveMonths}개월`;
+    }
+
+    salaryInput?.addEventListener('input', renderWeddingFeel);
+    renderWeddingFeel();
+  </script>
+</BaseLayout>
