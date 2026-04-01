@@ -1,0 +1,344 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  salaryAsset2016Vs2026,
+  formatAssetEok,
+  calcSalaryAssetFeelings,
+} from "../../data/salaryAsset2016Vs2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = salaryAsset2016Vs2026;
+const firstAverage = report.averageSeries[0];
+const lastAverage = report.averageSeries[report.averageSeries.length - 1];
+const feelings = calcSalaryAssetFeelings(
+  report.calculatorDefaults.annualIncomeManwon,
+  report.calculatorDefaults.savingRatePercent,
+);
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page salary-asset-report-page">
+    <CalculatorHero
+      eyebrow="연봉·자산 비교 리포트"
+      title="한국인 평균 연봉·자산 2016 vs 2026"
+      description="중위 연봉, 자산, 서울 집값을 같은 기준축에서 비교합니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, report.meta.updatedAt]}
+    />
+
+    <section class="content-section salary-asset-hero-board">
+      <div class="salary-asset-lead">
+        <p class="salary-asset-lead__eyebrow">Editor&apos;s Brief</p>
+        <h2>연봉은 올랐지만 따라잡기는 더 어려워졌습니다</h2>
+        <p class="salary-asset-lead__body">{report.reportLead}</p>
+        <div class="salary-asset-lead__chips">
+          <span class="is-year-2016">2016 연봉 {firstAverage.averageSalaryManwon.toLocaleString("ko-KR")}만</span>
+          <span class="is-year-2026">2026 연봉 {lastAverage.averageSalaryManwon.toLocaleString("ko-KR")}만</span>
+          <span class="is-accent">평균 자산 {formatAssetEok(lastAverage.averageAssetEok)}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>먼저 봐야 할 숫자 6개</h2>
+      </div>
+      <div class="salary-asset-kpi-grid">
+        {report.kpis.map((item) => (
+          <article class={`salary-asset-kpi-card ${item.accent === "up" ? "is-up" : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-primary-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 차트</p>
+        <h2>연봉, 자산, 서울 집값이 얼마나 다르게 움직였는지 비교합니다</h2>
+        <p id="salaryAssetPrimaryChartDesc">기본 보기에서는 평균 연봉과 평균 자산 흐름을 함께 보고, 지수 보기에서는 서울 집값까지 같은 기준으로 비교합니다.</p>
+      </div>
+      <div class="salary-asset-tab-row">
+        <button type="button" class="salary-asset-tab is-active" data-chart-mode="average">평균 연봉·자산</button>
+        <button type="button" class="salary-asset-tab" data-chart-mode="index">2016=100 지수</button>
+      </div>
+      <div class="salary-asset-chart-panel salary-asset-chart-panel--primary">
+        <div class="salary-asset-chart-meta-row">
+          <span>평균 연봉</span>
+          <span>평균 자산</span>
+          <span>서울 집값 지수</span>
+        </div>
+        <div class="salary-asset-chart-wrap salary-asset-chart-wrap--main">
+          <canvas id="salaryAssetPrimaryChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2016 vs 2026 비교</p>
+        <h2>2016과 2026을 같은 줄에 놓고 봅니다</h2>
+      </div>
+      <div class="salary-asset-compare-grid">
+        <article class="salary-asset-compare-card">
+          <p class="salary-asset-compare-card__eyebrow is-year-2016">2016</p>
+          <h3>자산 격차가 지금보다 얕던 구간</h3>
+          <ul class="salary-asset-compare-list">
+            {report.compareRows.map((row) => <li><span>{row.label}</span><strong>{row.value2016}</strong></li>)}
+          </ul>
+        </article>
+        <article class="salary-asset-compare-card salary-asset-compare-card--accent">
+          <p class="salary-asset-compare-card__eyebrow is-year-2026">2026</p>
+          <h3>집값과 자산 격차가 더 커진 현재</h3>
+          <ul class="salary-asset-compare-list">
+            {report.compareRows.map((row) => <li><span>{row.label}</span><strong>{row.value2026}</strong></li>)}
+          </ul>
+        </article>
+      </div>
+      <div class="salary-asset-compare-table-wrap">
+        <table class="salary-asset-compare-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>2016</th>
+              <th>2026</th>
+              <th>변화</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.compareRows.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.value2016}</td>
+                <td class="is-current">{row.value2026}</td>
+                <td><span class="salary-asset-change-pill">{row.changeLabel}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-band-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연봉 구간별 체감</p>
+        <h2>어느 구간부터 체감이 달라지는지 빠르게 보기</h2>
+      </div>
+      <div class="salary-asset-band-table-wrap">
+        <table class="salary-asset-band-table">
+          <thead>
+            <tr>
+              <th>구간</th>
+              <th>2016 연봉</th>
+              <th>2026 연봉</th>
+              <th>상승률</th>
+              <th>서울 집값 체감</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.incomeBands.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.salary2016}</td>
+                <td class="is-current">{row.salary2026}</td>
+                <td>{row.growth}</td>
+                <td>{row.feeling}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-gap-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자산 격차</p>
+        <h2>보유 여부가 자산 결과를 크게 갈랐습니다</h2>
+      </div>
+      <div class="salary-asset-gap-grid">
+        {report.gapCards.map((item) => (
+          <article class="salary-asset-gap-card">
+            <div class="salary-asset-gap-card__top">
+              <p>{item.title}</p>
+              <strong>{item.asset2026}</strong>
+            </div>
+            <div class="salary-asset-gap-stats">
+              <span>2016 {item.asset2016}</span>
+              <span>{item.growth}</span>
+            </div>
+            <p class="salary-asset-gap-card__summary">{item.summary}</p>
+            <span class="salary-asset-gap-card__note">{item.note}</span>
+          </article>
+        ))}
+      </div>
+      <div class="salary-asset-structure-box">
+        <strong>{report.structureBox.title}</strong>
+        <p>{report.structureBox.body}</p>
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-age-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연령대별 자산</p>
+        <h2>40~50대에서 자산 증가 폭이 더 크게 벌어집니다</h2>
+      </div>
+      <div class="salary-asset-chart-panel">
+        <div class="salary-asset-chart-wrap">
+          <canvas id="salaryAssetAgeChart"></canvas>
+        </div>
+      </div>
+      <div class="salary-asset-age-grid">
+        {report.ageRows.map((item) => (
+          <article class="salary-asset-age-card">
+            <div class="salary-asset-age-card__head">
+              <p>{item.age}</p>
+              <strong>{formatAssetEok(item.asset2026Eok)}</strong>
+            </div>
+            <span>2016 {formatAssetEok(item.asset2016Eok)}</span>
+            <p>{item.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-feel-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">내 기준 체감</p>
+        <h2>내 연봉 기준으로 따라잡기 체감을 봅니다</h2>
+      </div>
+      <div class="salary-asset-feel-box">
+        <div class="salary-asset-feel-input-grid">
+          <label class="salary-asset-input-field" for="salaryAssetIncomeInput">
+            <span>연봉 (만원)</span>
+            <input type="number" id="salaryAssetIncomeInput" min="1000" step="100" value={report.calculatorDefaults.annualIncomeManwon} />
+          </label>
+          <label class="salary-asset-input-field" for="salaryAssetSavingRateInput">
+            <span>저축률</span>
+            <input type="range" id="salaryAssetSavingRateInput" min="10" max="60" step="5" value={report.calculatorDefaults.savingRatePercent} />
+            <strong id="salaryAssetSavingRateValue">{report.calculatorDefaults.savingRatePercent}%</strong>
+          </label>
+        </div>
+        <div class="salary-asset-feel-grid">
+          <article class="salary-asset-feel-card">
+            <p>내 연봉 위치</p>
+            <strong id="salaryAssetPosition">{feelings.salaryPosition}</strong>
+            <span>중위 연봉 기준 비교</span>
+          </article>
+          <article class="salary-asset-feel-card">
+            <p>10년 저축 추정</p>
+            <strong id="salaryAssetSaving">{feelings.tenYearSaving.toLocaleString("ko-KR")}만원</strong>
+            <span>단순 누적 기준</span>
+          </article>
+          <article class="salary-asset-feel-card">
+            <p>서울 평균 집값 격차</p>
+            <strong id="salaryAssetHouseGap" class="is-up">{feelings.houseGapManwon.toLocaleString("ko-KR")}만원</strong>
+            <span id="salaryAssetHouseMultiple">연봉 {feelings.houseMultiple}배</span>
+          </article>
+          <article class="salary-asset-feel-card">
+            <p>서울 평균 전세 마련 기간</p>
+            <strong id="salaryAssetJeonseYears">{feelings.jeonseYears}년</strong>
+            <span>저축률 기준 추정</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-pattern-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>이 리포트에서 먼저 읽어야 할 흐름</h2>
+      </div>
+      <div class="salary-asset-pattern-grid">
+        {report.patternNotes.map((item) => (
+          <article class="salary-asset-pattern-card">
+            <span class="salary-asset-pattern-card__metric">{item.title}</span>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-reference-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">외부 참고 링크</p>
+        <h2>통계와 관련 계산기를 같이 확인하기</h2>
+      </div>
+      <div class="salary-asset-reference-grid">
+        <article class="salary-asset-reference-panel">
+          <h3>공식 통계</h3>
+          <div class="salary-asset-reference-links">
+            {report.references.official.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+          </div>
+        </article>
+        <article class="salary-asset-reference-panel">
+          <h3>관련 리포트</h3>
+          <div class="salary-asset-reference-links">
+            {report.references.market.map((item) => (
+              item.href.startsWith("/")
+                ? <a href={withBase(item.href)}>{item.label}</a>
+                : <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+            ))}
+          </div>
+        </article>
+        <article class="salary-asset-reference-panel">
+          <h3>다음 계산기</h3>
+          <div class="salary-asset-reference-links">
+            {report.references.next.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section salary-asset-cta-section">
+      <div class="salary-asset-cta-card">
+        <div>
+          <p class="salary-asset-cta-card__eyebrow">다음 액션</p>
+          <h2>내 연봉 위치와 가구 기준 계산으로 이어서 보는 편이 낫습니다</h2>
+          <p>연봉 티어, 가구 소득, 서울 집값 리포트까지 한 흐름에서 이어서 볼 수 있게 연결했습니다.</p>
+        </div>
+        <div class="salary-asset-cta-links">
+          {report.relatedLinks.map((item) => <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>)}
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="한국인 평균 연봉·자산 2016 vs 2026 리포트 읽는 법"
+      intro={[
+        "이 리포트는 중위 연봉, 평균 연봉, 중위 자산, 평균 자산, 서울 집값을 한 화면에서 비교해 10년 사이 자산 형성 구조가 어떻게 바뀌었는지 읽게 만드는 비교 페이지입니다.",
+        "핵심은 연봉이 올랐는지 여부가 아니라 자산과 주거비가 더 빠르게 벌어졌는지, 그리고 그 차이가 부동산 보유 여부에 따라 어떻게 달라졌는지를 같이 보는 데 있습니다.",
+      ]}
+      criteria={[
+        "평균과 중위는 다른 의미이므로 혼합해서 단순 비교하지 않는 것이 좋습니다.",
+        "부동산 보유자와 미보유자 자산 비교는 구조 해석용 카드이며 개인 상황을 그대로 뜻하지는 않습니다.",
+        "체감 계산은 단순 저축 가정이므로 실제 투자수익률, 대출, 맞벌이 여부를 반영하지 않습니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script id="salaryAsset2016Vs2026Data" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/salary-asset-2016-vs-2026.js")}></script>
+</BaseLayout>
+
+
+

@@ -1,0 +1,318 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  seoulHousing2016Vs2026,
+  formatEok,
+  formatManwon,
+  calcHousingFeelings,
+} from "../../data/seoulHousing2016Vs2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const seed = seoulHousing2016Vs2026;
+const faqItems = seed.faq.map((item) => ({ question: item.q, answer: item.a }));
+const saleSeries = seed.coreSeries;
+const firstPoint = saleSeries[0];
+const lastPoint = saleSeries[saleSeries.length - 1];
+const feelings = calcHousingFeelings(seed.calculatorDefaults.annualIncomeManwon);
+---
+
+<BaseLayout title={seed.meta.title} description={seed.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page housing-report-page">
+    <CalculatorHero
+      eyebrow="서울 주거비 리포트"
+      title="서울 집값 2016 vs 2026"
+      description="매매·전세·월세·PIR로 서울 주거비 10년 변화를 비교합니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[seed.meta.methodology, seed.meta.caution, seed.meta.updatedAt]}
+    />
+
+    <section class="content-section housing-report-hero-board">
+      <div class="housing-report-lead">
+        <p class="housing-report-lead__eyebrow">Editor's Brief</p>
+        <h2>서울 평균 주거비, 10년 만에 다른 레벨이 됐습니다</h2>
+        <p class="housing-report-lead__body">{seed.reportLead}</p>
+        <div class="housing-report-lead__chips">
+          <span>2016 {formatEok(firstPoint.saleEok)}</span>
+          <span>2026 {formatEok(lastPoint.saleEok)}</span>
+          <span class="is-accent">PIR {lastPoint.pir}배</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section housing-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>먼저 봐야 할 숫자 6개</h2>
+      </div>
+      <div class="housing-kpi-grid">
+        {seed.kpis.map((item) => (
+          <article class={`housing-kpi-card ${item.accent === "up" ? "is-up" : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section housing-main-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">가격과 부담</p>
+        <h2>매매가와 PIR을 같이 보면 부담이 보입니다</h2>
+        <p>가격 상승과 연봉 대비 부담 악화를 같은 차트에서 읽도록 구성했습니다.</p>
+      </div>
+      <div class="housing-chart-panel housing-chart-panel--primary">
+        <div class="housing-chart-meta-row">
+          <span>매매가 line</span>
+          <span>PIR bar</span>
+          <span>2016→2026</span>
+        </div>
+        <div class="housing-chart-wrap housing-chart-wrap--main">
+          <canvas id="housingMainChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section housing-secondary-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">보조 차트</p>
+        <h2>전세와 월세 흐름을 나눠서 보기</h2>
+        <p id="housingSecondaryChartDesc">서울 평균 전세가의 10년 변화를 기준으로 보고 있습니다.</p>
+      </div>
+      <div class="housing-tab-row" id="housingSecondaryTabs">
+        <button class="housing-tab is-active" type="button" data-mode="jeonse">전세가</button>
+        <button class="housing-tab" type="button" data-mode="rentDeposit">월세 보증금</button>
+        <button class="housing-tab" type="button" data-mode="rentMonthly">월세</button>
+      </div>
+      <div class="housing-chart-panel">
+        <div class="housing-chart-wrap">
+          <canvas id="housingSecondaryChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section housing-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2016 vs 2026 비교</p>
+        <h2>같은 숫자로 놓고 보면 차이가 더 선명합니다</h2>
+      </div>
+      <div class="housing-compare-grid">
+        <article class="housing-compare-card">
+          <p class="housing-compare-card__eyebrow">2016</p>
+          <h3>저금리 이전 서울 평균</h3>
+          <ul class="housing-compare-list">
+            {seed.compareRows.map((row) => <li><span>{row.label}</span><strong>{row.value2016}</strong></li>)}
+          </ul>
+        </article>
+        <article class="housing-compare-card housing-compare-card--accent">
+          <p class="housing-compare-card__eyebrow">2026</p>
+          <h3>현재 기준 서울 평균</h3>
+          <ul class="housing-compare-list">
+            {seed.compareRows.map((row) => <li><span>{row.label}</span><strong>{row.value2026}</strong></li>)}
+          </ul>
+        </article>
+      </div>
+      <div class="housing-compare-table-wrap">
+        <table class="housing-compare-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>2016</th>
+              <th>2026</th>
+              <th>변화</th>
+            </tr>
+          </thead>
+          <tbody>
+            {seed.compareRows.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.value2016}</td>
+                <td class="is-current">{row.value2026}</td>
+                <td><span class="housing-change-pill">{row.changeLabel}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section housing-pir-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">PIR 해설</p>
+        <h2>평균 직장인 기준 접근성은 더 멀어졌습니다</h2>
+        <p>가격 자체보다 연봉 대비 접근성이 얼마나 나빠졌는지 읽는 데 유용한 지표입니다.</p>
+      </div>
+      <div class="housing-pir-board">
+        <div class="housing-pir-note">
+          <strong>서울 PIR 25.6배</strong>
+          <p>평균 직장인이 연봉을 모두 모아도 서울 평균 주택에 닿기 어려운 구조를 뜻합니다. 2016년 11.9배와 비교하면 부담 자체가 다른 구간으로 넘어갔다고 볼 수 있습니다.</p>
+        </div>
+        <div class="housing-pir-list">
+          {seed.coreSeries.map((item) => (
+            <article class={`housing-pir-item ${item.year === 2026 ? "is-current" : ""}`}>
+              <span>{item.year}</span>
+              <strong>{item.pir}배</strong>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section housing-district-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">구별 체감</p>
+        <h2>서울 평균만으로는 안 보이는 구별 가격 차이</h2>
+        <p>대표 구간 체감을 빠르게 읽을 수 있도록 카드형으로 정리했습니다.</p>
+      </div>
+      <div class="housing-district-grid">
+        {seed.districtCards.map((item) => (
+          <article class="housing-district-card" data-district-card={item.slug}>
+            <div class="housing-district-card__head">
+              <p>{item.districtName}</p>
+              <strong>{formatEok(item.priceEok)}</strong>
+            </div>
+            <span>{item.note}</span>
+            <p>{item.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section housing-feel-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">내 연봉 기준 체감</p>
+        <h2>내 기준으로 보면 얼마나 멀어졌는지 바로 보입니다</h2>
+      </div>
+      <div class="housing-feel-box">
+        <div class="housing-feel-input-row">
+          <label for="housingSalaryInput">연봉 (만원)</label>
+          <input type="number" id="housingSalaryInput" min="1000" step="100" value={seed.calculatorDefaults.annualIncomeManwon} />
+          <span>만원</span>
+        </div>
+        <div class="housing-feel-grid">
+          <article class="housing-feel-card">
+            <p>2016 서울 평균 매매가</p>
+            <strong id="housingFeelSale2016">{feelings.sale2016Years}배</strong>
+            <span>연봉 기준</span>
+          </article>
+          <article class="housing-feel-card">
+            <p>2026 서울 평균 매매가</p>
+            <strong id="housingFeelSale2026" class="is-up">{feelings.sale2026Years}배</strong>
+            <span>연봉 기준</span>
+          </article>
+          <article class="housing-feel-card">
+            <p>2026 서울 평균 전세가</p>
+            <strong id="housingFeelJeonse2026">{feelings.jeonse2026Years}배</strong>
+            <span>연봉 기준</span>
+          </article>
+          <article class="housing-feel-card">
+            <p>2026 서울 평균 월세 부담</p>
+            <strong id="housingFeelRent2026">{formatManwon(feelings.annualRent2026Manwon)}</strong>
+            <span id="housingFeelRent2026Sub">연봉의 {feelings.annualRentShare}%</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section housing-pattern-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>서울 주거비 10년 변화에서 읽어야 할 흐름</h2>
+      </div>
+      <div class="housing-pattern-grid">
+        {seed.patternNotes.map((item) => (
+          <article class="housing-pattern-card">
+            <span class="housing-pattern-card__metric">{item.title}</span>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section housing-structure-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">시장 구조</p>
+        <h2>{seed.structureBox.title}</h2>
+      </div>
+      <div class="housing-structure-box">
+        <p>{seed.structureBox.body}</p>
+      </div>
+    </section>
+
+    <section class="content-section housing-reference-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">외부 참고 링크</p>
+        <h2>통계, 시세, 금융 확인 링크</h2>
+      </div>
+      <div class="housing-reference-grid">
+        <article class="housing-reference-panel">
+          <h3>공식 자료</h3>
+          <div class="housing-reference-links">
+            {seed.references.official.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+          </div>
+        </article>
+        <article class="housing-reference-panel">
+          <h3>시세 확인</h3>
+          <div class="housing-reference-links">
+            {seed.references.market.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+          </div>
+        </article>
+        <article class="housing-reference-panel">
+          <h3>관련 계산기</h3>
+          <div class="housing-reference-links">
+            {seed.references.finance.map((item) => (
+              item.href.startsWith("/")
+                ? <a href={withBase(item.href)}>{item.label}</a>
+                : <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section housing-cta-section">
+      <div class="housing-cta-card">
+        <div>
+          <p class="housing-cta-card__eyebrow">다음 액션</p>
+          <h2>주거비 체감은 계산기로 이어서 보는 편이 낫습니다</h2>
+          <p>매매 자금, 연봉, 다른 부동산 비교 리포트까지 바로 이어서 볼 수 있게 구성했습니다.</p>
+        </div>
+        <div class="housing-cta-links">
+          {seed.relatedLinks.map((item) => <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>)}
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="서울 집값 2016 vs 2026 리포트 읽는 법"
+      intro={[
+        "이 리포트는 서울 평균 매매가, 전세가, 월세, PIR을 같은 기준축에서 다시 묶어 10년 변화를 빠르게 읽게 만드는 비교 페이지입니다.",
+        "핵심은 집값이 올랐다는 사실 자체보다 연봉 대비 부담이 얼마나 더 빠르게 악화됐는지, 그리고 전세에서 월세로 시장 구조가 어떻게 바뀌었는지를 함께 보는 것입니다.",
+      ]}
+      criteria={[
+        "서울 평균값과 구별 대표 가격은 같은 성격의 수치가 아니므로 구분해서 읽어야 합니다.",
+        "PIR은 가격 자체보다 연봉 대비 접근성 악화를 보여주는 보조 지표입니다.",
+        "체감 계산은 연봉 기준 단순 환산이므로 실제 자금 계획과는 차이가 있을 수 있습니다.",
+      ]}
+      faq={faqItems}
+      related={seed.relatedLinks}
+    />
+  </main>
+
+  <script id="seoulHousing2016Vs2026Data" type="application/json" set:html={JSON.stringify(seed)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/seoul-housing-2016-vs-2026.js")}></script>
+</BaseLayout>
