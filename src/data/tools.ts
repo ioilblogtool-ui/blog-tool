@@ -280,5 +280,19 @@ export const tools: ToolMeta[] = [
       { label: "최대 기간", value: "20년" },
     ],
   },
+  {
+    slug: "fire-calculator",
+    title: "파이어족 계산기",
+    description: "현재 자산, 월 투자 가능 금액, 생활비, 기대수익률을 넣으면 FIRE 목표 자산과 예상 달성 시점, 부족 금액을 계산하는 도구",
+    order: 19,
+    eyebrow: "FIRE Calculator",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "핵심 결과", value: "목표 자산" },
+      { label: "시나리오", value: "3종 비교" },
+    ],
+  },
 ];
 

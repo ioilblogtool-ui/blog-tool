@@ -1,0 +1,489 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  FIRE_DEFAULT_INPUT,
+  FIRE_EXPENSE_PRESETS,
+  FIRE_CAGR_BENCHMARKS,
+  FIRE_LEGEND_INVESTORS,
+  FIRE_RATE_PRESETS,
+  FIRE_AFFILIATE_PRODUCTS,
+  FIRE_FAQ,
+  FIRE_EXTERNAL_LINKS,
+  FIRE_NEXT_CONTENT,
+} from "../../data/fireCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  FIRE_DEFAULT_INPUT,
+  FIRE_EXPENSE_PRESETS,
+  FIRE_CAGR_BENCHMARKS,
+  FIRE_LEGEND_INVESTORS,
+};
+
+const faqSchema = FIRE_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="파이어족 계산기 | FIRE 목표 자산·은퇴 시점 계산"
+  description="현재 자산, 월 투자 가능 금액, 생활비, 기대수익률을 넣으면 FIRE 목표 자산, 예상 달성 시점, 부족 금액, 추가 필요 투자금을 바로 계산합니다."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "파이어족 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description:
+      "현재 자산과 월 투자 가능 금액, 생활비, 기대수익률을 바탕으로 FIRE 목표 자산과 예상 달성 시점을 계산하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/fire-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="fire-calculator" pageClass="fire-page dca-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="FIRE 계산기"
+        title="지금 속도로, 몇 년 뒤 경제적 자유가 가능할까?"
+        description="현재 자산, 월 투자 가능 금액, 생활비, 기대수익률을 입력하면 FIRE 목표 자산과 예상 달성 시점을 바로 계산할 수 있습니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetFireBtn" copyId="copyFireLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 입력</p>
+            <h2 class="panel__title">은퇴 목표와 자산 속도</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>현재 나이</span>
+            <input id="fireCurrentAge" type="number" min="20" max="70" step="1" class="input-number" value={FIRE_DEFAULT_INPUT.currentAge} />
+            <small>20세~70세</small>
+          </label>
+
+          <label class="field">
+            <span>목표 은퇴 나이</span>
+            <input id="fireTargetRetireAge" type="number" min="30" max="90" step="1" class="input-number" value={FIRE_DEFAULT_INPUT.targetRetireAge} />
+            <small>현재 나이보다 높게 입력</small>
+          </label>
+
+          <label class="field">
+            <span>현재 순자산 (만원)</span>
+            <input id="fireCurrentNetWorth" type="text" inputmode="numeric" class="input-number" value={(FIRE_DEFAULT_INPUT.currentNetWorth / 10000).toLocaleString("ko-KR")} />
+            <small class="fire-input-hint" id="fireCurrentNetWorthHint">약 1억 8,000만원</small>
+            <small>예: 18,000 입력 = 1억 8,000만원</small>
+            <div class="fire-quick-values">
+              <button type="button" class="fire-quick-chip is-active" data-quick-target="currentNetWorth" data-quick-value="180000000">기본 1.8억</button>
+              <button type="button" class="fire-quick-chip" data-quick-target="currentNetWorth" data-quick-value="100000000">1억</button>
+              <button type="button" class="fire-quick-chip" data-quick-target="currentNetWorth" data-quick-value="300000000">3억</button>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>월 투자 가능 금액 (만원)</span>
+            <input id="fireMonthlyInvestment" type="text" inputmode="numeric" class="input-number" value={(FIRE_DEFAULT_INPUT.monthlyInvestment / 10000).toLocaleString("ko-KR")} />
+            <small class="fire-input-hint" id="fireMonthlyInvestmentHint">약 150만원</small>
+            <small>예: 150 입력 = 150만원</small>
+            <div class="fire-quick-values">
+              <button type="button" class="fire-quick-chip" data-quick-target="monthlyInvestment" data-quick-value="1000000">100만원</button>
+              <button type="button" class="fire-quick-chip is-active" data-quick-target="monthlyInvestment" data-quick-value="1500000">기본 150만원</button>
+              <button type="button" class="fire-quick-chip" data-quick-target="monthlyInvestment" data-quick-value="2000000">200만원</button>
+            </div>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">생활비 기준</p>
+            <h2 class="panel__title">월 생활비와 프리셋</h2>
+          </div>
+          <p class="panel-heading__summary">평균 생활비로 빠르게 시작하기</p>
+        </div>
+
+        <label class="field">
+          <span>월 생활비 (만원)</span>
+          <input id="fireMonthlyExpense" type="text" inputmode="numeric" class="input-number" value={(FIRE_DEFAULT_INPUT.monthlyExpense / 10000).toLocaleString("ko-KR")} />
+          <small class="fire-input-hint" id="fireMonthlyExpenseHint">약 300만원</small>
+          <small>예: 300 입력 = 300만원</small>
+          <div class="fire-quick-values fire-quick-values--stacked">
+            <button type="button" class="fire-quick-chip" data-quick-target="monthlyExpense" data-quick-value="2200000">220만원</button>
+            <button type="button" class="fire-quick-chip is-active" data-quick-target="monthlyExpense" data-quick-value="3000000">기본 300만원</button>
+            <button type="button" class="fire-quick-chip" data-quick-target="monthlyExpense" data-quick-value="4000000">400만원</button>
+          </div>
+          <small>평균값은 참고용이며 실제 계산은 본인의 은퇴 후 소비 구조에 맞게 조정하세요.</small>
+        </label>
+
+        <div class="fire-preset-grid" id="firePresetGrid">
+          {FIRE_EXPENSE_PRESETS.map((preset) => (
+            <button
+              type="button"
+              class="fire-preset-chip"
+              data-preset-code={preset.code}
+              data-monthly-expense={preset.monthlyExpense}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">가정 옵션</p>
+            <h2 class="panel__title">수익률과 인출률 조정</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>기대 연수익률</span>
+            <input id="fireAnnualReturnRate" type="number" min="1" max="30" step="0.1" class="input-number" value={(FIRE_DEFAULT_INPUT.annualReturnRate * 100).toFixed(1)} />
+            <small>입력값은 연 % 기준 · 현실 권장 범위 5~12%</small>
+            <p class="fire-return-warning" id="fireReturnWarning" style="display:none">
+              ⚠ 15% 초과 수익률은 투자의 대가들도 달성하기 어려운 수준입니다. 낙관적 시나리오 참고용으로만 활용하세요.
+            </p>
+          </label>
+
+          <!-- 수익률 참고 칩 -->
+          <div class="fire-rate-chip-wrap">
+            <p class="fire-rate-chip-label">수익률 참고 · 클릭 시 바로 적용</p>
+            <div class="fire-rate-chips" id="fireRateChips">
+              {FIRE_RATE_PRESETS.map((p) => (
+                <button
+                  class={`fire-rate-chip${p.isLegend ? " fire-rate-chip--legend" : ""}`}
+                  type="button"
+                  data-rate={(p.rate * 100).toFixed(1)}
+                  title={p.note}
+                >
+                  {p.label}
+                  <span>{(p.rate * 100).toFixed(0)}%{p.isLegend ? " ★" : ""}</span>
+                </button>
+              ))}
+            </div>
+            <small class="fire-rate-chip-note">★ 일반 투자자가 재현하기 매우 어려운 수준</small>
+          </div>
+
+          <label class="field">
+            <span>물가상승률</span>
+            <input id="fireInflationRate" type="number" min="0" max="10" step="0.1" class="input-number" value={(FIRE_DEFAULT_INPUT.inflationRate * 100).toFixed(1)} />
+            <small>은퇴 후 목표 생활비 증가 반영</small>
+          </label>
+
+          <label class="field">
+            <span>안전인출률</span>
+            <select id="fireWithdrawalRate" class="select">
+              <option value="0.04" selected>4.0%</option>
+              <option value="0.035">3.5%</option>
+              <option value="0.03">3.0%</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>계산 모드</span>
+            <select id="fireMode" class="select">
+              <option value="SINGLE" selected>1인 기준</option>
+              <option value="COUPLE">부부 합산</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>월 부수입 (만원)</span>
+            <input id="fireMonthlyPassiveIncome" type="text" inputmode="numeric" class="input-number" value={(FIRE_DEFAULT_INPUT.monthlyPassiveIncome / 10000).toLocaleString("ko-KR")} />
+            <small class="fire-input-hint" id="fireMonthlyPassiveIncomeHint">약 0원</small>
+            <small>예: 50 입력 = 50만원</small>
+          </label>
+
+          <label class="field">
+            <span>월 연금 예상액 (만원)</span>
+            <input id="fireMonthlyPension" type="text" inputmode="numeric" class="input-number" value={(FIRE_DEFAULT_INPUT.monthlyPension / 10000).toLocaleString("ko-KR")} />
+            <small class="fire-input-hint" id="fireMonthlyPensionHint">약 0원</small>
+            <small>예: 120 입력 = 120만원</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+    </Fragment>
+
+    <section class="dca-section">
+      <div class="dca-section__head">
+        <p class="dca-section__eyebrow">계산 결과</p>
+        <h2>언제 FIRE 가능한지 먼저 봅니다</h2>
+        <p class="dca-section__sub" id="fireResultSubcopy">입력값을 바꾸면 결과가 바로 반영됩니다.</p>
+      </div>
+      <div class="dca-kpi-grid fire-kpi-grid">
+        <article class="dca-kpi-card dca-kpi-card--accent">
+          <p>FIRE 목표 자산</p>
+          <strong id="fireTargetAssetValue">-</strong>
+          <span id="fireTargetAssetNote">-</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>예상 달성 시점</p>
+          <strong id="fireExpectedAgeValue">-</strong>
+          <span id="fireExpectedAgeNote">-</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>부족 금액</p>
+          <strong id="fireShortageValue">-</strong>
+          <span id="fireShortageNote">-</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>추가 필요 월 투자금</p>
+          <strong id="fireAdditionalMonthlyValue">-</strong>
+          <span id="fireAdditionalMonthlyNote">-</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>은퇴 후 월 인출 가능액</p>
+          <strong id="fireMonthlyWithdrawValue">-</strong>
+          <span id="fireMonthlyWithdrawNote">-</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>자산 소진 예상 나이</p>
+          <strong id="fireDepletionAgeValue">-</strong>
+          <span id="fireDepletionAgeNote">-</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>FIRE 유형</p>
+          <strong id="fireTypeValue">-</strong>
+          <span id="fireTypeNote">-</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="dca-section">
+      <div class="dca-section__head">
+        <p class="dca-section__eyebrow">{"메인 차트"}</p>
+        <h2>{"FIRE 전까지 자산을 얼마나 쌓는지 봅니다"}</h2>
+        <p class="dca-section__sub">{"초록선은 투자로 불어나는 예상 자산이고, 주황선은 물가를 반영해 커지는 필요 FIRE 자산입니다."}</p>
+      </div>
+      <article class="panel">
+        <div class="dca-line-chart-wrap fire-line-chart-wrap">
+          <canvas id="fireProjectionChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="dca-section">
+      <div class="dca-section__head">
+        <p class="dca-section__eyebrow">{"재정 수명 차트"}</p>
+        <h2>{"은퇴 후 자산이 얼마나 버티는지 봅니다"}</h2>
+        <p class="dca-section__sub">{"목표 은퇴 나이부터 적립을 멈추고 생활비를 인출하는 가정입니다. 자산이 0원이 되는 시점을 확인할 수 있습니다."}</p>
+      </div>
+      <article class="panel">
+        <div class="dca-line-chart-wrap fire-line-chart-wrap">
+          <canvas id="fireLongevityChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="dca-section">
+      <div class="dca-section__head">
+        <p class="dca-section__eyebrow">CAGR 비교</p>
+        <h2>대표 자산과 투자 대가로 기대수익률 감 잡기</h2>
+        <p class="dca-section__sub">과거 수익률은 미래 수익을 보장하지 않습니다. 대가들의 수치는 재현 난이도가 매우 높습니다.</p>
+      </div>
+
+      <article class="panel">
+        <div class="fire-toggle-row" id="fireBenchmarkToggles">
+          <button type="button" class="dca-tab" data-period="3">3년</button>
+          <button type="button" class="dca-tab" data-period="5">5년</button>
+          <button type="button" class="dca-tab is-active" data-period="10">10년</button>
+        </div>
+        <div class="table-wrap">
+          <table class="dca-rank-table fire-benchmark-table">
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>자산 / 인물</th>
+                <th>CAGR</th>
+                <th>비고</th>
+              </tr>
+            </thead>
+            <tbody id="fireBenchmarkTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="dca-section">
+      <div class="dca-section__head">
+        <p class="dca-section__eyebrow">시나리오 비교</p>
+        <h2>보수적·기본·공격적 가정을 나란히 봅니다</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="dca-rank-table">
+          <thead>
+            <tr>
+              <th>시나리오</th>
+              <th>기대수익률</th>
+              <th>목표 자산</th>
+              <th>예상 달성 나이</th>
+              <th>부족 금액</th>
+              <th>필요 월 투자금</th>
+            </tr>
+          </thead>
+          <tbody id="fireScenarioTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <article class="dca-insight-card" id="fireInsightCard">
+      <p id="fireInsightText"></p>
+    </article>
+
+    <InfoNotice
+      lines={[
+        "이 계산기는 현재 자산과 월 투자금이 일정하게 유지된다는 가정의 참고용 시뮬레이션입니다.",
+        "물가상승률을 반영하면 목표 FIRE 자산도 시간이 갈수록 함께 올라갑니다.",
+        "기대수익률을 높게 넣을수록 달성 시점이 빠르게 보일 수 있으니 5%·7%·9% 범위로 함께 비교하는 편이 안전합니다.",
+        "국민연금, 배당소득, 임대수입처럼 반복적으로 들어오는 현금흐름은 월 부수입과 월 연금 항목에 나눠 반영하세요.",
+      ]}
+    />
+
+    <!-- ── 추천 상품 (제휴) ──────────────────────────────────────────── -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">📚</span>
+          <div>
+            <h3 class="affiliate-box__title">FIRE 준비에 도움이 되는 추천 도서</h3>
+            <p class="affiliate-box__context">재정 독립과 장기 투자 전략을 다루는 책과 플래너입니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {FIRE_AFFILIATE_PRODUCTS.map((prod) => (
+            <a href={prod.href} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">{prod.cta}</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="content-section dca-report-next-section">
+      <div class="panel dca-report-main">
+        <div class="dca-report-main__badges">
+          {FIRE_NEXT_CONTENT.badges.map((badge) => (
+            <span class="dca-report-main__badge">{badge}</span>
+          ))}
+        </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{FIRE_NEXT_CONTENT.eyebrow}</p>
+            <h2 class="panel__title">{FIRE_NEXT_CONTENT.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{FIRE_NEXT_CONTENT.desc}</p>
+        </div>
+        <a href={FIRE_NEXT_CONTENT.href} class="button button--secondary">{FIRE_NEXT_CONTENT.cta}</a>
+      </div>
+      <div class="dca-report-sub-grid">
+        {FIRE_NEXT_CONTENT.sub.map((item) => (
+          <a href={item.href} class="dca-report-sub-card">
+            <div class="dca-report-sub-card__badges">
+              {item.badges.map((badge) => (
+                <span class="dca-report-sub-card__badge">{badge}</span>
+              ))}
+            </div>
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dca-reference-section">
+      <div class="panel dca-reference-links">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">생활비와 연금 기준 같이 보기</h2>
+          </div>
+          <p class="panel-heading__summary">계산 결과를 해석할 때 함께 보면 좋은 공식 정보입니다.</p>
+        </div>
+        <div class="dca-link-grid">
+          {FIRE_EXTERNAL_LINKS.map((item) => (
+            <a href={item.href} target="_blank" rel="noreferrer" class="dca-reference-link">
+              <span class="dca-reference-link__source">{item.source}</span>
+              <strong class="dca-reference-link__title">{item.title}</strong>
+              <span class="dca-reference-link__desc">{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="파이어족 계산기 활용 가이드"
+        intro={[
+          "이 페이지는 현재 순자산, 월 투자 가능 금액, 월 생활비, 기대수익률을 기준으로 FIRE 목표 자산과 예상 달성 시점을 계산하는 도구입니다. 결과 카드에서 먼저 목표 자산, 예상 은퇴 나이, 부족 금액, 추가 필요 월 투자금을 한 번에 볼 수 있게 구성했습니다.",
+          "상단 입력값은 가능한 한 현재보다 은퇴 후 기준에 가깝게 넣는 것이 좋습니다. 예를 들어 자녀 교육비가 끝나는 시점, 주거비가 줄어드는 시점, 국민연금 수급 개시 시점처럼 은퇴 후 소비 구조가 달라지는 요소를 먼저 정리해두면 결과 해석이 훨씬 안정적입니다.",
+        ]}
+        inputPoints={[
+          "월 생활비 아래 프리셋을 누르면 평균값이나 Lean FIRE, 2인 기본형 같은 기준으로 빠르게 시작할 수 있습니다.",
+          "기대수익률과 물가상승률, 안전인출률을 함께 조정하면서 보수적·기본·공격적 시나리오를 비교해보세요.",
+          "부부 합산 모드와 월 부수입, 월 연금 입력을 같이 쓰면 은퇴 후 실제 현금흐름에 더 가까운 계산이 가능합니다.",
+        ]}
+        criteria={[
+          "FIRE 목표 자산은 순 필요 생활비를 안전인출률로 나눠 계산합니다.",
+          "순 필요 생활비는 월 생활비에서 월 부수입과 월 연금을 뺀 뒤 연 단위로 환산합니다.",
+          "미래 자산 시뮬레이션은 현재 순자산 복리 성장과 월 투자금 적립을 월 단위로 계산하며, 목표 자산은 물가상승률만큼 함께 증가합니다.",
+          "추가 필요 월 투자금은 목표 은퇴 나이 시점까지 목표 자산을 달성하도록 이분 탐색으로 역산합니다.",
+          "대표 자산 CAGR 비교는 기대수익률 감을 잡기 위한 참고용이며 과거 수익률이 미래 성과를 보장하지 않습니다.",
+        ]}
+        faq={FIRE_FAQ}
+        related={[
+          { href: "/tools/dca-investment-calculator/", label: "적립식 투자 수익 비교 계산기" },
+          { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+          { href: "/tools/household-income/", label: "가구 소득 계산기" },
+          { href: "/tools/home-purchase-fund/", label: "내집마련 자금 계산기" },
+          { href: "/reports/salary-asset-2016-vs-2026/", label: "평균 연봉·자산 10년 비교 리포트" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="fireConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/fire-calculator.js")}></script>
+</BaseLayout>
+
+
+
+
