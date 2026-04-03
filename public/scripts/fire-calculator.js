@@ -239,7 +239,7 @@ function simulateProjection(input, overrideMonthlyInvestment) {
 function simulateRetirementDepletion(input, result) {
   const monthlyRate = input.annualReturnRate / 12;
   const monthlyInflation = input.inflationRate / 12;
-  const maxMonths = Math.max((100 - input.targetRetireAge) * 12, 12);
+  const maxMonths = Math.max((80 - input.targetRetireAge) * 12, 12);
   let asset = Math.max(result.projectedAtDesired, 0);
   let monthlyNeed = Math.max(input.monthlyExpense - input.monthlyPassiveIncome - input.monthlyPension, 0);
   let depletedAge = asset <= 0 ? input.targetRetireAge : null;
@@ -387,8 +387,8 @@ function renderKpis(input, result, additionalMonthlyNeeded, fireType, retirement
   if (additionalMonthlyValue) additionalMonthlyValue.textContent = additionalMonthlyNeeded > 0 ? fmtBig(additionalMonthlyNeeded) : "0원";
   if (additionalMonthlyNote) additionalMonthlyNote.textContent = additionalMonthlyNeeded > 0 ? "목표 시점에 맞추려면 추가 적립 필요" : "현재 투자금으로도 목표 시점 충족";
   const depletionAgeRounded = retirementResult.depletedAge === null ? null : Math.round(retirementResult.depletedAge * 10) / 10;
-  if (depletionAgeValue) depletionAgeValue.textContent = depletionAgeRounded === null ? "100세+" : `${depletionAgeRounded}세`;
-  if (depletionAgeNote) depletionAgeNote.textContent = depletionAgeRounded === null ? "100세 이후까지 자산 유지" : "재정 수명 차트 기준 자산 소진 시점";
+  if (depletionAgeValue) depletionAgeValue.textContent = depletionAgeRounded === null ? "80세+" : `${depletionAgeRounded}세`;
+  if (depletionAgeNote) depletionAgeNote.textContent = depletionAgeRounded === null ? "80세까지 자산 유지" : "재정 수명 차트 기준 자산 소진 시점";
   if (monthlyWithdrawValue) monthlyWithdrawValue.textContent = fmtBig(monthlyWithdrawable);
   if (monthlyWithdrawNote) monthlyWithdrawNote.textContent = "예상 도달 자산 기준 월 인출 가능액";
   if (fireTypeValue) fireTypeValue.textContent = fireType.label;

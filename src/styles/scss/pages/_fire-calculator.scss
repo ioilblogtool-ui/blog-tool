@@ -187,6 +187,19 @@
   font-weight: 600;
 }
 
+// ── 테이블 오버플로우 픽스 ─────────────────────────────────────
+// .dca-section이 display:grid인데 grid-template-columns 미지정 시
+// 암묵적 단일 컬럼이 자식 min-content(640px 테이블)로 팽창함.
+// minmax(0, 1fr)로 컬럼 최솟값을 0으로 고정해 컨테이너 너비에 묶음.
+.fire-page .dca-section {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.fire-page .table-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
 // ── 벤치마크 테이블 대가 섹션 ──────────────────────────────────
 .fire-page .fire-benchmark-row--current td {
   background: #f0faf6;
