@@ -265,6 +265,20 @@ export const tools: ToolMeta[] = [
       { label: "기본 카테고리", value: "6개" },
       { label: "분담 방식", value: "3가지" }
     ]
-  }
+  },
+  {
+    slug: "dca-investment-calculator",
+    title: "적립식 투자 수익 비교 계산기",
+    description: "S&P500·TQQQ·SOXL·삼성전자·에코프로 등 70종목에 매달 같은 금액을 넣었을 때 수익을 비교하는 DCA 시뮬레이터",
+    order: 18,
+    eyebrow: "DCA 투자 시뮬레이터",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "비교 자산", value: "70종+" },
+      { label: "최대 기간", value: "20년" },
+    ],
+  },
 ];
 

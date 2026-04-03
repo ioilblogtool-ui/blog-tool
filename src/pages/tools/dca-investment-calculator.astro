@@ -1,0 +1,387 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  DCA_ASSETS,
+  DCA_FAQ,
+  PERIOD_OPTIONS,
+  DEFAULT_SELECTED_ASSETS,
+  DCA_NEXT_REPORT,
+  DCA_EXTERNAL_LINKS,
+  DCA_AFFILIATE_PRODUCTS,
+  USD_KRW_RATES,
+} from "../../data/dcaInvestment";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = { DCA_ASSETS, PERIOD_OPTIONS, DEFAULT_SELECTED_ASSETS, USD_KRW_RATES };
+---
+
+<BaseLayout
+  title="DCA 적립식 투자 계산기 | S&P500·TQQQ·SOXL·삼성전자 등 70종목 비교"
+  description="S&P500, 나스닥100, TQQQ, SOXL, 삼성전자, 에코프로, 애플, 엔비디아 등 70개 이상 자산에 월 적립식 투자했을 때 수익이 어떻게 달랐는지 비교하는 DCA 계산기. 미국·한국 주식, 지수, ETF, 레버리지 ETF까지 한 번에 비교."
+  ogImage="/og/tools/dca-investment-calculator.png"
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="dca-investment-calculator" pageClass="dca-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="DCA 적립식 투자 시뮬레이터 · 70종목"
+        title="적립식 투자 수익 비교 계산기"
+        description="S&P500·나스닥·삼성전자·에코프로·TQQQ·SOXL 등 미국·한국 주식, 지수, ETF, 레버리지 ETF 70종목 이상을 한 번에 비교합니다. 매달 같은 금액을 넣었을 때 수익 차이를 확인하세요."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetDcaBtn" copyId="copyDcaLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <!-- 투자 조건 설정 패널 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">투자 조건 설정</p>
+            <h2 class="panel__title">월 투자금과 기간 선택</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <!-- 월 투자금 슬라이더 -->
+          <label class="field">
+            <span>월 투자금</span>
+            <div class="slider-value-row">
+              <input
+                id="dcaMonthlySlider"
+                type="range"
+                min="100000"
+                max="3000000"
+                step="50000"
+                value="300000"
+                class="slider"
+              />
+              <span id="dcaMonthlyLabel" class="slider-label">30만원</span>
+            </div>
+            <input
+              id="dcaMonthlyInput"
+              type="number"
+              value="300000"
+              min="100000"
+              max="3000000"
+              step="50000"
+              class="input-number"
+            />
+            <small>10만 ~ 300만원</small>
+          </label>
+
+          <!-- 투자 기간 -->
+          <label class="field">
+            <span>투자 기간</span>
+            <select id="dcaPeriodSelect" class="select">
+              {PERIOD_OPTIONS.map((opt) => (
+                <option value={opt.value} selected={opt.value === 10}>{opt.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <!-- 토글: 환율 반영 -->
+          <label class="check-field">
+            <input id="dcaFxToggle" type="checkbox" />
+            <span>환율 반영 (USD→KRW)</span>
+          </label>
+
+          <!-- 토글: 배당 재투자 -->
+          <label class="check-field">
+            <input id="dcaDividendToggle" type="checkbox" checked />
+            <span>배당 재투자</span>
+          </label>
+        </div>
+      </article>
+
+      <!-- 비교 자산 선택 패널 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">비교 자산 선택</p>
+            <h2 class="panel__title">지수와 종목을 고르세요</h2>
+          </div>
+        </div>
+
+        <!-- 종목 검색 -->
+        <div class="dca-search-wrap">
+          <span class="dca-search-icon">🔍</span>
+          <input
+            id="dcaAssetSearch"
+            type="text"
+            class="dca-search-input"
+            placeholder="종목명·티커 검색 (예: Apple, NVDA, 삼성)"
+            autocomplete="off"
+          />
+          <button id="dcaSearchClear" class="dca-search-clear" type="button" style="display:none">✕</button>
+        </div>
+
+        <!-- 카테고리 탭 -->
+        <div class="dca-asset-tabs" id="dcaAssetTabs">
+          <button class="dca-tab is-active" type="button" data-tab="INDEX_US">미국 지수</button>
+          <button class="dca-tab" type="button" data-tab="STOCK_US">미국 주식</button>
+          <button class="dca-tab" type="button" data-tab="INDEX_KR">한국 지수</button>
+          <button class="dca-tab" type="button" data-tab="STOCK_KR">한국 주식</button>
+          <button class="dca-tab dca-tab--etf" type="button" data-tab="ETF">ETF</button>
+        </div>
+
+        <!-- 전체선택 / 전체해제 -->
+        <div class="dca-select-actions">
+          <button id="dcaSelectAllBtn" class="dca-select-btn" type="button">탭 전체 선택</button>
+          <button id="dcaClearAllBtn" class="dca-select-btn dca-select-btn--ghost" type="button">전체 해제</button>
+        </div>
+
+        <!-- 자산 체크박스 목록 -->
+        <div class="dca-asset-list" id="dcaAssetList">
+          {DCA_ASSETS.map((asset) => (
+            <label
+              class="dca-asset-item"
+              data-category={asset.category}
+              data-name={asset.name.toLowerCase()}
+              data-ticker={asset.nameEn.toLowerCase()}
+              style={`display: ${asset.category === 'INDEX_US' ? 'flex' : 'none'}`}
+            >
+              <input
+                type="checkbox"
+                name="dcaAsset"
+                value={asset.id}
+                checked={DEFAULT_SELECTED_ASSETS.includes(asset.id)}
+              />
+              <span class="dca-asset-dot" style={`background: ${asset.color}`}></span>
+              <span class="dca-asset-name">{asset.name}</span>
+              <span class="dca-asset-ticker">{asset.nameEn}</span>
+              {asset.availableFrom > 2005 && (
+                <span class="dca-asset-from">{asset.availableFrom}~</span>
+              )}
+            </label>
+          ))}
+        </div>
+
+        <p class="dca-no-results" id="dcaNoResults" style="display:none">검색 결과가 없습니다.</p>
+        <p class="dca-asset-hint" id="dcaAssetHint">차트는 수익 상위 6개 자동 표시 · 테이블은 전체 표시</p>
+      </article>
+    </Fragment>
+
+    <!-- ── 결과 KPI 카드 ─────────────────────────────────────────────── -->
+    <section class="dca-section">
+      <div class="dca-section__head">
+        <p class="dca-section__eyebrow">계산 결과</p>
+        <h2>자산별 최종 수익 요약</h2>
+        <p class="dca-section__sub" id="dcaResultSubcopy">자산을 선택하고 계산하세요</p>
+      </div>
+      <div class="dca-kpi-grid">
+        <article class="dca-kpi-card dca-kpi-card--accent">
+          <p>최고 최종 평가금액</p>
+          <strong id="dcaTopFinalValue">-</strong>
+          <span id="dcaTopFinalNote">-</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>총 투자원금</p>
+          <strong id="dcaPrincipal">-</strong>
+          <span>월 투자금 × 기간</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>최고 총수익</p>
+          <strong id="dcaTopProfit">-</strong>
+          <span>원금 대비 수익</span>
+        </article>
+        <article class="dca-kpi-card">
+          <p>최고 CAGR</p>
+          <strong id="dcaTopCagr">-</strong>
+          <span id="dcaTopCagrNote">연평균 수익률</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── 비교 차트 ──────────────────────────────────────────────────── -->
+    <section class="dca-section">
+      <div class="dca-section__head">
+        <p class="dca-section__eyebrow">자산 비교 · 수익 상위 6개 자동 표시</p>
+        <h2>최종 평가금액 비교</h2>
+      </div>
+      <article class="panel">
+        <div class="dca-bar-chart-wrap">
+          <canvas id="dcaBarChart"></canvas>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="dca-section__head">
+          <p class="dca-section__eyebrow">기간별 누적 추이 · 상위 6개</p>
+          <h2>연도별 평가금액 변화</h2>
+        </div>
+        <div class="dca-line-chart-wrap">
+          <canvas id="dcaLineChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <!-- ── 순위 테이블 ────────────────────────────────────────────────── -->
+    <section class="dca-section">
+      <div class="dca-section__head">
+        <p class="dca-section__eyebrow">투자 수익 순위</p>
+        <h2>자산별 수익률 상세</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="dca-rank-table">
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>자산</th>
+              <th>최종 평가금액</th>
+              <th>총수익</th>
+              <th>수익률</th>
+              <th>CAGR</th>
+            </tr>
+          </thead>
+          <tbody id="dcaRankTableBody">
+            <tr><td colspan="6" style="text-align:center;color:#888;">자산을 선택하면 결과가 표시됩니다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 해석 문구 ──────────────────────────────────────────────────── -->
+    <article class="dca-insight-card" id="dcaInsightCard" style="display:none">
+      <p id="dcaInsightText"></p>
+    </article>
+
+    <!-- ── 안내 ─────────────────────────────────────────────────────────── -->
+    <InfoNotice
+      lines={[
+        "이 계산기는 연간 종가 기준 참고 수익률을 사용한 시뮬레이션이며, 실제 투자 결과와 다를 수 있습니다.",
+        "환율은 연평균 원/달러 환율을 사용합니다. 실제 매매 환율과 차이가 있을 수 있습니다.",
+        "배당 재투자는 연간 배당수익률을 단순 가산하는 방식으로 세금·거래 비용은 반영되지 않습니다.",
+        "TQQQ·SOXL·TECL 등 레버리지 ETF는 일일 기준 추종 상품입니다. 장기 보유 시 변동성 감쇠(Volatility Decay)로 인해 기초자산의 단순 배수와 실제 수익이 크게 달라질 수 있습니다.",
+        "과거 수익률은 미래 성과를 보장하지 않습니다. 투자 전 반드시 공식 자료와 전문가 상담을 병행하세요."
+      ]}
+    />
+
+    <!-- ── 다음 리포트 CTA ─────────────────────────────────────────────── -->
+    <section class="content-section dca-report-next-section">
+      <div class="panel dca-report-main">
+        <div class="dca-report-main__badges">
+          {DCA_NEXT_REPORT.badges.map((b) => (
+            <span class="dca-report-main__badge">{b}</span>
+          ))}
+        </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{DCA_NEXT_REPORT.eyebrow}</p>
+            <h2 class="panel__title">{DCA_NEXT_REPORT.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{DCA_NEXT_REPORT.desc}</p>
+        </div>
+        <a href={DCA_NEXT_REPORT.href} class="button button--secondary">{DCA_NEXT_REPORT.cta}</a>
+      </div>
+      <div class="dca-report-sub-grid">
+        {DCA_NEXT_REPORT.sub.map((item) => (
+          <a href={item.href} class="dca-report-sub-card">
+            <div class="dca-report-sub-card__badges">
+              {item.badges.map((b) => (
+                <span class="dca-report-sub-card__badge">{b}</span>
+              ))}
+            </div>
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 외부 참고 링크 ──────────────────────────────────────────────── -->
+    <section class="content-section dca-reference-section">
+      <div class="panel dca-reference-links">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">공식 데이터 출처</h2>
+          </div>
+          <p class="panel-heading__summary">계산에 사용한 지수·세금·절세 계좌 정보를 공식 사이트에서 확인하세요.</p>
+        </div>
+        <div class="dca-link-grid">
+          {DCA_EXTERNAL_LINKS.map((item) => (
+            <a href={item.href} target="_blank" rel="noreferrer" class="dca-reference-link">
+              <span class="dca-reference-link__source">{item.source}</span>
+              <strong class="dca-reference-link__title">{item.title}</strong>
+              <span class="dca-reference-link__desc">{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 추천 상품 (제휴) ──────────────────────────────────────────── -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">📈</span>
+          <div>
+            <h3 class="affiliate-box__title">적립식 투자 관련 추천 상품</h3>
+            <p class="affiliate-box__context">장기 투자 원칙과 포트폴리오 관리에 도움이 되는 도서와 아이템입니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {DCA_AFFILIATE_PRODUCTS.map((prod) => (
+            <a href={prod.href} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">{prod.cta}</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="적립식 투자(DCA) 계산기 활용 가이드"
+        intro={[
+          "이 페이지는 S&P500·나스닥100·코스피·코스닥·DJIA·러셀2000 등 주요 지수부터 애플·엔비디아·삼성전자·에코프로·크래프톤, TQQQ·SOXL 같은 레버리지 ETF까지 70종목 이상을 대상으로 매달 일정 금액을 투자했을 때의 수익을 비교하는 DCA(정액 분할매수) 시뮬레이터입니다.",
+          "미국 주식(27종)·한국 주식(26종)·미국 지수(4종)·한국 지수(2종)·ETF 및 레버리지 ETF(16종)를 탭별로 분류해 한 번에 비교할 수 있습니다. 투자 기간(3~20년), 월 투자금(10만~300만원), 환율 반영, 배당 재투자 여부를 조합해 2005~2025년 과거 데이터 기반 시뮬레이션 결과를 확인하세요."
+        ]}
+        inputPoints={[
+          "월 투자금 슬라이더 또는 직접 입력으로 10만~300만원 사이에서 설정합니다.",
+          "투자 기간은 3·5·7·10·15·20년 중 선택하며, 종료 시점은 2025년 기준입니다.",
+          "종목명·티커 검색 또는 미국 지수·미국 주식·한국 지수·한국 주식·ETF 탭에서 자산을 선택합니다. 차트는 수익 상위 6개를 자동 표시하고, 순위 테이블은 선택된 모든 자산을 비교합니다.",
+          "환율 반영 ON 시 USD 자산을 연평균 원/달러 환율로 원화 환산해 보여줍니다. TIGER 미국S&P500 등 원화 표시 ETF는 환율 토글과 무관하게 원화 기준으로 계산됩니다.",
+          "TQQQ·SOXL·TECL 같은 레버리지 ETF는 일일 기준 추종 상품으로, 장기 적립 시 변동성 누적 효과가 반영됩니다. 단기 성과와 장기 수익 곡선을 반드시 함께 확인하세요."
+        ]}
+        criteria={[
+          "수익률 데이터는 각 지수·종목의 연간 종가 기준 참고 추정값으로, 실제 투자 결과와 다를 수 있습니다.",
+          "배당 재투자는 연간 배당수익률을 12등분해 월 수익률에 단순 가산하며, 세금·거래 비용은 반영되지 않습니다.",
+          "상장 연도가 늦은 종목은 해당 연도 이후 기간만 시뮬레이션됩니다. 예: Meta(2012년~), NAVER(2008년~), PLTR·에코프로비엠(2020년~), COIN·크래프톤·카카오뱅크(2022년~), NVDL(2023년~).",
+          "레버리지·인버스 ETF는 장기 보유 시 변동성 감쇠(Volatility Decay) 영향으로 기초자산의 단순 배수와 실제 성과가 크게 달라질 수 있습니다.",
+          "이 시뮬레이션은 과거 데이터 기반이며 미래 투자 수익을 보장하지 않습니다. 투자 전 반드시 공식 자료와 전문가 상담을 병행하세요."
+        ]}
+        faq={DCA_FAQ}
+        related={[
+          { href: "/reports/us-rich-top10-patterns/",  label: "미국 부자 TOP 10 성공 패턴" },
+          { href: "/reports/korea-rich-top10-assets/", label: "한국 부자 TOP 10 자산 비교" },
+          { href: "/tools/salary-tier/",               label: "연봉 티어 계산기" },
+          { href: "/tools/household-income/",          label: "가구 소득 계산기" },
+          { href: "/tools/home-purchase-fund/",        label: "내집마련 자금 계산기" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="dcaConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/dca-investment-calculator.js")}></script>
+</BaseLayout>

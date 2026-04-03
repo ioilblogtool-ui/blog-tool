@@ -1,0 +1,537 @@
+// ── DCA 적립식 투자 계산기 ────────────────────────────────────────────────────
+
+// 슬라이더 값 표시 행
+.dca-page .slider-value-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.dca-page .slider-value-row .slider {
+  flex: 1;
+  accent-color: #0F6E56;
+}
+
+.dca-page .slider-label {
+  min-width: 4.5em;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0F6E56;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dca-page .input-number {
+  width: 100%;
+  border: 1px solid #E2E2DC;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  margin-top: 6px;
+  box-sizing: border-box;
+}
+
+.dca-page .select {
+  width: 100%;
+  border: 1px solid #E2E2DC;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: #fff;
+  cursor: pointer;
+}
+
+// ── 종목 검색창 ───────────────────────────────────────────────────────────────
+.dca-page .dca-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 10px;
+}
+
+.dca-page .dca-search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 13px;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.dca-page .dca-search-input {
+  width: 100%;
+  border: 1.5px solid #E2E2DC;
+  border-radius: 8px;
+  padding: 9px 32px 9px 32px;
+  font-size: 12px;
+  background: #FAFAF8;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: #B4B2A9; }
+  &:focus {
+    outline: none;
+    border-color: #1D9E75;
+    background: #fff;
+  }
+}
+
+.dca-page .dca-search-clear {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888780;
+  font-size: 12px;
+  padding: 4px;
+  line-height: 1;
+
+  &:hover { color: #1A1A18; }
+}
+
+.dca-page .dca-no-results {
+  font-size: 12px;
+  color: #B4B2A9;
+  text-align: center;
+  padding: 12px 0;
+  margin: 0;
+}
+
+// ── 전체선택 / 전체해제 버튼 ──────────────────────────────────────────────────
+.dca-page .dca-select-actions {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.dca-page .dca-select-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border: 1.5px solid #1D9E75;
+  background: #0F6E56;
+  color: #fff;
+
+  &:hover { background: #0A5A46; }
+
+  &.dca-select-btn--ghost {
+    background: #fff;
+    color: #5F5E5A;
+    border-color: #E2E2DC;
+
+    &:hover { background: #F4F3F0; }
+  }
+}
+
+// ── 자산 탭 ───────────────────────────────────────────────────────────────────
+.dca-page .dca-asset-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.dca-page .dca-tab {
+  padding: 6px 12px;
+  border: 1.5px solid #E2E2DC;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5F5E5A;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: #F0FAF6;
+    border-color: #1D9E75;
+    color: #0F6E56;
+  }
+
+  &.is-active {
+    background: #0F6E56;
+    border-color: #0F6E56;
+    color: #fff;
+  }
+
+  // ETF 탭 강조
+  &.dca-tab--etf {
+    border-color: #D97706;
+    color: #92400E;
+
+    &:hover {
+      background: #FFFBEB;
+      border-color: #D97706;
+      color: #92400E;
+    }
+
+    &.is-active {
+      background: #D97706;
+      border-color: #D97706;
+      color: #fff;
+    }
+  }
+}
+
+// ── 자산 체크박스 목록 ────────────────────────────────────────────────────────
+.dca-page .dca-asset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dca-page .dca-asset-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1.5px solid #E2E2DC;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:has(input:checked) {
+    border-color: #1D9E75;
+    background: #F0FAF6;
+  }
+
+  input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: #0F6E56;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
+
+.dca-page .dca-asset-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dca-page .dca-asset-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1A1A18;
+  flex: 1;
+}
+
+.dca-page .dca-asset-ticker {
+  font-size: 11px;
+  color: #888780;
+  margin-left: auto;
+}
+
+.dca-page .dca-asset-from {
+  font-size: 10px;
+  color: #B4B2A9;
+  background: #F4F3F0;
+  border-radius: 4px;
+  padding: 1px 4px;
+}
+
+.dca-page .dca-asset-hint {
+  font-size: 11px;
+  color: #B4B2A9;
+  margin-top: 8px;
+}
+
+// ── 섹션 공통 ─────────────────────────────────────────────────────────────────
+.dca-page .dca-section {
+  display: grid;
+  gap: 12px;
+}
+
+.dca-page .dca-section__head {
+  margin-bottom: 4px;
+
+  h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1A1A18;
+    margin: 4px 0;
+  }
+}
+
+.dca-page .dca-section__eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0F6E56;
+}
+
+.dca-page .dca-section__sub {
+  font-size: 12px;
+  color: #888780;
+  margin-top: 2px;
+}
+
+// ── KPI 그리드 ────────────────────────────────────────────────────────────────
+.dca-page .dca-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.dca-page .dca-kpi-card {
+  padding: 14px 12px;
+  border: 1.5px solid #E2E2DC;
+  border-radius: 10px;
+  background: #fff;
+
+  p {
+    font-size: 11px;
+    color: #5F5E5A;
+    margin: 0 0 6px;
+  }
+
+  strong {
+    display: block;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1A1A18;
+    line-height: 1.1;
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+
+  span {
+    font-size: 11px;
+    color: #888780;
+  }
+
+  &.dca-kpi-card--accent {
+    background: #E1F5EE;
+    border-color: #1D9E75;
+
+    strong { color: #0F6E56; }
+  }
+}
+
+// ── 차트 래퍼 ─────────────────────────────────────────────────────────────────
+.dca-page .dca-bar-chart-wrap {
+  position: relative;
+  height: 260px;
+}
+
+.dca-page .dca-line-chart-wrap {
+  position: relative;
+  height: 280px;
+}
+
+@media (min-width: 768px) {
+  .dca-page .dca-bar-chart-wrap { height: 300px; }
+  .dca-page .dca-line-chart-wrap { height: 320px; }
+}
+
+// ── 순위 테이블 ───────────────────────────────────────────────────────────────
+.dca-page .table-wrap {
+  overflow-x: auto;
+}
+
+.dca-page .dca-rank-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 480px;
+
+  th, td {
+    padding: 10px 12px;
+    text-align: right;
+    border-bottom: 1px solid #F0EFEA;
+    white-space: nowrap;
+
+    &:first-child { text-align: center; }
+    &:nth-child(2) { text-align: left; }
+  }
+
+  thead th {
+    background: #F7F6F4;
+    font-weight: 700;
+    color: #5F5E5A;
+    font-size: 11px;
+  }
+
+  tbody tr:first-child td {
+    font-weight: 700;
+    color: #0F6E56;
+  }
+
+  tbody tr:hover td {
+    background: #FAFAF8;
+  }
+}
+
+.dca-page .dca-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 800;
+
+  &--1 { background: #FFF3CD; color: #856404; }
+  &--2 { background: #F4F3F0; color: #5F5E5A; }
+  &--3 { background: #FDE8D8; color: #9C4221; }
+}
+
+// ── 해석 카드 ─────────────────────────────────────────────────────────────────
+.dca-page .dca-insight-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 13px;
+  color: #1A1A18;
+  line-height: 1.7;
+}
+
+// ── 다음 리포트 CTA ───────────────────────────────────────────────────────────
+.dca-page .dca-report-next-section {
+  display: grid;
+  gap: 10px;
+}
+
+.dca-page .dca-report-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #E1F5EE;
+  border: 1.5px solid #1D9E75;
+}
+
+.dca-page .dca-report-main__badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.dca-page .dca-report-main__badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #0F6E56;
+  color: #fff;
+}
+
+.dca-page .dca-report-sub-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.dca-page .dca-report-sub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border: 1.5px solid #E2E2DC;
+  border-radius: 10px;
+  background: #fff;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: #1D9E75;
+    background: #F0FAF6;
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1A1A18;
+    line-height: 1.4;
+  }
+
+  span {
+    font-size: 11px;
+    color: #5F5E5A;
+    line-height: 1.5;
+  }
+}
+
+.dca-page .dca-report-sub-card__badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.dca-page .dca-report-sub-card__badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #F0FAF6;
+  color: #0F6E56;
+  border: 1px solid #C6EFE1;
+}
+
+// ── 외부 참고 링크 ────────────────────────────────────────────────────────────
+.dca-page .dca-link-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dca-page .dca-reference-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1.5px solid #E2E2DC;
+  border-radius: 10px;
+  background: #fff;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: #1D9E75;
+    background: #F0FAF6;
+  }
+}
+
+.dca-page .dca-reference-link__source {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #F4F3F0;
+  color: #5F5E5A;
+  align-self: start;
+}
+
+.dca-page .dca-reference-link__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1A1A18;
+  line-height: 1.4;
+}
+
+.dca-page .dca-reference-link__desc {
+  font-size: 11px;
+  color: #888780;
+  line-height: 1.5;
+}
