@@ -293,6 +293,20 @@ export const tools: ToolMeta[] = [
       { label: "핵심 결과", value: "목표 자산" },
       { label: "시나리오", value: "3종 비교" },
     ],
+  },
+  {
+    slug: "baby-growth-percentile-calculator",
+    title: "아기 성장 백분위 계산기",
+    description: "몸무게, 키, 머리둘레를 기준으로 성장 백분위를 참고용으로 계산하고 월령별 수유량, 발달 체크, 예방접종 흐름을 함께 보는 도구",
+    order: 20,
+    eyebrow: "육아 성장 계산기",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "성장 지표", value: "3가지" },
+      { label: "월령 가이드", value: "수유·발달·접종" },
+    ],
   },
 ];
 

@@ -1,0 +1,473 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  largeCompanySalaryGrowthByYears2026,
+  formatKrwM,
+  formatYears,
+  getBandByYear,
+  formatBand,
+} from "../../data/largeCompanySalaryGrowthByYears2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = largeCompanySalaryGrowthByYears2026;
+const entries = [...report.entries];
+const sortedByYear10 = [...entries].sort(
+  (a, b) => (getBandByYear(b, 10)?.mid ?? 0) - (getBandByYear(a, 10)?.mid ?? 0),
+);
+const selected = sortedByYear10[0];
+const top3 = sortedByYear10.slice(0, 3);
+const highestAvg = [...entries].sort((a, b) => b.avgSalaryManwon - a.avgSalaryManwon)[0];
+const highestTenure = [...entries].sort((a, b) => b.tenureYears - a.tenureYears)[0];
+const typeCountMap = {
+  starterFast: entries.filter((entry) => entry.growthType === "starterFast").length,
+  stable: entries.filter((entry) => entry.growthType === "stable").length,
+  longTenure: entries.filter((entry) => entry.growthType === "longTenure").length,
+  performanceHeavy: entries.filter((entry) => entry.growthType === "performanceHeavy").length,
+};
+const dominantTypeLabel = report.typeCards
+  .map((card) => ({ label: card.title, count: typeCountMap[card.type] }))
+  .sort((a, b) => b.count - a.count)[0];
+const averageSalary = Math.round(entries.reduce((sum, entry) => sum + entry.avgSalaryManwon, 0) / entries.length);
+const averageYear10 = Math.round(
+  entries.reduce((sum, entry) => sum + (getBandByYear(entry, 10)?.mid ?? 0), 0) / entries.length,
+);
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page growth-report-page">
+    <CalculatorHero
+      eyebrow="연봉 성장 비교 리포트"
+      title={report.meta.title}
+      description="초봉보다 중요한 건 5년차, 10년차, 15년차에 얼마나 벌어지는지입니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, report.meta.updatedAt]}
+    />
+
+    <section class="content-section growth-brief">
+      <div class="growth-brief__lead">
+        <p class="growth-brief__eyebrow">Editor&apos;s Brief</p>
+        <h2>초봉이 높다고 10년차도 항상 높은 것은 아닙니다</h2>
+        <p class="growth-brief__body">
+          이 페이지는 주요 대기업 15개사의 공개 평균연봉, 초봉, 근속연수를 기준으로
+          연차별 성장 흐름을 표준화해 비교하는 리포트입니다. 초봉형, 안정형,
+          장기근속형, 성과급형 구조를 한 화면에서 읽고 내 연봉과 겹치는 구간까지
+          자연스럽게 확인할 수 있도록 구성했습니다.
+        </p>
+        <div class="growth-brief__chips">
+          <span>15개 대기업 비교</span>
+          <span>1년차·5년차·10년차·15년차 밴드</span>
+          <span>실측값 + 추정 밴드 분리</span>
+        </div>
+      </div>
+
+      <div class="growth-highlight-grid">
+        <article class="growth-highlight-card">
+          <p>최고 평균 연봉</p>
+          <strong>{highestAvg.companyName}</strong>
+          <span>{formatKrwM(highestAvg.avgSalaryManwon)} · 성과급형 상단</span>
+        </article>
+        <article class="growth-highlight-card">
+          <p>10년차 상단 밴드</p>
+          <strong>{top3[0].companyName}</strong>
+          <span>{top3[0].year10BandLabel} · 중간 연차 이후 격차 확인</span>
+        </article>
+        <article class="growth-highlight-card">
+          <p>최고 근속연수</p>
+          <strong>{highestTenure.companyName}</strong>
+          <span>{formatYears(highestTenure.tenureYears)} · 장기근속형 해석이 필요한 구간</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section growth-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>연차별 성장 리포트에서 먼저 봐야 할 숫자</h2>
+      </div>
+
+      <div class="growth-kpi-grid">
+        <article class="report-stat-card report-stat-card--primary">
+          <p>비교 대상</p>
+          <strong>{entries.length}개 기업</strong>
+          <span>반도체, 자동차, 플랫폼, IT서비스, 제조, 건설, 항공</span>
+        </article>
+        <article class="report-stat-card">
+          <p>평균 연봉 1위</p>
+          <strong>{highestAvg.companyName}</strong>
+          <span>{formatKrwM(highestAvg.avgSalaryManwon)}</span>
+        </article>
+        <article class="report-stat-card">
+          <p>10년차 mid 평균</p>
+          <strong>{formatKrwM(averageYear10)}</strong>
+          <span>표준화 성장 밴드 기준</span>
+        </article>
+        <article class="report-stat-card">
+          <p>평균 연봉 평균</p>
+          <strong>{formatKrwM(averageSalary)}</strong>
+          <span>15개 기업 단순 평균</span>
+        </article>
+        <article class="report-stat-card">
+          <p>가장 많은 성장 유형</p>
+          <strong>{dominantTypeLabel.label}</strong>
+          <span>{dominantTypeLabel.count}개 기업</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section growth-podium">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">Top 3 포디움</p>
+        <h2>10년차 기준 상단을 형성하는 대표 기업</h2>
+        <p>초봉이 아니라 10년차 mid 밴드를 기준으로 정렬한 카드입니다.</p>
+      </div>
+
+      <div class="growth-podium__grid">
+        {
+          top3.map((entry, index) => (
+            <article class={`growth-podium-card growth-podium-card--${index + 1}`}>
+              <span class="growth-podium-card__rank">TOP {index + 1}</span>
+              <h3>{entry.companyName}</h3>
+              <p class="growth-podium-card__value">{entry.year10BandLabel}</p>
+              <p class="growth-podium-card__meta">
+                평균 연봉 {formatKrwM(entry.avgSalaryManwon)} · 근속 {formatYears(entry.tenureYears)}
+              </p>
+              <p class="growth-podium-card__body">{entry.summary}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section growth-chart-board">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 차트</p>
+        <h2>연차별 성장곡선으로 시간축 차이를 읽기</h2>
+        <p id="growthChartDesc">
+          공개 평균연봉, 초봉, 근속연수 구조를 기준으로 표준화한 참고용 성장곡선입니다.
+          선택 기업은 강조되고, 필터에 따라 비교 대상이 함께 갱신됩니다.
+        </p>
+      </div>
+
+      <article class="growth-chart-panel">
+        <div class="growth-chart-panel__meta">
+          <span>1년차</span>
+          <span>5년차</span>
+          <span>10년차</span>
+          <span>15년차</span>
+        </div>
+        <div class="growth-chart-wrap">
+          <canvas id="growthLineChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section growth-type-board">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">성장 유형</p>
+        <h2>대기업마다 연봉 성장 방식이 다릅니다</h2>
+      </div>
+
+      <div class="growth-type-grid" id="growthTypeGrid">
+        {
+          report.typeCards.map((card) => (
+            <article class="growth-type-card" data-type={card.type}>
+              <p class="growth-type-card__eyebrow">{card.title}</p>
+              <strong>{card.companies.join(" · ")}</strong>
+              <p>{card.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section growth-controls">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리포트 탐색</p>
+        <h2>필터와 내 연봉 기준선으로 더 깊게 읽기</h2>
+      </div>
+
+      <div class="growth-controls__grid">
+        <div class="growth-lab-column">
+          <article class="growth-filter-panel">
+            <div class="growth-filter-panel__head">
+              <h3>시장 필터</h3>
+              <p>업종, 성장 유형, 보기 범위, 정렬을 바꿔가며 비교 흐름을 다시 읽을 수 있습니다.</p>
+            </div>
+
+            <div class="growth-summary-bar" id="growthSummaryBar"></div>
+
+            <div class="growth-filter-stack">
+              <label class="field">
+                <span>업종</span>
+                <select id="growthIndustryFilter">
+                  <option value="all">전체</option>
+                  <option value="semiconductor">반도체</option>
+                  <option value="auto">자동차</option>
+                  <option value="platform">플랫폼·통신</option>
+                  <option value="itService">IT서비스</option>
+                  <option value="electronics">전자·제조</option>
+                  <option value="construction">건설</option>
+                  <option value="airline">항공</option>
+                </select>
+              </label>
+
+              <div class="growth-chip-row" id="growthTypeFilters">
+                <button type="button" class="growth-chip is-active" data-type-filter="all">전체</button>
+                <button type="button" class="growth-chip" data-type-filter="starterFast">초봉형</button>
+                <button type="button" class="growth-chip" data-type-filter="stable">안정형</button>
+                <button type="button" class="growth-chip" data-type-filter="longTenure">장기근속형</button>
+                <button type="button" class="growth-chip" data-type-filter="performanceHeavy">성과급형</button>
+              </div>
+
+              <div class="growth-chip-row" id="growthRangeFilters">
+                <button type="button" class="growth-chip is-active" data-range="fifteenYears">1~15년 보기</button>
+                <button type="button" class="growth-chip" data-range="tenYears">1~10년 보기</button>
+              </div>
+
+              <label class="field">
+                <span>정렬</span>
+                <select id="growthSortSelect">
+                  <option value="year10Desc">10년차 높은순</option>
+                  <option value="avgDesc">평균 연봉 높은순</option>
+                  <option value="starterDesc">초봉 높은순</option>
+                  <option value="name">가나다순</option>
+                </select>
+              </label>
+            </div>
+          </article>
+
+          <article class="growth-benchmark-panel">
+            <div class="growth-benchmark-panel__head">
+              <p class="growth-benchmark-panel__eyebrow">Benchmark</p>
+              <h3>내 연봉을 비교선으로 올려보기</h3>
+              <p>현재 연봉을 넣으면 가까운 기업과 겹치는 연차 구간을 빠르게 읽을 수 있습니다.</p>
+            </div>
+
+            <div class="growth-input-row">
+              <label for="growthMySalaryInput">내 연봉 (만원)</label>
+              <input id="growthMySalaryInput" type="number" min="0" max="30000" step="100" placeholder="예: 8200" />
+              <span id="growthInputHint" class="growth-input-hint">입력하면 유사 기업과 시장 체감 문구가 표시됩니다.</span>
+            </div>
+
+            <div class="growth-result-card" id="growthResultCard">
+              <p id="growthResultTitle" class="growth-result-title"></p>
+              <div class="growth-result-grid">
+                <div class="growth-result-cell"><strong id="growthPct">-</strong><span>상위 체감</span></div>
+                <div class="growth-result-cell"><strong id="growthDiff">-</strong><span>평균 대비</span></div>
+                <div class="growth-result-cell"><strong id="growthBand">-</strong><span>가까운 구간</span></div>
+              </div>
+              <p id="growthSimilarText" class="growth-similar-text"></p>
+            </div>
+          </article>
+        </div>
+
+        <div class="growth-company-column">
+          <article class="panel growth-control-panel">
+            <label class="field">
+              <span>기업 선택</span>
+              <select id="growthCompanySelect">
+                {
+                  sortedByYear10.map((entry) => <option value={entry.slug}>{entry.companyName}</option>)
+                }
+              </select>
+            </label>
+          </article>
+
+          <article class="growth-company-card">
+            <div class="growth-company-card__head">
+              <div>
+                <p class="growth-company-card__eyebrow">Selected Company</p>
+                <h3 id="growthCompanyName">{selected.companyName}</h3>
+              </div>
+              <span class="growth-company-card__type" id="growthCompanyType">-</span>
+            </div>
+
+            <div class="growth-company-stats">
+              <div><p>초봉</p><strong id="growthStarter">{selected.starterSalaryManwon ? formatKrwM(selected.starterSalaryManwon) : "추정 필요"}</strong></div>
+              <div><p>평균 연봉</p><strong id="growthAverage">{formatKrwM(selected.avgSalaryManwon)}</strong></div>
+              <div><p>근속연수</p><strong id="growthTenure">{formatYears(selected.tenureYears)}</strong></div>
+              <div><p>10년차 밴드</p><strong id="growthYear10">{selected.year10BandLabel}</strong></div>
+            </div>
+
+            <div class="growth-company-bands" id="growthCompanyBands">
+              <span>1년차 {formatBand(getBandByYear(selected, 1)!)} </span>
+              <span>5년차 {formatBand(getBandByYear(selected, 5)!)} </span>
+              <span>10년차 {formatBand(getBandByYear(selected, 10)!)} </span>
+              <span>15년차 {formatBand(getBandByYear(selected, 15)!)} </span>
+            </div>
+
+            <p class="growth-company-summary" id="growthCompanySummary">{selected.summary}</p>
+            <div class="growth-company-tags" id="growthCompanyTags">
+              {selected.tags.map((tag) => <span>{tag}</span>)}
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section growth-tier-bridge">
+      <div class="growth-tier-bridge__lead">
+        <p class="growth-tier-bridge__eyebrow">다음 계산기</p>
+        <h2>내 연봉이 시장에서 어느 정도인지 바로 계산해보기</h2>
+        <p>
+          이 리포트가 시장의 성장 곡선을 읽는 페이지라면,
+          연봉 티어 계산기는 현재 내 연봉이 어느 구간에 있는지 더 직접적으로 확인하는 도구입니다.
+          지금 본 기업 성장 흐름과 함께 보면 해석이 훨씬 쉬워집니다.
+        </p>
+      </div>
+
+      <div class="growth-tier-bridge__grid">
+        <a class="growth-tier-card is-primary" href={withBase("/tools/salary-tier/")}>
+          <span class="growth-tier-card__label">추천</span>
+          <strong>연봉 티어 계산기</strong>
+          <p>내 연봉이 상위 몇 %인지, 어느 티어에 가까운지 빠르게 확인</p>
+          <span class="growth-tier-card__cta">계산기 열기 →</span>
+        </a>
+
+        <a class="growth-tier-card" href={withBase("/tools/negotiation/")}>
+          <span class="growth-tier-card__label">연계 계산</span>
+          <strong>연봉 인상 계산기</strong>
+          <p>5%, 10% 인상 시 실제 체감 차이가 얼마나 나는지 바로 비교</p>
+          <span class="growth-tier-card__cta">인상 시뮬레이션 →</span>
+        </a>
+
+        <a class="growth-tier-card" href={withBase("/tools/salary/")}>
+          <span class="growth-tier-card__label">이직 판단</span>
+          <strong>이직 계산기</strong>
+          <p>현재 연봉과 목표 연봉 차이를 넣고 이직 체감을 더 구체적으로 보기</p>
+          <span class="growth-tier-card__cta">이직 계산하기 →</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="content-section growth-compare-table">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">회사별 비교표</p>
+        <h2>실측값과 추정 밴드를 한 줄에서 같이 읽기</h2>
+      </div>
+
+      <div class="growth-table-wrap">
+        <table class="growth-table">
+          <thead>
+            <tr>
+              <th>기업</th>
+              <th>업종</th>
+              <th>초봉</th>
+              <th>평균 연봉</th>
+              <th>근속연수</th>
+              <th>5년차 밴드</th>
+              <th>10년차 밴드</th>
+              <th>15년차 밴드</th>
+              <th>성장 유형</th>
+            </tr>
+          </thead>
+          <tbody id="growthTableBody">
+            {
+              sortedByYear10.map((entry) => (
+                <tr>
+                  <td>{entry.companyName}</td>
+                  <td>{entry.industry}</td>
+                  <td>{entry.starterSalaryManwon ? formatKrwM(entry.starterSalaryManwon) : "-"}</td>
+                  <td>{formatKrwM(entry.avgSalaryManwon)}</td>
+                  <td>{formatYears(entry.tenureYears)}</td>
+                  <td>{formatBand(getBandByYear(entry, 5)!)}</td>
+                  <td>{formatBand(getBandByYear(entry, 10)!)}</td>
+                  <td>{formatBand(getBandByYear(entry, 15)!)}</td>
+                  <td>{entry.growthType}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section growth-pattern-grid">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>이 리포트는 이렇게 읽는 것이 좋습니다</h2>
+      </div>
+
+      <div class="growth-pattern-grid__cards">
+        {
+          report.patternPoints.map((item, index) => (
+            <article class="growth-pattern-card">
+              <div class="growth-pattern-card__head">
+                <span class="growth-pattern-card__index">0{index + 1}</span>
+                <strong>{item.title}</strong>
+              </div>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section growth-reference-panel">
+      <div class="panel growth-reference-card">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">실제 지원이나 처우 확인 전 원출처 다시 보기</h2>
+          </div>
+          <p class="panel-heading__summary">이 페이지는 비교 리포트이므로, 실제 판단 전에는 공식 채용 페이지와 공개 기업정보를 다시 확인하는 편이 안전합니다.</p>
+        </div>
+
+        <div class="growth-reference-grid">
+          <div class="growth-reference-col">
+            <h3>공식 사이트</h3>
+            {report.referenceLinks.official.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}
+          </div>
+          <div class="growth-reference-col">
+            <h3>채용</h3>
+            {report.referenceLinks.hiring.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}
+          </div>
+          <div class="growth-reference-col">
+            <h3>정보 / 공시</h3>
+            {report.referenceLinks.info.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="대기업 연차별 연봉 성장 비교 리포트 읽는 법"
+      intro={[
+        "이 페이지는 주요 대기업 15개사의 공개 평균연봉, 초봉, 근속연수를 바탕으로 1년차부터 15년차까지의 성장 흐름을 비교하도록 설계한 인터랙티브 리포트입니다.",
+        "실제 회사별 연차별 연봉 공시가 동일 형식으로 존재하지 않기 때문에, 이 페이지의 5년차·10년차·15년차 수치는 비교계산소 리포트용 표준화 추정 밴드로 제공됩니다."
+      ]}
+      inputPoints={[
+        "초봉만 보지 말고 5년차와 10년차 밴드가 어떻게 벌어지는지 먼저 확인하세요.",
+        "업종 필터와 성장 유형 필터를 바꿔서 같은 숫자도 다른 구조로 읽어보는 것이 중요합니다.",
+        "내 연봉을 넣으면 현재 위치와 유사 기업을 빠르게 찾을 수 있습니다."
+      ]}
+      criteria={[
+        "실측값은 공개 평균연봉, 초봉, 근속연수 기준입니다.",
+        "연차별 밴드는 기획 기준의 표준화 모델을 적용한 추정치입니다.",
+        "직무, 직군, 사업부, 평가, 성과급 구조에 따라 개인별 실제 보상은 크게 달라질 수 있습니다.",
+        "실제 지원 및 협상 전에는 공식 채용 페이지와 공시 자료를 다시 확인해야 합니다."
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks.map((item) => ({ href: item.href, label: item.label }))}
+    />
+  </main>
+
+  <script id="largeCompanySalaryGrowthByYears2026Data" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/large-company-salary-growth-by-years-2026.js")}></script>
+</BaseLayout>
+

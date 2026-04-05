@@ -1,0 +1,400 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PAGE_META,
+  BABY_GROWTH_DEFAULT_INPUT,
+  BABY_GROWTH_TABLES,
+  FEEDING_GUIDES,
+  DEVELOPMENT_GUIDES,
+  VACCINATION_GUIDES,
+  PAGE_FAQ,
+  EXTERNAL_REFERENCE_LINKS,
+  BABY_AFFILIATE_PRODUCTS,
+  relatedLinks,
+} from "../../data/babyGrowthPercentile";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  BABY_GROWTH_DEFAULT_INPUT,
+  BABY_GROWTH_TABLES,
+  FEEDING_GUIDES,
+  DEVELOPMENT_GUIDES,
+  VACCINATION_GUIDES,
+};
+
+const faqSchema = PAGE_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title={PAGE_META.title}
+  description={PAGE_META.subtitle}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "아기 성장 백분위 계산기",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/baby-growth-percentile-calculator/`,
+    description: PAGE_META.subtitle,
+    applicationCategory: "HealthApplication",
+    operatingSystem: "All",
+    inLanguage: "ko-KR",
+    isAccessibleForFree: true,
+    provider: { "@type": "Organization", name: "비교계산소" },
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="baby-growth-percentile-calculator" pageClass="baby-growth-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="육아 성장 계산기"
+        title="아기 성장 백분위 계산기"
+        description="몸무게, 키, 머리둘레를 입력하면 성장 백분위와 수유량, 발달 체크, 예방접종 흐름을 한 번에 확인할 수 있습니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetBabyGrowthBtn" copyId="copyBabyGrowthLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 정보</p>
+            <h2 class="panel__title">성장 측정값 입력</h2>
+          </div>
+          <p class="panel-heading__summary">의료 진단이 아닌 참고용 계산입니다. 한 번의 수치보다 추세를 함께 보세요.</p>
+        </div>
+
+        <div class="bg-form-grid">
+          <label class="field">
+            <span>성별</span>
+            <select id="bgSex" class="select">
+              <option value="male" selected>남아</option>
+              <option value="female">여아</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>생년월일</span>
+            <input id="bgBirthDate" type="date" class="input-number" value={BABY_GROWTH_DEFAULT_INPUT.birthDate} />
+          </label>
+
+          <label class="field">
+            <span>측정일</span>
+            <input id="bgMeasureDate" type="date" class="input-number" value={BABY_GROWTH_DEFAULT_INPUT.measureDate} />
+            <small>최근 측정일 기준 계산</small>
+          </label>
+
+          <label class="field">
+            <span>몸무게 (kg)</span>
+            <input id="bgWeightKg" type="number" min="1" max="25" step="0.1" class="input-number" value={BABY_GROWTH_DEFAULT_INPUT.weightKg} />
+            <small>예: 7.6</small>
+          </label>
+
+          <label class="field">
+            <span>키 (cm)</span>
+            <input id="bgHeightCm" type="number" min="35" max="110" step="0.1" class="input-number" value={BABY_GROWTH_DEFAULT_INPUT.heightCm} />
+            <small>예: 67.2</small>
+          </label>
+
+          <label class="field">
+            <span>머리둘레 (cm)</span>
+            <input id="bgHeadCm" type="number" min="25" max="60" step="0.1" class="input-number" value={BABY_GROWTH_DEFAULT_INPUT.headCircumferenceCm} />
+            <small>예: 43.1</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">교정 월령</p>
+            <h2 class="panel__title">조산아 참고 옵션</h2>
+          </div>
+          <p class="panel-heading__summary">초기에는 교정 월령으로 보는 편이 더 자연스러울 수 있습니다.</p>
+        </div>
+
+        <label class="bg-toggle-row">
+          <input id="bgUseCorrectedAge" type="checkbox" />
+          <span>교정 월령으로 계산하기</span>
+        </label>
+
+        <label class="field" id="bgPrematureField">
+          <span>출생 주수</span>
+          <input id="bgPrematureWeeks" type="number" min="24" max="39" step="1" class="input-number" value={BABY_GROWTH_DEFAULT_INPUT.prematureWeeks} />
+          <small>예: 36주 출생이면 36 입력</small>
+        </label>
+
+        <div class="bg-age-note" id="bgAgeNote">
+          <strong>월령 계산 기준</strong>
+          <span>측정일 기준 월령을 자동으로 계산합니다.</span>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="bg-section bg-section--result">
+      <div class="bg-section__head">
+        <p class="bg-section__eyebrow">핵심 결과</p>
+        <h2>현재 성장 위치를 먼저 봅니다</h2>
+        <p class="bg-section__sub" id="bgResultSubcopy">입력값을 바꾸면 성장 해석과 육아 가이드가 바로 갱신됩니다.</p>
+      </div>
+      <div class="bg-kpi-grid">
+        <article class="bg-kpi-card bg-kpi-card--accent">
+          <p>현재 월령</p>
+          <strong id="bgAgeValue">-</strong>
+          <span id="bgAgeDetail">-</span>
+        </article>
+        <article class="bg-kpi-card">
+          <p>몸무게 백분위</p>
+          <strong id="bgWeightPercentile">-</strong>
+          <span id="bgWeightCategory">-</span>
+        </article>
+        <article class="bg-kpi-card">
+          <p>키 백분위</p>
+          <strong id="bgHeightPercentile">-</strong>
+          <span id="bgHeightCategory">-</span>
+        </article>
+        <article class="bg-kpi-card">
+          <p>머리둘레 백분위</p>
+          <strong id="bgHeadPercentile">-</strong>
+          <span id="bgHeadCategory">-</span>
+        </article>
+      </div>
+      <div class="bg-insight-strip panel">
+        <strong id="bgSummaryHeadline">-</strong>
+        <p id="bgSummaryText">-</p>
+        <div class="bg-flag-list" id="bgFlagList"></div>
+      </div>
+    </section>
+
+    <section class="bg-section bg-section--chart">
+      <div class="bg-section__head">
+        <p class="bg-section__eyebrow">성장 차트</p>
+        <h2>월령 흐름 속에서 현재 위치를 봅니다</h2>
+        <p class="bg-section__sub">선택한 지표의 P3, P50, P97 기준과 현재 측정값을 함께 보여주는 참고용 차트입니다.</p>
+      </div>
+      <article class="panel bg-chart-panel">
+        <div class="bg-chart-toggle-row" id="bgChartMetricToggles">
+          <button type="button" class="bg-chart-chip is-active" data-chart-metric="weight">몸무게</button>
+          <button type="button" class="bg-chart-chip" data-chart-metric="height">키</button>
+          <button type="button" class="bg-chart-chip" data-chart-metric="head">머리둘레</button>
+        </div>
+        <div class="bg-chart-meta" id="bgChartMeta">현재 입력값 기준 차트를 표시합니다.</div>
+        <div class="bg-line-chart-wrap">
+          <canvas id="bgGrowthChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="bg-section">
+      <div class="bg-section__head">
+        <p class="bg-section__eyebrow">성장 해석</p>
+        <h2>세 항목을 같이 읽습니다</h2>
+        <p class="bg-section__sub">한 번의 백분위보다 지난 기록과 함께 흐름을 보는 것이 더 중요합니다.</p>
+      </div>
+      <div class="bg-percentile-grid" id="bgPercentileGrid"></div>
+    </section>
+
+    <section class="bg-section">
+      <div class="bg-section__head">
+        <p class="bg-section__eyebrow">수유량 참고</p>
+        <h2>월령 기준 수유 흐름</h2>
+        <p class="bg-section__sub">정확한 처방이 아니라 참고 범위를 보는 용도입니다.</p>
+      </div>
+      <div class="bg-guide-card panel">
+        <div class="bg-guide-card__grid">
+          <article>
+            <p>하루 총 수유량</p>
+            <strong id="bgFeedingDaily">-</strong>
+          </article>
+          <article>
+            <p>1회 수유량</p>
+            <strong id="bgFeedingSingle">-</strong>
+          </article>
+          <article>
+            <p>하루 수유 횟수</p>
+            <strong id="bgFeedingCount">-</strong>
+          </article>
+        </div>
+        <p class="bg-guide-card__note" id="bgFeedingNote">-</p>
+      </div>
+    </section>
+
+    <section class="bg-section">
+      <div class="bg-section__head">
+        <p class="bg-section__eyebrow">발달 체크</p>
+        <h2>이번 달과 다음 달 포인트</h2>
+        <p class="bg-section__sub">체크리스트는 참고용입니다. 이전에 하던 기능을 잃거나 여러 영역이 함께 느리면 상담을 권장합니다.</p>
+      </div>
+      <div class="bg-card-grid">
+        <article class="panel bg-check-card">
+          <p class="bg-check-card__eyebrow">이번 달</p>
+          <h3 id="bgDevelopmentLabel">-</h3>
+          <p class="bg-check-card__summary" id="bgDevelopmentSummary">-</p>
+          <ul id="bgDevelopmentCurrentList"></ul>
+        </article>
+        <article class="panel bg-check-card">
+          <p class="bg-check-card__eyebrow">다음 단계 미리 보기</p>
+          <h3>곧 보일 수 있는 변화</h3>
+          <ul id="bgDevelopmentNextList"></ul>
+        </article>
+        <article class="panel bg-check-card bg-check-card--warn">
+          <p class="bg-check-card__eyebrow">상담 권장 신호</p>
+          <h3>이럴 때는 체크만으로 넘기지 않기</h3>
+          <ul id="bgDevelopmentConsultList"></ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="bg-section">
+      <div class="bg-section__head">
+        <p class="bg-section__eyebrow">예방접종 안내</p>
+        <h2>현재 시기와 다음 일정</h2>
+        <p class="bg-section__sub">실제 접종 이력은 예방접종도우미나 병원 일정 확인이 가장 정확합니다.</p>
+      </div>
+      <div class="bg-card-grid">
+        <article class="panel bg-vaccine-card">
+          <p class="bg-check-card__eyebrow">현재 시기</p>
+          <h3 id="bgVaccineLabel">-</h3>
+          <ul id="bgCurrentVaccineList"></ul>
+        </article>
+        <article class="panel bg-vaccine-card">
+          <p class="bg-check-card__eyebrow">다음 일정</p>
+          <h3>다음에 확인할 접종</h3>
+          <ul id="bgNextVaccineList"></ul>
+          <p class="bg-vaccine-card__note" id="bgVaccineNote">-</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section bg-next-section">
+      <div class="panel bg-next-card">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">육아 계산기 이어보기</p>
+            <h2 class="panel__title">비용 계산까지 한 번에 이어서 보기</h2>
+          </div>
+          <p class="panel-heading__summary">성장과 수유 흐름을 확인했다면, 분유값과 기저귀값 계산기로 이어서 월별 육아 고정비를 같이 볼 수 있습니다.</p>
+        </div>
+        <div class="bg-next-grid">
+          <a href={withBase("/tools/formula-cost/")} class="bg-next-link-card">
+            <span class="bg-next-link-card__eyebrow">분유 비용</span>
+            <strong>아기 분유 값 계산기</strong>
+            <p>돌까지 월령별 사용량과 브랜드별 총비용을 바로 비교합니다.</p>
+            <span class="bg-next-link-card__cta">바로가기 →</span>
+          </a>
+          <a href={withBase("/tools/diaper-cost/")} class="bg-next-link-card">
+            <span class="bg-next-link-card__eyebrow">기저귀 비용</span>
+            <strong>아기 기저귀 값 계산기</strong>
+            <p>신생아부터 돌까지 브랜드별 기저귀 총비용과 차액을 바로 계산합니다.</p>
+            <span class="bg-next-link-card__cta">바로가기 →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">🧸</span>
+          <div>
+            <h3 class="affiliate-box__title">성장 기록과 육아 관리에 같이 보는 상품</h3>
+            <p class="affiliate-box__context">집에서 몸무게 추세를 보거나 수유량·건강 기록을 정리할 때 자주 같이 찾는 품목입니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {BABY_AFFILIATE_PRODUCTS.map((prod) => (
+            <a href={prod.href} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡 검색 페이지로 연결되며, 제휴 구조 적용 시 수수료가 발생할 수 있는 영역으로 운영할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="content-section bg-reference-section">
+      <div class="panel bg-reference-links">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">성장과 접종 정보를 같이 확인할 때</h2>
+          </div>
+          <p class="panel-heading__summary">계산 결과를 해석할 때 함께 보면 좋은 공식 정보입니다.</p>
+        </div>
+        <div class="bg-link-grid">
+          {EXTERNAL_REFERENCE_LINKS.map((item) => (
+            <a href={item.url} target="_blank" rel="noreferrer" class="bg-reference-link">
+              <strong>{item.title}</strong>
+              <span>{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "이 페이지는 참고용 성장 계산기이며 진단이나 치료 결정을 대신하지 않습니다.",
+        "성장 백분위는 한 번의 숫자보다 이전 측정과 함께 보는 추세가 더 중요합니다.",
+        `데이터 기준: ${PAGE_META.updatedAt}`,
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="아기 성장 백분위 계산기를 보는 방법"
+        intro={[
+          "이 계산기는 몸무게, 키, 머리둘레를 기준으로 현재 성장 위치를 참고용으로 보여주고, 같은 화면에서 월령별 수유량, 발달 체크, 예방접종 흐름까지 이어서 보게 만든 육아 도구입니다.",
+          "결과를 해석할 때는 현재 백분위 숫자 하나보다 이전 기록과 함께 흐름을 보는 것이 더 중요합니다. 특히 체중과 키, 머리둘레가 함께 움직이는지, 어느 한 항목만 크게 벗어나는지 같이 보는 방식이 자연스럽습니다.",
+        ]}
+        inputPoints={[
+          "성별, 생년월일, 측정일, 몸무게, 키, 머리둘레를 입력하면 현재 월령과 세 항목 백분위가 바로 계산됩니다.",
+          "조산아라면 교정 월령 옵션을 켜고 출생 주수를 넣어 초기 해석 기준을 조금 더 자연스럽게 맞출 수 있습니다.",
+          "성장 차트에서 몸무게, 키, 머리둘레 중 하나를 선택해 현재 위치와 P3·P50·P97 흐름을 같이 볼 수 있습니다.",
+        ]}
+        criteria={[
+          "0~24개월 기준표를 단순화한 참조 테이블을 사용해 몸무게, 키, 머리둘레 백분위를 추정합니다.",
+          "백분위 값은 정확한 진단 수치가 아니라 현재 위치를 빠르게 읽기 위한 근사값입니다.",
+          "수유량은 월령과 체중을 기준으로 하루 총량과 1회 수유량의 참고 범위를 계산합니다.",
+          "발달 체크와 예방접종은 월령 구간별 안내형 데이터로 구성돼 있으며 실제 진료 기록과 접종 이력 확인을 대체하지 않습니다.",
+        ]}
+        faq={PAGE_FAQ}
+        related={relatedLinks}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script id="babyGrowthConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/baby-growth-percentile-calculator.js")}></script>
+</BaseLayout>
+
+
