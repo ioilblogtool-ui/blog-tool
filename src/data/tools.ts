@@ -64,7 +64,7 @@ export const tools: ToolMeta[] = [
     title: "아기 기저귀 값 계산기",
     description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 하기스·팸퍼스·보솜이 등 브랜드별 총비용을 비교하는 페이지",
     order: 3,
-    eyebrow: "육아 소모품",
+    eyebrow: "육아 양육",
     category: "parenting",
     iframeReady: true,
     badges: ["신규"],
@@ -229,7 +229,7 @@ export const tools: ToolMeta[] = [
     title: "아기 분유 값 계산기",
     description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 매일 앱솔루트·남양 임페리얼·일동후디스 등 브랜드별 총비용을 비교하는 페이지",
     order: 15,
-    eyebrow: "육아 소모품",
+    eyebrow: "육아 양육",
     category: "parenting",
     iframeReady: true,
     badges: ["신규"],
@@ -308,5 +308,21 @@ export const tools: ToolMeta[] = [
       { label: "월령 가이드", value: "수유·발달·접종" },
     ],
   },
+  {
+    slug: "parental-leave-short-work-calculator",
+    title: "육아휴직 + 육아기 단축근무 계산기",
+    description: "육아휴직 18개월 여부, 남은 휴직·단축근무 기간, 2026년 기준 단축근무 예상 월급을 한 번에 계산하는 정책형 도구",
+    order: 21,
+    eyebrow: "육아 정책 계산기",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "핵심 결과", value: "남은 기간" },
+      { label: "급여 기준", value: "250만/160만" },
+    ],
+  },
 ];
+
+
 

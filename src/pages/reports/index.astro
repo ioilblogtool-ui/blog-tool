@@ -2,139 +2,129 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
+import { reports } from "../../data/reports";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
-const salarySeries = [
-  {
-    slug: "new-employee-salary-2026",
+
+type ReportCategory = "salary" | "estate" | "asset" | "life";
+type ReportTagMod = "salary" | "asset";
+
+type ReportIndexMeta = {
+  eyebrow: string;
+  tags: { label: string; mod: ReportTagMod }[];
+  category: ReportCategory;
+  isNew: boolean;
+};
+
+const reportMetaBySlug: Record<string, ReportIndexMeta> = {
+  "new-employee-salary-2026": {
     eyebrow: "연봉 비교",
-    title: "2026 신입 연봉 비교 70개 기업 초봉 총정리",
-    desc: "반도체, 제조, IT, 금융, 공공 등 70개 기업의 신입 초봉을 비교하고 내 위치를 바로 확인하는 리포트입니다.",
     tags: [{ label: "70개 기업", mod: "salary" }, { label: "연봉", mod: "salary" }],
     category: "salary",
     isNew: false,
   },
-  {
-    slug: "it-salary-top10",
+  "it-salary-top10": {
     eyebrow: "IT 초봉",
-    title: "IT 업계 신입 초봉 TOP 10 연봉·복지 비교 [2026]",
-    desc: "네이버, 카카오, SK텔레콤, 현대오토에버 등 주요 IT 기업의 초봉과 복지 포인트를 비교합니다.",
     tags: [{ label: "IT", mod: "salary" }, { label: "TOP10", mod: "salary" }],
     category: "salary",
     isNew: false,
   },
-  {
-    slug: "it-si-sm-salary-comparison-2026",
+  "it-si-sm-salary-comparison-2026": {
     eyebrow: "IT 서비스",
-    title: "IT SI·SM 대기업 평균 연봉·성과급 비교 리포트 2026",
-    desc: "삼성SDS, LG CNS, 현대오토에버, 한화시스템 ICT 등 주요 IT서비스 기업의 평균 연봉, 초봉, 성과급 체감, 회사 규모를 함께 비교합니다.",
     tags: [{ label: "IT서비스", mod: "salary" }, { label: "평균 연봉", mod: "salary" }, { label: "2026", mod: "salary" }],
     category: "salary",
     isNew: true,
   },
-  {
-    slug: "insurance-salary-bonus-comparison-2026",
+  "insurance-salary-bonus-comparison-2026": {
     eyebrow: "보험 비교",
-    title: "국내 TOP 보험사 평균 연봉·성과급 비교 리포트 2026",
-    desc: "삼성화재, 삼성생명, 메리츠화재, 현대해상, DB손해보험, KB손해보험 등 주요 보험사의 평균 연봉, 신입 초봉, 성과급, 총보상을 함께 비교합니다.",
     tags: [{ label: "보험", mod: "salary" }, { label: "총보상", mod: "salary" }, { label: "2026", mod: "salary" }],
     category: "salary",
     isNew: true,
   },
-  {
-    slug: "construction-salary-bonus-comparison-2026",
+  "construction-salary-bonus-comparison-2026": {
     eyebrow: "건설 비교",
-    title: "국내 TOP 대형 건설사 평균 연봉·성과급 비교 리포트 2026",
-    desc: "현대건설, GS건설, 대우건설, 롯데건설, 현대엔지니어링, 삼성E&A, SK에코플랜트 등 주요 대형 건설사의 평균 연봉, 초봉, 성과급, 총보상을 함께 비교합니다.",
     tags: [{ label: "건설", mod: "salary" }, { label: "총보상", mod: "salary" }, { label: "2026", mod: "salary" }],
     category: "salary",
     isNew: true,
-  },
-  {
-    slug: "large-company-salary-growth-by-years-2026",
+  },
+  "large-company-salary-growth-by-years-2026": {
     eyebrow: "연차별 성장",
-    title: "2026 대기업 연차별 연봉 성장 비교 리포트",
-    desc: "주요 대기업 15개사의 초봉, 평균 연봉, 근속연수를 바탕으로 1년차·5년차·10년차·15년차 성장 흐름을 비교합니다.",
     tags: [{ label: "연차별", mod: "salary" }, { label: "성장곡선", mod: "salary" }, { label: "2026", mod: "salary" }],
     category: "salary",
     isNew: true,
   },
-];
-const estateSeries = [
-  {
-    slug: "seoul-housing-2016-vs-2026",
+  "seoul-housing-2016-vs-2026": {
     eyebrow: "서울 집값",
-    title: "서울 집값 2016 vs 2026, 매매·전세·월세 10년 비교",
-    desc: "서울 평균 매매가, 전세가, 월세, PIR을 기준으로 10년 변화를 한 화면에서 보고, 내 연봉 기준 체감까지 바로 확인합니다.",
     tags: [{ label: "서울", mod: "asset" }, { label: "10년 비교", mod: "asset" }, { label: "PIR", mod: "asset" }],
     category: "estate",
     isNew: true,
-  },  {
-    slug: "seoul-84-apartment-prices",
+  },
+  "seoul-84-apartment-prices": {
     eyebrow: "부동산 비교",
-    title: "서울 국평 아파트 가격 비교 리포트",
-    desc: "강남, 서초, 송파, 마포, 성동, 강동의 대단지 84㎡ 아파트 가격과 연봉 대비 체감까지 한 번에 비교합니다.",
     tags: [{ label: "서울", mod: "asset" }, { label: "84㎡", mod: "asset" }, { label: "부동산", mod: "asset" }],
     category: "estate",
     isNew: true,
   },
-];
-
-const lifeSeries = [
-  {
-    slug: "wedding-cost-2016-vs-2026",
+  "wedding-cost-2016-vs-2026": {
     eyebrow: "결혼 비용",
-    title: "결혼비용 2016 vs 2026, 10년 만에 얼마나 올랐나",
-    desc: "웨딩홀, 스드메, 신혼여행, 예식 준비 비용을 같은 구조로 다시 묶어 10년 사이 총예산 변화를 비교합니다.",
     tags: [{ label: "결혼", mod: "asset" }, { label: "10년 비교", mod: "asset" }, { label: "예산", mod: "asset" }],
     category: "life",
     isNew: true,
   },
-];
-
-const assetSeries = [
-  {
-    slug: "salary-asset-2016-vs-2026",
+  "salary-asset-2016-vs-2026": {
     eyebrow: "연봉·자산",
-    title: "한국인 평균 연봉·자산 2016 vs 2026, 따라잡을 수 있나",
-    desc: "중위 연봉, 평균 자산, 서울 집값 지수를 함께 비교해 10년 사이 자산 형성 구조가 어떻게 달라졌는지 읽는 리포트입니다.",
     tags: [{ label: "연봉", mod: "asset" }, { label: "자산", mod: "asset" }, { label: "10년 비교", mod: "asset" }],
     category: "asset",
     isNew: true,
-  },  {
-    slug: "lee-jaemyung-government-officials-assets-salary-2026",
+  },
+  "lee-jaemyung-government-officials-assets-salary-2026": {
     eyebrow: "공개재산 비교",
-    title: "2026 이재명 정부 핵심 공직자 재산·보수 비교 리포트",
-    desc: "정기 재산변동 공개 기준 15명의 총재산, 세부 자산, 공직 보수를 한 화면에서 비교하는 리포트입니다.",
     tags: [{ label: "공직자", mod: "asset" }, { label: "재산공개", mod: "asset" }, { label: "2026", mod: "asset" }],
     category: "asset",
     isNew: true,
   },
-  {
-    slug: "korea-rich-top10-assets",
+  "korea-rich-top10-assets": {
     eyebrow: "자산 비교",
-    title: "한국 부자 TOP 10 자산 비교 리포트",
-    desc: "2026년 최신 공개 기준으로 한국 상위 10명의 자산과 환산값을 함께 보는 인터랙티브 리포트입니다.",
     tags: [{ label: "KRW", mod: "asset" }, { label: "자산", mod: "asset" }],
     category: "asset",
     isNew: false,
   },
-  {
-    slug: "us-rich-top10-patterns",
+  "us-rich-top10-patterns": {
     eyebrow: "미국 자산",
-    title: "미국 부자 TOP 10 성공 패턴 리포트",
-    desc: "자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트입니다.",
     tags: [{ label: "USD", mod: "asset" }, { label: "패턴 분석", mod: "asset" }],
     category: "asset",
     isNew: false,
   },
-];
+};
 
-const totalReports = salarySeries.length + estateSeries.length + lifeSeries.length + assetSeries.length;
+const reportEntries = reports
+  .map((report) => {
+    const meta = reportMetaBySlug[report.slug];
+    if (!meta) return null;
+    return {
+      slug: report.slug,
+      eyebrow: meta.eyebrow,
+      title: report.title,
+      desc: report.description,
+      tags: meta.tags,
+      category: meta.category,
+      isNew: meta.isNew,
+      order: report.order,
+    };
+  })
+  .filter(Boolean)
+  .sort((a, b) => a.order - b.order);
+
+const salarySeries = reportEntries.filter((report) => report.category === "salary");
+const estateSeries = reportEntries.filter((report) => report.category === "estate");
+const lifeSeries = reportEntries.filter((report) => report.category === "life");
+const assetSeries = reportEntries.filter((report) => report.category === "asset");
+
+const totalReports = reportEntries.length;
 ---
 
 <BaseLayout
@@ -171,6 +161,7 @@ const totalReports = salarySeries.length + estateSeries.length + lifeSeries.leng
       <button class="reports-filter-chip" data-filter="salary">연봉</button>
       <button class="reports-filter-chip" data-filter="estate">부동산</button>
       <button class="reports-filter-chip" data-filter="asset">자산</button>
+      <button class="reports-filter-chip" data-filter="life">생활</button>
       <button class="reports-filter-chip" data-filter="new">신규</button>
     </div>
 
@@ -359,6 +350,7 @@ const totalReports = salarySeries.length + estateSeries.length + lifeSeries.leng
     });
   });
 </script>
+
 
 
 

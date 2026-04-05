@@ -1,0 +1,360 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import TimelineToolShell from "../../components/TimelineToolShell.astro";
+import {
+  DEFAULT_INPUT,
+  HOUSEHOLD_TYPE_OPTIONS,
+  PAGE_FAQ,
+  PAGE_META,
+  POLICY_CONSTANTS,
+  REFERENCE_LINKS,
+  RELATED_LINKS,
+  SCENARIO_OPTIONS
+} from "../../data/parentalLeaveShortWork";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title={PAGE_META.seoTitle}
+  description={PAGE_META.seoDescription}
+  ogImage={PAGE_META.ogImage}>
+  <SiteHeader />
+
+  <TimelineToolShell
+    calculatorId="parental-leave-short-work-calculator"
+    pageClass="parental-leave-short-work-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="육아 정책 계산"
+        title="육아휴직 + 육아기 단축근무 계산기"
+        description="이미 사용한 육아휴직과 단축근무를 반영해 18개월 여부, 남은 기간, 2026년 기준 단축근무 예상 월급을 한 번에 계산합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetPlswBtn" copyId="copyPlswLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">내 상황 빠르게 입력</h2>
+          </div>
+          <p class="panel-heading__summary">자녀 나이, 통상임금, 배우자 사용 여부, 이미 사용한 개월 수만 넣어도 남은 기간과 월 수령액을 바로 볼 수 있습니다.</p>
+        </div>
+
+        <div class="form-grid form-grid--compact">
+          <label class="field">
+            <span>자녀 생년월일</span>
+            <input id="plswChildBirthDate" type="date" value={DEFAULT_INPUT.childBirthDate} />
+            <small class="is-placeholder">d</small>
+          </label>
+          <label class="field">
+            <span>기준일</span>
+            <input id="plswBaseDate" type="date" value={DEFAULT_INPUT.baseDate} />
+            <small class="is-placeholder">d</small>
+          </label>
+          <label class="field">
+            <span>월 통상임금</span>
+            <input id="plswMonthlyWage" type="number" value={DEFAULT_INPUT.monthlyOrdinaryWage} />
+            <small id="plswMonthlyWageHint"></small>
+          </label>
+          <label class="field">
+            <span>가구 유형</span>
+            <select id="plswHouseholdType">
+              {HOUSEHOLD_TYPE_OPTIONS.map((option) => (
+                <option value={option.value} selected={option.value === DEFAULT_INPUT.householdType}>{option.label}</option>
+              ))}
+            </select>
+            <small class="is-placeholder">d</small>
+          </label>
+          <label class="field">
+            <span>현재 주 근로시간</span>
+            <input id="plswWeeklyBefore" type="number" min="15" max="52" value={DEFAULT_INPUT.weeklyHoursBefore} />
+            <small class="is-placeholder">d</small>
+          </label>
+          <label class="field">
+            <span>단축 후 주 근로시간</span>
+            <input id="plswWeeklyAfter" type="number" min="15" max="35" value={DEFAULT_INPUT.weeklyHoursAfter} />
+            <small class="is-placeholder">d</small>
+          </label>
+          <label class="check-field field-span-full">
+            <input id="plswSpouseUsedThreeMonths" type="checkbox" checked={DEFAULT_INPUT.spouseUsedThreeMonths} />
+            <span>배우자도 같은 자녀로 3개월 이상 육아휴직 사용</span>
+          </label>
+        </div>
+
+        <details class="detail-box detail-box--soft">
+          <summary>이미 사용한 기간과 계획 더 입력하기</summary>
+          <div class="detail-box__content detail-box__content--tight">
+            <div class="form-grid form-grid--compact">
+              <label class="field">
+                <span>이미 사용한 육아휴직</span>
+                <input id="plswLeaveUsedMonths" type="number" min="0" max="18" step="0.5" value={DEFAULT_INPUT.leaveUsedMonths} />
+                <small>개월 수 기준 입력</small>
+              </label>
+              <label class="field">
+                <span>이미 사용한 단축근무</span>
+                <input id="plswShortUsedMonths" type="number" min="0" max="36" step="0.5" value={DEFAULT_INPUT.shortWorkUsedMonths} />
+                <small>개월 수 기준 입력</small>
+              </label>
+              <label class="field">
+                <span>이번에 계획 중인 휴직</span>
+                <input id="plswPlannedLeaveMonths" type="number" min="0" max="18" step="1" value={DEFAULT_INPUT.plannedLeaveMonths} />
+                <small>시나리오 비교용</small>
+              </label>
+              <label class="field">
+                <span>비교 모드</span>
+                <select id="plswScenarioMode">
+                  {SCENARIO_OPTIONS.map((option) => (
+                    <option value={option.value} selected={option.value === DEFAULT_INPUT.scenarioMode}>{option.label}</option>
+                  ))}
+                </select>
+                <small class="is-placeholder">d</small>
+              </label>
+            </div>
+          </div>
+        </details>
+
+        <button id="calcPlswBtn" class="button button--primary" type="button">남은 기간과 월급 계산하기</button>
+      </article>
+    </Fragment>
+
+    <SummaryCards
+      columns={4}
+      items={[
+        { label: "육아휴직 총 가능 기간", id: "plswLeaveMaxSummary" },
+        { label: "남은 육아휴직", id: "plswLeaveRemainSummary" },
+        { label: "단축근무 총 가능 기간", id: "plswShortMaxSummary" },
+        { label: "남은 단축근무", id: "plswShortRemainSummary" },
+        { label: "단축근무 예상 월 수령", id: "plswShortPaySummary" },
+        { label: "추천 전략", id: "plswBestStrategySummary" },
+        { label: "육아휴직 사용 가능 종료", id: "plswLeaveExpirySummary" },
+        { label: "단축근무 사용 가능 종료", id: "plswShortExpirySummary" }
+      ]}
+    />
+
+    <section class="plsw-decision-grid">
+      <article class="panel plsw-decision-card plsw-decision-card--accent">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">자격 판정</p>
+            <h2 class="panel__title">먼저 12개월인지 18개월인지 봅니다</h2>
+          </div>
+          <p class="panel-heading__summary" id="plswEligibilityNote">-</p>
+        </div>
+        <div class="result-summary-grid">
+          <article class="result-summary-card result-summary-card--accent">
+            <p>육아휴직 한도</p>
+            <strong id="plswEligibilityValue">-</strong>
+            <span id="plswEligibilityReason">-</span>
+          </article>
+          <article class="result-summary-card">
+            <p>단축근무 총 가능 기간</p>
+            <strong id="plswShortTotalValue">-</strong>
+            <span id="plswShortReason">-</span>
+          </article>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">급여 계산</p>
+            <h2 class="panel__title">단축근무하면 월급이 얼마나 남는지 봅니다</h2>
+          </div>
+          <p class="panel-heading__summary" id="plswPayNote">-</p>
+        </div>
+        <div class="plsw-pay-grid">
+          <article class="plsw-pay-card">
+            <p>회사 급여</p>
+            <strong id="plswCompanyPay">-</strong>
+            <span>단축 후 근로시간 비율 반영</span>
+          </article>
+          <article class="plsw-pay-card plsw-pay-card--soft">
+            <p>정부 지원금</p>
+            <strong id="plswGovernmentSupport">-</strong>
+            <span>2026년 상한 250만 / 160만 반영</span>
+          </article>
+          <article class="plsw-pay-card plsw-pay-card--accent">
+            <p>예상 월 수령액</p>
+            <strong id="plswEstimatedTotal">-</strong>
+            <span id="plswDeltaCopy">-</span>
+          </article>
+        </div>
+
+        <div class="plsw-hours-bar">
+          <div class="plsw-hours-bar__head">
+            <p>단축시간 구조</p>
+            <strong id="plswReducedHoursLabel">-</strong>
+          </div>
+          <div class="plsw-hours-bar__track">
+            <div class="plsw-hours-bar__part plsw-hours-bar__part--primary" id="plswFirstTenBar">
+              <span>최초 10시간</span>
+            </div>
+            <div class="plsw-hours-bar__part plsw-hours-bar__part--secondary" id="plswExtraBar">
+              <span>추가 단축분</span>
+            </div>
+          </div>
+        </div>
+
+        <details class="detail-box detail-box--soft plsw-formula-box">
+          <summary>공식식 기준 계산식 펼쳐보기</summary>
+          <div class="detail-box__content detail-box__content--tight">
+            <div class="plsw-formula-grid">
+              <article class="plsw-formula-card">
+                <p class="plsw-formula-card__label">최초 10시간 단축분</p>
+                <strong id="plswFormulaFirstValue">-</strong>
+                <code id="plswFormulaFirstCode">-</code>
+              </article>
+              <article class="plsw-formula-card">
+                <p class="plsw-formula-card__label">추가 단축분</p>
+                <strong id="plswFormulaExtraValue">-</strong>
+                <code id="plswFormulaExtraCode">-</code>
+              </article>
+            </div>
+            <p class="plsw-formula-note" id="plswFormulaNote">-</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">시나리오 비교</p>
+          <h2 class="panel__title">휴직 우선, 단축 우선, 혼합 사용을 비교합니다</h2>
+        </div>
+        <p class="panel-heading__summary" id="plswScenarioNote">-</p>
+      </div>
+      <div class="table-wrap">
+        <table class="result-table plsw-result-table">
+          <thead>
+            <tr>
+              <th>시나리오</th>
+              <th>월 수령액</th>
+              <th>휴직 구조</th>
+              <th>단축 구조</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody id="plswScenarioTable"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <section class="plsw-next-section panel">
+      <div class="plsw-next-section__head">
+        <p class="plsw-next-section__eyebrow">육아휴직 계산기 이어보기</p>
+        <h2>비슷한 계산도 바로 이어서 볼 수 있습니다</h2>
+        <p class="plsw-next-section__sub">단축근무와 함께 비교할 때 자주 보는 계산기를 같이 묶었습니다.</p>
+      </div>
+      <div class="plsw-next-grid">
+        <a class="plsw-next-link-card" href="/tools/single-parental-leave-total/">
+          <span class="plsw-next-link-card__eyebrow">총수령액 비교</span>
+          <strong>한 명만 육아휴직 총수령액 계산기</strong>
+          <p>육아휴직만 단독으로 쓸 때 월별 총수령액과 전체 수령 구조를 따로 계산해보고 싶다면 이 계산기로 이어서 볼 수 있습니다.</p>
+          <span class="plsw-next-link-card__cta">계산기 바로가기</span>
+        </a>
+        <a class="plsw-next-link-card" href="/tools/parental-leave-pay/">
+          <span class="plsw-next-link-card__eyebrow">월별 급여 확인</span>
+          <strong>육아휴직 급여 계산기</strong>
+          <p>단축근무가 아니라 육아휴직 급여만 월차별로 따져보고 싶다면 별도 계산기로 빠르게 확인할 수 있습니다.</p>
+          <span class="plsw-next-link-card__cta">급여 계산기 보기</span>
+        </a>
+      </div>
+    </section>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "육아휴직 18개월 연장은 부모 각각 3개월 이상 사용, 한부모 가정, 중증 장애아동 부모 조건을 단순화해 반영합니다.",
+        "육아기 근로시간 단축은 기본 12개월에 미사용 육아휴직의 2배를 가산하고 최대 36개월까지만 계산합니다.",
+        "단축근무 급여는 2026년 상한 구조를 반영한 모의계산이며, 실제 회사 지급 규정과 신청 승인 결과에 따라 달라질 수 있습니다."
+      ]}
+    />
+
+    <Fragment slot="timeline">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">월별 흐름</p>
+            <h2 class="panel__title">앞으로 12개월 현금흐름을 한 번에 봅니다</h2>
+          </div>
+          <p class="panel-heading__summary" id="plswTimelineNote">-</p>
+        </div>
+        <div class="plsw-chart-wrap">
+          <canvas id="plsw-timeline-chart"></canvas>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table plsw-result-table">
+            <thead>
+              <tr>
+                <th>월차</th>
+                <th>상태</th>
+                <th>회사 지급</th>
+                <th>지원금</th>
+                <th>총 수령액</th>
+              </tr>
+            </thead>
+            <tbody id="plswTimelineTable"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <section class="plsw-reference-grid">
+        {REFERENCE_LINKS.map((link) => (
+          <a class="plsw-reference-card" href={link.href} target="_blank" rel="noreferrer">
+            <p class="plsw-reference-card__title">{link.label}</p>
+            <p class="plsw-reference-card__desc">{link.description}</p>
+          </a>
+        ))}
+      </section>
+    </Fragment>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="육아휴직 + 육아기 단축근무 계산기에서 먼저 볼 숫자"
+        intro={[
+          "이 계산기는 육아휴직 18개월 가능 여부, 남은 육아휴직과 단축근무 기간, 그리고 단축근무 시 예상 월 수령액을 한 번에 확인하는 정책형 도구입니다. 사용자가 가장 많이 헷갈리는 ‘12개월인지 18개월인지’, ‘단축근무를 몇 개월 더 쓸 수 있는지’를 먼저 정리해줍니다.",
+          "특히 2026년 단축근무 급여 상한 구조와 미사용 육아휴직 2배 가산 규칙까지 같이 반영해, 휴직 우선과 단축 우선 중 어느 전략이 더 유리한지도 비교할 수 있게 구성합니다."
+        ]}
+        inputPoints={[
+          "자녀 생년월일, 월 통상임금, 배우자 사용 여부만 먼저 넣어도 18개월 자격과 남은 기간을 바로 볼 수 있습니다.",
+          "이미 사용한 육아휴직과 단축근무 개월 수를 넣으면 현재 시점 기준 잔여기간이 자동으로 계산됩니다.",
+          "현재 주 근로시간과 단축 후 주 근로시간을 넣으면 회사 급여와 정부 지원금을 분리해 예상 월 수령액을 볼 수 있습니다."
+        ]}
+        criteria={[
+          "육아휴직은 기본 12개월, 부모 각각 3개월 이상 사용 또는 한부모·중증 장애아동 부모는 18개월로 계산합니다.",
+          "육아기 근로시간 단축은 기본 12개월에 미사용 육아휴직 2배를 가산하고 최대 36개월까지만 계산합니다.",
+          "단축근무 급여는 2026년 상한 구조를 반영한 모의계산으로, 실제 수령액은 사업장 규정과 승인 결과에 따라 달라질 수 있습니다."
+        ]}
+        faq={PAGE_FAQ}
+        related={RELATED_LINKS}
+      />
+    </Fragment>
+  </TimelineToolShell>
+
+  <script is:inline type="application/json" id="plsw-config">
+    {JSON.stringify({ defaults: DEFAULT_INPUT, policy: POLICY_CONSTANTS })}
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/parental-leave-short-work-calculator.js")}></script>
+</BaseLayout>
+
+
+
+
+
