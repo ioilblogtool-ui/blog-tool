@@ -98,4 +98,11 @@ export const reports: ReportMeta[] = [
     order: 13,
     badges: ["연봉", "자산", "10년비교"],
   },
+  {
+    slug: "baby-cost-guide-first-year",
+    title: "신생아~돌까지 육아 비용 총정리 — 가성비·평균·프리미엄 비교",
+    description: "기저귀, 분유, 병원비, 이유식, 육아용품까지 아기 1년 육아 비용을 3단계 기준으로 비교하고 지원금 반영 후 실부담까지 확인하는 리포트입니다.",
+    order: 14,
+    badges: ["육아", "비용비교"],
+  },
 ];

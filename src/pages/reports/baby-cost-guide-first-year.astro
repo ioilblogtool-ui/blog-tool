@@ -1,0 +1,268 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { babyCostGuideFirstYear } from "../../data/babyCostGuideFirstYear";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = babyCostGuideFirstYear;
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout
+  title={report.meta.seoTitle}
+  description={report.meta.seoDescription}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page baby-cost-report-page">
+    <CalculatorHero
+      eyebrow="육아 비용 리포트"
+      title="신생아~돌까지 육아 비용 총정리"
+      description="기저귀, 분유, 병원비, 이유식, 육아용품까지. 아기 1년 육아비를 가성비·평균·프리미엄 3가지 기준으로 나눠 비교하고 지원금 반영 후 실부담까지 확인합니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[
+        report.meta.caution,
+        "지원금 반영 금액은 2026년 부모급여·출산지원금 기준으로 단순화한 예시입니다. 실제 수령액은 출생 시점·거주지·가구 상황에 따라 달라집니다.",
+        report.meta.updatedAt,
+      ]}
+    />
+
+    <!-- ① KPI 카드 — 가성비/평균/프리미엄 총비용 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한눈에 보는 총비용</p>
+        <h2>아기 1년, 얼마나 드나요?</h2>
+        <p>준비 방식에 따라 총비용 차이가 3배 이상 벌어집니다.</p>
+      </div>
+      <div class="bcg-kpi-grid">
+        {report.kpis.map((kpi) => (
+          <article class={`bcg-kpi-card bcg-kpi-card--${kpi.tier}`}>
+            <p>{kpi.label}</p>
+            <strong>{kpi.value}</strong>
+            <span>{kpi.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ② 총비용 카테고리별 비교 표 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">카테고리별 비교</p>
+        <h2>준비 방식에 따른 비용 구조</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="bcg-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th class="bcg-th--frugal">가성비</th>
+              <th class="bcg-th--average">평균</th>
+              <th class="bcg-th--premium">프리미엄</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.overviewRows.map((row) => (
+              <tr class={row.isTotal ? "bcg-row--total" : ""}>
+                <td>{row.category}</td>
+                <td class="bcg-td--frugal">{row.frugal}</td>
+                <td class="bcg-td--average">{row.average}</td>
+                <td class="bcg-td--premium">{row.premium}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="bcg-table-note">실제 금액은 수유 방식, 선물 비중, 중고 활용 여부, 외출 빈도, 병원 이용 빈도에 따라 달라질 수 있습니다.</p>
+    </section>
+
+    <!-- ③ 가성비/평균/프리미엄 기준 설명 카드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">우리 집은 어떤 타입?</p>
+        <h2>가성비 / 평균 / 프리미엄 기준 설명</h2>
+      </div>
+      <div class="bcg-tier-grid">
+        {report.tiers.map((tier) => (
+          <article class={`bcg-tier-card bcg-tier-card--${tier.tier}`}>
+            <p class="bcg-tier-card__label">{tier.label}</p>
+            <p class="bcg-tier-card__tagline">{tier.tagline}</p>
+            <p class="bcg-tier-card__recommend">추천 대상 — {tier.recommend}</p>
+          </article>
+        ))}
+      </div>
+      <p class="bcg-tier-note">아기 1년 육아비는 집집마다 다르지만, 대부분은 이 3가지 기준 중 하나에 가깝게 움직입니다. 핵심은 "모든 항목을 비싸게 사느냐"가 아니라, <strong>어떤 항목에서 예산 차이가 벌어지느냐</strong>를 보는 것입니다.</p>
+    </section>
+
+    <!-- ④ 항목별 용품 비교 표 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">항목별 비교</p>
+        <h2>어디서 비용 차이가 크게 벌어질까</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="bcg-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th class="bcg-th--frugal">가성비</th>
+              <th class="bcg-th--average">평균</th>
+              <th class="bcg-th--premium">프리미엄</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.itemRows.map((row) => (
+              <tr>
+                <td><strong>{row.item}</strong></td>
+                <td class="bcg-td--frugal">{row.frugal}</td>
+                <td class="bcg-td--average">{row.average}</td>
+                <td class="bcg-td--premium">{row.premium}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="bcg-table-note">총비용 차이는 주로 초기 대형 용품(유모차·카시트) + 반복 구매 소모품(기저귀·분유) + 후반부 이유식·놀이용품에서 크게 벌어집니다.</p>
+    </section>
+
+    <!-- ⑤ 월령별 비용 흐름 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">월령별 지출 흐름</p>
+        <h2>언제 어떤 비용이 많이 드나</h2>
+      </div>
+      <div class="bcg-monthly-grid">
+        {report.monthlyPhases.map((phase) => (
+          <article class="bcg-monthly-card">
+            <p class="bcg-monthly-card__period">{phase.period}</p>
+            <strong class="bcg-monthly-card__costs">{phase.mainCosts}</strong>
+            <span class="bcg-monthly-card__note">{phase.note}</span>
+          </article>
+        ))}
+      </div>
+      <p class="bcg-table-note">초반엔 준비비, 중반엔 소모품, 후반엔 이유식·놀이·활동용품 비중이 커지는 흐름으로 이해하면 쉽습니다.</p>
+    </section>
+
+    <!-- ⑥ 지원금 반영 후 실부담 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지원금 반영</p>
+        <h2>지원금까지 반영하면 실부담은 얼마나 줄까</h2>
+        <p>정부 지원금(부모급여·출산지원금 등)을 반영하면 가성비 준비의 경우 실부담이 거의 없는 수준이 될 수도 있습니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="bcg-table">
+          <thead>
+            <tr>
+              <th>준비 유형</th>
+              <th>1년 총 육아비</th>
+              <th>주요 지원금 반영</th>
+              <th>실부담 예시</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.subsidyRows.map((row) => (
+              <tr>
+                <td>
+                  <strong class={`bcg-td--${row.tier}`}>{row.label}</strong>
+                </td>
+                <td>{row.totalCost}</td>
+                <td class="bcg-td--minus">{row.subsidy}</td>
+                <td class="bcg-td--actual"><strong>{row.actual}</strong></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="bcg-table-note">지원금 규모는 거주지·출생 시점·가구 상황에 따라 달라질 수 있습니다. 아래 계산기에서 개인 기준으로 정확히 확인하세요.</p>
+    </section>
+
+    <!-- ⑦ 절약 팁 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">실전 가이드</p>
+        <h2>육아비를 줄이는 현실적인 방법</h2>
+      </div>
+      <ul class="bcg-tips-list">
+        {report.savingTips.map((tip) => (
+          <li class="bcg-tips-item">
+            <span class="bcg-tips-item__icon" aria-hidden="true">✓</span>
+            <span>{tip.tip}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="bcg-tips-summary">
+        가성비 육아의 핵심은 무조건 싼 제품이 아니라,
+        <strong>오래 쓰는 품목과 소모품을 구분해서 돈을 쓰는 것</strong>입니다.
+      </p>
+    </section>
+
+    <!-- ⑧ 쿠팡 파트너스 제휴 카드 -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">추천</span>
+          <div>
+            <h3 class="affiliate-box__title">육아 준비에 같이 보면 좋은 아이템</h3>
+            <p class="affiliate-box__context">리포트 흐름을 해치지 않도록 4개만 가볍게 정리했습니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {report.affiliates.map((product) => (
+            <a href={product.url} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+              <span class="affiliate-product-tag">{product.tag}</span>
+              <p class="affiliate-product-title">{product.title}</p>
+              <p class="affiliate-product-desc">{product.desc}</p>
+              <span class="affiliate-product-cta">자세히 보기</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 섹션에는 제휴 링크가 포함될 수 있으며, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- ⑨ 다음 액션 -->
+    <section class="content-section bcg-next-action-section">
+      <div class="bcg-next-action-card">
+        <div>
+          <p class="bcg-next-action-card__eyebrow">다음 액션</p>
+          <h2>지원금과 육아휴직 급여를 이어서 계산해보세요</h2>
+          <p>리포트로 비용 구조를 파악했다면, 내 상황 기준으로 직접 계산해보는 편이 정확합니다.</p>
+        </div>
+        <div class="bcg-next-action-links">
+          {report.relatedCalcs.map((item) => (
+            <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="신생아~돌까지 육아 비용 리포트 요약"
+      intro={[
+        "이 리포트는 신생아부터 돌까지 드는 육아 비용을 가성비·평균·프리미엄 3단계 기준으로 나눠 비교하는 페이지입니다.",
+        "기저귀, 분유, 유모차, 카시트, 병원비, 이유식까지 주요 항목별 비용 차이와 월령별 지출 흐름을 한 번에 확인할 수 있습니다.",
+        "지원금(부모급여·출산지원금)을 반영한 실부담 예시도 함께 제공하며, 더 정확한 계산은 출산~2세 총지원금 계산기와 육아휴직 급여 계산기에서 확인할 수 있습니다.",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/birth-support-total/",       label: "출산~2세 총지원금 계산기" },
+        { href: "/tools/parental-leave-pay/",         label: "육아휴직 급여 계산기" },
+        { href: "/tools/diaper-cost/",                label: "아기 기저귀 값 계산기" },
+        { href: "/tools/formula-cost/",               label: "아기 분유 값 계산기" },
+        { href: "/tools/baby-growth-percentile-calculator/", label: "아기 성장 퍼센타일 계산기" },
+        { href: "/reports/",                          label: "전체 리포트 보기" },
+      ]}
+    />
+  </main>
+</BaseLayout>
