@@ -16,6 +16,11 @@
   }
 }
 
+.parental-leave-short-work-page .table-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
 .plsw-decision-grid {
   display: grid;
   gap: 14px;
@@ -308,6 +313,40 @@
 .parental-leave-short-work-page .plsw-result-table td:nth-child(5) {
   text-align: right;
   white-space: nowrap;
+}
+
+/* 모바일: 시나리오 테이블 해석 컬럼 숨김, 타임라인 테이블 지원금 컬럼 숨김 */
+@media (max-width: 719px) {
+  /* 시나리오 테이블 — 5번째 컬럼(해석) 숨김 */
+  .plsw-scenario-table th:nth-child(5),
+  .plsw-scenario-table td:nth-child(5) {
+    display: none;
+  }
+
+  /* 타임라인 테이블 — 4번째 컬럼(지원금) 숨김 */
+  .plsw-timeline-table th:nth-child(4),
+  .plsw-timeline-table td:nth-child(4) {
+    display: none;
+  }
+
+  /* 나머지 컬럼 폰트 줄이기 */
+  .parental-leave-short-work-page .plsw-result-table {
+    font-size: 11px;
+  }
+
+  .parental-leave-short-work-page .plsw-result-table th,
+  .parental-leave-short-work-page .plsw-result-table td {
+    padding: 8px 8px;
+  }
+
+  /* 3번째·4번째 컬럼 nowrap 해제 — 짧은 값만 남으므로 줄바꿈 허용 */
+  .parental-leave-short-work-page .plsw-result-table th:nth-child(3),
+  .parental-leave-short-work-page .plsw-result-table th:nth-child(4),
+  .parental-leave-short-work-page .plsw-result-table td:nth-child(3),
+  .parental-leave-short-work-page .plsw-result-table td:nth-child(4) {
+    white-space: normal;
+    word-break: keep-all;
+  }
 }
 
 
