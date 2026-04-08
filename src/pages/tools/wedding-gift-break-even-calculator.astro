@@ -1,0 +1,561 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PAGE_META,
+  DEFAULT_INPUTS,
+  DEFAULT_DETAIL_INPUTS,
+  PRESETS,
+  WGBE_NEXT_TOOL,
+  WGBE_EXTERNAL_LINKS,
+  WGBE_AFFILIATE_PRODUCTS,
+  WGBE_FAQ,
+} from "../../data/weddingGiftBreakEven";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title={PAGE_META.title}
+  description={PAGE_META.description}
+  ogImage={PAGE_META.ogImage}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "결혼 축의금 손익분기점 계산기",
+    url: `${import.meta.env.SITE}/tools/wedding-gift-break-even-calculator/`,
+    description: PAGE_META.subtitle,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    inLanguage: "ko-KR",
+    isAccessibleForFree: true,
+    provider: { "@type": "Organization", name: "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="wedding-gift-break-even-calculator" pageClass="wgbe-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="결혼 예산 계산"
+        title="결혼 축의금 손익분기점 계산기"
+        description="예식홀 식대, 보증인원, 하객 수, 평균 축의금을 넣으면 결혼식 비용 구조와 본전 가능성을 미리 계산할 수 있습니다."
+      />
+      <div class="wgbe-hero-tags content-section">
+        <span class="wgbe-hero-tag">보증인원 구조 반영</span>
+        <span class="wgbe-hero-tag">손익분기 자동 계산</span>
+        <span class="wgbe-hero-tag">하객 구성별 정밀 계산</span>
+      </div>
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="wgbeResetBtn" copyId="wgbeCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <!-- 프리셋 칩 -->
+      <div class="wgbe-preset-chips">
+        {PRESETS.map((preset, i) => (
+          <button
+            type="button"
+            class:list={["wgbe-preset-chip", i === 2 && "wgbe-preset-chip--active"]}
+            data-preset-index={i}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+
+      <!-- 모드 탭 -->
+      <div class="wgbe-mode-tab">
+        <button type="button" class="wgbe-mode-tab__btn wgbe-mode-tab__btn--active" data-mode="simple">간단 모드</button>
+        <button type="button" class="wgbe-mode-tab__btn" data-mode="detail">상세 모드</button>
+      </div>
+
+      <!-- 간단 모드 입력 패널 -->
+      <article class="panel wgbe-input-group" id="wgbeSimplePanel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">예식 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">식대, 보증인원, 평균 축의금을 넣으면 손익을 바로 계산합니다.</p>
+        </div>
+
+        <div class="wgbe-field-stack">
+          <label class="wgbe-field">
+            <span>1인 식대</span>
+            <div class="wgbe-inline-input">
+              <input
+                id="wgbeMealCost"
+                type="number"
+                min="10000"
+                max="300000"
+                step="1000"
+                value={DEFAULT_INPUTS.mealCostPerPerson / 10000}
+              />
+              <em>만원</em>
+            </div>
+            <input
+              id="wgbeMealCostSlider"
+              type="range"
+              min="1"
+              max="30"
+              step="0.5"
+              value={DEFAULT_INPUTS.mealCostPerPerson / 10000}
+              class="wgbe-slider"
+            />
+          </label>
+
+          <label class="wgbe-field">
+            <span>보증인원</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeGuaranteedGuests" type="number" min="50" max="1000" step="10" value={DEFAULT_INPUTS.guaranteedGuests} />
+              <em>명</em>
+            </div>
+          </label>
+
+          <label class="wgbe-field">
+            <span>실제 예상 하객 수</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeExpectedGuests" type="number" min="50" max="1000" step="10" value={DEFAULT_INPUTS.expectedGuests} />
+              <em>명</em>
+            </div>
+          </label>
+
+          <div id="wgbeGuaranteeWarning" class="wgbe-guarantee-warning" hidden>
+            <span id="wgbeGuaranteeWarningText"></span>
+          </div>
+
+          <label class="wgbe-field">
+            <span>평균 축의금</span>
+            <div class="wgbe-inline-input">
+              <input
+                id="wgbeAvgGift"
+                type="number"
+                min="10000"
+                max="500000"
+                step="5000"
+                value={DEFAULT_INPUTS.avgGiftAmount / 10000}
+              />
+              <em>만원</em>
+            </div>
+            <input
+              id="wgbeAvgGiftSlider"
+              type="range"
+              min="1"
+              max="50"
+              step="0.5"
+              value={DEFAULT_INPUTS.avgGiftAmount / 10000}
+              class="wgbe-slider"
+            />
+          </label>
+
+          <div class="wgbe-section-label">고정비</div>
+
+          <label class="wgbe-field">
+            <span>대관료</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeVenueFee" type="number" min="0" step="10" value={DEFAULT_INPUTS.venueFee / 10000} />
+              <em>만원</em>
+            </div>
+          </label>
+
+          <label class="wgbe-field">
+            <span>장식·연출료</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeDecorationFee" type="number" min="0" step="10" value={DEFAULT_INPUTS.decorationFee / 10000} />
+              <em>만원</em>
+            </div>
+          </label>
+
+          <label class="wgbe-field">
+            <span>기타 고정비</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeOtherFixedCost" type="number" min="0" step="10" value={DEFAULT_INPUTS.otherFixedCost / 10000} />
+              <em>만원</em>
+            </div>
+          </label>
+        </div>
+      </article>
+
+      <!-- 상세 모드 입력 패널 -->
+      <article class="panel wgbe-detail-panel" id="wgbeDetailPanel" hidden>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">상세 입력</p>
+            <h2 class="panel__title">하객 구성별 정밀 계산</h2>
+          </div>
+          <p class="panel-heading__summary">그룹별 인원과 평균 축의금을 입력하면 더 정확한 손익을 계산합니다.</p>
+        </div>
+
+        <div class="wgbe-field-stack">
+          <label class="wgbe-field">
+            <span>1인 식대</span>
+            <div class="wgbe-inline-input">
+              <input
+                id="wgbeMealCostDetail"
+                type="number"
+                min="10000"
+                max="300000"
+                step="1000"
+                value={DEFAULT_INPUTS.mealCostPerPerson / 10000}
+              />
+              <em>만원</em>
+            </div>
+          </label>
+
+          <label class="wgbe-field">
+            <span>보증인원</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeGuaranteedGuestsDetail" type="number" min="50" max="1000" step="10" value={DEFAULT_INPUTS.guaranteedGuests} />
+              <em>명</em>
+            </div>
+          </label>
+
+          <div id="wgbeGuaranteeWarningDetail" class="wgbe-guarantee-warning" hidden>
+            <span id="wgbeGuaranteeWarningDetailText"></span>
+          </div>
+
+          <div class="wgbe-section-label">고정비</div>
+
+          <label class="wgbe-field">
+            <span>대관료</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeVenueFeeDetail" type="number" min="0" step="10" value={DEFAULT_INPUTS.venueFee / 10000} />
+              <em>만원</em>
+            </div>
+          </label>
+
+          <label class="wgbe-field">
+            <span>장식·연출료</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeDecorationFeeDetail" type="number" min="0" step="10" value={DEFAULT_INPUTS.decorationFee / 10000} />
+              <em>만원</em>
+            </div>
+          </label>
+
+          <label class="wgbe-field">
+            <span>기타 고정비</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeOtherFixedCostDetail" type="number" min="0" step="10" value={DEFAULT_INPUTS.otherFixedCost / 10000} />
+              <em>만원</em>
+            </div>
+          </label>
+
+          <div class="wgbe-section-label">하객 구성</div>
+        </div>
+
+        <div class="wgbe-detail-group-header">
+          <span>그룹</span>
+          <span>인원</span>
+          <span>평균 축의금</span>
+        </div>
+
+        <div class="wgbe-detail-group-row">
+          <span class="wgbe-detail-group-row__label">친구</span>
+          <div class="wgbe-inline-input">
+            <input id="wgbeFriendCount" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.friendCount} />
+            <em>명</em>
+          </div>
+          <div class="wgbe-inline-input">
+            <input id="wgbeFriendAvgGift" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.friendAvgGift / 10000} />
+            <em>만원</em>
+          </div>
+        </div>
+
+        <div class="wgbe-detail-group-row">
+          <span class="wgbe-detail-group-row__label">직장동료</span>
+          <div class="wgbe-inline-input">
+            <input id="wgbeCoworkerCount" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.coworkerCount} />
+            <em>명</em>
+          </div>
+          <div class="wgbe-inline-input">
+            <input id="wgbeCoworkerAvgGift" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.coworkerAvgGift / 10000} />
+            <em>만원</em>
+          </div>
+        </div>
+
+        <div class="wgbe-detail-group-row">
+          <span class="wgbe-detail-group-row__label">친척</span>
+          <div class="wgbe-inline-input">
+            <input id="wgbeRelativeCount" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.relativeCount} />
+            <em>명</em>
+          </div>
+          <div class="wgbe-inline-input">
+            <input id="wgbeRelativeAvgGift" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.relativeAvgGift / 10000} />
+            <em>만원</em>
+          </div>
+        </div>
+
+        <div class="wgbe-detail-group-row">
+          <span class="wgbe-detail-group-row__label">부모님 지인</span>
+          <div class="wgbe-inline-input">
+            <input id="wgbeParentsGuestCount" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.parentsGuestCount} />
+            <em>명</em>
+          </div>
+          <div class="wgbe-inline-input">
+            <input id="wgbeParentsGuestAvgGift" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.parentsGuestAvgGift / 10000} />
+            <em>만원</em>
+          </div>
+        </div>
+
+        <div class="wgbe-detail-summary-row">
+          <span>합계</span>
+          <span id="wgbeDetailTotalGuests" class="wgbe-detail-summary-row__value">-명</span>
+          <span id="wgbeDetailWeightedAvg" class="wgbe-detail-summary-row__value">가중평균 -만원</span>
+        </div>
+
+        <div class="wgbe-field-stack" style="margin-top: 16px;">
+          <div class="wgbe-section-label">보조 조건</div>
+
+          <label class="wgbe-field">
+            <span>노쇼 예상 인원</span>
+            <div class="wgbe-inline-input">
+              <input id="wgbeNoShowCount" type="number" min="0" step="1" value={DEFAULT_DETAIL_INPUTS.noShowCount} />
+              <em>명</em>
+            </div>
+          </label>
+
+          <label class="wgbe-field">
+            <span>식권 누수율</span>
+            <select id="wgbeMealTicketLossRate">
+              <option value="0" selected>0% (없음)</option>
+              <option value="3">3%</option>
+              <option value="5">5%</option>
+              <option value="10">10%</option>
+            </select>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- 요약 카드 6개 -->
+    <section class="wgbe-summary-section">
+      <div class="wgbe-summary-grid">
+        <article class="wgbe-summary-card">
+          <p>총예식비</p>
+          <strong id="wgbeTotalWeddingCost">-</strong>
+        </article>
+        <article class="wgbe-summary-card">
+          <p>총예상 축의금</p>
+          <strong id="wgbeTotalGiftAmount">-</strong>
+        </article>
+        <article class="wgbe-summary-card wgbe-summary-card--primary">
+          <p>예상 손익</p>
+          <strong id="wgbeEstimatedPnl">-</strong>
+        </article>
+        <article class="wgbe-summary-card">
+          <p>손익분기 평균 축의금</p>
+          <strong id="wgbeBreakEvenGift">-</strong>
+          <span class="wgbe-summary-card__sub">본전이 되는 1인당 축의금</span>
+        </article>
+        <article class="wgbe-summary-card">
+          <p>손익분기 하객 수</p>
+          <strong id="wgbeBreakEvenGuests">-</strong>
+          <span class="wgbe-summary-card__sub">현재 평균 기준 필요 인원</span>
+        </article>
+        <article class="wgbe-summary-card">
+          <p>리스크 레벨</p>
+          <strong id="wgbeRiskBadge" class="wgbe-risk-badge">-</strong>
+        </article>
+      </div>
+    </section>
+
+    <!-- 차트 섹션 -->
+    <section class="content-section wgbe-chart-section">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">손익 시각화</p>
+          <h2 class="panel__title">비용 vs 축의금 구조</h2>
+        </div>
+      </div>
+      <div class="wgbe-chart-grid">
+        <div class="wgbe-chart-block">
+          <span class="wgbe-chart-label">비용 구조</span>
+          <div class="wgbe-chart-canvas-wrap">
+            <canvas id="wgbeCostDonut"></canvas>
+          </div>
+        </div>
+        <div class="wgbe-chart-block">
+          <span class="wgbe-chart-label">총예식비 vs 총축의금</span>
+          <div class="wgbe-chart-canvas-wrap">
+            <canvas id="wgbeCompareBar"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 비용 분해 카드 -->
+    <section class="content-section wgbe-cost-breakdown">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">비용 구조</p>
+          <h2 class="panel__title">예식비 분해</h2>
+        </div>
+      </div>
+      <div class="wgbe-breakdown-list">
+        <div class="wgbe-breakdown-row">
+          <span>식대 적용 인원</span>
+          <strong id="wgbeEffectiveGuests">-명</strong>
+        </div>
+        <div class="wgbe-breakdown-row">
+          <span>식대 총액</span>
+          <strong id="wgbeTotalMealCost">-</strong>
+        </div>
+        <div class="wgbe-breakdown-row">
+          <span>고정비 합계</span>
+          <strong id="wgbeTotalFixedCost">-</strong>
+        </div>
+        <div class="wgbe-breakdown-row wgbe-breakdown-row--total">
+          <span>총예식비</span>
+          <strong id="wgbeTotalWeddingCostBreakdown">-</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- 해석 문구 카드 -->
+    <section class="content-section wgbe-interpretation-card" id="wgbeInterpretationCard">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">분석 결과</p>
+          <h2 class="panel__title">손익 해석</h2>
+        </div>
+      </div>
+      <ul id="wgbeInterpretationList" class="wgbe-interpretation-list"></ul>
+    </section>
+
+    <!-- 안내 문구 -->
+    <InfoNotice
+      title="안내"
+      lines={[
+        PAGE_META.caution,
+        "실제 식대 계약 방식, 식권 누수, 노쇼 등에 따라 달라질 수 있습니다.",
+        "결혼식 손익을 수치로 확인하는 것은 예산 판단에 도움이 되지만, 결혼의 의미를 비용으로만 환산하지 않도록 주의하세요.",
+      ]}
+    />
+
+    <!-- 다음 도구 CTA -->
+    <section class="content-section wgbe-next-tool-cta">
+      <div class="panel wgbe-next-tool-main">
+        <div class="wgbe-next-tool-main__badges">
+          {WGBE_NEXT_TOOL.badges.map((b) => (
+            <span class="wgbe-next-tool-main__badge">{b}</span>
+          ))}
+        </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{WGBE_NEXT_TOOL.eyebrow}</p>
+            <h2 class="panel__title">{WGBE_NEXT_TOOL.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{WGBE_NEXT_TOOL.desc}</p>
+        </div>
+        <a href={WGBE_NEXT_TOOL.href} class="button button--secondary">{WGBE_NEXT_TOOL.cta}</a>
+      </div>
+      <div class="wgbe-next-tool-sub-grid">
+        {WGBE_NEXT_TOOL.sub.map((item) => (
+          <a href={item.href} class="wgbe-next-tool-sub-card">
+            <div class="wgbe-next-tool-sub-card__badges">
+              {item.badges.map((b) => (
+                <span class="wgbe-next-tool-sub-card__badge">{b}</span>
+              ))}
+            </div>
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 외부 참고 링크 -->
+    <section class="content-section wgbe-external-links">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">공식 정보 출처</h2>
+          </div>
+          <p class="panel-heading__summary">보증인원·식대 계약, 소비자 권리 등 공식 사이트에서 자세히 확인하세요.</p>
+        </div>
+        <div class="wgbe-link-grid">
+          {WGBE_EXTERNAL_LINKS.map((item) => (
+            <a href={item.href} target="_blank" rel="noopener noreferrer" class="wgbe-reference-link">
+              <span class="wgbe-reference-link__source">{item.source}</span>
+              <strong class="wgbe-reference-link__title">{item.title}</strong>
+              <span class="wgbe-reference-link__desc">{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 제휴 상품 -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">💍</span>
+          <div>
+            <h3 class="affiliate-box__title">결혼 준비에 도움이 되는 책</h3>
+            <p class="affiliate-box__context">예식 예산부터 신혼 재테크까지 한 번에 준비해보세요.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {WGBE_AFFILIATE_PRODUCTS.map((prod) => (
+            <a href={prod.href} class="affiliate-product-card" target="_blank" rel="noopener sponsored">
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">{prod.cta}</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="결혼 축의금 손익분기점 계산기 — 이렇게 활용하세요"
+        intro={[
+          "예식홀 식대와 보증인원 구조는 결혼식 비용에서 가장 큰 변수입니다. 보증인원이 실제 하객보다 많으면 그만큼 손실이 발생하므로 계약 전에 반드시 확인해야 합니다.",
+          "하객 구성(친구·직장동료·친척·부모님 지인)에 따라 평균 축의금이 달라지므로 상세 모드에서 그룹별로 나눠 계산하면 더 현실적인 손익을 파악할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "1인 식대와 보증인원 기준으로 총예식비를 자동 계산합니다.",
+          "하객 구성별 입력으로 실제에 가까운 총축의금을 예상합니다.",
+          "손익분기 평균 축의금과 손익분기 하객 수를 역산해 본전 조건을 알려줍니다.",
+        ]}
+        criteria={[
+          "식대 적용 인원 = max(보증인원, 실제 예상 하객 수)",
+          "총예식비 = 식대 총액 + 대관료 + 장식비 + 기타 고정비",
+          "손익분기 평균 축의금 = 총예식비 ÷ 실제 하객 수",
+          "이 결과는 입력값 기반 모의계산이며 실제 계약 조건과 다를 수 있습니다.",
+        ]}
+        faq={WGBE_FAQ}
+        related={[
+          { href: "/tools/wedding-budget-calculator/", label: "결혼 예산 계산기" },
+          { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+          { href: "/tools/household-income/", label: "가구 소득 계산기" },
+          { href: "/tools/birth-support-total/", label: "출산~2세 지원금 계산기" },
+          { href: "/tools/six-plus-six/", label: "6+6 부모육아휴직 계산기" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script
+    id="wgbeConfig"
+    type="application/json"
+    set:html={JSON.stringify({ presets: PRESETS })}
+  ></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/wedding-gift-break-even-calculator.js")}></script>
+</BaseLayout>

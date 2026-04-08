@@ -293,7 +293,7 @@ export const tools: ToolMeta[] = [
       { label: "핵심 결과", value: "목표 자산" },
       { label: "시나리오", value: "3종 비교" },
     ],
-  },
+  },
   {
     slug: "baby-growth-percentile-calculator",
     title: "아기 성장 백분위 계산기",
@@ -320,6 +320,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "핵심 결과", value: "남은 기간" },
       { label: "급여 기준", value: "250만/160만" },
+    ],
+  },
+  {
+    slug: "wedding-gift-break-even-calculator",
+    title: "결혼 축의금 손익분기점 계산기",
+    description: "예식홀 식대, 보증인원, 하객 수, 평균 축의금을 넣어 결혼식 손익을 계산합니다.",
+    order: 22,
+    eyebrow: "결혼 예산 계산",
+    category: "lifestyle",
+    iframeReady: true,
+    badges: ["신규"],
+    previewStats: [
+      { label: "식대 × 보증인원", value: "핵심 구조" },
+      { label: "손익분기점", value: "자동 계산" },
     ],
   },
 ];
