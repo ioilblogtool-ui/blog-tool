@@ -1,0 +1,371 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { seoulApartmentJeonseReport, findBudgetScenario } from "../../data/seoulApartmentJeonseReport";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = seoulApartmentJeonseReport;
+const latestPoint = report.marketSeries[report.marketSeries.length - 1];
+const firstPoint = report.marketSeries[0];
+const defaultBudget = 30000;
+const defaultScenario = findBudgetScenario(defaultBudget);
+const defaultDistrict = report.districtCards[0];
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page jeonse-report-page">
+    <CalculatorHero
+      eyebrow="서울 주거 리포트"
+      title="전세 사라지는 서울 아파트"
+      description="신혼부부가 찾던 역세권 전세가 왜 더 어려워졌는지, 서울 평균 변화와 지역 체감으로 비교합니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, report.meta.updatedAt]}
+    />
+
+    <section class="content-section jr-hero-board">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">Editor&apos;s Brief</p>
+        <h2>서울 전세 시장은 가격보다 선택지가 더 빠르게 줄었습니다</h2>
+        <p>{report.heroSummary}</p>
+      </div>
+      <div class="jr-chip-row">
+        <span>2016 전세가 {firstPoint.jeonseEok.toFixed(1)}억</span>
+        <span>2026 전세가 {latestPoint.jeonseEok.toFixed(1)}억</span>
+        <span class="is-accent">전세 비중 {latestPoint.jeonseShare}%</span>
+      </div>
+      <div class="jr-kpi-grid jr-kpi-grid--hero">
+        <article class="jr-kpi-card">
+          <p>2016 서울 평균 전세가</p>
+          <strong>{firstPoint.jeonseEok.toFixed(1)}억</strong>
+          <span>전세 비중 {firstPoint.jeonseShare}%</span>
+        </article>
+        <article class="jr-kpi-card">
+          <p>2026 서울 평균 전세가</p>
+          <strong>{latestPoint.jeonseEok.toFixed(1)}억</strong>
+          <span>전세 비중 {latestPoint.jeonseShare}%</span>
+        </article>
+        <article class="jr-kpi-card">
+          <p>2026 전세대출 참고금리</p>
+          <strong>{latestPoint.estimatedJeonseLoanRate.toFixed(1)}%</strong>
+          <span>전세가 80% 대출 시 연 {latestPoint.loanInterest80Manwon.toLocaleString("ko-KR")}만원</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section jr-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>먼저 봐야 할 숫자 5개</h2>
+      </div>
+      <div class="jr-kpi-grid">
+        {report.kpis.map((item) => (
+          <article class={`jr-kpi-card ${item.tone ? `is-${item.tone}` : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section jr-market-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">시장 흐름</p>
+        <h2>전세가는 오르는데 전세 비중은 내려가는 흐름</h2>
+        <p id="jrMarketChartDesc">서울 평균 전세가와 전세 비중을 같은 흐름으로 묶어 보여주는 차트입니다.</p>
+      </div>
+      <div class="jr-chart-panel">
+        <div class="jr-chart-meta-row">
+          <span>전세가 line</span>
+          <span>전세 비중 bar</span>
+          <span>2016→2026</span>
+        </div>
+        <div class="jr-chart-wrap">
+          <canvas id="jrMarketChart"></canvas>
+        </div>
+      </div>
+      <div class="table-wrap jr-table-wrap">
+        <table class="jr-table">
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>서울 평균 전세가</th>
+              <th>서울 평균 매매가</th>
+              <th>전세 비중</th>
+              <th>월세 보증금</th>
+              <th>평균 월세</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.marketSeries.map((item) => (
+              <tr>
+                <td>{item.year}</td>
+                <td>{item.jeonseEok.toFixed(1)}억</td>
+                <td>{item.saleEok.toFixed(1)}억</td>
+                <td>{item.jeonseShare}%</td>
+                <td>{item.rentDepositEok.toFixed(2)}억</td>
+                <td>{item.rentMonthlyManwon.toLocaleString("ko-KR")}만원</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section jr-secondary-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">주거 방식 비교</p>
+        <h2>전세·반전세·월세 흐름을 탭으로 비교</h2>
+        <p id="jrSecondaryChartDesc">기본 보기는 서울 평균 전세가 흐름입니다.</p>
+      </div>
+      <div class="jr-tab-row" id="jrSecondaryTabs">
+        <button type="button" class="jr-chip-button is-active" data-secondary-mode="jeonse">전세</button>
+        <button type="button" class="jr-chip-button" data-secondary-mode="semiJeonse">반전세</button>
+        <button type="button" class="jr-chip-button" data-secondary-mode="wolse">월세</button>
+      </div>
+      <div class="jr-chart-panel">
+        <div class="jr-chart-meta-row">
+          <span id="jrSecondaryChartUnit">전세가 (억원)</span>
+          <span>탭 전환 가능</span>
+        </div>
+        <div class="jr-chart-wrap jr-chart-wrap--secondary">
+          <canvas id="jrSecondaryChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section jr-loan-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">전세대출 금리</p>
+        <h2>각 연도별 금리 환경과 80% 대출 시 전세 이자</h2>
+        <p>기준금리는 한국은행 공개값 기준이며, 전세대출 금리는 시장 환경을 반영한 참고 추정치입니다.</p>
+      </div>
+      <div class="jr-kpi-grid">
+        <article class="jr-kpi-card is-accent">
+          <p>2026 기준금리</p>
+          <strong>{latestPoint.policyRate.toFixed(2)}%</strong>
+          <span>한국은행 2026-02-26 발표 기준</span>
+        </article>
+        <article class="jr-kpi-card is-warn">
+          <p>2026 전세대출 참고금리</p>
+          <strong>{latestPoint.estimatedJeonseLoanRate.toFixed(1)}%</strong>
+          <span>상품·신용도별 차이 가능</span>
+        </article>
+        <article class="jr-kpi-card">
+          <p>전세가 80% 대출 연이자</p>
+          <strong>{latestPoint.loanInterest80Manwon.toLocaleString("ko-KR")}만원</strong>
+          <span>서울 평균 전세가 기준 추정</span>
+        </article>
+      </div>
+      <div class="table-wrap jr-table-wrap">
+        <table class="jr-table">
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>기준금리</th>
+              <th>전세대출 참고금리</th>
+              <th>서울 평균 전세가</th>
+              <th>전세가 80% 대출금</th>
+              <th>연간 이자</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.marketSeries.map((item) => (
+              <tr>
+                <td>{item.year}</td>
+                <td>{item.policyRate.toFixed(2)}%</td>
+                <td class="is-now">{item.estimatedJeonseLoanRate.toFixed(1)}%</td>
+                <td>{item.jeonseEok.toFixed(1)}억</td>
+                <td>{(item.jeonseEok * 0.8).toFixed(2)}억</td>
+                <td>{item.loanInterest80Manwon.toLocaleString("ko-KR")}만원</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section jr-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">예전 vs 지금</p>
+        <h2>같은 예산인데 어떤 조건이 바뀌었는지 비교합니다</h2>
+      </div>
+      <div class="table-wrap jr-table-wrap">
+        <table class="jr-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>예전</th>
+              <th>지금</th>
+              <th>실수요자 영향</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.conditionRows.map((item) => (
+              <tr>
+                <td>{item.label}</td>
+                <td>{item.before}</td>
+                <td class="is-now">{item.now}</td>
+                <td>{item.impact}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section jr-district-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역 체감</p>
+        <h2>강서·강동·강북에서 느끼는 변화를 빠르게 보기</h2>
+      </div>
+      <div class="jr-district-controls" id="jrDistrictControls">
+        {report.districtCards.map((item, index) => (
+          <button
+            type="button"
+            class={`jr-chip-button ${index === 0 ? "is-active" : ""}`}
+            data-district-key={item.key}
+          >
+            {item.name}
+          </button>
+        ))}
+      </div>
+      <div class="jr-district-feature" id="jrDistrictFeature">
+        <article class="jr-district-feature-card">
+          <p class="jr-district-feature-card__eyebrow">현재 선택 지역</p>
+          <h3 id="jrDistrictName">{defaultDistrict.name}</h3>
+          <strong id="jrDistrictTagline">{defaultDistrict.tagline}</strong>
+          <span id="jrDistrictCommute">{defaultDistrict.commuteFit}</span>
+          <p id="jrDistrictSummary">{defaultDistrict.summary}</p>
+          <p id="jrDistrictThenNow"><strong>예전 vs 지금</strong> {defaultDistrict.thenVsNow}</p>
+          <p id="jrDistrictCompromise"><strong>양보 포인트</strong> {defaultDistrict.compromise.join(", ")}</p>
+        </article>
+      </div>
+      <div class="jr-district-grid">
+        {report.districtCards.map((item, index) => (
+          <article class={`jr-district-card ${index === 0 ? "is-active" : ""}`} data-district-panel={item.key}>
+            <p>{item.name}</p>
+            <strong>{item.tagline}</strong>
+            <span>{item.commuteFit}</span>
+            <p>{item.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section jr-cause-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 어려워졌나</p>
+        <h2>전세가 줄어든 이유 4가지</h2>
+      </div>
+      <div class="jr-card-grid jr-card-grid--2col">
+        {report.causes.map((item) => (
+          <article class="jr-info-card">
+            <p>{item.title}</p>
+            <span>{item.description}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section jr-shift-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수요자 변화</p>
+        <h2>신혼부부와 무주택 수요자는 이렇게 움직입니다</h2>
+      </div>
+      <div class="jr-card-grid jr-card-grid--3col">
+        {report.behaviorShifts.map((item) => (
+          <article class="jr-info-card">
+            <p>{item.title}</p>
+            <span>{item.summary}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section jr-budget-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">예산 체감</p>
+        <h2>예산 기준으로 전세·반전세·월세 선택지를 비교합니다</h2>
+        <p>입력값은 방향 제시용이며 실제 매물 추천이나 대출 심사를 대체하지 않습니다.</p>
+      </div>
+      <div class="jr-budget-box">
+        <div class="jr-budget-controls">
+          <label class="jr-field" for="jrBudgetInput">
+            <span>예산 또는 보증금</span>
+            <input type="number" id="jrBudgetInput" min="0" step="1000" value={defaultBudget} />
+          </label>
+          <div class="jr-mode-row" id="jrModeButtons">
+            <button type="button" class="jr-chip-button is-active" data-budget-mode="deposit">보증금 기준</button>
+            <button type="button" class="jr-chip-button" data-budget-mode="monthlyTotal">월 고정비 기준</button>
+          </div>
+        </div>
+        <div class="jr-budget-summary">
+          <article class="jr-kpi-card jr-kpi-card--summary">
+            <p>기본 구간</p>
+            <strong id="jrScenarioGuide">{defaultScenario.depositGuide}</strong>
+            <span id="jrScenarioCta">{defaultScenario.recommendedCta}</span>
+          </article>
+        </div>
+        <div class="jr-budget-grid">
+          <article class="jr-budget-card">
+            <p>전세</p>
+            <strong id="jrResultJeonse">{defaultScenario.jeonseResult}</strong>
+          </article>
+          <article class="jr-budget-card">
+            <p>반전세</p>
+            <strong id="jrResultSemiJeonse">{defaultScenario.semiJeonseResult}</strong>
+          </article>
+          <article class="jr-budget-card">
+            <p>월세</p>
+            <strong id="jrResultWolse">{defaultScenario.wolseResult}</strong>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section jr-cta-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 이동</p>
+        <h2>계산기와 다른 리포트로 이어보기</h2>
+      </div>
+      <div class="button-group">
+        {report.relatedLinks.map((item) => (
+          <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="서울 아파트 전세 리포트 읽는 법"
+      intro={[
+        "이 리포트는 서울 아파트 전세가 왜 체감상 더 어려워졌는지, 가격 상승과 전세 비중 감소, 지역별 실수요 체감까지 한 화면에서 읽도록 만든 비교 페이지입니다.",
+        "핵심은 전세 가격 자체보다 같은 예산에서 어떤 조건을 잃게 되었는지, 그리고 왜 반전세와 월세까지 같이 봐야 하는 구조가 되었는지를 함께 이해하는 것입니다.",
+      ]}
+      criteria={[
+        "서울 평균값과 지역 체감 카드는 같은 성격의 수치가 아니므로 구분해서 읽어야 합니다.",
+        "이 페이지의 예산 시나리오는 방향 제시용 비교이며 실제 매물 추천이 아닙니다.",
+        "금리와 전세대출 항목 중 기준금리는 한국은행 공개값 기준, 전세대출 금리는 시장 환경을 반영한 참고 추정치입니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script id="seoulApartmentJeonseReportData" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/seoul-apartment-jeonse-report.js")}></script>
+</BaseLayout>

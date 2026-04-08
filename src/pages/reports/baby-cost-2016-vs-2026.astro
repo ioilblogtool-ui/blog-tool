@@ -1,0 +1,367 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  babyCost2016Vs2026,
+  calcBabyCostFeelings,
+  formatCostManwon,
+} from "../../data/babyCost2016Vs2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = babyCost2016Vs2026;
+const feelings = calcBabyCostFeelings("newborn", "formula", "home");
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page baby-cost-2016-report-page">
+    <CalculatorHero
+      eyebrow="육아비 10년 비교 리포트"
+      title="아이 키우는 비용 2016 vs 2026"
+      description="분유, 기저귀, 어린이집을 기준으로 10년 전과 지금의 육아 체감 비용을 비교합니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[
+        report.meta.methodology,
+        report.meta.caution,
+        report.meta.updatedAt,
+      ]}
+    />
+
+    <section class="content-section baby-cost-hero-board">
+      <div class="baby-cost-lead">
+        <p class="baby-cost-lead__eyebrow">Editor&apos;s Brief</p>
+        <h2>가격표만 보면 놓치는 육아비 체감이 있습니다</h2>
+        <p class="baby-cost-lead__body">{report.reportLead}</p>
+        <div class="baby-cost-lead__chips">
+          <span class="is-year-2016">2016 기준 체감</span>
+          <span class="is-year-2026">2026 기준 체감</span>
+          <span class="is-accent">지원금 반영 구조 포함</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>먼저 봐야 할 숫자 6개</h2>
+      </div>
+      <div class="baby-cost-kpi-grid">
+        {report.kpis.map((item) => (
+          <article class={`baby-cost-kpi-card ${item.accent === "up" ? "is-up" : ""} ${item.accent === "warning" ? "is-warning" : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-context-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출산·양육 환경</p>
+        <h2>이 비교가 단순 가격표 모음이 아닌 이유</h2>
+        <p>통계청 기준으로 보면 출생아 수와 합계출산율 흐름이 먼저 바뀌었고, 그 위에 정책 구조와 반복지출 체감이 겹쳐졌습니다.</p>
+      </div>
+      <div class="baby-cost-context-grid">
+        {report.contextRows.map((item) => (
+          <article class="baby-cost-context-card">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-annual-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도별 추이</p>
+        <h2>출생아 수와 합계출산율을 함께 보면 배경이 더 선명해집니다</h2>
+        <p>연간 출생아 수는 막대, 합계출산율은 선으로 표시했습니다. 2026년 4월 8일 현재 최신 연간 값은 2025년 잠정치까지입니다.</p>
+      </div>
+      <article class="baby-cost-chart-panel">
+        <div class="baby-cost-chart-wrap">
+          <canvas id="babyCostDemographicChart" aria-label="2016년부터 2025년까지 출생아 수와 합계출산율 차트"></canvas>
+        </div>
+        <p class="baby-cost-chart-note">출처: 통계청 출생통계(2025 잠정 포함). 2024년에 반등 후 2025 잠정치가 한 차례 더 올라왔지만, 2016년과 비교하면 여전히 낮은 수준입니다.</p>
+      </article>
+    </section>
+
+    <section class="content-section baby-cost-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2016 vs 2026 비교</p>
+        <h2>같은 줄에 놓고 보면 무엇이 달라졌는지 빠르게 보입니다</h2>
+      </div>
+      <div class="baby-cost-compare-grid">
+        <article class="baby-cost-compare-card">
+          <p class="baby-cost-compare-card__eyebrow is-year-2016">2016</p>
+          <h3>가격 차이보다 준비 구조가 단순하던 시기</h3>
+          <ul class="baby-cost-compare-list">
+            {report.compareRows.map((row) => <li><span>{row.label}</span><strong>{row.value2016}</strong></li>)}
+          </ul>
+        </article>
+        <article class="baby-cost-compare-card baby-cost-compare-card--accent">
+          <p class="baby-cost-compare-card__eyebrow is-year-2026">2026</p>
+          <h3>지원금은 늘었지만 체감 해석이 더 어려운 시기</h3>
+          <ul class="baby-cost-compare-list">
+            {report.compareRows.map((row) => <li><span>{row.label}</span><strong>{row.value2026}</strong></li>)}
+          </ul>
+        </article>
+      </div>
+      <div class="baby-cost-compare-table-wrap">
+        <table class="baby-cost-compare-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>2016</th>
+              <th>2026</th>
+              <th>변화</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.compareRows.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.value2016}</td>
+                <td class="is-current">{row.value2026}</td>
+                <td><span class="baby-cost-change-pill">{row.changeLabel}</span></td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-item-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">품목별 비교</p>
+        <h2>분유, 기저귀, 어린이집은 같은 방식으로 읽으면 안 됩니다</h2>
+      </div>
+      <div class="baby-cost-item-table-wrap">
+        <table class="baby-cost-item-table">
+          <thead>
+            <tr>
+              <th>품목</th>
+              <th>2016 체감</th>
+              <th>2026 체감</th>
+              <th>변화 포인트</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.itemRows.map((row) => (
+              <tr>
+                <td>{row.item}</td>
+                <td>{row.cost2016}</td>
+                <td class="is-current">{row.cost2026}</td>
+                <td>{row.changePoint}</td>
+                <td>{row.interpretation}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-structure-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">구조 해설</p>
+        <h2>왜 부모들은 더 무겁게 느끼는가</h2>
+      </div>
+      <div class="baby-cost-structure-grid">
+        {report.structureNotes.map((item) => (
+          <article class="baby-cost-structure-card">
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-support-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지원금 반영</p>
+        <h2>지원이 있어도 체감이 남는 이유를 범위로 봅니다</h2>
+      </div>
+      <div class="baby-cost-support-table-wrap">
+        <table class="baby-cost-support-table">
+          <thead>
+            <tr>
+              <th>시나리오</th>
+              <th>분유</th>
+              <th>기저귀</th>
+              <th>어린이집</th>
+              <th>지원금 반영</th>
+              <th>월 체감 총평</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.supportScenarios.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.formula}</td>
+                <td>{row.diaper}</td>
+                <td>{row.daycare}</td>
+                <td>{row.support}</td>
+                <td><span class="baby-cost-change-pill">{row.feelBand}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-feel-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">내 상황 기준 체감</p>
+        <h2>육아 단계와 보육 방식에 따라 월 부담을 가볍게 추정해봅니다</h2>
+        <p>가정보육과 어린이집 이용 시 지원금 구조가 달라지도록 계산했습니다. 실제 금액은 브랜드, 지역, 반편성 시점에 따라 달라질 수 있습니다.</p>
+      </div>
+      <div class="baby-cost-feel-box">
+        <div class="baby-cost-feel-controls">
+          <label class="baby-cost-input-field" for="babyCostStageSelect">
+            <span>육아 단계</span>
+            <select id="babyCostStageSelect">
+              <option value="newborn">신생아~6개월</option>
+              <option value="infant">7~24개월</option>
+            </select>
+          </label>
+          <label class="baby-cost-input-field" for="babyCostFeedingSelect">
+            <span>수유 방식</span>
+            <select id="babyCostFeedingSelect">
+              <option value="formula">분유 사용</option>
+              <option value="mixed">혼합 수유</option>
+              <option value="breast">모유수유 중심</option>
+            </select>
+          </label>
+          <label class="baby-cost-input-field" for="babyCostCareSelect">
+            <span>보육 방식</span>
+            <select id="babyCostCareSelect">
+              <option value="home">가정보육 중심</option>
+              <option value="daycare">어린이집 이용</option>
+            </select>
+          </label>
+        </div>
+        <div class="baby-cost-feel-grid">
+          <article class="baby-cost-feel-card">
+            <p>월 예상 총비용</p>
+            <strong id="babyCostBaseMonthly">{formatCostManwon(feelings.baseMonthlyCost)}</strong>
+            <span>단순 합산 추정</span>
+          </article>
+          <article class="baby-cost-feel-card">
+            <p>지원금 반영 후</p>
+            <strong id="babyCostNetBurden" class="is-up">{formatCostManwon(feelings.netBurden)}</strong>
+            <span id="babyCostFeelBand">{feelings.feelBand}</span>
+          </article>
+          <article class="baby-cost-feel-card">
+            <p>가장 부담 큰 항목</p>
+            <strong id="babyCostLargestItem">{feelings.largestLabel}</strong>
+            <span>현재 선택 기준</span>
+          </article>
+          <article class="baby-cost-feel-card">
+            <p>해석</p>
+            <strong id="babyCostSummary">{feelings.summaryLabel}</strong>
+            <span>비교용 가이드</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-pattern-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>이 리포트에서 꼭 읽어야 할 포인트</h2>
+      </div>
+      <div class="baby-cost-pattern-grid">
+        {report.structureNotes.map((item) => (
+          <article class="baby-cost-pattern-card">
+            <span class="baby-cost-pattern-card__metric">{item.title}</span>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-reference-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">외부 참고 링크</p>
+        <h2>공식 통계, 제도, 관련 페이지를 이어서 봅니다</h2>
+      </div>
+      <div class="baby-cost-reference-grid">
+        <article class="baby-cost-reference-panel">
+          <h3>공식 자료</h3>
+          <div class="baby-cost-reference-links">
+            {report.references.official.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+          </div>
+        </article>
+        <article class="baby-cost-reference-panel">
+          <h3>제도/계산기</h3>
+          <div class="baby-cost-reference-links">
+            {report.references.policy.map((item) => (
+              item.href.startsWith("/")
+                ? <a href={withBase(item.href)}>{item.label}</a>
+                : <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+            ))}
+          </div>
+        </article>
+        <article class="baby-cost-reference-panel">
+          <h3>같이 읽을 콘텐츠</h3>
+          <div class="baby-cost-reference-links">
+            {report.references.reading.map((item) => (
+              item.href.startsWith("/")
+                ? <a href={withBase(item.href)}>{item.label}</a>
+                : <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section baby-cost-cta-section">
+      <div class="baby-cost-cta-card">
+        <div>
+          <p class="baby-cost-cta-card__eyebrow">다음 액션</p>
+          <h2>비용 구조를 본 뒤에는 내 조건으로 다시 계산하는 편이 정확합니다</h2>
+          <p>지원금, 육아휴직, 첫 1년 비용 가이드를 바로 이어서 보도록 연결했습니다.</p>
+        </div>
+        <div class="baby-cost-cta-links">
+          {report.relatedLinks.map((item) => <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>)}
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="아이 키우는 비용 2016 vs 2026 리포트 읽는 법"
+      intro={[
+        "이 리포트는 분유, 기저귀, 어린이집을 기준으로 2016년과 2026년의 육아 체감 비용이 어떻게 달라졌는지를 빠르게 읽게 만드는 비교 페이지입니다.",
+        "핵심은 모든 항목이 똑같이 많이 오른 것이 아니라, 반복지출과 제도 구조 변화 때문에 무엇이 더 부담되고 무엇은 해석이 필요한지를 구분해서 보는 데 있습니다.",
+      ]}
+      criteria={[
+        "출생아 수와 합계출산율 차트는 2026년 4월 8일 현재 공표된 최신 연간 값인 2025년 잠정치까지 반영합니다.",
+        "분유와 기저귀는 반복구매 누적 체감이 중요합니다.",
+        "어린이집은 공식 보육료보다 지원 구조와 실제 준비비를 함께 봐야 합니다.",
+        "체감 계산은 육아 단계, 수유 방식, 보육 방식만 반영한 단순 추정치입니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script id="babyCost2016Vs2026Data" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/baby-cost-2016-vs-2026.js")}></script>
+</BaseLayout>
