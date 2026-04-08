@@ -10,7 +10,7 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
 
-type ReportCategory = "salary" | "estate" | "asset" | "life";
+type ReportCategory = "salary" | "estate" | "asset" | "life" | "culture";
 type ReportTagMod = "salary" | "asset";
 
 type ReportIndexMeta = {
@@ -117,6 +117,12 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     category: "asset",
     isNew: false,
   },
+  "korean-movie-break-even-profit": {
+    eyebrow: "영화 손익",
+    tags: [{ label: "영화", mod: "salary" }, { label: "손익분기점", mod: "salary" }, { label: "2026신작", mod: "salary" }],
+    category: "culture",
+    isNew: true,
+  },
 };
 
 const reportEntries = reports
@@ -141,6 +147,7 @@ const salarySeries = reportEntries.filter((report) => report.category === "salar
 const estateSeries = reportEntries.filter((report) => report.category === "estate");
 const lifeSeries = reportEntries.filter((report) => report.category === "life");
 const assetSeries = reportEntries.filter((report) => report.category === "asset");
+const cultureSeries = reportEntries.filter((report) => report.category === "culture");
 
 const totalReports = reportEntries.length;
 ---
@@ -180,6 +187,7 @@ const totalReports = reportEntries.length;
       <button class="reports-filter-chip" data-filter="estate">부동산</button>
       <button class="reports-filter-chip" data-filter="asset">자산</button>
       <button class="reports-filter-chip" data-filter="life">생활</button>
+      <button class="reports-filter-chip" data-filter="culture">문화·엔터</button>
       <button class="reports-filter-chip" data-filter="new">신규</button>
     </div>
 
@@ -286,6 +294,29 @@ const totalReports = reportEntries.length;
         ))}
       </div>
     </section>
+
+    {cultureSeries.length > 0 && (
+      <section class="reports-series" data-series="culture">
+        <h3 class="reports-series__label">문화·엔터 시리즈</h3>
+        <div class="reports-card-grid">
+          {cultureSeries.map((r) => (
+            <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
+              <p class="rc-eyebrow">{r.eyebrow}</p>
+              <p class="rc-title">{r.title}</p>
+              <p class="rc-desc">{r.desc}</p>
+              <div class="rc-footer">
+                <div class="rc-tags">
+                  {r.tags.map((t) => (
+                    <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                  ))}
+                </div>
+                <span class="rc-arrow">→</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
 
     <section class="reports-content-block">
       <div class="reports-content-block__lead">

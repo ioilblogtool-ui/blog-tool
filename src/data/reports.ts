@@ -119,4 +119,11 @@ export const reports: ReportMeta[] = [
     order: 16,
     badges: ["서울", "전세", "부동산"],
   },
+  {
+    slug: "korean-movie-break-even-profit",
+    title: "대한민국 영화 손익 비교 리포트 — 많이 본 영화와 많이 번 영화는 다르다",
+    description: "명량, 극한직업, 왕의 남자 등 대표 흥행 영화의 제작비, 손익분기점, 실제 관객 수를 한 번에 비교합니다. 저예산 대박작부터 천만 영화까지 숫자로 정리한 리포트입니다.",
+    order: 17,
+    badges: ["영화", "손익비교"],
+  },
 ];

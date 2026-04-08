@@ -1,0 +1,464 @@
+.kmbep-page {
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #e6e1d8;
+    border-radius: 20px;
+    background: #fffdf9;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+    padding: 20px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 16px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #92400e;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.35;
+      color: #1f2937;
+    }
+
+    p {
+      margin: 6px 0 0;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #6b7280;
+      max-width: 760px;
+    }
+  }
+
+  // ── KPI 카드 ───────────────────────────────────────────
+  .kmbep-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .kmbep-kpi-card {
+    background: #f9f7f4;
+    border: 1px solid #e2ddd6;
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    p {
+      margin: 0 0 6px;
+      font-size: 0.72rem;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    strong {
+      display: block;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #1f2937;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    span {
+      font-size: 0.72rem;
+      color: #9ca3af;
+    }
+
+    &.is-accent {
+      background: #fffbeb;
+      border-color: #fcd34d;
+
+      strong { color: #92400e; }
+    }
+
+    &.is-warn {
+      background: #fff7ed;
+      border-color: #fed7aa;
+
+      strong { color: #c2410c; }
+    }
+  }
+
+  // ── 차트 섹션 ──────────────────────────────────────────
+  .kmbep-chart-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .kmbep-chart-wrap {
+    position: relative;
+    height: 360px;
+
+    @media (min-width: 768px) {
+      height: 440px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+
+  .kmbep-chart-note {
+    margin: 10px 0 0;
+    font-size: 0.72rem;
+    color: #9ca3af;
+    text-align: right;
+  }
+
+  // ── 정렬 탭 ────────────────────────────────────────────
+  .kmbep-sort-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .kmbep-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid #d8ddd8;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+    &.is-active {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    &:hover:not(.is-active) {
+      background: #e5e7eb;
+    }
+  }
+
+  // ── 비교표 ─────────────────────────────────────────────
+  .kmbep-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .kmbep-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+
+    thead tr {
+      background: #f3f4f6;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    th {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      color: #374151;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover td {
+      background: #fafaf9;
+    }
+
+    .col-title {
+      min-width: 130px;
+    }
+
+    .kmbep-comment {
+      font-size: 0.76rem;
+      color: #6b7280;
+      min-width: 180px;
+    }
+  }
+
+  .kmbep-movie-title {
+    display: block;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 4px;
+  }
+
+  .kmbep-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .kmbep-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 0.64rem;
+    font-weight: 700;
+
+    &--hit {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    &--low {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    &--eff {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    &--etc {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    &--new {
+      background: #ede9fe;
+      color: #5b21b6;
+    }
+  }
+
+  .kmbep-result {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+
+    &--hit {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    &--breakeven {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    &--loss {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  }
+
+  .kmbep-estimate-tag {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    background: #f3f4f6;
+    color: #9ca3af;
+    vertical-align: middle;
+  }
+
+  // ── 저예산 대박작 ──────────────────────────────────────
+  .kmbep-lowbudget-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .kmbep-lowbudget-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 14px;
+    padding: 16px;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+
+      strong {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #064e3b;
+      }
+    }
+
+    &__stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+
+      span {
+        font-size: 0.76rem;
+        color: #047857;
+
+        b {
+          font-weight: 700;
+        }
+      }
+    }
+
+    &__highlight {
+      margin: 0;
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: #374151;
+    }
+  }
+
+  // ── 천만 의외의 포인트 ─────────────────────────────────
+  .kmbep-surprise-box {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 14px;
+    padding: 18px;
+
+    > p:first-child {
+      margin: 0 0 18px;
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: #374151;
+    }
+  }
+
+  .kmbep-compare-pair {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .kmbep-compare-card {
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    &__label {
+      margin: 0 0 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    strong {
+      display: block;
+      font-size: 0.96rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0 0 0 16px;
+      list-style: disc;
+
+      li {
+        font-size: 0.8rem;
+        color: #374151;
+        margin-bottom: 4px;
+        line-height: 1.55;
+      }
+    }
+
+    &--a {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+
+      .kmbep-compare-card__label { color: #c2410c; }
+      strong { color: #c2410c; }
+    }
+
+    &--b {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+
+      .kmbep-compare-card__label { color: #065f46; }
+      strong { color: #065f46; }
+    }
+  }
+
+  .kmbep-surprise-note {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #92400e;
+    text-align: center;
+  }
+
+  // ── 손익분기점 해설 카드 ───────────────────────────────
+  .kmbep-factor-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .kmbep-factor-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    &__title {
+      margin: 0 0 8px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: #1f2937;
+    }
+
+    span {
+      font-size: 0.79rem;
+      line-height: 1.7;
+      color: #4b5563;
+    }
+  }
+
+  // ── CTA ────────────────────────────────────────────────
+  .kmbep-cta-section {
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  }
+}

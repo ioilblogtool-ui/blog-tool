@@ -1,0 +1,255 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { koreanMovieReport } from "../../data/koreanMovieBreakEvenProfit";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = koreanMovieReport;
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+
+// 관객 수 기준 내림차순 정렬 (기본)
+const moviesSorted = [...report.movies].sort((a, b) => b.audienceCount - a.audienceCount);
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page kmbep-page">
+    <CalculatorHero
+      eyebrow="한국 영화 손익 리포트"
+      title="대한민국 영화 손익 비교 리포트"
+      description="많이 본 영화와 많이 번 영화는 다를 수 있습니다. 제작비, 손익분기점, 실제 관객 수를 한 번에 비교해보세요."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, report.meta.updatedAt]}
+    />
+
+    <!-- KPI 요약 카드 -->
+    <section class="content-section kmbep-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 포인트</p>
+        <h2>먼저 봐야 할 숫자 4개</h2>
+      </div>
+      <div class="kmbep-kpi-grid">
+        {report.kpis.map((kpi) => (
+          <article class={`kmbep-kpi-card ${kpi.tone ? `is-${kpi.tone}` : ""}`}>
+            <p>{kpi.label}</p>
+            <strong>{kpi.value}</strong>
+            <span>{kpi.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 차트 섹션 -->
+    <section class="content-section kmbep-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">시각 비교</p>
+        <h2>관객 수 & 수익 구조 한눈에 보기</h2>
+        <p>탭을 눌러 관객 수 비교와 제작비 대비 박스오피스 비교를 전환합니다.</p>
+      </div>
+      <div class="kmbep-chart-tabs" id="kmbepChartTabs">
+        <button type="button" class="kmbep-tab-btn is-active" data-chart="audience">관객 수 비교</button>
+        <button type="button" class="kmbep-tab-btn" data-chart="revenue">제작비 vs 박스오피스</button>
+        <button type="button" class="kmbep-tab-btn" data-chart="roi">추정 ROI 비교</button>
+      </div>
+      <div class="kmbep-chart-wrap" id="kmbepChartAudience">
+        <canvas id="kmbepAudienceChart"></canvas>
+      </div>
+      <div class="kmbep-chart-wrap" id="kmbepChartRevenue" hidden>
+        <canvas id="kmbepRevenueChart"></canvas>
+      </div>
+      <div class="kmbep-chart-wrap" id="kmbepChartRoi" hidden>
+        <canvas id="kmbepRoiChart"></canvas>
+      </div>
+      <p class="kmbep-chart-note">추정 수치 포함. 공개 기사 기반 참고값입니다.</p>
+    </section>
+
+    <!-- 핵심 비교표 -->
+    <section class="content-section kmbep-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 비교표</p>
+        <h2>대한민국 대표 흥행 영화 손익 비교</h2>
+        <p>추정 표기 수치는 공개 기사 기반 참고값이며, 실제 정산과 다를 수 있습니다.</p>
+      </div>
+
+      <div class="kmbep-sort-tabs" id="kmbepSortTabs">
+        <button type="button" class="kmbep-tab-btn is-active" data-sort="audienceDesc">관객 수순</button>
+        <button type="button" class="kmbep-tab-btn" data-sort="productionCostAsc">제작비순</button>
+        <button type="button" class="kmbep-tab-btn" data-sort="roiDesc">추정 효율순</button>
+      </div>
+
+      <div class="table-wrap kmbep-table-wrap">
+        <table class="kmbep-table" id="kmbepMovieTable">
+          <thead>
+            <tr>
+              <th class="col-title">영화명</th>
+              <th>개봉</th>
+              <th>관객 수</th>
+              <th>제작비</th>
+              <th>손익분기점</th>
+              <th>흥행 결과</th>
+              <th>추정 수익성</th>
+              <th>코멘트</th>
+            </tr>
+          </thead>
+          <tbody id="kmbepTableBody">
+            {moviesSorted.map((movie) => (
+              <tr
+                data-audience={movie.audienceCount}
+                data-cost={movie.productionCost ?? 9999}
+                data-roi={movie.roi ?? -1}
+              >
+                <td class="col-title">
+                  <span class="kmbep-movie-title">{movie.title}</span>
+                  <span class="kmbep-badge-row">
+                    {movie.badges.map((badge) => (
+                      <span class={`kmbep-badge kmbep-badge--${badge === "천만" ? "hit" : badge === "저예산" ? "low" : badge === "고효율" ? "eff" : badge === "2026신작" ? "new" : "etc"}`}>
+                        {badge}
+                      </span>
+                    ))}
+                  </span>
+                </td>
+                <td>{movie.year}</td>
+                <td>{movie.audienceCount.toLocaleString("ko-KR")}만</td>
+                <td>{movie.productionCost !== null ? `${movie.productionCost.toLocaleString("ko-KR")}억` : "-"}</td>
+                <td>
+                  {movie.breakEvenPoint !== null ? `${movie.breakEvenPoint.toLocaleString("ko-KR")}만` : "-"}
+                </td>
+                <td>
+                  <span class={`kmbep-result kmbep-result--${movie.profitResult}`}>
+                    {movie.profitResult === "hit" ? "달성" : movie.profitResult === "breakeven" ? "본전권" : "미달"}
+                  </span>
+                </td>
+                <td>
+                  <span class={movie.isEstimate ? "kmbep-estimate" : ""}>
+                    {movie.profitLabel}
+                    {movie.isEstimate && <span class="kmbep-estimate-tag">추정</span>}
+                  </span>
+                </td>
+                <td class="kmbep-comment">{movie.comment}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 저예산 대박작 -->
+    <section class="content-section kmbep-lowbudget-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">저예산 대박작</p>
+        <h2>적은 돈으로 더 많이 남긴 영화</h2>
+        <p>관객 수보다 제작비 대비 효율이 훨씬 높은 작품들입니다. 왕과 사는 남자(2026)는 105억으로 박스오피스 1,507억을 기록하며 역대급 효율을 보였습니다.</p>
+      </div>
+      <div class="kmbep-lowbudget-grid">
+        {report.lowBudgetCards.map((card) => (
+          <article class="kmbep-lowbudget-card">
+            <div class="kmbep-lowbudget-card__header">
+              <strong>{card.title}</strong>
+              <span class="kmbep-badge kmbep-badge--hit">{card.profitLabel}</span>
+            </div>
+            <div class="kmbep-lowbudget-card__stats">
+              <span>제작비 <b>{card.productionCost}억</b></span>
+              <span>관객 <b>{card.audienceCount.toLocaleString("ko-KR")}만</b></span>
+              <span>{card.year}년</span>
+            </div>
+            <p class="kmbep-lowbudget-card__highlight">{card.highlight}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 천만인데 의외의 포인트 -->
+    <section class="content-section kmbep-surprise-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">천만인데 의외의 포인트</p>
+        <h2>천만 영화라고 모두 수익률이 높은 건 아닙니다</h2>
+      </div>
+      <div class="kmbep-surprise-box">
+        <p>{report.millenniumSurpriseNote}</p>
+        <div class="kmbep-compare-pair">
+          <article class="kmbep-compare-card kmbep-compare-card--a">
+            <p class="kmbep-compare-card__label">고예산 천만</p>
+            <strong>해운대 (2009)</strong>
+            <ul>
+              <li>관객 1,132만</li>
+              <li>제작비 약 130억</li>
+              <li>대규모 VFX·CG 투입</li>
+              <li>수익성: 상대적으로 낮음 <span class="kmbep-estimate-tag">추정</span></li>
+            </ul>
+          </article>
+          <article class="kmbep-compare-card kmbep-compare-card--b">
+            <p class="kmbep-compare-card__label">저예산 천만</p>
+            <strong>극한직업 (2019)</strong>
+            <ul>
+              <li>관객 1,626만</li>
+              <li>제작비 약 65억</li>
+              <li>국내 촬영 중심 저예산</li>
+              <li>수익성: 압도적 대박 <span class="kmbep-estimate-tag">추정</span></li>
+            </ul>
+          </article>
+        </div>
+        <p class="kmbep-surprise-note">같은 천만 흥행이라도 제작비에 따라 수익 구조는 완전히 달라집니다.</p>
+      </div>
+    </section>
+
+    <!-- 손익분기점 해설 -->
+    <section class="content-section kmbep-factor-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">손익분기점 해설</p>
+        <h2>영화 손익분기점은 왜 기사마다 다르게 보일까</h2>
+      </div>
+      <div class="kmbep-factor-grid">
+        {report.breakEvenFactors.map((factor) => (
+          <article class="kmbep-factor-card">
+            <p class="kmbep-factor-card__title">{factor.title}</p>
+            <span>{factor.description}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 계산기 CTA -->
+    <section class="content-section kmbep-cta-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 이동</p>
+        <h2>계산기와 다른 리포트로 이어보기</h2>
+      </div>
+      <div class="button-group">
+        {report.relatedLinks.map((link) => (
+          <a class="button button--secondary" href={withBase(link.href)}>{link.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="대한민국 영화 손익 리포트 읽는 법"
+      intro={[
+        "이 리포트는 한국 대표 흥행 영화들을 '얼마나 많이 봤나'가 아니라 '얼마나 남겼나' 관점으로 비교하는 데이터 리포트입니다.",
+        "관객 수 기준 TOP 영화들의 제작비와 손익분기점을 함께 놓고 보면, 흥행과 수익성이 반드시 같지 않다는 사실이 보입니다.",
+        "추정 표기 수치는 공개 기사·인터뷰 기반이며, 실제 배급·정산 내역은 공개되지 않은 경우가 많습니다.",
+      ]}
+      criteria={[
+        "제작비와 손익분기점은 공개 기사 기준이며, 순제작비와 총제작비(P&A 포함) 중 어느 기준인지 출처에 따라 다를 수 있습니다.",
+        "ROI·추정 수익성 라벨은 공개 수치 기반 참고용이며, 실제 정산 수익과 다를 수 있습니다.",
+        "외국 영화(어벤져스 등)는 한국 개봉 통계는 포함되나 제작비 구조는 분리되지 않습니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script id="kmbepReportData" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/korean-movie-break-even-profit.js")}></script>
+</BaseLayout>
