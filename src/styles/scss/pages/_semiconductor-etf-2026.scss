@@ -1,0 +1,680 @@
+// 반도체 ETF 비교 리포트 2026
+// CSS prefix: se26-
+
+.se26-page {
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #e6e1d8;
+    border-radius: 20px;
+    background: #fffdf9;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+    padding: 20px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 16px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #1e40af;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.35;
+      color: #1f2937;
+    }
+
+    p {
+      margin: 6px 0 0;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #6b7280;
+      max-width: 760px;
+    }
+  }
+
+  // ─── 요약 카드 ────────────────────────────────────────────────
+
+  .se26-summary-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .se26-summary-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+
+    p {
+      margin: 0;
+      font-size: 0.74rem;
+      color: #6b7280;
+    }
+
+    strong {
+      font-size: 1.4rem;
+      color: #1e3a8a;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: #4b5563;
+      line-height: 1.55;
+    }
+  }
+
+  // ─── 탭 버튼 ─────────────────────────────────────────────────
+
+  .se26-tab-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .se26-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+    &.is-active {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1e40af;
+    }
+  }
+
+  // ─── 공통 테이블 ──────────────────────────────────────────────
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .se26-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+
+    th,
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #ece7de;
+      text-align: left;
+      font-size: 0.81rem;
+      line-height: 1.55;
+      vertical-align: top;
+    }
+
+    th {
+      color: #6b7280;
+      font-weight: 700;
+      background: #f9fafb;
+      white-space: nowrap;
+    }
+  }
+
+  .se26-table--matching {
+    min-width: 420px;
+
+    td:first-child {
+      color: #374151;
+    }
+  }
+
+  .se26-list-cell {
+    ul {
+      margin: 0;
+      padding-left: 16px;
+
+      li {
+        margin-bottom: 2px;
+        font-size: 0.79rem;
+        line-height: 1.55;
+        color: #374151;
+      }
+    }
+  }
+
+  // ─── 티커 / 배지 ──────────────────────────────────────────────
+
+  .se26-ticker {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.77rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .se26-ticker--us {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .se26-ticker--kr {
+    background: #dcfce7;
+    color: #166534;
+    font-size: 0.72rem;
+  }
+
+  .se26-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 0.73rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .se26-etf-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    color: #0369a1;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .se26-match-etf {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #dbeafe;
+    color: #1e40af;
+    font-size: 0.79rem;
+    font-weight: 700;
+  }
+
+  // ─── 숨김 ────────────────────────────────────────────────────
+
+  .is-hidden {
+    display: none !important;
+  }
+
+  // ─── ETF 패널 ────────────────────────────────────────────────
+
+  .se26-etf-panel {
+    // 기본 표시 상태
+  }
+
+  // ─── 구성 종목 ────────────────────────────────────────────────
+
+  .se26-holdings-group {
+    & + & {
+      margin-top: 20px;
+    }
+  }
+
+  .se26-holdings-subtitle {
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+    color: #374151;
+  }
+
+  .se26-holding-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .se26-holding-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    font-size: 0.75rem;
+    color: #374151;
+
+    em {
+      font-style: normal;
+      font-weight: 700;
+      color: #1e40af;
+    }
+  }
+
+  // ─── 국가 배지 ────────────────────────────────────────────────
+
+  .se26-country-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  .se26-country-badge--us {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .se26-country-badge--kr {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .se26-country-badge--tw {
+    background: #fef9c3;
+    color: #713f12;
+  }
+
+  .se26-country-badge--nl {
+    background: #ffe4e6;
+    color: #9f1239;
+  }
+
+  // ─── 시총 bar row ────────────────────────────────────────────
+
+  .se26-bar-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .se26-bar-row {
+    display: grid;
+    gap: 6px;
+  }
+
+  .se26-bar-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .se26-bar-rank {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  .se26-bar-info {
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      display: block;
+      font-size: 0.92rem;
+      color: #111827;
+    }
+
+    span {
+      font-size: 0.76rem;
+      color: #6b7280;
+    }
+  }
+
+  .se26-bar-cap {
+    flex-shrink: 0;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-top: 2px;
+  }
+
+  .se26-bar-track {
+    height: 10px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    overflow: hidden;
+  }
+
+  .se26-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    transition: width 0.3s ease;
+  }
+
+  .se26-bar-etfs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  // ─── 기업 카드 ────────────────────────────────────────────────
+
+  .se26-company-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .se26-company-card {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    transition: opacity 0.2s;
+
+    &.is-hidden {
+      display: none;
+    }
+  }
+
+  .se26-company-card__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    strong {
+      font-size: 1rem;
+      color: #111827;
+    }
+  }
+
+  .se26-company-card__segment {
+    margin: 0;
+    font-size: 0.76rem;
+    color: #6b7280;
+  }
+
+  .se26-company-card__dl {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+
+    div {
+      display: flex;
+      gap: 6px;
+      align-items: baseline;
+    }
+
+    dt {
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      color: #9ca3af;
+      min-width: 60px;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.82rem;
+      color: #1f2937;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+  }
+
+  .se26-company-card__note {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #4b5563;
+    line-height: 1.6;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #f9fafb;
+    border-left: 3px solid #93c5fd;
+  }
+
+  .se26-company-card__etfs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  // ─── 장단점 카드 ──────────────────────────────────────────────
+
+  .se26-pros-columns {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .se26-pros-subtitle {
+    margin: 0 0 12px;
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  .se26-pros-subtitle--us {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .se26-pros-subtitle--kr {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .se26-pros-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .se26-pros-card {
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .se26-pros-card__name {
+    padding: 10px 14px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .se26-pros-card__body {
+    padding: 12px 14px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .se26-pros-card__section {
+    ul {
+      margin: 4px 0 0;
+      padding-left: 16px;
+
+      li {
+        font-size: 0.79rem;
+        line-height: 1.55;
+        color: #374151;
+        margin-bottom: 2px;
+      }
+    }
+  }
+
+  .se26-pros-card__section--cons ul li {
+    color: #dc2626;
+  }
+
+  .se26-pros-card__label {
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+  }
+
+  .se26-pros-card__best {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #1e40af;
+    padding: 6px 8px;
+    background: #eff6ff;
+    border-radius: 6px;
+  }
+
+  // ─── CTA ─────────────────────────────────────────────────────
+
+  .se26-cta-section .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  // ─── 반응형 ───────────────────────────────────────────────────
+
+  @media (max-width: 768px) {
+    gap: 20px;
+
+    .content-section {
+      padding: 16px;
+      border-radius: 18px;
+    }
+
+    .se26-summary-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .se26-table {
+      min-width: 520px;
+    }
+
+    .se26-company-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .se26-pros-columns {
+      grid-template-columns: 1fr;
+    }
+
+    .se26-bar-cap {
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .se26-summary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+.se26-page {
+  .se26-chart-panel,
+  .se26-reference-card,
+  .se26-cta-card {
+    display: grid;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid #e6e1d8;
+    background: #ffffff;
+  }
+
+  .se26-chart-wrap {
+    position: relative;
+    min-height: 340px;
+  }
+
+  .se26-chart-note,
+  .se26-inline-note,
+  .se26-row-title span,
+  .se26-reference-links a {
+    color: #6b7280;
+    font-size: 0.78rem;
+    line-height: 1.6;
+  }
+
+  .se26-row-title {
+    display: grid;
+    gap: 4px;
+
+    strong {
+      color: #111827;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+  }
+
+  .se26-reference-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .se26-reference-card h3,
+  .se26-cta-card h2 {
+    margin: 0;
+    color: #111827;
+  }
+
+  .se26-reference-links {
+    display: grid;
+    gap: 8px;
+  }
+
+  .se26-reference-links a {
+    text-decoration: none;
+  }
+
+  .se26-reference-links a:hover {
+    color: #1e40af;
+  }
+
+  .se26-cta-card__eyebrow {
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1e40af;
+  }
+
+  .se26-cta-card p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.7;
+    font-size: 0.84rem;
+  }
+
+  [data-market-row].is-hidden {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .se26-chart-wrap {
+      min-height: 300px;
+    }
+  }
+}

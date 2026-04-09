@@ -126,4 +126,18 @@ export const reports: ReportMeta[] = [
     order: 17,
     badges: ["영화", "손익비교"],
   },
+  {
+    slug: "semiconductor-etf-2026",
+    title: "미국·한국 반도체 ETF 비교 2026 — SOXX, SMH, TIGER, RISE, ACE 구성 종목 총정리",
+    description: "SOXX, SMH, TIGER 반도체, RISE AI반도체TOP10, ACE AI반도체TOP3+ 등 10종 ETF의 구성 종목, 운용사, 장단점을 한눈에 비교합니다.",
+    order: 18,
+    badges: ["ETF", "반도체", "투자"],
+  },
+  {
+    slug: "semiconductor-value-chain",
+    title: "엔비디아는 왜 공장이 없을까? 반도체 산업 구조 한눈에 보기",
+    description: "반도체 밸류체인 설계→장비→전공정→메모리→후공정→테스트 전 단계와 NVIDIA·TSMC·삼성전자·SK하이닉스·ASML 등 20개 기업의 역할을 인터랙티브로 이해합니다.",
+    order: 19,
+    badges: ["반도체", "산업구조", "밸류체인"],
+  },
 ];

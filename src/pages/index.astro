@@ -42,6 +42,44 @@ const topicBySlug: Record<string, string> = {
 };
 
 const categories = [...new Set(orderedTools.map(t => topicBySlug[t.slug]).filter(Boolean))];
+type HomeReportCategory = "salary" | "estate" | "asset" | "life" | "culture";
+
+type HomeReportMeta = {
+  category: HomeReportCategory;
+  isNew: boolean;
+};
+
+const reportMetaBySlug: Record<string, HomeReportMeta> = {
+  "new-employee-salary-2026": { category: "salary", isNew: false },
+  "it-salary-top10": { category: "salary", isNew: false },
+  "it-si-sm-salary-comparison-2026": { category: "salary", isNew: true },
+  "insurance-salary-bonus-comparison-2026": { category: "salary", isNew: true },
+  "construction-salary-bonus-comparison-2026": { category: "salary", isNew: true },
+  "large-company-salary-growth-by-years-2026": { category: "salary", isNew: true },
+  "seoul-housing-2016-vs-2026": { category: "estate", isNew: true },
+  "seoul-84-apartment-prices": { category: "estate", isNew: true },
+  "wedding-cost-2016-vs-2026": { category: "life", isNew: true },
+  "salary-asset-2016-vs-2026": { category: "asset", isNew: true },
+  "baby-cost-guide-first-year": { category: "life", isNew: true },
+  "baby-cost-2016-vs-2026": { category: "life", isNew: true },
+  "lee-jaemyung-government-officials-assets-salary-2026": { category: "asset", isNew: true },
+  "korea-rich-top10-assets": { category: "asset", isNew: false },
+  "seoul-apartment-jeonse-report": { category: "estate", isNew: true },
+  "us-rich-top10-patterns": { category: "asset", isNew: false },
+  "korean-movie-break-even-profit": { category: "culture", isNew: true },
+  "semiconductor-etf-2026": { category: "asset", isNew: true },
+  "semiconductor-value-chain": { category: "asset", isNew: true }
+};
+
+const reportCategoryLabels: Record<HomeReportCategory, string> = {
+  salary: "연봉",
+  estate: "부동산",
+  asset: "자산",
+  life: "생활",
+  culture: "문화·엔터"
+};
+
+const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "estate", "asset", "life", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
 const trustLinks = [
@@ -149,16 +187,37 @@ const trustLinks = [
     <!-- ⑤ 리포트 -->
     <section class="home-section">
       <div class="home-section__head">
-        <h2>비교 리포트</h2>
+        <h2>비교 리포트 <span class="home-section__count">{reportCount}개</span></h2>
+        <a href={withBase("/reports/")}>전체 보기 →</a>
       </div>
+
+      <div class="home-filter home-filter--reports">
+        <button class="home-filter__chip home-filter__chip--report is-active" data-report-filter="all">전체</button>
+        {reportFilterOrder.map(filterKey => (
+          <button class="home-filter__chip home-filter__chip--report" data-report-filter={filterKey}>
+            {filterKey === "new" ? "신규" : reportCategoryLabels[filterKey]}
+          </button>
+        ))}
+      </div>
+
       <div class="home-reports">
-        {orderedReports.length > 0 ? orderedReports.map(report => (
-          <a class="home-report-card" href={withBase(`/reports/${report.slug}/`)}>
+        {orderedReports.length > 0 ? orderedReports.map(report => {
+          const reportMeta = reportMetaBySlug[report.slug];
+          const reportCategory = reportMeta ? reportCategoryLabels[reportMeta.category] : "기타";
+          return (
+          <a
+            class="home-report-card"
+            href={withBase(`/reports/${report.slug}/`)}
+            data-report-category={reportMeta?.category ?? "other"}
+            data-report-is-new={reportMeta?.isNew ? "true" : "false"}
+          >
             <span class="home-report-card__badge">인터랙티브 리포트</span>
+            <p class="home-report-card__cat">{reportCategory}</p>
             <p class="home-report-card__title">{report.title}</p>
             <p class="home-report-card__desc">{report.description}</p>
           </a>
-        )) : (
+          );
+        }) : (
           <Fragment>
             <a class="home-report-card" href={withBase("/reports/korea-rich-top10-assets/")}>
               <span class="home-report-card__badge">인터랙티브 리포트</span>
@@ -199,21 +258,33 @@ const trustLinks = [
   <script is:inline>
     document.querySelectorAll('.home-filter__chip').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        document.querySelectorAll('.home-filter__chip').forEach(function(b) {
-          b.classList.remove('is-active');
-        });
-        btn.classList.add('is-active');
-        var cat = btn.getAttribute('data-cat');
-        document.querySelectorAll('.home-tool-row').forEach(function(row) {
-          row.style.display = (cat === '전체' || row.getAttribute('data-category') === cat) ? '' : 'none';
-        });
+        if (btn.hasAttribute('data-cat')) {
+          document.querySelectorAll('.home-filter__chip[data-cat]').forEach(function(b) {
+            b.classList.remove('is-active');
+          });
+          btn.classList.add('is-active');
+          var cat = btn.getAttribute('data-cat');
+          document.querySelectorAll('.home-tool-row').forEach(function(row) {
+            row.style.display = (cat === '전체' || row.getAttribute('data-category') === cat) ? '' : 'none';
+          });
+        }
+
+        if (btn.hasAttribute('data-report-filter')) {
+          document.querySelectorAll('.home-filter__chip[data-report-filter]').forEach(function(b) {
+            b.classList.remove('is-active');
+          });
+          btn.classList.add('is-active');
+          var reportFilter = btn.getAttribute('data-report-filter');
+          document.querySelectorAll('.home-report-card').forEach(function(card) {
+            var matchesCategory = reportFilter === 'all' || card.getAttribute('data-report-category') === reportFilter;
+            var matchesNew = reportFilter === 'new' && card.getAttribute('data-report-is-new') === 'true';
+            card.style.display = (matchesCategory || matchesNew) ? '' : 'none';
+          });
+        }
       });
     });
   </script>
 </BaseLayout>
-
-
-
 
 
 

@@ -1,0 +1,281 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  VC_META,
+  VC_STEPS,
+  VC_COMPANIES,
+  MYTH_CARDS,
+  STRENGTH_INSIGHTS,
+  VC_FAQ,
+} from "../../data/semiconductorValueChain";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+function getCompaniesForStep(stepId: string) {
+  const step = VC_STEPS.find((s) => s.id === stepId);
+  if (!step) return [];
+  return step.companyIds
+    .map((cid) => VC_COMPANIES.find((c) => c.id === cid))
+    .filter(Boolean);
+}
+
+function formatKrwFromUsd(amountUsd: number) {
+  const trillion = (amountUsd * VC_META.usdKrw) / 1_000_000_000_000;
+  const rounded = trillion >= 100 ? Math.round(trillion) : Number(trillion.toFixed(1));
+  return `${rounded.toLocaleString("ko-KR")}조원`;
+}
+
+const totalMarketCapUsd = VC_COMPANIES.reduce((sum, company) => sum + company.marketCapUsd, 0);
+const krCompanies = VC_COMPANIES.filter((company) => company.country === "KR");
+const krMarketCapUsd = krCompanies.reduce((sum, company) => sum + company.marketCapUsd, 0);
+const uniqueStageCompanies = new Set(VC_STEPS.flatMap((step) => step.companyIds)).size;
+const largestStage = VC_STEPS.map((step) => {
+  const companies = getCompaniesForStep(step.id);
+  const totalUsd = companies.reduce((sum, company) => sum + company!.marketCapUsd, 0);
+  const leadCompany = [...companies].sort((a, b) => b!.marketCapUsd - a!.marketCapUsd)[0];
+  return {
+    ...step,
+    companies,
+    totalUsd,
+    leadCompany,
+  };
+}).sort((a, b) => b.totalUsd - a.totalUsd)[0];
+
+const stageScaleCards = VC_STEPS.map((step) => {
+  const companies = getCompaniesForStep(step.id);
+  const totalUsd = companies.reduce((sum, company) => sum + company!.marketCapUsd, 0);
+  const leadCompany = [...companies].sort((a, b) => b!.marketCapUsd - a!.marketCapUsd)[0];
+  return {
+    ...step,
+    companyCount: companies.length,
+    totalUsd,
+    leadCompany,
+  };
+});
+
+const faqItems = VC_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+const vcDataJson = JSON.stringify({ steps: VC_STEPS, companies: VC_COMPANIES, usdKrw: VC_META.usdKrw });
+---
+
+<BaseLayout
+  title="엔비디아는 왜 공장이 없을까? 반도체 산업 구조 한눈에 보기"
+  description="반도체 밸류체인 설계→장비→전공정→메모리→후공정→테스트 전 단계를 한눈에 보여줍니다. NVIDIA·TSMC·삼성전자·SK하이닉스·ASML·한미반도체 등 핵심 기업의 규모와 역할을 원화 기준으로도 이해하세요."
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page vc-page">
+    <CalculatorHero
+      eyebrow="반도체 산업 구조 리포트"
+      title="반도체 하나 만들기까지, 이 회사들이 다 연결되어 있다"
+      description="엔비디아·TSMC·삼성전자·SK하이닉스·ASML·한미반도체. 누가 설계하고, 누가 만들고, 누가 병목을 쥐고 있는지 원화 감각으로 정리했습니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[VC_META.dataNote, VC_META.fxNote, VC_META.disclaimer, `데이터 기준일: ${VC_META.updatedAt}`]}
+    />
+
+    <section class="content-section vc-scale-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한눈에 보는 규모</p>
+        <h2>한국 독자 기준으로 먼저 읽는 반도체 밸류체인 스케일</h2>
+        <p>달러 숫자가 너무 커서 감이 안 오는 구간을 원화 기준으로 다시 묶었습니다.</p>
+      </div>
+
+      <div class="vc-overview-grid">
+        <article class="vc-overview-card vc-overview-card--strong">
+          <p class="vc-overview-card__label">추적 기업 시총 합계</p>
+          <p class="vc-overview-card__value">약 {formatKrwFromUsd(totalMarketCapUsd)}</p>
+          <p class="vc-overview-card__sub">총 {uniqueStageCompanies}개 핵심 기업 기준</p>
+        </article>
+        <article class="vc-overview-card">
+          <p class="vc-overview-card__label">한국 핵심 기업 합산 시총</p>
+          <p class="vc-overview-card__value">약 {formatKrwFromUsd(krMarketCapUsd)}</p>
+          <p class="vc-overview-card__sub">삼성전자·SK하이닉스·한미반도체 등 {krCompanies.length}개사</p>
+        </article>
+        <article class="vc-overview-card">
+          <p class="vc-overview-card__label">가장 큰 단계</p>
+          <p class="vc-overview-card__value">{largestStage.name}</p>
+          <p class="vc-overview-card__sub">추적 시총 약 {formatKrwFromUsd(largestStage.totalUsd)}</p>
+        </article>
+        <article class="vc-overview-card">
+          <p class="vc-overview-card__label">현재 대표 병목</p>
+          <p class="vc-overview-card__value">파운드리 + HBM</p>
+          <p class="vc-overview-card__sub">TSMC 생산능력, SK하이닉스·삼성 HBM 공급이 핵심</p>
+        </article>
+      </div>
+
+      <div class="vc-stage-scale-grid">
+        {stageScaleCards.map((step) => (
+          <article class="vc-stage-scale-card">
+            <div class="vc-stage-scale-card__top">
+              <span class="vc-stage-scale-card__num">{step.num}</span>
+              <span class="vc-stage-scale-card__name">{step.name}</span>
+            </div>
+            <p class="vc-stage-scale-card__cap">약 {formatKrwFromUsd(step.totalUsd)}</p>
+            <p class="vc-stage-scale-card__meta">대표 {step.companyCount}개사 · 선두 {step.leadCompany?.name}</p>
+            <p class="vc-stage-scale-card__desc">{step.shortDesc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section vc-flowmap-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">밸류체인 플로우맵</p>
+        <h2>반도체 산업 6단계, 단계나 기업을 클릭해 디테일을 보세요</h2>
+        <p>각 기업 패널에는 원화 환산 시총, 최근 매출·영업이익, 업력, 임직원 수, 5개년 성장 포인트를 함께 넣었습니다.</p>
+      </div>
+
+      <div class="vc-filter-row" id="vcFilterRow">
+        <button type="button" class="vc-filter-btn is-active" data-filter="all">전체</button>
+        <button type="button" class="vc-filter-btn" data-filter="US">🇺🇸 미국 기업만</button>
+        <button type="button" class="vc-filter-btn" data-filter="KR">🇰🇷 한국 기업만</button>
+      </div>
+
+      <div class="vc-flow-wrap">
+        <div class="vc-flow-grid" id="vcFlowGrid">
+          {VC_STEPS.map((step, idx) => {
+            const stepCompanies = getCompaniesForStep(step.id);
+            return (
+              <>
+                <div class="vc-step-col" data-step-id={step.id}>
+                  <button
+                    type="button"
+                    class="vc-step-header"
+                    data-step={step.id}
+                    aria-expanded="false"
+                  >
+                    <span class="vc-step-num">{step.num}</span>
+                    <span class="vc-step-name">{step.name}</span>
+                    <span class="vc-step-short">{step.shortDesc}</span>
+                  </button>
+                  <ul class="vc-company-list">
+                    {stepCompanies.map((company) => (
+                      <li>
+                        <button
+                          type="button"
+                          class="vc-company-btn"
+                          data-company-id={company!.id}
+                          data-country={company!.country}
+                        >
+                          <span class="vc-company-flag">{company!.flag}</span>
+                          <span class="vc-company-name">{company!.name}</span>
+                          <span class="vc-company-cap">{company!.marketCapKrwDisplay}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {idx < VC_STEPS.length - 1 && (
+                  <div class="vc-arrow" aria-hidden="true">→</div>
+                )}
+              </>
+            );
+          })}
+        </div>
+      </div>
+
+      <div id="vcDetailPanel" class="vc-detail-panel is-hidden" role="region" aria-live="polite">
+        <button type="button" id="vcDetailClose" class="vc-close-btn" aria-label="패널 닫기">✕</button>
+        <div id="vcDetailContent" class="vc-detail-content"></div>
+      </div>
+    </section>
+
+    <section class="content-section vc-strength-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">강점 지도</p>
+        <h2>미국 vs 한국, 어떤 단계에서 누가 더 강한가</h2>
+        <p>절대 수치가 아니라 밸류체인 지배력과 경쟁우위를 5단계 참고값으로 정리한 지도입니다.</p>
+      </div>
+      <div class="vc-strength-grid">
+        {VC_STEPS.map((step) => (
+          <div class="vc-strength-row">
+            <span class="vc-strength-label">{step.name}</span>
+            <div class="vc-strength-bars">
+              <div class="vc-bar-wrap">
+                <span class="vc-bar-country vc-bar-country--us">🇺🇸 미국</span>
+                <div class="vc-bar-track">
+                  <div class="vc-bar-fill vc-bar-fill--us" style={`width:${step.usStrength * 20}%`}></div>
+                </div>
+                <span class="vc-bar-val">{step.usStrength > 0 ? "★".repeat(step.usStrength) : "—"}</span>
+              </div>
+              <div class="vc-bar-wrap">
+                <span class="vc-bar-country vc-bar-country--kr">🇰🇷 한국</span>
+                <div class="vc-bar-track">
+                  <div class="vc-bar-fill vc-bar-fill--kr" style={`width:${step.krStrength * 20}%`}></div>
+                </div>
+                <span class="vc-bar-val">{step.krStrength > 0 ? "★".repeat(step.krStrength) : "—"}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="vc-insight-grid">
+        {STRENGTH_INSIGHTS.map((item) => (
+          <article class="vc-insight-card">
+            <p class="vc-insight-card__title">{item.title}</p>
+            <p class="vc-insight-card__body">{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section vc-myth-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자주 하는 오해</p>
+        <h2>반도체 밸류체인을 볼 때 자주 헷갈리는 포인트 3가지</h2>
+      </div>
+      <div class="vc-myth-grid">
+        {MYTH_CARDS.map((card) => (
+          <article class="vc-myth-card">
+            <p class="vc-myth-card__num">{card.num}</p>
+            <p class="vc-myth-card__claim">"{card.claim}"</p>
+            <p class="vc-myth-card__fact">→ {card.fact}</p>
+            <p class="vc-myth-card__detail">{card.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section vc-cta-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 이동</p>
+        <h2>ETF 리포트와 계산기로 이어보기</h2>
+      </div>
+      <div class="button-group">
+        <a class="button button--secondary" href={withBase("/reports/semiconductor-etf-2026/")}>미국·한국 반도체 ETF 비교 2026</a>
+        <a class="button button--secondary" href={withBase("/tools/dca-investment-calculator/")}>적립식 투자 수익 계산기</a>
+        <a class="button button--secondary" href={withBase("/tools/fire-calculator/")}>FIRE 은퇴 계산기</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="반도체 밸류체인 리포트 읽는 법"
+      intro={[
+        "이 리포트는 반도체 산업을 처음 보는 독자도 설계, 장비, 파운드리, 메모리, 패키징, 테스트까지 흐름을 한 번에 파악하도록 만든 인터랙티브 페이지입니다.",
+        "이번 업데이트에서는 한국 독자 기준으로 원화 환산 시총과 기업 규모 감각을 강화했고, 회사별 최근 매출·영업이익·임직원 수·업력·5개년 성장 포인트를 더 자세히 넣었습니다.",
+      ]}
+      criteria={[
+        "원화 환산은 비교 편의를 위한 근사치입니다. 실제 환율과 시점에 따라 달라질 수 있습니다.",
+        "실적 수치는 최근 공개 연간 기준이며 실시간 데이터가 아닙니다.",
+        "삼성전자는 메모리와 파운드리 양쪽 맥락에서 중요하지만, 플로우맵 대표 단계는 파운드리로 두었습니다.",
+      ]}
+      faq={faqItems}
+      related={[
+        { label: "미국·한국 반도체 ETF 비교 2026", href: "/reports/semiconductor-etf-2026/" },
+        { label: "적립식 투자 수익 계산기", href: "/tools/dca-investment-calculator/" },
+      ]}
+    />
+  </main>
+
+  <script type="application/json" id="vc-data" set:html={vcDataJson}></script>
+  <script type="module" src={withBase("/scripts/semiconductor-value-chain.js")}></script>
+</BaseLayout>
