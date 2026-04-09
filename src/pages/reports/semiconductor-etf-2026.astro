@@ -25,9 +25,18 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 
 const faqItems = FAQ_ITEMS.map((item) => ({ question: item.q, answer: item.a }));
 const relatedLinks = RELATED_LINKS.map((item) => ({ label: item.label, href: item.href }));
+const KR_CHART_LABELS: Record<string, string> = {
+  "381180": "TIGER 미국필라델피아",
+  "396500": "TIGER Fn반도체TOP10",
+  "0093A0": "RISE AI반도체TOP10",
+  "469150": "ACE AI반도체TOP3+",
+  "469050": "RISE 미국반도체(H)",
+  "446770": "ACE 글로벌반도체TOP4",
+};
+
 const chartSeed = {
   etfs: ETF_ROWS.map((item) => ({
-    ticker: item.ticker,
+    ticker: item.market === "KR" ? (KR_CHART_LABELS[item.ticker] ?? item.name) : item.ticker,
     market: item.market,
     aumKrwBillion: item.aumKrwBillion,
   })),
@@ -39,7 +48,7 @@ const chartSeed = {
 
 const formatAum = (value: number) => {
   if (value >= 1000) return `${(value / 1000).toFixed(2)}조원`;
-  return `${value.toFixed(0)}억원`;
+  return `${(value * 10).toFixed(0)}억원`;
 };
 
 const formatCompanyCap = (value: number) => `${value.toLocaleString("ko-KR", { maximumFractionDigits: 1 })}조원`;
@@ -251,6 +260,19 @@ const formatCompanyCap = (value: number) => `${value.toLocaleString("ko-KR", { m
             ))}
           </div>
         </article>
+      </div>
+    </section>
+
+    <section class="content-section se26-dca-link-section">
+      <div class="se26-dca-link-card">
+        <div class="se26-dca-link-card__body">
+          <p class="se26-dca-link-card__eyebrow">적립식 투자 시뮬레이터</p>
+          <h2 class="se26-dca-link-card__title">이 페이지에서 본 반도체 종목, 적립식으로 투자했으면 어땠을까?</h2>
+          <p class="se26-dca-link-card__desc">NVIDIA·TSMC·삼성전자·SK하이닉스·ASML·AMD·LRCX 등 반도체 밸류체인 19개 종목을 한 탭에 모아뒀습니다. 월 투자금과 기간을 설정해 실제 수익 차이를 비교해보세요.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/dca-investment-calculator/?tab=SEMICONDUCTOR")}>
+          반도체 종목 적립식 수익 비교 →
+        </a>
       </div>
     </section>
 

@@ -52,14 +52,14 @@ if (chartSeedElement) {
                 if (value >= 1000) {
                   return `원화 기준 규모: ${(value / 1000).toFixed(2)}조원`;
                 }
-                return `원화 기준 규모: ${value.toFixed(0)}억원`;
+                return `원화 기준 규모: ${(value * 10).toFixed(0)}억원`;
               },
             },
           },
         },
         scales: {
           x: {
-            ticks: { color: "#4b5563" },
+            ticks: { color: "#4b5563", maxRotation: 45, minRotation: 25 },
             grid: { display: false },
           },
           y: {
@@ -68,7 +68,7 @@ if (chartSeedElement) {
               color: "#6b7280",
               callback(value) {
                 const numeric = Number(value);
-                return numeric >= 1000 ? `${(numeric / 1000).toFixed(0)}조` : `${numeric.toFixed(0)}억`;
+                return numeric >= 1000 ? `${(numeric / 1000).toFixed(0)}조` : `${(numeric * 10).toFixed(0)}억`;
               },
             },
             grid: { color: "rgba(219, 212, 202, 0.5)" },

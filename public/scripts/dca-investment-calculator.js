@@ -426,6 +426,9 @@ function loadFromUrlParams() {
 
   if (fxToggle)       fxToggle.checked       = params.get("fx")  === "1";
   if (dividendToggle) dividendToggle.checked  = params.get("div") !== "0";
+
+  const tab = params.get("tab");
+  if (tab) switchTab(tab);
 }
 
 // ── 슬라이더 ─────────────────────────────────────────────────────────────────
@@ -441,6 +444,13 @@ function updateMonthlyLabel(val) {
 }
 
 // ── 탭 제어 ───────────────────────────────────────────────────────────────────
+function isItemVisibleInTab(item, tabName) {
+  if (tabName === "SEMICONDUCTOR") {
+    return item.dataset.sector === "SEMICONDUCTOR";
+  }
+  return item.dataset.category === tabName;
+}
+
 function switchTab(tabName) {
   if (isSearching) return; // 검색 중엔 탭 전환 무시
   activeTab = tabName;
@@ -448,7 +458,7 @@ function switchTab(tabName) {
     btn.classList.toggle("is-active", btn.dataset.tab === tabName);
   });
   assetList?.querySelectorAll(".dca-asset-item").forEach((item) => {
-    item.style.display = item.dataset.category === tabName ? "flex" : "none";
+    item.style.display = isItemVisibleInTab(item, tabName) ? "flex" : "none";
   });
   updateSelectAllLabel();
 }
@@ -494,7 +504,7 @@ function handleSearch(query) {
       if (show) visibleCount++;
     } else {
       // 검색 해제 시 현재 탭 기준 복원
-      item.style.display = item.dataset.category === activeTab ? "flex" : "none";
+      item.style.display = isItemVisibleInTab(item, activeTab) ? "flex" : "none";
     }
   });
 

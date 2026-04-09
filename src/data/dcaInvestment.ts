@@ -14,6 +14,7 @@ export interface DcaAsset {
   yearlyReturns: Record<number, number>;
   dividendYields?: Record<number, number>;
   color: string;
+  sector?: string;
 }
 
 export interface FxRates {
@@ -158,7 +159,7 @@ export const DCA_ASSETS: DcaAsset[] = [
   {
     id: 'NVDA', name: 'Nvidia', nameEn: 'NVDA',
     category: 'STOCK_US', currency: 'USD',
-    availableFrom: 2005, color: '#76B900',
+    availableFrom: 2005, color: '#76B900', sector: 'SEMICONDUCTOR',
     yearlyReturns: {
       2005: 0.360,  2006: -0.057, 2007: 0.396,  2008: -0.741,
       2009: 2.064,  2010: 0.047,  2011: -0.190, 2012: 0.098,
@@ -220,7 +221,7 @@ export const DCA_ASSETS: DcaAsset[] = [
   {
     id: 'SEC', name: '삼성전자', nameEn: '005930',
     category: 'STOCK_KR', currency: 'KRW',
-    availableFrom: 2005, color: '#1428A0',
+    availableFrom: 2005, color: '#1428A0', sector: 'SEMICONDUCTOR',
     yearlyReturns: {
       2005: 0.270,  2006: 0.038,  2007: 0.219,  2008: -0.325,
       2009: 0.607,  2010: 0.315,  2011: 0.151,  2012: 0.456,
@@ -241,7 +242,7 @@ export const DCA_ASSETS: DcaAsset[] = [
   {
     id: 'SKHYNIX', name: 'SK하이닉스', nameEn: '000660',
     category: 'STOCK_KR', currency: 'KRW',
-    availableFrom: 2005, color: '#EA0029',
+    availableFrom: 2005, color: '#EA0029', sector: 'SEMICONDUCTOR',
     yearlyReturns: {
       2005: 0.190,  2006: -0.110, 2007: 0.410,  2008: -0.580,
       2009: 1.320,  2010: 0.540,  2011: -0.420, 2012: 0.230,
@@ -428,7 +429,7 @@ export const DCA_ASSETS: DcaAsset[] = [
 {
   id: 'AVGO', name: 'Broadcom', nameEn: 'AVGO',
   category: 'STOCK_US', currency: 'USD',
-  availableFrom: 2009, color: '#C0172B',
+  availableFrom: 2009, color: '#C0172B', sector: 'SEMICONDUCTOR',
   yearlyReturns: {
     2009: 0.000,
     2010: 0.230,
@@ -768,7 +769,7 @@ export const DCA_ASSETS: DcaAsset[] = [
 {
   id: 'AMD', name: 'AMD', nameEn: 'AMD',
   category: 'STOCK_US', currency: 'USD',
-  availableFrom: 2005, color: '#ED1C24',
+  availableFrom: 2005, color: '#ED1C24', sector: 'SEMICONDUCTOR',
   yearlyReturns: {
     2005: 0.060,  2006: -0.046, 2007: -0.580, 2008: -0.650,
     2009: 0.510,  2010: 0.140,  2011: -0.170, 2012: -0.390,
@@ -781,7 +782,7 @@ export const DCA_ASSETS: DcaAsset[] = [
 {
   id: 'MU', name: 'Micron', nameEn: 'MU',
   category: 'STOCK_US', currency: 'USD',
-  availableFrom: 2005, color: '#0071C5',
+  availableFrom: 2005, color: '#0071C5', sector: 'SEMICONDUCTOR',
   yearlyReturns: {
     2005: 0.050,  2006: 0.270,  2007: -0.220, 2008: -0.570,
     2009: 0.700,  2010: 0.430,  2011: -0.380, 2012: 0.470,
@@ -989,7 +990,7 @@ export const DCA_ASSETS: DcaAsset[] = [
 {
   id: 'TSM', name: 'TSMC', nameEn: 'Taiwan Semiconductor',
   category: 'STOCK_US', currency: 'USD',
-  availableFrom: 2005, color: '#007B5E',
+  availableFrom: 2005, color: '#007B5E', sector: 'SEMICONDUCTOR',
   yearlyReturns: {
     2005: 0.100,  2006: 0.030,  2007: 0.220,  2008: -0.350,
     2009: 0.870,  2010: 0.400,  2011: -0.060, 2012: 0.370,
@@ -1010,7 +1011,7 @@ export const DCA_ASSETS: DcaAsset[] = [
 {
   id: 'ASML', name: 'ASML', nameEn: 'ASML Holding',
   category: 'STOCK_US', currency: 'USD',
-  availableFrom: 2005, color: '#0072CE',
+  availableFrom: 2005, color: '#0072CE', sector: 'SEMICONDUCTOR',
   yearlyReturns: {
     2005: 0.220,  2006: 0.180,  2007: 0.220,  2008: -0.410,
     2009: 0.720,  2010: 0.360,  2011: -0.070, 2012: 0.410,
@@ -1031,7 +1032,7 @@ export const DCA_ASSETS: DcaAsset[] = [
 {
   id: 'QCOM', name: 'QCOM (퀄컴)', nameEn: 'Qualcomm',
   category: 'STOCK_US', currency: 'USD',
-  availableFrom: 2005, color: '#3253DC',
+  availableFrom: 2005, color: '#3253DC', sector: 'SEMICONDUCTOR',
   yearlyReturns: {
     2005: 0.010,  2006: 0.100,  2007: 0.110,  2008: -0.290,
     2009: 0.560,  2010: 0.220,  2011: 0.190,  2012: 0.230,
@@ -1202,6 +1203,150 @@ export const DCA_ASSETS: DcaAsset[] = [
     2017: 0.040, 2018: 0.045, 2019: 0.045, 2020: 0.048,
     2021: 0.048, 2022: 0.060, 2023: 0.060, 2024: 0.055,
     2025: 0.055,
+  },
+},
+// ─ 반도체 밸류체인 추가 (미국)
+{
+  id: 'LRCX', name: 'Lam Research', nameEn: 'LRCX',
+  category: 'STOCK_US', currency: 'USD',
+  availableFrom: 2005, color: '#5B21B6', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2005: 0.180,  2006: 0.100,  2007: -0.050, 2008: -0.600,
+    2009: 1.200,  2010: 0.700,  2011: -0.300, 2012: 0.550,
+    2013: 0.550,  2014: 0.350,  2015: -0.100, 2016: 0.900,
+    2017: 0.550,  2018: -0.250, 2019: 0.750,  2020: 0.600,
+    2021: 0.650,  2022: -0.450, 2023: 0.700,  2024: -0.080,
+    2025: -0.250,
+  },
+  dividendYields: {
+    2014: 0.010, 2015: 0.012, 2016: 0.012, 2017: 0.013,
+    2018: 0.015, 2019: 0.013, 2020: 0.012, 2021: 0.011,
+    2022: 0.015, 2023: 0.013, 2024: 0.012, 2025: 0.013,
+  },
+},
+{
+  id: 'KLAC', name: 'KLA', nameEn: 'KLAC',
+  category: 'STOCK_US', currency: 'USD',
+  availableFrom: 2005, color: '#7C3AED', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2005: 0.080,  2006: 0.200,  2007: 0.050,  2008: -0.500,
+    2009: 1.000,  2010: 0.550,  2011: -0.100, 2012: 0.300,
+    2013: 0.450,  2014: 0.200,  2015: -0.050, 2016: 0.500,
+    2017: 0.450,  2018: -0.050, 2019: 0.750,  2020: 0.550,
+    2021: 0.550,  2022: -0.350, 2023: 0.550,  2024: 0.250,
+    2025: -0.200,
+  },
+  dividendYields: {
+    2005: 0.015, 2006: 0.014, 2007: 0.012, 2008: 0.020,
+    2009: 0.015, 2010: 0.014, 2011: 0.016, 2012: 0.020,
+    2013: 0.020, 2014: 0.022, 2015: 0.025, 2016: 0.023,
+    2017: 0.020, 2018: 0.022, 2019: 0.018, 2020: 0.016,
+    2021: 0.014, 2022: 0.020, 2023: 0.016, 2024: 0.014,
+    2025: 0.015,
+  },
+},
+{
+  id: 'AMAT', name: 'Applied Materials', nameEn: 'AMAT',
+  category: 'STOCK_US', currency: 'USD',
+  availableFrom: 2005, color: '#0EA5E9', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2005: 0.100,  2006: 0.150,  2007: 0.100,  2008: -0.550,
+    2009: 0.950,  2010: 0.600,  2011: -0.250, 2012: 0.300,
+    2013: 0.700,  2014: 0.300,  2015: -0.150, 2016: 0.950,
+    2017: 0.550,  2018: -0.150, 2019: 0.800,  2020: 0.600,
+    2021: 0.800,  2022: -0.400, 2023: 0.650,  2024: 0.000,
+    2025: -0.250,
+  },
+  dividendYields: {
+    2005: 0.008, 2006: 0.008, 2007: 0.008, 2008: 0.012,
+    2009: 0.010, 2010: 0.010, 2011: 0.012, 2012: 0.014,
+    2013: 0.014, 2014: 0.018, 2015: 0.022, 2016: 0.018,
+    2017: 0.014, 2018: 0.016, 2019: 0.014, 2020: 0.012,
+    2021: 0.010, 2022: 0.014, 2023: 0.012, 2024: 0.010,
+    2025: 0.011,
+  },
+},
+{
+  id: 'AMKR', name: 'Amkor', nameEn: 'AMKR',
+  category: 'STOCK_US', currency: 'USD',
+  availableFrom: 2005, color: '#F59E0B', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2005: -0.100, 2006: 0.250,  2007: 0.050,  2008: -0.650,
+    2009: 2.800,  2010: 0.300,  2011: -0.350, 2012: 0.350,
+    2013: 0.550,  2014: -0.150, 2015: -0.300, 2016: 0.750,
+    2017: 0.350,  2018: -0.250, 2019: 0.550,  2020: 0.350,
+    2021: 0.850,  2022: -0.450, 2023: 0.300,  2024: -0.200,
+    2025: -0.100,
+  },
+},
+// ─ 반도체 밸류체인 추가 (한국)
+{
+  id: 'HMS', name: '한미반도체', nameEn: '042700',
+  category: 'STOCK_KR', currency: 'KRW',
+  availableFrom: 2005, color: '#DC2626', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2005: 0.200,  2006: 0.100,  2007: 0.500,  2008: -0.600,
+    2009: 1.200,  2010: 0.400,  2011: -0.300, 2012: 0.200,
+    2013: 0.600,  2014: -0.100, 2015: -0.200, 2016: 0.300,
+    2017: 0.500,  2018: -0.300, 2019: 0.400,  2020: 0.800,
+    2021: 0.300,  2022: -0.300, 2023: 4.000,  2024: -0.300,
+    2025: -0.200,
+  },
+},
+{
+  id: 'WONIK', name: '원익IPS', nameEn: '240810',
+  category: 'STOCK_KR', currency: 'KRW',
+  availableFrom: 2017, color: '#059669', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2017: 0.600,  2018: -0.400, 2019: 0.700,  2020: 0.550,
+    2021: 0.300,  2022: -0.500, 2023: 0.300,  2024: -0.300,
+    2025: -0.100,
+  },
+},
+{
+  id: 'SPETA', name: '이수페타시스', nameEn: '007660',
+  category: 'STOCK_KR', currency: 'KRW',
+  availableFrom: 2005, color: '#B45309', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2005: 0.150,  2006: 0.200,  2007: 0.300,  2008: -0.550,
+    2009: 0.600,  2010: 0.300,  2011: -0.200, 2012: 0.150,
+    2013: 0.250,  2014: 0.100,  2015: -0.050, 2016: 0.200,
+    2017: 0.300,  2018: -0.150, 2019: 0.250,  2020: 0.300,
+    2021: 0.200,  2022: -0.300, 2023: 4.500,  2024: -0.600,
+    2025: -0.200,
+  },
+},
+{
+  id: 'ISC', name: 'ISC', nameEn: '095340',
+  category: 'STOCK_KR', currency: 'KRW',
+  availableFrom: 2010, color: '#0891B2', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2010: 0.300,  2011: -0.200, 2012: 0.300,  2013: 0.500,
+    2014: 0.200,  2015: 0.100,  2016: 0.300,  2017: 0.600,
+    2018: -0.300, 2019: 0.400,  2020: 0.500,  2021: 1.200,
+    2022: -0.500, 2023: 0.800,  2024: -0.300, 2025: -0.200,
+  },
+},
+{
+  id: 'LINO', name: '리노공업', nameEn: '058470',
+  category: 'STOCK_KR', currency: 'KRW',
+  availableFrom: 2010, color: '#6366F1', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2010: 0.200,  2011: -0.150, 2012: 0.250,  2013: 0.300,
+    2014: 0.150,  2015: 0.100,  2016: 0.250,  2017: 0.400,
+    2018: -0.200, 2019: 0.350,  2020: 0.450,  2021: 0.800,
+    2022: -0.500, 2023: 0.600,  2024: -0.200, 2025: -0.150,
+  },
+},
+{
+  id: 'OKINS', name: '오킨스전자', nameEn: '080580',
+  category: 'STOCK_KR', currency: 'KRW',
+  availableFrom: 2012, color: '#84CC16', sector: 'SEMICONDUCTOR',
+  yearlyReturns: {
+    2012: 0.150,  2013: 0.250,  2014: 0.100,  2015: 0.050,
+    2016: 0.200,  2017: 0.350,  2018: -0.250, 2019: 0.300,
+    2020: 0.400,  2021: 0.900,  2022: -0.450, 2023: 0.500,
+    2024: -0.200, 2025: -0.100,
   },
 },
 // ─ 레버리지 ETF
