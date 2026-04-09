@@ -45,7 +45,7 @@ export const scenarioPresets: ScenarioPreset[] = [
 ];
 
 export const factAnchors = [
-  { label: "성과금", value: "월급 450%", note: "2025 임단협 패키지 기준" },
+  { label: "성과급", value: "월급 450%", note: "2025 임단협 패키지 기준" },
   { label: "정액 현금", value: "1,580만 원", note: "2025 임단협 패키지 기준" },
   { label: "자사주", value: "30주", note: "2025 임단협 패키지 기준" },
   { label: "상품권", value: "20만 원", note: "전통시장 상품권" },

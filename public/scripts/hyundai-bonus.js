@@ -1,5 +1,5 @@
 /**
- * hyundai-bonus.js — 현대자동차 성과금 계산기 (ES 모듈)
+ * hyundai-bonus.js — 현대자동차 성과급 계산기 (ES 모듈)
  * Chart.js 4.x UMD (window.Chart) 필요 — CDN <script> 먼저 로드 후 type="module".
  */
 import { formatKRW, buildDefaultOptions, makeLabelPlugin } from "./chart-config.js";
@@ -146,7 +146,7 @@ function updateHints() {
   setText("selfMonthlyBaseHint", `추천 월 기본급 예시: ${formatKoreanAmount(selfPreset.defaultMonthlyBase)}`);
   setText("spouseMonthlyBaseHint", `추천 월 기본급 예시: ${formatKoreanAmount(spousePreset.defaultMonthlyBase)}`);
   setText("packageModeHint", packageMode.description);
-  setText("scenarioHint", `성과금 ${scenario.bonusMultiplier.toFixed(1)}배 / 정액 ${formatKoreanAmount(scenario.fixedCash)} / 자사주 ${scenario.stockShares}주`);
+  setText("scenarioHint", `성과급 ${scenario.bonusMultiplier.toFixed(1)}배 / 정액 ${formatKoreanAmount(scenario.fixedCash)} / 자사주 ${scenario.stockShares}주`);
   setText("stockPriceHint", `현재 입력 기준 1주 ${formatWon(stockPrice)}`);
   setText("benefitsHint", mode === "COUPLE" ? `1인당 ${formatKoreanAmount(benefits)} / 부부 합산 ${formatKoreanAmount(benefits * 2)}` : `개인 복지 ${formatKoreanAmount(benefits)}`);
 }
@@ -261,7 +261,7 @@ function renderSummaryReport(result) {
   const rows = [
     [isCouple ? "부부 연봉 합산" : "연봉", formatWon(result.totals.annualSalary), false],
     [isCouple ? "부부 월 기본급 합산" : "월 기본급", formatWon(result.totals.monthlyBaseWage), false],
-    [isCouple ? "부부 성과금 합산" : "성과금", formatWon(result.totals.bonus), false],
+    [isCouple ? "부부 성과급 합산" : "성과급", formatWon(result.totals.bonus), false],
     [isCouple ? "부부 정액 현금 합산" : "정액 현금", formatWon(result.totals.cash), false],
     [isCouple ? "부부 상품권 합산" : "상품권", formatWon(result.totals.giftValue), false],
     [isCouple ? "부부 자사주 가치 합산" : "자사주 가치", formatWon(result.totals.stockValue), false],
@@ -269,7 +269,7 @@ function renderSummaryReport(result) {
     [isCouple ? "부부 연 총보상" : "연 총보상", formatWon(result.totals.totalComp), true],
     ["월 기본 체감", formatWon(result.totals.monthlyBase), false],
     [isCouple ? "부부 월평균 총보상" : "월 총보상 체감", formatWon(result.totals.monthlyCompView), true],
-    ["월 성과금 포함 증가분", formatWon(result.totals.monthlyBonusLift), true]
+    ["월 성과급 포함 증가분", formatWon(result.totals.monthlyBonusLift), true]
   ];
 
   $("summaryReportList").innerHTML = rows.map(([label, value, highlight]) => `
@@ -360,7 +360,7 @@ function renderDonutChart(totals) {
     totals.stockValue,
     totals.benefitsAmount,
   ];
-  const labels = ["연봉", "성과금", "정액현금·상품권", "자사주", "복지"];
+  const labels = ["연봉", "성과급", "정액현금·상품권", "자사주", "복지"];
   const colors = ["#B4B2A9", "#1D9E75", "#5DCAA5", "#9FE1CB", "#E1F5EE"];
   if (_hyundaiDonutChart) { _hyundaiDonutChart.destroy(); _hyundaiDonutChart = null; }
   const total = data.reduce((a, b) => a + b, 0);
@@ -452,7 +452,7 @@ function renderScenarioChart(result) {
       labels: years.map((y) => y.label),
       datasets: [
         { label: "연봉",        data: years.map((y) => y.salary),   backgroundColor: "#B4B2A9", stack: "s" },
-        { label: "성과금",      data: years.map((y) => y.bonus),    backgroundColor: "#0F6E56", stack: "s" },
+        { label: "성과급",      data: years.map((y) => y.bonus),    backgroundColor: "#0F6E56", stack: "s" },
         { label: "현금·상품권", data: years.map((y) => y.cash),     backgroundColor: "#5DCAA5", stack: "s" },
         { label: "자사주",      data: years.map((y) => y.stock),    backgroundColor: "#9FE1CB", stack: "s" },
         { label: "복지",        data: years.map((y) => y.benefits), backgroundColor: "#E1F5EE", stack: "s" },

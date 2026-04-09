@@ -157,15 +157,15 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "hyundai-bonus",
-    title: "현대자동차 성과금 계산기",
-    description: "개인·부부 모드로 현대자동차 성과금 패키지와 자사주 포함 총보상, 월 체감액을 계산하는 페이지",
+    title: "현대자동차 성과급 계산기",
+    description: "개인·부부 모드로 현대자동차 성과급 패키지와 자사주 포함 총보상, 월 체감액을 계산하는 페이지",
     order: 10,
     eyebrow: "Hyundai Tool",
     category: "simulator",
     iframeReady: true,
     badges: ["신규", "추천"],
     previewStats: [
-      { label: "성과금 총액", value: "2,800만", context: "책임 기준" },
+      { label: "성과급 총액", value: "2,800만", context: "책임 기준" },
       { label: "월 체감", value: "+233만" }
     ]
   },
