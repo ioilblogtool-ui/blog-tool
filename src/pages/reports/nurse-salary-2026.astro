@@ -1,0 +1,400 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  NS_META,
+  NURSE_ALLOWANCE_GROUPS,
+  NURSE_CAREER_STAGES,
+  NURSE_FAQ,
+  NURSE_HERO_STATS,
+  NURSE_HOSPITAL_TYPES,
+  NURSE_WORK_LIFE_TABLE,
+} from "../../data/nurseSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmtWonRange = (range: [number, number]) =>
+  `${(range[0] / 10_000).toLocaleString("ko-KR")}만 원 ~ ${(range[1] / 10_000).toLocaleString("ko-KR")}만 원`;
+
+const allowanceMap = Object.fromEntries(
+  NURSE_ALLOWANCE_GROUPS.map((group) => [group.id, group.items]),
+);
+
+const compareRows = NURSE_HOSPITAL_TYPES.map((type) => {
+  const point5 = type.yearlyProgression.find((point) => point.year === 5);
+  const point10 = type.yearlyProgression.find((point) => point.year === 10);
+  return {
+    ...type,
+    point5,
+    point10,
+  };
+});
+
+const faqItems = NURSE_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={NS_META.title} description={NS_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ns-page">
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="간호사 연차별 연봉 + 병원 규모별 비교 2026"
+      description="2026년 채용공고·병원공시·협회 자료 기반 · 신입~20년차 · 병원 유형별 범위형 비교"
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "간호사 연봉 데이터는 공식 단일 봉급표가 아닌 채용공고·병원공시·협회 자료·현직자 제보를 종합한 범위형 추정치입니다.",
+        "세전 연봉은 범위형, 세후 실수령 월급은 추정치로 표기합니다.",
+        "성과급·나이트수당·특수파트 수당은 병원과 부서에 따라 큰 차이가 있습니다.",
+        "워라밸 점수와 성장성 평가는 비교계산소 편집 기준입니다.",
+      ]}
+    />
+
+    <section class="content-section ns-kpi-section" aria-label="핵심 지표">
+      <div class="ns-kpi-grid">
+        <div class="ns-kpi-card">
+          <p class="ns-kpi-card__label">비교 기관 수</p>
+          <p class="ns-kpi-card__value">{NURSE_HERO_STATS.categories}개 유형</p>
+          <span class="ns-badge ns-badge--range">범위형</span>
+        </div>
+        <div class="ns-kpi-card">
+          <p class="ns-kpi-card__label">비교 연차 구간</p>
+          <p class="ns-kpi-card__value">{NURSE_HERO_STATS.yearRange}</p>
+          <span class="ns-badge ns-badge--range">범위형</span>
+        </div>
+        <div class="ns-kpi-card">
+          <p class="ns-kpi-card__label">병원 규모 격차</p>
+          <p class="ns-kpi-card__value">{NURSE_HERO_STATS.maxGapLabel}</p>
+          <span class="ns-badge ns-badge--estimate">추정</span>
+        </div>
+        <div class="ns-kpi-card">
+          <p class="ns-kpi-card__label">이직률 인사이트</p>
+          <p class="ns-kpi-card__value">{NURSE_HERO_STATS.turnoverInsight}</p>
+          <span class="ns-badge ns-badge--editorial">편집 요약</span>
+        </div>
+      </div>
+      <p class="ns-kpi-source">출처: 병원간호사회 자료실, 보건복지부 교대제 개선 지침, 병원 채용공고·병원 공시 종합</p>
+    </section>
+
+    <section class="content-section" aria-labelledby="insight-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">핵심 인사이트</p>
+        <h2 id="insight-title">이 페이지에서 먼저 봐야 할 결론</h2>
+      </div>
+      <div class="ns-insight-strip">
+        <div class="ns-insight-chip">초봉은 빅5·상급종합병원이 강함</div>
+        <div class="ns-insight-chip">3~5년차 이직 구간이 중요</div>
+        <div class="ns-insight-chip">공공형은 워라밸 강점</div>
+        <div class="ns-insight-chip">중소병원은 상승폭 제한 가능</div>
+      </div>
+      <p class="ns-insight-note">병원 규모가 작을수록 사직률이 높아지는 경향이 있다는 협회 자료와 함께 읽으면 흐름이 더 명확합니다.</p>
+    </section>
+
+    <section class="content-section" aria-labelledby="hospital-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">병원 유형별 연봉 비교</p>
+        <h2 id="hospital-title">병원 유형 선택 → 연차별 상세 확인</h2>
+        <p>카드를 클릭하면 연차별 세전 연봉, 세후 실수령(월, 추정), 성장성·워라밸 요약을 함께 볼 수 있습니다.</p>
+      </div>
+
+      <div class="ns-hospital-grid" id="ns-hospital-grid">
+        {NURSE_HOSPITAL_TYPES.map((type) => (
+          <div
+            class="ns-hospital-card"
+            data-type-id={type.id}
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+          >
+            <div class="ns-hospital-bar" style={`background: var(--ns-color-${type.id})`}></div>
+            <div class="ns-hospital-card__body">
+              <div class="ns-hospital-card__header">
+                <strong>{type.shortName}</strong>
+                <span class="ns-badge ns-badge--range">{type.badge}</span>
+              </div>
+              <p class="ns-hospital-card__examples">대표 예시: {type.examples.join(", ")}</p>
+              <p class="ns-hospital-card__range">
+                신입 세전<br />
+                <strong>{fmtWonRange(type.entryRange)}</strong>
+              </p>
+              <p class="ns-hospital-card__range">
+                20년차 범위<br />
+                <strong>{fmtWonRange(type.year20Range)}</strong>
+              </p>
+              <button class="ns-hospital-card__toggle" aria-label={`${type.name} 상세 보기`}>
+                상세 보기 <span class="ns-toggle-icon">▼</span>
+              </button>
+            </div>
+
+            <div class="ns-hospital-panel" hidden>
+              <p class="ns-hospital-panel__desc">{type.description}</p>
+
+              <div class="ns-hospital-panel__meta">
+                <div>
+                  <span>워라밸</span>
+                  <strong>{type.workLifeBalanceScore}/5</strong>
+                  <span class="ns-badge ns-badge--editorial">편집 기준</span>
+                </div>
+                <div>
+                  <span>성장성</span>
+                  <strong>{type.growthScore}/5</strong>
+                  <span class="ns-badge ns-badge--editorial">편집 기준</span>
+                </div>
+                <div>
+                  <span>이직 리스크</span>
+                  <strong>{type.turnoverRiskLabel}</strong>
+                  <span class="ns-badge ns-badge--editorial">편집 요약</span>
+                </div>
+              </div>
+
+              <div class="ns-year-table-wrap">
+                <table class="ns-year-table">
+                  <thead>
+                    <tr>
+                      <th>연차</th>
+                      <th>직급 예시</th>
+                      <th>세전 연봉</th>
+                      <th>세후 실수령(월, 추정)</th>
+                      <th>비고</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {type.yearlyProgression.map((point) => (
+                      <tr class={point.highlight ? "ns-year-row--highlight" : ""}>
+                        <td>{point.label}</td>
+                        <td>{point.gradeLabel}</td>
+                        <td>{fmtWonRange(point.salary.annualGross)}</td>
+                        <td>{fmtWonRange(point.salary.monthlyNetEstimate)}</td>
+                        <td>
+                          {point.highlight ? <span class="ns-badge ns-badge--estimate">핵심 구간</span> : null}
+                          {point.salary.note ? <span class="ns-year-note">{point.salary.note}</span> : null}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="ns-allowance-note-list">
+                {type.allowanceNotes.map((note) => (
+                  <p>{note}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="growth-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">연차별 성장 비교</p>
+        <h2 id="growth-title">병원 유형별 연차 성장 차트 <span class="ns-badge ns-badge--estimate">추정</span></h2>
+        <p>병원 유형에 따라 초봉, 성과급, 나이트수당 구조가 달라 동일 연차라도 차이가 큽니다.</p>
+      </div>
+      <div class="ns-growth-legend">
+        {NURSE_HOSPITAL_TYPES.map((type) => (
+          <button class="ns-legend-chip is-active" data-series-id={type.id} style={`--series-color: var(--ns-color-${type.id})`}>
+            <span class="ns-legend-chip__dot"></span>
+            {type.shortName}
+          </button>
+        ))}
+      </div>
+      <div class="ns-growth-chart-wrap">
+        <canvas id="ns-growth-chart"></canvas>
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="compare-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">한눈에 비교</p>
+        <h2 id="compare-title">병원 유형별 요약 비교 테이블</h2>
+        <p>스니펫·스크랩 대응용 요약 테이블입니다. 세부 금액은 상세 패널에서 다시 확인하세요.</p>
+      </div>
+      <div class="ns-compare-table-wrap">
+        <table class="ns-compare-table">
+          <thead>
+            <tr>
+              <th>병원 유형</th>
+              <th>신입 초봉 범위</th>
+              <th>5년차 범위</th>
+              <th>10년차 범위</th>
+              <th>20년차 범위</th>
+              <th>워라밸</th>
+              <th>특징</th>
+            </tr>
+          </thead>
+          <tbody>
+            {compareRows.map((row) => (
+              <tr>
+                <td><strong>{row.name}</strong></td>
+                <td>{fmtWonRange(row.entryRange)}</td>
+                <td>{row.point5 ? fmtWonRange(row.point5.salary.annualGross) : "-"}</td>
+                <td>{row.point10 ? fmtWonRange(row.point10.salary.annualGross) : "-"}</td>
+                <td>{fmtWonRange(row.year20Range)}</td>
+                <td>{row.workLifeBalanceScore}/5</td>
+                <td>
+                  <div class="ns-tag-list">
+                    {row.tags.map((tag) => <span>{tag}</span>)}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="ns-compare-note">같은 병원에서도 부서·교대 여부에 따라 월 실수령은 수십만 원 이상 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="content-section" aria-labelledby="allowance-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">급여 구성 요소</p>
+        <h2 id="allowance-title">수당 구조는 병원마다 크게 다릅니다</h2>
+        <p>성과급과 특수수당은 병원별 편차가 매우 크므로 예시 범위로만 확인해야 합니다.</p>
+      </div>
+
+      <div class="ns-allowance-tabs" role="tablist" aria-label="간호사 수당 유형">
+        <button class="ns-allowance-tab is-active" data-group="fixed" aria-selected="true">고정 수당</button>
+        <button class="ns-allowance-tab" data-group="special" aria-selected="false">특수 파트 수당</button>
+        <button class="ns-allowance-tab" data-group="annual" aria-selected="false">연간 특별 지급</button>
+      </div>
+
+      {Object.entries(allowanceMap).map(([groupId, items]) => (
+        <div class="ns-allowance-list" data-group={groupId} hidden={groupId !== "fixed"}>
+          {items.map((item) => (
+            <div class="ns-allowance-card">
+              <div class="ns-allowance-card__top">
+                <strong>{item.name}</strong>
+                <span class="ns-allowance-card__amount">{item.amount}</span>
+              </div>
+              <p class="ns-allowance-card__basis">{item.basis}</p>
+              {item.note ? <p class="ns-allowance-card__note">{item.note}</p> : null}
+            </div>
+          ))}
+        </div>
+      ))}
+    </section>
+
+    <section class="content-section" aria-labelledby="career-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">직급 구조 & 커리어</p>
+        <h2 id="career-title">간호사는 연차보다 직급·부서·이직 여부가 더 중요합니다</h2>
+        <p>병원별 명칭과 승진 체계 차이가 커서, 아래 구조는 일반적인 예시로만 읽는 것이 안전합니다.</p>
+      </div>
+      <div class="ns-career-grid">
+        {NURSE_CAREER_STAGES.map((stage) => (
+          <article class="ns-career-card">
+            <p class="ns-career-card__stage">{stage.stage}</p>
+            <p class="ns-career-card__years">{stage.typicalYears}</p>
+            <p class="ns-career-card__examples">{stage.titleExamples.join(" · ")}</p>
+            <p class="ns-career-card__note">{stage.note}</p>
+            <span class="ns-badge ns-badge--editorial">예시</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="balance-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">워라밸 비교</p>
+        <h2 id="balance-title">병원 유형별 워라밸·성장성·업무강도 비교 <span class="ns-badge ns-badge--editorial">편집 기준</span></h2>
+        <p>공식 수치가 아닌 비교계산소 편집부 기준의 상대 평가입니다.</p>
+      </div>
+
+      <div class="ns-balance-grid">
+        {NURSE_WORK_LIFE_TABLE.map((row) => (
+          <article class="ns-balance-card">
+            <p class="ns-balance-card__name">{row.name}</p>
+            {row.metrics.map((metric) => (
+              <div class="ns-balance-row">
+                <span>{metric.label}</span>
+                <div class="ns-balance-bar">
+                  <div class="ns-balance-bar__fill" style={`width:${metric.score * 20}%`}></div>
+                </div>
+                <strong>{metric.score}/5</strong>
+              </div>
+            ))}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="ns-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">내부 연결</p>
+        <h2 id="ns-related-title">같이 보면 좋은 계산기·리포트</h2>
+        <p>실수령 계산, 연봉 티어 비교, 다른 직군 연봉 리포트까지 바로 이어서 볼 수 있게 연결했습니다.</p>
+      </div>
+
+      <div class="ns-link-grid">
+        <a class="ns-link-card" href={withBase("/tools/salary/")}>
+          <span class="ns-link-card__eyebrow">계산기</span>
+          <strong>연봉 실수령 계산기</strong>
+          <p>간호사 연봉 범위를 넣고 세후 체감을 바로 확인해보세요.</p>
+        </a>
+        <a class="ns-link-card" href={withBase("/tools/salary-tier/")}>
+          <span class="ns-link-card__eyebrow">계산기</span>
+          <strong>연봉 티어 계산기</strong>
+          <p>내 연봉이 전체 직장인 분포에서 어느 구간인지 빠르게 비교합니다.</p>
+        </a>
+        <a class="ns-link-card" href={withBase("/reports/police-salary-2026/")}>
+          <span class="ns-link-card__eyebrow">관련 리포트</span>
+          <strong>경찰관 계급별 연봉 2026</strong>
+          <p>간호사와 다른 공공 직군의 급여 구조를 함께 비교해볼 수 있습니다.</p>
+        </a>
+        <a class="ns-link-card" href={withBase("/reports/firefighter-salary-2026/")}>
+          <span class="ns-link-card__eyebrow">관련 리포트</span>
+          <strong>소방관 계급별 연봉 2026</strong>
+          <p>교대근무 수당 구조와 성장 흐름을 나란히 비교할 수 있습니다.</p>
+        </a>
+        <a class="ns-link-card" href={withBase("/reports/large-company-salary-growth-by-years-2026/")}>
+          <span class="ns-link-card__eyebrow">관련 리포트</span>
+          <strong>대기업 연차별 연봉 성장 비교</strong>
+          <p>민간 대기업 연봉 성장 곡선과 간호사 커리어 곡선을 같이 볼 수 있습니다.</p>
+        </a>
+        <a class="ns-link-card" href={withBase("/reports/")}>
+          <span class="ns-link-card__eyebrow">리포트 모음</span>
+          <strong>전체 비교 리포트 보기</strong>
+          <p>다른 직업·자산·생활 리포트까지 한 번에 이어서 탐색할 수 있습니다.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="간호사 연차별 연봉 + 병원 규모별 비교 2026 — 비교계산소 해설"
+      intro={[
+        "간호사 연봉은 공무원처럼 단일 봉급표로 정리되지 않습니다. 병원 규모, 지역, 나이트 빈도, 부서, 성과급 구조에 따라 실제 체감 연봉이 크게 달라지기 때문에 범위형으로 읽는 것이 더 정확합니다.",
+        "이 페이지는 빅5 상급종합병원, 수도권 대학병원, 종합병원, 중소·일반병원, 보건소·공공기관, 요양·재활병원 6개 축으로 나눠 신입부터 20년차까지의 흐름을 비교할 수 있게 구성했습니다.",
+        "특히 간호사는 3~5년차가 이직과 전과를 가장 많이 고민하는 구간이라, 초봉만이 아니라 5년차와 10년차 성장폭, 워라밸, 수당 구조를 함께 보는 것이 중요합니다.",
+      ]}
+      criteria={[
+        "세전 연봉은 범위형, 세후 실수령은 월 추정 범위로 표기",
+        "성과급·상여금·특수수당은 병원별 편차가 크므로 예시 범위만 제공",
+        "워라밸·성장성·업무강도 평가는 비교계산소 편집 기준",
+        "병원 유형별 연봉은 채용공고·병원 공시·협회 자료·현직자 제보를 종합한 추정치",
+        "보건소·공공기관형은 병원형과 급여 구조가 다를 수 있어 별도 카테고리로 분리",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/police-salary-2026/", label: "경찰관 계급별 연봉·호봉 완전 정리 2026" },
+        { href: "/reports/firefighter-salary-2026/", label: "소방관 계급별 연봉·수당 비교 2026" },
+        { href: "/reports/large-company-salary-growth-by-years-2026/", label: "대기업 연차별 연봉 성장 비교" },
+        { href: "/reports/", label: "전체 비교 리포트 보기" },
+      ]}
+    />
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/nurse-salary-2026.js" defer></script>
+</BaseLayout>

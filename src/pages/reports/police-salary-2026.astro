@@ -1,0 +1,370 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  POLICE_RANKS,
+  ALLOWANCES,
+  ENTRY_METHODS,
+  CAREER_PATH,
+  LIFETIME_PATHS,
+  HERO_STATS,
+  POLICE_FAQ,
+  PS_META,
+} from "../../data/policeSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmtWon = (n: number) =>
+  (n / 10_000).toLocaleString("ko-KR", { maximumFractionDigits: 1 }) + "만 원";
+const fmtWonM = (n: number) => {
+  if (n >= 100_000_000) return (n / 100_000_000).toFixed(1) + "억 원";
+  return (n / 10_000).toLocaleString("ko-KR") + "만 원";
+};
+const fmtRange = (range: [number, number]) =>
+  `${fmtWon(range[0])} ~ ${fmtWon(range[1])}`;
+
+const fixedAllowances = ALLOWANCES.filter((a) => a.type === "fixed");
+const variableAllowances = ALLOWANCES.filter((a) => a.type === "variable");
+const annualAllowances = ALLOWANCES.filter((a) => a.type === "annual");
+
+const faqItems = POLICE_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+// 생애소득: 누적 합 계산
+const lifetimeSummary = LIFETIME_PATHS.map((path) => ({
+  ...path,
+  totalM: path.yearlyIncome.reduce((s, v) => s + v, 0),
+}));
+
+// 바 차트용 최대값
+const maxAnnual = Math.max(...POLICE_RANKS.map((r) => r.estimatedAnnual));
+---
+
+<BaseLayout title={PS_META.title} description={PS_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ps-page">
+
+    <!-- A. Hero -->
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="경찰관 계급별 연봉·호봉 완전 정리 2026"
+      description="2026년 공식 봉급표 기준 · 순경~치안정감 계급별 기본급과 수당 구조 비교"
+    />
+
+    <!-- B. InfoNotice -->
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "기본급 1호봉은 공무원보수규정 별표 10(2026.1.2 개정) 기준 공식 수치입니다.",
+        "이후 호봉 및 예상 연봉·실수령은 표준 공무원 호봉 증가 패턴 기반 추정치로, 개인 근무 조건에 따라 달라집니다.",
+        "수당 항목은 법령 및 인사혁신처 2026년 처우개선 보도자료 기준으로만 표기했습니다.",
+      ]}
+    />
+
+    <!-- C. Hero KPI 카드 -->
+    <section class="content-section ps-kpi-section" aria-label="핵심 지표">
+      <div class="ps-kpi-grid">
+        <div class="ps-kpi-card">
+          <p class="ps-kpi-card__label">계급 수</p>
+          <p class="ps-kpi-card__value">{HERO_STATS.rankCount}단계</p>
+          <span class="ps-badge ps-badge--official">공식</span>
+        </div>
+        <div class="ps-kpi-card">
+          <p class="ps-kpi-card__label">2026 보수 인상</p>
+          <p class="ps-kpi-card__value">{HERO_STATS.salaryIncreaseRate}</p>
+          <span class="ps-badge ps-badge--official">공식</span>
+        </div>
+        <div class="ps-kpi-card">
+          <p class="ps-kpi-card__label">순경 1호봉 기본급</p>
+          <p class="ps-kpi-card__value">{HERO_STATS.constableBase1Str}</p>
+          <span class="ps-badge ps-badge--official">공식</span>
+        </div>
+        <div class="ps-kpi-card">
+          <p class="ps-kpi-card__label">9급 초임 월 보수</p>
+          <p class="ps-kpi-card__value">{HERO_STATS.grade9InitialMonthlyStr}</p>
+          <span class="ps-badge ps-badge--official">공식</span>
+        </div>
+      </div>
+      <p class="ps-kpi-source">출처: 인사혁신처 2026년 공무원 보수 및 처우 개선 보도자료 / 공무원보수규정 별표 10</p>
+    </section>
+
+    <!-- D. 계급 카드 그리드 + 호봉 패널 -->
+    <section class="content-section" aria-labelledby="rank-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">계급별 기본급 비교</p>
+        <h2 id="rank-section-title">계급 선택 → 호봉표 상세 확인</h2>
+        <p>카드를 클릭하면 호봉별 기본급 상세를 볼 수 있습니다. 1호봉은 공식, 이후 호봉은 표준 증가 패턴 기반 추정입니다.</p>
+      </div>
+
+      <div class="ps-rank-grid" id="ps-rank-grid">
+        {POLICE_RANKS.map((rank) => (
+          <div
+            class="ps-rank-card"
+            data-rank-id={rank.id}
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+          >
+            <div class="ps-rank-bar" style={`background:${rank.colorHex}`}></div>
+            <div class="ps-rank-card__body">
+              <div class="ps-rank-card__header">
+                <span class="ps-rank-card__name">{rank.name}</span>
+                <span class="ps-badge ps-badge--official">공식</span>
+              </div>
+              <p class="ps-rank-card__equiv">{rank.equiv}</p>
+              <p class="ps-rank-card__base">
+                1호봉 기본급<br />
+                <strong>{fmtWon(rank.officialBase1)}</strong>
+              </p>
+              <p class="ps-rank-card__est">
+                예상 체감 월 보수 <span class="ps-badge ps-badge--estimate">추정</span><br />
+                <span>{fmtRange(rank.estimatedMonthlyRange)}</span>
+              </p>
+              <button class="ps-rank-card__toggle" aria-label={`${rank.name} 호봉표 상세 보기`}>
+                호봉표 보기 <span class="ps-toggle-icon">▼</span>
+              </button>
+            </div>
+
+            <!-- 호봉 패널 -->
+            <div class="ps-rank-panel" hidden>
+              <p class="ps-rank-panel__desc">{rank.description}</p>
+              <div class="ps-step-table-wrap">
+                <table class="ps-step-table">
+                  <thead>
+                    <tr>
+                      <th>호봉</th>
+                      <th>월 기본급</th>
+                      <th>비고</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rank.steps.map((s) => (
+                      <tr class={s.step === rank.representativeStep ? "ps-step-row--highlight" : ""}>
+                        <td>{s.step}호봉</td>
+                        <td>{s.monthlyBase.toLocaleString("ko-KR")}원</td>
+                        <td>
+                          {s.step === 1
+                            ? <span class="ps-badge ps-badge--official">공식</span>
+                            : s.step === rank.representativeStep
+                            ? <span class="ps-badge ps-badge--estimate">대표 호봉</span>
+                            : ""}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div class="ps-rank-panel__summary">
+                <div>
+                  <span>예상 실수령 <span class="ps-badge ps-badge--estimate">추정</span></span>
+                  <strong>{fmtRange(rank.estimatedMonthlyRange)}</strong>
+                </div>
+                <div>
+                  <span>예상 연봉 <span class="ps-badge ps-badge--estimate">추정</span></span>
+                  <strong>{fmtWonM(rank.estimatedAnnual)}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- E. 예상 연봉 바 차트 -->
+    <section class="content-section" aria-labelledby="chart-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">계급별 예상 연봉 비교</p>
+        <h2 id="chart-section-title">계급별 예상 연봉 <span class="ps-badge ps-badge--estimate">추정</span></h2>
+        <p>기본급(대표 호봉)×12 + 정액급식비·직급보조비·정근수당·명절휴가비 주요 항목 반영 추정치입니다. 시간외근무·야간·출동수당·성과상여금에 따라 실제 연봉은 달라집니다.</p>
+      </div>
+      <div class="ps-chart-wrap">
+        {POLICE_RANKS.slice().reverse().map((rank) => {
+          const pct = Math.round((rank.estimatedAnnual / maxAnnual) * 100);
+          return (
+            <div class="ps-chart-row">
+              <span class="ps-chart-label">{rank.name}</span>
+              <div class="ps-chart-bar-wrap">
+                <div
+                  class="ps-chart-bar"
+                  style={`width:${pct}%; background:${rank.colorHex}`}
+                  data-value={fmtWonM(rank.estimatedAnnual)}
+                ></div>
+                <span class="ps-chart-value">{fmtWonM(rank.estimatedAnnual)}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- F. 수당 구조 -->
+    <section class="content-section" aria-labelledby="allowance-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">2026 수당 구조</p>
+        <h2 id="allowance-section-title">기본급 외에 이런 수당이 더 붙습니다</h2>
+        <p>법령 및 인사혁신처 보도자료에서 확인 가능한 항목만 표기했습니다.</p>
+      </div>
+      <div class="ps-allowance-tabs" role="tablist" aria-label="수당 유형">
+        <button class="ps-allowance-tab is-active" role="tab" data-tab="fixed" aria-selected="true">고정 수당</button>
+        <button class="ps-allowance-tab" role="tab" data-tab="variable" aria-selected="false">변동 수당</button>
+        <button class="ps-allowance-tab" role="tab" data-tab="annual" aria-selected="false">연간 특별 지급</button>
+      </div>
+      <div class="ps-allowance-list" data-tab="fixed">
+        {fixedAllowances.map((a) => (
+          <div class="ps-allowance-card">
+            <div class="ps-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ps-allowance-amount">{a.amount}</span>
+            </div>
+            <p class="ps-allowance-basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ps-allowance-list" data-tab="variable" hidden>
+        {variableAllowances.map((a) => (
+          <div class="ps-allowance-card">
+            <div class="ps-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ps-allowance-amount">{a.amount}</span>
+            </div>
+            <p class="ps-allowance-basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ps-allowance-list" data-tab="annual" hidden>
+        {annualAllowances.map((a) => (
+          <div class="ps-allowance-card">
+            <div class="ps-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ps-allowance-amount">{a.amount}</span>
+            </div>
+            <p class="ps-allowance-basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+      <a class="ps-inline-cta" href={withBase("/tools/salary/")}>내 실수령 연봉 계산해보기 →</a>
+    </section>
+
+    <!-- G. 승진 경로 & 근속 구조 -->
+    <section class="content-section" aria-labelledby="career-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">승진 경로와 근속 구조</p>
+        <h2 id="career-section-title">일반적인 경찰 커리어 흐름 <span class="ps-badge ps-badge--ref">참고용</span></h2>
+        <p>개인 승진 속도·시험 여부·보직에 따라 차이가 있습니다. 공식 통계가 아닌 일반적 흐름 예시입니다.</p>
+      </div>
+      <div class="ps-career-table-wrap">
+        <table class="ps-career-table">
+          <thead>
+            <tr>
+              <th>계급</th>
+              <th>일반적 근속 기간</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CAREER_PATH.map((step) => (
+              <tr>
+                <td><strong>{step.rank}</strong></td>
+                <td>{step.typicalYears}</td>
+                <td>{step.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- H. 30년 생애 소득 시뮬레이션 -->
+    <section class="content-section ps-lifetime-section" aria-labelledby="lifetime-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">30년 생애 소득 시뮬레이션</p>
+        <h2 id="lifetime-section-title">입직 방식별 추정 누적 보수 <span class="ps-badge ps-badge--estimate">추정</span></h2>
+        <p>보수적 추정 · 예시 수준입니다. 승진 속도, 초과근무, 개인 조건에 따라 실제 차이가 큽니다.</p>
+      </div>
+      <div class="ps-lifetime-controls">
+        <label class="ps-lifetime-label">입직 방식 · 승진 속도 선택</label>
+        <div class="ps-lifetime-btns" role="group" aria-label="생애 소득 경로 선택">
+          {LIFETIME_PATHS.map((path, i) => (
+            <button
+              class={`ps-lifetime-btn${i === 0 ? " is-active" : ""}`}
+              data-path-id={path.id}
+              aria-pressed={i === 0 ? "true" : "false"}
+            >
+              {path.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div class="ps-lifetime-chart" id="ps-lifetime-chart" aria-label="생애 소득 차트">
+        <canvas id="ps-lifetime-canvas"></canvas>
+      </div>
+      <div class="ps-lifetime-summaries">
+        {lifetimeSummary.map((path, i) => (
+          <div
+            class={`ps-lifetime-summary${i === 0 ? " is-active" : ""}`}
+            data-path-id={path.id}
+          >
+            <p class="ps-lifetime-summary__label">{path.label}</p>
+            <p class="ps-lifetime-summary__total">
+              30년 추정 누적 보수: <strong>{fmtWonM(path.totalM * 10_000)}</strong>
+              <span class="ps-badge ps-badge--estimate">추정</span>
+            </p>
+          </div>
+        ))}
+      </div>
+      <p class="ps-lifetime-note">공무원연금은 재직기간·퇴직시점·개인 조건에 따라 별도 산정되며 위 시뮬레이션에 포함되지 않습니다.</p>
+    </section>
+
+    <!-- I. 입직 방법 비교 -->
+    <section class="content-section" aria-labelledby="entry-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">입직 방법 비교</p>
+        <h2 id="entry-section-title">어떻게 들어가느냐에 따라 시작 계급이 다릅니다</h2>
+      </div>
+      <div class="ps-entry-grid">
+        {ENTRY_METHODS.map((m) => (
+          <div class="ps-entry-card">
+            <p class="ps-entry-card__name">{m.name}</p>
+            <p class="ps-entry-card__rank">{m.startRank}</p>
+            <p class="ps-entry-card__note">{m.salaryNote}</p>
+            <p class="ps-entry-card__desc">{m.description}</p>
+          </div>
+        ))}
+      </div>
+      <a class="ps-inline-cta" href={withBase("/tools/salary/")}>공무원 호봉 계산기로 시뮬레이션하기 →</a>
+    </section>
+
+    <!-- J. FAQ + K. CTA + L. SeoContent -->
+    <SeoContent
+      introTitle="경찰관 연봉·호봉 완전 정리 2026 — 비교계산소 해설"
+      intro={[
+        "경찰공무원의 급여는 단순히 기본급만 보는 것보다 계급·호봉·수당 구조 전체를 함께 봐야 정확합니다. 2026년 공무원보수규정 별표 10 기준으로 순경 1호봉 기본급은 2,133,000원이지만, 정액급식비(월 16만 원)·위험근무수당(월 8만 원) 등 고정 수당만 더해도 체감 월 보수는 크게 달라집니다.",
+        "2026년에는 전체 공무원 보수가 3.5% 인상됐고, 경찰·소방 위험근무수당 인상, 112 출동수당 상한 확대, 비상근무수당 상향 등 현장직 처우 개선이 함께 반영됐습니다.",
+        "계급 선택으로 호봉표를 바로 확인하고, 수당 구조 탭에서 고정·변동·연간 항목을 구분해서 읽으면 실제 연봉 구성을 빠르게 파악할 수 있습니다.",
+      ]}
+      criteria={[
+        "기본급: 공무원보수규정 별표 10(2026.1.2 개정) 공식 수치",
+        "이후 호봉: 표준 공무원 호봉 증가 패턴 기반 추정 — 개인 경력 환산에 따라 초임 호봉 다를 수 있음",
+        "예상 연봉: 기본급(대표 호봉)×12 + 주요 수당 포함 추정치",
+        "수당: 법령(공무원수당규정) 및 인사혁신처 보도자료에서 확인 가능한 항목만 포함",
+        "치안총감 미포함: 공식 별표 10 확인 범위 초과로 이번 버전에서 제외",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/reports/large-company-salary-growth-by-years-2026/", label: "대기업 연차별 연봉 성장 비교" },
+        { href: "/reports/new-employee-salary-2026/", label: "2026 신입사원 초봉 비교 리포트" },
+      ]}
+    />
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/police-salary-2026.js" defer></script>
+</BaseLayout>

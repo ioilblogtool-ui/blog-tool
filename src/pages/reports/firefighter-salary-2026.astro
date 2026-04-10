@@ -1,0 +1,443 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  FIRE_RANKS,
+  FIRE_ALLOWANCES,
+  FIRE_ENTRY_METHODS,
+  FIRE_CAREER_PATH,
+  FIRE_LIFETIME_PATHS,
+  FIRE_HERO_STATS,
+  FIRE_FAQ,
+  FF_META,
+  SHIFT_PATTERNS,
+  COMPARE_POINTS,
+} from "../../data/firefighterSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmtWon = (n: number) =>
+  (n / 10_000).toLocaleString("ko-KR", { maximumFractionDigits: 1 }) + "만 원";
+const fmtWonM = (n: number) => {
+  if (n >= 100_000_000) return (n / 100_000_000).toFixed(1) + "억 원";
+  return (n / 10_000).toLocaleString("ko-KR") + "만 원";
+};
+const fmtRange = (range: [number, number]) =>
+  `${fmtWon(range[0])} ~ ${fmtWon(range[1])}`;
+
+const firefighterAllowances = FIRE_ALLOWANCES.filter((a) => a.firefighterOnly);
+const fixedAllowances = FIRE_ALLOWANCES.filter((a) => !a.firefighterOnly && (a.type === "fixed" || a.type === "variable"));
+const annualAllowances = FIRE_ALLOWANCES.filter((a) => a.type === "annual");
+
+const faqItems = FIRE_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+const lifetimeSummary = FIRE_LIFETIME_PATHS.map((path) => ({
+  ...path,
+  totalM: path.yearlyIncome.reduce((s, v) => s + v, 0),
+}));
+
+const maxAnnual = Math.max(...FIRE_RANKS.map((r) => r.estimatedAnnual));
+---
+
+<BaseLayout title={FF_META.title} description={FF_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ff-page">
+
+    <!-- A. Hero -->
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="소방관 계급별 연봉·수당 비교 2026"
+      description="2026년 공식 봉급표 기준 · 소방사~소방정감 기본급·호봉·수당 구조 한눈에 비교"
+    />
+
+    <!-- B. InfoNotice -->
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "기본급 1호봉은 공무원보수규정 별표 10(2026.1.2 개정) 기준 공식 수치입니다.",
+        "이후 호봉 및 예상 연봉·실수령은 표준 공무원 호봉 증가 패턴 기반 추정치입니다.",
+        "교대근무 수당은 근무지·출동 빈도에 따라 개인차가 크며 모두 추정치입니다.",
+        "수당 항목은 법령 및 인사혁신처 2026년 처우개선 보도자료 기준만 표기했습니다.",
+      ]}
+    />
+
+    <!-- C. Hero KPI 카드 -->
+    <section class="content-section ff-kpi-section" aria-label="핵심 지표">
+      <div class="ff-kpi-grid">
+        <div class="ff-kpi-card">
+          <p class="ff-kpi-card__label">계급 수</p>
+          <p class="ff-kpi-card__value">{FIRE_HERO_STATS.rankCount}단계</p>
+          <span class="ff-badge ff-badge--official">공식</span>
+        </div>
+        <div class="ff-kpi-card">
+          <p class="ff-kpi-card__label">2026 보수 인상</p>
+          <p class="ff-kpi-card__value">{FIRE_HERO_STATS.salaryIncreaseRate}</p>
+          <span class="ff-badge ff-badge--official">공식</span>
+        </div>
+        <div class="ff-kpi-card">
+          <p class="ff-kpi-card__label">저연차 초임 인상</p>
+          <p class="ff-kpi-card__value">{FIRE_HERO_STATS.juniorIncreaseRate}</p>
+          <span class="ff-badge ff-badge--official">공식</span>
+        </div>
+        <div class="ff-kpi-card">
+          <p class="ff-kpi-card__label">소방사 1호봉 기본급</p>
+          <p class="ff-kpi-card__value">{FIRE_HERO_STATS.firefighterBase1Str}</p>
+          <span class="ff-badge ff-badge--official">공식</span>
+        </div>
+      </div>
+      <p class="ff-kpi-source">출처: 인사혁신처 2026년 공무원 보수 및 처우 개선 보도자료 / 공무원보수규정 별표 10</p>
+    </section>
+
+    <!-- D. 경찰 vs 소방 비교 배너 -->
+    <section class="content-section ff-compare-section" aria-labelledby="compare-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">경찰 vs 소방</p>
+        <h2 id="compare-section-title">같은 봉급표, 다른 수당 구조</h2>
+        <p>경찰과 소방은 공무원보수규정 별표 10으로 동일한 기본급을 받지만, 현장 수당 구조는 다릅니다.</p>
+      </div>
+      <div class="ff-compare-banner">
+        <div class="ff-compare-col ff-compare-col--police">
+          <p class="ff-compare-col__label">경찰관</p>
+          {COMPARE_POINTS.map((p) => (
+            <div class="ff-compare-row">
+              <span class="ff-compare-row__key">{p.label}</span>
+              <span class="ff-compare-row__val">{p.police}</span>
+            </div>
+          ))}
+          <a class="ff-compare-link" href={withBase("/reports/police-salary-2026/")}>경찰관 연봉 리포트 보기 →</a>
+        </div>
+        <div class="ff-compare-col ff-compare-col--fire">
+          <p class="ff-compare-col__label">소방관 <span class="ff-badge ff-badge--now">현재 페이지</span></p>
+          {COMPARE_POINTS.map((p) => (
+            <div class="ff-compare-row">
+              <span class="ff-compare-row__key">{p.label}</span>
+              <span class="ff-compare-row__val">{p.fire}</span>
+            </div>
+          ))}
+          <p class="ff-compare-note">교대 현장직은 야간·출동수당으로 체감 연봉 소폭 높게 추정</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- E. 계급 카드 그리드 + 호봉 패널 -->
+    <section class="content-section" aria-labelledby="rank-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">계급별 기본급 비교</p>
+        <h2 id="rank-section-title">계급 선택 → 호봉표 상세 확인</h2>
+        <p>카드를 클릭하면 호봉별 기본급 상세를 볼 수 있습니다. 1호봉은 공식, 이후 호봉은 표준 증가 패턴 기반 추정입니다.</p>
+      </div>
+
+      <div class="ff-rank-grid" id="ff-rank-grid">
+        {FIRE_RANKS.map((rank) => (
+          <div
+            class="ff-rank-card"
+            data-rank-id={rank.id}
+            data-shift={rank.isShiftWork ? "true" : "false"}
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+          >
+            <div class="ff-rank-bar" style={`background:${rank.colorHex}`}></div>
+            <div class="ff-rank-card__body">
+              <div class="ff-rank-card__header">
+                <span class="ff-rank-card__name">{rank.name}</span>
+                <span class="ff-badge ff-badge--official">공식</span>
+                {rank.isShiftWork && (
+                  <span class="ff-badge ff-badge--shift">교대근무</span>
+                )}
+              </div>
+              <p class="ff-rank-card__equiv">{rank.equiv}</p>
+              <p class="ff-rank-card__base">
+                1호봉 기본급<br />
+                <strong>{fmtWon(rank.officialBase1)}</strong>
+              </p>
+              <p class="ff-rank-card__est">
+                예상 체감 월 보수 <span class="ff-badge ff-badge--estimate">추정</span><br />
+                <span>{fmtRange(rank.estimatedMonthlyRange)}</span>
+              </p>
+              {rank.isShiftWork && (
+                <p class="ff-rank-card__shift-est">
+                  교대 포함 추정 <span class="ff-badge ff-badge--estimate">추정</span><br />
+                  <span>{fmtRange(rank.estimatedMonthlyShiftRange)}</span>
+                </p>
+              )}
+              <button class="ff-rank-card__toggle" aria-label={`${rank.name} 호봉표 상세 보기`}>
+                호봉표 보기 <span class="ff-toggle-icon">▼</span>
+              </button>
+            </div>
+
+            <!-- 호봉 패널 -->
+            <div class="ff-rank-panel" hidden>
+              <p class="ff-rank-panel__desc">{rank.description}</p>
+
+              {rank.isShiftWork && (
+                <div class="ff-shift-block">
+                  <span class="ff-shift-badge">교대근무</span>
+                  <p class="ff-shift-block__text">{rank.shiftNote}</p>
+                  <p class="ff-shift-block__extra">
+                    교대 포함 추정 월 보수: <strong>{fmtRange(rank.estimatedMonthlyShiftRange)}</strong>
+                    <span class="ff-badge ff-badge--estimate">추정</span>
+                  </p>
+                </div>
+              )}
+
+              <div class="ff-step-table-wrap">
+                <table class="ff-step-table">
+                  <thead>
+                    <tr>
+                      <th>호봉</th>
+                      <th>월 기본급</th>
+                      <th>비고</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rank.steps.map((s) => (
+                      <tr class={s.step === rank.representativeStep ? "ff-step-row--highlight" : ""}>
+                        <td>{s.step}호봉</td>
+                        <td>{s.monthlyBase.toLocaleString("ko-KR")}원</td>
+                        <td>
+                          {s.step === 1
+                            ? <span class="ff-badge ff-badge--official">공식</span>
+                            : s.step === rank.representativeStep
+                            ? <span class="ff-badge ff-badge--estimate">대표 호봉</span>
+                            : ""}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div class="ff-rank-panel__summary">
+                <div>
+                  <span>예상 실수령 <span class="ff-badge ff-badge--estimate">추정</span></span>
+                  <strong>{fmtRange(rank.estimatedMonthlyRange)}</strong>
+                </div>
+                <div>
+                  <span>예상 연봉 <span class="ff-badge ff-badge--estimate">추정</span></span>
+                  <strong>{fmtWonM(rank.estimatedAnnual)}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- F. 예상 연봉 바 차트 -->
+    <section class="content-section" aria-labelledby="chart-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">계급별 예상 연봉 비교</p>
+        <h2 id="chart-section-title">계급별 예상 연봉 <span class="ff-badge ff-badge--estimate">추정</span></h2>
+        <p>기본급(대표 호봉)×12 + 정액급식비·위험근무수당·정근수당·명절휴가비·직급보조비 + 현장 교대근무 평균 수당을 반영한 추정치입니다.</p>
+      </div>
+      <div class="ff-chart-wrap">
+        {FIRE_RANKS.slice().reverse().map((rank) => {
+          const pct = Math.round((rank.estimatedAnnual / maxAnnual) * 100);
+          return (
+            <div class="ff-chart-row">
+              <span class="ff-chart-label">{rank.name}</span>
+              <div class="ff-chart-bar-wrap">
+                <div
+                  class="ff-chart-bar"
+                  style={`width:${pct}%; background:${rank.colorHex}`}
+                ></div>
+                <span class="ff-chart-value">{fmtWonM(rank.estimatedAnnual)}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- G. 교대근무 & 수당 구조 -->
+    <section class="content-section" aria-labelledby="allowance-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">교대근무 & 수당 구조</p>
+        <h2 id="allowance-section-title">소방관 연봉의 핵심 변수는 교대근무와 현장 출동 수당</h2>
+        <p>법령 및 인사혁신처 보도자료에서 확인 가능한 항목만 표기했습니다.</p>
+      </div>
+
+      <!-- 교대근무 구조 박스 -->
+      <div class="ff-shift-patterns">
+        {SHIFT_PATTERNS.map((sp) => (
+          <div class="ff-shift-pattern-card">
+            <p class="ff-shift-pattern-card__name">{sp.name}</p>
+            <p class="ff-shift-pattern-card__cycle">{sp.cycle}</p>
+            <p class="ff-shift-pattern-card__extra">
+              {sp.monthlyShiftExtra}
+              {sp.id !== "admin" && <span class="ff-badge ff-badge--estimate">추정</span>}
+            </p>
+            <p class="ff-shift-pattern-card__note">{sp.note}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- 수당 탭 -->
+      <div class="ff-allowance-tabs" role="tablist" aria-label="수당 유형" style="margin-top: 20px;">
+        <button class="ff-allowance-tab is-active" role="tab" data-tab="firefighter" aria-selected="true">소방 전용 수당</button>
+        <button class="ff-allowance-tab" role="tab" data-tab="fixed" aria-selected="false">공통 고정 수당</button>
+        <button class="ff-allowance-tab" role="tab" data-tab="annual" aria-selected="false">연간 특별 지급</button>
+      </div>
+      <div class="ff-allowance-list" data-tab="firefighter">
+        {firefighterAllowances.map((a) => (
+          <div class="ff-allowance-card ff-allowance-card--fire">
+            <div class="ff-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ff-allowance-amount">{a.amount}</span>
+            </div>
+            <p class="ff-allowance-basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ff-allowance-list" data-tab="fixed" hidden>
+        {fixedAllowances.map((a) => (
+          <div class="ff-allowance-card">
+            <div class="ff-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ff-allowance-amount">{a.amount}</span>
+            </div>
+            <p class="ff-allowance-basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ff-allowance-list" data-tab="annual" hidden>
+        {annualAllowances.map((a) => (
+          <div class="ff-allowance-card">
+            <div class="ff-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ff-allowance-amount">{a.amount}</span>
+            </div>
+            <p class="ff-allowance-basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+      <a class="ff-inline-cta" href={withBase("/tools/salary/")}>내 실수령 연봉 계산해보기 →</a>
+    </section>
+
+    <!-- H. 승진 경로 & 근속 구조 -->
+    <section class="content-section" aria-labelledby="career-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">승진 경로와 근속 구조</p>
+        <h2 id="career-section-title">일반적인 소방관 커리어 흐름 <span class="ff-badge ff-badge--ref">참고용</span></h2>
+        <p>개인 승진 속도·시험 여부·보직에 따라 차이가 있습니다. 공식 통계가 아닌 일반적 흐름 예시입니다.</p>
+      </div>
+      <div class="ff-career-table-wrap">
+        <table class="ff-career-table">
+          <thead>
+            <tr>
+              <th>계급</th>
+              <th>일반적 근속 기간</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {FIRE_CAREER_PATH.map((step) => (
+              <tr>
+                <td><strong>{step.rank}</strong></td>
+                <td>{step.typicalYears}</td>
+                <td>{step.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- I. 30년 생애 소득 시뮬레이션 -->
+    <section class="content-section ff-lifetime-section" aria-labelledby="lifetime-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">30년 생애 소득 시뮬레이션</p>
+        <h2 id="lifetime-section-title">입직 방식별 추정 누적 보수 <span class="ff-badge ff-badge--estimate">추정</span></h2>
+        <p>보수적 추정 · 예시 수준입니다. 교대 출동 빈도, 승진 속도, 개인 조건에 따라 실제 차이가 큽니다.</p>
+      </div>
+      <div class="ff-lifetime-controls">
+        <label class="ff-lifetime-label">입직 방식 · 승진 속도 선택</label>
+        <div class="ff-lifetime-btns" role="group" aria-label="생애 소득 경로 선택">
+          {FIRE_LIFETIME_PATHS.map((path, i) => (
+            <button
+              class={`ff-lifetime-btn${i === 0 ? " is-active" : ""}`}
+              data-path-id={path.id}
+              aria-pressed={i === 0 ? "true" : "false"}
+            >
+              {path.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div class="ff-lifetime-chart">
+        <canvas id="ff-lifetime-canvas"></canvas>
+      </div>
+      <div class="ff-lifetime-summaries">
+        {lifetimeSummary.map((path, i) => (
+          <div
+            class={`ff-lifetime-summary${i === 0 ? " is-active" : ""}`}
+            data-path-id={path.id}
+          >
+            <p class="ff-lifetime-summary__label">{path.label}</p>
+            <p class="ff-lifetime-summary__total">
+              30년 추정 누적 보수: <strong>{fmtWonM(path.totalM * 10_000)}</strong>
+              <span class="ff-badge ff-badge--estimate">추정</span>
+            </p>
+          </div>
+        ))}
+      </div>
+      <div class="ff-lifetime-note-box">
+        <p>교대근무(3교대) 현장직은 야간·시간외·출동수당으로 경찰 대비 추정 연봉이 소폭 높을 수 있습니다.</p>
+        <p>공무원연금은 재직기간·퇴직시점·개인 조건에 따라 별도 산정되며 위 시뮬레이션에 포함되지 않습니다.</p>
+      </div>
+    </section>
+
+    <!-- J. 입직 방법 비교 -->
+    <section class="content-section" aria-labelledby="entry-section-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">입직 방법 비교</p>
+        <h2 id="entry-section-title">어떻게 들어가느냐에 따라 시작 계급이 다릅니다</h2>
+      </div>
+      <div class="ff-entry-grid">
+        {FIRE_ENTRY_METHODS.map((m) => (
+          <div class="ff-entry-card">
+            <p class="ff-entry-card__name">{m.name}</p>
+            <p class="ff-entry-card__rank">{m.startRank}</p>
+            <p class="ff-entry-card__note">{m.salaryNote}</p>
+            <p class="ff-entry-card__desc">{m.description}</p>
+          </div>
+        ))}
+      </div>
+      <a class="ff-inline-cta" href={withBase("/reports/police-salary-2026/")}>경찰관 연봉 리포트와 비교하기 →</a>
+    </section>
+
+    <!-- K. SeoContent (FAQ + CTA) -->
+    <SeoContent
+      introTitle="소방관 연봉·수당 비교 2026 — 비교계산소 해설"
+      intro={[
+        "소방공무원의 급여는 기본급만 보는 것보다 교대근무·출동수당 구조 전체를 함께 봐야 정확합니다. 2026년 공무원보수규정 별표 10 기준으로 소방사 1호봉 기본급은 2,133,000원이지만, 3교대 현장 근무 시 야간·시간외·출동가산금이 추가되어 체감 보수는 크게 달라집니다.",
+        "2026년에는 전체 공무원 보수가 3.5% 인상됐고, 7~9급 상당 저연차 초임은 6.6% 올랐습니다. 경찰·소방 위험근무수당은 월 8만 원, 출동가산금 1일 상한은 4만 원, 비상근무수당 월 상한은 18만 원으로 현장직 처우가 개선됐습니다.",
+        "경찰과 소방은 같은 별표 10 봉급표를 사용하지만, 소방 3교대 현장직은 교대 관련 수당 비중이 높아 동일 계급 대비 체감 연봉이 소폭 높게 추정됩니다.",
+      ]}
+      criteria={[
+        "기본급: 공무원보수규정 별표 10(2026.1.2 개정) 공식 수치",
+        "이후 호봉: 표준 공무원 호봉 증가 패턴 기반 추정",
+        "예상 연봉: 기본급(대표 호봉)×12 + 주요 수당 + 교대근무 평균 수당 포함 추정치",
+        "수당: 법령(공무원수당규정) 및 인사혁신처 보도자료에서 확인 가능한 항목만 포함",
+        "소방총감 미포함: 공식 별표 10 확인 범위 초과로 이번 버전에서 제외",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/reports/police-salary-2026/", label: "경찰관 연봉·호봉 완전 정리 2026" },
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/reports/large-company-salary-growth-by-years-2026/", label: "대기업 연차별 연봉 성장 비교" },
+      ]}
+    />
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/firefighter-salary-2026.js" defer></script>
+</BaseLayout>
