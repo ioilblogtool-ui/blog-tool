@@ -105,25 +105,25 @@ export const PREGNANCY_AFFILIATE_PRODUCTS = [
     tag: "산전 필수",
     title: "임산부 엽산·철분제 세트",
     desc: "임신 초기부터 출산까지 챙기는 대표 영양제 패키지",
-    url: "https://www.coupang.com/np/search?q=%EC%9E%84%EC%82%B0%EB%B6%80+%EC%97%BD%EC%82%B0+%EC%B2%A0%EB%B6%84",
+    url: "https://link.coupang.com/a/emSdHA",
   },
   {
     tag: "산전 준비",
     title: "임산부 복대·골반벨트",
     desc: "허리·골반 부담 줄이는 임산부 전용 보정 용품",
-    url: "https://www.coupang.com/np/search?q=%EC%9E%84%EC%82%B0%EB%B6%80+%EB%B3%B5%EB%8C%80+%EA%B3%A8%EB%B0%98%EB%B2%A8%ED%8A%B8",
+    url: "https://link.coupang.com/a/emSeTU",
   },
   {
     tag: "산후 회복",
     title: "산모 패드·오로패드",
     desc: "출산 후 회복 기간에 사용하는 산모 전용 위생 용품",
-    url: "https://www.coupang.com/np/search?q=%EC%82%B0%EB%AA%A8%ED%8C%A8%EB%93%9C+%EC%98%A4%EB%A1%9C%ED%8C%A8%EB%93%9C",
+    url: "https://link.coupang.com/a/emSfKe",
   },
   {
     tag: "모유수유",
     title: "유축기·수유패드 세트",
     desc: "병원 퇴원 전 준비하면 좋은 모유수유 기본 세트",
-    url: "https://www.coupang.com/np/search?q=%EC%9C%A0%EC%B6%95%EA%B8%B0+%EC%88%98%EC%9C%A0%ED%8C%A8%EB%93%9C",
+    url: "https://link.coupang.com/a/emSgng",
   },
 ];
 
