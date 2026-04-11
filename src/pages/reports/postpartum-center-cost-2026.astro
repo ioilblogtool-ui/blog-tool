@@ -1,0 +1,259 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PC_ALTERNATIVES,
+  PC_FAQ,
+  PC_HERO_STATS,
+  PC_META,
+  PC_PRICE_TREND,
+  PC_PUBLIC_PRIVATE_COMPARE,
+  PC_REGION_COMPARISON,
+  PC_ROOM_TYPES,
+  PC_SAVING_TIPS,
+  PC_SEOUL_DISTRICTS,
+  PC_SUPPORT_FUNDS,
+} from "../../data/postpartumCenter2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmtManwon = (n: number) => `${n.toLocaleString("ko-KR")}만원`;
+const badgeMod = (label: string) =>
+  label === "공식" ? "official" : label === "참고" ? "ref" : label === "추정" ? "estimate" : "editorial";
+const faqItems = PC_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={PC_META.title} description={PC_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page pc-page">
+    <CalculatorHero
+      eyebrow="출산·육아 비용 리포트"
+      title="2026 산후조리원 비용 완전 비교"
+      description="전국 평균, 서울·경기·지방, 일반실·특실, 공공 vs 민간까지 2주 비용을 한 번에 비교합니다."
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "보건복지부 공개 조사와 서울시·언론 보도 기준을 함께 사용한 비교형 리포트입니다.",
+        "공식 수치와 최신 시세 참고치가 섞여 있으므로 각 카드의 배지를 함께 확인해 주세요.",
+        "실제 결제 금액은 객실 등급, 지역, 계약 시점, 지원금 적용 범위에 따라 달라집니다.",
+      ]}
+    />
+
+    <section class="content-section">
+      <div class="pc-kpi-grid">
+        {PC_HERO_STATS.map((stat) => (
+          <article class="pc-kpi-card">
+            <p class="pc-kpi-card__label">{stat.label}</p>
+            <strong class="pc-kpi-card__value">{stat.value}</strong>
+            <span class="pc-kpi-card__note">{stat.note}</span>
+            <span class={`pc-badge pc-badge--${badgeMod(stat.badge)}`}>{stat.badge}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>먼저 봐야 할 비용 구조</h2>
+        <p>전국 평균보다 서울, 일반실보다 특실, 민간보다 공공에서 비용 차이가 크게 벌어집니다.</p>
+      </div>
+      <div class="pc-insight-grid">
+        <article class="pc-insight-card"><strong>전국 평균 286.5만원</strong><p>공식 조사 기준으로는 이 숫자가 기준점입니다.</p></article>
+        <article class="pc-insight-card"><strong>서울 일반실 506만원</strong><p>최신 시세 기준 체감 가격은 훨씬 높습니다.</p></article>
+        <article class="pc-insight-card"><strong>공공은 229.5만원</strong><p>가격 메리트는 크지만 예약 경쟁이 치열합니다.</p></article>
+        <article class="pc-insight-card"><strong>특실은 선택의 문제</strong><p>브랜드와 부가 서비스가 붙을수록 비용이 빠르게 올라갑니다.</p></article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">지역별 비교</p>
+        <h2>전국 평균 vs 서울·경기·지방</h2>
+        <p>지역별 일반실·특실 가격 흐름을 먼저 비교한 뒤, 서울 내부 구간까지 이어서 보는 구성이 좋습니다.</p>
+      </div>
+      <div class="pc-chart-wrap"><canvas id="pc-region-chart"></canvas></div>
+      <div class="table-wrap">
+        <table class="pc-table">
+          <thead><tr><th>지역</th><th>일반실 평균</th><th>특실 평균</th><th>비고</th></tr></thead>
+          <tbody>
+            {PC_REGION_COMPARISON.map((row) => (
+              <tr>
+                <td><strong>{row.region}</strong><span class={`pc-badge pc-badge--${badgeMod(row.badge)}`}>{row.badge}</span></td>
+                <td>{fmtManwon(row.standardAvg)}</td>
+                <td>{row.suiteAvg ? fmtManwon(row.suiteAvg) : "-"}</td>
+                <td>{row.note ?? "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">서울 세부 구간</p>
+        <h2>서울 안에서도 가격 차이가 큽니다</h2>
+      </div>
+      <div class="pc-district-grid">
+        {PC_SEOUL_DISTRICTS.map((district) => (
+          <article class="pc-district-card">
+            <p class="pc-district-card__name">{district.district}</p>
+            <strong>{district.standardAvg ? `일반실 ${fmtManwon(district.standardAvg)}` : "일반실 데이터 제한"}</strong>
+            <span>{district.suiteMax ? `특실 상단 ${fmtManwon(district.suiteMax)}` : "특실 데이터 제한"}</span>
+            <p>{district.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">공공 vs 민간</p>
+        <h2>가격만 볼지, 예약 가능성까지 볼지</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="pc-table">
+          <thead><tr><th>유형</th><th>2주 평균 비용</th><th>예약 난이도</th><th>서비스 범위</th><th>가성비</th></tr></thead>
+          <tbody>
+            {PC_PUBLIC_PRIVATE_COMPARE.map((row) => (
+              <tr>
+                <td><strong>{row.type}</strong></td>
+                <td>{fmtManwon(row.avgCost2Weeks)}</td>
+                <td>{row.reservationDifficulty}</td>
+                <td>{row.serviceRange}</td>
+                <td>{row.valueForMoney}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">가격 추이</p>
+        <h2>최근 몇 년 사이 비용이 올라왔는지</h2>
+      </div>
+      <div class="pc-chart-wrap pc-chart-wrap--line"><canvas id="pc-trend-chart"></canvas></div>
+      <div class="pc-chip-row">
+        {PC_PRICE_TREND.map((item) => <span class="pc-chip">{item.period} {fmtManwon(item.nationalAvg)}</span>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">등급 차이</p>
+        <h2>일반실·특실·프리미엄의 차이</h2>
+      </div>
+      <div class="pc-room-grid">
+        {PC_ROOM_TYPES.map((room) => (
+          <article class="pc-room-card">
+            <p class="pc-room-card__type">{room.type}</p>
+            <strong>{room.roomDesc}</strong>
+            <span>{room.priceRange}</span>
+            <p>{room.features}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">대안 비교</p>
+        <h2>산후조리원 vs 산후도우미 vs 가족 도움</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="pc-table">
+          <thead><tr><th>대안</th><th>평균 비용</th><th>케어 강도</th><th>이동성</th><th>지원금 연계</th></tr></thead>
+          <tbody>
+            {PC_ALTERNATIVES.map((item) => (
+              <tr>
+                <td><strong>{item.type}</strong></td>
+                <td>{fmtManwon(item.avgCost)}</td>
+                <td>{item.careIntensity}</td>
+                <td>{item.mobility}</td>
+                <td>{item.supportLink}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">지원금 체크</p>
+        <h2>지원금은 어디까지 쓸 수 있나</h2>
+      </div>
+      <div class="pc-support-grid">
+        {PC_SUPPORT_FUNDS.map((fund) => (
+          <article class={`pc-support-card pc-support-card--${fund.available}`}>
+            <p class="pc-support-card__name">{fund.name}</p>
+            <strong>{fund.usableForCenter}</strong>
+            <p>{fund.note}</p>
+            <span class={`pc-badge pc-badge--${badgeMod(fund.badge)}`}>{fund.badge}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">절약 포인트</p>
+        <h2>비용 줄일 때 먼저 볼 체크리스트</h2>
+      </div>
+      <ul class="pc-tip-list">
+        {PC_SAVING_TIPS.map((tip) => <li>{tip}</li>)}
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">내부 연결</p>
+        <h2>같이 보면 좋은 계산기·리포트</h2>
+      </div>
+      <div class="pc-link-grid">
+        <a class="pc-link-card" href={withBase("/tools/birth-support-total/")}><span>계산기</span><strong>출산~2세 총지원금 계산기</strong><p>거주지와 출생 시점 기준으로 실제 지원금 규모를 확인합니다.</p></a>
+        <a class="pc-link-card" href={withBase("/tools/parental-leave-pay/")}><span>계산기</span><strong>육아휴직 급여 계산기</strong><p>산후조리원 비용 이후 이어지는 현금흐름까지 같이 계산할 수 있습니다.</p></a>
+        <a class="pc-link-card" href={withBase("/reports/baby-cost-guide-first-year/")}><span>관련 리포트</span><strong>신생아~돌까지 육아 비용 총정리</strong><p>조리원 이후 1년 육아비용 흐름까지 이어서 볼 수 있습니다.</p></a>
+        <a class="pc-link-card" href={withBase("/reports/baby-cost-2016-vs-2026/")}><span>관련 리포트</span><strong>아이 키우는 비용 2016 vs 2026</strong><p>육아 체감 비용이 얼마나 달라졌는지 장기 비교로 확인합니다.</p></a>
+        <a class="pc-link-card" href={withBase("/reports/")}><span>리포트 모음</span><strong>전체 비교 리포트 보기</strong><p>출산·육아 외 다른 생활 리포트까지 이어서 탐색할 수 있습니다.</p></a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 산후조리원 비용 비교 요약"
+      intro={[
+        "산후조리원 비용은 전국 평균 하나만으로 판단하기 어렵습니다. 서울과 수도권, 일반실과 특실, 공공과 민간 구조를 함께 봐야 실제 체감과 가까워집니다.",
+        "이 페이지는 공식 조사 수치와 최신 시세 참고치를 함께 배치해 기준점과 현재 체감을 한 화면에서 보도록 구성했습니다.",
+        "지원금 사용 범위와 조리원 외 대안까지 함께 보면 실제 예산 판단이 더 쉬워집니다.",
+      ]}
+      criteria={[
+        "전국 평균과 최신 시세 참고치를 구분해 병행 표기",
+        "서울 내부 구간과 수도권 대체권 가격을 함께 비교",
+        "공공·민간·특실·대안 서비스까지 한 흐름에서 정리",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" },
+        { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+        { href: "/reports/baby-cost-guide-first-year/", label: "신생아~돌까지 육아 비용 총정리" },
+        { href: "/reports/baby-cost-2016-vs-2026/", label: "아이 키우는 비용 2016 vs 2026" },
+        { href: "/reports/", label: "전체 비교 리포트 보기" },
+      ]}
+    />
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/postpartum-center-cost-2026.js" defer></script>
+</BaseLayout>

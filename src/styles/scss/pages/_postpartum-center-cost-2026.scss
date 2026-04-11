@@ -1,0 +1,251 @@
+.pc-page {
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #eadfd7;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #fffaf7 0%, #f8f1eb 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.05);
+    padding: 24px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 18px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9a5f35;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.12rem;
+      line-height: 1.38;
+      color: #172033;
+    }
+
+    p {
+      margin: 0;
+      max-width: 820px;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #5f6674;
+    }
+  }
+}
+
+.pc-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+
+  &--official { background: #eaf7ef; color: #2e7d51; border: 1px solid #8ed0aa; }
+  &--ref { background: #f8efe7; color: #9a5f35; border: 1px solid #e3c1ab; }
+  &--estimate { background: #fff6e8; color: #b57600; border: 1px solid #e7c27d; }
+  &--editorial { background: #f3f4f6; color: #6b7280; border: 1px solid #d4d7dc; }
+}
+
+.pc-kpi-grid,
+.pc-insight-grid,
+.pc-district-grid,
+.pc-room-grid,
+.pc-support-grid,
+.pc-link-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pc-kpi-card,
+.pc-insight-card,
+.pc-district-card,
+.pc-room-card,
+.pc-support-card,
+.pc-link-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #eadfd7;
+  background: #fff;
+}
+
+.pc-kpi-card__label,
+.pc-district-card__name,
+.pc-room-card__type,
+.pc-support-card__name,
+.pc-link-card span {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #9a5f35;
+}
+
+.pc-kpi-card__value,
+.pc-insight-card strong,
+.pc-district-card strong,
+.pc-room-card strong,
+.pc-support-card strong,
+.pc-link-card strong {
+  color: #172033;
+  font-size: 1.02rem;
+  line-height: 1.45;
+}
+
+.pc-kpi-card__note,
+.pc-district-card span,
+.pc-insight-card p,
+.pc-room-card p,
+.pc-support-card p,
+.pc-link-card p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: #5f6674;
+}
+
+.pc-chart-wrap {
+  height: 360px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid #eadfd7;
+  margin-bottom: 16px;
+}
+
+.pc-chart-wrap--line {
+  height: 320px;
+}
+
+.pc-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 11px 10px;
+    border-bottom: 1px solid #eee3db;
+    text-align: left;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    vertical-align: top;
+  }
+
+  th {
+    background: #fbf4ef;
+    color: #4b5563;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  td {
+    color: #526071;
+  }
+
+  strong {
+    display: inline-block;
+    margin-right: 8px;
+    color: #172033;
+  }
+}
+
+.pc-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pc-chip {
+  display: inline-flex;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #eadfd7;
+  font-size: 0.76rem;
+  color: #7b8794;
+}
+
+.pc-tip-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 18px;
+
+  li {
+    color: #4b5563;
+    line-height: 1.7;
+  }
+}
+
+.pc-support-card {
+  &--yes { background: #f1fbf5; }
+  &--conditional { background: #fffaf1; }
+  &--no { background: #fafafa; }
+}
+
+.pc-link-card {
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: #c98a62;
+    box-shadow: 0 10px 24px rgba(201, 138, 98, 0.12);
+    transform: translateY(-1px);
+    outline: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .pc-page .content-section {
+    padding: 20px;
+  }
+
+  .pc-kpi-grid,
+  .pc-insight-grid,
+  .pc-district-grid,
+  .pc-room-grid,
+  .pc-support-grid,
+  .pc-link-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pc-chart-wrap,
+  .pc-chart-wrap--line {
+    height: 300px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pc-page {
+    gap: 20px;
+  }
+
+  .pc-page .content-section {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .pc-kpi-grid,
+  .pc-insight-grid,
+  .pc-district-grid,
+  .pc-room-grid,
+  .pc-support-grid,
+  .pc-link-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pc-chart-wrap,
+  .pc-chart-wrap--line {
+    height: 260px;
+    padding: 12px;
+  }
+}
