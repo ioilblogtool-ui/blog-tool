@@ -11,9 +11,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev       # local dev server
-npm run build     # production build (always run before committing)
-npm run preview   # preview production build locally
+npm run dev          # local dev server
+npm run build        # production build (always run before committing)
+npm run preview      # preview production build locally
+npm run og:generate  # OG 이미지 일괄 생성 (node scripts/generate-og.mjs)
 ```
 
 No test suite exists. Manual verification per `DEPLOY_CHECKLIST.md` is the quality gate.
@@ -40,16 +41,38 @@ Each tool is composed of four files:
 ### Key shared components
 
 - `BaseLayout.astro` — wraps every page; handles `<head>`, SEO meta, OG tags, JSON-LD
+- `SiteHeader.astro` / `SiteFooter.astro` — global nav + footer
 - `CalculatorHero.astro` — top hero section with title/description
 - `SummaryCards.astro` / `KpiCard.astro` — result display
 - `ToolActionBar.astro` — reset + copy-link buttons
+- `ToolTabs.astro` — tab navigation within a tool
+- `InfoNotice.astro` — disclaimer/notice boxes
+- `TrustPanel.astro` — data source trust indicators
 - `SeoContent.astro` — SEO text block + FAQ section
 
 ### Data layer (`src/data/`)
 
 - `tools.ts` — single source of truth for all tool metadata; drives homepage listing, `/tools/` library page, and badges
-- Company-specific compensation data: `samsungCompensation.ts`, `skHynixCompensation.ts`, `hyundaiCompensation.ts`, `bonusSimulator.ts`
-- Report data: `reports.ts`, `usRichTop10Report.ts`, `koreaRichTop10Current.ts`
+- `reports.ts` — report page metadata registry
+
+**카테고리별 데이터 파일:**
+| 카테고리 | 주요 파일 |
+|---------|---------|
+| 대기업 보너스 | `samsungCompensation.ts`, `skHynixCompensation.ts`, `hyundaiCompensation.ts`, `bonusSimulator.ts` |
+| 급여·직군 | `itSalaryTop10.ts`, `salaryTierData.ts`, `policeSalary2026.ts`, `firefighterSalary2026.ts`, `nurseSalary2026.ts`, `newEmployeeSalary2026.ts`, `largeCompanySalaryGrowthByYears2026.ts` |
+| 급여·직군 비교 | `itSiSmSalaryComparison2026.ts`, `insuranceSalaryBonusComparison2026.ts`, `constructionSalaryBonusComparison2026.ts`, `leeGovernmentOfficialsAssetsSalary2026.ts` |
+| 부동산·주거 | `seoul84ApartmentPrices.ts`, `seoulHousing2016Vs2026.ts`, `seoulApartmentJeonseReport.ts` |
+| 결혼 | `weddingBudget.ts`, `weddingCost2016Vs2026.ts`, `weddingGiftBreakEven.ts` |
+| 육아·출산 | `babyGrowthPercentile.ts`, `babyCostGuideFirstYear.ts`, `babyCost2016Vs2026.ts`, `formulaCost.ts`, `diaperCost.ts`, `parentalLeaveShortWork.ts` |
+| 투자·재무 | `fireCalculator.ts`, `dcaInvestment.ts`, `homePurchaseFund.ts`, `semiconductorEtf2026.ts`, `semiconductorValueChain.ts` |
+| 리포트 | `usRichTop10Report.ts`, `koreaRichTop10Current.ts`, `koreanMovieBreakEvenProfit.ts`, `salaryAsset2016Vs2026.ts` |
+
+### Utility scripts (`public/scripts/`)
+
+도구별 `<slug>.js` 외 공통 유틸리티:
+- `chart-config.js` — Chart.js 전역 설정 및 공통 옵션
+- `url-state.js` — URL 파라미터 직렬화/복원 헬퍼
+- `tool-library.js` — `/tools/` 라이브러리 페이지 필터링 로직
 
 ### Styling
 
