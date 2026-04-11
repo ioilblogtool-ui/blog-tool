@@ -1,0 +1,452 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PREGNANCY_BIRTH_COST_DEFAULT_INPUT,
+  PREGNANCY_DELIVERY_OPTIONS,
+  PREGNANCY_HOSPITAL_OPTIONS,
+  PREGNANCY_POSTPARTUM_OPTIONS,
+  PREGNANCY_POSTPARTUM_ROOM_OPTIONS,
+  PREGNANCY_FAQ,
+  PREGNANCY_TIPS,
+  PREGNANCY_RELATED_LINKS,
+  PREGNANCY_SOURCE_LINKS,
+  PREGNANCY_AFFILIATE_PRODUCTS,
+} from "../../data/pregnancyBirthCost";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  PREGNANCY_BIRTH_COST_DEFAULT_INPUT,
+  PREGNANCY_DELIVERY_OPTIONS,
+  PREGNANCY_HOSPITAL_OPTIONS,
+  PREGNANCY_POSTPARTUM_OPTIONS,
+  PREGNANCY_POSTPARTUM_ROOM_OPTIONS,
+};
+
+const faqSchema = PREGNANCY_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="임신 출산 비용 계산기 2026 | 분만비·조리비·지원금 차감 후 본인부담"
+  description="임신 주수, 자연분만·제왕절개, 병원 등급, 다태아, 무통분만, 산후조리 여부를 입력하면 의료비 총액과 지원금 차감 후 본인부담, 조리 포함 최종 예산을 계산합니다."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "임신 출산 비용 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description:
+      "임신 주수, 분만 방식, 병원 등급, 다태아 여부, 산후조리 방식을 입력하면 의료비 총액과 지원금 차감 후 예상 본인부담액을 계산하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/pregnancy-birth-cost/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="pregnancy-birth-cost" pageClass="pregnancy-birth-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="출산 비용 계산기"
+        title="의료비와 조리비를 나눠서, 실제 본인부담까지 봅니다"
+        description="임신·출산 의료비는 바우처 차감, 산후조리 비용은 별도 합산으로 분리해서 보는 것이 핵심입니다. 병원 등급, 분만 방식, 다태아, 조리 방식까지 한 번에 계산해보세요."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetPregnancyBirthBtn" copyId="copyPregnancyBirthLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 입력</p>
+            <h2 class="panel__title">임신·분만 조건</h2>
+          </div>
+          <p class="panel-heading__summary">의료비 총액을 먼저 계산하는 입력값입니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>임신 주수</span>
+            <input id="pregGestationalWeeks" type="range" min="4" max="41" step="1" value={PREGNANCY_BIRTH_COST_DEFAULT_INPUT.gestationalWeeks} />
+            <small id="pregWeeksHint">38주</small>
+          </label>
+
+          <label class="field">
+            <span>분만 방식</span>
+            <select id="pregDeliveryType" class="select">
+              {PREGNANCY_DELIVERY_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === PREGNANCY_BIRTH_COST_DEFAULT_INPUT.deliveryType}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>병원 등급</span>
+            <select id="pregHospitalTier" class="select">
+              {PREGNANCY_HOSPITAL_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === PREGNANCY_BIRTH_COST_DEFAULT_INPUT.hospitalTier}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>태아 수</span>
+            <select id="pregFetusCount" class="select">
+              <option value="1" selected>단태아</option>
+              <option value="2">쌍둥이</option>
+              <option value="3">세쌍둥이 이상</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>무통분만</span>
+            <select id="pregEpidural" class="select">
+              <option value="yes" selected>예</option>
+              <option value="no">아니오</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>분만취약지 여부</span>
+            <select id="pregUnderservedArea" class="select">
+              <option value="no" selected>아니오</option>
+              <option value="yes">예</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">산후조리 입력</p>
+            <h2 class="panel__title">조리 비용은 따로 더합니다</h2>
+          </div>
+          <p class="panel-heading__summary">조리원 기본 이용료는 의료비 바우처 자동 차감 대상에서 제외합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>산후조리 방식</span>
+            <select id="pregPostpartumCareType" class="select">
+              {PREGNANCY_POSTPARTUM_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === PREGNANCY_BIRTH_COST_DEFAULT_INPUT.postpartumCareType}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>조리 지역</span>
+            <select id="pregPostpartumRegion" class="select">
+              <option value="seoul">서울</option>
+              <option value="gyeonggi" selected>경기</option>
+              <option value="local">지방</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>조리원 등급</span>
+            <select id="pregPostpartumRoomType" class="select">
+              {PREGNANCY_POSTPARTUM_ROOM_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === PREGNANCY_BIRTH_COST_DEFAULT_INPUT.postpartumRoomType}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>첫째 / 둘째 이상</span>
+            <select id="pregBirthOrder" class="select">
+              <option value="first" selected>첫째</option>
+              <option value="second_or_more">둘째 이상</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">고급 입력</p>
+            <h2 class="panel__title">현실값으로 조금 더 보정하기</h2>
+          </div>
+        </div>
+
+        <details class="preg-advanced-box" open>
+          <summary>입원일수, 검사비, 바우처 잔액 직접 수정</summary>
+          <div class="form-grid">
+            <label class="field">
+              <span>입원일수 직접 입력</span>
+              <input id="pregHospitalStayDays" type="number" min="0" max="20" step="1" class="input-number" placeholder="자동 계산 사용" />
+              <small>비워두면 분만 방식 기준 기본값을 사용합니다.</small>
+            </label>
+
+            <label class="field">
+              <span>산전검사비 직접 보정 (만원)</span>
+              <input id="pregPrenatalAdjustment" type="text" inputmode="numeric" class="input-number" placeholder="예: 20" />
+              <small>기본 추정치에 추가로 더할 금액입니다.</small>
+            </label>
+
+            <label class="field">
+              <span>조리 비용 직접 입력 (만원)</span>
+              <input id="pregPostpartumCustomCost" type="text" inputmode="numeric" class="input-number" placeholder="예: 480" />
+              <small>실제 계약 금액이 있다면 이 값을 우선 사용합니다.</small>
+            </label>
+
+            <label class="field">
+              <span>바우처 사용 여부</span>
+              <select id="pregVoucherEnabled" class="select">
+                <option value="yes" selected>예</option>
+                <option value="no">아니오</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>이미 사용한 바우처 금액 (만원)</span>
+              <input id="pregVoucherUsedAmount" type="text" inputmode="numeric" class="input-number" value={(PREGNANCY_BIRTH_COST_DEFAULT_INPUT.voucherUsedAmount / 10000).toLocaleString("ko-KR")} />
+              <small>진료비로 먼저 사용한 금액을 반영합니다.</small>
+            </label>
+          </div>
+        </details>
+      </article>
+    </Fragment>
+
+    <section class="preg-section">
+      <div class="preg-section__head">
+        <p class="preg-section__eyebrow">핵심 결과</p>
+        <h2>실제 예산을 세 단계로 나눠서 봅니다</h2>
+        <p class="preg-section__sub" id="pregResultSubcopy">입력값을 바꾸면 의료비, 지원금, 조리 포함 총액이 바로 바뀝니다.</p>
+      </div>
+      <div class="preg-kpi-grid">
+        <article class="preg-kpi-card">
+          <p>의료비 예상 총액</p>
+          <strong id="pregMedicalTotal">-</strong>
+          <span id="pregMedicalTotalNote">산전검사 + 분만 + 입원 + 처치</span>
+        </article>
+        <article class="preg-kpi-card preg-kpi-card--accent">
+          <p>적용 가능한 지원금</p>
+          <strong id="pregVoucherAvailable">-</strong>
+          <span id="pregVoucherNote">공식 기준 반영</span>
+        </article>
+        <article class="preg-kpi-card">
+          <p>의료비 예상 본인부담</p>
+          <strong id="pregOutOfPocket">-</strong>
+          <span id="pregOutOfPocketNote">지원금 차감 후</span>
+        </article>
+        <article class="preg-kpi-card">
+          <p>산후조리 포함 총비용</p>
+          <strong id="pregFinalTotal">-</strong>
+          <span id="pregFinalTotalNote">조리 방식 별도 합산</span>
+        </article>
+        <article class="preg-kpi-card">
+          <p>절약 가능 포인트</p>
+          <strong id="pregSavingsValue">-</strong>
+          <span id="pregSavingsNote">낮은 비용 시나리오 대비</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="preg-section">
+      <div class="preg-section__head">
+        <p class="preg-section__eyebrow">항목별 분해</p>
+        <h2>어디에서 비용이 커지는지 바로 보입니다</h2>
+        <p class="preg-section__sub">지원금 차감액은 음수 막대로 표시해서 총액 구조를 한눈에 읽을 수 있게 했습니다.</p>
+      </div>
+      <article class="panel">
+        <div class="preg-chart-wrap">
+          <canvas id="pregnancyBirthCostChart"></canvas>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>예상 금액</th>
+                <th>설명</th>
+              </tr>
+            </thead>
+            <tbody id="pregBreakdownTableBody">
+              <tr>
+                <td colspan="3">입력값을 넣으면 항목별 금액이 표시됩니다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="preg-section">
+      <div class="preg-section__head">
+        <p class="preg-section__eyebrow">비교 해설</p>
+        <h2>같은 임신 조건에서도 어디서 차이가 나는지 봅니다</h2>
+      </div>
+      <div class="preg-comparison-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">현재 선택</p>
+              <h2 class="panel__title" id="pregScenarioTitle">-</h2>
+            </div>
+            <p class="panel-heading__summary" id="pregScenarioSummary">-</p>
+          </div>
+          <p id="pregScenarioInsight" class="preg-insight-copy">-</p>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">비교 시나리오</p>
+              <h2 class="panel__title">비용 민감도 체크</h2>
+            </div>
+            <p class="panel-heading__summary" id="pregScenarioCompare">-</p>
+          </div>
+          <ul class="preg-insight-list" id="pregInsightList"></ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="preg-section">
+      <div class="preg-section__head">
+        <p class="preg-section__eyebrow">지원금 참고</p>
+        <h2>의료비 차감과 별도 바우처를 나눠서 봅니다</h2>
+      </div>
+      <div class="preg-support-grid">
+        <article class="preg-support-card">
+          <span>임신·출산 진료비 지원</span>
+          <strong id="pregVoucherRuleSummary">-</strong>
+          <p id="pregVoucherRuleDetail">-</p>
+        </article>
+        <article class="preg-support-card">
+          <span>첫만남이용권 참고</span>
+          <strong id="pregFirstMeetingVoucher">-</strong>
+          <p>의료비 자동 차감이 아니라 출생 후 별도 바우처 성격으로 참고합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "이 계산기는 평균 비용과 공개 제도 기준을 바탕으로 만든 추정 도구입니다.",
+        "실제 진료비는 병원, 합병증 여부, 조산 여부, 입원 기간에 따라 크게 달라질 수 있습니다.",
+        "임신·출산 진료비 지원은 의료비 성격 항목 중심으로 보고, 산후조리원 기본 이용료는 별도 예산으로 보는 보수적 기준을 사용했습니다.",
+      ]}
+    />
+
+    <section class="preg-section">
+      <div class="preg-section__head">
+        <p class="preg-section__eyebrow">절약 팁</p>
+        <h2>예산 잡을 때 특히 먼저 볼 포인트</h2>
+      </div>
+      <div class="preg-tip-grid">
+        {PREGNANCY_TIPS.map((tip) => (
+          <article class="preg-tip-card">
+            <strong>{tip}</strong>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="임신 출산 비용 계산기 2026을 보는 방법"
+        intro={[
+          "임신 출산 비용 계산기 2026은 산전검사비, 분만비, 입원비 같은 의료비와 산후조리 비용을 분리해서 보여주는 도구입니다. 지원금을 어디에 차감해야 하는지 헷갈릴 때 가장 먼저 보기 좋게 설계했습니다.",
+          "특히 의료비 총액, 지원금 적용 후 본인부담, 조리 포함 최종 총액을 세 단계로 나눠 보여주기 때문에 출산 직전 예산 점검용으로 바로 활용할 수 있습니다."
+        ]}
+        inputPoints={[
+          "자연분만과 제왕절개, 병원 등급, 다태아 여부에 따라 의료비 구조가 어떻게 달라지는지 볼 수 있습니다.",
+          "이미 사용한 바우처가 있다면 잔액 기준으로 다시 계산해서 현실 예산에 더 가깝게 맞출 수 있습니다.",
+          "조리원·산후도우미·집조리를 비교하면서 조리비가 총예산에 미치는 영향을 바로 확인할 수 있습니다."
+        ]}
+        criteria={[
+          "단태아는 100만원, 다태아는 140만원 기본 지급에 태아당 100만원이 되도록 추가 지원하는 기준을 반영했습니다.",
+          "분만취약지는 20만원을 추가 지원하는 구조로 계산합니다.",
+          "산후조리 비용은 의료 바우처 자동 차감 대상에서 제외하고 별도 합산합니다."
+        ]}
+        faq={PREGNANCY_FAQ}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <section class="container pregnancy-birth-page pregnancy-bottom-section">
+    <div class="preg-bottom-grid">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">참고 링크</p>
+            <h2 class="panel__title">공식 기준 확인</h2>
+          </div>
+        </div>
+        <div class="related-links">
+          {PREGNANCY_SOURCE_LINKS.map((item) => (
+            <a class="related-link" href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">다음 계산기</p>
+            <h2 class="panel__title">같이 보면 이해가 더 쉬운 계산기</h2>
+          </div>
+        </div>
+        <div class="related-links">
+          {PREGNANCY_RELATED_LINKS.map((item) => (
+            <a class="related-link" href={withBase(item.href)}>{item.label}</a>
+          ))}
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="container pregnancy-birth-page pregnancy-bottom-section">
+    <div class="affiliate-box">
+      <div class="affiliate-box__header">
+        <span class="affiliate-box__icon">🤰</span>
+        <div>
+          <h3 class="affiliate-box__title">임신·출산 준비 추천 상품</h3>
+          <p class="affiliate-box__context">출산 비용 계산 후 준비하면 좋은 필수 용품 링크입니다.</p>
+        </div>
+      </div>
+      <div class="affiliate-product-grid">
+        {PREGNANCY_AFFILIATE_PRODUCTS.map((prod) => (
+          <a href={prod.url} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+            <span class="affiliate-product-tag">{prod.tag}</span>
+            <p class="affiliate-product-title">{prod.title}</p>
+            <p class="affiliate-product-desc">{prod.desc}</p>
+            <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+          </a>
+        ))}
+      </div>
+      <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+    </div>
+  </section>
+
+  <script id="pregnancyBirthCostConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/pregnancy-birth-cost.js")}></script>
+</BaseLayout>
+
