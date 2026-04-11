@@ -336,6 +336,20 @@ export const tools: ToolMeta[] = [
       { label: "손익분기점", value: "자동 계산" },
     ],
   },
+  {
+    slug: "pregnancy-birth-cost",
+    title: "임신 출산 비용 계산기",
+    description: "산전검사비, 분만비, 입원비, 산후조리 비용을 나눠 계산하고 지원금 차감 후 예상 본인부담액까지 보여주는 계산기",
+    order: 23,
+    eyebrow: "임신 출산 계산기",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "핵심 구조", value: "의료비 vs 조리비" },
+      { label: "지원금 반영", value: "자동 차감" },
+    ],
+  },
 ];
 
 
