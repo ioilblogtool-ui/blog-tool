@@ -1,0 +1,582 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  TS_META,
+  TS_HERO_STATS,
+  TEACHER_STEPS,
+  TEACHER_SUMMARY_STEPS,
+  SCHOOL_LEVELS,
+  TEACHER_ALLOWANCES,
+  PUBLIC_PRIVATE,
+  WORKLOAD_COMPARISON,
+  ENTRY_PATHS,
+  TOTAL_COMP,
+  TEACHER_FAQ,
+} from "../../data/teacherSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmt = (n: number) => Math.round(n / 10_000).toLocaleString("ko-KR");
+const fmtWon = (n: number) => n.toLocaleString("ko-KR");
+const fmtRange = (a: number, b: number) => `${fmt(a)}~${fmt(b)}만 원`;
+
+const allowanceFixed  = TEACHER_ALLOWANCES.filter((a) => a.type === "fixed");
+const allowanceRole   = TEACHER_ALLOWANCES.filter((a) => a.type === "role");
+const allowanceAnnual = TEACHER_ALLOWANCES.filter((a) => a.type === "annual");
+
+const faqItems = TEACHER_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+// 시뮬레이션용 데이터: 경력 0~30년 (매년 1호봉, 최대 40호봉)
+function getSimSteps(startStep: number, years: number): number[] {
+  const result: number[] = [];
+  for (let y = 0; y <= years; y++) {
+    const step = Math.min(startStep + y, 40);
+    const row = TEACHER_STEPS.find((t) => t.step === step)!;
+    // 기본급×12 + 교직수당×12 + 정액급식비×12 + 명절휴가비(본봉×0.6×2) 추정
+    const bonus = row.monthlyBase * 0.6 * 2;
+    const est = row.monthlyBase * 12 + 250_000 * 12 + 160_000 * 12 + bonus;
+    result.push(Math.round(est / 10_000));
+  }
+  return result;
+}
+const simElem = getSimSteps(9, 30);
+const simMid  = getSimSteps(9, 30);  // 사범대도 9호봉 동일
+const simFixed = getSimSteps(8, 30);
+const simLabels = Array.from({ length: 31 }, (_, i) => `${i}년차`);
+
+// 차트용 요약 데이터 (대표 호봉 예상 연봉)
+const chartData = TEACHER_SUMMARY_STEPS.map((s) => {
+  const bonus = s.monthlyBase * 0.6 * 2;
+  return Math.round((s.monthlyBase * 12 + 250_000 * 12 + 160_000 * 12 + bonus) / 10_000);
+});
+const chartLabels = TEACHER_SUMMARY_STEPS.map((s) => `${s.step}호봉`);
+
+const workloadLevel = (v: string) => {
+  if (v === "매우 높음") return "very-high";
+  if (v === "높음") return "high";
+  if (v === "중간~높음") return "mid-high";
+  if (v === "중간") return "mid";
+  return "low";
+};
+---
+
+<BaseLayout title={TS_META.title} description={TS_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ts-page">
+
+    <!-- A. Hero -->
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="학교 선생님 연봉·호봉 완전 정리 2026"
+      description="2026년 교원 봉급표 기준 · 초등·중학교·고등학교 선생님 월급과 기간제 차이까지 한눈에 비교"
+    />
+
+    <!-- B. InfoNotice -->
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "기본급(본봉)은 인사혁신처 2026년 고시 「유치원·초등학교·중학교·고등학교 교원 등의 봉급표」 기준입니다.",
+        "세후 실수령 추정은 미혼·부양가족 없음 기준이며, 개인 공제 조건(부양가족·공제회비 등)에 따라 달라집니다.",
+        "수당은 담임·보직·학교 유형에 따라 편차가 있으며, 예상 연봉은 추정치입니다.",
+        "워라밸·업무강도 비교는 비교계산소 편집부 기준입니다.",
+      ]}
+    />
+
+    <!-- C. Hero KPI 카드 -->
+    <section class="content-section ts-kpi-section" aria-label="핵심 지표">
+      <div class="ts-kpi-grid">
+        <div class="ts-kpi-card">
+          <p class="ts-kpi-card__label">2026 인상률</p>
+          <p class="ts-kpi-card__value">{TS_HERO_STATS.increaseRate2026}</p>
+          <span class="ts-badge ts-badge--official">공식</span>
+        </div>
+        <div class="ts-kpi-card">
+          <p class="ts-kpi-card__label">신입 시작 호봉</p>
+          <p class="ts-kpi-card__value">{TS_HERO_STATS.entryStep}호봉</p>
+          <span class="ts-badge ts-badge--official">공식</span>
+          <p class="ts-kpi-card__sub">교대·사범대 졸업 기준</p>
+        </div>
+        <div class="ts-kpi-card">
+          <p class="ts-kpi-card__label">9호봉 기본급</p>
+          <p class="ts-kpi-card__value">{fmt(TS_HERO_STATS.entryMonthlyBase)}만 원</p>
+          <span class="ts-badge ts-badge--official">공식</span>
+          <p class="ts-kpi-card__sub">월 기준</p>
+        </div>
+        <div class="ts-kpi-card">
+          <p class="ts-kpi-card__label">40호봉 기본급</p>
+          <p class="ts-kpi-card__value">{fmt(TS_HERO_STATS.step40MonthlyBase)}만 원</p>
+          <span class="ts-badge ts-badge--official">공식</span>
+          <p class="ts-kpi-card__sub">월 기준</p>
+        </div>
+      </div>
+      <p class="ts-source-note">출처: 인사혁신처 2026년 공무원보수규정 별표 (2026.1.2 개정)</p>
+    </section>
+
+    <!-- D. 학교급 비교 카드 -->
+    <section class="content-section" aria-labelledby="ts-level-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">학교급별 비교</p>
+        <h2 id="ts-level-title">초등 vs 중학교 vs 고등학교 — 봉급표는 같고 체감은 다르다</h2>
+        <p>카드를 클릭하면 시작 호봉·자격 조건·업무 체감 상세를 볼 수 있습니다.</p>
+      </div>
+
+      <div class="ts-level-grid" id="ts-level-grid">
+        {SCHOOL_LEVELS.map((level) => {
+          const entryRow = TEACHER_STEPS.find((s) => s.step === level.entryStep)!;
+          return (
+            <div
+              class="ts-level-card"
+              data-level-id={level.id}
+              role="button"
+              tabindex="0"
+              aria-expanded="false"
+            >
+              <div class="ts-level-bar" style={`background: var(${level.colorVar})`}></div>
+              <div class="ts-level-card__body">
+                <div class="ts-level-card__header">
+                  <strong>{level.name}</strong>
+                  <span class="ts-badge ts-badge--ref">{level.badge}</span>
+                </div>
+                <p class="ts-level-card__basis">{level.entryStep}호봉 시작 · {level.entryStepBasis}</p>
+                <p class="ts-level-card__base">
+                  기본급 <strong>{fmt(entryRow.monthlyBase)}만 원</strong>/월
+                  <span class="ts-badge ts-badge--official" style="margin-left:4px">공식</span>
+                </p>
+                <p class="ts-level-card__range">
+                  체감 초임: <strong>{fmtRange(...level.estimatedEntryMonthly)}</strong>
+                  <span class="ts-badge ts-badge--estimate" style="margin-left:4px">추정</span>
+                </p>
+                <button class="ts-level-card__toggle" aria-label={`${level.name} 상세 보기`}>
+                  상세 보기 <span class="ts-toggle-icon">▼</span>
+                </button>
+              </div>
+
+              <div class="ts-level-panel" hidden>
+                <p class="ts-level-panel__qual">{level.qualificationNote}</p>
+                <ul class="ts-level-panel__chars">
+                  {level.characteristics.map((c) => <li>{c}</li>)}
+                  <li>담임: {level.classTeacherNote}</li>
+                  <li>시간외: {level.overtimeNote}</li>
+                </ul>
+                {level.id === "fixed_term" && (
+                  <p class="ts-level-panel__notice">
+                    ※ 군 복무(최대 3호봉), 기간제 경력, 대학원 학위 등으로 초임 호봉이 달라질 수 있습니다.
+                    <span class="ts-badge ts-badge--ref">참고</span>
+                  </p>
+                )}
+                {level.id !== "fixed_term" && (
+                  <p class="ts-level-panel__notice">
+                    ※ 군 복무·기간제 경력·대학원 학위 등으로 시작 호봉 가산 가능.
+                    <span class="ts-badge ts-badge--ref">참고</span>
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- E. 교원 호봉표 -->
+    <section class="content-section" aria-labelledby="ts-hobong-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">2026 교원 봉급표</p>
+        <h2 id="ts-hobong-title">2026 교원 호봉별 기본급표 <span class="ts-badge ts-badge--official">공식</span></h2>
+        <p>초·중·고 공통 단일 봉급표. 세후 실수령은 미혼·부양가족 없음 기준 추정치입니다.</p>
+      </div>
+
+      <div class="ts-hobong-summary">
+        <table class="ts-hobong-table">
+          <thead>
+            <tr>
+              <th>구간</th>
+              <th>호봉</th>
+              <th>월 기본급</th>
+              <th>정액급식비 포함</th>
+              <th>세후 실수령 (추정)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TEACHER_SUMMARY_STEPS.map((s) => (
+              <tr class={s.step === 9 ? "ts-hobong-row--highlight" : ""}>
+                <td>{s.label ?? `${s.step}호봉`}</td>
+                <td><strong>{s.step}호봉</strong></td>
+                <td>{fmtWon(s.monthlyBase)}원</td>
+                <td>{fmtWon(s.monthlyBase + 160_000)}원</td>
+                <td>
+                  약 {fmtWon(s.monthlyNetEstimate)}원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <button class="ts-hobong-toggle-btn" id="ts-hobong-toggle" aria-expanded="false">
+        전체 호봉표 펼쳐보기 (1~40호봉) ▼
+      </button>
+
+      <div class="ts-hobong-full" id="ts-hobong-full" hidden>
+        <table class="ts-hobong-table ts-hobong-table--full">
+          <thead>
+            <tr>
+              <th>호봉</th>
+              <th>월 기본급</th>
+              <th>세전 연봉</th>
+              <th>세후 실수령 (추정)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TEACHER_STEPS.map((s) => (
+              <tr class={s.step === 9 ? "ts-hobong-row--highlight" : ""}>
+                <td><strong>{s.step}</strong>{s.label ? <span class="ts-hobong-label">{s.label}</span> : null}</td>
+                <td>{fmtWon(s.monthlyBase)}원</td>
+                <td>{fmtWon(s.annualGross)}원</td>
+                <td>약 {fmtWon(s.monthlyNetEstimate)}원</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="ts-hobong-footnote">
+          40호봉 이후: 근속가봉(근가호봉) 적용. 1호봉당 약 35,000~40,000원 추가 가산.
+          <span class="ts-badge ts-badge--ref">참고</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- F. 예상 연봉 바 차트 -->
+    <section class="content-section" aria-labelledby="ts-chart-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">호봉별 예상 연봉</p>
+        <h2 id="ts-chart-title">대표 호봉 구간별 예상 연봉 비교 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>기본급×12 + 교직수당 + 정액급식비 + 명절휴가비(본봉×0.6×2) 주요 항목 반영 추정치. 담임·보직 수당 미포함.</p>
+      </div>
+      <div class="ts-chart-wrap">
+        <canvas id="ts-annual-chart"
+          data-labels={JSON.stringify(chartLabels)}
+          data-values={JSON.stringify(chartData)}
+        ></canvas>
+      </div>
+    </section>
+
+    <!-- G. 수당 구조 -->
+    <section class="content-section" aria-labelledby="ts-allowance-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">수당 구조</p>
+        <h2 id="ts-allowance-title">2026 교사 수당 구조</h2>
+        <p>공식 규정 기반 항목만 포함했습니다. 학교·지역별로 추가 수당이 있을 수 있습니다.</p>
+      </div>
+
+      <div class="ts-allowance-tabs" role="tablist" aria-label="수당 유형">
+        <button class="ts-allowance-tab is-active" data-tab="fixed"  aria-selected="true">고정 수당</button>
+        <button class="ts-allowance-tab"             data-tab="role"   aria-selected="false">역할 수당</button>
+        <button class="ts-allowance-tab"             data-tab="annual" aria-selected="false">연간 특별 지급</button>
+      </div>
+
+      <div class="ts-allowance-list" data-tab="fixed">
+        {allowanceFixed.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+            <p class="ts-allowance-card__basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="ts-allowance-list" data-tab="role" hidden>
+        {allowanceRole.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+            <p class="ts-allowance-card__basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="ts-allowance-list" data-tab="annual" hidden>
+        {allowanceAnnual.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+            <p class="ts-allowance-card__basis">{a.basis}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- H. 공립 vs 사립 -->
+    <section class="content-section" aria-labelledby="ts-pp-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">근무 환경 비교</p>
+        <h2 id="ts-pp-title">공립학교 vs 사립학교 교사 비교</h2>
+        <p>봉급표 자체는 공립·사립 동일 기준이 원칙입니다. 수당·복지·인사 구조에서 차이가 발생합니다.</p>
+      </div>
+      <div class="ts-pp-table-wrap">
+        <table class="ts-pp-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>공립 교사</th>
+              <th>사립 교사</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PUBLIC_PRIVATE.map((row) => (
+              <tr>
+                <td><strong>{row.category}</strong></td>
+                <td>{row.public}</td>
+                <td>
+                  {row.private}
+                  {row.note && <span class="ts-badge ts-badge--ref" style="margin-left:4px">참고</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- I. 연봉 시뮬레이션 -->
+    <section class="content-section" aria-labelledby="ts-sim-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">연봉 시뮬레이션</p>
+        <h2 id="ts-sim-title">연차별 예상 연봉 흐름 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>9호봉 시작 기준 매년 1호봉씩 상승 가정. 기본급+교직수당+정액급식비+명절휴가비 반영 추정치입니다.</p>
+      </div>
+
+      <div class="ts-sim-controls">
+        <div class="ts-sim-control-group">
+          <span class="ts-sim-control-label">진입 유형</span>
+          <div class="ts-sim-btns" role="group">
+            <button class="ts-sim-btn is-active" data-entry="elem">초등 / 중등(사범대)</button>
+            <button class="ts-sim-btn" data-entry="fixed">기간제</button>
+          </div>
+        </div>
+        <div class="ts-sim-control-group">
+          <span class="ts-sim-control-label">담임 수당 포함</span>
+          <div class="ts-sim-btns" role="group">
+            <button class="ts-sim-btn is-active" data-classtp="yes">포함</button>
+            <button class="ts-sim-btn" data-classtp="no">미포함</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ts-sim-chart-wrap">
+        <canvas id="ts-sim-chart"
+          data-elem={JSON.stringify(simElem)}
+          data-fixed={JSON.stringify(simFixed)}
+          data-labels={JSON.stringify(simLabels)}
+        ></canvas>
+      </div>
+      <p class="ts-sim-note">
+        ※ 이 시뮬레이션은 보수적 추정 예시입니다. 실제 호봉 승급은 매년 1호봉이 원칙이나,
+        성과·징계·휴직 등에 따라 달라질 수 있습니다.
+      </p>
+    </section>
+
+    <!-- J. 업무 강도·워라밸 -->
+    <section class="content-section" aria-labelledby="ts-workload-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">업무 강도 비교</p>
+        <h2 id="ts-workload-title">
+          업무 강도·워라밸 비교
+          <span class="ts-badge ts-badge--editorial">편집부 기준</span>
+        </h2>
+        <p>공식 수치가 아닌 비교계산소 편집부 기준 상대 평가입니다. 학교·지역·담임 여부에 따라 실제 업무 강도는 달라집니다.</p>
+      </div>
+
+      <div class="ts-workload-table-wrap">
+        <table class="ts-workload-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>초등교사</th>
+              <th>중학교 교사</th>
+              <th>고등학교 교사</th>
+            </tr>
+          </thead>
+          <tbody>
+            {WORKLOAD_COMPARISON.map((row) => (
+              <tr>
+                <td><strong>{row.category}</strong></td>
+                <td class={`ts-workload-cell ts-workload--${workloadLevel(row.elementary)}`}>{row.elementary}</td>
+                <td class={`ts-workload-cell ts-workload--${workloadLevel(row.middle)}`}>{row.middle}</td>
+                <td class={`ts-workload-cell ts-workload--${workloadLevel(row.high)}`}>{row.high}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- K. 총보상 패키지 -->
+    <section class="content-section" aria-labelledby="ts-comp-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">실질 총보상</p>
+        <h2 id="ts-comp-title">교사 총보상 패키지 — 기본급 + 수당 + 연금 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>공무원연금 환산 포인트: 30년 재직 시 퇴직 후 월 200~250만원대 연금 수령 가능 (추정, 국민연금 대비 유리한 구조).</p>
+      </div>
+      <div class="ts-comp-table-wrap">
+        <table class="ts-comp-table">
+          <thead>
+            <tr>
+              <th>경력 구간</th>
+              <th>기본급 기준 세전 연봉</th>
+              <th>수당 포함 추정 연봉</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TOTAL_COMP.map((row) => (
+              <tr>
+                <td><strong>{row.label}</strong></td>
+                <td>{fmtWon(row.annualBase)}원</td>
+                <td>
+                  약 {fmt(row.estimatedMin)}~{fmt(row.estimatedMax)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td class="ts-comp-note">{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- L. 진입 경로 -->
+    <section class="content-section" aria-labelledby="ts-entry-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">교사 되는 길</p>
+        <h2 id="ts-entry-title">진입 경로별 자격·시작 호봉 비교</h2>
+        <p>교대·사범대·교직이수·특수교육·기간제 각 루트의 시작 조건과 첫 호봉을 정리했습니다.</p>
+      </div>
+
+      <div class="ts-entry-grid">
+        {ENTRY_PATHS.map((path) => {
+          const row = TEACHER_STEPS.find((s) => s.step === path.entryStep)!;
+          return (
+            <article class="ts-entry-card">
+              <p class="ts-entry-card__name">{path.name}</p>
+              <p class="ts-entry-card__qual">{path.qualification}</p>
+              <p class="ts-entry-card__step">
+                시작 호봉: <strong>{path.entryStep}호봉</strong>
+                <span class="ts-entry-card__base">기본급 {fmt(row.monthlyBase)}만 원</span>
+              </p>
+              <p class="ts-entry-card__basis">{path.entryStepBasis}</p>
+              <p class="ts-entry-card__desc">{path.description}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- M. FAQ -->
+    <section class="content-section" aria-labelledby="ts-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="ts-faq-title">교사 연봉 FAQ</h2>
+      </div>
+      <div class="ts-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+        {TEACHER_FAQ.map((item) => (
+          <div class="ts-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="ts-faq-q" itemprop="name" aria-expanded="false">
+              {item.q}
+              <span class="ts-faq-icon">▼</span>
+            </button>
+            <div class="ts-faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.a}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- N. 관련 콘텐츠 -->
+    <section class="content-section" aria-labelledby="ts-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">내부 연결</p>
+        <h2 id="ts-related-title">같이 보면 좋은 계산기·리포트</h2>
+        <p>실수령 계산, 연봉 티어 비교, 공무원·전문직 연봉 시리즈와 이어서 볼 수 있습니다.</p>
+      </div>
+
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/tools/salary/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 실수령 계산기</strong>
+          <p>교사 연봉을 넣고 세후 체감 실수령을 바로 확인해보세요.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/tools/salary-tier/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 티어 계산기</strong>
+          <p>교사 연봉이 전체 직장인 분포에서 어느 구간인지 확인합니다.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/police-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>경찰관 계급별 연봉 2026</strong>
+          <p>공무원 봉급표 기반 직업 연봉 비교 시리즈 1탄.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/firefighter-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>소방관 계급별 연봉 2026</strong>
+          <p>교대근무·출동 수당 구조와 성장 흐름 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/nurse-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>간호사 연차별 연봉 2026</strong>
+          <p>전문직 연봉 구조와 병원 규모별 격차를 비교합니다.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/")}>
+          <span class="ts-link-card__eyebrow">리포트 모음</span>
+          <strong>전체 비교 리포트 보기</strong>
+          <p>다른 직업·자산·생활 리포트까지 한 번에 탐색.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="학교 선생님 연봉·호봉 완전 정리 2026 — 비교계산소 해설"
+      intro={[
+        "교사 연봉은 초·중·고 모두 동일한 단일 봉급표를 기준으로 합니다. 2026년 인사혁신처 고시 기준 9호봉 월 기본급은 2,495,600원이며, 신규 임용교사(교대·사범대 졸업)는 여기서 시작합니다.",
+        "체감 차이는 수당 구조에서 발생합니다. 초등교사는 대부분 담임을 맡아 월 20만원 담임수당이 거의 고정 수입이 되는 반면, 중·고교 교사는 담임 여부·보직·야자 지도 여부에 따라 월 수령액 차이가 큽니다.",
+        "기간제교사는 동일 봉급표를 적용받지만 공무원연금 미적용, 호봉 산정 후 고정급 원칙이라는 차이가 있습니다. 장기적 총보상 구조를 비교할 때는 공무원연금 환산 가치를 함께 고려해야 합니다.",
+      ]}
+      criteria={[
+        "기본급·교직수당·정액급식비는 공식 수치로 표기",
+        "세후 실수령은 미혼·부양가족 없음 기준 추정치",
+        "예상 연봉은 주요 수당 항목 반영 추정치이며 담임 여부 등에 따라 차이 발생",
+        "워라밸·업무강도 비교는 비교계산소 편집부 기준",
+        "공립·사립 복지·안정성 항목은 일반적 경향으로 학교별 편차 있음",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/police-salary-2026/", label: "경찰관 계급별 연봉·호봉 완전 정리 2026" },
+        { href: "/reports/firefighter-salary-2026/", label: "소방관 계급별 연봉·수당 비교 2026" },
+        { href: "/reports/nurse-salary-2026/", label: "간호사 연차별 연봉 + 병원 규모별 비교 2026" },
+        { href: "/reports/", label: "전체 비교 리포트 보기" },
+      ]}
+    />
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/teacher-salary-2026.js" defer></script>
+</BaseLayout>

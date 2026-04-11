@@ -1,0 +1,692 @@
+.ts-page {
+  --ts-color-elementary: #4caf8d;
+  --ts-color-middle:     #4a90d9;
+  --ts-color-high:       #5c6bc0;
+  --ts-color-special:    #9c7cc7;
+  --ts-color-fixed:      #90a4ae;
+
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #d0e8e4;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #f7fcfb 0%, #edf6f4 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.05);
+    padding: 24px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 18px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #2e7d72;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.12rem;
+      line-height: 1.38;
+      color: #172033;
+    }
+
+    p {
+      margin: 0;
+      max-width: 820px;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #5f6674;
+    }
+  }
+}
+
+// ── 배지 ────────────────────────────────────────────────────
+.ts-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  vertical-align: middle;
+
+  &--official {
+    border: 1px solid #2d7a2d;
+    background: #e8f4e8;
+    color: #2d7a2d;
+  }
+  &--estimate {
+    border: 1px solid #b8780a;
+    background: #fff8e6;
+    color: #9b6600;
+  }
+  &--ref {
+    border: 1px solid #2a5bbf;
+    background: #e8f0fb;
+    color: #2a5bbf;
+  }
+  &--editorial {
+    border: 1px solid #8ba3a0;
+    background: #f3f7f6;
+    color: #5f6674;
+  }
+}
+
+// ── KPI 카드 ────────────────────────────────────────────────
+.ts-kpi-section {
+  .ts-source-note {
+    margin: 10px 0 0;
+    font-size: 0.72rem;
+    color: #8892a0;
+  }
+}
+
+.ts-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.ts-kpi-card {
+  background: #fff;
+  border: 1px solid #c8e3de;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+
+  &__label {
+    margin: 0 0 4px;
+    font-size: 0.78rem;
+    color: #5f6674;
+  }
+  &__value {
+    margin: 0 0 5px;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #0f5f63;
+    line-height: 1.2;
+  }
+  &__sub {
+    margin: 4px 0 0;
+    font-size: 0.7rem;
+    color: #8892a0;
+  }
+}
+
+// ── 학교급 카드 ─────────────────────────────────────────────
+.ts-level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.ts-level-card {
+  background: #fff;
+  border: 1px solid #ccdfe0;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.18s, border-color 0.18s;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    outline: 2px solid var(--ts-color-elementary);
+  }
+
+  &.is-active {
+    border-color: #4caf8d;
+    box-shadow: 0 4px 16px rgba(76, 175, 141, 0.18);
+  }
+
+  &__body {
+    padding: 14px 14px 10px;
+  }
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+
+    strong { font-size: 1rem; color: #172033; }
+  }
+  &__basis {
+    margin: 0 0 4px;
+    font-size: 0.74rem;
+    color: #5f6674;
+  }
+  &__base {
+    margin: 0 0 4px;
+    font-size: 0.84rem;
+  }
+  &__range {
+    margin: 0 0 10px;
+    font-size: 0.82rem;
+  }
+  &__toggle {
+    width: 100%;
+    padding: 6px 0;
+    background: none;
+    border: none;
+    border-top: 1px solid #e8eeee;
+    font-size: 0.8rem;
+    color: #2e7d72;
+    cursor: pointer;
+    font-weight: 600;
+    text-align: center;
+
+    &:hover { background: #f0faf8; }
+  }
+}
+
+.ts-level-bar {
+  height: 5px;
+}
+
+.ts-level-panel {
+  padding: 12px 14px 14px;
+  background: #f7fcfb;
+  border-top: 1px solid #daeee9;
+  font-size: 0.83rem;
+
+  &__qual {
+    margin: 0 0 8px;
+    font-weight: 600;
+    color: #1a3f3a;
+  }
+  &__chars {
+    margin: 0 0 8px;
+    padding-left: 18px;
+    color: #444c56;
+    line-height: 1.8;
+  }
+  &__notice {
+    margin: 0;
+    font-size: 0.76rem;
+    color: #7b8794;
+  }
+}
+
+.ts-toggle-icon {
+  display: inline-block;
+  transition: transform 0.18s;
+}
+.ts-level-card.is-active .ts-toggle-icon {
+  transform: rotate(180deg);
+}
+
+// ── 호봉표 ─────────────────────────────────────────────────
+.ts-hobong-summary,
+.ts-hobong-full {
+  overflow-x: auto;
+  margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ts-hobong-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th {
+    background: #e8f4f2;
+    color: #1a4a46;
+    padding: 8px 10px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #edf2f1;
+    vertical-align: middle;
+  }
+  &--full {
+    min-width: 460px;
+    td, th { padding: 6px 10px; }
+  }
+}
+
+.ts-hobong-row--highlight {
+  background: #e6f8f4 !important;
+  font-weight: 700;
+  td { color: #0f5f63; }
+}
+
+.ts-hobong-label {
+  margin-left: 6px;
+  font-size: 0.7rem;
+  color: #2e7d72;
+  font-weight: 600;
+}
+
+.ts-hobong-toggle-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: #f0faf8;
+  border: 1px solid #b8dcd8;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #2e7d72;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 12px;
+
+  &:hover { background: #e0f5f1; }
+}
+
+.ts-hobong-footnote {
+  margin: 8px 0 0;
+  font-size: 0.74rem;
+  color: #7b8794;
+}
+
+// ── 차트 ───────────────────────────────────────────────────
+.ts-chart-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+
+  canvas {
+    width: 100% !important;
+    min-height: 320px;
+  }
+}
+
+.ts-sim-chart-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+
+  canvas {
+    width: 100% !important;
+    min-height: 320px;
+  }
+}
+
+// ── 수당 탭 ────────────────────────────────────────────────
+.ts-allowance-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.ts-allowance-tab {
+  padding: 6px 14px;
+  border: 1px solid #b8d8d4;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: #4a5568;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover { background: #e8f4f2; }
+  &.is-active {
+    background: #2e7d72;
+    color: #fff;
+    border-color: #2e7d72;
+  }
+}
+
+.ts-allowance-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.ts-allowance-card {
+  background: #fff;
+  border: 1px solid #d4e8e4;
+  border-radius: 12px;
+  padding: 14px;
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    strong { font-size: 0.9rem; color: #172033; }
+  }
+  &__amount {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #2e7d72;
+    white-space: nowrap;
+  }
+  &__cond {
+    margin: 0 0 4px;
+    font-size: 0.76rem;
+    color: #5f6674;
+  }
+  &__basis {
+    margin: 0;
+    font-size: 0.72rem;
+    color: #8892a0;
+  }
+}
+
+// ── 공립 vs 사립 ────────────────────────────────────────────
+.ts-pp-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ts-pp-table {
+  width: 100%;
+  min-width: 460px;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+
+  th {
+    background: #e8f4f2;
+    color: #1a4a46;
+    padding: 9px 12px;
+    text-align: left;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #edf2f1;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+}
+
+// ── 시뮬레이션 ──────────────────────────────────────────────
+.ts-sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.ts-sim-control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ts-sim-control-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4a5568;
+  white-space: nowrap;
+}
+
+.ts-sim-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.ts-sim-btn {
+  padding: 5px 12px;
+  border: 1px solid #b8d8d4;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #4a5568;
+  transition: background 0.14s;
+
+  &.is-active {
+    background: #2e7d72;
+    color: #fff;
+    border-color: #2e7d72;
+  }
+  &:hover:not(.is-active) { background: #e8f4f2; }
+}
+
+.ts-sim-note {
+  margin: 10px 0 0;
+  font-size: 0.74rem;
+  color: #8892a0;
+}
+
+// ── 업무 강도 테이블 ─────────────────────────────────────────
+.ts-workload-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ts-workload-table {
+  width: 100%;
+  min-width: 400px;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+
+  th {
+    background: #e8f4f2;
+    color: #1a4a46;
+    padding: 9px 12px;
+    text-align: left;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #edf2f1;
+  }
+}
+
+.ts-workload-cell {
+  font-weight: 600;
+  border-radius: 6px;
+}
+.ts-workload--very-high { color: #b81c1c; background: #fff0f0; }
+.ts-workload--high      { color: #c05c00; background: #fff5ec; }
+.ts-workload--mid-high  { color: #8b6d00; background: #fffaed; }
+.ts-workload--mid       { color: #2a7a2a; background: #f0f8ee; }
+.ts-workload--low       { color: #5f6674; background: #f5f5f5; }
+
+// ── 총보상 패키지 ───────────────────────────────────────────
+.ts-comp-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ts-comp-table {
+  width: 100%;
+  min-width: 500px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th {
+    background: #e8f4f2;
+    color: #1a4a46;
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #edf2f1;
+    vertical-align: middle;
+  }
+}
+
+.ts-comp-note {
+  font-size: 0.76rem;
+  color: #8892a0;
+}
+
+// ── 진입 경로 ──────────────────────────────────────────────
+.ts-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.ts-entry-card {
+  background: #fff;
+  border: 1px solid #d4e8e4;
+  border-radius: 14px;
+  padding: 16px;
+
+  &__name {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #172033;
+  }
+  &__qual {
+    margin: 0 0 8px;
+    font-size: 0.78rem;
+    color: #2e7d72;
+    font-weight: 600;
+  }
+  &__step {
+    margin: 0 0 4px;
+    font-size: 0.84rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  &__base {
+    font-size: 0.76rem;
+    color: #5f6674;
+    font-weight: 400;
+  }
+  &__basis {
+    margin: 0 0 6px;
+    font-size: 0.74rem;
+    color: #8892a0;
+  }
+  &__desc {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #4a5568;
+    line-height: 1.6;
+  }
+}
+
+// ── FAQ ───────────────────────────────────────────────────
+.ts-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ts-faq-item {
+  border-bottom: 1px solid #e0eeed;
+
+  &:last-child { border-bottom: none; }
+}
+
+.ts-faq-q {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #172033;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.45;
+
+  &:hover { color: #2e7d72; }
+}
+
+.ts-faq-icon {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  transition: transform 0.18s;
+  color: #7b8794;
+}
+
+.ts-faq-item.is-open .ts-faq-icon {
+  transform: rotate(180deg);
+}
+
+.ts-faq-a {
+  padding: 0 0 14px;
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: #4a5568;
+  }
+}
+
+// ── 관련 링크 ──────────────────────────────────────────────
+.ts-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.ts-link-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #d4e8e4;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.16s, border-color 0.16s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border-color: #4caf8d;
+  }
+
+  &__eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #2e7d72;
+  }
+
+  strong {
+    font-size: 0.9rem;
+    color: #172033;
+    line-height: 1.3;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #5f6674;
+    line-height: 1.55;
+  }
+}
+
+// ── 반응형 ─────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .ts-level-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ts-entry-grid,
+  .ts-link-grid,
+  .ts-allowance-list {
+    grid-template-columns: 1fr;
+  }
+  .ts-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ts-sim-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .ts-level-grid { grid-template-columns: 1fr; }
+}

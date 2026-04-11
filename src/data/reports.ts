@@ -161,4 +161,11 @@ export const reports: ReportMeta[] = [
     order: 22,
     badges: ["간호사", "연봉", "병원비교", "2026"],
   },
+  {
+    slug: "teacher-salary-2026",
+    title: "학교 선생님 연봉·호봉 완전 정리 2026",
+    description: "초등·중학교·고등학교 교사 호봉표, 수당 구조, 기간제 차이를 2026년 교원 봉급표 기준으로 비교합니다.",
+    order: 23,
+    badges: ["교사", "공무원", "연봉", "호봉표", "2026"],
+  },
 ];
