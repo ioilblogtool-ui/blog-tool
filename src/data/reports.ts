@@ -168,4 +168,11 @@ export const reports: ReportMeta[] = [
     order: 23,
     badges: ["교사", "공무원", "연봉", "호봉표", "2026"],
   },
+  {
+    slug: "postpartum-center-cost-2026",
+    title: "2026 산후조리원 비용 완전 비교",
+    description: "전국 평균, 서울·경기·지방, 일반실·특실, 공공 vs 민간까지 산후조리원 2주 비용을 한 번에 비교합니다.",
+    order: 24,
+    badges: ["출산", "산후조리원", "비용비교", "2026"],
+  },
 ];
