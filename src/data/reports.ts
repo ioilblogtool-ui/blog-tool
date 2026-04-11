@@ -175,4 +175,11 @@ export const reports: ReportMeta[] = [
     order: 24,
     badges: ["출산", "산후조리원", "비용비교", "2026"],
   },
+  {
+    slug: "national-pension-generational-comparison-2026",
+    title: "국민연금 세대별 손익 비교 2026",
+    description: "1960·1975·1990·2000년생 기준 납입 총액, 예상 수령액, 손익분기점, 수익비와 2026 연금개혁 영향 총정리",
+    order: 25,
+    badges: ["국민연금", "세대비교", "연금개혁", "2026"],
+  },
 ];

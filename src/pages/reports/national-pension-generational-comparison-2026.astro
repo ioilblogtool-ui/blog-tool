@@ -1,0 +1,478 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  NP_META,
+  NP_HERO_STATS,
+  SYSTEM_CONCEPTS,
+  PREMIUM_RATE_ROADMAP,
+  GENERATION_SCENARIOS,
+  GENERATION_SUMMARIES,
+  PAYOUT_TIMING_COMPARE,
+  OECD_COMPARISON,
+  FUND_SCENARIOS,
+  BURDEN_COMPARE,
+  RETIREMENT_READINESS,
+  THREE_LAYER_STRATEGY,
+  REFORM_CHECKLIST,
+  NP_FAQ,
+  REFERENCES,
+  SEO_SECTIONS,
+} from "../../data/nationalPension2026";
+
+const badgeMod = (label: string) =>
+  label === "공식" ? "official" : label === "시뮬레이션" ? "sim" : "note";
+
+const faqItems = NP_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+
+const genKeys = ["1960", "1975", "1990", "2000"] as const;
+const genLabels = { "1960": "1960년생", "1975": "1975년생", "1990": "1990년생", "2000": "2000년생" };
+
+const rateLabels = JSON.stringify(PREMIUM_RATE_ROADMAP.map((r) => String(r.year)));
+const rateValues = JSON.stringify(PREMIUM_RATE_ROADMAP.map((r) => r.rate));
+
+const contribOld = JSON.stringify(genKeys.map((k) => GENERATION_SCENARIOS[k].old.totalContribution));
+const contribReform = JSON.stringify(genKeys.map((k) => GENERATION_SCENARIOS[k].reform.totalContribution));
+
+const pensionOld = JSON.stringify(genKeys.map((k) => GENERATION_SCENARIOS[k].old.monthlyPension));
+const pensionReform = JSON.stringify(genKeys.map((k) => GENERATION_SCENARIOS[k].reform.monthlyPension));
+
+const ratioNormal = JSON.stringify(genKeys.map((k) => GENERATION_SCENARIOS[k].reform.payoutRatio));
+// 조기수령: 수익비 약 -0.19x (정상 대비)
+const ratioEarly = JSON.stringify(genKeys.map((k) => +(GENERATION_SCENARIOS[k].reform.payoutRatio * 0.81).toFixed(2)));
+const ratioDefer = JSON.stringify(genKeys.map((k) => +(GENERATION_SCENARIOS[k].reform.payoutRatio * 1.23).toFixed(2)));
+
+const genLabelsJson = JSON.stringify(genKeys.map((k) => genLabels[k]));
+
+const oecdLabels = JSON.stringify(OECD_COMPARISON.map((o) => o.country));
+const oecdValues = JSON.stringify(OECD_COMPARISON.map((o) => o.rate));
+---
+
+<BaseLayout
+  title="국민연금 세대별 손익 비교 2026 | 보험료율 인상·수익비·손익분기점 총정리 | 비교계산소"
+  description="1960·1975·1990·2000년생 기준으로 국민연금 납입 총액, 예상 수령액, 손익분기점, 수익비를 비교하고 2026년 연금개혁 이후 달라지는 점까지 정리했습니다."
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page np-page">
+
+    <!-- SECTION A: Hero -->
+    <CalculatorHero
+      eyebrow="국민연금 리포트"
+      title="국민연금 세대별 손익 비교 2026"
+      description="1960·1975·1990·2000년생 기준으로 낸 돈, 받을 돈, 손익분기점, 연금개혁 영향까지 한눈에 비교합니다."
+      badges={["국민연금", "연금개혁", "2026", "세대비교"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "납입 총액·수령액·손익분기점·수익비는 월소득 300만원·직장가입자 본인 부담 가정 기반 시뮬레이션입니다.",
+        "보험료율·소득대체율·지급개시연령 등 제도 수치는 국민연금공단·보건복지부 공식 기준을 사용합니다.",
+        "실제 개인별 금액은 소득이력·가입기간에 따라 크게 달라질 수 있습니다.",
+      ]}
+    />
+
+    <!-- SECTION B: Hero KPI 4개 -->
+    <section class="content-section">
+      <div class="np-kpi-grid">
+        {NP_HERO_STATS.map((stat) => (
+          <article class="np-kpi-card">
+            <span class={`np-badge np-badge--${badgeMod(stat.badge)}`}>{stat.badge}</span>
+            <p class="np-kpi-label">{stat.label}</p>
+            <strong class="np-kpi-value">{stat.value}</strong>
+            <p class="np-kpi-note">{stat.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTION C: 제도 개념 설명 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">제도 기초</p>
+        <h2>국민연금 제도 한눈에 보기</h2>
+        <p>보험료율·소득대체율·지급개시연령·가입기간 — 4가지 개념부터 파악해야 세대별 비교가 보입니다.</p>
+      </div>
+      <div class="np-concept-grid">
+        {SYSTEM_CONCEPTS.map((c) => (
+          <article class="np-concept-card">
+            <p class="np-concept-term">{c.title}</p>
+            <p class="np-concept-def">{c.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTION D: 보험료율 인상 로드맵 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">공식 기준</p>
+        <h2>보험료율 인상 로드맵</h2>
+        <p>2026년 9.5%에서 시작해 2033년 13%까지 매년 0.5%p씩 단계 인상됩니다.</p>
+      </div>
+      <div class="np-chart-wrap">
+        <canvas
+          id="np-rate-chart"
+          data-labels={rateLabels}
+          data-values={rateValues}
+        ></canvas>
+      </div>
+      <div class="np-rate-extra-box">
+        <p class="np-rate-extra-title">월평균소득 309만원 기준 2026년 추가 부담 <span class="np-badge np-badge--official">공식</span></p>
+        {BURDEN_COMPARE.map((b) => (
+          <div class="np-rate-extra-row">
+            <span>{b.title}</span>
+            <strong>{b.monthlyExtra}</strong>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTION E: 세대별 납입 총액 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">세대별 비교</p>
+        <h2>세대별 납입 총액 비교</h2>
+        <p>개혁 전과 개혁 반영 시나리오를 나란히 보면 세대별 보험료 증가 폭이 보입니다.</p>
+      </div>
+      <div class="np-scenario-btns" id="np-scenario-btns">
+        <button class="np-scenario-btn is-active" data-scenario="reform">개혁 반영</button>
+        <button class="np-scenario-btn" data-scenario="old">개혁 전</button>
+      </div>
+      <div class="np-chart-wrap">
+        <canvas
+          id="np-contribution-chart"
+          data-labels={genLabelsJson}
+          data-old={contribOld}
+          data-reform={contribReform}
+        ></canvas>
+      </div>
+      <p class="np-sim-note"><span class="np-badge np-badge--sim">시뮬레이션</span> 월소득 300만원 고정·직장가입자 본인 부담 기준 추정치입니다. 개인별 실제 금액과 다를 수 있습니다.</p>
+
+      <!-- 세대별 요약 카드 -->
+      <div class="np-gen-summary-grid">
+        {GENERATION_SUMMARIES.map((g) => (
+          <article class="np-gen-summary-card">
+            <p class="np-gen-summary-title">{g.title}</p>
+            <p class="np-gen-summary-body">{g.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTION F: 세대별 예상 수령액과 손익분기점 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">시뮬레이션</p>
+        <h2>세대별 예상 수령액과 손익분기점</h2>
+        <p>예상 월 수령액과 투자 원금을 회수하는 손익분기점 나이를 세대별로 비교합니다.</p>
+      </div>
+      <div class="np-chart-wrap">
+        <canvas
+          id="np-pension-chart"
+          data-labels={genLabelsJson}
+          data-old={pensionOld}
+          data-reform={pensionReform}
+        ></canvas>
+      </div>
+      <p class="np-sim-note"><span class="np-badge np-badge--sim">시뮬레이션</span> 개혁 반영 시나리오 기준. 수령액은 소득 수준·가입기간에 따라 달라집니다.</p>
+
+      <div class="np-breakeven-cards">
+        {genKeys.map((k) => (
+          <article class="np-breakeven-card" data-gen={k}>
+            <p class="np-breakeven-gen">{genLabels[k]}</p>
+            <p class="np-breakeven-age" id={`np-be-${k}`}>
+              {GENERATION_SCENARIOS[k].reform.breakevenAge}세
+            </p>
+            <p class="np-breakeven-label">손익분기점 나이 <span class="np-badge np-badge--sim">시뮬레이션</span></p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTION G: 수익비 비교 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">수령 방식별</p>
+        <h2>세대별 수익비 비교</h2>
+        <p>조기·정상·연기 수령 방식별로 수익비가 어떻게 달라지는지 확인합니다.</p>
+      </div>
+      <div class="np-timing-tabs" id="np-timing-tabs">
+        <button class="np-timing-tab is-active" data-timing="normal">정상수령</button>
+        <button class="np-timing-tab" data-timing="early">조기수령</button>
+        <button class="np-timing-tab" data-timing="defer">연기수령</button>
+      </div>
+      <div class="np-chart-wrap">
+        <canvas
+          id="np-ratio-chart"
+          data-labels={genLabelsJson}
+          data-normal={ratioNormal}
+          data-early={ratioEarly}
+          data-defer={ratioDefer}
+        ></canvas>
+      </div>
+      <div class="np-ratio-notice">
+        국민연금은 단순 금융상품이 아닌 장수위험 분산 사회보험입니다. 수익비는 납입 대비 총수령 비율 참고 지표이며, 유족·장애 보장 등 부가 기능은 포함되지 않습니다.
+      </div>
+    </section>
+
+    <!-- SECTION H: 2055년 고갈설과 실제 영향 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 오해</p>
+        <h2>2055년 기금 고갈설과 실제 영향</h2>
+        <p>현행 유지 시와 개혁 반영 시 전망을 나란히 보면 혼동이 줄어듭니다.</p>
+      </div>
+      <div class="np-timeline">
+        {FUND_SCENARIOS.map((s) => (
+          <div class="np-timeline-row">
+            <span class="np-timeline-label">{s.title}</span>
+            <div class={`np-timeline-bar np-timeline-bar--${s.title.includes("현행") ? "old" : "reform"}`}>
+              <span class="np-timeline-end">{s.year}</span>
+            </div>
+            <span class={`np-badge np-badge--${badgeMod(s.badge)}`}>{s.badge}</span>
+          </div>
+        ))}
+      </div>
+      <div class="np-notice-box">
+        <strong>기금 소진 ≠ 지급 중단</strong><br />
+        기금이 소진되더라도 국가 재정 투입 등을 통해 연금 지급이 계속될 수 있습니다.
+        "2055년에 연금을 아예 못 받는다"는 단정은 공식 견해와 다릅니다.
+      </div>
+    </section>
+
+    <!-- SECTION I: 조기수령 vs 정상수령 vs 연기수령 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">수령 전략</p>
+        <h2>조기수령 vs 정상수령 vs 연기수령</h2>
+        <p>1975년생·개혁 반영 기준 예시입니다. 건강 상태·다른 소득원·기대수명에 따라 유불리가 달라집니다.</p>
+      </div>
+      <div class="np-timing-compare">
+        {PAYOUT_TIMING_COMPARE.map((item) => {
+          const mod = item.type === "조기수령" ? "early" : item.type === "연기수령" ? "defer" : "normal";
+          return (
+            <article class={`np-timing-card np-timing-card--${mod}`}>
+              <p class="np-timing-type">{item.type}</p>
+              <p class="np-timing-age">시작: {item.startAge}세</p>
+              <p class="np-timing-amount">{item.monthlyAmount}만원/월</p>
+              <p class="np-timing-breakeven">손익분기: 약 {item.breakevenVsNormal}세</p>
+              <p class="np-timing-best">{item.bestFor}</p>
+              <span class={`np-badge np-badge--${badgeMod(item.badge)}`}>{item.badge}</span>
+            </article>
+          );
+        })}
+      </div>
+      <p class="np-sim-note">
+        <span class="np-badge np-badge--sim">시뮬레이션</span>
+        조기수령 -0.6%/월 × 60개월 = -36%, 연기수령 +0.6%/월 × 60개월 = +36% 기준 추정입니다.
+      </p>
+    </section>
+
+    <!-- SECTION J: 직장가입자 vs 지역가입자 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">가입 유형 비교</p>
+        <h2>직장가입자 vs 지역가입자 납입 구조</h2>
+        <p>같은 보험료율 인상이라도 부담 방식에 따라 체감이 다릅니다.</p>
+      </div>
+      <div class="np-subscriber-compare">
+        {BURDEN_COMPARE.map((b) => (
+          <article class="np-subscriber-card">
+            <h3>{b.title}</h3>
+            <p class="np-subscriber-burden">{b.monthlyExtra}</p>
+            <p>{b.body}</p>
+            <span class={`np-badge np-badge--${badgeMod(b.badge)}`}>{b.badge}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTION K: OECD 비교 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">국제 비교</p>
+        <h2>OECD 주요국 공적연금 소득대체율 비교</h2>
+        <p>한국 목표치(43%)를 OECD 주요국과 나란히 봅니다.</p>
+      </div>
+      <div class="np-chart-wrap">
+        <canvas
+          id="np-oecd-chart"
+          data-labels={oecdLabels}
+          data-values={oecdValues}
+        ></canvas>
+      </div>
+      <p class="np-sim-note">
+        <span class="np-badge np-badge--note">참고</span>
+        Pensions at a Glance 2025 기준 평균소득자 대략값. 국가별 제도 구조 차이로 직접 비교에는 한계가 있습니다.
+      </p>
+    </section>
+
+    <!-- SECTION L: 국민연금만으로 노후 준비 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">노후 준비 현실</p>
+        <h2>국민연금만으로 노후 준비가 충분한가요?</h2>
+      </div>
+      <div class="np-readiness-box">
+        <div class="np-readiness-row">
+          <span>목표 노후 생활비 예시</span>
+          <strong>월 {RETIREMENT_READINESS.targetMonthlyExpense}만원</strong>
+        </div>
+        <div class="np-readiness-row">
+          <span>국민연금 예상 수령액</span>
+          <strong class="np-readiness-pension">월 {RETIREMENT_READINESS.expectedPension}만원</strong>
+        </div>
+        <div class="np-readiness-row np-readiness-row--shortfall">
+          <span>부족분 (추가 준비 필요)</span>
+          <strong>월 {RETIREMENT_READINESS.shortfall}만원</strong>
+        </div>
+        <p class="np-readiness-note">
+          소득대체율 43% 기준 국민연금 커버율 약 {RETIREMENT_READINESS.coverageRate}%. IRP·연금저축 같은 추가 축이 필요합니다.
+        </p>
+      </div>
+      <div class="np-readiness-cta">
+        <a
+          href="https://csa.nps.or.kr/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="np-cta-link"
+        >내 예상 연금액 직접 확인 (국민연금공단 내 연금 알아보기)</a>
+      </div>
+    </section>
+
+    <!-- SECTION M: 3층 연금 전략 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">노후 전략</p>
+        <h2>국민연금 + IRP + 연금저축 3층 전략</h2>
+        <p>국민연금만으로 모자라는 부분을 메우는 구조를 3층으로 나눠봅니다.</p>
+      </div>
+      <div class="np-three-layer">
+        {THREE_LAYER_STRATEGY.map((layer, i) => (
+          <article class="np-layer-card">
+            <span class="np-layer-num">{i + 1}층</span>
+            <h3 class="np-layer-title">{layer.title}</h3>
+            <p class="np-layer-body">{layer.body}</p>
+          </article>
+        ))}
+      </div>
+      <div class="np-related-links">
+        {REFERENCES.related.map((link) => (
+          <a href={link.href} class="np-related-link">{link.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTION N: 납입 공백 대처법 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">납입 공백</p>
+        <h2>납입 공백·사각지대 대처법</h2>
+        <p>실직·프리랜서 전환·육아휴직 등으로 납입이 끊기는 경우 아래를 확인하세요.</p>
+      </div>
+      <ul class="np-checklist np-gap-list">
+        <li>실직 기간: 납부예외 신청으로 강제 체납 방지</li>
+        <li>프리랜서 전환: 지역가입자 전환 후 소득 신고 기준 재산정</li>
+        <li>육아 경력 공백: 출산·육아기 보험료 지원제도 확인</li>
+        <li>납부예외 장기화: 추후납부 제도로 공백 기간 소급 납부 가능</li>
+        <li>가입기간 10년 미만: 반환일시금 vs 임의가입 선택 비교 필요</li>
+      </ul>
+      <div class="np-readiness-cta">
+        <a
+          href="https://www.nps.or.kr/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="np-cta-link"
+        >국민연금공단 공식 민원 안내 바로가기</a>
+      </div>
+    </section>
+
+    <!-- SECTION O: 연금개혁 체크리스트 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">체크리스트</p>
+        <h2>연금 개혁 이후 내 상황 체크리스트</h2>
+        <p>아래 항목을 하나씩 확인해보세요.</p>
+      </div>
+      <ul class="np-checklist">
+        {REFORM_CHECKLIST.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- SECTION P: FAQ -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2>국민연금 FAQ</h2>
+      </div>
+      <div class="np-faq-list" id="np-faq-list">
+        {NP_FAQ.map((item, i) => (
+          <div class="np-faq-item">
+            <button class="np-faq-q" data-idx={i}>
+              <span>{item.q}</span>
+              <span class="np-faq-icon">＋</span>
+            </button>
+            <div class="np-faq-a" hidden>
+              {item.a}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTION Q: 관련 콘텐츠 CTA -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">관련 콘텐츠</p>
+        <h2>함께 보면 좋은 계산기</h2>
+      </div>
+      <div class="np-cta-grid">
+        <a href="/tools/dca-investment-calculator/" class="np-cta-card">
+          <strong>적립식 투자 계산기</strong>
+          <p>IRP·연금저축 복리 효과를 직접 계산해보세요</p>
+        </a>
+        <a href="/tools/fire-calculator/" class="np-cta-card">
+          <strong>FIRE 은퇴 계산기</strong>
+          <p>국민연금 외 필요 자산을 역산합니다</p>
+        </a>
+        <a href="/tools/salary-tier/" class="np-cta-card">
+          <strong>연봉 티어 계산기</strong>
+          <p>연금 기반 소득 위치를 파악합니다</p>
+        </a>
+        <a href="/reports/salary-asset-2016-vs-2026/" class="np-cta-card">
+          <strong>연봉·자산 10년 비교</strong>
+          <p>2016 vs 2026 연봉·자산 체감 변화</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- SECTION R: SeoContent -->
+    <SeoContent
+      introTitle="국민연금 세대별 손익 비교 2026 요약"
+      intro={SEO_SECTIONS.map((s) => s.body)}
+      criteria={[
+        "보험료율·소득대체율·지급개시연령 등 제도 수치는 국민연금공단·보건복지부 공식 기준 사용",
+        "납입 총액·수익비·손익분기점은 월소득 300만원·직장가입자 기준 시뮬레이션",
+        "OECD 소득대체율 비교는 Pensions at a Glance 2025 기준 평균소득자 대략값",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/dca-investment-calculator/", label: "적립식 투자 계산기" },
+        { href: "/tools/fire-calculator/", label: "FIRE 은퇴 계산기" },
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/salary-asset-2016-vs-2026/", label: "연봉·자산 2016 vs 2026" },
+      ]}
+    />
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" is:inline></script>
+  <script src="/scripts/national-pension-generational-comparison-2026.js" is:inline></script>
+</BaseLayout>
