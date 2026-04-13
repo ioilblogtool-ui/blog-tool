@@ -1,0 +1,360 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  bitcoinGoldSp5002026,
+  calcInvestmentOutcome,
+  formatKoreanWon,
+  formatRecoveryLabel,
+  formatSignedPercent,
+} from "../../data/bitcoinGoldSp5002026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = bitcoinGoldSp5002026;
+const defaultAmount = report.calculatorDefaults.investmentAmount;
+const initialOutcomes = report.snapshots
+  .map((asset) => ({
+    ...asset,
+    ...calcInvestmentOutcome(defaultAmount, asset),
+  }))
+  .sort((a, b) => b.finalAmount - a.finalAmount);
+const bestOutcome = initialOutcomes[0];
+const calmestAsset = [...report.snapshots].sort((a, b) => Math.abs(a.mdd) - Math.abs(b.mdd))[0];
+const fastestRecovery = [...report.snapshots]
+  .filter((asset) => asset.recoveryMonths != null)
+  .sort((a, b) => (a.recoveryMonths ?? 999) - (b.recoveryMonths ?? 999))[0];
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page asset-comparison-report-page">
+    <CalculatorHero
+      eyebrow="자산 비교 리포트"
+      title="비트코인·금·S&P500 10년 수익 비교 2026"
+      description="2016년에 같은 돈을 넣었다는 가정으로 현재 가치, 하락폭, 회복 기간까지 함께 비교합니다."
+      badges={["비트코인", "금", "S&P500", "10년비교", "2026"]}
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, report.meta.updatedAt]}
+    />
+
+    <section class="content-section asset-comparison-hero-board">
+      <div class="asset-comparison-lead">
+        <p class="asset-comparison-lead__eyebrow">Editor&apos;s Brief</p>
+        <h2>수익률 1등과 버티기 쉬운 자산 1등은 달랐습니다</h2>
+        <p class="asset-comparison-lead__body">{report.reportLead}</p>
+        <div class="asset-comparison-lead__chips">
+          <span class="is-strong">100만원 결과 1위 {bestOutcome.label}</span>
+          <span class="is-calm">낙폭 최소 {calmestAsset.label}</span>
+          <span class="is-balance">회복 최단 {fastestRecovery.label}</span>
+        </div>
+      </div>
+      <div class="asset-comparison-hero-stats">
+        {report.heroStats.map((item) => (
+          <article class="asset-comparison-hero-stat">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>먼저 보면 좋은 결론 6개</h2>
+      </div>
+      <div class="asset-comparison-kpi-grid">
+        {report.kpis.map((item) => (
+          <article class="asset-comparison-kpi-card">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 비교 표</p>
+        <h2>10년 성과를 같은 줄에 놓고 봅니다</h2>
+        <p>기본 정렬은 100만원 투자 결과 기준입니다. 표 하단 주석과 함께 읽어야 오해가 적습니다.</p>
+      </div>
+      <div class="asset-comparison-table-wrap">
+        <table class="asset-comparison-table">
+          <thead>
+            <tr>
+              <th>자산</th>
+              <th>시작값</th>
+              <th>현재값</th>
+              <th>누적수익률</th>
+              <th>CAGR</th>
+              <th>100만원 결과</th>
+            </tr>
+          </thead>
+          <tbody>
+            {initialOutcomes.map((item, index) => (
+              <tr class={index === 0 ? "is-top" : ""}>
+                <td>
+                  <strong>{item.label}</strong>
+                </td>
+                <td>{item.displayStart}</td>
+                <td>{item.displayEnd}</td>
+                <td class="is-strong">{formatSignedPercent(item.totalReturnRate)}</td>
+                <td>{formatSignedPercent(item.cagr)}</td>
+                <td class="is-current">{item.finalLabel}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="asset-comparison-footnote">기준일: 2016년 초 ~ 2026년 4월 스냅샷. 미국 자산은 한국 투자자 체감 기준으로 원화 결과를 읽기 쉽게 재구성했습니다.</p>
+    </section>
+
+    <section class="content-section asset-comparison-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">탐색 차트</p>
+        <h2>성장, 낙폭, 회복, 실질 수익을 탭으로 전환해서 봅니다</h2>
+        <p id="assetComparisonChartDesc">기본 보기에서는 2016=100 성장 곡선을 로그 스케일로 보여줍니다.</p>
+      </div>
+      <div class="asset-comparison-tab-row">
+        <button type="button" class="asset-comparison-tab is-active" data-compare-mode="growth">성장 곡선</button>
+        <button type="button" class="asset-comparison-tab" data-compare-mode="drawdown">최대 낙폭</button>
+        <button type="button" class="asset-comparison-tab" data-compare-mode="recovery">회복 기간</button>
+        <button type="button" class="asset-comparison-tab" data-compare-mode="real">실질/세후</button>
+      </div>
+      <div class="asset-comparison-chart-panel">
+        <div class="asset-comparison-chart-wrap">
+          <canvas id="assetComparisonPrimaryChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-risk-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리스크 보드</p>
+        <h2>같은 성과라도 스트레스는 크게 달랐습니다</h2>
+      </div>
+      <div class="asset-comparison-risk-grid">
+        {report.snapshots.map((item) => (
+          <article class="asset-comparison-risk-card">
+            <div class="asset-comparison-risk-card__head">
+              <p>{item.label}</p>
+              <strong>{formatSignedPercent(item.totalReturnRate)}</strong>
+            </div>
+            <ul class="asset-comparison-risk-list">
+              <li><span>MDD</span><b>{item.mdd}%</b></li>
+              <li><span>회복 기간</span><b>{formatRecoveryLabel(item.recoveryMonths)}</b></li>
+              <li><span>연환산 변동성</span><b>{item.volatilityAnnual}%</b></li>
+            </ul>
+            <p class="asset-comparison-risk-card__summary">{item.roleSummary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-simulation-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">투자금 시뮬레이션</p>
+        <h2>100만원, 1000만원, 1억원 기준 결과를 바로 비교합니다</h2>
+      </div>
+      <div class="asset-comparison-simulation-box">
+        <div class="asset-comparison-simulation-controls">
+          <label class="asset-comparison-input-field" for="assetComparisonAmountInput">
+            <span>투자금 (원)</span>
+            <input type="number" id="assetComparisonAmountInput" min="100000" step="100000" value={defaultAmount} />
+          </label>
+          <div class="asset-comparison-preset-row">
+            <button type="button" class="asset-comparison-preset is-active" data-amount="1000000">100만원</button>
+            <button type="button" class="asset-comparison-preset" data-amount="10000000">1000만원</button>
+            <button type="button" class="asset-comparison-preset" data-amount="100000000">1억원</button>
+          </div>
+          <div class="asset-comparison-simulation-summary">
+            <article class="asset-comparison-simulation-card">
+              <p>최고 현재 가치</p>
+              <strong id="assetComparisonTopAsset">{bestOutcome.label}</strong>
+              <span id="assetComparisonTopValue">{bestOutcome.finalLabel}</span>
+            </article>
+            <article class="asset-comparison-simulation-card">
+              <p>투자금 기준 최고 차익</p>
+              <strong id="assetComparisonTopProfit">{bestOutcome.profitLabel}</strong>
+              <span>가장 강했던 자산</span>
+            </article>
+          </div>
+        </div>
+        <div class="asset-comparison-simulation-table-wrap">
+          <table class="asset-comparison-simulation-table">
+            <thead>
+              <tr>
+                <th>자산</th>
+                <th>현재 가치</th>
+                <th>차익</th>
+                <th>배수</th>
+              </tr>
+            </thead>
+            <tbody id="assetComparisonSimulationBody">
+              {initialOutcomes.map((item) => (
+                <tr>
+                  <td>{item.label}</td>
+                  <td class="is-current">{item.finalLabel}</td>
+                  <td>{item.profitLabel}</td>
+                  <td>{item.multiple.toFixed(1)}배</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-correlation-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상관관계</p>
+        <h2>자산배분 관점에서는 같이 움직이는 정도도 중요합니다</h2>
+        <p>최근 10년 기준 단순 상관관계 매트릭스입니다. 완벽한 예측 수단이 아니라, 성격 차이를 읽는 보조판으로 활용합니다.</p>
+      </div>
+      <div class="asset-comparison-correlation-wrap">
+        <table class="asset-comparison-correlation-table">
+          <thead>
+            <tr>
+              <th>자산</th>
+              <th>BTC</th>
+              <th>금</th>
+              <th>S&P500</th>
+              <th>나스닥100</th>
+              <th>코스피</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.correlationMatrix.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.BTC.toFixed(2)}</td>
+                <td>{row.GOLD.toFixed(2)}</td>
+                <td>{row.SP500.toFixed(2)}</td>
+                <td>{row.NASDAQ100.toFixed(2)}</td>
+                <td>{row.KOSPI.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-access-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">국내 투자자 관점</p>
+        <h2>실제로는 무엇을 어떻게 사느냐가 체감을 바꿉니다</h2>
+      </div>
+      <div class="asset-comparison-access-grid">
+        {report.snapshots.map((item) => (
+          <article class="asset-comparison-access-card">
+            <div class="asset-comparison-access-card__head">
+              <p>{item.label}</p>
+              <strong>{item.accessSummary}</strong>
+            </div>
+            <span>{item.roleSummary}</span>
+          </article>
+        ))}
+      </div>
+      <div class="asset-comparison-reference-grid">
+        <article class="asset-comparison-reference-panel">
+          <h3>공식·지표 자료</h3>
+          <div class="asset-comparison-reference-links">
+            {report.references.official.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+          </div>
+        </article>
+        <article class="asset-comparison-reference-panel">
+          <h3>시장 확인 링크</h3>
+          <div class="asset-comparison-reference-links">
+            {report.references.market.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+          </div>
+        </article>
+        <article class="asset-comparison-reference-panel">
+          <h3>다음 계산기</h3>
+          <div class="asset-comparison-reference-links">
+            {report.references.next.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-allocation-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2026 현재 시나리오</p>
+        <h2>무엇을 살지보다 어떤 하락을 견딜 비중인지가 더 중요합니다</h2>
+      </div>
+      <div class="asset-comparison-allocation-grid">
+        {report.allocationPresets.map((preset) => (
+          <article class="asset-comparison-allocation-card" data-preset-card={preset.id}>
+            <div class="asset-comparison-allocation-card__head">
+              <p>{preset.label}</p>
+              <strong>{preset.weights.map((item) => `${item.assetId} ${item.weight}%`).join(" · ")}</strong>
+            </div>
+            <span>{preset.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-pattern-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">패턴 요약</p>
+        <h2>이 페이지에서 읽어야 할 핵심 해석 4개</h2>
+      </div>
+      <div class="asset-comparison-pattern-grid">
+        {report.patternNotes.map((item) => (
+          <article class="asset-comparison-pattern-card">
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section asset-comparison-cta-section">
+      <div class="asset-comparison-cta-card">
+        <div>
+          <p class="asset-comparison-cta-card__eyebrow">다음 액션</p>
+          <h2>장기투자 비교는 계산기로 이어서 봐야 더 선명합니다</h2>
+          <p>일시 투자 비교를 봤다면 이제 적립식, FIRE, ETF 리포트까지 연결해서 보는 흐름이 가장 자연스럽습니다.</p>
+        </div>
+        <div class="asset-comparison-cta-links">
+          {report.relatedLinks.map((item) => <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>)}
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="비트코인·금·S&P500 10년 비교 리포트 읽는 법"
+      intro={[
+        "이 리포트는 2016년부터 2026년까지 같은 돈을 넣었다고 가정했을 때 어떤 자산이 실제로 가장 강했는지, 그리고 그 과정이 얼마나 버티기 어려웠는지를 함께 보여주는 비교 페이지입니다.",
+        "핵심은 최종 수익률 하나만 보는 것이 아니라 최대 낙폭, 회복 기간, 실질 수익, 한국 투자자 접근 수단까지 함께 봐야 체감이 달라진다는 점입니다.",
+      ]}
+      criteria={[
+        "미국 자산은 한국 투자자 체감을 위해 원화 기준 결과를 읽기 쉽게 재구성했습니다.",
+        "세후 수익은 자산별 세법을 완전히 재현한 계산이 아니라 단순 비교용 추정치입니다.",
+        "비트코인의 성장 곡선은 다른 자산과 격차가 매우 커서 차트에서 로그 스케일로 보여줍니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script id="bitcoinGoldSp5002026Data" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/bitcoin-gold-sp500-10year-comparison-2026.js")}></script>
+</BaseLayout>
