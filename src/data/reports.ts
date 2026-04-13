@@ -182,4 +182,11 @@ export const reports: ReportMeta[] = [
     order: 25,
     badges: ["국민연금", "세대비교", "연금개혁", "2026"],
   },
+  {
+    slug: "bitcoin-gold-sp500-10year-comparison-2026",
+    title: "비트코인 vs 금 vs S&P500 10년 수익 비교 2026",
+    description: "2016~2026년 비트코인, 금, S&P500, 나스닥100, 코스피에 같은 돈을 투자했을 때의 결과를 수익률, MDD, 회복 기간, 실질 수익까지 함께 비교하는 인터랙티브 리포트입니다.",
+    order: 26,
+    badges: ["투자", "자산비교", "10년비교", "2026"],
+  },
 ];
