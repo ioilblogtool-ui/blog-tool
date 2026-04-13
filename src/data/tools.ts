@@ -350,6 +350,34 @@ export const tools: ToolMeta[] = [
       { label: "지원금 반영", value: "자동 차감" },
     ],
   },
+  {
+    slug: "national-pension-calculator",
+    title: "국민연금 예상수령액 계산기",
+    description: "현재 나이, 가입 시작 연도, 월소득 또는 보험료를 입력하면 조기·정상·연기 수령 기준 예상 월연금과 손익분기점을 비교하는 계산기",
+    order: 24,
+    eyebrow: "연금 계산기",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "정상 수령 나이", value: "65세" },
+      { label: "연기 가산", value: "+0.6%/월" },
+    ],
+  },
+  {
+    slug: "coin-tax-calculator",
+    title: "코인 세금 계산기",
+    description: "비트코인·이더리움 등 가상자산 매도 시 양도차익, 250만원 공제, 예상 세금, 세후 순이익을 바로 계산하는 페이지",
+    order: 25,
+    eyebrow: "가상자산 세금",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "기본공제", value: "250만원", context: "국세청 안내 기준" },
+      { label: "기본 계산세율", value: "22%", context: "지방세 포함" },
+    ],
+  },
 ];
 
 

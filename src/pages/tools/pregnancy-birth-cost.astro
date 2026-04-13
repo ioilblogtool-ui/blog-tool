@@ -13,9 +13,9 @@ import {
   PREGNANCY_POSTPARTUM_OPTIONS,
   PREGNANCY_POSTPARTUM_ROOM_OPTIONS,
   PREGNANCY_FAQ,
+  PREGNANCY_NEXT_CONTENT,
+  PREGNANCY_REFERENCE_CARDS,
   PREGNANCY_TIPS,
-  PREGNANCY_RELATED_LINKS,
-  PREGNANCY_SOURCE_LINKS,
   PREGNANCY_AFFILIATE_PRODUCTS,
 } from "../../data/pregnancyBirthCost";
 
@@ -368,33 +368,53 @@ const faqSchema = PREGNANCY_FAQ.map((item) => ({
       </div>
     </section>
 
-    <section class="content-section">
-      <div class="panel">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-heading__eyebrow">참고 링크</p>
-            <h2 class="panel__title">공식 기준 확인</h2>
-          </div>
-        </div>
-        <div class="related-links">
-          {PREGNANCY_SOURCE_LINKS.map((item) => (
-            <a class="related-link" href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+    <section class="content-section preg-next-section">
+      <div class="panel preg-next-main">
+        <div class="preg-next-main__badges">
+          {PREGNANCY_NEXT_CONTENT.badges.map((badge) => (
+            <span class="preg-next-main__badge">{badge}</span>
           ))}
         </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{PREGNANCY_NEXT_CONTENT.eyebrow}</p>
+            <h2 class="panel__title">{PREGNANCY_NEXT_CONTENT.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{PREGNANCY_NEXT_CONTENT.desc}</p>
+        </div>
+        <a href={withBase(PREGNANCY_NEXT_CONTENT.href)} class="button button--secondary">{PREGNANCY_NEXT_CONTENT.cta}</a>
+      </div>
+      <div class="preg-next-grid">
+        {PREGNANCY_NEXT_CONTENT.sub.map((item) => (
+          <a href={withBase(item.href)} class="preg-next-card">
+            <div class="preg-next-card__badges">
+              {item.badges.map((badge) => (
+                <span class="preg-next-card__badge">{badge}</span>
+              ))}
+            </div>
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
       </div>
     </section>
 
-    <section class="content-section">
-      <div class="panel">
+    <section class="content-section preg-reference-section">
+      <div class="panel preg-reference-links">
         <div class="panel-heading">
           <div>
-            <p class="panel-heading__eyebrow">다음 계산기</p>
-            <h2 class="panel__title">같이 보면 이해가 더 쉬운 계산기</h2>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">지원금과 바우처 기준 같이 보기</h2>
           </div>
+          <p class="panel-heading__summary">실제 신청 전에는 의료비 지원 범위와 출생 이후 바우처 구조를 공식 문서로 함께 확인하는 편이 안전합니다.</p>
         </div>
-        <div class="related-links">
-          {PREGNANCY_RELATED_LINKS.map((item) => (
-            <a class="related-link" href={withBase(item.href)}>{item.label}</a>
+        <div class="preg-link-grid">
+          {PREGNANCY_REFERENCE_CARDS.map((item) => (
+            <a class="preg-reference-link" href={item.href} target="_blank" rel="noopener noreferrer">
+              <span class="preg-reference-link__source">{item.source}</span>
+              <strong class="preg-reference-link__title">{item.title}</strong>
+              <span class="preg-reference-link__desc">{item.desc}</span>
+            </a>
           ))}
         </div>
       </div>

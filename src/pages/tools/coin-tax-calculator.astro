@@ -1,0 +1,344 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CTC_RULES,
+  CTC_DEFAULT_INPUT,
+  CTC_ASSET_PRESETS,
+  CTC_SCENARIO_PRESETS,
+  CTC_FAQ,
+  CTC_RELATED_LINKS,
+  CTC_NEXT_CONTENT,
+  CTC_SOURCE_LINKS,
+} from "../../data/coinTaxCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  CTC_RULES,
+  CTC_DEFAULT_INPUT,
+  CTC_ASSET_PRESETS,
+  CTC_SCENARIO_PRESETS,
+};
+
+const faqSchema = CTC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="코인 세금 계산기 2026 | 가상자산 양도차익·250만원 공제·예상 세금 계산"
+  description="비트코인·이더리움 등 코인 매도 시 양도차익, 250만원 기본공제, 예상 세금, 세후 순이익, 총 실수령 금액을 한 번에 계산해보세요."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "코인 세금 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description:
+      "가상자산 매도 시 양도차익, 기본공제, 예상 세금, 세후 순이익을 계산하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/coin-tax-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="coin-tax-calculator" pageClass="ctc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="가상자산 세금 계산기"
+        title="지금 팔면 세후로 얼마 남는지 먼저 봅니다"
+        description="매수가, 수량, 매도가를 입력하면 가상자산 양도차익, 250만원 공제, 예상 세금, 세후 순이익과 총 실수령 금액을 바로 계산할 수 있습니다."
+      />
+      <InfoNotice
+        lines={[
+          "이 계산기는 국세청 공개 안내 기준을 바탕으로 만든 참고용 시뮬레이터입니다.",
+          "현재 문서 기준으로는 2027년 1월 1일 이후 양도·대여분부터 가상자산 소득 과세가 적용되는 흐름을 반영했습니다.",
+          "실제 신고·납부 세액은 연간 손익 통산, 필요경비 인정 범위, 거래 증빙, 법령 개정 여부에 따라 달라질 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetCoinTaxBtn" copyId="copyCoinTaxLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 입력</p>
+            <h2 class="panel__title">매도 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">단일 코인 기준으로 빠르게 세후 수익을 확인합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>코인명</span>
+            <input id="ctcAssetName" type="text" class="input-number" value={CTC_DEFAULT_INPUT.assetName} list="ctcAssetPresetList" />
+            <datalist id="ctcAssetPresetList">
+              {CTC_ASSET_PRESETS.map((asset) => (
+                <option value={asset.value}>{asset.label}</option>
+              ))}
+            </datalist>
+          </label>
+
+          <label class="field">
+            <span>평균 매수단가 (원)</span>
+            <input id="ctcAverageBuyPrice" type="text" inputmode="numeric" class="input-number" value={CTC_DEFAULT_INPUT.averageBuyPrice.toLocaleString("ko-KR")} />
+            <small id="ctcAverageBuyPriceHint" class="ctc-input-hint">약 1,000만원</small>
+          </label>
+
+          <label class="field">
+            <span>보유 수량</span>
+            <input id="ctcQuantity" type="number" min="0" step="0.00000001" class="input-number" value={CTC_DEFAULT_INPUT.quantity} />
+          </label>
+
+          <label class="field">
+            <span>예상 매도가 (원)</span>
+            <input id="ctcSellPrice" type="text" inputmode="numeric" class="input-number" value={CTC_DEFAULT_INPUT.sellPrice.toLocaleString("ko-KR")} />
+            <small id="ctcSellPriceHint" class="ctc-input-hint">약 1억원</small>
+          </label>
+
+          <label class="field">
+            <span>매수 수수료율 (%)</span>
+            <input id="ctcBuyFeeRate" type="number" min="0" max="10" step="0.01" class="input-number" value={(CTC_DEFAULT_INPUT.buyFeeRate * 100).toFixed(2)} />
+          </label>
+
+          <label class="field">
+            <span>매도 수수료율 (%)</span>
+            <input id="ctcSellFeeRate" type="number" min="0" max="10" step="0.01" class="input-number" value={(CTC_DEFAULT_INPUT.sellFeeRate * 100).toFixed(2)} />
+          </label>
+
+          <label class="field">
+            <span>기타 필요경비 (원)</span>
+            <input id="ctcExtraCost" type="text" inputmode="numeric" class="input-number" value={CTC_DEFAULT_INPUT.extraCost.toLocaleString("ko-KR")} />
+            <small id="ctcExtraCostHint" class="ctc-input-hint">약 0원</small>
+          </label>
+
+          <label class="field">
+            <span>과세 기준 연도</span>
+            <select id="ctcTaxYear" class="select">
+              <option value="2027" selected>2027 이후 기준</option>
+              <option value="2026">2026 이전 참고</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">세율 모드</p>
+            <h2 class="panel__title">국세 20%와 22% 기준 비교</h2>
+          </div>
+        </div>
+
+        <div class="ctc-tax-mode-tabs" id="ctcTaxModeTabs">
+          <button type="button" class="ctc-tax-mode-tab is-active" data-mode="effective">지방세 포함 22%</button>
+          <button type="button" class="ctc-tax-mode-tab" data-mode="incomeTaxOnly">국세 20%</button>
+        </div>
+        <p class="ctc-help-text">22%는 국세청 안내 기준 세율 20%에 지방소득세를 반영한 계산용 기본값입니다.</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 예시</p>
+            <h2 class="panel__title">버튼으로 바로 넣어보기</h2>
+          </div>
+        </div>
+
+        <div class="ctc-scenario-presets" id="ctcScenarioPresets">
+          {CTC_SCENARIO_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`ctc-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset-id={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="ctc-section">
+      <div class="ctc-section__head">
+        <p class="ctc-section__eyebrow">핵심 결과</p>
+        <h2>세전보다 세후 수익이 먼저 보이게 구성했습니다</h2>
+        <p class="ctc-section__sub" id="ctcResultSubcopy">입력값을 바꾸면 양도차익과 예상 세금이 바로 바뀝니다.</p>
+      </div>
+
+      <div class="ctc-result-cards">
+        <article class="ctc-result-card ctc-result-card--main">
+          <p class="ctc-result-label">양도차익</p>
+          <strong class="ctc-result-value ctc-result-value--hl" id="ctcCapitalGainValue">-</strong>
+          <span class="ctc-result-note">매수금액·수수료·기타비용 차감 후</span>
+        </article>
+        <article class="ctc-result-card">
+          <p class="ctc-result-label">과세표준</p>
+          <strong class="ctc-result-value" id="ctcTaxableIncomeValue">-</strong>
+          <span class="ctc-result-note">250만원 기본공제 반영</span>
+        </article>
+        <article class="ctc-result-card">
+          <p class="ctc-result-label">예상 세금</p>
+          <strong class="ctc-result-value" id="ctcEstimatedTaxValue">-</strong>
+          <span class="ctc-result-note" id="ctcEstimatedTaxNote">22% 기준</span>
+        </article>
+        <article class="ctc-result-card">
+          <p class="ctc-result-label">세후 순이익</p>
+          <strong class="ctc-result-value" id="ctcAfterTaxProfitValue">-</strong>
+          <span class="ctc-result-note">세금 차감 후 남는 수익</span>
+        </article>
+        <article class="ctc-result-card">
+          <p class="ctc-result-label">총 실수령 금액</p>
+          <strong class="ctc-result-value" id="ctcNetReceiptValue">-</strong>
+          <span class="ctc-result-note">매도 대금에서 매도 수수료·세금 차감</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="ctc-section">
+      <div class="ctc-callout" id="ctcTaxFreeNotice" hidden>
+        <strong>공제 범위 안이라 계산상 예상 세금은 0원입니다.</strong>
+        <p>현재 입력값 기준 양도차익이 250만원 기본공제 범위 안에 있어 과세표준이 0원으로 계산됩니다.</p>
+      </div>
+      <div class="ctc-callout ctc-callout--muted">
+        <strong>참고용 시뮬레이터</strong>
+        <p>실제 신고 세액은 연간 손익 통산, 거래소별 증빙, 필요경비 인정 범위, 법령 개정 여부에 따라 달라질 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="ctc-section">
+      <div class="ctc-section__head">
+        <p class="ctc-section__eyebrow">상세 계산표</p>
+        <h2>어디에서 세금이 붙는지 항목별로 나눠서 봅니다</h2>
+      </div>
+
+      <article class="panel">
+        <div class="table-wrap">
+          <table class="ctc-breakdown-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>금액</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>총 매수금액</td><td id="ctcBuyAmountValue">-</td></tr>
+              <tr><td>총 매도금액</td><td id="ctcSellAmountValue">-</td></tr>
+              <tr><td>총 매수 수수료</td><td id="ctcBuyFeeValue">-</td></tr>
+              <tr><td>총 매도 수수료</td><td id="ctcSellFeeValue">-</td></tr>
+              <tr><td>총 수수료</td><td id="ctcTotalFeeValue">-</td></tr>
+              <tr><td>기타 필요경비</td><td id="ctcExtraCostValue">-</td></tr>
+              <tr><td>양도차익</td><td id="ctcCapitalGainRowValue">-</td></tr>
+              <tr><td>기본공제</td><td id="ctcDeductionValue">-</td></tr>
+              <tr><td>과세표준</td><td id="ctcTaxableIncomeRowValue">-</td></tr>
+              <tr><td>예상 세금</td><td id="ctcEstimatedTaxRowValue">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+
+    <section class="content-section ctc-next-section">
+      <div class="panel ctc-next-main">
+        <div class="ctc-next-main__badges">
+          {CTC_NEXT_CONTENT.badges.map((badge) => (
+            <span class="ctc-next-main__badge">{badge}</span>
+          ))}
+        </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{CTC_NEXT_CONTENT.eyebrow}</p>
+            <h2 class="panel__title">{CTC_NEXT_CONTENT.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{CTC_NEXT_CONTENT.desc}</p>
+        </div>
+        <a href={CTC_NEXT_CONTENT.href} class="button button--secondary">{CTC_NEXT_CONTENT.cta}</a>
+      </div>
+
+      <div class="ctc-next-grid">
+        {CTC_NEXT_CONTENT.sub.map((item) => (
+          <a href={item.href} class="ctc-next-card">
+            <div class="ctc-next-card__badges">
+              {item.badges.map((badge) => (
+                <span class="ctc-next-card__badge">{badge}</span>
+              ))}
+            </div>
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ctc-reference-section">
+      <div class="panel ctc-reference-links">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">과세 기준과 법령 원문 같이 보기</h2>
+          </div>
+          <p class="panel-heading__summary">계산 결과를 해석하거나 실제 신고 전에 함께 확인하면 좋은 공식 문서입니다.</p>
+        </div>
+        <div class="ctc-link-grid">
+          {CTC_SOURCE_LINKS.map((item) => (
+            <a class="ctc-reference-link" href={item.href} target="_blank" rel="noopener noreferrer">
+              <span class="ctc-reference-link__source">{item.source}</span>
+              <strong class="ctc-reference-link__title">{item.title}</strong>
+              <span class="ctc-reference-link__desc">{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="코인 세금 계산기 2026 활용 가이드"
+        intro={[
+          "이 계산기는 비트코인, 이더리움 같은 가상자산을 매도할 때 세전 수익이 아니라 세후로 얼마 남는지 빠르게 확인하기 위한 도구입니다. 평균 매수단가, 보유 수량, 매도가, 수수료만 넣으면 양도차익과 250만원 공제 적용 후 예상 세금을 바로 볼 수 있게 구성했습니다.",
+          "복잡한 세법 해설보다 먼저 내가 지금 팔면 얼마 남는지 감을 잡고 싶은 사용자를 기준으로 설계했습니다. 따라서 핵심 결과 카드도 양도차익, 예상 세금, 세후 순이익, 총 실수령 금액이 한눈에 보이도록 배치했습니다.",
+        ]}
+        inputPoints={[
+          "대표 예시 버튼으로 BTC 1천만→1억, ETH 200만→350만 같은 시나리오를 바로 불러와 볼 수 있습니다.",
+          "수수료율은 매수와 매도를 따로 넣을 수 있어 거래소별 체감 차이를 반영하기 쉽습니다.",
+          "세율 모드는 지방세 포함 22%와 국세 20% 기준을 바로 전환해 볼 수 있습니다.",
+        ]}
+        criteria={[
+          "양도차익은 총 매도금액에서 총 매수금액, 매수·매도 수수료, 기타 필요경비를 차감해 계산합니다.",
+          "과세표준은 양도차익에서 250만원 기본공제를 차감한 뒤 0원 미만이면 0원으로 처리합니다.",
+          "기본 계산 모드 22%는 국세청 안내 기준 세율 20%에 지방소득세를 반영한 계산용 기본값입니다.",
+          "실제 신고 세액은 연간 손익 통산, 필요경비 인정 범위, 거래 증빙, 법령 개정 여부에 따라 달라질 수 있습니다.",
+        ]}
+        faq={CTC_FAQ}
+        related={CTC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="coinTaxCalculatorConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/coin-tax-calculator.js")}></script>
+</BaseLayout>

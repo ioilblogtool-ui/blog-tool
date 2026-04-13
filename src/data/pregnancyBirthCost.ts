@@ -141,3 +141,53 @@ export const PREGNANCY_SOURCE_LINKS = [
     href: "https://www.voucher.go.kr/voucher/firstEncounter.do",
   },
 ];
+
+export const PREGNANCY_NEXT_CONTENT = {
+  eyebrow: "계산기 이어보기",
+  title: "출산 이후 비용과 지원 흐름까지 이어서 보기",
+  desc: "출산 직전 예산을 확인했다면, 출생 이후 지원금과 첫해 육아비용까지 같이 봐야 전체 계획이 더 선명해집니다.",
+  href: "/tools/birth-support-total/",
+  cta: "출산~2세 총지원금 계산기 보기",
+  badges: ["출산 이후", "지원금", "육아 예산"],
+  sub: [
+    {
+      href: "/tools/parental-leave-pay/",
+      title: "육아휴직 급여 계산기",
+      desc: "출산 직후 소득 공백을 메우는 핵심 제도를 같이 계산해보세요.",
+      badges: ["소득 보전"],
+    },
+    {
+      href: "/reports/postpartum-center-cost-2026/",
+      title: "산후조리원 비용 비교 리포트",
+      desc: "조리원 예산이 가장 고민이라면 지역별 평균 비용 비교를 바로 이어서 볼 수 있습니다.",
+      badges: ["리포트"],
+    },
+    {
+      href: "/reports/baby-cost-guide-first-year/",
+      title: "신생아 첫해 육아비용 가이드",
+      desc: "출산 직후 1년 동안 어떤 고정비가 이어지는지 넓게 확인할 수 있습니다.",
+      badges: ["첫해 비용"],
+    },
+  ],
+};
+
+export const PREGNANCY_REFERENCE_CARDS = [
+  {
+    href: "https://www.mohw.go.kr/menu.es?mid=a10705020100",
+    source: "보건복지부",
+    title: "임신·출산 진료비 지원사업",
+    desc: "국민행복카드와 진료비 지원 구조를 공식 기준으로 확인할 수 있습니다.",
+  },
+  {
+    href: "https://www.mohw.go.kr/board.es?act=view&bid=0027&list_no=1488450&mid=a10503010100&nPage=1&tag=",
+    source: "보건복지부",
+    title: "국민행복카드 안내",
+    desc: "임신·출산 지원 바우처의 사용 범위와 신청 흐름을 확인할 때 유용합니다.",
+  },
+  {
+    href: "https://www.voucher.go.kr/voucher/firstEncounter.do",
+    source: "사회서비스 전자바우처",
+    title: "첫만남이용권 안내",
+    desc: "출생 이후 별도 바우처 성격의 지원금 기준을 같이 확인할 수 있습니다.",
+  },
+];
