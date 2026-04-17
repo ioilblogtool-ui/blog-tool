@@ -1,0 +1,440 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  AI_TOOLS,
+  PRESET_BUNDLES,
+  AI_CALC_META,
+  AI_DEFAULT_STATE,
+  AI_FAQ,
+  AI_RELATED_LINKS,
+  AI_NEXT_CONTENT,
+  AI_SOURCE_LINKS,
+  STAGE_LABELS,
+  STAGE_ICONS,
+  CATEGORY_LABELS,
+  BUDGET_LABELS,
+} from "../../data/aiStackTools";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  AI_TOOLS,
+  PRESET_BUNDLES,
+  AI_CALC_META,
+  AI_DEFAULT_STATE,
+  STAGE_LABELS,
+  STAGE_ICONS,
+};
+
+const faqItems = AI_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+const faqSchema = AI_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="AI 스택 비용 계산기 | ChatGPT·Claude·Cursor 월 구독료 조합 비교"
+  description={AI_CALC_META.subtitle}
+  ogImage="/og/sample-tool.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "AI 스택 비용 계산기",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "All",
+    description: AI_CALC_META.subtitle,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/ai-stack-cost-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="ai-stack-cost-calculator" pageClass="ai-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="AI 구독료 계산기"
+        title="AI 스택 비용 계산기"
+        description="기획, 개발, 디자인, 운영까지 어떤 AI 툴 조합을 쓰는지에 따라 월 구독료가 얼마나 달라지는지 바로 계산하고 예산별 추천 스택까지 확인하세요."
+      />
+      <InfoNotice
+        lines={[
+          "이 계산기는 각 서비스 공식 가격 페이지의 개인 플랜 기준 월정가를 바탕으로 만든 참고용 도구입니다.",
+          "실제 결제 금액은 환율, 부가세, 카드 해외결제 수수료, 연간 결제 할인 여부에 따라 달라질 수 있습니다.",
+          `가격 정보 기준: ${AI_CALC_META.updatedAt}`,
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="aiResetBtn" copyId="aiCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel ai-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">업무 단계와 예산 선택</h2>
+          </div>
+          <p class="panel-heading__summary">현재 쓰는 툴이 있다면 같이 체크해서 추가 비용 기준으로 확인해보세요.</p>
+        </div>
+
+        <div class="ai-step">
+          <p class="ai-step__label">Step 1. 어떤 업무 단계에 집중하나요?</p>
+          <p class="ai-step__sub">복수 선택 가능 · 기본값은 기획 + 개발입니다.</p>
+          <div class="ai-stage-grid" id="aiStageButtons">
+            {Object.entries(STAGE_LABELS).map(([stage, label]) => (
+              <button
+                type="button"
+                class={`ai-chip ai-chip--stage${AI_DEFAULT_STATE.selectedStages.includes(stage as never) ? " is-active" : ""}`}
+                data-stage={stage}
+              >
+                <span>{STAGE_ICONS[stage as keyof typeof STAGE_ICONS]}</span>
+                <strong>{label}</strong>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="ai-step">
+          <p class="ai-step__label">Step 2. 사용 강도는 어느 정도인가요?</p>
+          <div class="ai-choice-grid ai-choice-grid--intensity" id="aiIntensityButtons">
+            <button type="button" class="ai-choice-button" data-level="light">
+              <strong>가볍게</strong>
+              <span>핵심 1개 위주</span>
+            </button>
+            <button type="button" class="ai-choice-button is-active" data-level="normal">
+              <strong>보통</strong>
+              <span>핵심 + 보조 조합</span>
+            </button>
+            <button type="button" class="ai-choice-button" data-level="heavy">
+              <strong>집중적으로</strong>
+              <span>여러 단계 커버</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="ai-step">
+          <p class="ai-step__label">Step 3. 월 예산은 어느 정도인가요?</p>
+          <div class="ai-choice-grid ai-choice-grid--budget" id="aiBudgetButtons">
+            {Object.entries(BUDGET_LABELS).map(([value, label], index) => (
+              <button
+                type="button"
+                class={`ai-budget-button${index === 1 ? " is-active" : ""}`}
+                data-budget={value}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="ai-step">
+          <p class="ai-step__label">Step 4. 이미 구독 중인 툴이 있나요?</p>
+          <p class="ai-step__sub">겹치는 툴은 추가 필요 비용 계산에서 제외됩니다.</p>
+          <div class="ai-tool-checks">
+            {AI_TOOLS.map((tool) => (
+              <label class="ai-tool-check" data-tool-label={tool.id}>
+                <input type="checkbox" class="ai-tool-check__input" value={tool.id} />
+                <div class="ai-tool-check__copy">
+                  <strong>{tool.name}</strong>
+                  <span>{CATEGORY_LABELS[tool.category]} · ${tool.monthlyUsd}/월</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div class="ai-step">
+          <p class="ai-step__label">Step 5. 원화 환산 옵션</p>
+          <div class="ai-inline-row">
+            <label for="aiExchangeRate">환율</label>
+            <input id="aiExchangeRate" type="number" min="1000" max="2000" step="10" value={AI_DEFAULT_STATE.exchangeRate} />
+            <span>원 / 1 USD</span>
+          </div>
+          <label class="ai-inline-check">
+            <input id="aiVatCheck" type="checkbox" />
+            <span>부가세 10% 포함</span>
+          </label>
+        </div>
+
+        <button type="button" class="button button--primary ai-submit" id="aiCalculateBtn">비용 계산하기</button>
+      </article>
+
+      <article class="panel ai-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 조합</p>
+            <h2 class="panel__title">한 번에 불러오는 프리셋</h2>
+          </div>
+          <p class="panel-heading__summary">예산과 업무 단계가 어느 정도 정해져 있다면 바로 불러와서 비교할 수 있습니다.</p>
+        </div>
+
+        <div class="ai-preset-stack">
+          {PRESET_BUNDLES.map((preset, index) => (
+            <button
+              type="button"
+              class={`ai-preset-btn${index === 1 ? " is-active" : ""}`}
+              data-preset-id={preset.id}
+            >
+              <div class="ai-preset-btn__head">
+                <strong>{preset.name}</strong>
+                <span>${preset.monthlyCostUsd}/월</span>
+              </div>
+              <p>{preset.description}</p>
+              <small>{preset.forWhom}</small>
+            </button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="ai-section">
+      <div class="ai-section__head">
+        <p class="ai-section__eyebrow">핵심 결과</p>
+        <h2>예산 안에서 어떤 조합이 가장 효율적인지 먼저 봅니다</h2>
+        <p class="ai-section__sub" id="aiResultSubcopy">기획과 개발을 기준으로 추천 스택을 계산합니다.</p>
+      </div>
+
+      <div class="ai-alert ai-alert--warn" id="aiStageWarning" hidden>
+        <strong>먼저 업무 단계를 선택하세요.</strong>
+        <p>최소 1개 단계는 선택해야 추천 스택을 계산할 수 있습니다.</p>
+      </div>
+
+      <div class="ai-kpi-grid">
+        <article class="ai-kpi-card ai-kpi-card--main">
+          <p class="ai-kpi-card__label">월 추가 비용</p>
+          <strong class="ai-kpi-card__value" id="aiMonthlyUsd">$0</strong>
+          <span class="ai-kpi-card__note" id="aiMonthlyKrw">약 0원</span>
+        </article>
+        <article class="ai-kpi-card">
+          <p class="ai-kpi-card__label">연 추가 비용</p>
+          <strong class="ai-kpi-card__value" id="aiAnnualUsd">$0</strong>
+          <span class="ai-kpi-card__note" id="aiAnnualKrw">약 0원</span>
+        </article>
+        <article class="ai-kpi-card">
+          <p class="ai-kpi-card__label">단계 커버리지</p>
+          <strong class="ai-kpi-card__value" id="aiCoverage">0%</strong>
+          <span class="ai-kpi-card__note" id="aiCoverageNote">선택한 단계 중 커버 비율</span>
+        </article>
+        <article class="ai-kpi-card">
+          <p class="ai-kpi-card__label">절감 가능 금액</p>
+          <strong class="ai-kpi-card__value" id="aiSavings">$0</strong>
+          <span class="ai-kpi-card__note" id="aiSavingsNote">절약형 대비 차이</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="ai-section">
+      <div class="ai-recommend-grid">
+        <article class="panel ai-recommend-card ai-recommend-card--best">
+          <p class="ai-recommend-card__eyebrow">최적 스택</p>
+          <h2 class="ai-recommend-card__title" id="aiRecName">-</h2>
+          <p class="ai-recommend-card__cost" id="aiRecCost">-</p>
+          <div class="ai-recommend-card__tools" id="aiRecTools"></div>
+          <p class="ai-recommend-card__desc" id="aiRecDesc">-</p>
+          <p class="ai-recommend-card__meta" id="aiRecMeta">-</p>
+        </article>
+
+        <article class="panel ai-recommend-card ai-recommend-card--budget">
+          <p class="ai-recommend-card__eyebrow">절약형 대안</p>
+          <h2 class="ai-recommend-card__title" id="aiBudgetName">-</h2>
+          <p class="ai-recommend-card__cost" id="aiBudgetCost">-</p>
+          <div class="ai-recommend-card__tools" id="aiBudgetTools"></div>
+          <p class="ai-recommend-card__desc" id="aiBudgetDesc">-</p>
+          <p class="ai-recommend-card__meta" id="aiBudgetMeta">-</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="ai-section">
+      <article class="panel ai-chart-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">비용 비중</p>
+            <h2 class="panel__title">추천 스택에서 어떤 툴이 비용을 차지하는지 확인하세요</h2>
+          </div>
+          <p class="panel-heading__summary">도넛 차트는 현재 추천된 스택 기준으로 갱신됩니다.</p>
+        </div>
+        <div class="ai-chart-wrap">
+          <canvas id="aiDonutChart"></canvas>
+          <p class="ai-chart-fallback" id="aiChartFallback" hidden>차트를 불러오지 못해도 추천 카드와 비교표는 그대로 확인할 수 있습니다.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="ai-section">
+      <article class="panel ai-preset-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 프리셋</p>
+            <h2 class="panel__title">인기 AI 스택 조합</h2>
+          </div>
+          <p class="panel-heading__summary">각 조합은 "누가 쓰기 좋은지"가 먼저 보이도록 카드형으로 정리했습니다.</p>
+        </div>
+
+        <div class="ai-preset-grid">
+          {PRESET_BUNDLES.map((preset) => (
+            <article class="ai-preset-card">
+              <div class="ai-preset-card__head">
+                <strong>{preset.name}</strong>
+                <span>${preset.monthlyCostUsd}/월</span>
+              </div>
+              <p class="ai-preset-card__for">{preset.forWhom}</p>
+              <p class="ai-preset-card__desc">{preset.description}</p>
+              <div class="ai-preset-card__chips">
+                {preset.toolIds.map((toolId) => {
+                  const tool = AI_TOOLS.find((item) => item.id === toolId);
+                  return tool ? <span>{tool.name}</span> : null;
+                })}
+              </div>
+              <button type="button" class="button button--secondary ai-preset-card__apply" data-preset-id={preset.id}>이 조합으로 계산하기</button>
+            </article>
+          ))}
+        </div>
+      </article>
+    </section>
+
+    <section class="ai-section">
+      <article class="panel ai-table-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">툴 비교표</p>
+            <h2 class="panel__title">공식 월정가 기준으로 한 번에 비교</h2>
+          </div>
+          <p class="panel-heading__summary">{AI_CALC_META.priceNote}</p>
+        </div>
+
+        <div class="table-wrap">
+          <table class="ai-tool-table">
+            <thead>
+              <tr>
+                <th>툴</th>
+                <th>월 비용</th>
+                <th>카테고리</th>
+                <th>주요 단계</th>
+                <th>특징</th>
+                <th>공식 링크</th>
+              </tr>
+            </thead>
+            <tbody>
+              {AI_TOOLS.map((tool) => (
+                <tr>
+                  <td>
+                    <strong>{tool.name}</strong>
+                    {tool.badge && <span class="ai-table-badge">{tool.badge}</span>}
+                  </td>
+                  <td>${tool.monthlyUsd}</td>
+                  <td>{CATEGORY_LABELS[tool.category]}</td>
+                  <td>{tool.stages.map((stage) => STAGE_LABELS[stage]).join(" · ")}</td>
+                  <td>{tool.tagline}</td>
+                  <td>
+                    <a href={tool.officialUrl} target="_blank" rel="noopener noreferrer">가격 보기</a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section ai-next-section">
+      <div class="panel ai-next-main">
+        <div class="ai-next-main__badges">
+          {AI_NEXT_CONTENT.badges.map((badge) => (
+            <span class="ai-next-main__badge">{badge}</span>
+          ))}
+        </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{AI_NEXT_CONTENT.eyebrow}</p>
+            <h2 class="panel__title">{AI_NEXT_CONTENT.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{AI_NEXT_CONTENT.desc}</p>
+        </div>
+        <a href={AI_NEXT_CONTENT.href} class="button button--secondary">{AI_NEXT_CONTENT.cta}</a>
+      </div>
+
+      <div class="ai-next-grid">
+        {AI_NEXT_CONTENT.sub.map((item) => (
+          <a href={item.href} class="ai-next-card">
+            <div class="ai-next-card__badges">
+              {item.badges.map((badge) => (
+                <span class="ai-next-card__badge">{badge}</span>
+              ))}
+            </div>
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ai-source-section">
+      <div class="panel ai-source-links">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">툴별 공식 가격 페이지 같이 보기</h2>
+          </div>
+          <p class="panel-heading__summary">실제 도입 전에는 각 서비스의 최신 요금 페이지를 한 번 더 확인하는 편이 안전합니다.</p>
+        </div>
+        <div class="ai-source-grid">
+          {AI_SOURCE_LINKS.map((item) => (
+            <a class="ai-source-link" href={item.href} target="_blank" rel="noopener noreferrer">
+              <span class="ai-source-link__source">{item.source}</span>
+              <strong class="ai-source-link__title">{item.title}</strong>
+              <span class="ai-source-link__desc">{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="AI 스택 비용 계산기 활용 가이드"
+        intro={[
+          "ChatGPT, Claude, Cursor 같은 AI 툴은 하나씩만 보면 부담이 작아 보여도 여러 개를 함께 쓰기 시작하면 월 구독료가 빠르게 쌓입니다. 이 계산기는 업무 단계별로 필요한 조합을 골라 월간·연간 비용을 한 번에 보고, 예산 안에서 어떤 스택이 가장 효율적인지 빠르게 판단하기 위한 도구입니다.",
+          "핵심은 툴 소개가 아니라 비용 의사결정입니다. 어떤 단계에 집중하는지, 사용 강도는 어느 정도인지, 이미 구독 중인 툴은 무엇인지에 따라 추천 스택과 추가 필요 비용이 달라집니다.",
+          "환율과 부가세 옵션까지 같이 반영하면 카드 청구서 기준 체감 비용에 더 가깝게 볼 수 있어, 개인 생산성 지출이나 사이드프로젝트 운영비 계획에도 바로 활용하기 좋습니다.",
+        ]}
+        inputPoints={[
+          "업무 단계는 복수 선택이 가능해서 기획 + 개발, 기획 + 디자인처럼 실제 작업 흐름에 맞게 고를 수 있습니다.",
+          "이미 구독 중인 툴을 체크하면 추천 스택과 겹치는 항목을 제외하고 추가로 필요한 비용만 계산합니다.",
+          "예산 버튼과 프리셋 버튼을 같이 눌러보면 같은 예산에서도 어떤 조합이 더 넓은 단계 커버리지를 주는지 빠르게 비교할 수 있습니다.",
+        ]}
+        criteria={[
+          "가격은 각 서비스의 개인 플랜 공식 월정가 기준으로 정리했습니다.",
+          "사용 강도는 가격 배수가 아니라 추천 우선순위에 반영됩니다. 가볍게는 예산형, 보통은 균형형, 집중적으로는 풀커버형이 우선됩니다.",
+          "커버리지는 선택한 업무 단계 중 추천 스택이 포함하는 단계 비율로 계산합니다.",
+          "추가 필요 비용은 추천 스택에 포함되면서 이미 구독 중인 툴 비용을 제외한 값입니다.",
+        ]}
+        faq={faqItems}
+        related={AI_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="aiStackCalculatorConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/ai-stack-cost-calculator.js")}></script>
+</BaseLayout>

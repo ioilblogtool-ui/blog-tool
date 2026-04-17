@@ -1,4 +1,4 @@
-﻿export type PreviewStat = {
+export type PreviewStat = {
   label: string;    // '월 실수령', '총보상' 등
   value: string;    // '341만', '1.2억' 등
   context?: string; // '5,000만 기준' 등 맥락
@@ -376,6 +376,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "기본공제", value: "250만원", context: "국세청 안내 기준" },
       { label: "기본 계산세율", value: "22%", context: "지방세 포함" },
+    ],
+  },
+  {
+    slug: "ai-stack-cost-calculator",
+    title: "AI 스택 비용 계산기",
+    description: "ChatGPT, Claude, Cursor, Perplexity 등 AI 도구 조합을 선택하면 월 구독료, 연간 비용, 중복 지출과 추천 스택을 한 번에 비교하는 계산기",
+    order: 26,
+    eyebrow: "AI Productivity Tool",
+    category: "ai",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "비교 도구", value: "8종" },
+      { label: "핵심 결과", value: "월·연간 비용" },
     ],
   },
   {
