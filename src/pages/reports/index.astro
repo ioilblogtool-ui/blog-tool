@@ -1,4 +1,4 @@
-﻿---
+---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
@@ -8,7 +8,6 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
-
 
 type ReportCategory = "salary" | "estate" | "asset" | "life" | "culture";
 type ReportTagMod = "salary" | "asset";
@@ -171,6 +170,12 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     category: "life",
     isNew: true,
   },
+  "fetal-insurance-guide-2026": {
+    eyebrow: "출산 가이드",
+    tags: [{ label: "태아보험", mod: "salary" }, { label: "가입시기", mod: "salary" }, { label: "2026", mod: "salary" }],
+    category: "life",
+    isNew: true,
+  },
   "national-pension-generational-comparison-2026": {
     eyebrow: "국민연금",
     tags: [
@@ -218,6 +223,52 @@ const assetSeries = reportEntries.filter((report) => report.category === "asset"
 const cultureSeries = reportEntries.filter((report) => report.category === "culture");
 
 const totalReports = reportEntries.length;
+
+const recommendedReports = [
+  {
+    slug: "new-employee-salary-2026",
+    reason: "취업과 이직을 앞두고 시장 초봉 감각을 빠르게 잡기 좋습니다.",
+  },
+  {
+    slug: "seoul-housing-2016-vs-2026",
+    reason: "서울 주거비 체감이 왜 달라졌는지 큰 흐름부터 이해하기 좋습니다.",
+  },
+  {
+    slug: "postpartum-center-cost-2026",
+    reason: "출산 준비 과정에서 실제 예산 판단에 바로 연결되는 주제입니다.",
+  },
+  {
+    slug: "national-pension-generational-comparison-2026",
+    reason: "연금개혁과 세대별 손익 구조를 한 번에 읽기 좋습니다.",
+  },
+  {
+    slug: "overseas-travel-cost-compare-2026",
+    reason: "항공권, 숙소, 식비를 같이 비교해 여행 예산 감을 잡기 쉽습니다.",
+  },
+].map((item) => {
+  const report = reportEntries.find((entry) => entry.slug === item.slug);
+  return report ? { ...report, reason: item.reason } : null;
+}).filter(Boolean);
+
+const seriesIntroductions: Record<ReportCategory, string> = {
+  salary: "입사, 이직, 직무 선택처럼 보상 판단이 필요한 순간에 먼저 보는 시리즈입니다.",
+  estate: "집값, 전세, 체감 주거비처럼 실수요 판단에 직접 연결되는 시리즈입니다.",
+  asset: "자산 격차, 연금, ETF, 투자 수익처럼 장기 판단 기준을 잡을 때 읽기 좋습니다.",
+  life: "결혼, 출산, 육아, 여행처럼 생활비와 선택 기준이 함께 필요한 주제를 모았습니다.",
+  culture: "흥행, 손익, 산업 구조처럼 숫자를 읽는 재미가 있는 비교형 리포트입니다.",
+};
+
+const reportToToolBridges = [
+  {
+    title: "리포트를 읽고 내 상황까지 계산하고 싶다면",
+    desc: "공개 데이터로 시장 감각을 잡은 뒤 내 입력값으로 다시 계산하면 의사결정이 더 빨라집니다.",
+    links: [
+      { href: "/tools/home-purchase-fund/", label: "집 마련 자금 계산기" },
+      { href: "/tools/national-pension-calculator/", label: "국민연금 계산기" },
+      { href: "/tools/overseas-travel-cost/", label: "해외여행 비용 계산기" },
+    ],
+  },
+];
 ---
 
 <BaseLayout
@@ -249,6 +300,29 @@ const totalReports = reportEntries.length;
       </div>
     </div>
 
+    <section class="reports-intro">
+      <div class="reports-intro__lead">
+        <p class="reports-intro__eyebrow">리포트 소개</p>
+        <h2 class="reports-intro__title">비교 리포트는 숫자의 맥락을 먼저 읽게 만드는 페이지입니다</h2>
+        <div class="reports-intro__copy">
+          <p>비교계산소의 리포트는 단순 기사형 요약이 아니라, 공개 데이터를 기준으로 여러 선택지를 같은 기준에서 읽을 수 있게 만든 비교형 콘텐츠입니다. 숫자 자체보다도 무엇을 비교해야 하는지, 어떤 차이가 실제 판단에 영향을 주는지 이해하도록 돕는 데 초점을 맞춥니다.</p>
+          <p>계산기가 개인 입력값으로 내 상황을 보는 도구라면, 리포트는 시장과 제도, 가격 흐름을 먼저 읽는 도구에 가깝습니다. 둘을 같이 보면 숫자의 맥락과 내 선택 기준을 훨씬 빨리 잡을 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="reports-intro__panel">
+        <article class="reports-intro-card">
+          <span class="reports-intro-card__label">리포트가 하는 일</span>
+          <strong class="reports-intro-card__title">숫자를 해석 가능한 기준으로 바꾸기</strong>
+          <p class="reports-intro-card__desc">같은 데이터라도 무엇을 먼저 봐야 하는지 정리해 주면 실제 의사결정 속도가 훨씬 빨라집니다.</p>
+        </article>
+        <article class="reports-intro-card reports-intro-card--accent">
+          <span class="reports-intro-card__label">가장 좋은 활용법</span>
+          <strong class="reports-intro-card__title">리포트로 맥락을 읽고 계산기로 내 상황 확인</strong>
+          <p class="reports-intro-card__desc">시장 흐름과 공개 데이터를 먼저 이해한 뒤 개인 입력값으로 다시 계산하면 훨씬 실전적인 판단이 가능합니다.</p>
+        </article>
+      </div>
+    </section>
+
     <div class="reports-filter-bar">
       <button class="reports-filter-chip is-active" data-filter="all">전체</button>
       <button class="reports-filter-chip" data-filter="salary">연봉</button>
@@ -264,7 +338,7 @@ const totalReports = reportEntries.length;
         <p class="reports-featured-card__eyebrow">부동산 리포트 · 신규</p>
         <h2 class="reports-featured-card__title">서울 국평 아파트 가격 비교<br />강남·서초·송파·마포·성동·강동</h2>
         <p class="reports-featured-card__desc">
-          서울 6개 구 대단지 84㎡ 아파트를 최고가, 평균가, 연봉 대비 체감 기준으로 바로 비교하고 매매 자금 계산기로 이어집니다.
+          서울 6개 구 대단지 84㎡ 아파트를 최고가, 평균가, 연봉 대비 체감 기준으로 바로 비교하고 집 마련 자금 계산기로 이어집니다.
         </p>
         <div class="reports-featured-card__tags">
           <span class="reports-featured-tag reports-featured-tag--new">신규</span>
@@ -279,8 +353,31 @@ const totalReports = reportEntries.length;
       </div>
     </a>
 
+    <section class="reports-picks">
+      <div class="reports-section-head">
+        <div>
+          <p class="reports-section-head__eyebrow">입문용 추천</p>
+          <h2>처음이라면 이 리포트부터 보세요</h2>
+        </div>
+        <p class="reports-section-head__summary">지금 바로 실생활 판단에 도움이 되는 주제부터 먼저 읽는 것을 권장합니다.</p>
+      </div>
+
+      <div class="reports-picks__grid">
+        {recommendedReports.map((report) => (
+          <a href={withBase(`/reports/${report.slug}/`)} class="reports-pick-card">
+            <p class="reports-pick-card__eyebrow">{report.eyebrow}</p>
+            <strong>{report.title}</strong>
+            <p>{report.reason}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
     <section class="reports-series" data-series="salary">
-      <h3 class="reports-series__label">연봉·초봉 시리즈</h3>
+      <div class="reports-series__head">
+        <h3 class="reports-series__label">연봉·초봉 시리즈</h3>
+        <p class="reports-series__desc">{seriesIntroductions.salary}</p>
+      </div>
       <div class="reports-card-grid">
         {salarySeries.map((r) => (
           <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
@@ -301,7 +398,10 @@ const totalReports = reportEntries.length;
     </section>
 
     <section class="reports-series" data-series="life">
-      <h3 class="reports-series__label">생활·결혼 시리즈</h3>
+      <div class="reports-series__head">
+        <h3 class="reports-series__label">생활·결혼 시리즈</h3>
+        <p class="reports-series__desc">{seriesIntroductions.life}</p>
+      </div>
       <div class="reports-card-grid">
         {lifeSeries.map((r) => (
           <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
@@ -322,7 +422,10 @@ const totalReports = reportEntries.length;
     </section>
 
     <section class="reports-series" data-series="estate">
-      <h3 class="reports-series__label">부동산 시리즈</h3>
+      <div class="reports-series__head">
+        <h3 class="reports-series__label">부동산 시리즈</h3>
+        <p class="reports-series__desc">{seriesIntroductions.estate}</p>
+      </div>
       <div class="reports-card-grid">
         {estateSeries.map((r) => (
           <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
@@ -343,7 +446,10 @@ const totalReports = reportEntries.length;
     </section>
 
     <section class="reports-series" data-series="asset">
-      <h3 class="reports-series__label">자산·부자 시리즈</h3>
+      <div class="reports-series__head">
+        <h3 class="reports-series__label">자산·연금·투자 시리즈</h3>
+        <p class="reports-series__desc">{seriesIntroductions.asset}</p>
+      </div>
       <div class="reports-card-grid">
         {assetSeries.map((r) => (
           <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
@@ -365,7 +471,10 @@ const totalReports = reportEntries.length;
 
     {cultureSeries.length > 0 && (
       <section class="reports-series" data-series="culture">
-        <h3 class="reports-series__label">문화·엔터 시리즈</h3>
+        <div class="reports-series__head">
+          <h3 class="reports-series__label">문화·엔터 시리즈</h3>
+          <p class="reports-series__desc">{seriesIntroductions.culture}</p>
+        </div>
         <div class="reports-card-grid">
           {cultureSeries.map((r) => (
             <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
@@ -386,29 +495,27 @@ const totalReports = reportEntries.length;
       </section>
     )}
 
-    <section class="reports-content-block">
-      <div class="reports-content-block__lead">
-        <p class="reports-content-block__eyebrow">리포트 안내</p>
-        <h2 class="reports-content-block__title">비교계산소의 리포트는 숫자를 바로 읽게 만드는 비교 페이지입니다</h2>
-        <p class="reports-content-block__desc">
-          이 영역의 리포트는 사용자가 값을 직접 입력하는 계산기와 달리, 공개된 수치와 비교 지표를 한 번에 읽을 수 있도록 구성한 인터랙티브 콘텐츠입니다.
-          연봉, 자산, 부동산처럼 해석이 필요한 데이터를 카드, 차트, 티어, 분포 구조로 정리해 다음 판단으로 이어지게 돕습니다.
-        </p>
+    <section class="reports-bridge">
+      <div class="reports-section-head">
+        <div>
+          <p class="reports-section-head__eyebrow">리포트 다음 단계</p>
+          <h2>리포트만 보고 끝내지 말고 계산기로 바로 이어가세요</h2>
+        </div>
+        <p class="reports-section-head__summary">공개 데이터로 시장 감각을 잡은 뒤, 내 상황에 맞는 입력값으로 다시 계산하면 훨씬 실전적인 판단이 가능합니다.</p>
       </div>
 
-      <div class="reports-content-grid">
-        <article class="reports-content-card">
-          <strong>어떻게 읽으면 되나요?</strong>
-          <p>상단 요약 카드로 전체 판도를 먼저 보고, 중간의 차트와 티어 보드로 분포를 확인한 뒤, 하단의 상세 카드와 참고 링크까지 이어서 보는 흐름을 권장합니다.</p>
-        </article>
-        <article class="reports-content-card">
-          <strong>계산기와 무엇이 다른가요?</strong>
-          <p>계산기는 입력값을 넣고 결과를 바로 확인하는 도구이고, 리포트는 비교 대상 자체를 읽고 해석하는 페이지입니다. 필요하면 리포트에서 계산기로 바로 이어질 수 있습니다.</p>
-        </article>
-        <article class="reports-content-card">
-          <strong>수치는 어디까지 믿어야 하나요?</strong>
-          <p>리포트의 수치와 해석은 공개 자료를 기준으로 정리한 참고용 정보입니다. 실제 의사결정 전에는 사업보고서, 공식 공고, 원출처 데이터를 다시 확인하는 것이 안전합니다.</p>
-        </article>
+      <div class="reports-bridge__grid">
+        {reportToToolBridges.map((bridge) => (
+          <article class="reports-bridge-card">
+            <strong>{bridge.title}</strong>
+            <p>{bridge.desc}</p>
+            <div class="reports-bridge-card__links">
+              {bridge.links.map((link) => (
+                <a href={withBase(link.href)}>{link.label}</a>
+              ))}
+            </div>
+          </article>
+        ))}
       </div>
     </section>
 
@@ -467,27 +574,3 @@ const totalReports = reportEntries.length;
     });
   });
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

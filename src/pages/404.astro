@@ -1,4 +1,4 @@
-﻿---
+---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 
@@ -11,17 +11,59 @@ const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`
 <BaseLayout title="페이지를 찾을 수 없습니다 | 비교계산소" description="요청한 페이지를 찾을 수 없습니다.">
   <SiteHeader />
 
-  <main class="container page-shell">
+  <main class="container page-shell info-page">
     <section class="hero hero--home">
       <p class="hero__eyebrow">404</p>
       <h1 class="hero__title">페이지를 찾을 수 없습니다</h1>
       <p class="hero__description">
         주소가 잘못되었거나, 페이지가 이동 또는 삭제되었을 수 있습니다.
-        필요한 계산 도구는 전체 목록에서 다시 찾아보실 수 있습니다.
+        아래에서 많이 찾는 계산기와 리포트를 바로 다시 확인하실 수 있습니다.
       </p>
       <div class="home-actions">
         <a class="button button--primary" href={withBase("/tools/")}>도구 목록 보기</a>
       </div>
+    </section>
+
+    <section class="info-layout">
+      <article class="panel info-panel">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Popular Tools</p>
+          <h2 class="ip-section__title">많이 찾는 계산기</h2>
+        </div>
+        <div class="info-copy">
+          <p><a href={withBase("/tools/salary/")}>연봉 인상 계산기</a></p>
+          <p><a href={withBase("/tools/parental-leave-short-work-calculator/")}>육아휴직 + 단축근무 계산기</a></p>
+          <p><a href={withBase("/tools/home-purchase-fund/")}>집 마련 자금 계산기</a></p>
+          <p><a href={withBase("/tools/ai-stack-cost-calculator/")}>AI 스택 비용 계산기</a></p>
+        </div>
+      </article>
+
+      <article class="panel info-panel">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Featured Reports</p>
+          <h2 class="ip-section__title">대표 비교 리포트</h2>
+        </div>
+        <div class="info-copy">
+          <p><a href={withBase("/reports/new-employee-salary-2026/")}>2026 신입사원 초봉 비교 리포트</a></p>
+          <p><a href={withBase("/reports/seoul-housing-2016-vs-2026/")}>서울 집값 2016 vs 2026 비교 리포트</a></p>
+          <p><a href={withBase("/reports/postpartum-center-cost-2026/")}>2026 산후조리원 비용 완전 비교</a></p>
+        </div>
+      </article>
+
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Next Step</p>
+          <h2 class="ip-section__title">필요한 페이지를 다시 찾는 가장 빠른 방법</h2>
+        </div>
+        <div class="info-copy">
+          <p>찾으시던 페이지가 없거나 주소가 바뀌었을 수 있습니다. 홈, 도구 목록, 리포트 모음으로 이동하면 주제별로 다시 찾기 쉽고, 오류 제보가 필요하면 문의 페이지로 바로 이어질 수 있습니다.</p>
+        </div>
+        <div class="home-actions">
+          <a class="button button--secondary" href={withBase("/")}>홈으로 이동</a>
+          <a class="button button--secondary" href={withBase("/reports/")}>리포트 모음 보기</a>
+          <a class="button button--secondary" href={withBase("/contact/")}>문의하기</a>
+        </div>
+      </article>
     </section>
   </main>
 </BaseLayout>
