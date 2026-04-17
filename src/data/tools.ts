@@ -378,6 +378,34 @@ export const tools: ToolMeta[] = [
       { label: "기본 계산세율", value: "22%", context: "지방세 포함" },
     ],
   },
+  {
+    slug: "child-tutoring-cost-calculator",
+    title: "아이 사교육비 계산기",
+    description: "자녀 수, 학교급, 과목, 지역을 입력하면 월·연간·누적 교육비와 또래 평균 대비 수준을 한 번에 계산. 기회비용 시뮬레이션 포함.",
+    order: 26,
+    eyebrow: "사교육비 계산기",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "비교 기준", value: "4개 지역" },
+      { label: "자녀 수", value: "최대 4명" },
+    ],
+  },
+  {
+    slug: "overseas-travel-cost",
+    title: "해외여행 총비용 계산기",
+    description: "항공권, 숙박, 식비, 교통비, 관광비, 쇼핑, 비상금까지 합쳐 일본·동남아·유럽·미주 여행 예산을 계산하는 도구",
+    order: 27,
+    eyebrow: "여행 예산 계산기",
+    category: "lifestyle",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "지원 권역", value: "일본·동남아·유럽" },
+      { label: "핵심 결과", value: "총 여행 예산" },
+    ],
+  },
 ];
 
 

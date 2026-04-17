@@ -189,4 +189,18 @@ export const reports: ReportMeta[] = [
     order: 26,
     badges: ["투자", "자산비교", "10년비교", "2026"],
   },
+  {
+    slug: "elementary-school-ready-cost-2026",
+    title: "초등학교 입학 준비물·비용 총정리 2026",
+    description: "책가방, 실내화, 문구, 체육복, 돌봄과 방과후까지 초등학교 입학 전 준비물과 첫 달 비용을 한 번에 정리한 리포트입니다.",
+    order: 27,
+    badges: ["교육", "입학준비", "2026"],
+  },
+  {
+    slug: "overseas-travel-cost-compare-2026",
+    title: "일본·동남아·유럽 해외여행 비용 비교 2026",
+    description: "도쿄, 오사카, 방콕, 하노이, 파리 등 주요 도시의 항공권·숙소·식비·교통비를 기준으로 2026년 해외여행 총비용을 비교하는 리포트입니다.",
+    order: 28,
+    badges: ["여행", "비용비교", "2026"],
+  },
 ];

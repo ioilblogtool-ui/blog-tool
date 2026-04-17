@@ -1,0 +1,785 @@
+// ─── _child-tutoring-cost-calculator.scss ────────────────────────────────────
+// 아이 사교육비 계산기 전용 스타일 (prefix: tutoring-)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.tutoring-page {
+  // ── 공통 필드 레이블 ──────────────────────────────────────────────────────
+  .tutoring-field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6c6a64;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: keep-all;
+  }
+
+  .tutoring-field-label--note {
+    font-size: 10px;
+    font-weight: 400;
+    color: #9a9890;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .tutoring-field {
+    display: grid;
+    gap: 6px;
+
+    &--grade {
+      display: grid;
+      gap: 6px;
+    }
+
+    &--inline {
+      display: grid;
+      gap: 6px;
+    }
+  }
+
+  // ── 셀렉트 / 인풋 공통 ────────────────────────────────────────────────────
+  .tutoring-select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #dcd9d0;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px;
+    color: #1a1a18;
+    appearance: auto;
+    cursor: pointer;
+
+    &:focus {
+      outline: 2px solid #1d9e75;
+      outline-offset: 1px;
+    }
+  }
+
+  .tutoring-number-input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid #dcd9d0;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px;
+    color: #1a1a18;
+
+    &:focus {
+      outline: 2px solid #1d9e75;
+      outline-offset: 1px;
+    }
+  }
+
+  .tutoring-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .tutoring-input-unit {
+    font-size: 12px;
+    color: #6c6a64;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  // ── 입력 영역 ─────────────────────────────────────────────────────────────
+  .tutoring-input {
+    display: grid;
+    gap: 16px;
+    background: #f8f7f3;
+    border: 1px solid #e2e2dc;
+    border-radius: 16px;
+    padding: 16px;
+    min-width: 0;
+    overflow: hidden; // 자녀 카드 가로 overflow 차단
+  }
+
+  // 자녀 카드 컨테이너 — JS가 카드를 append하는 div
+  #childCardsContainer {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  // ── 자녀 수 선택 ──────────────────────────────────────────────────────────
+  .tutoring-child-count {
+    display: grid;
+    gap: 8px;
+  }
+
+  .tutoring-count-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .tutoring-count-btn {
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+    border: 1.5px solid #e2e2dc;
+    border-radius: 8px;
+    background: #fff;
+    color: #4d4a43;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover {
+      border-color: #1d9e75;
+      background: #f0faf6;
+    }
+
+    &.is-active {
+      border-color: #1d9e75;
+      background: #e1f5ee;
+      color: #0f6e56;
+    }
+  }
+
+  // ── 자녀 카드 ─────────────────────────────────────────────────────────────
+  .tutoring-child-card {
+    border: 1px solid #dcd9d0;
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .tutoring-child-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: #f8f7f3;
+    border-bottom: 1px solid #ece9e0;
+    cursor: pointer;
+  }
+
+  .tutoring-child-card__title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a18;
+  }
+
+  .tutoring-child-card__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #6c6a64;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.2s;
+
+    &:hover {
+      background: #ebe8df;
+    }
+
+    .tutoring-toggle-icon {
+      transition: transform 0.2s;
+    }
+
+    &.is-collapsed .tutoring-toggle-icon {
+      transform: rotate(-90deg);
+    }
+  }
+
+  .tutoring-child-card__body {
+    display: grid;
+    gap: 14px;
+    padding: 14px;
+    transition: all 0.2s;
+    min-width: 0; // grid 자식이 카드 너비를 초과하지 않도록
+
+    // 모든 직계 grid 아이템도 수축 허용
+    > * {
+      min-width: 0;
+    }
+
+    &.is-collapsed {
+      display: none;
+    }
+  }
+
+  // ── 학교급 버튼 ───────────────────────────────────────────────────────────
+  .tutoring-level-buttons {
+    display: flex;
+    gap: 6px;
+  }
+
+  .tutoring-level-btn {
+    flex: 1;
+    min-width: 0;
+    min-height: 36px;
+    border: 1.5px solid #e2e2dc;
+    border-radius: 8px;
+    background: #fff;
+    color: #4d4a43;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover {
+      border-color: #1d9e75;
+      background: #f0faf6;
+    }
+
+    &.is-active {
+      border-color: #1d9e75;
+      background: #e1f5ee;
+      color: #0f6e56;
+    }
+  }
+
+  // ── 과목 영역 ─────────────────────────────────────────────────────────────
+  .tutoring-subjects {
+    display: grid;
+    gap: 8px;
+  }
+
+  .tutoring-subjects__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tutoring-add-subject-btn {
+    padding: 5px 10px;
+    border: 1.5px solid #1d9e75;
+    border-radius: 6px;
+    background: #fff;
+    color: #0f6e56;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #e1f5ee;
+    }
+  }
+
+  .tutoring-subject-rows {
+    display: grid;
+    gap: 8px;
+  }
+
+  .tutoring-subject-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 6px;
+    align-items: center;
+    min-width: 0;
+
+    > * {
+      min-width: 0;
+    }
+
+    // cost input: 두 번째 행 왼쪽
+    .tutoring-input-wrap {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    // 삭제 버튼: 두 번째 행 오른쪽
+    .tutoring-remove-subject-btn {
+      grid-column: 2;
+      grid-row: 2;
+      justify-self: end;
+      align-self: center;
+    }
+  }
+
+  .tutoring-remove-subject-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e2e2dc;
+    border-radius: 6px;
+    background: #fff;
+    color: #9a9890;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+    &:hover {
+      border-color: #e05252;
+      background: #fff5f5;
+      color: #c62828;
+    }
+  }
+
+  // ── 교재비 / 기타비용 ─────────────────────────────────────────────────────
+  .tutoring-extra-costs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    min-width: 0;
+
+    > * {
+      min-width: 0;
+    }
+
+    @media (min-width: 640px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .tutoring-extra-costs .tutoring-input-wrap {
+    width: 100%;
+  }
+
+  .tutoring-extra-costs .tutoring-number-input {
+    width: 100%;
+  }
+
+  // ── 자녀 소계 ─────────────────────────────────────────────────────────────
+  .tutoring-child-subtotal {
+    font-size: 12px;
+    color: #6c6a64;
+    text-align: right;
+    padding-top: 4px;
+    border-top: 1px solid #ece9e0;
+
+    strong.tutoring-child-subtotal__value {
+      color: #0f6e56;
+      font-weight: 700;
+    }
+  }
+
+  // ── 결과 영역 ─────────────────────────────────────────────────────────────
+  .tutoring-result {
+    display: grid;
+    gap: 24px;
+    min-width: 0;
+  }
+
+  // 데스크톱에서 결과 패널 sticky: 입력이 길어도 결과가 항상 보임
+  @media (min-width: 1024px) {
+    .simple-tool-shell__main {
+      position: sticky;
+      top: 84px; // 헤더(68px) + 여백
+    }
+  }
+
+  .tutoring-section-title {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a18;
+    line-height: 1.4;
+  }
+
+  .tutoring-section-note {
+    margin: 0 0 12px;
+    font-size: 12px;
+    color: #6c6a64;
+    line-height: 1.6;
+  }
+
+  // ── KPI 그리드 ────────────────────────────────────────────────────────────
+  .tutoring-kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .tutoring-kpi-card {
+    display: grid;
+    gap: 6px;
+    padding: 14px 12px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #ebe8df;
+
+    &--accent {
+      border-color: #1d9e75;
+      background: #f0faf6;
+    }
+  }
+
+  .tutoring-kpi-card__label {
+    font-size: 11px;
+    color: #6c6a64;
+    font-weight: 500;
+  }
+
+  .tutoring-kpi-card__value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a1a18;
+    line-height: 1.2;
+
+    @media (min-width: 768px) {
+      font-size: 22px;
+    }
+  }
+
+  .tutoring-kpi-card__context {
+    font-size: 10px;
+    color: #9a9890;
+    line-height: 1.5;
+  }
+
+  // ── 또래 비교 ─────────────────────────────────────────────────────────────
+  .tutoring-comparison {
+    display: grid;
+    gap: 12px;
+  }
+
+  .tutoring-comparison-card {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid #ebe8df;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .tutoring-comparison-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tutoring-comparison-card__name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a18;
+  }
+
+  .tutoring-comparison-card__meta {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: #4d4a43;
+    flex-wrap: wrap;
+
+    strong {
+      color: #0f6e56;
+    }
+  }
+
+  .tutoring-comparison-card__diff {
+    color: #6c6a64;
+  }
+
+  .tutoring-comparison-card__note {
+    margin: 0;
+    font-size: 10px;
+    color: #9a9890;
+  }
+
+  .tutoring-comparison-empty {
+    margin: 0;
+    padding: 16px;
+    font-size: 13px;
+    color: #9a9890;
+    text-align: center;
+    border: 1px dashed #dcd9d0;
+    border-radius: 10px;
+  }
+
+  // ── 가로 막대 그래프 ──────────────────────────────────────────────────────
+  .tutoring-bar-wrap {
+    position: relative;
+    height: 20px;
+    background: #f0ede6;
+    border-radius: 999px;
+    overflow: visible;
+    margin-bottom: 36px; // 평균 레이블(top: 32px)이 카드 내용과 겹치지 않도록
+  }
+
+  .tutoring-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #1d9e75;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+    min-width: 4px;
+  }
+
+  .tutoring-bar__avg-marker {
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 2px;
+    height: 28px;
+    background: #ba7517;
+    border-radius: 2px;
+    z-index: 1;
+  }
+
+  .tutoring-bar__avg-label {
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: #ba7517;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  // ── 티어 뱃지 ─────────────────────────────────────────────────────────────
+  .tutoring-tier-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: #9a9890;
+    white-space: nowrap;
+  }
+
+  .tier--saving {
+    background: #1d9e75;
+  }
+
+  .tier--average {
+    background: #0f6e56;
+  }
+
+  .tier--active {
+    background: #ba7517;
+  }
+
+  .tier--high {
+    background: #c62828;
+  }
+
+  // ── 누적 시뮬레이션 ───────────────────────────────────────────────────────
+  .tutoring-simulation {
+    display: grid;
+    gap: 12px;
+  }
+
+  .tutoring-scenario-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tutoring-scenario-btn {
+    padding: 7px 12px;
+    border: 1.5px solid #e2e2dc;
+    border-radius: 8px;
+    background: #fff;
+    color: #4d4a43;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover {
+      border-color: #1d9e75;
+      background: #f0faf6;
+    }
+
+    &.is-active {
+      border-color: #1d9e75;
+      background: #e1f5ee;
+      color: #0f6e56;
+    }
+  }
+
+  .tutoring-simulation-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tutoring-sim-table {
+    width: 100%;
+    min-width: 400px;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #ece9df;
+      text-align: left;
+      vertical-align: middle;
+      line-height: 1.5;
+    }
+
+    th {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6c6a64;
+      background: #f8f7f3;
+    }
+
+    td strong {
+      color: #0f6e56;
+      font-weight: 700;
+    }
+
+    .tutoring-sim-total td {
+      font-weight: 700;
+      background: #f0faf6;
+      border-top: 2px solid #1d9e75;
+
+      strong {
+        font-size: 15px;
+        color: #0f6e56;
+      }
+    }
+  }
+
+  .tutoring-sim-note {
+    margin: 6px 0 0;
+    font-size: 10px;
+    color: #9a9890;
+    line-height: 1.5;
+  }
+
+  // ── 기회비용 ──────────────────────────────────────────────────────────────
+  .tutoring-opportunity {
+    display: grid;
+    gap: 14px;
+  }
+
+  .tutoring-opportunity-params {
+    display: grid;
+    gap: 12px;
+
+    @media (min-width: 480px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .tutoring-tab-buttons {
+    display: flex;
+    gap: 6px;
+  }
+
+  .tutoring-tab-btn {
+    flex: 1;
+    min-width: 0;
+    min-height: 36px;
+    border: 1.5px solid #e2e2dc;
+    border-radius: 8px;
+    background: #fff;
+    color: #4d4a43;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover {
+      border-color: #1d9e75;
+      background: #f0faf6;
+    }
+
+    &.is-active {
+      border-color: #1d9e75;
+      background: #e1f5ee;
+      color: #0f6e56;
+    }
+  }
+
+  .tutoring-opportunity-card {
+    display: grid;
+    gap: 8px;
+    padding: 18px 16px;
+    border: 1.5px solid #1d9e75;
+    border-radius: 14px;
+    background: #f0faf6;
+  }
+
+  .tutoring-opportunity-card__label {
+    font-size: 12px;
+    color: #4d4a43;
+    line-height: 1.5;
+  }
+
+  .tutoring-opportunity-card__value {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f6e56;
+    line-height: 1.2;
+
+    @media (min-width: 768px) {
+      font-size: 30px;
+    }
+  }
+
+  .tutoring-opportunity-card__note {
+    font-size: 11px;
+    color: #6c6a64;
+  }
+
+  .tutoring-opportunity-card__disclaimer {
+    margin: 0;
+    padding-top: 8px;
+    border-top: 1px solid #c8ede0;
+    font-size: 10px;
+    color: #9a9890;
+    line-height: 1.6;
+  }
+
+  .tutoring-opportunity-links {
+    text-align: right;
+  }
+
+  .tutoring-link-btn {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f6e56;
+    text-decoration: none;
+    transition: color 0.15s;
+
+    &:hover {
+      color: #1d9e75;
+      text-decoration: underline;
+    }
+  }
+
+  // ── 절감 팁 ───────────────────────────────────────────────────────────────
+  .tutoring-tips {
+    padding: 18px;
+    background: #f8f7f3;
+    border-radius: 12px;
+    border: 1px solid #ece9df;
+  }
+
+  .tutoring-tips-list {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 8px;
+
+    li {
+      font-size: 13px;
+      color: #4d4a43;
+      line-height: 1.6;
+    }
+  }
+}

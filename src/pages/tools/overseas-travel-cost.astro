@@ -1,0 +1,472 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  TRAVEL_DEFAULT_INPUT,
+  TRAVEL_PRESETS,
+  TRAVEL_REGION_BASE_COSTS,
+  REGIONAL_GUIDES,
+  TRAVEL_COST_TIPS,
+  TRAVEL_COST_FAQ,
+  TRAVEL_COST_RELATED_LINKS,
+} from "../../data/overseasTravelCost";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  DEFAULT_INPUT: TRAVEL_DEFAULT_INPUT,
+  PRESETS: TRAVEL_PRESETS,
+  REGION_BASE_COSTS: TRAVEL_REGION_BASE_COSTS,
+};
+
+const TRAVEL_NEXT_REPORT = {
+  href: withBase("/reports/overseas-travel-cost-compare-2026/"),
+  eyebrow: "관련 리포트",
+  title: "해외여행 경비 비교 2026",
+  description:
+    "일본, 동남아, 유럽, 미주, 대만·홍콩의 항공권·숙박·식비 평균 범위와 예산 차이를 표로 비교한 리포트입니다.",
+  cta: "리포트 보기",
+  points: ["지역별 평균 시세", "예산대별 차이", "항공·숙박 비중 비교"],
+};
+
+const faqSchema = TRAVEL_COST_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="해외여행 총비용 계산기 2026 | 항공권·숙박·식비·비상금까지 한 번에"
+  description="여행지, 인원, 여행일수, 항공권 등급, 숙박 단가, 식비, 교통비, 관광비, 쇼핑, 비상금을 입력하면 해외여행 총비용과 1인당 비용, 예산 초과 여부를 바로 계산합니다."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "해외여행 총비용 계산기 2026",
+    applicationCategory: "TravelApplication",
+    operatingSystem: "All",
+    description:
+      "여행지, 인원, 일정, 항공권·숙박·식비·교통비·관광비·쇼핑·비상금을 합산해 해외여행 총예산을 계산하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/overseas-travel-cost/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="overseas-travel-cost" pageClass="otc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="여행 예산 계산기"
+        title="항공권만 보지 말고, 총여행비를 먼저 잡아보세요"
+        description="항공권·숙박·식비·현지 교통·관광비·보험·쇼핑·비상금까지 합쳐서 실제 여행에 가까운 총예산을 계산합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetOverseasTravelBtn" copyId="copyOverseasTravelLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 시작</p>
+            <h2 class="panel__title">대표 일정 프리셋</h2>
+          </div>
+          <p class="panel-heading__summary" id="otcPresetSummary">일본 3박 4일 기본값으로 시작합니다.</p>
+        </div>
+
+        <div class="otc-preset-row">
+          {TRAVEL_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`otc-preset-chip${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 입력</p>
+            <h2 class="panel__title">여행 조건</h2>
+          </div>
+          <p class="panel-heading__summary">여행지와 일정, 인원부터 먼저 정합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>여행 지역</span>
+            <select id="otcRegion" class="select">
+              <option value="japan" selected>일본</option>
+              <option value="southeast-asia">동남아</option>
+              <option value="europe">유럽</option>
+              <option value="americas">미주</option>
+              <option value="taiwan-hongkong">대만·홍콩</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>인원 수</span>
+            <input id="otcPersons" type="number" min="1" max="20" step="1" class="input-number" value={TRAVEL_DEFAULT_INPUT.persons} />
+          </label>
+
+          <label class="field">
+            <span>여행일수</span>
+            <input id="otcDays" type="number" min="1" max="30" step="1" class="input-number" value={TRAVEL_DEFAULT_INPUT.days} />
+            <small>식비·교통·관광비 계산 기준</small>
+          </label>
+
+          <label class="field">
+            <span>숙박일수</span>
+            <input id="otcNights" type="number" min="1" max="30" step="1" class="input-number" value={TRAVEL_DEFAULT_INPUT.nights} />
+            <small>호텔 비용 계산 기준</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">항공·숙박</p>
+            <h2 class="panel__title">큰 비용부터 맞춥니다</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field field--full">
+            <span>항공권 등급</span>
+            <div class="toggle-grid otc-chip-grid">
+              <label class="mode-chip">
+                <input type="radio" name="otcFlightClass" value="lcc" />
+                <span>저가항공</span>
+              </label>
+              <label class="mode-chip">
+                <input type="radio" name="otcFlightClass" value="economy" checked />
+                <span>이코노미</span>
+              </label>
+              <label class="mode-chip">
+                <input type="radio" name="otcFlightClass" value="premium" />
+                <span>프리미엄</span>
+              </label>
+              <label class="mode-chip">
+                <input type="radio" name="otcFlightClass" value="business" />
+                <span>비즈니스</span>
+              </label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>1인 항공권</span>
+            <input id="otcFlightPerPerson" type="text" inputmode="numeric" class="input-number" value={TRAVEL_DEFAULT_INPUT.flightPerPerson.toLocaleString("ko-KR")} />
+          </label>
+
+          <div class="field field--full">
+            <span>숙박 등급</span>
+            <div class="toggle-grid otc-chip-grid">
+              <label class="mode-chip">
+                <input type="radio" name="otcHotelTier" value="guesthouse" />
+                <span>게스트하우스</span>
+              </label>
+              <label class="mode-chip">
+                <input type="radio" name="otcHotelTier" value="3star" checked />
+                <span>3성급</span>
+              </label>
+              <label class="mode-chip">
+                <input type="radio" name="otcHotelTier" value="4star" />
+                <span>4성급</span>
+              </label>
+              <label class="mode-chip">
+                <input type="radio" name="otcHotelTier" value="5star" />
+                <span>5성급</span>
+              </label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>1박 숙박비</span>
+            <input id="otcHotelPerNight" type="text" inputmode="numeric" class="input-number" value={TRAVEL_DEFAULT_INPUT.hotelPerNight.toLocaleString("ko-KR")} />
+          </label>
+
+          <label class="field">
+            <span>객실 수</span>
+            <input id="otcRooms" type="number" min="1" max="10" step="1" class="input-number" value={TRAVEL_DEFAULT_INPUT.rooms} />
+            <small id="otcRoomsHint">2인 기준 1실 추천</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">현지 지출</p>
+            <h2 class="panel__title">작은 비용까지 더합니다</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>1인 1일 식비</span>
+            <input id="otcMeal" type="text" inputmode="numeric" class="input-number" value={TRAVEL_DEFAULT_INPUT.mealPerPersonPerDay.toLocaleString("ko-KR")} />
+          </label>
+
+          <label class="field">
+            <span>1인 1일 교통비</span>
+            <input id="otcTransport" type="text" inputmode="numeric" class="input-number" value={TRAVEL_DEFAULT_INPUT.transportPerPersonPerDay.toLocaleString("ko-KR")} />
+          </label>
+
+          <label class="field">
+            <span>1인 1일 관광비</span>
+            <input id="otcActivity" type="text" inputmode="numeric" class="input-number" value={TRAVEL_DEFAULT_INPUT.activityPerPersonPerDay.toLocaleString("ko-KR")} />
+          </label>
+
+          <label class="field otc-toggle-field">
+            <span>여행자보험 포함</span>
+            <input id="otcInsurance" type="checkbox" checked />
+          </label>
+
+          <label class="field" id="otcInsuranceField">
+            <span>1인 보험료</span>
+            <input id="otcInsurancePerPerson" type="text" inputmode="numeric" class="input-number" value={TRAVEL_DEFAULT_INPUT.insurancePerPerson.toLocaleString("ko-KR")} />
+          </label>
+
+          <label class="field">
+            <span>쇼핑 예산</span>
+            <input id="otcShopping" type="text" inputmode="numeric" class="input-number" value={TRAVEL_DEFAULT_INPUT.shopping.toLocaleString("ko-KR")} />
+          </label>
+
+          <div class="field field--full">
+            <span>비상금 비율</span>
+            <div class="toggle-grid otc-chip-grid">
+              <label class="mode-chip">
+                <input type="radio" name="otcEmergencyRate" value="0.05" />
+                <span>5%</span>
+              </label>
+              <label class="mode-chip">
+                <input type="radio" name="otcEmergencyRate" value="0.1" checked />
+                <span>10%</span>
+              </label>
+              <label class="mode-chip">
+                <input type="radio" name="otcEmergencyRate" value="0.15" />
+                <span>15%</span>
+              </label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>내 예산 총액</span>
+            <input id="otcBudget" type="text" inputmode="numeric" class="input-number" value={TRAVEL_DEFAULT_INPUT.budget.toLocaleString("ko-KR")} />
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="otc-section">
+      <div class="otc-section__head">
+        <p class="otc-section__eyebrow">핵심 결과</p>
+        <h2>총액, 1인당, 예산 초과 여부를 먼저 봅니다</h2>
+        <p class="otc-section__sub" id="otcResultSubcopy">입력값을 바꾸면 항공·숙박·현지 지출과 비상금이 즉시 다시 계산됩니다.</p>
+      </div>
+
+      <div class="otc-summary-cards">
+        <article class="otc-kpi-card otc-kpi-card--total">
+          <p class="otc-kpi-label">예상 총비용</p>
+          <strong class="otc-kpi-value" id="otcTotalCost">-</strong>
+          <span class="otc-kpi-note" id="otcTotalNote">항공권부터 비상금까지 모두 합산</span>
+        </article>
+        <article class="otc-kpi-card">
+          <p class="otc-kpi-label">1인당 비용</p>
+          <strong class="otc-kpi-value" id="otcPerPerson">-</strong>
+          <span class="otc-kpi-note">총비용 ÷ 인원 수</span>
+        </article>
+        <article class="otc-kpi-card">
+          <p class="otc-kpi-label">비상금 권장액</p>
+          <strong class="otc-kpi-value" id="otcEmergency">-</strong>
+          <span class="otc-kpi-note">예상치 못한 지출 대비</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="otc-gauge-wrap">
+      <div class="otc-gauge-header">
+        <span>내 예산 대비</span>
+        <strong id="otcBudgetStatus" class="otc-budget-status">-</strong>
+      </div>
+      <div class="otc-gauge-bar" aria-hidden="true">
+        <div class="otc-gauge-fill" id="otcGaugeFill"></div>
+      </div>
+      <div class="otc-gauge-labels">
+        <span>내 예산 <strong id="otcBudgetDisplay">-</strong></span>
+        <span id="otcBudgetDiff" class="otc-budget-diff">-</span>
+      </div>
+      <p class="otc-gauge-message" id="otcGaugeMessage">-</p>
+    </section>
+
+    <section class="otc-results-grid">
+      <article class="panel otc-chart-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">비용 구성</p>
+            <h2 class="panel__title">무엇이 총액을 키우는지 봅니다</h2>
+          </div>
+        </div>
+        <div class="otc-donut-wrap">
+          <canvas id="otcDonutChart"></canvas>
+        </div>
+        <p class="otc-insight" id="otcInsight">-</p>
+      </article>
+
+      <article class="panel otc-breakdown-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">상세 내역</p>
+            <h2 class="panel__title">항목별 금액과 비중</h2>
+          </div>
+        </div>
+
+        <table class="otc-breakdown-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>비중</th>
+            </tr>
+          </thead>
+          <tbody id="otcBreakdownBody"></tbody>
+          <tfoot>
+            <tr class="otc-breakdown-total">
+              <td>총비용</td>
+              <td id="otcBreakdownTotal">-</td>
+              <td>100%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </article>
+    </section>
+
+    <section class="panel otc-guide-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">지역 가이드</p>
+          <h2 class="panel__title">평균 시세 범위와 체크포인트</h2>
+        </div>
+        <p class="panel-heading__summary">실제 예약 시점에 따라 차이가 크기 때문에 평균 범위를 참고용으로만 보세요.</p>
+      </div>
+
+      <div class="otc-guide-table-wrap">
+        <table class="otc-guide-table">
+          <thead>
+            <tr>
+              <th>지역</th>
+              <th>항공권</th>
+              <th>1박 숙박비</th>
+              <th>1일 식비</th>
+              <th>특징</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REGIONAL_GUIDES.map((guide) => (
+              <tr>
+                <td>{guide.label}</td>
+                <td>{guide.avgFlightKRW}</td>
+                <td>{guide.avgHotelPerNightKRW}</td>
+                <td>{guide.avgMealPerDayKRW}</td>
+                <td>
+                  <strong>{guide.characteristics}</strong>
+                  <span>{guide.note}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel otc-tips-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">예산 절약 팁</p>
+          <h2 class="panel__title">총비용을 줄일 때 먼저 볼 포인트</h2>
+        </div>
+      </div>
+
+      <ul class="otc-tips-list">
+        {TRAVEL_COST_TIPS.map((tip) => <li>{tip}</li>)}
+      </ul>
+    </section>
+
+    <section class="panel otc-report-link-panel">
+      <div class="otc-report-link-panel__content">
+        <div class="otc-report-link-panel__copy">
+          <p class="otc-report-link-panel__eyebrow">{TRAVEL_NEXT_REPORT.eyebrow}</p>
+          <h2>{TRAVEL_NEXT_REPORT.title}</h2>
+          <p>{TRAVEL_NEXT_REPORT.description}</p>
+          <div class="otc-report-link-panel__points">
+            {TRAVEL_NEXT_REPORT.points.map((point) => (
+              <span>{point}</span>
+            ))}
+          </div>
+        </div>
+        <a href={TRAVEL_NEXT_REPORT.href} class="button button--secondary">
+          {TRAVEL_NEXT_REPORT.cta}
+        </a>
+      </div>
+    </section>
+
+    <InfoNotice
+      lines={[
+        "계산 결과는 평균 시세와 입력값을 바탕으로 한 참고용 추정치입니다.",
+        "실제 금액은 성수기, 예약 시점, 환율, 수하물, 도시세, 현장 추가 결제 여부에 따라 달라질 수 있습니다.",
+        "중요한 예약 전에는 항공사·숙박 플랫폼·보험사 실제 금액을 한 번 더 확인하세요.",
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="해외여행 총비용 계산기 활용 가이드"
+        intro={[
+          "해외여행 예산은 항공권만 보고 잡으면 거의 항상 부족합니다. 숙박, 식비, 교통비, 관광비, 보험, 쇼핑, 비상금까지 더해야 실제 여행에 가까운 총액이 나옵니다.",
+          "이 계산기는 일본·동남아·유럽·미주·대만·홍콩처럼 많이 찾는 지역을 기준으로 빠르게 시작하고, 항공권 등급과 숙소 수준을 바꾸면서 총액이 얼마나 달라지는지 바로 확인하는 데 초점을 맞췄습니다.",
+        ]}
+        inputPoints={[
+          "대표 일정 프리셋으로 시작한 뒤 여행일수, 숙박일수, 인원 수만 바꿔도 큰 그림을 빠르게 볼 수 있습니다.",
+          "항공권과 숙박 단가를 직접 넣을 수 있어서 실제 예약 화면을 보면서 현실값으로 보정하기 좋습니다.",
+          "내 예산 총액과 비교하면 사유 예산인지, 촉박한지, 초과인지 바로 판단할 수 있습니다.",
+        ]}
+        criteria={[
+          "항공권은 1인 기준, 식비·교통비·관광비는 1인 1일 기준으로 계산합니다.",
+          "숙박비는 1박 단가 × 숙박일수 × 객실 수 구조로 계산합니다.",
+          "비상금은 총지출 소계의 5~15% 중 사용자가 고른 비율만큼 추가됩니다.",
+          "여행자보험은 체크를 해제하면 총액에서 빠지고, 체크 시 1인당 보험료가 인원 수만큼 합산됩니다.",
+        ]}
+        faq={TRAVEL_COST_FAQ}
+        related={TRAVEL_COST_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+</BaseLayout>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script define:vars={{ config }}>
+  window.__TRAVEL_CONFIG__ = config;
+</script>
+<script type="module" src={withBase("/scripts/overseas-travel-cost.js")}></script>

@@ -1,0 +1,599 @@
+// ── 초등입학 전 체크리스트·비용 총정리 2026 ─────────────────────────────────
+// prefix: esr-
+
+.esr-page {
+  display: grid;
+  gap: 26px;
+
+  // ── 섹션 카드 공통 ──────────────────────────────────────────────────────────
+  .content-section {
+    border: 1px solid #dde4f0;
+    border-radius: 20px;
+    background: linear-gradient(180deg, #f9faff 0%, #f2f5fd 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.05);
+    padding: 24px;
+  }
+
+  // ── 섹션 헤더 ───────────────────────────────────────────────────────────────
+  .section-header--compact {
+    margin-bottom: 18px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #2563eb;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.38;
+      color: #111827;
+    }
+
+    p {
+      margin: 0;
+      max-width: 820px;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #4b5563;
+    }
+  }
+
+  // ── 뱃지 ────────────────────────────────────────────────────────────────────
+  .esr-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .esr-badge--required,
+  .esr-badge--high   { background: #dcfce7; color: #166534; }
+  .esr-badge--school,
+  .esr-badge--mid,
+  .esr-badge--estimate { background: #fef3c7; color: #92400e; }
+  .esr-badge--optional,
+  .esr-badge--ref    { background: #f3f4f6; color: #4b5563; }
+  .esr-badge--official { background: #dbeafe; color: #1d4ed8; }
+
+  // ── 각주 ────────────────────────────────────────────────────────────────────
+  .esr-footnote {
+    margin: 12px 0 0;
+    font-size: 0.77rem;
+    color: #6b7280;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  // ── KPI 그리드 (4개) ────────────────────────────────────────────────────────
+  .esr-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .esr-kpi-card {
+    padding: 18px 16px;
+    border: 1px solid #c7d5f0;
+    border-radius: 14px;
+    background: #fff;
+    display: grid;
+    gap: 5px;
+  }
+
+  .esr-kpi-card__label {
+    margin: 0;
+    font-size: 0.76rem;
+    color: #4b5563;
+    line-height: 1.4;
+  }
+
+  .esr-kpi-card__value {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+  }
+
+  .esr-kpi-card__note {
+    font-size: 0.73rem;
+    color: #6b7280;
+  }
+
+  // ── 입학 일정 타임라인 ──────────────────────────────────────────────────────
+  .esr-timeline {
+    display: grid;
+    gap: 12px;
+  }
+
+  .esr-timeline__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 16px;
+    border: 1px solid #c7d5f0;
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .esr-timeline__badge {
+    width: 3.2rem;
+    text-align: center;
+    padding: 0.35rem 0;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .esr-timeline__content {
+    strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.83rem;
+      color: #4b5563;
+      line-height: 1.65;
+    }
+  }
+
+  // ── 준비물 체크리스트 ────────────────────────────────────────────────────────
+  .esr-checklist-counter {
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-bottom: 12px;
+
+    strong {
+      color: #2563eb;
+      font-size: 1rem;
+    }
+  }
+
+  .esr-checklist {
+    display: grid;
+    gap: 12px;
+  }
+
+  .esr-checklist__group {
+    border: 1px solid #dde4f0;
+    border-radius: 14px;
+    padding: 16px;
+    background: #fff;
+  }
+
+  .esr-checklist__group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+
+    strong {
+      font-size: 0.9rem;
+      color: #111827;
+    }
+  }
+
+  .esr-checklist__group-count {
+    font-size: 0.78rem;
+    color: #9ca3af;
+  }
+
+  .esr-checklist__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 0.75rem;
+    align-items: start;
+    padding: 10px 0;
+    border-top: 1px solid #f0f2f7;
+    cursor: pointer;
+
+    &:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    &.is-complete .esr-checklist__name {
+      text-decoration: line-through;
+      opacity: 0.55;
+    }
+  }
+
+  .esr-checklist__checkbox {
+    margin-top: 3px;
+    accent-color: #2563eb;
+    width: 16px;
+    height: 16px;
+  }
+
+  .esr-checklist__name {
+    font-size: 0.88rem;
+    color: #1f2937;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .esr-checklist__note {
+    grid-column: 2;
+    font-size: 0.77rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-top: 1px;
+  }
+
+  // ── 테이블 공통 래퍼 ────────────────────────────────────────────────────────
+  .esr-cost-table-wrap,
+  .esr-compare-table-wrap,
+  .esr-learning-table-wrap,
+  .esr-support-table-wrap,
+  .esr-sibling-table-wrap,
+  .esr-year-compare-table-wrap {
+    overflow-x: auto;
+  }
+
+  .esr-cost-table,
+  .esr-compare-table,
+  .esr-learning-table,
+  .esr-support-table,
+  .esr-sibling-table,
+  .esr-year-compare-table {
+    width: 100%;
+    min-width: 580px;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+
+    th {
+      padding: 11px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #374151;
+      text-align: left;
+      background: #f0f4fc;
+      border-bottom: 2px solid #c7d5f0;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 11px 14px;
+      font-size: 0.84rem;
+      color: #374151;
+      border-bottom: 1px solid #eef0f7;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f8faff; }
+
+    strong { color: #111827; }
+  }
+
+  // 품목별 비용 tier 헤더 색
+  .esr-cost-table__tier--frugal  { color: #166534; background: #dcfce7 !important; }
+  .esr-cost-table__tier--average { color: #92400e; background: #fef3c7 !important; }
+  .esr-cost-table__tier--premium { color: #9333ea; background: #f3e8ff !important; }
+  .esr-cost-table__note { color: #6b7280; font-size: 0.77rem; }
+
+  // 2026 현재값 강조
+  .esr-year-compare-table__current {
+    font-weight: 700;
+    color: #2563eb;
+  }
+
+  // ── 첫 달 시나리오 카드 ──────────────────────────────────────────────────────
+  .esr-scenario-grid {
+    display: grid;
+    gap: 14px;
+  }
+
+  .esr-scenario-card {
+    padding: 18px;
+    border: 1px solid #dde4f0;
+    border-radius: 14px;
+    background: #fff;
+    display: grid;
+    gap: 12px;
+  }
+
+  .esr-scenario-card--frugal { border-color: #a7d9c0; background: #f0faf6; }
+  .esr-scenario-card--average { border-color: #c7d5f0; background: #f0f4fb; }
+  .esr-scenario-card--premium { border-color: #d4b8f0; background: #f7f0ff; }
+
+  .esr-scenario-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .esr-scenario-card__label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .esr-scenario-card--frugal  .esr-scenario-card__label { color: #166534; }
+  .esr-scenario-card--average .esr-scenario-card__label { color: #1d4ed8; }
+  .esr-scenario-card--premium .esr-scenario-card__label { color: #7c3aed; }
+
+  .esr-scenario-card__dl {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+
+    > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    dt { color: #6b7280; }
+    dd { margin: 0; font-weight: 600; color: #1f2937; }
+  }
+
+  .esr-scenario-card__total {
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+    dt { font-weight: 700; color: #374151; }
+    dd strong {
+      font-size: 1.05rem;
+      color: #111827;
+    }
+  }
+
+  // ── 돌봄 신청 플로우 ────────────────────────────────────────────────────────
+  .esr-care-flow {
+    display: grid;
+    gap: 12px;
+  }
+
+  .esr-care-flow__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 16px;
+    border: 1px solid #dde4f0;
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .esr-care-flow__badge {
+    width: 2.2rem;
+    height: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .esr-care-flow__title {
+    display: block;
+    font-size: 0.92rem;
+    color: #111827;
+    margin-bottom: 4px;
+  }
+
+  .esr-care-flow__desc {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #4b5563;
+    line-height: 1.65;
+  }
+
+  // ── 후회한 준비물 ────────────────────────────────────────────────────────────
+  .esr-regret-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .esr-regret-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 16px;
+    border: 1px solid #dde4f0;
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .esr-regret-item__rank {
+    width: 2.2rem;
+    height: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-weight: 700;
+    font-size: 0.88rem;
+    flex-shrink: 0;
+  }
+
+  .esr-regret-item__name {
+    display: block;
+    font-size: 0.93rem;
+    color: #111827;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .esr-regret-item__reason {
+    margin: 0 0 6px;
+    font-size: 0.82rem;
+    color: #4b5563;
+    line-height: 1.6;
+  }
+
+  .esr-regret-item__tip {
+    margin: 0;
+    font-size: 0.81rem;
+    color: #065f46;
+    line-height: 1.55;
+    background: #ecfdf5;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  // ── FAQ 아코디언 ────────────────────────────────────────────────────────────
+  .esr-faq {
+    display: grid;
+    gap: 8px;
+  }
+
+  .esr-faq__item {
+    border: 1px solid #dde4f0;
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .esr-faq__question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1f2937;
+    cursor: pointer;
+
+    &:hover { background: #f8faff; }
+  }
+
+  .esr-faq__icon::before {
+    content: "+";
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #6b7280;
+  }
+
+  .esr-faq__item.is-open .esr-faq__icon::before { content: "−"; }
+
+  .esr-faq__answer {
+    display: none;
+    padding: 0 1.1rem 1rem;
+    font-size: 0.85rem;
+    color: #4b5563;
+    line-height: 1.75;
+
+    p { margin: 0; }
+  }
+
+  .esr-faq__item.is-open .esr-faq__answer { display: block; }
+
+  // ── CTA 섹션 ────────────────────────────────────────────────────────────────
+  .esr-cta-card {
+    display: grid;
+    gap: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, #eef4ff 0%, #fff 100%);
+    border: 1px solid #c7d5f0;
+    border-radius: 16px;
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+      color: #111827;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.84rem;
+      color: #4b5563;
+      line-height: 1.65;
+    }
+  }
+
+  .esr-cta-card__eyebrow {
+    margin: 0 0 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #2563eb;
+  }
+
+  .esr-cta-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  // ── 반응형 ────────────────────────────────────────────────────────────────────
+  @media (min-width: 768px) {
+    .esr-kpi-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .esr-scenario-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .esr-care-flow {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .esr-regret-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .esr-timeline {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .esr-cta-card {
+      grid-template-columns: 1fr auto;
+      align-items: start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .content-section {
+      padding: 18px;
+      border-radius: 16px;
+    }
+
+    gap: 16px;
+  }
+}

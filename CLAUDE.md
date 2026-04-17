@@ -105,6 +105,21 @@ Each tool is composed of four files:
 
 GitHub Actions (`.github/workflows/deploy.yml`) builds and deploys to GitHub Pages automatically. Cloudflare Pages also picks up the `main` branch. Follow `DEPLOY_CHECKLIST.md` before every push.
 
+## 하네스 엔지니어링 문서 구조
+
+세션 시작 시 `AGENT.md`(ROOT)를 먼저 확인합니다. 전체 문서 지도와 작업별 결정 트리가 포함되어 있습니다.
+
+| 파일 | 역할 |
+| --- | --- |
+| `AGENT.md` | 에이전트 빠른 참조 · 문서 TOC · hard rules |
+| `docs/ARCHITECTURE.md` | 코드 구조 전체 지도 · 파일 패턴 · 등록 체크포인트 |
+| `docs/QUALITY_SCORE.md` | 배포 전 품질 루브릭 (빌드·콘텐츠·UX·SEO·코드) |
+| `docs/SECURITY.md` | 보안 규칙 · API키 · XSS 방지 · 제휴링크 처리 |
+| `docs/plan-docs/` | 기획 프로세스 가이드 · 인덱스 |
+| `docs/design-docs/` | 설계 프로세스 가이드 · 패턴 모음 · 인덱스 |
+| `docs/references/` | 외부 라이브러리·데이터 출처 레퍼런스 |
+| `docs/exec-plans/` | 실행 계획 · 우선순위 · 스프린트 기록 |
+
 ## 문서 참고 우선순위
 
 이 저장소의 작업 기준은 `CLAUDE.md`를 시작점으로 하고, 작업 유형에 따라 아래 문서를 우선 참고한다.
