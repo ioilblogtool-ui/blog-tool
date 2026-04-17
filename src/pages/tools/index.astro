@@ -12,66 +12,68 @@ const orderedTools = [...tools].sort((a, b) => a.order - b.order);
 const orderedReports = [...reports].sort((a, b) => a.order - b.order);
 
 const topicBySlug: Record<string, string> = {
-  salary: "연봉·이직",
-  retirement: "연봉·이직",
-  negotiation: "연봉·이직",
-  "household-income": "연봉·이직",
-  "parental-leave": "육아휴직·출산",
+  salary: "연봉·퇴직",
+  retirement: "연봉·퇴직",
+  negotiation: "연봉·퇴직",
+  "household-income": "연봉·퇴직",
+  "parental-leave": "육아·복지·출산",
   "bonus-simulator": "성과급 비교",
   "samsung-bonus": "성과급 비교",
   "sk-hynix-bonus": "성과급 비교",
   "hyundai-bonus": "성과급 비교",
-  "birth-support-total": "육아휴직·출산",
-  "single-parental-leave-total": "육아휴직·출산",
-  "parental-leave-pay": "육아휴직·출산",
-  "six-plus-six": "육아휴직·출산",
-  "parental-leave-short-work-calculator": "육아휴직·출산",
+  "birth-support-total": "육아·복지·출산",
+  "single-parental-leave-total": "육아·복지·출산",
+  "parental-leave-pay": "육아·복지·출산",
+  "six-plus-six": "육아·복지·출산",
+  "parental-leave-short-work-calculator": "육아·복지·출산",
   "diaper-cost": "육아·양육",
   "formula-cost": "육아·양육",
   "baby-growth-percentile-calculator": "육아·양육",
   "child-tutoring-cost-calculator": "육아·양육",
   "home-purchase-fund": "부동산·내집마련",
-  "salary-tier": "연봉·이직",
+  "salary-tier": "연봉·퇴직",
   "wedding-budget-calculator": "결혼·웨딩",
   "wedding-gift-break-even-calculator": "결혼·웨딩",
   "dca-investment-calculator": "투자·재테크",
   "fire-calculator": "투자·재테크",
-  "ai-stack-cost-calculator": "AI·생산성"
   "national-pension-calculator": "투자·재테크",
-  "coin-tax-calculator": "투자·재테크"
+  "coin-tax-calculator": "투자·재테크",
+  "ai-stack-cost-calculator": "AI·생산성",
 };
 
-const topicOrder = ["전체", "연봉·이직", "성과급 비교", "육아휴직·출산", "육아·양육", "부동산·내집마련", "결혼·웨딩", "투자·재테크", "AI·생산성"];
+const topicOrder = ["전체", "연봉·퇴직", "성과급 비교", "육아·복지·출산", "육아·양육", "부동산·내집마련", "결혼·웨딩", "투자·재테크", "AI·생산성"];
 const categories = topicOrder.filter(
   (category) => category === "전체" || orderedTools.some((tool) => topicBySlug[tool.slug] === category)
 );
 
 const toolHighlights: Record<string, string> = {
-  salary: "연봉 인상률별 월 실수령 차이와 연 총보상 흐름을 비교합니다.",
-  retirement: "평균임금 기준 예상 퇴직금과 세후 추정액을 빠르게 확인합니다.",
-  negotiation: "현재 연봉과 제안 연봉 차이를 세전 기준으로 한 번에 비교합니다.",
-  "household-income": "가구 연 총소득, 월 체감, 평균·중위 대비 위치를 한 번에 계산합니다.",
-  "parental-leave": "휴직 중 버틸 수 있는 현금흐름과 복직 후 변화를 같이 봅니다.",
-  "bonus-simulator": "삼성전자, SK하이닉스, 현대차의 보상 시나리오를 나란히 정리합니다.",
-  "samsung-bonus": "개인·부부 모드로 삼성전자 OPI, TAI, 월 체감 총보상을 바로 계산합니다.",
-  "sk-hynix-bonus": "개인·부부 모드로 하이닉스 PS, PI, 월 체감 총보상을 바로 계산합니다.",
-  "hyundai-bonus": "개인·부부 모드로 현대차 성과급 패키지와 월 체감 총보상을 바로 계산합니다.",
-  "birth-support-total": "출산 직후부터 두 돌까지 받을 수 있는 지원금 총액을 계산합니다.",
-  "single-parental-leave-total": "한 명만 육아휴직할 때 가구 총수령액을 합산해서 보여줍니다.",
+  salary: "연봉 인상률과 월 실수령 차이를 한 번에 비교합니다.",
+  retirement: "예상 퇴직금과 은퇴 이후 자금 흐름을 빠르게 확인합니다.",
+  negotiation: "현재 연봉과 제안 연봉 차이를 연봉 기준으로 바로 비교합니다.",
+  "household-income": "가구원 수와 총소득 기준으로 내 위치를 바로 계산합니다.",
+  "parental-leave": "육아휴직 중 월급 변화와 복직 후 차이를 함께 봅니다.",
+  "bonus-simulator": "삼성전자, SK하이닉스, 현대차 성과급 시나리오를 비교합니다.",
+  "samsung-bonus": "삼성전자 OPI, TAI와 실수령 총액을 빠르게 계산합니다.",
+  "sk-hynix-bonus": "SK하이닉스 PS, PI와 실수령 총액을 빠르게 계산합니다.",
+  "hyundai-bonus": "현대차 성과급 패키지와 실수령 총액을 빠르게 계산합니다.",
+  "birth-support-total": "출산 직후부터 초기 양육까지 받을 수 있는 지원금 총액을 계산합니다.",
+  "single-parental-leave-total": "외벌이 육아휴직 기준 가구 총소득 변화를 계산합니다.",
   "parental-leave-pay": "일반 육아휴직 급여 기준으로 월별 급여와 총액을 정리합니다.",
-  "six-plus-six": "6+6 특례와 일반 육아휴직 차이를 금액 기준으로 비교합니다.",
-  "parental-leave-short-work-calculator": "육아휴직 18개월 여부, 남은 단축근무 기간, 2026년 기준 예상 월급을 한 번에 계산합니다.",
-  "diaper-cost": "월령별 사용량 자동 계산, 브랜드 장당가 비교로 총비용 차이를 확인합니다.",
-  "formula-cost": "월령별 분유 사용량 자동 계산, 브랜드 100g당 가격 비교로 총비용 차이를 확인합니다.",
-  "baby-growth-percentile-calculator": "몸무게, 키, 머리둘레 기준 성장 백분위와 수유·발달·접종 흐름을 함께 봅니다.",
-  "child-tutoring-cost-calculator": "자녀 수, 학교급, 과목, 지역 기준으로 월·연간 사교육비와 또래 평균 대비 수준을 비교합니다.",
-  "home-purchase-fund": "LTV·취득세·중개보수를 한 번에 계산해 집 살 때 필요한 현금을 바로 확인합니다.",
-  "wedding-budget-calculator": "웨딩홀, 스드메, 신혼여행 비용을 지역과 티어 기준으로 빠르게 계산합니다.",
-  "wedding-gift-break-even-calculator": "식대·보증인원·하객 수·평균 축의금을 넣어 결혼식 손익분기점을 바로 계산합니다.",
-  "salary-tier": "내 연봉이 시장에서 어느 티어인지, 상위 몇 %인지 바로 비교합니다.",
-  "dca-investment-calculator": "S&P500·TQQQ·SOXL·삼성전자 등 70종목에 월 적립식 투자했을 때 수익 차이를 한 번에 비교합니다.",
-  "fire-calculator": "현재 자산과 월 투자금, 생활비 기준으로 FIRE 목표 자산과 예상 달성 시점을 바로 계산합니다.",
-  "ai-stack-cost-calculator": "업무 단계와 현재 쓰는 AI 도구를 기준으로 과금 중복과 추천 조합을 바로 정리합니다."
+  "six-plus-six": "6+6 제도와 일반 육아휴직 차이를 금액 기준으로 비교합니다.",
+  "parental-leave-short-work-calculator": "육아기 단축근무와 육아휴직 조합 기준 예상 급여를 계산합니다.",
+  "diaper-cost": "연령별 기저귀 사용량과 브랜드별 비용 차이를 빠르게 봅니다.",
+  "formula-cost": "분유 용량과 브랜드별 단가 차이를 기준으로 총비용을 계산합니다.",
+  "baby-growth-percentile-calculator": "키, 몸무게, 머리둘레 기준 성장 백분위를 확인합니다.",
+  "child-tutoring-cost-calculator": "아이 과목별 사교육비와 연간 누적 비용을 바로 계산합니다.",
+  "home-purchase-fund": "LTV와 취득세, 부대비용까지 포함해 내집마련 필요 자금을 계산합니다.",
+  "wedding-budget-calculator": "스드메, 예물, 신혼여행 비용을 묶어 결혼 예산을 계산합니다.",
+  "wedding-gift-break-even-calculator": "축의금과 하객 수를 기준으로 결혼식 손익분기점을 계산합니다.",
+  "salary-tier": "내 연봉이 시장에서 어느 구간인지 빠르게 비교합니다.",
+  "dca-investment-calculator": "적립식 투자 전략별 누적 투자와 수익 차이를 비교합니다.",
+  "fire-calculator": "현재 자산과 월 지출을 기준으로 FIRE 목표 시점을 계산합니다.",
+  "national-pension-calculator": "국민연금 납입과 예상 수령 흐름을 빠르게 계산합니다.",
+  "coin-tax-calculator": "가상자산 양도차익 기준 예상 세금을 빠르게 계산합니다.",
+  "ai-stack-cost-calculator": "사용 중인 AI 도구 조합의 중복 과금과 추천 구성을 정리합니다.",
 };
 
 const toolLibraryScript = `
@@ -123,38 +125,30 @@ const toolLibraryScript = `
 `;
 
 const trustLinks = [
-  { href: withBase("/about/"),      title: "비교계산소 소개",    desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
-  { href: withBase("/privacy/"),    title: "개인정보처리방침",   desc: "쿠키·외부 서비스·수집 정보 처리 원칙" },
-  { href: withBase("/contact/"),    title: "문의 안내",          desc: "오류 제보·기능 제안·제휴 문의 범위" },
-  { href: withBase("/disclaimer/"), title: "이용안내 및 면책",   desc: "결과 해석 방법과 실제 지급액 차이 안내" },
+  { href: withBase("/about/"), title: "비교계산소 소개", desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
+  { href: withBase("/privacy/"), title: "개인정보처리방침", desc: "쿠키와 서비스 운영 중 수집 정보 처리 원칙" },
+  { href: withBase("/contact/"), title: "문의 안내", desc: "오류 제보, 기능 제안, 제휴 문의 범위" },
+  { href: withBase("/disclaimer/"), title: "이용안내 및 면책", desc: "결과 해석 방법과 실제 지급액 차이 안내" },
 ];
 ---
 
-<BaseLayout title="비교계산소 도구 목록" description="연봉·성과급·육아휴직·출산지원금까지 자주 비교하는 계산기를 주제별로 묶어 모바일에서도 빠르게 찾을 수 있게 정리했습니다.">
+<BaseLayout title="비교계산소 도구 목록" description="연봉, 성과급, 육아, 투자, 부동산까지 자주 비교하는 계산기를 주제별로 묶어 모바일에서도 빠르게 찾을 수 있게 정리했습니다.">
   <SiteHeader />
 
   <main class="container page-shell tool-library-page">
-
-    <!-- ① hero -->
     <section class="tl-hero">
       <p class="tl-hero__eyebrow">도구 목록</p>
-      <h1 class="tl-hero__title">필요한 계산기를<br>바로 찾고 입력하세요</h1>
-      <p class="tl-hero__desc">연봉·성과급·육아휴직·출산지원금까지 주제별로 묶어 빠르게 찾을 수 있게 정리했습니다.</p>
+      <h1 class="tl-hero__title">필요한 계산기를<br />바로 찾고 입력하세요</h1>
+      <p class="tl-hero__desc">연봉, 성과급, 육아, 투자, 부동산까지 주제별로 묶어 빠르게 찾을 수 있게 정리했습니다.</p>
     </section>
 
-    <!-- ② 검색 + 필터 툴바 -->
     <section class="tl-toolbar">
       <div class="tl-toolbar__search">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <circle cx="6" cy="6" r="4.5" stroke="#B4B2A9" stroke-width="1.2"/>
-          <line x1="9.5" y1="9.5" x2="12.5" y2="12.5" stroke="#B4B2A9" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="6" cy="6" r="4.5" stroke="#B4B2A9" stroke-width="1.2"></circle>
+          <line x1="9.5" y1="9.5" x2="12.5" y2="12.5" stroke="#B4B2A9" stroke-width="1.2" stroke-linecap="round"></line>
         </svg>
-        <input
-          id="toolSearchInput"
-          type="search"
-          placeholder="예: 연봉, 육아휴직, 성과급"
-          autocomplete="off"
-        />
+        <input id="toolSearchInput" type="search" placeholder="예: 연봉, 육아휴직, 성과급" autocomplete="off" />
       </div>
       <div class="tl-toolbar__filters">
         {categories.map((category, index) => (
@@ -167,27 +161,19 @@ const trustLinks = [
           </button>
         ))}
       </div>
-      <p class="tl-toolbar__count" id="toolLibraryCount" aria-live="polite">
-        {orderedTools.length}개 결과
-      </p>
+      <p class="tl-toolbar__count" id="toolLibraryCount" aria-live="polite">{orderedTools.length}개 결과</p>
     </section>
 
-    <!-- ③ 전체 계산기 그리드 -->
     <section class="tl-section">
       <div class="tl-section__head">
-        <h2>전체 계산기 <span class="tl-section__count">{orderedTools.length}개</span></h2>
+        <h2>전체 계산기<span class="tl-section__count">{orderedTools.length}개</span></h2>
       </div>
 
       <div class="tl-cards" id="toolLibraryGrid">
         {orderedTools.map((tool) => {
           const topic = topicBySlug[tool.slug] ?? "기타";
           return (
-            <a
-              class="tl-card"
-              href={withBase(`/tools/${tool.slug}/`)}
-              data-tool-card
-              data-category={topic}
-            >
+            <a class="tl-card" href={withBase(`/tools/${tool.slug}/`)} data-tool-card data-category={topic}>
               <div class="tl-card__head">
                 <span class="tl-card__cat">{topic}</span>
                 {tool.badges && tool.badges.length > 0 && (
@@ -215,7 +201,7 @@ const trustLinks = [
 
               <p class="tl-card__desc">{tool.description}</p>
               <p class="tl-card__meta">
-                {toolHighlights[tool.slug] ?? "입력 후 결과를 바로 확인할 수 있게 구성했습니다."}
+                {toolHighlights[tool.slug] ?? "입력과 결과를 빠르게 확인할 수 있게 구성했습니다."}
               </p>
             </a>
           );
@@ -227,7 +213,6 @@ const trustLinks = [
       </p>
     </section>
 
-    <!-- ④ 리포트 섹션 -->
     <section class="tl-section">
       <div class="tl-section__head">
         <h2>비교 리포트</h2>
@@ -247,13 +232,12 @@ const trustLinks = [
             </div>
             <p class="tl-report-card__title">{report.title}</p>
             <p class="tl-report-card__desc">{report.description}</p>
-            <p class="tl-report-card__meta">인물 선택, 패턴 요약, 분포 비교를 한 화면에서 볼 수 있습니다.</p>
+            <p class="tl-report-card__meta">비교 포인트와 핵심 요약을 함께 볼 수 있습니다.</p>
           </a>
         ))}
       </div>
     </section>
 
-    <!-- ⑤ 이용안내 섹션 -->
     <section class="tl-section">
       <div class="tl-section__head">
         <h2>이용 안내</h2>
@@ -268,18 +252,10 @@ const trustLinks = [
       </div>
       <p class="tl-notice">
         계산 결과는 공개 기준과 입력값을 바탕으로 한 참고용 추정치입니다.
-        중요한 결정 전에는 원문 공지와 공식 자료를 함께 확인해주세요.
+        중요한 결정 전에는 전문 기관이나 공식 자료를 함께 확인해주세요.
       </p>
     </section>
-
   </main>
 
   <script is:inline set:html={toolLibraryScript}></script>
 </BaseLayout>
-
-
-
-
-
-
-
