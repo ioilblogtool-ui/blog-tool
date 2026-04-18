@@ -1,0 +1,299 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { seoulJeonwolseRatio2026, getTopDistricts, getBottomDistricts } from "../../data/seoulJeonwolseRatio2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = seoulJeonwolseRatio2026;
+const latestPoint = report.citySeries[report.citySeries.length - 1];
+const topLease = getTopDistricts("leaseRatio", 5);
+const bottomLease = getBottomDistricts("leaseRatio", 5);
+const defaultDistrict = report.districtRows[0];
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Report",
+  headline: report.meta.title,
+  description: report.meta.subtitle,
+  inLanguage: "ko-KR",
+  dateModified: "2026-04-14",
+  mainEntityOfPage: `https://bigyocalc.com/reports/${report.meta.slug}/`,
+  publisher: {
+    "@type": "Organization",
+    name: "비교계산소",
+    url: "https://bigyocalc.com",
+  },
+};
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sjr-page">
+    <CalculatorHero
+      eyebrow="서울 부동산 리포트"
+      title="서울 25개 구 전월세 전환 지도"
+      description="전세는 어디서 빠르게 줄고 있고, 월세와 반전세는 어떤 구에서 더 빨리 늘고 있는지 2026 최신 공개 기준으로 비교합니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[
+        "2026 수치는 연간 확정치가 아니라 2026-04-14 기준 최신 공개 자료를 정리한 YTD 참고값입니다.",
+        "서울시 공개 전월세 실거래 및 전월세 전환율 통계를 같은 기준일로 맞춰 비교했습니다.",
+        "구별 비교는 같은 기준일과 같은 해석 기준으로 읽어야 하며, 실제 계약 조건은 개별 주택 유형과 입지에 따라 달라질 수 있습니다.",
+      ]}
+    />
+
+    <section class="content-section sjr-hero-board">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">Editor&apos;s Brief</p>
+        <h2>서울 전월세 시장은 전세 중심에서 혼합 구조로 이동 중입니다</h2>
+        <p>{report.heroSummary}</p>
+      </div>
+      <div class="sjr-chip-row">
+        <span>서울 전세 비중 {latestPoint.leaseRatio}%</span>
+        <span>서울 월세 비중 {latestPoint.monthlyRatio}%</span>
+        <span class="is-accent">평균 전환율 {latestPoint.conversionRate.toFixed(1)}%</span>
+      </div>
+      <div class="sjr-brief-grid">
+        <article class="sjr-brief-card">
+          <p>전세가 가장 많이 남은 구</p>
+          <strong>{topLease[0].district}</strong>
+          <span>전세 비중 {topLease[0].leaseRatio2026}%</span>
+        </article>
+        <article class="sjr-brief-card">
+          <p>전세 비중이 가장 낮은 구</p>
+          <strong>{bottomLease[0].district}</strong>
+          <span>전세 비중 {bottomLease[0].leaseRatio2026}%</span>
+        </article>
+        <article class="sjr-brief-card is-accent">
+          <p>월세 전환 fastest</p>
+          <strong>관악</strong>
+          <span>월세 비중 +13%p</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sjr-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>먼저 봐야 할 숫자 4개</h2>
+      </div>
+      <div class="sjr-kpi-grid">
+        {report.kpis.map((item) => (
+          <article class={`sjr-kpi-card ${item.tone ? `is-${item.tone}` : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sjr-city-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">서울 전체 구조</p>
+        <h2>2021 vs 2026, 서울 전월세 구조가 어떻게 바뀌었는지</h2>
+        <p id="sjrCityChartDesc">전세·월세·반전세 비중을 한 번에 비교한 차트입니다.</p>
+      </div>
+      <div class="sjr-chart-grid">
+        <div class="sjr-chart-panel">
+          <div class="sjr-chart-meta-row">
+            <span>stacked bar</span>
+            <span>2021 vs 2026</span>
+          </div>
+          <div class="sjr-chart-wrap">
+            <canvas id="sjrStructureChart"></canvas>
+          </div>
+        </div>
+        <div class="sjr-chart-panel">
+          <div class="sjr-chart-meta-row">
+            <span>line</span>
+            <span>2021 → 2026</span>
+          </div>
+          <div class="sjr-chart-wrap">
+            <canvas id="sjrTrendChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section sjr-district-board-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">25개 구 비교</p>
+        <h2>구별 전세 잔존율과 월세 전환 흐름을 카드로 보기</h2>
+        <p>카드를 누르면 해석 패널이 바뀝니다. 서울 전체 평균이 아니라 구 단위 체감 차이를 읽는 섹션입니다.</p>
+      </div>
+      <div class="sjr-district-feature" id="sjrDistrictFeature">
+        <article class="sjr-feature-card">
+          <p class="sjr-feature-card__eyebrow">선택한 자치구</p>
+          <h3 id="sjrDistrictName">{defaultDistrict.district}</h3>
+          <strong id="sjrDistrictLease">전세 비중 {defaultDistrict.leaseRatio2026}%</strong>
+          <span id="sjrDistrictTags">{defaultDistrict.tags.join(" · ")}</span>
+          <p id="sjrDistrictInterpretation">{defaultDistrict.interpretation}</p>
+          <p id="sjrDistrictDelta"><strong>2021 대비</strong> 전세 {defaultDistrict.leaseRatio2026 - defaultDistrict.leaseRatio2021}p, 월세 {defaultDistrict.monthlyRatio2026 - defaultDistrict.monthlyRatio2021}p</p>
+        </article>
+      </div>
+      <div class="sjr-district-grid">
+        {report.districtRows.map((item, index) => (
+          <button
+            type="button"
+            class={`sjr-district-card ${index === 0 ? "is-active" : ""}`}
+            data-district={item.district}
+          >
+            <span>{item.district}</span>
+            <strong>{item.leaseRatio2026}%</strong>
+            <small>전세</small>
+            <em>{item.monthlyRatio2026}% 월세</em>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sjr-ranking-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">TOP 5 / BOTTOM 5</p>
+        <h2>전세 잔존율, 월세 전환 속도, 반전세 비중으로 다시 정렬</h2>
+        <p id="sjrRankingDesc">기본 보기는 전세 잔존율 기준입니다.</p>
+      </div>
+      <div class="sjr-tab-row" id="sjrRankingTabs">
+        <button type="button" class="sjr-chip-button is-active" data-ranking-mode="leaseRatio">전세 잔존율</button>
+        <button type="button" class="sjr-chip-button" data-ranking-mode="monthlyGrowth">월세 증가폭</button>
+        <button type="button" class="sjr-chip-button" data-ranking-mode="semiMonthlyRatio">반전세 비중</button>
+      </div>
+      <div class="sjr-ranking-grid">
+        <article class="sjr-ranking-card">
+          <div class="sjr-ranking-card__head">
+            <p>TOP 5</p>
+            <span id="sjrTopMetricLabel">전세 비중 높은 순</span>
+          </div>
+          <div id="sjrTopList" class="sjr-ranking-list"></div>
+        </article>
+        <article class="sjr-ranking-card">
+          <div class="sjr-ranking-card__head">
+            <p>BOTTOM 5</p>
+            <span id="sjrBottomMetricLabel">전세 비중 낮은 순</span>
+          </div>
+          <div id="sjrBottomList" class="sjr-ranking-list"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sjr-group-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역군 비교</p>
+        <h2>강남3구와 노도강은 전월세 구조가 어떻게 다른가</h2>
+      </div>
+      <div class="sjr-group-grid">
+        {report.groupCompare.map((item) => (
+          <article class="sjr-group-card">
+            <p>{item.title}</p>
+            <div class="sjr-group-metrics">
+              <span>전세 {item.leaseRatio2026}%</span>
+              <span>월세 {item.monthlyRatio2026}%</span>
+              <span>반전세 {item.semiMonthlyRatio2026}%</span>
+            </div>
+            <strong>평균 보증금 {item.avgDepositEok.toFixed(1)}억 / 월세 {item.avgMonthlyManwon}만원</strong>
+            <p>{item.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sjr-band-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">보증금 규모별 전환율</p>
+        <h2>보증금이 낮을수록 월세화 압력이 더 큽니다</h2>
+      </div>
+      <div class="sjr-band-grid">
+        {report.depositBands.map((item) => (
+          <article class="sjr-band-card">
+            <p>{item.label}</p>
+            <strong>{item.conversionRate.toFixed(1)}%</strong>
+            <span>{item.summary}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sjr-scenario-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">임차인 체감</p>
+        <h2>전세가 줄어드는 것이 실제 부담으로 번역되는 방식</h2>
+      </div>
+      <div class="sjr-scenario-grid">
+        {report.tenantScenarios.map((item) => (
+          <article class="sjr-scenario-card">
+            <p>{item.title}</p>
+            <strong>보증금 {item.beforeDepositEok.toFixed(1)}억 → {item.afterDepositEok.toFixed(1)}억</strong>
+            <span>월세 {item.monthlyManwon}만원 / 연 {item.annualBurdenManwon.toLocaleString("ko-KR")}만원</span>
+            <p>{item.summary}</p>
+          </article>
+        ))}
+      </div>
+      <div class="sjr-highlight-grid">
+        {report.districtHighlights.map((item) => (
+          <article class="sjr-highlight-card">
+            <p>{item.district}</p>
+            <strong>{item.title}</strong>
+            <span>{item.signal}</span>
+            <p>{item.summary}</p>
+            <small>{item.why}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sjr-source-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처와 다음 이동</p>
+        <h2>공식 자료와 연결 계산기</h2>
+      </div>
+      <div class="sjr-source-grid">
+        <article class="sjr-source-panel">
+          <h3>공식 자료</h3>
+          <div class="sjr-link-list">
+            {report.sourceLinks.map((item) => (
+              <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+            ))}
+          </div>
+        </article>
+        <article class="sjr-source-panel">
+          <h3>관련 계산기</h3>
+          <div class="sjr-link-list">
+            {report.relatedLinks.map((item) => (
+              <a href={withBase(item.href)}>{item.label}</a>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="서울 전월세 전환 리포트 읽는 법"
+      intro={[
+        "이 리포트는 서울시 공개 데이터를 기준으로 25개 구의 전세 비중, 월세 비중, 반전세 비중이 어떻게 달라졌는지 빠르게 비교하도록 만든 페이지입니다.",
+        "핵심은 서울 평균만 보는 것이 아니라 어느 구에서 전세가 더 빨리 줄고, 어디서 월세와 반전세가 더 빠르게 늘었는지 구 단위로 읽는 데 있습니다.",
+      ]}
+      criteria={[
+        "2026 수치는 2026년 4월 14일 기준 최신 공개 자료를 정리한 참고용 값입니다.",
+        "구별 비교는 같은 기준일과 같은 해석 기준으로 봐야 하며, 실제 개별 주택 거래 조건과는 차이가 있을 수 있습니다.",
+        "보증금 규모별 전환율과 임차인 시나리오는 구조 이해를 돕기 위한 해석용 정보입니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script id="seoulJeonwolseRatio2026Data" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/seoul-jeonwolse-ratio-2026.js")}></script>
+</BaseLayout>

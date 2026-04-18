@@ -1,0 +1,366 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  JWC_DEFAULT_INPUT,
+  JWC_FAQ,
+  JWC_NEXT_CONTENT,
+  JWC_PAGE_META,
+  JWC_RELATED_LINKS,
+  JWC_RULES,
+  JWC_SCENARIO_PRESETS,
+  JWC_SOURCE_LINKS,
+} from "../../data/jeonwolseConversion";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  JWC_RULES,
+  JWC_DEFAULT_INPUT,
+  JWC_SCENARIO_PRESETS,
+};
+
+const faqSchema = JWC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title={JWC_PAGE_META.title}
+  description={JWC_PAGE_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "전월세 전환율 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: JWC_PAGE_META.description,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/jeonwolse-conversion/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="jeonwolse-conversion" pageClass="jwc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow={JWC_PAGE_META.eyebrow}
+        title={JWC_PAGE_META.heroTitle}
+        description={JWC_PAGE_META.heroDescription}
+      />
+      <InfoNotice
+        lines={[
+          "이 계산기는 주택임대차보호법상 전월세 전환 기준과 사용자가 입력한 가정을 바탕으로 만든 참고용 계산 도구입니다.",
+          `법정 상한은 ${JWC_RULES.baseRateDateLabel} 기준금리와 연 2% 가산 규칙을 반영해 계산합니다.`,
+          "실제 계약 조건, 지역, 주택 유형, 갱신 여부에 따라 결과는 달라질 수 있으므로 중요한 결정 전에는 공식 문서와 상담 창구를 함께 확인하세요.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetJwcBtn" copyId="copyJwcLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">계산 모드</p>
+            <h2 class="panel__title">전세 ↔ 월세 환산과 비교</h2>
+          </div>
+          <p class="panel-heading__summary">핵심은 비교 탭입니다. 환산 결과와 총비용 판단을 같이 봅니다.</p>
+        </div>
+        <div class="jwc-mode-tabs" id="jwc-mode-tabs">
+          <button type="button" class="jwc-mode-tab" data-mode="jeonseToWolse">전세 → 월세 환산</button>
+          <button type="button" class="jwc-mode-tab" data-mode="wolseToJeonse">월세 → 전세 환산</button>
+          <button type="button" class="jwc-mode-tab is-active" data-mode="compare">전세 vs 월세 비교</button>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 입력</p>
+            <h2 class="panel__title">계약 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">보증금과 월세를 넣으면 실제 전환율과 환산 결과가 바로 바뀝니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>전세 보증금</span>
+            <input id="jwcJeonseDeposit" type="number" min="0" step="1000000" class="input-number" value={JWC_DEFAULT_INPUT.jeonseDeposit} />
+            <small class="jwc-field-hint">예: 300000000</small>
+          </label>
+          <label class="field">
+            <span>월세 보증금</span>
+            <input id="jwcWolseDeposit" type="number" min="0" step="1000000" class="input-number" value={JWC_DEFAULT_INPUT.wolseDeposit} />
+            <small class="jwc-field-hint">예: 50000000</small>
+          </label>
+          <label class="field">
+            <span>월세액</span>
+            <input id="jwcMonthlyRent" type="number" min="0" step="10000" class="input-number" value={JWC_DEFAULT_INPUT.monthlyRent} />
+            <small class="jwc-field-hint">예: 900000</small>
+          </label>
+          <label class="field">
+            <span>기준금리 (%)</span>
+            <input id="jwcBaseRate" type="number" min="0" max="20" step="0.01" class="input-number" value={(JWC_DEFAULT_INPUT.baseRate * 100).toFixed(2)} />
+            <small class="jwc-field-hint">{JWC_RULES.baseRateDateLabel}</small>
+          </label>
+          <label class="field field--checkbox">
+            <span>법정 상한 자동 적용</span>
+            <input id="jwcUseLegalCap" type="checkbox" checked={JWC_DEFAULT_INPUT.useLegalCap} />
+          </label>
+          <label class="field">
+            <span>사용자 입력 전환율 (%)</span>
+            <input id="jwcCustomRate" type="number" min="0" max="20" step="0.01" class="input-number" value={(JWC_DEFAULT_INPUT.customRate * 100).toFixed(2)} />
+            <small id="jwcRateModeHint" class="jwc-field-hint">법정 상한 사용 시 비활성됩니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">비용 옵션</p>
+            <h2 class="panel__title">총비용 비교 가정</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>대출금리 (%)</span>
+            <input id="jwcLoanRate" type="number" min="0" max="20" step="0.01" class="input-number" value={(JWC_DEFAULT_INPUT.loanRate * 100).toFixed(2)} />
+          </label>
+          <label class="field">
+            <span>기회비용 수익률 (%)</span>
+            <input id="jwcOpportunityRate" type="number" min="0" max="20" step="0.01" class="input-number" value={(JWC_DEFAULT_INPUT.opportunityRate * 100).toFixed(2)} />
+          </label>
+          <label class="field">
+            <span>비교 기간 (년)</span>
+            <input id="jwcComparisonYears" type="number" min="1" max="10" step="1" class="input-number" value={JWC_DEFAULT_INPUT.comparisonYears} />
+          </label>
+          <label class="field">
+            <span>이사비용</span>
+            <input id="jwcMovingCost" type="number" min="0" step="100000" class="input-number" value={JWC_DEFAULT_INPUT.movingCost} />
+          </label>
+          <label class="field">
+            <span>중개수수료</span>
+            <input id="jwcBrokerFee" type="number" min="0" step="100000" class="input-number" value={JWC_DEFAULT_INPUT.brokerFee} />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 시나리오</p>
+            <h2 class="panel__title">바로 넣어보기</h2>
+          </div>
+        </div>
+        <div class="jwc-scenario-presets" id="jwc-scenario-presets">
+          {JWC_SCENARIO_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`jwc-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset-id={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="jwc-section">
+      <div class="jwc-section__head">
+        <p class="jwc-section__eyebrow">핵심 결과</p>
+        <h2>법정 상한, 환산 결과, 총비용 차이를 같이 봅니다</h2>
+        <p class="jwc-section__sub" id="jwcResultSub">조건을 입력하면 실제 전환율과 유불리 판단이 바로 갱신됩니다.</p>
+      </div>
+
+      <div class="jwc-result-cards">
+        <article class="jwc-result-card jwc-result-card--main">
+          <p class="jwc-result-label">실제 전환율</p>
+          <strong class="jwc-result-value" id="jwcActualRateValue">-</strong>
+          <span class="jwc-result-note" id="jwcActualRateNote">월세 기준 연 환산</span>
+        </article>
+        <article class="jwc-result-card">
+          <p class="jwc-result-label">법정 상한 전환율</p>
+          <strong class="jwc-result-value" id="jwcLegalCapValue">-</strong>
+          <span class="jwc-result-note" id="jwcLegalCapNote">기준금리 + 연 2% 반영</span>
+        </article>
+        <article class="jwc-result-card">
+          <p class="jwc-result-label">월세 환산액</p>
+          <strong class="jwc-result-value" id="jwcConvertedMonthlyRentValue">-</strong>
+          <span class="jwc-result-note">전세 차액을 월세로 환산</span>
+        </article>
+        <article class="jwc-result-card">
+          <p class="jwc-result-label">전세 환산 보증금</p>
+          <strong class="jwc-result-value" id="jwcConvertedJeonseValue">-</strong>
+          <span class="jwc-result-note">현재 월세를 전세로 환산</span>
+        </article>
+        <article class="jwc-result-card" id="jwcWinnerCard">
+          <p class="jwc-result-label">총비용 기준 유리한 쪽</p>
+          <strong class="jwc-result-value" id="jwcWinnerValue">-</strong>
+          <span class="jwc-result-note" id="jwcWinnerNote">비교 기간 총비용 기준</span>
+        </article>
+        <article class="jwc-result-card">
+          <p class="jwc-result-label">총비용 차이</p>
+          <strong class="jwc-result-value" id="jwcCostDiffValue">-</strong>
+          <span class="jwc-result-note" id="jwcCostDiffNote">전세 vs 월세 차이</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="jwc-section">
+      <div class="jwc-callout" id="jwcRateStatusCallout">
+        <strong id="jwcRateStatusTitle">법정 상한과 비교한 결과</strong>
+        <p id="jwcRateStatusText">실제 전환율과 법정 상한 차이를 문장으로 보여줍니다.</p>
+      </div>
+      <div class="jwc-callout jwc-callout--muted">
+        <strong>참고용 계산기</strong>
+        <p>실제 계약은 법령 적용 범위, 개별 특약, 지역별 관행에 따라 달라질 수 있습니다. 이 화면은 협상 기준을 빠르게 잡기 위한 참고용 계산입니다.</p>
+      </div>
+    </section>
+
+    <section class="jwc-section">
+      <div class="jwc-section__head">
+        <p class="jwc-section__eyebrow">비교표</p>
+        <h2>전세와 월세를 같은 프레임으로 나눠서 봅니다</h2>
+      </div>
+      <article class="panel">
+        <div class="table-wrap">
+          <table class="jwc-compare-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>전세</th>
+                <th>월세</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th>초기 보증금</th><td id="jwc-r-jeonse-deposit">-</td><td id="jwc-r-wolse-deposit">-</td></tr>
+              <tr><th>월 고정지출</th><td>0원</td><td id="jwc-r-monthly-rent">-</td></tr>
+              <tr><th>대출/기회비용</th><td id="jwc-r-jeonse-extra">-</td><td id="jwc-r-wolse-extra">-</td></tr>
+              <tr><th>비교기간 총비용</th><td id="jwc-r-jeonse-total">-</td><td id="jwc-r-wolse-total">-</td></tr>
+              <tr><th>판정</th><td id="jwc-r-jeonse-judge">-</td><td id="jwc-r-wolse-judge">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="jwc-section">
+      <div class="jwc-section__head">
+        <p class="jwc-section__eyebrow">해설</p>
+        <h2>계약 판단에 바로 연결되는 문장형 해석</h2>
+      </div>
+      <article class="panel jwc-interpretation-box">
+        <ul class="jwc-interpretation-list">
+          <li id="jwcInterpretationRate">-</li>
+          <li id="jwcInterpretationCost">-</li>
+          <li id="jwcInterpretationCashflow">-</li>
+          <li id="jwcInterpretationSensitivity">-</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="content-section jwc-next-section">
+      <div class="panel jwc-next-main">
+        <div class="jwc-next-main__badges">
+          {JWC_NEXT_CONTENT.badges.map((badge) => (
+            <span class="jwc-next-main__badge">{badge}</span>
+          ))}
+        </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{JWC_NEXT_CONTENT.eyebrow}</p>
+            <h2 class="panel__title">{JWC_NEXT_CONTENT.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{JWC_NEXT_CONTENT.desc}</p>
+        </div>
+        <a href={JWC_NEXT_CONTENT.href} class="button button--secondary">{JWC_NEXT_CONTENT.cta}</a>
+      </div>
+
+      <div class="jwc-next-grid">
+        {JWC_NEXT_CONTENT.sub.map((item) => (
+          <a href={item.href} class="jwc-next-card">
+            <div class="jwc-next-card__badges">
+              {item.badges.map((badge) => (
+                <span class="jwc-next-card__badge">{badge}</span>
+              ))}
+            </div>
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section jwc-reference-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">법령과 기준금리 원문 같이 보기</h2>
+          </div>
+          <p class="panel-heading__summary">실제 계약 판단 전에는 공식 문서를 함께 확인하는 편이 안전합니다.</p>
+        </div>
+        <div class="jwc-reference-grid">
+          {JWC_SOURCE_LINKS.map((item) => (
+            <a class="jwc-reference-link" href={item.href} target="_blank" rel="noopener noreferrer">
+              <span class="jwc-reference-link__source">{item.source}</span>
+              <strong class="jwc-reference-link__title">{item.title}</strong>
+              <span class="jwc-reference-link__desc">{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="전월세 전환율 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 전세와 월세를 같은 기준으로 환산해 실제 전환율, 법정 상한, 전세 환산 보증금, 월세 환산액, 비교 기간 총비용 차이까지 한 화면에서 확인할 수 있게 만든 참고용 도구입니다.",
+          "특히 재계약이나 이사 결정처럼 전세 유지와 월세 전환 사이에서 판단이 필요한 상황을 기준으로 설계했습니다. 숫자만 보여주는 대신 법정 상한 초과 여부와 총비용 유불리 해석을 같이 제공합니다.",
+        ]}
+        inputPoints={[
+          "전세 보증금, 월세 보증금, 월세액을 넣으면 실제 전환율과 환산 결과가 즉시 바뀝니다.",
+          "기준금리를 수정하면 법정 상한 전환율도 같이 변해서 금리 환경 변화에 따른 민감도를 가볍게 볼 수 있습니다.",
+          "대출금리, 기회비용 수익률, 비교 기간, 이사비용, 중개수수료를 함께 넣으면 전세와 월세의 총비용 차이를 보다 현실적으로 볼 수 있습니다.",
+        ]}
+        criteria={[
+          "실제 전환율은 `(월세 × 12) / (전세보증금 - 월세보증금)` 공식으로 계산합니다.",
+          "법정 상한은 `연 10%`와 `기준금리 + 연 2%` 중 더 낮은 값을 적용합니다.",
+          "전세 총비용은 전세 보증금의 대출비용과 기회비용, 이사비용, 중개수수료를 합산해 계산합니다.",
+          "월세 총비용은 월세 총액과 월세 보증금 기회비용, 이사비용, 중개수수료를 합산해 계산합니다.",
+        ]}
+        faq={JWC_FAQ}
+        related={JWC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="jwcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/jeonwolse-conversion.js")}></script>
+</BaseLayout>
