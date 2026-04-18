@@ -407,6 +407,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "fetal-insurance-calculator",
+    title: "태아보험 보험료 계산기",
+    description: "임신 주수와 산모 나이, 보장 유형, 특약 선택 기준으로 예상 월 보험료 범위와 총 납입액을 계산합니다.",
+    order: 27,
+    eyebrow: "임신·출산 보험",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "입력 기준", value: "주수·특약" },
+      { label: "결과 구조", value: "월 보험료 범위" },
+    ],
+  },
+  {
     slug: "overseas-travel-cost",
     title: "해외여행 총비용 계산기",
     description: "항공권, 숙박, 식비, 교통비, 관광비, 쇼핑, 비상금까지 합쳐 일본·동남아·유럽·미주 여행 예산을 계산하는 도구",

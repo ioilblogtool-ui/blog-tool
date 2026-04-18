@@ -203,4 +203,11 @@ export const reports: ReportMeta[] = [
     order: 28,
     badges: ["여행", "비용비교", "2026"],
   },
+  {
+    slug: "fetal-insurance-guide-2026",
+    title: "태아보험 언제 가입해야 할까? 2026 완전 가이드",
+    description: "12주 이후부터 22주 이후까지 주차별 체크 포인트, 우선 특약, 중복 보장 정리, 납입기간 비교를 한 번에 정리한 태아보험 가이드 리포트입니다.",
+    order: 29,
+    badges: ["출산", "태아보험", "가이드", "2026"],
+  },
 ];

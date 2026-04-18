@@ -1,0 +1,240 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  FIG_COVERAGE_CHECKLIST,
+  FIG_DUPLICATE_TIPS,
+  FIG_FAQ,
+  FIG_HERO_STATS,
+  FIG_META,
+  FIG_PAYMENT_TERM_ROWS,
+  FIG_RELATED_LINKS,
+  FIG_SECTION_NOTES,
+  FIG_WEEK_STAGES,
+} from "../../data/fetalInsuranceGuide2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const faqItems = FIG_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={FIG_META.title} description={FIG_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page fetal-guide-report-page">
+    <CalculatorHero
+      eyebrow="임신·출산 가이드"
+      title="태아보험, 언제부터 보고 어떻게 골라야 할까"
+      description="12주 이후부터 22주 이후까지 주차별 체크 사인과 특약 구조를 기준으로 태아보험 가입 흐름을 정리한 2026 가이드입니다."
+    />
+
+    <InfoNotice
+      title="먼저 알고 보기"
+      lines={[
+        "이 페이지는 특정 보험사 가격 비교가 아니라 가입 시기 판단과 특약 구조 이해에 초점을 둔 가이드 리포트입니다.",
+        "상품 조건과 보험료는 임신 주수, 고지 사항에 따라 달라질 수 있으므로 실제 가입 전 최종 확인이 필요합니다.",
+        "22주 이후가 무조건 불가를 뜻하는 것은 아니지만 일부 특약 제한 가능성이 커지는 구간으로 이해하는 편이 정확합니다.",
+      ]}
+    />
+
+    <section class="content-section fig-kpi-section">
+      <div class="fig-kpi-grid">
+        {FIG_HERO_STATS.map((stat) => (
+          <article class="fig-kpi-card">
+            <p class="fig-kpi-card__label">{stat.label}</p>
+            <strong class="fig-kpi-card__value">{stat.value}</strong>
+            <span class="fig-kpi-card__note">{stat.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section fig-toc-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">목차</p>
+        <h2>먼저 보고 내려가면 빠릅니다</h2>
+      </div>
+      <nav class="fig-toc" aria-label="태아보험 가이드 목차">
+        <a href="#fig-basics">태아보험은 먼저 무엇을 봐야 하는지</a>
+        <a href="#fig-weeks">몇 주에 무엇을 체크해야 하는지</a>
+        <a href="#fig-coverage">우선 확인할 특약</a>
+        <a href="#fig-duplicate">중복 보장 정리</a>
+        <a href="#fig-payment">납입기간 비교</a>
+        <a href="#fig-checks">2026 체크 사인</a>
+        <a href="#fig-links">관련 계산기</a>
+        <a href="#fig-faq">FAQ</a>
+      </nav>
+    </section>
+
+    <section id="fig-basics" class="content-section" data-fig-section>
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">기본 이해</p>
+        <h2>보험료보다 먼저 볼 것은 특약 구조입니다</h2>
+        <p>
+          태아보험은 이름보다 구조를 읽는 것이 먼저입니다. 출생 직후 체감도가 높은 보장,
+          선천 이상 관련 항목, 입원·수술처럼 기존 보험과 겹치기 쉬운 항목을 분리해서 보면
+          훨씬 판단이 쉬워집니다.
+        </p>
+      </div>
+      <div class="fig-overview-grid">
+        {FIG_SECTION_NOTES.map((note) => (
+          <article class="fig-overview-card">
+            <p>{note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="fig-weeks" class="content-section" data-fig-section>
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">주차별 흐름</p>
+        <h2>언제부터 보고, 언제까지 무엇을 끝내야 하는지</h2>
+      </div>
+      <div class="fig-stage-grid">
+        {FIG_WEEK_STAGES.map((stage) => (
+          <article class={`fig-stage-card fig-stage-card--${stage.tone}`}>
+            <p class="fig-stage-card__range">{stage.weekRange}</p>
+            <strong>{stage.label}</strong>
+            <p>{stage.summary}</p>
+            <span>{stage.action}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="fig-coverage" class="content-section" data-fig-section>
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">우선 확인 특약</p>
+        <h2>가장 먼저 체크할 보장은 따로 있습니다</h2>
+        <p>
+          보험료 차이보다 먼저, 가입 시점에 따라 제한 가능성이 있거나 출생 직후 체감도가
+          높은 항목부터 봐야 합니다.
+        </p>
+      </div>
+      <div class="fig-check-grid">
+        {FIG_COVERAGE_CHECKLIST.map((item) => (
+          <article class={`fig-check-card fig-check-card--${item.priority}`}>
+            <p class="fig-check-card__category">{item.category}</p>
+            <strong>{item.item}</strong>
+            <p>{item.why}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="fig-duplicate" class="content-section" data-fig-section>
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">중복 보장</p>
+        <h2>많이 넣는 것보다 겹치는 것을 먼저 줄여야 합니다</h2>
+      </div>
+      <div class="fig-duplicate-grid">
+        {FIG_DUPLICATE_TIPS.map((tip) => (
+          <article class="fig-duplicate-card">
+            <strong>{tip.title}</strong>
+            <p>{tip.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="fig-payment" class="content-section" data-fig-section>
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">납입기간 비교</p>
+        <h2>10년납, 20년납, 30년납은 무엇이 다른가</h2>
+        <p>정답은 없고, 초기 부담과 총납입액의 균형을 어떻게 잡을지에 따라 선택이 달라집니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="fig-payment-table">
+          <thead>
+            <tr>
+              <th>납입기간</th>
+              <th>월 부담</th>
+              <th>총납입 체감</th>
+              <th>더 맞는 경우</th>
+            </tr>
+          </thead>
+          <tbody>
+            {FIG_PAYMENT_TERM_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.term}</strong></td>
+                <td>{row.monthly}</td>
+                <td>{row.total}</td>
+                <td>{row.suitableFor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="fig-checks" class="content-section" data-fig-section>
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">2026 체크 사인</p>
+        <h2>숫자 하나보다 체크 구간을 놓치지 않는 것이 중요합니다</h2>
+      </div>
+      <ul class="fig-note-list">
+        <li>12주 이후부터는 비교 시작, 17~21주는 실제 조건 재확인, 22주 이후는 제한 가능성 확인 흐름으로 보면 이해가 쉽습니다.</li>
+        <li>태아보험은 보험료 최저가보다 출생 직후 체감되는 보장과 중복 보장 정리 여부가 결과 만족도를 더 크게 좌우합니다.</li>
+        <li>실제 가입 가능 범위는 고지 사항과 주수에 따라 달라질 수 있으므로 마지막 비교는 반드시 조건 기준으로 확인합니다.</li>
+      </ul>
+    </section>
+
+    <section id="fig-links" class="content-section" data-fig-section>
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">관련 계산기</p>
+        <h2>같이 보면 더 자연스럽게 이어지는 페이지</h2>
+      </div>
+      <div class="fig-link-grid">
+        {FIG_RELATED_LINKS.map((link) => (
+          <a class="fig-link-card" href={withBase(link.href)}>
+            <span>바로가기</span>
+            <strong>{link.label}</strong>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section id="fig-faq" class="content-section" data-fig-section>
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">FAQ</p>
+        <h2>자주 묻는 질문</h2>
+      </div>
+      <div class="fig-faq-list">
+        {FIG_FAQ.map((item, index) => (
+          <article class="fig-faq-item">
+            <button class="fig-faq-item__button" type="button" aria-expanded={index === 0 ? "true" : "false"}>
+              <span>{item.q}</span>
+              <span class="fig-faq-item__icon">+</span>
+            </button>
+            <div class={`fig-faq-item__panel${index === 0 ? " is-open" : ""}`}>
+              <p>{item.a}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="태아보험 가입 시기 가이드 2026"
+      intro={[
+        "태아보험은 보험사 이름을 먼저 고르기보다 몇 주에 무엇을 체크해야 하는지부터 이해하는 편이 더 실용적입니다.",
+        "보통 12주 이후부터 비교를 시작하고 17~21주에 조건을 다시 확인하는 흐름으로 보면, 불안하게 서두르지 않고도 핵심을 놓치지 않을 수 있습니다.",
+      ]}
+      criteria={[
+        "태아 특약과 출생 직후 체감도가 높은 보장을 먼저 본다.",
+        "기존 보험과 겹치는 입원·수술·진단비 구조를 분리해서 본다.",
+        "납입기간은 월 부담과 총납입액의 균형으로 판단한다.",
+      ]}
+      faq={faqItems}
+      related={FIG_RELATED_LINKS}
+    />
+  </main>
+
+  <script src={withBase("/scripts/fetal-insurance-guide-2026.js")} defer></script>
+</BaseLayout>

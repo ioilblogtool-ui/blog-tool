@@ -1,4 +1,4 @@
-﻿---
+---
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
@@ -20,19 +20,26 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
     </a>
 
     <nav class="site-nav" aria-label="주요 메뉴">
+
+      <!-- 계산기 드롭다운 -->
       <div class="site-nav__item site-nav__item--has-dropdown">
         <button class="site-nav__btn" aria-expanded="false" aria-haspopup="true">
           계산기 <span class="site-nav__arrow" aria-hidden="true">▾</span>
         </button>
-        <div class="site-nav__dropdown" role="menu">
+        <div class="site-nav__dropdown site-nav__dropdown--tools" role="menu">
+
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">연봉·이직</p>
-            <a href={withBase("/tools/salary-tier/")} role="menuitem">연봉 티어 계산기 <span class="site-nav__badge">신규</span></a>
+            <a href={withBase("/tools/salary-tier/")} role="menuitem">
+              연봉 티어 계산기 <span class="site-nav__badge">신규</span>
+            </a>
+            <a href={withBase("/tools/household-income/")} role="menuitem">
+              가구 소득 계산기 <span class="site-nav__badge">신규</span>
+            </a>
             <a href={withBase("/tools/salary/")} role="menuitem">연봉 인상 계산기</a>
             <a href={withBase("/tools/negotiation/")} role="menuitem">이직 계산기</a>
-            <a href={withBase("/tools/retirement/")} role="menuitem">퇴직금 계산기</a>
-            <a href={withBase("/tools/household-income/")} role="menuitem">가구 소득 계산기 <span class="site-nav__badge">신규</span></a>
           </div>
+
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label site-nav__dropdown-label--bonus">성과급 비교</p>
             <a href={withBase("/tools/bonus-simulator/")} role="menuitem">대기업 성과급 시뮬레이터</a>
@@ -40,68 +47,88 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
             <a href={withBase("/tools/sk-hynix-bonus/")} role="menuitem">SK하이닉스 성과급 계산기</a>
             <a href={withBase("/tools/hyundai-bonus/")} role="menuitem">현대자동차 성과급 계산기</a>
           </div>
+
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">육아휴직·출산</p>
             <a href={withBase("/tools/parental-leave/")} role="menuitem">육아휴직 계산기</a>
             <a href={withBase("/tools/parental-leave-pay/")} role="menuitem">육아휴직 급여 계산기</a>
-            <a href={withBase("/tools/six-plus-six/")} role="menuitem">6+6 부모육아휴직제 계산기</a>
-            <a href={withBase("/tools/single-parental-leave-total/")} role="menuitem">한 명만 육아휴직 총수령액 <span class="site-nav__badge site-nav__badge--rec">추천</span></a>
-            <a href={withBase("/tools/birth-support-total/")} role="menuitem">출산~2세 총지원금 계산기</a>
+            <a href={withBase("/tools/six-plus-six/")} role="menuitem">6+6 부모육아휴직제</a>
+            <a href={withBase("/tools/single-parental-leave-total/")} role="menuitem">
+              한 명만 육아휴직 <span class="site-nav__badge site-nav__badge--rec">추천</span>
+            </a>
           </div>
-          <div class="site-nav__dropdown-section">
-            <p class="site-nav__dropdown-label">육아·생활·부동산</p>
-            <a href={withBase("/tools/diaper-cost/")} role="menuitem">아기 기저귀 값 계산기</a>
-            <a href={withBase("/tools/formula-cost/")} role="menuitem">아기 분유 값 계산기</a>
-            <a href={withBase("/tools/home-purchase-fund/")} role="menuitem">내집마련 자금 계산기</a>
-          </div>
-          <div class="site-nav__dropdown-section">
-            <p class="site-nav__dropdown-label">결혼·웨딩</p>
-            <a href={withBase("/tools/wedding-budget-calculator/")} role="menuitem">결혼 비용 계산기</a>
-          </div>
+
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">투자·재테크</p>
-            <a href={withBase("/tools/dca-investment-calculator/")} role="menuitem">적립식 투자 수익 비교 <span class="site-nav__badge">신규</span></a>
-            <a href={withBase("/tools/fire-calculator/")} role="menuitem">파이어족 계산기 <span class="site-nav__badge">신규</span></a>
+            <a href={withBase("/tools/dca-investment-calculator/")} role="menuitem">
+              적립식 투자 수익 비교 <span class="site-nav__badge">신규</span>
+            </a>
+            <a href={withBase("/tools/fire-calculator/")} role="menuitem">
+              파이어족 계산기 <span class="site-nav__badge">신규</span>
+            </a>
+            <a href={withBase("/tools/national-pension-calculator/")} role="menuitem">
+              국민연금 계산기 <span class="site-nav__badge">신규</span>
+            </a>
+            <a href={withBase("/tools/coin-tax-calculator/")} role="menuitem">
+              코인 세금 계산기 <span class="site-nav__badge">신규</span>
+            </a>
           </div>
+
         </div>
       </div>
 
+      <!-- 리포트 드롭다운 -->
       <div class="site-nav__item site-nav__item--has-dropdown">
         <button class="site-nav__btn" aria-expanded="false" aria-haspopup="true">
           리포트 <span class="site-nav__arrow" aria-hidden="true">▾</span>
         </button>
-        <div class="site-nav__dropdown" role="menu">
+        <div class="site-nav__dropdown site-nav__dropdown--reports" role="menu">
+
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">연봉·초봉</p>
             <a href={withBase("/reports/new-employee-salary-2026/")} role="menuitem">2026 신입사원 초봉 비교</a>
             <a href={withBase("/reports/it-salary-top10/")} role="menuitem">IT 업계 신입 초봉 TOP 10</a>
-            <a href={withBase("/reports/it-si-sm-salary-comparison-2026/")} role="menuitem">IT SI·SM 대기업 연봉·성과급 <span class="site-nav__badge">신규</span></a>
-            <a href={withBase("/reports/insurance-salary-bonus-comparison-2026/")} role="menuitem">국내 TOP 보험사 연봉·성과급 <span class="site-nav__badge">신규</span></a>
-            <a href={withBase("/reports/construction-salary-bonus-comparison-2026/")} role="menuitem">국내 TOP 대형 건설사 연봉 <span class="site-nav__badge">신규</span></a>
+            <a href={withBase("/reports/it-si-sm-salary-comparison-2026/")} role="menuitem">
+              IT SI·SM 대기업 연봉·성과급 <span class="site-nav__badge">신규</span>
+            </a>
+            <a href={withBase("/reports/insurance-salary-bonus-comparison-2026/")} role="menuitem">
+              국내 TOP 보험사 연봉·성과급 <span class="site-nav__badge">신규</span>
+            </a>
           </div>
+
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">비교·트렌드</p>
-            <a href={withBase("/reports/wedding-cost-2016-vs-2026/")} role="menuitem">결혼비용 2016 vs 2026 <span class="site-nav__badge">신규</span></a>
-            <a href={withBase("/reports/seoul-housing-2016-vs-2026/")} role="menuitem">서울 집값 2016 vs 2026 <span class="site-nav__badge">신규</span></a>
-            <a href={withBase("/reports/salary-asset-2016-vs-2026/")} role="menuitem">연봉·자산 2016 vs 2026 <span class="site-nav__badge">신규</span></a>
+            <a href={withBase("/reports/wedding-cost-2016-vs-2026/")} role="menuitem">
+              결혼비용 2016 vs 2026 <span class="site-nav__badge">신규</span>
+            </a>
+            <a href={withBase("/reports/seoul-housing-2016-vs-2026/")} role="menuitem">
+              서울 집값 2016 vs 2026 <span class="site-nav__badge">신규</span>
+            </a>
+            <a href={withBase("/reports/salary-asset-2016-vs-2026/")} role="menuitem">
+              연봉·자산 2016 vs 2026 <span class="site-nav__badge">신규</span>
+            </a>
           </div>
+
           <div class="site-nav__dropdown-section">
             <p class="site-nav__dropdown-label">자산·부동산</p>
-            <a href={withBase("/reports/lee-jaemyung-government-officials-assets-salary-2026/")} role="menuitem">이재명 정부 공직자 재산·보수 <span class="site-nav__badge">신규</span></a>
+            <a href={withBase("/reports/lee-jaemyung-government-officials-assets-salary-2026/")} role="menuitem">
+              이재명 정부 공직자 재산·보수 <span class="site-nav__badge">신규</span>
+            </a>
             <a href={withBase("/reports/seoul-84-apartment-prices/")} role="menuitem">서울 국평 아파트 가격 비교</a>
             <a href={withBase("/reports/korea-rich-top10-assets/")} role="menuitem">한국 부자 TOP 10 자산 비교</a>
             <a href={withBase("/reports/us-rich-top10-patterns/")} role="menuitem">미국 부자 TOP 10 성공 패턴</a>
           </div>
-          <div class="site-nav__dropdown-section">
-            <a href={withBase("/reports/")} role="menuitem" style="color:#64748b;font-size:0.82rem;">전체 리포트 보기 →</a>
+
+          <div class="site-nav__dropdown-footer">
+            <a href={withBase("/reports/")} role="menuitem">전체 리포트 보기 →</a>
           </div>
+
         </div>
       </div>
 
       <a class="site-nav__link" href={withBase("/about/")}>소개</a>
+      <a class="site-nav__link site-nav__link--all" href={withBase("/tools/")}>전체 보기</a>
     </nav>
-
-    <a class="site-header__cta" href={withBase("/tools/")}>전체 보기</a>
 
     <button class="site-header__hamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
@@ -117,6 +144,10 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
             <span>연봉 티어 계산기</span>
             <span class="site-header__mobile-badge">신규</span>
           </a>
+          <a href={withBase("/tools/household-income/")}>
+            <span>가구 소득 계산기</span>
+            <span class="site-header__mobile-badge">신규</span>
+          </a>
           <a href={withBase("/tools/salary/")}>
             <span>연봉 인상 계산기</span>
             <span class="site-header__mobile-cat">연봉·이직</span>
@@ -128,10 +159,6 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
           <a href={withBase("/tools/retirement/")}>
             <span>퇴직금 계산기</span>
             <span class="site-header__mobile-cat">연봉·이직</span>
-          </a>
-          <a href={withBase("/tools/household-income/")}>
-            <span>가구 소득 계산기</span>
-            <span class="site-header__mobile-badge">신규</span>
           </a>
           <a href={withBase("/tools/bonus-simulator/")}>
             <span>대기업 성과급 시뮬레이터</span>
@@ -169,28 +196,20 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
             <span>출산~2세 총지원금 계산기</span>
             <span class="site-header__mobile-cat">육아휴직</span>
           </a>
-          <a href={withBase("/tools/diaper-cost/")}>
-            <span>아기 기저귀 값 계산기</span>
-            <span class="site-header__mobile-cat">육아·생활</span>
-          </a>
-          <a href={withBase("/tools/formula-cost/")}>
-            <span>아기 분유 값 계산기</span>
-            <span class="site-header__mobile-cat">육아·생활</span>
-          </a>
-          <a href={withBase("/tools/home-purchase-fund/")}>
-            <span>내집마련 자금 계산기</span>
-            <span class="site-header__mobile-cat">부동산</span>
-          </a>
-          <a href={withBase("/tools/wedding-budget-calculator/")}>
-            <span>결혼 비용 계산기</span>
-            <span class="site-header__mobile-cat">결혼·웨딩</span>
-          </a>
           <a href={withBase("/tools/dca-investment-calculator/")}>
             <span>적립식 투자 수익 비교</span>
             <span class="site-header__mobile-badge">신규</span>
           </a>
           <a href={withBase("/tools/fire-calculator/")}>
             <span>파이어족 계산기</span>
+            <span class="site-header__mobile-badge">신규</span>
+          </a>
+          <a href={withBase("/tools/national-pension-calculator/")}>
+            <span>국민연금 계산기</span>
+            <span class="site-header__mobile-badge">신규</span>
+          </a>
+          <a href={withBase("/tools/coin-tax-calculator/")}>
+            <span>코인 세금 계산기</span>
             <span class="site-header__mobile-badge">신규</span>
           </a>
         </div>
@@ -254,6 +273,7 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         <p class="site-header__mobile-label">사이트</p>
         <div class="site-header__mobile-links">
           <a href={withBase("/about/")}><span>소개</span></a>
+          <a href={withBase("/tools/")}><span>전체 계산기</span></a>
           <a href={withBase("/contact/")}><span>문의</span></a>
         </div>
       </div>

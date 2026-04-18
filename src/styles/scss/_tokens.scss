@@ -1,75 +1,135 @@
 // ─── Design Tokens · 비교계산소 ─────────────────────────────────────────────
 // 모든 페이지/컴포넌트에서 공유하는 디자인 토큰.
 // CSS Custom Properties로 정의 → JS에서도 getComputedStyle로 접근 가능.
+//
+// Brand direction: Trustworthy · Data-driven · Approachable
+//   Primary  — Blue  #1a56db  (action, links, primary CTA)
+//   Accent   — Teal  #0891b2  (highlights, secondary info)
+//   Neutral  — Gray scale (backgrounds, borders, text)
 // ─────────────────────────────────────────────────────────────────────────────
 
 :root {
 
-  // ── Brand Colors (Teal 기반) ────────────────────────────────────────────
-  --color-brand-primary: #0F6E56;          // 메인 CTA, 주요 강조
-  --color-brand-mid:     #1D9E75;          // hover, 보조 강조
-  --color-brand-tint:    #E1F5EE;          // 배경 tint, 배지 배경
-  --color-accent:        #534AB7;          // 리포트 페이지 전용 강조
-  --color-accent-tint:   rgba(83,74,183,0.10);  // accent 배지 배경
-  --color-warning:       #BA7517;          // '추정값' 배지, 주의 표시
-  --color-warning-tint:  rgba(186,117,23,0.12); // warning 배지 배경
+  // ── Brand Colors (Blue primary) ─────────────────────────────────────────
+  --color-brand-primary: #1a56db;          // 주요 CTA, 링크, 포커스 링
+  --color-brand-mid:     #3b82f6;          // hover, 보조 강조
+  --color-brand-dark:    #1447bf;          // active/pressed
+  --color-brand-tint:    #dbeafe;          // 배지 배경, 연한 강조
 
-  // ── Category Accent Colors ──────────────────────────────────────────────
-  --color-cat-salary:       #0F6E56;       // 연봉·이직 — Teal
-  --color-cat-salary-tint:  #E1F5EE;
-  --color-cat-bonus:        #854F0B;       // 성과급 비교 — Amber
-  --color-cat-bonus-tint:   #FAEEDA;
-  --color-cat-parental:     #0F6E56;       // 육아휴직·출산 — Teal
-  --color-cat-parental-tint:#E1F5EE;
-  --color-cat-report:       #534AB7;       // 리포트 — Purple
-  --color-cat-report-tint:  #EEEDFE;
+  --color-teal:          #0891b2;          // teal 액센트 (highlight)
+  --color-teal-mid:      #0ea5e9;          // teal 보조
+  --color-teal-tint:     #e0f2fe;          // teal 배경 tint
 
-  // ── Border Tokens ────────────────────────────────────────────────────────
-  --color-border-card:      #CECDCA;       // 카드 기본 테두리
-  --color-border-hover:     #B4B2A9;       // hover 중간 단계
-  --color-border-accent:    #1D9E75;       // highlight 카드
+  --color-warning:       #d97706;          // 추정값 배지, 주의 표시
+  --color-warning-tint:  #fef3c7;          // warning 배지 배경
+
+  // ── Category Badge Colors ───────────────────────────────────────────────
+  // 연봉·이직 — Blue
+  --color-cat-salary:       #1a56db;
+  --color-cat-salary-tint:  #dbeafe;
+
+  // 성과급 비교 — Purple
+  --color-cat-bonus:        #7c3aed;
+  --color-cat-bonus-tint:   #ede9fe;
+
+  // 육아·출산 — Green
+  --color-cat-parental:     #059669;
+  --color-cat-parental-tint:#d1fae5;
+
+  // 부동산 — Teal
+  --color-cat-estate:       #0891b2;
+  --color-cat-estate-tint:  #e0f2fe;
+
+  // 투자·재테크 — Amber
+  --color-cat-invest:       #d97706;
+  --color-cat-invest-tint:  #fef3c7;
+
+  // AI·생산성 — Slate blue
+  --color-cat-ai:           #4f46e5;
+  --color-cat-ai-tint:      #eef2ff;
+
+  // 리포트 — Purple (보고서 전용 강조)
+  --color-cat-report:       #7c3aed;
+  --color-cat-report-tint:  #ede9fe;
+
+  // ── Neutral / Border Tokens ─────────────────────────────────────────────
+  --color-border-card:   rgba(15, 23, 42, 0.08);   // 카드 기본 0.5px 테두리
+  --color-border-hover:  rgba(15, 23, 42, 0.15);   // hover 단계
+  --color-border-accent: #1a56db;                  // 강조 카드 테두리
 
   // ── Typography Scale ────────────────────────────────────────────────────
-  // KPI 핵심 숫자 (계산 결과 큰 값)
+  // KPI 핵심 숫자
   --text-display-size:    28px;
-  --text-display-weight:  500;
+  --text-display-weight:  600;
   --text-display-leading: 1.2;
 
-  // 페이지 제목 / 패널 헤드
+  // 페이지 제목
   --text-h1-size:    22px;
-  --text-h1-weight:  500;
+  --text-h1-weight:  600;
   --text-h1-leading: 1.3;
 
-  // 섹션 제목 / 카드 제목
+  // 섹션/카드 제목
   --text-h2-size:    18px;
   --text-h2-weight:  500;
   --text-h2-leading: 1.4;
 
-  // 본문 / 설명
-  --text-body-size:    14px;
+  // 본문 — 16px base / 1.7 leading
+  --text-body-size:    16px;
   --text-body-weight:  400;
   --text-body-leading: 1.7;
 
-  // 입력 레이블 / 메타 텍스트
-  --text-label-size:     11px;
+  // 입력 레이블 / 메타
+  --text-label-size:     12px;
   --text-label-weight:   500;
   --text-label-tracking: 0.05em;
   --text-label-leading:  1.4;
 
-  // 출처 / 보조 캡션
-  --text-caption-size:    10px;
+  // 보조 캡션
+  --text-caption-size:    11px;
   --text-caption-weight:  400;
   --text-caption-leading: 1.5;
 
   // ── Component Radius ────────────────────────────────────────────────────
-  --radius-card: 12px;   // 일반 카드 / 패널
+  --radius-card: 12px;   // 카드 / 패널
   --radius-btn:  8px;    // 버튼
   --radius-chip: 20px;   // 배지 / 칩
 
+  // ── Shadow ──────────────────────────────────────────────────────────────
+  // 카드는 그림자 없음 — 0.5px border만 사용
+  --shadow-card: none;
+  --shadow-dropdown: 0 4px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+
+  // ── Category Badge Utility Classes ──────────────────────────────────────
+  // .badge--salary / .badge--bonus / .badge--parental / .badge--estate
+  // .badge--invest / .badge--ai / .badge--report
+  // → _legacy.scss에 .badge 컴포넌트로 구현
+
+}
+
+// ── Badge 컴포넌트 ─────────────────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-chip);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  white-space: nowrap;
+
+  &--salary   { color: var(--color-cat-salary);   background: var(--color-cat-salary-tint); }
+  &--bonus    { color: var(--color-cat-bonus);    background: var(--color-cat-bonus-tint); }
+  &--parental { color: var(--color-cat-parental); background: var(--color-cat-parental-tint); }
+  &--estate   { color: var(--color-cat-estate);   background: var(--color-cat-estate-tint); }
+  &--invest   { color: var(--color-cat-invest);   background: var(--color-cat-invest-tint); }
+  &--ai       { color: var(--color-cat-ai);       background: var(--color-cat-ai-tint); }
+  &--report   { color: var(--color-cat-report);   background: var(--color-cat-report-tint); }
+  &--new      { color: var(--color-brand-primary); background: var(--color-brand-tint); }
+  &--rec      { color: var(--color-cat-bonus);    background: var(--color-cat-bonus-tint); }
 }
 
 // ── 접근성 유틸리티 ────────────────────────────────────────────────────────────
-// 화면에는 보이지 않고 스크린리더에만 읽히는 텍스트
 .sr-only {
   position: absolute;
   width: 1px;

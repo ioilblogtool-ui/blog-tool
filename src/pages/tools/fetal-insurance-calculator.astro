@@ -1,0 +1,321 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  FI_META,
+  FI_DEFAULT_STATE,
+  FI_WEEK_BANDS,
+  FI_PLAN_LABELS,
+  FI_PAYMENT_TERM_LABELS,
+  FI_MATURITY_LABELS,
+  FI_SPECIAL_OPTIONS,
+  FI_PREMIUM_RULES,
+  FI_GUIDE_TEXT,
+  FI_FAQ,
+  FI_RELATED_LINKS,
+} from "../../data/fetalInsuranceCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  FI_DEFAULT_STATE,
+  FI_WEEK_BANDS,
+  FI_PLAN_LABELS,
+  FI_PAYMENT_TERM_LABELS,
+  FI_MATURITY_LABELS,
+  FI_SPECIAL_OPTIONS,
+  FI_PREMIUM_RULES,
+  FI_GUIDE_TEXT,
+};
+
+const faqSchema = FI_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="태아보험 보험료 계산기 2026 | 임신 주수·특약 기준 범위 추정"
+  description={FI_META.subtitle}
+  ogImage="/og/sample-tool.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: FI_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: FI_META.subtitle,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/fetal-insurance-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="fetal-insurance-calculator" pageClass="fi-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow={FI_META.eyebrow}
+        title={FI_META.title}
+        description="임신 주수, 산모 나이, 보장 구성, 특약 선택 기준으로 예상 월 보험료 범위와 총 납입 예상액을 빠르게 확인합니다."
+      />
+      <InfoNotice
+        lines={[
+          "이 계산기는 보험사 견적이 아니라 범위 추정 도구입니다.",
+          "실제 보험료는 고지 항목, 심사 조건, 특약 구성에 따라 달라질 수 있습니다.",
+          `가격 기준: ${FI_META.updatedAt}`,
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetFetalInsuranceBtn" copyId="copyFetalInsuranceLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel fi-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">주수와 보장 구조 입력</h2>
+          </div>
+          <p class="panel-heading__summary">가장 큰 영향이 큰 조건부터 먼저 입력합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>임신 주수</span>
+            <input id="fiWeek" type="number" min="4" max="32" step="1" value={FI_DEFAULT_STATE.week} class="input-number" />
+            <small>4주~32주 범위에서 계산합니다.</small>
+          </label>
+
+          <label class="field">
+            <span>산모 나이</span>
+            <input id="fiMaternalAge" type="number" min="20" max="45" step="1" value={FI_DEFAULT_STATE.maternalAge} class="input-number" />
+            <small>20세~45세 범위 기준</small>
+          </label>
+
+          <div class="field fi-field-block">
+            <span>보장 유형</span>
+            <div class="fi-chip-row fi-chip-row--plan">
+              {Object.entries(FI_PLAN_LABELS).map(([value, label]) => (
+                <button
+                  type="button"
+                  class={`fi-chip ${value === FI_DEFAULT_STATE.plan ? "is-active" : ""}`}
+                  data-fi-plan={value}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div class="field fi-field-block">
+            <span>납입 기간</span>
+            <div class="fi-chip-row">
+              {Object.entries(FI_PAYMENT_TERM_LABELS).map(([value, label]) => (
+                <button
+                  type="button"
+                  class={`fi-chip ${value === FI_DEFAULT_STATE.paymentTerm ? "is-active" : ""}`}
+                  data-fi-term={value}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <label class="field">
+            <span>만기</span>
+            <select id="fiMaturityAge" class="select">
+              {Object.entries(FI_MATURITY_LABELS).map(([value, label]) => (
+                <option value={value} selected={value === FI_DEFAULT_STATE.maturityAge}>{label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel fi-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">특약 선택</p>
+            <h2 class="panel__title">기본 보장에 덧붙일 항목</h2>
+          </div>
+          <p class="panel-heading__summary">필수로 많이 붙는 특약은 기본 선택 상태로 두었습니다.</p>
+        </div>
+
+        <div class="fi-special-list">
+          {FI_SPECIAL_OPTIONS.map((item) => (
+            <label class="fi-special-item">
+              <input
+                type="checkbox"
+                value={item.id}
+                class="fi-special-input"
+                checked={FI_DEFAULT_STATE.specialOptions.includes(item.id)}
+              />
+              <div>
+                <strong>{item.label}</strong>
+                <p>{item.description}</p>
+              </div>
+              <span>월 +{Math.round(item.extraMonthly / 1000).toLocaleString("ko-KR")}천원</span>
+            </label>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel fi-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">옵션</p>
+            <h2 class="panel__title">심사 변수를 같이 보기</h2>
+          </div>
+        </div>
+
+        <div class="fi-toggle-list">
+          <label class="fi-toggle-item">
+            <input id="fiHighRisk" type="checkbox" checked={FI_DEFAULT_STATE.highRisk} />
+            <div>
+              <strong>고위험 임신 여부</strong>
+              <p>보험료 범위를 보수적으로 가산합니다.</p>
+            </div>
+          </label>
+
+          <label class="fi-toggle-item">
+            <input id="fiUnderserved" type="checkbox" checked={FI_DEFAULT_STATE.underserved} />
+            <div>
+              <strong>분만취약지 거주 여부</strong>
+              <p>보험료 직접 가산은 없지만 준비 가이드를 달리 보여줍니다.</p>
+            </div>
+          </label>
+        </div>
+
+        <button type="button" class="button button--primary fi-submit" id="fiCalculateBtn">보험료 범위 계산하기</button>
+      </article>
+    </Fragment>
+
+    <section class="fi-section">
+      <div class="fi-section__head">
+        <p class="fi-section__eyebrow">핵심 결과</p>
+        <h2>보험료와 총 납입 범위를 먼저 봅니다</h2>
+        <p class="fi-section__sub" id="fiResultSubcopy">입력 조건에 맞는 범위를 바로 계산합니다.</p>
+      </div>
+
+      <div class="fi-result-grid">
+        <article class="fi-kpi-card fi-kpi-card--primary">
+          <p>예상 월 보험료 범위</p>
+          <strong id="fiMonthlyRange">-</strong>
+          <span id="fiMonthlyNote">-</span>
+        </article>
+        <article class="fi-kpi-card">
+          <p>총 납입 예상액</p>
+          <strong id="fiTotalRange">-</strong>
+          <span id="fiTotalNote">-</span>
+        </article>
+        <article class="fi-kpi-card">
+          <p>현재 주수 체크 상태</p>
+          <strong id="fiStatus">-</strong>
+          <span id="fiStatusNote">-</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="fi-section">
+      <div class="fi-guide-grid">
+        <article class="fi-guide-card fi-guide-card--positive" id="fiGuidePrimary"></article>
+        <article class="fi-guide-card fi-guide-card--neutral" id="fiGuideSecondary"></article>
+      </div>
+      <div class="fi-status-line">
+        <span class="fi-status-badge" id="fiStatusBadge" data-status="safe">적정</span>
+        <p>주수가 올라갈수록 특약 선택 폭과 심사 여유가 줄 수 있으니, 현재 상태를 먼저 확인하는 것이 중요합니다.</p>
+      </div>
+    </section>
+
+    <section class="fi-section">
+      <div class="fi-section__head">
+        <p class="fi-section__eyebrow">구성 비교</p>
+        <h2>기본형·표준형·강화형 차이를 같이 봅니다</h2>
+        <p class="fi-section__sub">같은 주수와 연령 조건에서 보장 유형만 바꿨을 때의 차이입니다.</p>
+      </div>
+
+      <div class="table-wrap fi-compare-table">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>보장 유형</th>
+              <th>월 보험료 범위</th>
+              <th>총 납입 범위</th>
+              <th>메모</th>
+            </tr>
+          </thead>
+          <tbody id="fiCompareTableBody">
+            <tr>
+              <td colspan="4">입력값을 바꾸면 비교 결과가 표시됩니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="fi-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">해석 가이드</p>
+            <h2 class="panel__title">이 범위를 어떻게 읽으면 좋은지</h2>
+          </div>
+          <p class="panel-heading__summary">최저가 검색보다 보장 우선순위 정리에 초점을 둔 계산기입니다.</p>
+        </div>
+        <div class="fi-interpretation" id="fiInterpretation"></div>
+      </div>
+    </section>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "이 계산기는 특정 보험사 상품 비교가 아니라 조건별 보험료 범위를 추정하는 도구입니다.",
+        "실제 가입 가능 여부와 보험료는 고지 내용, 병력, 심사 결과에 따라 달라질 수 있습니다.",
+        FI_META.disclaimer,
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="태아보험 보험료 계산기 2026 활용 가이드"
+        intro={[
+          "태아보험은 상품 이름보다 언제 비교를 시작하는지, 어떤 특약을 우선순위로 볼지, 납입 기간을 얼마나 길게 가져갈지가 실제 체감 보험료에 더 큰 영향을 주는 경우가 많습니다. 이 계산기는 그 판단을 빠르게 돕기 위한 범위 추정 도구입니다.",
+          "주수, 산모 연령, 보장 유형, 납입 기간, 만기, 특약 선택을 바꾸면 월 보험료 범위와 총 납입 예상액이 바로 갱신돼서 지금 조건에서 어느 정도 예산을 잡아야 하는지 한 번에 확인할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "주수별 체크 상태를 먼저 보고 지금이 설계 검토를 시작하기 좋은 구간인지 확인할 수 있습니다.",
+          "기본형·표준형·강화형을 같은 조건에서 비교해 보장 두께에 따른 보험료 차이를 바로 읽을 수 있습니다.",
+          "고위험 임신 여부를 켜면 보다 보수적인 범위로 보고 예산을 잡을 수 있습니다.",
+        ]}
+        criteria={[
+          "보험료는 연령대, 임신 주수 구간, 보장 유형, 납입 기간, 만기 조합 기준의 범위 추정 모델을 사용합니다.",
+          "선택 특약은 월 보험료 가산 방식으로 반영했고, 총 납입액은 납입 개월 수 단순 합산 기준입니다.",
+          "분만취약지 거주 여부는 보험료 직접 가산이 아니라 준비 가이드 강화 요소로 반영했습니다.",
+        ]}
+        faq={FI_FAQ}
+        related={FI_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="fetalInsuranceCalculatorConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/fetal-insurance-calculator.js")}></script>
+</BaseLayout>

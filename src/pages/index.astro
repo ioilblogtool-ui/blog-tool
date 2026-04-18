@@ -34,6 +34,7 @@ const topicBySlug: Record<string, string> = {
   "formula-cost": "육아·양육",
   "baby-growth-percentile-calculator": "육아·양육",
   "child-tutoring-cost-calculator": "육아·양육",
+  "fetal-insurance-calculator": "육아·복지·출산",
   "home-purchase-fund": "부동산·내집마련",
   "salary-tier": "연봉·이직",
   "wedding-budget-calculator": "결혼·웨딩",
@@ -80,6 +81,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "bitcoin-gold-sp500-10year-comparison-2026": { category: "asset", isNew: true },
   "teacher-salary-2026": { category: "salary", isNew: true },
   "postpartum-center-cost-2026": { category: "life", isNew: true },
+  "fetal-insurance-guide-2026": { category: "life", isNew: true },
   "national-pension-generational-comparison-2026": { category: "asset", isNew: true },
 };
 
@@ -113,29 +115,42 @@ const trustLinks = [
     <!-- ① hero -->
     <section class="hero hero--home">
       <p class="hero__eyebrow">비교계산소</p>
-      <h1 class="hero__title">세상의 궁금한 숫자,<br>한 번에 비교 계산하세요</h1>
+      <h1 class="hero__title">숫자로 더 잘<br>판단하세요</h1>
       <p class="hero__description">연봉·성과급·육아휴직·출산지원금까지 자주 보는 숫자를 빠르게 계산하고 비교합니다.</p>
-      <div class="home-actions">
-        <a class="button button--primary" href={withBase("/tools/")}>운영 중인 계산기 보기</a>
-      </div>
-    </section>
 
-    <!-- ② stats -->
-    <section class="home-stats">
-      <div class="home-stats__card home-stats__card--hl">
-        <p class="home-stats__num">{toolCount}</p>
-        <p class="home-stats__label">운영 중 계산기</p>
-        <p class="home-stats__source">계속 추가 중</p>
+      <div class="hero-search hero-search--desktop">
+        <input
+          class="hero-search__input"
+          type="search"
+          id="hero-search-input"
+          placeholder="계산기 검색 — 예) 연봉, 퇴직금, 육아휴직"
+          autocomplete="off"
+        />
+        <div class="hero-search__chips">
+          <button class="hero-search__chip" data-search="연봉 티어">연봉 티어</button>
+          <button class="hero-search__chip" data-search="성과급">성과급 시뮬레이터</button>
+          <button class="hero-search__chip" data-search="육아휴직">육아휴직</button>
+          <button class="hero-search__chip" data-search="파이어">파이어족</button>
+        </div>
       </div>
-      <div class="home-stats__card">
-        <p class="home-stats__num">{categories.length}</p>
-        <p class="home-stats__label">카테고리</p>
-        <p class="home-stats__source">{categories.slice(0, 2).join("·")} 등</p>
+
+      <div class="hero-counters">
+        <div class="hero-counter">
+          <strong class="hero-counter__num">{toolCount}<span class="hero-counter__unit">개</span></strong>
+          <span class="hero-counter__label">계산기</span>
+        </div>
+        <div class="hero-counter">
+          <strong class="hero-counter__num">{categories.length}<span class="hero-counter__unit">개</span></strong>
+          <span class="hero-counter__label">카테고리</span>
+        </div>
+        <div class="hero-counter">
+          <strong class="hero-counter__num">{reportCount}<span class="hero-counter__unit">개</span></strong>
+          <span class="hero-counter__label">리포트</span>
+        </div>
       </div>
-      <div class="home-stats__card">
-        <p class="home-stats__num">{reportCount}</p>
-        <p class="home-stats__label">비교 리포트</p>
-        <p class="home-stats__source">인터랙티브 리포트</p>
+      <div class="home-actions">
+        <a class="button button--primary" href={withBase("/tools/")}>계산기 보기</a>
+        <a class="home-actions__link" href={withBase("/reports/")}>리포트 보기</a>
       </div>
     </section>
 
@@ -144,24 +159,56 @@ const trustLinks = [
       <div class="home-section__head">
         <h2>처음이라면 여기부터</h2>
       </div>
-      <div class="home-showcase">
-        {finalShowcase.map((tool, i) => (
-          <a
-            class={`home-tool-card${i === 0 ? " home-tool-card--feat" : ""}`}
-            href={withBase(`/tools/${tool.slug}/`)}
-          >
-            <p class="home-tool-card__cat">{topicBySlug[tool.slug] ?? "도구"}</p>
-            <h3 class="home-tool-card__title">{tool.title}</h3>
-            {tool.badges && tool.badges.length > 0 && (
-              <div class="home-tool-card__chips">
-                {tool.badges.slice(0, 3).map(tag => (
-                  <span class="home-tool-card__chip">{tag}</span>
-                ))}
-              </div>
-            )}
-            <p class="home-tool-card__desc">{tool.description}</p>
-          </a>
-        ))}
+      <div class="home-feat-grid">
+
+        <a class="home-feat-card" href={withBase("/tools/salary-tier/")}>
+          <div class="home-feat-card__header">
+            <span class="home-feat-card__icon" aria-hidden="true">📊</span>
+            <span class="home-feat-card__cat home-feat-card__cat--salary">연봉·이직</span>
+          </div>
+          <div class="home-feat-card__body-wrap">
+            <h3 class="home-feat-card__title">연봉 티어 계산기</h3>
+            <p class="home-feat-card__sub">내 연봉의 상위 % 즉시 확인</p>
+          </div>
+          <span class="home-feat-card__link">→</span>
+        </a>
+
+        <a class="home-feat-card" href={withBase("/tools/bonus-simulator/")}>
+          <div class="home-feat-card__header">
+            <span class="home-feat-card__icon" aria-hidden="true">🏢</span>
+            <span class="home-feat-card__cat home-feat-card__cat--bonus">성과급 비교</span>
+          </div>
+          <div class="home-feat-card__body-wrap">
+            <h3 class="home-feat-card__title">대기업 성과급 시뮬레이터</h3>
+            <p class="home-feat-card__sub">삼성·SK·현대 성과급 비교</p>
+          </div>
+          <span class="home-feat-card__link">→</span>
+        </a>
+
+        <a class="home-feat-card" href={withBase("/tools/household-income/")}>
+          <div class="home-feat-card__header">
+            <span class="home-feat-card__icon" aria-hidden="true">🏠</span>
+            <span class="home-feat-card__cat home-feat-card__cat--salary">연봉·이직</span>
+          </div>
+          <div class="home-feat-card__body-wrap">
+            <h3 class="home-feat-card__title">가구 소득 계산기</h3>
+            <p class="home-feat-card__sub">맞벌이 실수령 계산</p>
+          </div>
+          <span class="home-feat-card__link">→</span>
+        </a>
+
+        <a class="home-feat-card" href={withBase("/tools/fire-calculator/")}>
+          <div class="home-feat-card__header">
+            <span class="home-feat-card__icon" aria-hidden="true">🔥</span>
+            <span class="home-feat-card__cat home-feat-card__cat--invest">투자·재테크</span>
+          </div>
+          <div class="home-feat-card__body-wrap">
+            <h3 class="home-feat-card__title">파이어족 계산기</h3>
+            <p class="home-feat-card__sub">조기 은퇴 시뮬레이션</p>
+          </div>
+          <span class="home-feat-card__link">→</span>
+        </a>
+
       </div>
     </section>
 
@@ -215,31 +262,103 @@ const trustLinks = [
       <div class="home-reports">
         {orderedReports.length > 0 ? orderedReports.map(report => {
           const reportMeta = reportMetaBySlug[report.slug];
+          const cat = reportMeta?.category ?? "other";
           const reportCategory = reportMeta ? reportCategoryLabels[reportMeta.category] : "기타";
+          const useBar = ['salary', 'life', 'culture', 'other'].includes(cat);
           return (
           <a
             class="home-report-card"
             href={withBase(`/reports/${report.slug}/`)}
-            data-report-category={reportMeta?.category ?? "other"}
+            data-report-category={cat}
             data-report-is-new={reportMeta?.isNew ? "true" : "false"}
           >
-            <span class="home-report-card__badge">인터랙티브 리포트</span>
-            <p class="home-report-card__cat">{reportCategory}</p>
-            <p class="home-report-card__title">{report.title}</p>
-            <p class="home-report-card__desc">{report.description}</p>
+            <div class="home-report-card__head">
+              <span class="home-report-card__cat-label">{reportCategory}</span>
+              {useBar ? (
+                <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
+                  <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"/>
+                  <rect x="12" y="14" width="7" height="22" rx="1" fill="rgba(255,255,255,0.38)"/>
+                  <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"/>
+                  <rect x="32" y="10" width="7" height="26" rx="1" fill="rgba(255,255,255,0.74)"/>
+                  <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"/>
+                </svg>
+              ) : (
+                <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
+                  <polyline points="2,34 13,26 26,16 38,10 50,4" stroke="rgba(255,255,255,0.38)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="2"  cy="34" r="2.5" fill="rgba(255,255,255,0.48)"/>
+                  <circle cx="13" cy="26" r="2.5" fill="rgba(255,255,255,0.62)"/>
+                  <circle cx="26" cy="16" r="2.5" fill="rgba(255,255,255,0.78)"/>
+                  <circle cx="38" cy="10" r="2.5" fill="rgba(255,255,255,0.9)"/>
+                  <circle cx="50" cy="4"  r="3"   fill="white"/>
+                </svg>
+              )}
+            </div>
+            <div class="home-report-card__body">
+              <p class="home-report-card__title">{report.title}</p>
+              <p class="home-report-card__desc">{report.description}</p>
+              <div class="home-report-card__footer">
+                <span class="home-report-card__badge">인터랙티브 리포트</span>
+                <span class="home-report-card__link">보기 →</span>
+              </div>
+            </div>
           </a>
           );
         }) : (
           <Fragment>
-            <a class="home-report-card" href={withBase("/reports/korea-rich-top10-assets/")}>
-              <span class="home-report-card__badge">인터랙티브 리포트</span>
-              <p class="home-report-card__title">한국 부자 TOP 10 자산 비교 리포트</p>
-              <p class="home-report-card__desc">원화 기준 TOP 10 · 서울 국평·그랜저 환산값</p>
+            <a class="home-report-card" href={withBase("/reports/it-salary-top10/")} data-report-category="salary">
+              <div class="home-report-card__head">
+                <span class="home-report-card__cat-label">연봉</span>
+                <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
+                  <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"/>
+                  <rect x="12" y="14" width="7" height="22" rx="1" fill="rgba(255,255,255,0.38)"/>
+                  <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"/>
+                  <rect x="32" y="10" width="7" height="26" rx="1" fill="rgba(255,255,255,0.74)"/>
+                  <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"/>
+                </svg>
+              </div>
+              <div class="home-report-card__body">
+                <p class="home-report-card__title">IT 업계 신입 초봉 TOP 10</p>
+                <p class="home-report-card__desc">국내 주요 IT 기업 신입 초봉 비교</p>
+                <div class="home-report-card__footer">
+                  <span class="home-report-card__badge">인터랙티브 리포트</span>
+                  <span class="home-report-card__link">보기 →</span>
+                </div>
+              </div>
             </a>
-            <a class="home-report-card" href={withBase("/reports/us-rich-top10-patterns/")}>
-              <span class="home-report-card__badge">인터랙티브 리포트</span>
-              <p class="home-report-card__title">미국 부자 TOP 10 성공 패턴 리포트</p>
-              <p class="home-report-card__desc">자산·학력·업종·창업 배경 비교 읽기</p>
+            <a class="home-report-card" href={withBase("/reports/wedding-cost-2016-vs-2026/")} data-report-category="life">
+              <div class="home-report-card__head">
+                <span class="home-report-card__cat-label">생활</span>
+                <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
+                  <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"/>
+                  <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"/>
+                  <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"/>
+                </svg>
+              </div>
+              <div class="home-report-card__body">
+                <p class="home-report-card__title">결혼비용 2016 vs 2026</p>
+                <p class="home-report-card__desc">10년 사이 결혼 비용 변화 비교</p>
+                <div class="home-report-card__footer">
+                  <span class="home-report-card__badge">인터랙티브 리포트</span>
+                  <span class="home-report-card__link">보기 →</span>
+                </div>
+              </div>
+            </a>
+            <a class="home-report-card" href={withBase("/reports/seoul-84-apartment-prices/")} data-report-category="estate">
+              <div class="home-report-card__head">
+                <span class="home-report-card__cat-label">부동산</span>
+                <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
+                  <polyline points="2,34 13,26 26,16 38,10 50,4" stroke="rgba(255,255,255,0.38)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="50" cy="4" r="3" fill="white"/>
+                </svg>
+              </div>
+              <div class="home-report-card__body">
+                <p class="home-report-card__title">서울 국평 아파트 가격 비교</p>
+                <p class="home-report-card__desc">서울 구별 84㎡ 아파트 실거래가 비교</p>
+                <div class="home-report-card__footer">
+                  <span class="home-report-card__badge">인터랙티브 리포트</span>
+                  <span class="home-report-card__link">보기 →</span>
+                </div>
+              </div>
             </a>
           </Fragment>
         )}
@@ -268,6 +387,44 @@ const trustLinks = [
   </main>
 
   <script is:inline>
+    // ── hero search ──────────────────────────────────────────────────────────
+    var searchInput = document.getElementById('hero-search-input');
+    var toolRows = document.querySelectorAll('.home-tool-row');
+
+    function filterToolsByQuery(q) {
+      var normalized = q.trim().toLowerCase();
+      toolRows.forEach(function(row) {
+        var titleEl = row.querySelector('.home-tool-row__title');
+        var catEl   = row.querySelector('.home-tool-row__cat');
+        var text    = ((titleEl ? titleEl.textContent : '') + ' ' + (catEl ? catEl.textContent : '')).toLowerCase();
+        row.style.display = (!normalized || text.includes(normalized)) ? '' : 'none';
+      });
+      if (normalized) {
+        document.querySelectorAll('.home-filter__chip[data-cat]').forEach(function(b) { b.classList.remove('is-active'); });
+        var allChip = document.querySelector('.home-filter__chip[data-cat="전체"]');
+        if (allChip) allChip.classList.add('is-active');
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', function() { filterToolsByQuery(this.value); });
+      searchInput.addEventListener('search', function() { filterToolsByQuery(this.value); });
+    }
+
+    document.querySelectorAll('.hero-search__chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        document.querySelectorAll('.hero-search__chip').forEach(function(c) { c.classList.remove('is-active'); });
+        chip.classList.add('is-active');
+        var term = chip.getAttribute('data-search');
+        if (searchInput) {
+          searchInput.value = term;
+          filterToolsByQuery(term);
+          var toolsSection = document.querySelector('.home-tools-list');
+          if (toolsSection) toolsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    });
+
     document.querySelectorAll('.home-filter__chip').forEach(function(btn) {
       btn.addEventListener('click', function() {
         if (btn.hasAttribute('data-cat')) {
