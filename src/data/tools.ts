@@ -365,6 +365,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "jeonwolse-conversion",
+    title: "전월세 전환율 계산기",
+    description: "전세 보증금과 월세 조건을 같은 기준으로 환산해 실제 전환율, 법정 상한 초과 여부, 전세 vs 월세 총비용 차이를 비교합니다.",
+    order: 24.5,
+    eyebrow: "부동산 비교 계산",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "법정 상한", value: "연 4.50%", context: "2026-04 기준금리 2.50%" },
+      { label: "핵심 비교", value: "총비용 + 유불리", context: "전세 vs 월세" },
+    ],
+  },
+  {
     slug: "coin-tax-calculator",
     title: "코인 세금 계산기",
     description: "비트코인·이더리움 등 가상자산 매도 시 양도차익, 250만원 공제, 예상 세금, 세후 순이익을 바로 계산하는 페이지",
