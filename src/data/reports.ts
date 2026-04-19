@@ -231,4 +231,18 @@ export const reports: ReportMeta[] = [
     order: 31,
     badges: ["서울", "청약", "부동산", "2026"],
   },
+  {
+    slug: "ai-job-salary-impact-2026",
+    title: "직군별 AI 도입 전후 연봉 효과 비교 2026",
+    description: "개발자, 마케터, 디자이너, PM, 회계, 번역 등 10개 직군 기준으로 AI 도입 이후 연봉 격차와 채용시장 변화를 비교하는 인터랙티브 리포트입니다.",
+    order: 32,
+    badges: ["AI", "직군비교", "연봉", "2026"],
+  },
+  {
+    slug: "etf-vs-direct-stock-10year-2026",
+    title: "ETF vs 직접투자 10년 비교 2026",
+    description: "KODEX200, TIGER200 같은 국내 ETF와 삼성전자·SK하이닉스 등 개별주를 10년 수익률, MDD, 세후 순수익 기준으로 비교하는 장기투자 리포트입니다.",
+    order: 33,
+    badges: ["ETF", "개별주", "10년비교", "2026"],
+  },
 ];

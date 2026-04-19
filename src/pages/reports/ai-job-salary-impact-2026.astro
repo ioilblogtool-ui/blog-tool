@@ -1,0 +1,360 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { aiJobSalaryImpact2026, levelLabel, trackLabel } from "../../data/aiJobSalaryImpact2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = aiJobSalaryImpact2026;
+const defaultJob = report.jobImpactRows[0];
+const defaultGap = report.gapCompareRows[0];
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+const levelClass = (level: string) => `is-${level}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: report.meta.title,
+  description: report.meta.description,
+  inLanguage: "ko-KR",
+  dateModified: "2026-04-19",
+  mainEntityOfPage: `https://bigyocalc.com/reports/${report.meta.slug}/`,
+  publisher: {
+    "@type": "Organization",
+    name: "비교계산소",
+    url: "https://bigyocalc.com",
+  },
+};
+
+const faqJsonLd = {
+  "@type": "FAQPage",
+  mainEntity: report.faq.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.a,
+    },
+  })),
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      ...articleJsonLd,
+      "@context": undefined,
+    },
+    faqJsonLd,
+  ],
+};
+---
+
+<BaseLayout title={`${report.meta.title} | AI 활용자 vs 비활용자 격차 분석`} description={report.meta.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ajs-page">
+    <CalculatorHero
+      eyebrow="AI 커리어 리포트"
+      title={report.meta.title}
+      description="AI를 쓰는 사람과 아닌 사람의 연봉 차이가 어디서 벌어지는지, 10개 직군 기준으로 비교합니다."
+    />
+
+    <InfoNotice
+      title="해석 기준 안내"
+      lines={[
+        report.meta.caution,
+        "일부 수치는 인덱스와 범위 기반 추정으로 표시했습니다.",
+        "AI 활용자와 비활용자 차이는 도구 사용 여부가 아니라 성과 개선 가능성과 협상력까지 포함한 해석입니다.",
+      ]}
+    />
+
+    <section class="content-section ajs-brief-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">Editor&apos;s Brief</p>
+        <h2>AI는 연봉표를 바로 바꾸기보다 직무 안의 가치 배분을 먼저 바꿉니다</h2>
+        <p>
+          {report.meta.subtitle}으로 AI 도입 체감도, 자동화 압박, 연봉 상승 가능성, 채용시장 변화를 한 화면에서 비교합니다.
+          공포 마케팅이 아니라 협상에 쓸 수 있는 성과 언어를 찾는 리포트입니다.
+        </p>
+      </div>
+      <div class="ajs-chip-row">
+        <span>2026</span>
+        <span>직군비교</span>
+        <span>연봉 인덱스</span>
+        <span class="is-warn">공식 연봉표 아님</span>
+      </div>
+      <div class="ajs-hero-kpis">
+        {report.heroStats.map((item) => (
+          <article class={`ajs-kpi-card ${item.tone ? `is-${item.tone}` : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ajs-intro-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 지금 봐야 하나</p>
+        <h2>AI와 연봉을 같이 봐야 하는 세 가지 이유</h2>
+      </div>
+      <div class="ajs-intro-grid">
+        {report.introCards.map((item, index) => (
+          <article class="ajs-intro-card">
+            <span>0{index + 1}</span>
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+            <em>{item.stat}</em>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ajs-matrix-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">직군 매트릭스</p>
+        <h2>10개 직군의 수혜와 압박을 나눠 보기</h2>
+        <p>필터를 바꾸면 직군 카드와 선택 목록이 함께 좁혀집니다. 각 수치는 절대 연봉이 아니라 상대적인 영향 수준입니다.</p>
+      </div>
+
+      <div class="ajs-filter-bar" id="ajsFilterBar">
+        <button type="button" class="ajs-filter is-active" data-filter="all">전체</button>
+        <button type="button" class="ajs-filter" data-filter="positive">수혜 가능성 높음</button>
+        <button type="button" class="ajs-filter" data-filter="pressure">압박 가능성 높음</button>
+        <button type="button" class="ajs-filter" data-filter="creative">크리에이티브</button>
+        <button type="button" class="ajs-filter" data-filter="operator">오퍼레이션</button>
+      </div>
+
+      <div class="ajs-job-grid" id="ajsJobGrid">
+        {report.jobImpactRows.map((job) => (
+          <button type="button" class={`ajs-job-card ${job.id === defaultJob.id ? "is-active" : ""}`} data-job-id={job.id} data-filter-tags={job.filterTags.join(" ")}>
+            <div class="ajs-job-card__head">
+              <span>{trackLabel[job.track]}</span>
+              <strong>{job.name}</strong>
+            </div>
+            <p>{job.summary}</p>
+            <div class="ajs-level-grid">
+              <div><span>AI 도입</span><b class={levelClass(job.aiAdoptionLevel)}>{levelLabel[job.aiAdoptionLevel]}</b></div>
+              <div><span>자동화 압박</span><b class={levelClass(job.automationRiskLevel)}>{levelLabel[job.automationRiskLevel]}</b></div>
+              <div><span>연봉 상승</span><b class={levelClass(job.salaryUpsideLevel)}>{levelLabel[job.salaryUpsideLevel]}</b></div>
+              <div><span>채용 변화</span><b class={levelClass(job.hiringMomentumLevel)}>{levelLabel[job.hiringMomentumLevel]}</b></div>
+            </div>
+            <small>{job.aiPremiumRange}</small>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ajs-gap-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">AI 활용자 vs 비활용자</p>
+        <h2>선택 직군의 연봉·생산성·협상력 인덱스 비교</h2>
+      </div>
+
+      <div class="ajs-gap-layout">
+        <article class="ajs-gap-panel">
+          <label class="field">
+            <span>직군 선택</span>
+            <select id="ajsJobSelect">
+              {report.jobImpactRows.map((job) => (
+                <option value={job.id} selected={job.id === defaultJob.id}>{job.name}</option>
+              ))}
+            </select>
+          </label>
+          <div class="ajs-gap-chart-wrap">
+            <canvas id="ajsGapChart" aria-describedby="ajsGapSummary"></canvas>
+          </div>
+          <p id="ajsGapSummary">{defaultGap.summary}</p>
+        </article>
+
+        <article class="ajs-selected-card">
+          <p class="ajs-panel-eyebrow">Selected Job</p>
+          <h3 id="ajsSelectedName">{defaultJob.name}</h3>
+          <p id="ajsSelectedSummary">{defaultJob.summary}</p>
+          <div class="ajs-selected-meta">
+            <span id="ajsSelectedBand">{defaultJob.salaryBand2026}</span>
+            <span id="ajsSelectedPremium">{defaultJob.aiPremiumRange}</span>
+          </div>
+          <div>
+            <h4>왜 차이가 나는가</h4>
+            <ul id="ajsSelectedWhy">
+              {defaultJob.why.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+          <div>
+            <h4>협상 신호</h4>
+            <div class="ajs-tag-list" id="ajsSelectedSignals">
+              {defaultJob.negotiationSignals.map((item) => <span>{item}</span>)}
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section ajs-rank-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">TOP 3</p>
+        <h2>수혜 직군과 압박 직군을 나눠 읽기</h2>
+      </div>
+      <div class="ajs-rank-layout">
+        <div>
+          <h3>수혜 직군 TOP3</h3>
+          <div class="ajs-rank-grid">
+            {report.winnersTop3.map((item, index) => (
+              <article class="ajs-rank-card is-positive">
+                <span>TOP {index + 1}</span>
+                <strong>{item.jobName}</strong>
+                <p>{item.headline}</p>
+                <small>{item.reason}</small>
+              </article>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h3>압박 직군 TOP3</h3>
+          <div class="ajs-rank-grid">
+            {report.pressureTop3.map((item, index) => (
+              <article class="ajs-rank-card is-warning">
+                <span>TOP {index + 1}</span>
+                <strong>{item.jobName}</strong>
+                <p>{item.headline}</p>
+                <small>{item.reason}</small>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section ajs-signal-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">채용시장 변화</p>
+        <h2>기업 유형별로 AI 도입 방식이 다르게 나타납니다</h2>
+      </div>
+      <div class="ajs-signal-grid">
+        {report.hiringSignals.map((item) => (
+          <article class="ajs-signal-card">
+            <p>{item.companyType}</p>
+            <strong>{item.aiAdoptionStyle}</strong>
+            <span>{item.hiringChange}</span>
+            <small>{item.implication}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ajs-stack-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">추천 툴 스택</p>
+        <h2>직군별 AI 도구는 목적별로 조합해야 합니다</h2>
+      </div>
+      <div class="ajs-stack-grid">
+        {report.toolStacks.map((item) => (
+          <article class="ajs-stack-card">
+            <h3>{item.jobName}</h3>
+            <div class="ajs-tag-list">
+              {item.coreTools.map((tool) => <span>{tool}</span>)}
+            </div>
+            <p>{item.useCases.join(" · ")}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ajs-outlook-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2026 → 2028</p>
+        <h2>앞으로 3년은 사용 여부에서 검증 능력으로 기준이 이동합니다</h2>
+      </div>
+      <div class="ajs-outlook">
+        {report.futureOutlook.map((item) => (
+          <article class="ajs-outlook-item">
+            <span>{item.year}</span>
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ajs-checklist-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">내 상황 체크리스트</p>
+        <h2>AI 활용이 연봉 협상 근거가 되는지 점검하세요</h2>
+        <p>체크한 항목의 합산 점수에 따라 다음에 볼 계산기를 추천합니다.</p>
+      </div>
+      <div class="ajs-checklist-layout">
+        <form class="ajs-checklist-box" id="ajsChecklist">
+          {report.negotiationChecklist.map((item) => (
+            <label>
+              <input type="checkbox" value={item.weight} />
+              <span>{item.text}</span>
+            </label>
+          ))}
+        </form>
+        <article class="ajs-cta-box">
+          <p class="ajs-panel-eyebrow">추천 다음 단계</p>
+          <h3 id="ajsCtaTitle">AI 시급/ROI부터 계산해보세요</h3>
+          <p id="ajsCtaBody">아직 성과 근거가 약한 단계입니다. 먼저 줄인 시간과 비용 효과를 숫자로 바꿔보는 편이 좋습니다.</p>
+          <a id="ajsCtaLink" href={withBase("/tools/ai-automation-hourly-roi/")}>추천 계산기 열기</a>
+          <strong id="ajsChecklistScore">0점</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section ajs-source-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처와 관련 계산기</p>
+        <h2>시장 자료와 계산기를 함께 확인하세요</h2>
+      </div>
+      <div class="ajs-source-grid">
+        <article class="ajs-source-panel">
+          <h3>참고 출처</h3>
+          <div class="ajs-link-list">
+            {report.sourceLinks.map((item) => (
+              <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+            ))}
+          </div>
+        </article>
+        <article class="ajs-source-panel">
+          <h3>관련 계산기</h3>
+          <div class="ajs-related-grid">
+            {report.relatedLinks.map((item) => (
+              <a href={withBase(item.href)}>
+                <strong>{item.label}</strong>
+                <span>{item.description}</span>
+              </a>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="직군별 AI 연봉 효과 리포트 읽는 법"
+      intro={[
+        "이 리포트는 AI 활용 여부에 따라 직군별 연봉 협상 포인트가 어떻게 달라지는지 비교하기 위한 시장 해석형 페이지입니다.",
+        "연봉 인덱스는 실제 평균 연봉이 아니라 AI 활용자가 성과와 협상력을 더 잘 설명할 수 있는 정도를 상대적으로 표현한 참고 지표입니다.",
+      ]}
+      criteria={[
+        "직군별 비교는 AI 도입 체감도, 자동화 리스크, 연봉 상승 가능성, 채용시장 변화를 함께 봅니다.",
+        "AI 활용자는 단순히 도구를 쓰는 사람이 아니라 시간 절감, 처리량 증가, 오류 감소를 설명할 수 있는 사람으로 정의했습니다.",
+        "압박 직군도 역할 이동과 성과 지표를 준비하면 연봉 방어와 협상 근거를 만들 수 있습니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks.map((item) => ({ href: item.href, label: item.label }))}
+    />
+  </main>
+
+  <script id="aiJobSalaryImpact2026Data" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/ai-job-salary-impact-2026.js")}></script>
+</BaseLayout>

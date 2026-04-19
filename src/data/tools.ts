@@ -407,6 +407,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "domestic-stock-capital-gains-tax",
+    title: "국내주식 양도소득세 계산기",
+    description: "국내 상장주식 대주주, 장외거래, 비상장주식 양도 시 예상 세액을 계산하고 손익통산과 기본공제까지 반영하는 계산기입니다.",
+    order: 25.5,
+    eyebrow: "주식 세금",
+    category: "investment",
+    iframeReady: true,
+    badges: ["세금", "국내주식", "2026"],
+    previewStats: [
+      { label: "기본공제", value: "250만원", context: "연간 기준" },
+      { label: "과세 판정", value: "대주주·장외·비상장" },
+    ],
+  },
+  {
     slug: "ai-stack-cost-calculator",
     title: "AI 스택 비용 계산기",
     description: "ChatGPT, Claude, Cursor, Perplexity 등 AI 도구 조합을 선택하면 월 구독료, 연간 비용, 중복 지출과 추천 스택을 한 번에 비교하는 계산기",
