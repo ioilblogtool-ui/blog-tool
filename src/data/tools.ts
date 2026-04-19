@@ -379,6 +379,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "irp-pension-calculator",
+    title: "IRP 연금 계산기",
+    description: "IRP·DC 적립금과 월 추가 납입액을 기준으로 은퇴 시점 예상 적립금과 연금 수령·일시금 차이를 비교하는 계산기",
+    order: 24.6,
+    eyebrow: "투자 도구",
+    category: "investment",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "월 납입 시나리오", value: "10만~50만" },
+      { label: "수익률 비교", value: "3%·5%·7%" }
+    ]
+  },
+  {
     slug: "coin-tax-calculator",
     title: "코인 세금 계산기",
     description: "비트코인·이더리움 등 가상자산 매도 시 양도차익, 250만원 공제, 예상 세금, 세후 순이익을 바로 계산하는 페이지",
@@ -407,6 +421,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "ai-automation-hourly-roi",
+    title: "AI 업무 자동화 시급 계산기",
+    description: "월급, 반복 업무 시간, 절감 시간, AI 도구 비용을 기준으로 도입 후 체감 시급 상승과 투자 회수 기간을 계산하는 도구",
+    order: 26.1,
+    eyebrow: "AI Productivity Tool",
+    category: "ai",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "핵심 입력", value: "월급·절감시간" },
+      { label: "결과 지표", value: "시급·회수기간" },
+    ],
+  },
+  {
     slug: "child-tutoring-cost-calculator",
     title: "아이 사교육비 계산기",
     description: "자녀 수, 학교급, 과목, 지역을 입력하면 월·연간·누적 교육비와 또래 평균 대비 수준을 한 번에 계산. 기회비용 시뮬레이션 포함.",
@@ -432,6 +460,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "입력 기준", value: "주수·특약" },
       { label: "결과 구조", value: "월 보험료 범위" },
+    ],
+  },
+  {
+    slug: "apt-cheonyak-gajum-calculator",
+    title: "아파트 청약 가점 계산기",
+    description: "무주택기간, 부양가족 수, 청약통장 가입기간을 입력하면 총 84점 기준 청약 가점과 서울·수도권·지방 참고 당첨선을 바로 확인합니다.",
+    order: 24.7,
+    eyebrow: "청약 가점 계산",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "만점", value: "84점", context: "무주택 32 + 부양가족 35 + 통장 17" },
+      { label: "비교", value: "지역 참고선", context: "서울·수도권·지방" },
     ],
   },
   {

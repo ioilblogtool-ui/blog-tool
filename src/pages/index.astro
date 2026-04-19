@@ -37,17 +37,20 @@ const topicBySlug: Record<string, string> = {
   "fetal-insurance-calculator": "육아·복지·출산",
   "home-purchase-fund": "부동산·내집마련",
   "jeonwolse-conversion": "부동산·내집마련",
+  "apt-cheonyak-gajum-calculator": "부동산·내집마련",
   "salary-tier": "연봉·이직",
   "wedding-budget-calculator": "결혼·웨딩",
   "wedding-gift-break-even-calculator": "결혼·웨딩",
   "dca-investment-calculator": "투자·재테크",
   "fire-calculator": "투자·재테크",
   "national-pension-calculator": "투자·재테크",
+  "irp-pension-calculator": "투자·재테크",
   "coin-tax-calculator": "투자·재테크",
-  "ai-stack-cost-calculator": "AI·생산성"
-  };
+  "ai-stack-cost-calculator": "AI·생산성",
+  "ai-automation-hourly-roi": "AI·생산성",
+};
 
-const categories = [...new Set(orderedTools.map(t => topicBySlug[t.slug]).filter(Boolean))];
+const categories = [...new Set(orderedTools.map((t) => topicBySlug[t.slug]).filter(Boolean))];
 type HomeReportCategory = "salary" | "estate" | "asset" | "life" | "culture";
 
 type HomeReportMeta = {
@@ -85,6 +88,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "postpartum-center-cost-2026": { category: "life", isNew: true },
   "fetal-insurance-guide-2026": { category: "life", isNew: true },
   "national-pension-generational-comparison-2026": { category: "asset", isNew: true },
+  "pension-irp-comparison-2026": { category: "asset", isNew: true },
 };
 
 const reportCategoryLabels: Record<HomeReportCategory, string> = {
@@ -92,17 +96,17 @@ const reportCategoryLabels: Record<HomeReportCategory, string> = {
   estate: "부동산",
   asset: "자산",
   life: "생활",
-  culture: "문화·엔터"
+  culture: "문화·엔터",
 };
 
 const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "estate", "asset", "life", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
 const trustLinks = [
-  { href: withBase("/about/"),      title: "비교계산소 소개",    desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
-  { href: withBase("/privacy/"),    title: "개인정보처리방침",   desc: "쿠키·외부 서비스·수집 정보 처리 원칙" },
-  { href: withBase("/contact/"),    title: "문의 안내",          desc: "오류 제보·기능 제안·제휴 문의 범위" },
-  { href: withBase("/disclaimer/"), title: "이용안내 및 면책",   desc: "결과 해석 방법과 실제 지급액 차이 안내" },
+  { href: withBase("/about/"), title: "비교계산소 소개", desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
+  { href: withBase("/privacy/"), title: "개인정보처리방침", desc: "쿠키·외부 서비스·수집 정보 처리 원칙" },
+  { href: withBase("/contact/"), title: "문의 안내", desc: "오류 제보·기능 제안·제휴 문의 범위" },
+  { href: withBase("/disclaimer/"), title: "이용안내 및 면책", desc: "결과 해석 방법과 실제 지급액 차이 안내" },
 ];
 ---
 
@@ -113,11 +117,9 @@ const trustLinks = [
   <SiteHeader />
 
   <main class="container page-shell">
-
-    <!-- ① hero -->
     <section class="hero hero--home">
       <p class="hero__eyebrow">비교계산소</p>
-      <h1 class="hero__title">숫자로 더 잘<br>판단하세요</h1>
+      <h1 class="hero__title">숫자로 더 잘<br />판단하세요</h1>
       <p class="hero__description">연봉·성과급·육아휴직·출산지원금까지 자주 보는 숫자를 빠르게 계산하고 비교합니다.</p>
 
       <div class="hero-search hero-search--desktop">
@@ -156,13 +158,11 @@ const trustLinks = [
       </div>
     </section>
 
-    <!-- ③ 추천 계산기 -->
     <section class="home-section">
       <div class="home-section__head">
         <h2>처음이라면 여기부터</h2>
       </div>
       <div class="home-feat-grid">
-
         <a class="home-feat-card" href={withBase("/tools/salary-tier/")}>
           <div class="home-feat-card__header">
             <span class="home-feat-card__icon" aria-hidden="true">📊</span>
@@ -210,11 +210,9 @@ const trustLinks = [
           </div>
           <span class="home-feat-card__link">→</span>
         </a>
-
       </div>
     </section>
 
-    <!-- ④ 전체 계산기 -->
     <section class="home-section">
       <div class="home-section__head">
         <h2>전체 계산기 <span class="home-section__count">{toolCount}개</span></h2>
@@ -223,13 +221,13 @@ const trustLinks = [
 
       <div class="home-filter">
         <button class="home-filter__chip is-active" data-cat="전체">전체</button>
-        {categories.map(cat => (
+        {categories.map((cat) => (
           <button class="home-filter__chip" data-cat={cat}>{cat}</button>
         ))}
       </div>
 
       <div class="home-tools-list">
-        {orderedTools.map(tool => (
+        {orderedTools.map((tool) => (
           <a
             class="home-tool-row"
             href={withBase(`/tools/${tool.slug}/`)}
@@ -245,7 +243,6 @@ const trustLinks = [
       </div>
     </section>
 
-    <!-- ⑤ 리포트 -->
     <section class="home-section">
       <div class="home-section__head">
         <h2>비교 리포트 <span class="home-section__count">{reportCount}개</span></h2>
@@ -254,7 +251,7 @@ const trustLinks = [
 
       <div class="home-filter home-filter--reports">
         <button class="home-filter__chip home-filter__chip--report is-active" data-report-filter="all">전체</button>
-        {reportFilterOrder.map(filterKey => (
+        {reportFilterOrder.map((filterKey) => (
           <button class="home-filter__chip home-filter__chip--report" data-report-filter={filterKey}>
             {filterKey === "new" ? "신규" : reportCategoryLabels[filterKey]}
           </button>
@@ -262,48 +259,48 @@ const trustLinks = [
       </div>
 
       <div class="home-reports">
-        {orderedReports.length > 0 ? orderedReports.map(report => {
+        {orderedReports.length > 0 ? orderedReports.map((report) => {
           const reportMeta = reportMetaBySlug[report.slug];
           const cat = reportMeta?.category ?? "other";
           const reportCategory = reportMeta ? reportCategoryLabels[reportMeta.category] : "기타";
-          const useBar = ['salary', 'life', 'culture', 'other'].includes(cat);
+          const useBar = ["salary", "life", "culture", "other"].includes(cat);
           return (
-          <a
-            class="home-report-card"
-            href={withBase(`/reports/${report.slug}/`)}
-            data-report-category={cat}
-            data-report-is-new={reportMeta?.isNew ? "true" : "false"}
-          >
-            <div class="home-report-card__head">
-              <span class="home-report-card__cat-label">{reportCategory}</span>
-              {useBar ? (
-                <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
-                  <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"/>
-                  <rect x="12" y="14" width="7" height="22" rx="1" fill="rgba(255,255,255,0.38)"/>
-                  <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"/>
-                  <rect x="32" y="10" width="7" height="26" rx="1" fill="rgba(255,255,255,0.74)"/>
-                  <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"/>
-                </svg>
-              ) : (
-                <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
-                  <polyline points="2,34 13,26 26,16 38,10 50,4" stroke="rgba(255,255,255,0.38)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="2"  cy="34" r="2.5" fill="rgba(255,255,255,0.48)"/>
-                  <circle cx="13" cy="26" r="2.5" fill="rgba(255,255,255,0.62)"/>
-                  <circle cx="26" cy="16" r="2.5" fill="rgba(255,255,255,0.78)"/>
-                  <circle cx="38" cy="10" r="2.5" fill="rgba(255,255,255,0.9)"/>
-                  <circle cx="50" cy="4"  r="3"   fill="white"/>
-                </svg>
-              )}
-            </div>
-            <div class="home-report-card__body">
-              <p class="home-report-card__title">{report.title}</p>
-              <p class="home-report-card__desc">{report.description}</p>
-              <div class="home-report-card__footer">
-                <span class="home-report-card__badge">인터랙티브 리포트</span>
-                <span class="home-report-card__link">보기 →</span>
+            <a
+              class="home-report-card"
+              href={withBase(`/reports/${report.slug}/`)}
+              data-report-category={cat}
+              data-report-is-new={reportMeta?.isNew ? "true" : "false"}
+            >
+              <div class="home-report-card__head">
+                <span class="home-report-card__cat-label">{reportCategory}</span>
+                {useBar ? (
+                  <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
+                    <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"></rect>
+                    <rect x="12" y="14" width="7" height="22" rx="1" fill="rgba(255,255,255,0.38)"></rect>
+                    <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"></rect>
+                    <rect x="32" y="10" width="7" height="26" rx="1" fill="rgba(255,255,255,0.74)"></rect>
+                    <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"></rect>
+                  </svg>
+                ) : (
+                  <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
+                    <polyline points="2,34 13,26 26,16 38,10 50,4" stroke="rgba(255,255,255,0.38)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                    <circle cx="2" cy="34" r="2.5" fill="rgba(255,255,255,0.48)"></circle>
+                    <circle cx="13" cy="26" r="2.5" fill="rgba(255,255,255,0.62)"></circle>
+                    <circle cx="26" cy="16" r="2.5" fill="rgba(255,255,255,0.78)"></circle>
+                    <circle cx="38" cy="10" r="2.5" fill="rgba(255,255,255,0.9)"></circle>
+                    <circle cx="50" cy="4" r="3" fill="white"></circle>
+                  </svg>
+                )}
               </div>
-            </div>
-          </a>
+              <div class="home-report-card__body">
+                <p class="home-report-card__title">{report.title}</p>
+                <p class="home-report-card__desc">{report.description}</p>
+                <div class="home-report-card__footer">
+                  <span class="home-report-card__badge">인터랙티브 리포트</span>
+                  <span class="home-report-card__link">보기 →</span>
+                </div>
+              </div>
+            </a>
           );
         }) : (
           <Fragment>
@@ -311,11 +308,11 @@ const trustLinks = [
               <div class="home-report-card__head">
                 <span class="home-report-card__cat-label">연봉</span>
                 <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
-                  <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"/>
-                  <rect x="12" y="14" width="7" height="22" rx="1" fill="rgba(255,255,255,0.38)"/>
-                  <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"/>
-                  <rect x="32" y="10" width="7" height="26" rx="1" fill="rgba(255,255,255,0.74)"/>
-                  <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"/>
+                  <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"></rect>
+                  <rect x="12" y="14" width="7" height="22" rx="1" fill="rgba(255,255,255,0.38)"></rect>
+                  <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"></rect>
+                  <rect x="32" y="10" width="7" height="26" rx="1" fill="rgba(255,255,255,0.74)"></rect>
+                  <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"></rect>
                 </svg>
               </div>
               <div class="home-report-card__body">
@@ -331,9 +328,9 @@ const trustLinks = [
               <div class="home-report-card__head">
                 <span class="home-report-card__cat-label">생활</span>
                 <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
-                  <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"/>
-                  <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"/>
-                  <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"/>
+                  <rect x="2" y="22" width="7" height="14" rx="1" fill="rgba(255,255,255,0.22)"></rect>
+                  <rect x="22" y="6" width="7" height="30" rx="1" fill="rgba(255,255,255,0.58)"></rect>
+                  <rect x="42" y="2" width="8" height="34" rx="1" fill="rgba(255,255,255,0.92)"></rect>
                 </svg>
               </div>
               <div class="home-report-card__body">
@@ -349,8 +346,8 @@ const trustLinks = [
               <div class="home-report-card__head">
                 <span class="home-report-card__cat-label">부동산</span>
                 <svg class="home-report-card__chart" width="52" height="36" viewBox="0 0 52 36" fill="none" aria-hidden="true">
-                  <polyline points="2,34 13,26 26,16 38,10 50,4" stroke="rgba(255,255,255,0.38)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="50" cy="4" r="3" fill="white"/>
+                  <polyline points="2,34 13,26 26,16 38,10 50,4" stroke="rgba(255,255,255,0.38)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                  <circle cx="50" cy="4" r="3" fill="white"></circle>
                 </svg>
               </div>
               <div class="home-report-card__body">
@@ -367,13 +364,12 @@ const trustLinks = [
       </div>
     </section>
 
-    <!-- ⑥ 이용안내 -->
     <section class="home-section">
       <div class="home-section__head">
         <h2>이용 안내</h2>
       </div>
       <div class="home-trust">
-        {trustLinks.map(link => (
+        {trustLinks.map((link) => (
           <a class="home-trust-card" href={link.href}>
             <p class="home-trust-card__title">{link.title}</p>
             <p class="home-trust-card__desc">{link.desc}</p>
@@ -385,77 +381,72 @@ const trustLinks = [
         중요한 결정 전에는 원문 공지와 공식 자료를 함께 확인해주세요.
       </p>
     </section>
-
   </main>
 
   <script is:inline>
-    // ── hero search ──────────────────────────────────────────────────────────
-    var searchInput = document.getElementById('hero-search-input');
-    var toolRows = document.querySelectorAll('.home-tool-row');
+    var searchInput = document.getElementById("hero-search-input");
+    var toolRows = document.querySelectorAll(".home-tool-row");
 
     function filterToolsByQuery(q) {
       var normalized = q.trim().toLowerCase();
-      toolRows.forEach(function(row) {
-        var titleEl = row.querySelector('.home-tool-row__title');
-        var catEl   = row.querySelector('.home-tool-row__cat');
-        var text    = ((titleEl ? titleEl.textContent : '') + ' ' + (catEl ? catEl.textContent : '')).toLowerCase();
-        row.style.display = (!normalized || text.includes(normalized)) ? '' : 'none';
+      toolRows.forEach(function (row) {
+        var titleEl = row.querySelector(".home-tool-row__title");
+        var catEl = row.querySelector(".home-tool-row__cat");
+        var text = ((titleEl ? titleEl.textContent : "") + " " + (catEl ? catEl.textContent : "")).toLowerCase();
+        row.style.display = !normalized || text.includes(normalized) ? "" : "none";
       });
       if (normalized) {
-        document.querySelectorAll('.home-filter__chip[data-cat]').forEach(function(b) { b.classList.remove('is-active'); });
+        document.querySelectorAll('.home-filter__chip[data-cat]').forEach(function (b) { b.classList.remove("is-active"); });
         var allChip = document.querySelector('.home-filter__chip[data-cat="전체"]');
-        if (allChip) allChip.classList.add('is-active');
+        if (allChip) allChip.classList.add("is-active");
       }
     }
 
     if (searchInput) {
-      searchInput.addEventListener('input', function() { filterToolsByQuery(this.value); });
-      searchInput.addEventListener('search', function() { filterToolsByQuery(this.value); });
+      searchInput.addEventListener("input", function () { filterToolsByQuery(this.value); });
+      searchInput.addEventListener("search", function () { filterToolsByQuery(this.value); });
     }
 
-    document.querySelectorAll('.hero-search__chip').forEach(function(chip) {
-      chip.addEventListener('click', function() {
-        document.querySelectorAll('.hero-search__chip').forEach(function(c) { c.classList.remove('is-active'); });
-        chip.classList.add('is-active');
-        var term = chip.getAttribute('data-search');
+    document.querySelectorAll(".hero-search__chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        document.querySelectorAll(".hero-search__chip").forEach(function (c) { c.classList.remove("is-active"); });
+        chip.classList.add("is-active");
+        var term = chip.getAttribute("data-search");
         if (searchInput) {
           searchInput.value = term;
           filterToolsByQuery(term);
-          var toolsSection = document.querySelector('.home-tools-list');
-          if (toolsSection) toolsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          var toolsSection = document.querySelector(".home-tools-list");
+          if (toolsSection) toolsSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
       });
     });
 
-    document.querySelectorAll('.home-filter__chip').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        if (btn.hasAttribute('data-cat')) {
-          document.querySelectorAll('.home-filter__chip[data-cat]').forEach(function(b) {
-            b.classList.remove('is-active');
+    document.querySelectorAll(".home-filter__chip").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (btn.hasAttribute("data-cat")) {
+          document.querySelectorAll(".home-filter__chip[data-cat]").forEach(function (b) {
+            b.classList.remove("is-active");
           });
-          btn.classList.add('is-active');
-          var cat = btn.getAttribute('data-cat');
-          document.querySelectorAll('.home-tool-row').forEach(function(row) {
-            row.style.display = (cat === '전체' || row.getAttribute('data-category') === cat) ? '' : 'none';
+          btn.classList.add("is-active");
+          var cat = btn.getAttribute("data-cat");
+          document.querySelectorAll(".home-tool-row").forEach(function (row) {
+            row.style.display = cat === "전체" || row.getAttribute("data-category") === cat ? "" : "none";
           });
         }
 
-        if (btn.hasAttribute('data-report-filter')) {
-          document.querySelectorAll('.home-filter__chip[data-report-filter]').forEach(function(b) {
-            b.classList.remove('is-active');
+        if (btn.hasAttribute("data-report-filter")) {
+          document.querySelectorAll(".home-filter__chip[data-report-filter]").forEach(function (b) {
+            b.classList.remove("is-active");
           });
-          btn.classList.add('is-active');
-          var reportFilter = btn.getAttribute('data-report-filter');
-          document.querySelectorAll('.home-report-card').forEach(function(card) {
-            var matchesCategory = reportFilter === 'all' || card.getAttribute('data-report-category') === reportFilter;
-            var matchesNew = reportFilter === 'new' && card.getAttribute('data-report-is-new') === 'true';
-            card.style.display = (matchesCategory || matchesNew) ? '' : 'none';
+          btn.classList.add("is-active");
+          var reportFilter = btn.getAttribute("data-report-filter");
+          document.querySelectorAll(".home-report-card").forEach(function (card) {
+            var matchesCategory = reportFilter === "all" || card.getAttribute("data-report-category") === reportFilter;
+            var matchesNew = reportFilter === "new" && card.getAttribute("data-report-is-new") === "true";
+            card.style.display = matchesCategory || matchesNew ? "" : "none";
           });
         }
       });
     });
   </script>
 </BaseLayout>
-
-
-

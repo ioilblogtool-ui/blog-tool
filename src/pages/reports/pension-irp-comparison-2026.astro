@@ -1,0 +1,350 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PIC26_META,
+  PENSION_IRP_COMPARISON_ROWS,
+  PENSION_IRP_FAQ,
+  PENSION_IRP_MISTAKES,
+  PENSION_IRP_PRODUCTS,
+  PENSION_IRP_RELATED_LINKS,
+  PENSION_IRP_SCENARIOS,
+  PENSION_IRP_TAX_GUIDE,
+  PENSION_IRP_TOP_SUMMARY,
+} from "../../data/pensionIrpComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const faqItems = PENSION_IRP_FAQ.map((item) => ({
+  question: item.question,
+  answer: item.answer,
+}));
+
+const faqSchema = PENSION_IRP_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+
+const comparisonHighlights = [
+  {
+    label: "세액공제 중심축",
+    value: "연금저축 + IRP",
+    sub: "연금보험은 일반적으로 같은 절세 계좌 축으로 보지 않습니다.",
+  },
+  {
+    label: "퇴직금 이전 가능",
+    value: "IRP",
+    sub: "퇴직금 수령과 연금화 연결성은 IRP 쪽이 더 분명합니다.",
+  },
+  {
+    label: "운용 자유도",
+    value: "연금저축 우위",
+    sub: "ETF·펀드 등 운용 선택 폭은 연금저축 쪽 설명이 더 단순합니다.",
+  },
+  {
+    label: "유동성 제약",
+    value: "IRP가 더 큼",
+    sub: "중도 인출과 운용 제약을 함께 보고 들어가야 오해가 줄어듭니다.",
+  },
+];
+---
+
+<BaseLayout
+  title={PIC26_META.title}
+  description={PIC26_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: PIC26_META.title,
+    description: PIC26_META.description,
+    inLanguage: "ko-KR",
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page pic26-page">
+    <CalculatorHero
+      eyebrow={PIC26_META.eyebrow}
+      title={PIC26_META.heroTitle}
+      description={PIC26_META.heroDescription}
+    />
+
+    <InfoNotice
+      title="읽기 전 기준"
+      lines={[
+        "이 리포트는 연금저축, IRP, 연금보험의 구조 차이를 일반론 중심으로 비교해 이해를 돕는 참고용 정리입니다.",
+        "세액공제, 중도 인출, 퇴직금 이전, 수령 방식은 개인 상황과 실제 상품 조건에 따라 달라질 수 있습니다.",
+        "세무·법률 확정 판단보다는 구조 이해와 다음 행동 선택에 초점을 맞춰 읽는 편이 적절합니다.",
+      ]}
+    />
+
+    <nav class="pic26-anchor-nav">
+      <a href="#brief">핵심 브리프</a>
+      <a href="#comparison">비교표</a>
+      <a href="#tax-guide">세액공제</a>
+      <a href="#flexibility">선택 가이드</a>
+      <a href="#scenario">상황별 추천</a>
+      <a href="#calculator-link">계산기 연결</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <section class="content-section pic26-hero-board" id="brief">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">Editor&apos;s Brief</p>
+        <h2>연금저축은 기본축, IRP는 퇴직금과 절세 보완축, 연금보험은 별도 구조로 봐야 합니다</h2>
+        <p>
+          `어떤 계좌가 무조건 낫다`가 아니라 `내가 무엇을 우선순위로 두는가`에 따라 먼저 볼 상품이
+          달라집니다. 이 페이지는 절세, 유동성, 퇴직금, 연금 수령이라는 네 가지 관점으로 구조를 빠르게
+          정리합니다.
+        </p>
+      </div>
+      <div class="pic26-chip-row">
+        <span>세액공제 계좌: 연금저축 · IRP</span>
+        <span>퇴직금 이전: IRP</span>
+        <span>운용 자유도: 연금저축 우위</span>
+        <span class="is-accent">유동성 제약: IRP 주의</span>
+      </div>
+      <div class="pic26-brief-grid">
+        {PENSION_IRP_TOP_SUMMARY.map((item, index) => (
+          <article class={`pic26-brief-card ${index === 1 ? "is-accent" : ""}`}>
+            <p>{item.title}</p>
+            <strong>{item.conclusion}</strong>
+            <span>{item.description}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section pic26-kpi-section" id="summary">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교 포인트</p>
+        <h2>먼저 읽어야 할 숫자 대신 기준 4개</h2>
+        <p>이 페이지는 수익률 비교가 아니라 계좌 구조 비교입니다. 아래 네 줄만 잡아도 선택 기준이 선명해집니다.</p>
+      </div>
+      <div class="pic26-kpi-grid">
+        {comparisonHighlights.map((item, index) => (
+          <article class={`pic26-kpi-card ${index === 1 ? "is-accent" : index === 3 ? "is-warn" : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section pic26-table-section" id="comparison">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 비교표</p>
+        <h2>세액공제, 퇴직금, 운용 자유도, 인출 제약을 같은 줄에서 봅니다</h2>
+        <p>표 한 장으로 큰 차이를 먼저 읽고, 아래 카드 섹션에서 사용 상황별 맥락을 덧붙이면 판단이 쉬워집니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="pic26-compare-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>연금저축</th>
+              <th>IRP</th>
+              <th>연금보험</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PENSION_IRP_COMPARISON_ROWS.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                <td>{row.pensionSaving}</td>
+                <td>{row.irp}</td>
+                <td>{row.annuityInsurance}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section pic26-tax-section" id="tax-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">세액공제 설명</p>
+        <h2>절세만 보면 쉬워 보이지만, 실제 선택은 유동성과 유지 가능성까지 같이 봐야 합니다</h2>
+        <p>연금저축과 IRP의 차이는 세액공제 가능 여부보다도 이후 운용과 인출 제약에서 체감 차이가 크게 납니다.</p>
+      </div>
+      <div class="pic26-tax-callout">
+        <strong>한도 이해는 출발점이고, 실제 선택 기준은 그 다음입니다.</strong>
+        <p>
+          연금저축 단독, 연금저축 + IRP 조합, 소득 구간별 환급 체감은 모두 설명용 예시로 이해하는 편이
+          안전합니다. 결국 중요한 것은 내 현금흐름과 장기 유지 가능성입니다.
+        </p>
+      </div>
+      <div class="pic26-tax-grid">
+        {PENSION_IRP_TAX_GUIDE.map((item) => (
+          <article class="pic26-tax-card">
+            <p>{item.title}</p>
+            <strong>{item.point}</strong>
+            <span>{item.example}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section pic26-product-section" id="flexibility">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">운용 자유도 · 중도 인출</p>
+        <h2>좋은 점과 불편한 점을 같이 봐야 실제 선택에 가까워집니다</h2>
+        <p>상품별 장점만 읽으면 과대평가하기 쉽고, 제약만 읽으면 필요 이상으로 피하게 됩니다.</p>
+      </div>
+      <div class="pic26-product-grid">
+        {PENSION_IRP_PRODUCTS.map((product, index) => (
+          <article class={`pic26-product-card ${index === 1 ? "is-accent" : ""}`}>
+            <p class="pic26-product-card__name">{product.name}</p>
+            <strong>{product.summary}</strong>
+            <div class="pic26-product-block">
+              <span class="pic26-pill pic26-pill--good">좋은 점</span>
+              <ul>
+                {product.strengths.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+            <div class="pic26-product-block">
+              <span class="pic26-pill pic26-pill--limit">불편한 점</span>
+              <ul>
+                {product.weaknesses.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section pic26-withdraw-section" id="withdrawal">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수령 방식 · 세금</p>
+        <h2>퇴직금 이전과 연금 수령까지 생각하면 IRP의 역할이 더 분명해집니다</h2>
+        <p>이 리포트는 구조를 설명하는 단계이고, 실제 월 수령액과 기간은 계산기로 이어졌을 때 더 빠르게 잡힙니다.</p>
+      </div>
+      <div class="pic26-withdraw-box">
+        <strong>내 적립금 기준 월 수령액은 IRP 연금 계산기에서 바로 확인할 수 있습니다.</strong>
+        <p>퇴직금 이전 대상자라면 IRP 구조를 먼저 이해하고, 이후에는 계산기에서 적립금과 수령 기간을 넣어보는 흐름이 가장 실용적입니다.</p>
+        <div class="pic26-withdraw-links">
+          <a class="button button--primary" href={withBase("/tools/irp-pension-calculator/")}>IRP 연금 계산기 보기</a>
+          <a class="button button--secondary" href={withBase("/tools/national-pension-calculator/")}>국민연금 계산기 보기</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section pic26-scenario-section" id="scenario">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상황별 추천</p>
+        <h2>같은 질문이라도 직장인 초보와 퇴직금 이전 대상자는 출발점이 다릅니다</h2>
+      </div>
+      <div class="pic26-scenario-grid">
+        {PENSION_IRP_SCENARIOS.map((item) => (
+          <article class="pic26-scenario-card">
+            <p class="pic26-scenario-card__title">{item.title}</p>
+            <strong>{item.target}</strong>
+            <p>{item.recommendation}</p>
+            <span>{item.caution}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section pic26-mistake-section" id="mistakes">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자주 하는 실수</p>
+        <h2>이 부분만 피해도 계좌 선택 오류를 꽤 줄일 수 있습니다</h2>
+      </div>
+      <div class="pic26-mistake-board">
+        <ul class="pic26-mistake-list">
+          {PENSION_IRP_MISTAKES.map((item) => <li>{item}</li>)}
+        </ul>
+        <article class="pic26-mistake-aside">
+          <p>먼저 고를 순서</p>
+          <strong>세액공제만 볼지, 퇴직금까지 볼지부터 정하세요.</strong>
+          <span>
+            연말정산 중심이면 연금저축부터, 퇴직금 이전 대상자면 IRP부터 보는 흐름이 보통 더 자연스럽습니다.
+            연금보험은 같은 절세 계좌가 아니라 별도 구조로 분리해서 읽는 편이 좋습니다.
+          </span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" id="calculator-link">
+      <div class="pic26-cta-panel">
+        <div>
+          <p class="pic26-cta-panel__eyebrow">계산기 연결</p>
+          <h2>비교 리포트 다음에는 내 적립금 기준 계산으로 이어가면 됩니다</h2>
+          <p>리포트는 구조를 이해하는 단계이고, 실제 예상 수령액과 부족분은 계산기로 이어졌을 때 훨씬 선명해집니다.</p>
+        </div>
+        <div class="pic26-cta-links">
+          <a class="button button--primary" href={withBase("/tools/irp-pension-calculator/")}>내 IRP 예상 수령액 계산하기</a>
+          <a class="button button--secondary" href={withBase("/tools/retirement/")}>은퇴 계산기 보기</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section pic26-related-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다음 액션</p>
+        <h2>비교만 보고 끝내지 말고 바로 계산기로 이어가면 좋습니다</h2>
+      </div>
+      <div class="pic26-related-grid">
+        {PENSION_IRP_RELATED_LINKS.map((item, index) => (
+          <a class={`pic26-related-card ${index === 0 ? "is-accent" : ""}`} href={withBase(item.href)}>
+            <p>{index === 0 ? "메인 계산기" : "관련 페이지"}</p>
+            <strong>{item.label}</strong>
+            <span>바로 이동</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" id="faq">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">FAQ</p>
+        <h2>연금저축과 IRP 비교에서 가장 많이 묻는 질문</h2>
+      </div>
+      <div class="pic26-faq-list">
+        {PENSION_IRP_FAQ.map((item, index) => (
+          <details class="pic26-faq-item" open={index === 0}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="연금저축 vs IRP 비교 2026 읽는 법"
+      intro={[
+        "이 리포트는 연금저축, IRP, 연금보험의 차이를 세액공제, 운용 자유도, 중도 인출, 퇴직금 이전, 연금 수령 방식 관점에서 한눈에 비교하기 위한 페이지입니다.",
+        "핵심은 세법 문구를 길게 설명하는 것이 아니라 사용자가 10초 안에 나는 어떤 계좌를 먼저 봐야 하는지 감을 잡게 만드는 데 있습니다.",
+      ]}
+      inputPoints={[
+        "절세 중심이면 연금저축을 기본 축으로 두고 IRP를 보완축으로 이해하는 흐름이 가장 쉽습니다.",
+        "퇴직금 이전 대상자라면 IRP의 역할과 인출 제약을 먼저 확인하는 편이 자연스럽습니다.",
+        "연금보험은 세액공제 계좌와 같은 상품으로 단순 비교하기보다 별도 구조로 보는 편이 안전합니다.",
+      ]}
+      criteria={[
+        "무조건, 확정, 보장 같은 단정 표현 대신 일반적으로, 상황에 따라, 설명용 예시라는 표현을 기준으로 읽는 편이 적절합니다.",
+        "세액공제 여부만으로 선택하지 말고 운용 자유도와 유동성 제약을 같이 봐야 실제 체감과 가깝습니다.",
+        "실제 적립금 기준 수령액 판단은 IRP 연금 계산기, 국민연금 계산기, 은퇴 계산기로 이어서 확인하는 편이 빠릅니다.",
+      ]}
+      faq={faqItems}
+      related={PENSION_IRP_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

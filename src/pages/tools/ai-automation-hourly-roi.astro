@@ -1,0 +1,280 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  AI_HOURLY_ROI_DEFAULT_STATE,
+  AI_HOURLY_ROI_FAQ,
+  AI_HOURLY_ROI_GUIDE_POINTS,
+  AI_HOURLY_ROI_META,
+  AI_HOURLY_ROI_MULTIPLIERS,
+  AI_HOURLY_ROI_PRESETS,
+  AI_HOURLY_ROI_RELATED_LINKS,
+} from "../../data/aiAutomationHourlyRoi";
+
+const pageTitle = `${AI_HOURLY_ROI_META.title} | 비교계산소`;
+const pageDescription = AI_HOURLY_ROI_META.subtitle;
+
+const webApplicationLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: AI_HOURLY_ROI_META.title,
+  description: pageDescription,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${AI_HOURLY_ROI_META.slug}/`,
+};
+
+const config = {
+  defaults: AI_HOURLY_ROI_DEFAULT_STATE,
+  presets: AI_HOURLY_ROI_PRESETS,
+  weeksPerMonth: AI_HOURLY_ROI_META.weeksPerMonth,
+};
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={webApplicationLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={AI_HOURLY_ROI_META.slug} pageClass="ai-hourly-roi-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="AI 생산성 계산기"
+        title={AI_HOURLY_ROI_META.title}
+        description={AI_HOURLY_ROI_META.subtitle}
+      />
+      <InfoNotice title="추정 계산 안내" lines={[AI_HOURLY_ROI_META.caution, `업데이트 기준: ${AI_HOURLY_ROI_META.updatedAt}`]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetAhrBtn" copyId="copyAhrLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <form id="aiHourlyRoiForm" class="calculator-form ahr-panel">
+        <div class="ahr-section__head">
+          <div>
+            <p class="ahr-section__eyebrow">빠른 프리셋</p>
+            <h2>대표 시나리오</h2>
+          </div>
+        </div>
+        <div class="ahr-preset-row">
+          {AI_HOURLY_ROI_PRESETS.map((preset) => (
+            <button class="ahr-preset-btn" type="button" data-ahr-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="ahr-section__head">
+          <div>
+            <p class="ahr-section__eyebrow">모드 선택</p>
+            <h2>개인 또는 팀</h2>
+          </div>
+        </div>
+        <div class="ahr-mode-row">
+          <label class="ahr-mode-card">
+            <input type="radio" name="ahrMode" value="personal" checked />
+            <strong>개인 기준</strong>
+            <span>내 월급과 내 절감 시간을 기준으로 시급 상승을 계산합니다.</span>
+          </label>
+          <label class="ahr-mode-card">
+            <input type="radio" name="ahrMode" value="team" />
+            <strong>팀 기준</strong>
+            <span>1인 기준 월급과 팀 인원 수를 함께 반영합니다.</span>
+          </label>
+        </div>
+
+        <div class="form-grid">
+          <label>
+            <span>월급 기준</span>
+            <div class="segmented-control">
+              <label>
+                <input type="radio" name="ahrSalaryMode" value="gross" checked />
+                <span>세전</span>
+              </label>
+              <label>
+                <input type="radio" name="ahrSalaryMode" value="net" />
+                <span>실수령</span>
+              </label>
+            </div>
+          </label>
+
+          <label>
+            <span>월급</span>
+            <input id="ahrMonthlySalary" type="number" min="0" step="10000" value={AI_HOURLY_ROI_DEFAULT_STATE.monthlySalary} />
+          </label>
+
+          <label>
+            <span>월 근로시간</span>
+            <input id="ahrMonthlyWorkHours" type="number" min="1" step="1" value={AI_HOURLY_ROI_DEFAULT_STATE.monthlyWorkHours} />
+          </label>
+
+          <label>
+            <span>주간 반복 업무 시간</span>
+            <input id="ahrWeeklyRepeatHours" type="number" min="0" step="0.5" value={AI_HOURLY_ROI_DEFAULT_STATE.weeklyRepeatHours} />
+          </label>
+
+          <label>
+            <span>주간 절감 시간</span>
+            <input id="ahrWeeklySavedHours" type="number" min="0" step="0.5" value={AI_HOURLY_ROI_DEFAULT_STATE.weeklySavedHours} />
+          </label>
+
+          <label>
+            <span>월 AI 도구 비용</span>
+            <input id="ahrMonthlyToolCost" type="number" min="0" step="1000" value={AI_HOURLY_ROI_DEFAULT_STATE.monthlyToolCost} />
+          </label>
+
+          <label>
+            <span>생산성 배수</span>
+            <select id="ahrMultiplier">
+              {AI_HOURLY_ROI_MULTIPLIERS.map((item) => (
+                <option value={item.value} selected={item.value === AI_HOURLY_ROI_DEFAULT_STATE.multiplier}>
+                  {item.label} · {item.description}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label id="ahrUsersField" hidden>
+            <span>팀 인원 수</span>
+            <input id="ahrUsers" type="number" min="1" step="1" value={AI_HOURLY_ROI_DEFAULT_STATE.users} />
+          </label>
+
+          <label>
+            <span>연간 적용 개월 수</span>
+            <input
+              id="ahrAnnualWorkingMonths"
+              type="number"
+              min="1"
+              max="12"
+              step="1"
+              value={AI_HOURLY_ROI_DEFAULT_STATE.annualWorkingMonths}
+            />
+          </label>
+        </div>
+      </form>
+    </Fragment>
+
+    <section class="ahr-section">
+      <div class="ahr-section__head">
+        <div>
+          <p class="ahr-section__eyebrow">핵심 결과</p>
+          <h2>도입 후 체감 시급과 투자 회수</h2>
+        </div>
+      </div>
+
+      <div class="ahr-kpi-grid">
+        <article class="ahr-kpi-card ahr-kpi-card--main">
+          <p class="ahr-kpi-card__label">AI 도입 후 체감 시급</p>
+          <p class="ahr-kpi-card__value" id="ahrAfterHourly">0원</p>
+          <p class="ahr-kpi-card__sub" id="ahrAfterHourlySub">현재 대비 변화</p>
+        </article>
+
+        <article class="ahr-kpi-card">
+          <p class="ahr-kpi-card__label">현재 기준 시급</p>
+          <p class="ahr-kpi-card__value" id="ahrCurrentHourly">0원</p>
+        </article>
+
+        <article class="ahr-kpi-card">
+          <p class="ahr-kpi-card__label">월 순효과</p>
+          <p class="ahr-kpi-card__value" id="ahrMonthlyEffect">0원</p>
+          <p class="ahr-kpi-card__sub" id="ahrMonthlyEffectSub">월 절감 가치</p>
+        </article>
+
+        <article class="ahr-kpi-card">
+          <p class="ahr-kpi-card__label">연간 순효과</p>
+          <p class="ahr-kpi-card__value" id="ahrAnnualEffect">0원</p>
+          <p class="ahr-kpi-card__sub" id="ahrAnnualEffectSub">연 누적 추정</p>
+        </article>
+
+        <article class="ahr-kpi-card">
+          <p class="ahr-kpi-card__label">투자 회수 기간</p>
+          <p class="ahr-kpi-card__value" id="ahrPayback">0개월</p>
+          <p class="ahr-kpi-card__sub" id="ahrPaybackSub">월 절감 가치 기준</p>
+        </article>
+      </div>
+
+      <div class="ahr-result-box" id="ahrResultBox" data-tone="mid">
+        <h3 id="ahrResultTitle">도입 효과를 계산 중입니다.</h3>
+        <p id="ahrResultText">입력값에 맞춰 예상 ROI를 분석합니다.</p>
+      </div>
+    </section>
+
+    <section class="ahr-section">
+      <div class="ahr-section__head">
+        <div>
+          <p class="ahr-section__eyebrow">상세 테이블</p>
+          <h2>입력값 해석</h2>
+        </div>
+      </div>
+      <div class="ahr-table-wrap">
+        <table class="ahr-table">
+          <tbody id="ahrSummaryBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ahr-section">
+      <div class="ahr-section__head">
+        <div>
+          <p class="ahr-section__eyebrow">민감도 분석</p>
+          <h2>절감 시간별 ROI 변화</h2>
+        </div>
+      </div>
+      <div class="ahr-table-wrap">
+        <table class="ahr-table">
+          <thead>
+            <tr>
+              <th scope="col">시나리오</th>
+              <th scope="col">월 순효과</th>
+              <th scope="col">회수 기간</th>
+            </tr>
+          </thead>
+          <tbody id="ahrScenarioBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ahr-section">
+      <div class="ahr-section__head">
+        <div>
+          <p class="ahr-section__eyebrow">입력 가이드</p>
+          <h2>보수적으로 넣을수록 현실에 가깝습니다.</h2>
+        </div>
+      </div>
+      <ul class="ahr-guide-list">
+        {AI_HOURLY_ROI_GUIDE_POINTS.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="AI 업무 자동화 ROI를 시급 기준으로 보는 이유"
+        intro={[
+          "AI 도구 도입은 단순한 구독료 비교보다 절감 시간과 처리량 증가를 함께 봐야 현실적인 판단이 됩니다.",
+          "이 계산기는 월급, 반복 업무 시간, 절감 시간, 생산성 배수를 바탕으로 체감 시급 상승과 투자 회수 기간을 추정합니다.",
+        ]}
+        inputPoints={[
+          "월급은 세전 또는 실수령 기준 중 하나로 통일해 입력합니다.",
+          "반복 업무 시간과 절감 시간은 주간 기준으로 보수적으로 입력합니다.",
+          "팀 도입 검토라면 1인 기준 월급과 팀 인원 수를 함께 반영합니다.",
+        ]}
+        criteria={[
+          "월 순효과가 0원보다 크면 비용보다 절감 가치가 큰 구조입니다.",
+          "회수 기간이 1개월 이하라면 다음 결제 주기 전 비용 회수가 가능한 수준으로 볼 수 있습니다.",
+          "생산성 배수를 높게 잡을수록 결과가 커지므로 기본값 1.2배부터 검토하는 편이 안전합니다.",
+        ]}
+        faq={AI_HOURLY_ROI_FAQ}
+        related={AI_HOURLY_ROI_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="aiHourlyRoiConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src="/scripts/ai-automation-hourly-roi.js"></script>
+</BaseLayout>
