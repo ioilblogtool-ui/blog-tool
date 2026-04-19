@@ -1,0 +1,323 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CYG_DEFAULT_INPUT,
+  CYG_FAQ,
+  CYG_NEXT_CONTENT,
+  CYG_PAGE_META,
+  CYG_REGION_REF_LINES,
+  CYG_RELATED_LINKS,
+} from "../../data/aptCheonyakGajum";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaults: CYG_DEFAULT_INPUT,
+  regionRefLines: CYG_REGION_REF_LINES,
+};
+
+const faqSchema = CYG_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title={CYG_PAGE_META.title}
+  description={CYG_PAGE_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "아파트 청약 가점 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: CYG_PAGE_META.description,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/apt-cheonyak-gajum-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="apt-cheonyak-gajum-calculator" pageClass="cyg-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow={CYG_PAGE_META.eyebrow}
+        title={CYG_PAGE_META.heroTitle}
+        description={CYG_PAGE_META.heroDescription}
+      />
+      <InfoNotice
+        lines={[
+          "이 계산기는 일반적인 청약 가점 구조(무주택기간 32점·부양가족수 35점·청약통장 가입기간 17점)를 기준으로 산출한 참고용 결과입니다.",
+          "실제 청약 자격, 가점 인정 여부, 당첨 가능성은 모집공고일 기준 공급유형·지역요건·세대구성에 따라 달라질 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetCygBtn" copyId="copyCygLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">무주택기간</p>
+            <h2 class="panel__title">무주택기간 입력</h2>
+          </div>
+          <p class="panel-heading__summary">모집공고일 기준 본인 및 세대원 전원이 주택을 소유하지 않은 기간입니다.</p>
+        </div>
+
+        <div class="cyg-input-group">
+          <div class="cyg-slider-row">
+            <input
+              type="range"
+              id="cygHomelessSlider"
+              min="0"
+              max="30"
+              step="1"
+              value={CYG_DEFAULT_INPUT.homelessYears}
+              class="cyg-slider"
+            />
+            <div class="cyg-number-wrap">
+              <input
+                type="number"
+                id="cygHomelessYears"
+                min="0"
+                max="30"
+                value={CYG_DEFAULT_INPUT.homelessYears}
+                class="cyg-number-input"
+              />
+              <span class="cyg-unit">년</span>
+            </div>
+          </div>
+          <p class="cyg-score-preview" id="cygHomelessScorePreview">
+            → <strong id="cygHomelessScoreVal">10</strong>점 / 32점
+          </p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">부양가족 수</p>
+            <h2 class="panel__title">부양가족 수 입력</h2>
+          </div>
+          <p class="panel-heading__summary">배우자, 직계존속, 직계비속 중 인정 가능한 인원입니다 (본인 제외).</p>
+        </div>
+
+        <div class="cyg-input-group">
+          <div class="cyg-stepper-row">
+            <button type="button" class="cyg-stepper-btn" id="cygDepMinus" aria-label="부양가족 줄이기">−</button>
+            <span class="cyg-stepper-value" id="cygDepCount">{CYG_DEFAULT_INPUT.dependentsCount}</span>
+            <span class="cyg-unit">명</span>
+            <button type="button" class="cyg-stepper-btn" id="cygDepPlus" aria-label="부양가족 늘리기">+</button>
+          </div>
+          <p class="cyg-score-preview" id="cygDepScorePreview">
+            → <strong id="cygDepScoreVal">15</strong>점 / 35점
+          </p>
+        </div>
+
+        <details class="cyg-accordion">
+          <summary class="cyg-accordion-summary">부양가족 인정 기준 확인하기</summary>
+          <div class="cyg-accordion-body">
+            <p><strong>인정 대표 사례</strong></p>
+            <ul>
+              <li>배우자 (세대주·세대원 모두 가능)</li>
+              <li>직계존속 (부모·조부모 등) — 동일 주민등록 3년 이상 요건 확인 필요</li>
+              <li>직계비속 (자녀 등) — 미혼인 경우 인정</li>
+            </ul>
+            <p><strong>주의 사항</strong></p>
+            <ul>
+              <li>동일 세대 구성·주민등록 여부 필수 확인</li>
+              <li>배우자 보유 이력 있을 경우 세대원 전원 무주택 요건에 영향 가능</li>
+              <li>2025년 개정 이후 부양가족 요건 증빙(건강보험 요양급여 내역 등)이 강화됨</li>
+              <li>공급유형별 세부 기준 차이 존재 — 반드시 모집공고문 기준 확인</li>
+            </ul>
+          </div>
+        </details>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">청약통장 가입기간</p>
+            <h2 class="panel__title">청약통장 가입기간 입력</h2>
+          </div>
+          <p class="panel-heading__summary">주택청약종합저축 가입일 기준, 모집공고일까지 계속 유지한 기간입니다.</p>
+        </div>
+
+        <div class="cyg-input-group">
+          <div class="cyg-number-wrap">
+            <input
+              type="number"
+              id="cygSubYears"
+              min="0"
+              max="20"
+              value={CYG_DEFAULT_INPUT.subscriptionYears}
+              class="cyg-number-input"
+            />
+            <span class="cyg-unit">년</span>
+          </div>
+          <p class="cyg-score-preview" id="cygSubScorePreview">
+            → <strong id="cygSubScoreVal">6</strong>점 / 17점
+          </p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">세대주 여부</p>
+            <h2 class="panel__title">세대주 여부 확인</h2>
+          </div>
+          <p class="panel-heading__summary">공급유형에 따라 세대주 요건이 붙는 경우가 있습니다.</p>
+        </div>
+
+        <div class="cyg-input-group">
+          <div class="cyg-toggle-row">
+            <label class="cyg-toggle">
+              <input type="checkbox" id="cygHouseholder" checked={CYG_DEFAULT_INPUT.isHouseholder} />
+              <span class="cyg-toggle-track"></span>
+            </label>
+            <span class="cyg-toggle-label" id="cygHouseholderLabel">
+              {CYG_DEFAULT_INPUT.isHouseholder ? "세대주" : "세대원"}
+            </span>
+          </div>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="cyg-section">
+      <div class="cyg-section__head">
+        <p class="cyg-section__eyebrow">핵심 결과</p>
+        <h2>총 가점과 항목별 점수를 바로 확인합니다</h2>
+        <p class="cyg-section__sub">조건을 바꾸면 점수가 즉시 갱신됩니다.</p>
+      </div>
+
+      <div class="cyg-result-cards">
+        <article class="cyg-result-card cyg-result-card--main">
+          <p class="cyg-result-label">총 가점</p>
+          <strong class="cyg-result-value" id="cygTotalScore">31</strong>
+          <p class="cyg-result-note">/ 84점 만점</p>
+          <span class="cyg-score-badge" id="cygScoreBadge">보통</span>
+        </article>
+        <article class="cyg-result-card">
+          <p class="cyg-result-label">무주택기간 점수</p>
+          <strong class="cyg-result-value" id="cygHomelessScore">10</strong>
+          <p class="cyg-result-note">/ 32점</p>
+        </article>
+        <article class="cyg-result-card">
+          <p class="cyg-result-label">부양가족 점수</p>
+          <strong class="cyg-result-value" id="cygDepScore">15</strong>
+          <p class="cyg-result-note">/ 35점</p>
+        </article>
+        <article class="cyg-result-card">
+          <p class="cyg-result-label">청약통장 점수</p>
+          <strong class="cyg-result-value" id="cygSubScore">6</strong>
+          <p class="cyg-result-note">/ 17점</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="cyg-section">
+      <div class="cyg-section__head">
+        <p class="cyg-section__eyebrow">지역 참고선 비교</p>
+        <h2>내 점수와 지역별 참고 당첨선을 비교합니다</h2>
+        <p class="cyg-section__sub cyg-section__sub--note">최근 주요 분양 사례 기준 참고선 · 공급유형·단지별 편차 있음</p>
+      </div>
+      <article class="panel">
+        <div class="cyg-chart-wrap">
+          <canvas id="cygRegionChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="cyg-section">
+      <div class="cyg-section__head">
+        <p class="cyg-section__eyebrow">전략 체크</p>
+        <h2>내 점수 기반 전략 포인트</h2>
+      </div>
+      <article class="cyg-strategy-box" id="cygStrategyBox">
+        <ul class="cyg-strategy-list" id="cygStrategyList">
+          <li>조건을 입력하면 전략 포인트가 갱신됩니다.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="content-section cyg-next-section">
+      <div class="panel cyg-next-main">
+        <div class="cyg-next-main__badges">
+          {CYG_NEXT_CONTENT.badges.map((badge) => (
+            <span class="cyg-next-main__badge">{badge}</span>
+          ))}
+        </div>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{CYG_NEXT_CONTENT.eyebrow}</p>
+            <h2 class="panel__title">{CYG_NEXT_CONTENT.title}</h2>
+          </div>
+          <p class="panel-heading__summary">{CYG_NEXT_CONTENT.desc}</p>
+        </div>
+        <a href={withBase(CYG_NEXT_CONTENT.href)} class="button button--secondary">{CYG_NEXT_CONTENT.cta}</a>
+      </div>
+
+      <div class="cyg-next-grid">
+        {CYG_NEXT_CONTENT.sub.map((item) => (
+          <a href={withBase(item.href)} class="cyg-next-card">
+            <div class="cyg-next-card__badges">
+              {item.badges.map((badge) => (
+                <span class="cyg-next-card__badge">{badge}</span>
+              ))}
+            </div>
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="청약 가점 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 국토교통부 민영주택 일반공급 가점제 기준(무주택기간 32점·부양가족수 35점·청약통장 가입기간 17점, 총 84점)을 바탕으로 내 청약 가점을 빠르게 확인하고, 서울·수도권·지방 참고 당첨선과 비교하는 참고용 도구입니다.",
+          "단순 점수 계산에 그치지 않고 항목별 점수 분석과 전략 포인트를 함께 제공해, 어느 항목에서 점수를 더 쌓을 수 있는지 방향을 잡는 데 도움이 됩니다.",
+        ]}
+        inputPoints={[
+          "무주택기간은 모집공고일 기준 본인 및 세대원 전원의 무주택 기간을 슬라이더로 입력합니다.",
+          "부양가족 수는 배우자·직계존속·직계비속 중 실제 인정 가능한 인원을 스테퍼로 입력합니다. 인정 기준은 아코디언 항목에서 확인할 수 있습니다.",
+          "청약통장 가입기간은 주택청약종합저축 가입일부터 모집공고일까지 유지한 기간을 년 단위로 입력합니다.",
+        ]}
+        criteria={[
+          "무주택기간 점수는 1년 미만 2점부터 시작해 1년 단위로 2점씩 올라가며, 15년 이상이면 최대 32점입니다.",
+          "부양가족 점수는 0명 5점부터 시작해 1명 추가당 5점씩 올라가며, 6명 이상이면 최대 35점입니다.",
+          "청약통장 가입기간 점수는 1년 미만 2점부터 시작해 1년 단위로 1점씩 올라가며, 15년 이상이면 최대 17점입니다.",
+          "지역 참고선은 최근 주요 분양 사례 기준 참고값이며, 실제 당첨선은 단지·공급유형·경쟁률에 따라 크게 달라질 수 있습니다.",
+        ]}
+        faq={CYG_FAQ}
+        related={CYG_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="cygConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/apt-cheonyak-gajum-calculator.js")}></script>
+</BaseLayout>

@@ -1,0 +1,416 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  seoulAptCheonyakCutline2026,
+  getRecommendedStrategy,
+} from "../../data/seoulAptCheonyakCutline2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = seoulAptCheonyakCutline2026;
+const defaultRecommendation = getRecommendedStrategy(report.simulationDefaults);
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+const sourceTypeLabel = {
+  official: "공식",
+  news: "기사",
+  reference: "참고",
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: report.meta.title,
+  description: report.meta.subtitle,
+  inLanguage: "ko-KR",
+  dateModified: "2026-04-19",
+  mainEntityOfPage: `https://bigyocalc.com/reports/${report.meta.slug}/`,
+  publisher: {
+    "@type": "Organization",
+    name: "비교계산소",
+    url: "https://bigyocalc.com",
+  },
+};
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.subtitle} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sac-page">
+    <CalculatorHero
+      eyebrow="서울 부동산 리포트"
+      title="2026 서울 아파트 청약 당첨 가점 커트라인"
+      description="서울 청약 커트라인을 자치구, 면적, 공급유형, 실제 단지 사례 기준으로 나눠 비교합니다. 내 점수대에서 일반공급, 추첨제, 특별공급 중 어디를 봐야 하는지도 함께 정리합니다."
+    />
+
+    <InfoNotice
+      title="청약 커트라인 해석 기준"
+      lines={[
+        "청약 가점 구조는 공개 제도 기준을 바탕으로 정리한 참고 정보입니다.",
+        "단지별 당첨 가점은 모집공고, 공급유형, 주택형, 특별공급 여부에 따라 달라집니다.",
+        "예상 커트라인은 최근 인근 사례와 면적·입지·분양가 조건을 바탕으로 한 시뮬레이션입니다.",
+        "최종 청약 판단은 반드시 해당 단지 모집공고문과 청약홈 기준으로 확인해야 합니다.",
+      ]}
+    />
+
+    <section class="content-section sac-brief-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">Editor&apos;s Brief</p>
+        <h2>서울 청약은 평균 점수 하나로 판단하면 위험합니다</h2>
+        <p>{report.heroSummary}</p>
+      </div>
+      <div class="sac-chip-row">
+        <span>가점제 84점 만점</span>
+        <span>면적별 커트라인 편차</span>
+        <span class="is-warn">예상값은 시뮬레이션 표기</span>
+        <span class="is-accent">특공·추첨제 병행 확인</span>
+      </div>
+      <div class="sac-brief-grid">
+        <article class="sac-brief-card">
+          <p>가장 먼저 볼 기준</p>
+          <strong>지역 + 면적 + 공급유형</strong>
+          <span>서울 평균 커트라인보다 세부 조건 조합이 더 중요합니다.</span>
+        </article>
+        <article class="sac-brief-card is-warn">
+          <p>높은 경쟁 구간</p>
+          <strong>강남권 59㎡·84㎡</strong>
+          <span>상한제 기대와 희소 입지가 겹치면 만점권 사례도 나옵니다.</span>
+        </article>
+        <article class="sac-brief-card is-accent">
+          <p>낮은 가점의 대안</p>
+          <strong>대형·추첨제·특공</strong>
+          <span>가점만 보지 말고 공급 트랙을 나눠 전략을 짜야 합니다.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sac-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>청약 전에 먼저 봐야 할 숫자 4개</h2>
+      </div>
+      <div class="sac-kpi-grid">
+        {report.kpis.map((item) => (
+          <article class={`sac-kpi-card ${item.tone ? `is-${item.tone}` : ""}`}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sac-score-rule-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">84점 구조</p>
+        <h2>무주택기간, 부양가족, 청약통장 가입기간이 전부입니다</h2>
+        <p>가점제 총점은 84점입니다. 항목별 점수를 먼저 나눠 봐야 내 점수가 왜 낮거나 높은지 설명됩니다.</p>
+      </div>
+      <div class="sac-table-wrap">
+        <table class="sac-table sac-score-rule-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>최대점수</th>
+              <th>만점 조건</th>
+              <th>주의할 점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.scoreRules.map((item) => (
+              <tr>
+                <td><strong>{item.category}</strong></td>
+                <td>{item.maxScore}점</td>
+                <td>{item.fullScoreCondition}</td>
+                <td>{item.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section sac-case-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">실제 사례</p>
+        <h2>최근 당첨 가점 사례는 최저·평균·최고점을 나눠 봐야 합니다</h2>
+        <p>아래 표는 실제 사례와 참고 사례를 분리해 보여줍니다. 평균값이 없는 경우에는 공개된 최저점 중심으로만 해석합니다.</p>
+      </div>
+      <div class="sac-control-row" id="sacCaseFilters">
+        <button type="button" class="sac-chip-button is-active" data-case-filter="all">전체</button>
+        <button type="button" class="sac-chip-button" data-case-filter="under60">59㎡ 이하</button>
+        <button type="button" class="sac-chip-button" data-case-filter="eightyFour">84㎡</button>
+        <button type="button" class="sac-chip-button" data-case-filter="large">대형</button>
+      </div>
+      <div class="sac-table-wrap">
+        <table class="sac-table sac-case-table">
+          <thead>
+            <tr>
+              <th>단지</th>
+              <th>자치구</th>
+              <th>시점</th>
+              <th>주택형</th>
+              <th>최저</th>
+              <th>평균</th>
+              <th>최고</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody id="sacCaseTableBody">
+            {report.actualCases.map((item) => (
+              <tr data-area={item.areaBand}>
+                <td>
+                  <a href={item.sourceHref} target="_blank" rel="noopener noreferrer">{item.complexName}</a>
+                  <span class="sac-badge">{item.badge}</span>
+                </td>
+                <td>{item.district}</td>
+                <td>{item.announcedAt}</td>
+                <td>{item.areaLabel}</td>
+                <td>{item.minScore}점</td>
+                <td>{item.avgScore ? `${item.avgScore}점` : "공개값 없음"}</td>
+                <td>{item.maxScore ? `${item.maxScore}점` : "공개값 없음"}</td>
+                <td>{item.interpretation}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section sac-region-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역별 예상 구간</p>
+        <h2>강남3구와 비강남은 같은 서울이어도 점수 해석이 다릅니다</h2>
+        <p>지역별 점수 구간은 실제 사례와 단지 성격을 바탕으로 한 참고 구간입니다. 카드 선택 시 전략 도우미의 선호 지역도 함께 바뀝니다.</p>
+      </div>
+      <div class="sac-region-grid">
+        {report.regionCutlines.map((item) => (
+          <button
+            type="button"
+            class={`sac-region-card ${item.key === report.simulationDefaults.regionGroup ? "is-active" : ""} is-${item.difficulty === "매우 높음" ? "hard" : item.difficulty === "높음" ? "high" : item.difficulty === "낮음" ? "low" : "mid"}`}
+            data-region={item.key}
+          >
+            <span>{item.badge}</span>
+            <strong>{item.label}</strong>
+            <b>{item.minGuide}~{item.maxGuide}점</b>
+            <small>{item.districts.join(" · ")}</small>
+            <p>{item.summary}</p>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sac-area-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">면적별 차이</p>
+        <h2>59㎡, 84㎡, 대형 평형은 커트라인이 다르게 움직입니다</h2>
+      </div>
+      <div class="sac-area-grid">
+        {report.areaCutlines.map((item) => (
+          <article class="sac-area-card">
+            <p>{item.label}</p>
+            <strong>{item.scoreGuide}</strong>
+            <span>{item.lotterySignal}</span>
+            <p>{item.competitionPattern}</p>
+            <small>{item.recommendedFor}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sac-score-band-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">점수대별 전략</p>
+        <h2>40점대, 50점대, 60점대, 70점대 이상은 접근법이 다릅니다</h2>
+      </div>
+      <div class="sac-score-layout">
+        <div class="sac-tab-column" id="sacScoreTabs">
+          {report.scoreBandStrategies.map((item) => (
+            <button
+              type="button"
+              class={`sac-score-tab ${item.key === "fifties" ? "is-active" : ""}`}
+              data-score-band={item.key}
+            >
+              <strong>{item.label}</strong>
+              <span>{item.possibleZone}</span>
+            </button>
+          ))}
+        </div>
+        <article class="sac-strategy-panel">
+          <p class="sac-panel-eyebrow" id="sacBandLabel">{report.scoreBandStrategies[1].label}</p>
+          <h3 id="sacBandZone">{report.scoreBandStrategies[1].possibleZone}</h3>
+          <dl>
+            <div>
+              <dt>우선 전략</dt>
+              <dd id="sacBandStrategy">{report.scoreBandStrategies[1].mainStrategy}</dd>
+            </div>
+            <div>
+              <dt>피해야 할 접근</dt>
+              <dd id="sacBandAvoid">{report.scoreBandStrategies[1].avoid}</dd>
+            </div>
+          </dl>
+          <a id="sacBandCta" href={withBase(report.scoreBandStrategies[1].ctaHref)}>{report.scoreBandStrategies[1].ctaLabel}</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sac-simulator-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">내 점수 전략 도우미</p>
+        <h2>점수, 면적, 지역, 공급유형을 넣고 방향을 확인하세요</h2>
+        <p>당첨 확률 계산기가 아니라 전략 방향 안내입니다. 결과는 모집공고문 확인 전 참고용으로만 읽어야 합니다.</p>
+      </div>
+      <div class="sac-simulator-panel">
+        <form class="sac-simulator-form" id="sacSimulatorForm">
+          <label>
+            <span>청약 가점</span>
+            <input id="sacScoreInput" type="number" min="0" max="84" value={report.simulationDefaults.score} inputmode="numeric" />
+          </label>
+          <label>
+            <span>희망 면적</span>
+            <select id="sacAreaSelect">
+              {report.areaCutlines.map((item) => (
+                <option value={item.key} selected={item.key === report.simulationDefaults.areaBand}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>선호 지역</span>
+            <select id="sacRegionSelect">
+              {report.regionCutlines.map((item) => (
+                <option value={item.key} selected={item.key === report.simulationDefaults.regionGroup}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>공급유형</span>
+            <select id="sacSupplySelect">
+              {report.supplyStrategies.map((item) => (
+                <option value={item.key} selected={item.key === report.simulationDefaults.supplyType}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+        </form>
+        <article class="sac-result-card" aria-live="polite">
+          <p class="sac-panel-eyebrow">결과 요약</p>
+          <h3 id="sacResultSignal">{defaultRecommendation.signal}</h3>
+          <p id="sacResultSummary">{defaultRecommendation.summary}</p>
+          <div class="sac-result-metrics">
+            <span id="sacResultRegion">지역 기준 {defaultRecommendation.region.representativeScore}점</span>
+            <span id="sacResultArea">면적 {defaultRecommendation.area.label}</span>
+            <span id="sacResultSupply">{defaultRecommendation.supply.label}</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sac-supply-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공급유형 비교</p>
+        <h2>일반공급만 보지 말고 특공과 추첨제를 같이 보세요</h2>
+      </div>
+      <div class="sac-supply-grid">
+        {report.supplyStrategies.map((item) => (
+          <article class="sac-supply-card">
+            <p>{item.label}</p>
+            <strong>{item.fitUser}</strong>
+            <span>{item.advantage}</span>
+            <small>{item.caution}</small>
+            <em>{item.nextAction}</em>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sac-future-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2026 예정 단지</p>
+        <h2>예상 커트라인은 반드시 예상값으로만 읽어야 합니다</h2>
+      </div>
+      <div class="sac-future-grid">
+        {report.futureComplexEstimates.map((item) => (
+          <article class="sac-future-card">
+            <span>{item.badge}</span>
+            <p>{item.district} · {item.expectedMonth}</p>
+            <strong>{item.complexName}</strong>
+            <b>{item.expectedScoreRange}</b>
+            <small>{item.areaHint}</small>
+            <p>{item.basis}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sac-roadmap-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">가점 상승 로드맵</p>
+        <h2>점수는 오르지만, 시장 난이도도 같이 바뀝니다</h2>
+      </div>
+      <div class="sac-roadmap">
+        {report.roadmaps.map((item) => (
+          <article class="sac-roadmap-item">
+            <span>{item.label}</span>
+            <strong>{item.scoreSignal}</strong>
+            <p>{item.action}</p>
+            <small>{item.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sac-source-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처와 다음 이동</p>
+        <h2>공식 기준과 관련 계산기로 이어서 확인하세요</h2>
+      </div>
+      <div class="sac-source-grid">
+        <article class="sac-source-panel">
+          <h3>참고 출처</h3>
+          <div class="sac-link-list">
+            {report.sourceLinks.map((item) => (
+              <a href={item.href} target="_blank" rel="noopener noreferrer">
+                <span>{sourceTypeLabel[item.type]}</span>
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </article>
+        <article class="sac-source-panel">
+          <h3>관련 계산기·리포트</h3>
+          <div class="sac-related-grid">
+            {report.relatedLinks.map((item) => (
+              <a href={withBase(item.href)}>
+                <strong>{item.label}</strong>
+                <span>{item.description}</span>
+              </a>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="서울 청약 커트라인 리포트 읽는 법"
+      intro={[
+        "이 리포트는 서울 청약 당첨선을 하나의 평균값으로 보지 않고, 지역·면적·공급유형·실제 사례로 나눠 읽도록 만든 페이지입니다.",
+        "청약 가점이 낮다고 바로 포기하거나, 높은 점수라고 안심하는 방식 모두 위험합니다. 단지별 모집공고와 추첨제·특별공급 조건을 함께 봐야 합니다.",
+      ]}
+      criteria={[
+        "청약 가점제는 무주택기간 32점, 부양가족 수 35점, 청약통장 가입기간 17점의 84점 체계입니다.",
+        "실제 사례는 기사와 공개 자료에서 확인 가능한 최저·평균·최고 가점을 분리해 표시합니다.",
+        "지역별·면적별 커트라인은 예상 또는 시뮬레이션 값이므로 실제 당첨 가능성을 보장하지 않습니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script id="seoulAptCheonyakCutline2026Data" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script type="module" src={withBase("/scripts/2026-seoul-apt-cheonyak-cutline.js")}></script>
+</BaseLayout>

@@ -1,0 +1,294 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  IRP_DEFAULT_INPUT,
+  IRP_FAQ,
+  IRP_GUIDE_POINTS,
+  IRP_PRESETS,
+  IRP_RELATED_LINKS,
+  IRP_RETURN_PRESETS,
+  IRP_RULES,
+} from "../../data/irpPensionCalculator";
+
+const faqSchema = IRP_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="IRP 연금 계산기 2026 | 은퇴 적립금·월 연금 수령 추정"
+  description="현재 IRP·DC 적립금과 월 추가 납입액, 기대 수익률을 입력하면 은퇴 시점 예상 적립금과 월 연금 수령액, 일시금 비교를 한 번에 확인할 수 있습니다."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "IRP 연금 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description:
+      "IRP와 DC 적립금, 월 납입액, 기대 수익률을 기준으로 은퇴 시점 예상 적립금과 월 연금 수령액을 비교하는 계산기",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/irp-pension-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="irp-pension-calculator" pageClass="ipc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="은퇴연금 계산기"
+        title="IRP 적립금과 월 연금 수령액을 한 번에 계산합니다"
+        description="현재 IRP·DC 적립금, 월 추가 납입액, 기대 수익률을 입력하면 은퇴 시점 예상 적립금과 연금 수령·일시금 비교를 바로 확인할 수 있습니다."
+      />
+      <InfoNotice
+        title="안내"
+        lines={[
+          "이 계산기는 공식 확정 금액이 아닌 추정 계산기입니다.",
+          "세액공제, 세금, 수수료, 실제 상품별 수익률 차이는 반영하지 않았습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetIpcBtn" copyId="copyIpcLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel ipc-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력 조건</p>
+            <h2 class="panel__title">IRP 적립 시나리오 설정</h2>
+          </div>
+          <p class="panel-heading__summary">기본 시나리오를 고른 뒤 현재 적립금과 월 납입액을 조정하면 됩니다.</p>
+        </div>
+
+        <div class="ipc-preset-row">
+          {IRP_PRESETS.map((preset) => (
+            <button class="ipc-preset-btn" type="button" data-ipc-preset={preset.id}>{preset.label}</button>
+          ))}
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>현재 나이</span>
+            <input id="ipcCurrentAge" type="number" min="20" max="64" value={IRP_DEFAULT_INPUT.currentAge} />
+          </label>
+
+          <label class="field">
+            <span>은퇴 예정 나이</span>
+            <input id="ipcRetireAge" type="number" min="45" max="75" value={IRP_DEFAULT_INPUT.retireAge} />
+          </label>
+
+          <label class="field">
+            <span>현재 IRP 적립금</span>
+            <input id="ipcCurrentIrp" type="text" inputmode="numeric" data-currency="true" value={IRP_DEFAULT_INPUT.currentIrpBalance} />
+          </label>
+
+          <label class="field">
+            <span>현재 DC/퇴직연금 적립금</span>
+            <input id="ipcCurrentDc" type="text" inputmode="numeric" data-currency="true" value={IRP_DEFAULT_INPUT.currentDcBalance} />
+          </label>
+
+          <label class="field">
+            <span>월 추가 납입액</span>
+            <input id="ipcMonthlyContribution" type="text" inputmode="numeric" data-currency="true" value={IRP_DEFAULT_INPUT.monthlyContribution} />
+          </label>
+
+          <label class="field">
+            <span>기대 수익률</span>
+            <input id="ipcAnnualReturn" type="number" min="0" max="12" step="0.1" value={IRP_DEFAULT_INPUT.annualReturnRate * 100} />
+            <div class="ipc-return-row">
+              {IRP_RETURN_PRESETS.map((item) => (
+                <button class="ipc-return-btn" type="button" data-ipc-return={item.value}>{item.label}</button>
+              ))}
+            </div>
+          </label>
+
+          <div class="field field-span-full">
+            <span class="field__label">수령 방식</span>
+            <div class="ipc-mode-row">
+              <label class="ipc-mode-card">
+                <input type="radio" name="ipcPayoutMode" value="annuity" checked />
+                <strong>연금 수령</strong>
+                <span>월 생활비 흐름 중심으로 나눠 받기</span>
+              </label>
+              <label class="ipc-mode-card">
+                <input type="radio" name="ipcPayoutMode" value="lump-sum" />
+                <strong>일시금 비교</strong>
+                <span>은퇴 시점 목돈 활용 가능성 같이 보기</span>
+              </label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>연금 수령 시작 나이</span>
+            <input id="ipcAnnuityStartAge" type="number" min="55" max="80" value={IRP_DEFAULT_INPUT.annuityStartAge} />
+          </label>
+
+          <label class="field">
+            <span>연금 수령 기간</span>
+            <select id="ipcAnnuityPeriod">
+              <option value="10">10년</option>
+              <option value="15">15년</option>
+              <option value="20" selected>20년</option>
+              <option value="25">25년</option>
+              <option value="30">30년</option>
+            </select>
+          </label>
+
+          <div class="field field-span-full">
+            <label class="ipc-inline-check">
+              <input id="ipcPostRetirementReturn" type="checkbox" checked={IRP_DEFAULT_INPUT.applyPostRetirementReturn} />
+              <span>은퇴 후에도 일부 운용 수익률 반영</span>
+            </label>
+          </div>
+
+          <label class="field field-span-full" id="ipcPostRetirementWrap">
+            <span>은퇴 후 기대 수익률</span>
+            <input id="ipcPostRetirementReturnRate" type="number" min="0" max="10" step="0.1" value={IRP_DEFAULT_INPUT.postRetirementReturnRate * 100} />
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="ipc-section">
+      <div class="ipc-section__head">
+        <p class="ipc-section__eyebrow">핵심 결과</p>
+        <h2>은퇴 시점 적립금과 월 수령 추정액을 먼저 봅니다</h2>
+        <p class="ipc-section__sub">입력값이 바뀌면 미래 적립금, 총 원금, 예상 수익, 월 연금 추정액이 즉시 갱신됩니다.</p>
+      </div>
+
+      <div class="ipc-kpi-grid">
+        <article class="ipc-kpi-card">
+          <p>은퇴 시점 예상 적립금</p>
+          <strong id="ipcFutureValue">-</strong>
+        </article>
+        <article class="ipc-kpi-card">
+          <p>총 납입 원금</p>
+          <strong id="ipcPrincipal">-</strong>
+        </article>
+        <article class="ipc-kpi-card">
+          <p>예상 수익</p>
+          <strong id="ipcExpectedGain">-</strong>
+        </article>
+        <article class="ipc-kpi-card">
+          <p>월 예상 연금 수령액</p>
+          <strong id="ipcMonthlyAnnuity">-</strong>
+          <p id="ipcMonthlyAnnuitySub">-</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="ipc-section">
+      <div class="ipc-section__head">
+        <p class="ipc-section__eyebrow">수령 방식 비교</p>
+        <h2>연금 수령과 일시금의 차이를 테이블로 봅니다</h2>
+      </div>
+      <div class="ipc-table-wrap">
+        <table class="ipc-table">
+          <thead>
+            <tr>
+              <th scope="col">항목</th>
+              <th scope="col">연금 수령</th>
+              <th scope="col">일시금</th>
+            </tr>
+          </thead>
+          <tbody id="ipcComparisonBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ipc-section">
+      <div class="ipc-section__head">
+        <p class="ipc-section__eyebrow">민감도 분석</p>
+        <h2>납입액, 수익률, 은퇴 시점을 바꾸면 얼마나 달라지는지 확인합니다</h2>
+      </div>
+      <div class="ipc-table-wrap">
+        <table class="ipc-table">
+          <thead>
+            <tr>
+              <th scope="col">시나리오</th>
+              <th scope="col">예상 적립금</th>
+              <th scope="col">월 연금 추정</th>
+            </tr>
+          </thead>
+          <tbody id="ipcSensitivityBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ipc-section">
+      <div class="ipc-section__head">
+        <p class="ipc-section__eyebrow">해석 가이드</p>
+        <h2>결과를 볼 때 같이 체크할 포인트</h2>
+      </div>
+      <ul class="ipc-guide-list">
+        {IRP_GUIDE_POINTS.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="ipc-section">
+      <div class="ipc-section__head">
+        <p class="ipc-section__eyebrow">관련 계산기</p>
+        <h2>국민연금과 은퇴 생활비 계산까지 이어서 보기</h2>
+      </div>
+      <div class="ipc-link-grid">
+        {IRP_RELATED_LINKS.map((item) => (
+          <a class="ipc-link-card" href={item.href}>
+            <strong>{item.label}</strong>
+            <span>IRP 결과와 함께 보면 은퇴 전체 현금흐름을 더 입체적으로 볼 수 있습니다.</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="IRP 연금 계산기를 이렇게 보면 됩니다"
+        intro={[
+          "IRP는 세액공제와 노후 자산 축적이라는 두 가지 목적이 함께 붙는 상품입니다. 그래서 단순히 세액공제 한도만 보는 것보다 은퇴 시점에 얼마가 쌓이고, 월 생활비 기준으로 어느 정도 수령 가능한지를 같이 보는 편이 더 실용적입니다.",
+          "이 페이지는 현재 적립금과 월 납입액, 기대 수익률만으로 미래 적립금과 월 연금 수령 추정액을 빠르게 확인하는 데 초점을 맞췄습니다.",
+        ]}
+        inputPoints={[
+          "월 납입액을 바꿔 보면서 연금 수령액이 얼마나 달라지는지 확인합니다.",
+          "은퇴 시점을 55세, 60세, 65세로 바꿔 적립 기간 차이를 비교합니다.",
+          "연금 수령과 일시금 비교를 함께 보면서 생활비용 자산인지 목적 자금인지 판단합니다.",
+        ]}
+        criteria={[
+          "연금 수령은 생활비 관점에서 안정성이 높고, 일시금은 대출 상환이나 주택 자금, 재투자처럼 큰 목적 자금에 유리합니다.",
+          "어느 쪽이 더 낫다는 정답보다 은퇴 직후 필요한 현금 규모와 다른 연금·자산이 얼마나 있는지를 함께 보는 것이 중요합니다.",
+          "세액공제, 세금, 수수료, 실제 상품별 수익률 차이는 반영하지 않았으므로 실제 의사결정 전에는 금융사 자료를 다시 확인해야 합니다.",
+        ]}
+        faq={IRP_FAQ}
+        related={IRP_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script
+    id="ipcConfig"
+    type="application/json"
+    set:html={JSON.stringify({
+      defaults: IRP_DEFAULT_INPUT,
+      presets: IRP_PRESETS,
+      returnPresets: IRP_RETURN_PRESETS,
+      rules: IRP_RULES,
+    })}
+  ></script>
+  <script type="module" src="/scripts/irp-pension-calculator.js"></script>
+</BaseLayout>
