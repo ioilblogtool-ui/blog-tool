@@ -393,6 +393,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "retirement-fund-depletion",
+    title: "노후 자금 고갈 계산기",
+    description: "현재 자산, 생활비, 국민연금, 물가상승률, 운용수익률을 기준으로 은퇴 시점 필요 자산과 자산 고갈 예상 나이를 추정하는 계산기",
+    order: 24.65,
+    eyebrow: "은퇴·노후 계산",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "핵심 결과", value: "고갈 시점" },
+      { label: "시나리오", value: "낙관·기본·보수" }
+    ]
+  },
+  {
     slug: "coin-tax-calculator",
     title: "코인 세금 계산기",
     description: "비트코인·이더리움 등 가상자산 매도 시 양도차익, 250만원 공제, 예상 세금, 세후 순이익을 바로 계산하는 페이지",
@@ -502,6 +516,48 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "지원 권역", value: "일본·동남아·유럽" },
       { label: "핵심 결과", value: "총 여행 예산" },
+    ],
+  },
+  {
+    slug: "flight-cheapest-timing-calculator",
+    title: "항공권 최저가 시기 계산기",
+    description: "출발지, 목적지 권역, 출발 월, 인원수를 기준으로 지금 예매와 기다렸다 예매하는 경우의 예상 항공권 차이를 계산합니다.",
+    order: 27.2,
+    eyebrow: "항공권 예매 타이밍",
+    category: "lifestyle",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "지원 권역", value: "일본·동남아·유럽" },
+      { label: "핵심 결과", value: "예매 시점 비교" },
+    ],
+  },
+  {
+    slug: "postnatal-care-cost",
+    title: "산후도우미 비용 계산기",
+    description: "거주 지역, 출산 유형, 소득 구간, 이용 기간을 입력하면 2026년 산모·신생아 건강관리 지원사업 기준 정부지원금과 예상 본인부담금을 계산합니다.",
+    order: 27.35,
+    eyebrow: "출산·산후관리",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규", "출산", "정부지원"],
+    previewStats: [
+      { label: "기준", value: "2026년 공개표", context: "공식 산모·신생아 지원사업" },
+      { label: "지원 유형", value: "단축·표준·연장형" },
+    ],
+  },
+  {
+    slug: "stock-breakeven-calculator",
+    title: "주식 손익분기점 계산기",
+    description: "매수가, 수량, 수수료, 증권거래세를 반영해 실제 본전 매도가와 목표 수익률 매도가를 즉시 계산합니다. 현재 주가 입력 시 지금 내 손익도 확인할 수 있습니다.",
+    order: 27.3,
+    eyebrow: "주식 계산기",
+    category: "investment",
+    iframeReady: true,
+    badges: ["신규", "주식"],
+    previewStats: [
+      { label: "거래세 기본값", value: "0.18%", context: "코스피·코스닥 기준" },
+      { label: "계산 항목", value: "수수료+거래세", context: "매수·매도 모두 반영" },
     ],
   },
 ];

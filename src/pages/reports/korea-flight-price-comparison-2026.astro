@@ -1,0 +1,440 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  AIRPORT_COMPARISONS,
+  BOOKING_INDEX,
+  CARRIER_COMPARISONS,
+  CARRIER_LABELS,
+  FAQ_ITEMS,
+  KFP_META,
+  MONTHLY_HEATMAP,
+  OPTION_SCENARIOS,
+  REGION_LABELS,
+  RELATED_LINKS,
+  ROUTE_PRICES,
+  SAVING_TIPS,
+  type RegionId,
+} from "../../data/koreaFlightPriceComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const regionOrder: RegionId[] = ["japan", "southeastAsia", "chinaTaiwan", "europe", "americas", "oceania"];
+const defaultRegion: RegionId = "japan";
+const defaultRoutes = ROUTE_PRICES.filter((route) => route.region === defaultRegion);
+const defaultBookingPoint = BOOKING_INDEX.find((point) => point.window === "d60") ?? BOOKING_INDEX[1];
+const routeById = Object.fromEntries(ROUTE_PRICES.map((route) => [route.id, route]));
+
+const formatManwon = (value: number) => {
+  if (value >= 1_000_000) return `${Math.round(value / 10_000).toLocaleString("ko-KR")}만원`;
+  return `${Math.round(value / 10_000)}만원`;
+};
+
+const formatRange = (min: number, max: number) => `${formatManwon(min)}~${formatManwon(max)}`;
+const formatWon = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+
+const routeAverages = ROUTE_PRICES.map((route) => ({
+  route,
+  regularAverage: Math.round((route.prices.regular.min + route.prices.regular.max) / 2),
+  peakGap: route.prices.peak.max - route.prices.offseason.min,
+}));
+const cheapestRoute = [...routeAverages].sort((a, b) => a.regularAverage - b.regularAverage)[0];
+const volatileRoute = [...routeAverages].sort((a, b) => b.peakGap - a.peakGap)[0];
+const longHaulAverage = Math.round(
+  ROUTE_PRICES.filter((route) => ["europe", "americas", "oceania"].includes(route.region))
+    .reduce((sum, route) => sum + (route.prices.regular.min + route.prices.regular.max) / 2, 0) /
+    ROUTE_PRICES.filter((route) => ["europe", "americas", "oceania"].includes(route.region)).length
+);
+
+const marketStats = [
+  {
+    label: "대표 노선",
+    value: `${ROUTE_PRICES.length}개`,
+    note: "일본·동남아·중화권·유럽·미주·오세아니아",
+  },
+  {
+    label: "일반가 최저 노선",
+    value: `${cheapestRoute.route.destinationKo}`,
+    note: `평균 ${formatManwon(cheapestRoute.regularAverage)} 수준`,
+  },
+  {
+    label: "변동폭 큰 노선",
+    value: `${volatileRoute.route.destinationKo}`,
+    note: `비수기-성수기 격차 ${formatManwon(volatileRoute.peakGap)}+`,
+  },
+  {
+    label: "장거리 일반가",
+    value: `${formatManwon(longHaulAverage)}`,
+    note: "유럽·미주·오세아니아 1인 왕복 평균",
+  },
+];
+
+const seed = {
+  meta: KFP_META,
+  routes: ROUTE_PRICES,
+  regionLabels: REGION_LABELS,
+  carrierLabels: CARRIER_LABELS,
+  carrierComparisons: CARRIER_COMPARISONS,
+  bookingIndex: BOOKING_INDEX,
+};
+
+const faq = FAQ_ITEMS.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout title={KFP_META.title} description={KFP_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page kfp-report-page">
+    <CalculatorHero
+      eyebrow="항공권 가격 리포트"
+      title={KFP_META.title}
+      description="한국 출발 주요 해외 노선의 왕복 항공권 가격을 권역, 항공사, 예약 시점, 옵션 포함 총비용 기준으로 비교합니다."
+      badges={["항공권", "해외여행", "총비용", "2026"]}
+    />
+
+    <InfoNotice
+      title="비교 기준"
+      lines={[
+        "이 리포트는 2026년 4월 기준 공개 자료와 대표 노선 표본을 바탕으로 구성한 비교 목적 자료입니다.",
+        "항공권 가격은 검색일, 출발일, 체류 기간, 항공사, 환승 여부, 수하물 포함 여부에 따라 크게 달라질 수 있습니다.",
+        "노선별 가격은 성인 1인 왕복 일반석 기준이며, 옵션 포함 총비용 섹션은 별도 시나리오 기준 추정값입니다.",
+      ]}
+    />
+
+    <section class="content-section kfp-market-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">시장 요약</p>
+        <h2>항공권은 노선 가격보다 예약 시점과 옵션 포함 여부가 최종 체감 비용을 좌우합니다</h2>
+        <p>단거리 일본 노선은 특가 여지가 있지만, 성수기와 주말에는 LCC도 빠르게 비싸집니다. 유럽·미주·오세아니아는 조기 예약과 경유 옵션 비교가 핵심입니다.</p>
+      </div>
+
+      <div class="kfp-market-board">
+        {marketStats.map((stat) => (
+          <article class="kfp-stat-card">
+            <p>{stat.label}</p>
+            <strong>{stat.value}</strong>
+            <span>{stat.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section kfp-route-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">노선별 비교</p>
+        <h2>권역을 바꾸면 대표 노선의 비수기·일반·성수기 가격대를 바로 볼 수 있습니다</h2>
+        <p>모든 가격은 성인 1인 왕복 일반석 기준 추정 범위입니다. 실제 예약 전에는 세금, 유류할증료, 위탁수하물 조건을 확인해야 합니다.</p>
+      </div>
+
+      <div class="kfp-route-tabs" role="tablist" aria-label="권역 선택">
+        {regionOrder.map((region) => (
+          <button
+            type="button"
+            class={`kfp-tab${region === defaultRegion ? " is-active" : ""}`}
+            data-kfp-region={region}
+            role="tab"
+            aria-selected={region === defaultRegion ? "true" : "false"}
+          >
+            {REGION_LABELS[region]}
+          </button>
+        ))}
+      </div>
+
+      <div class="kfp-route-highlight-grid">
+        <article class="kfp-route-card">
+          <p>현재 권역</p>
+          <strong id="kfpCurrentRegion">{REGION_LABELS[defaultRegion]}</strong>
+          <span id="kfpCurrentRegionNote">단거리 특가와 성수기 변동폭을 같이 봐야 합니다.</span>
+        </article>
+        <article class="kfp-route-card">
+          <p>권역 내 저가 노선</p>
+          <strong id="kfpRegionCheapest">{defaultRoutes[2].destinationKo}</strong>
+          <span id="kfpRegionCheapestValue">{formatRange(defaultRoutes[2].prices.regular.min, defaultRoutes[2].prices.regular.max)}</span>
+        </article>
+        <article class="kfp-route-card">
+          <p>주의 노선</p>
+          <strong id="kfpRegionWatch">{defaultRoutes[1].destinationKo}</strong>
+          <span id="kfpRegionWatchText">벚꽃철·연말연시에 가격이 급등하기 쉽습니다.</span>
+        </article>
+      </div>
+
+      <div class="kfp-table-wrap">
+        <table class="kfp-route-table">
+          <thead>
+            <tr>
+              <th>노선</th>
+              <th>비수기</th>
+              <th>일반</th>
+              <th>성수기</th>
+              <th>극성수기</th>
+              <th>체감</th>
+              <th>메모</th>
+            </tr>
+          </thead>
+          <tbody id="kfpRouteTableBody">
+            {defaultRoutes.map((route) => (
+              <tr>
+                <td>
+                  <strong>{route.origin}-{route.destination}</strong>
+                  <span>{route.destinationKo} · {route.countryKo}</span>
+                </td>
+                <td>{formatRange(route.prices.offseason.min, route.prices.offseason.max)}</td>
+                <td>{formatRange(route.prices.regular.min, route.prices.regular.max)}</td>
+                <td>{formatRange(route.prices.peak.min, route.prices.peak.max)}</td>
+                <td>{formatManwon(route.prices.superPeak.min)}+</td>
+                <td><span class="kfp-badge">{route.priceFeel}</span></td>
+                <td>{route.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="kfp-footnote">기준: {KFP_META.baseCondition}. 모든 금액은 실시간 견적이 아닌 비교 목적 추정 범위입니다.</p>
+    </section>
+
+    <section class="content-section kfp-carrier-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">항공사 유형</p>
+        <h2>LCC는 기본가만 보면 싸지만, 위탁수하물과 좌석을 넣으면 차이가 빠르게 줄어듭니다</h2>
+        <p>아래 표는 대표 노선별 항공사 유형의 1인 기준 예시입니다. 버튼을 눌러 기본가와 옵션 포함 총액을 전환할 수 있습니다.</p>
+      </div>
+
+      <div class="kfp-toggle-row" role="group" aria-label="항공사 비교 기준">
+        <button type="button" class="kfp-tab" data-kfp-carrier-mode="base">기본가</button>
+        <button type="button" class="kfp-tab is-active" data-kfp-carrier-mode="total">옵션 포함 총액</button>
+      </div>
+
+      <div class="kfp-table-wrap">
+        <table class="kfp-carrier-table">
+          <thead>
+            <tr>
+              <th>노선</th>
+              <th>유형</th>
+              <th>표시 금액</th>
+              <th>수하물</th>
+              <th>좌석</th>
+              <th>판단</th>
+            </tr>
+          </thead>
+          <tbody id="kfpCarrierTableBody">
+            {CARRIER_COMPARISONS.map((item) => (
+              <tr>
+                <td>{routeById[item.routeId]?.destinationKo ?? item.routeId}</td>
+                <td>{item.label}</td>
+                <td class="is-money">{formatManwon(item.total)}</td>
+                <td>{item.baggage > 0 ? formatManwon(item.baggage) : "포함/없음"}</td>
+                <td>{item.seatSelection > 0 ? formatManwon(item.seatSelection) : "포함/없음"}</td>
+                <td>{item.verdict}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section kfp-heatmap-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">월별 히트맵</p>
+        <h2>비싼 달은 권역마다 다릅니다. 일본은 봄·연말, 유럽은 여름, 오세아니아는 한국 겨울이 강합니다</h2>
+        <p>100을 보통으로 둔 상대 지수입니다. 색상과 숫자를 같이 확인하세요.</p>
+      </div>
+
+      <div class="kfp-heatmap" aria-label="월별 항공권 가격 지수">
+        <div class="kfp-heatmap-row kfp-heatmap-row--head">
+          <span>권역</span>
+          {Array.from({ length: 12 }, (_, index) => <span>{index + 1}월</span>)}
+        </div>
+        {MONTHLY_HEATMAP.map((row) => (
+          <div class="kfp-heatmap-row">
+            <strong>{row.label}</strong>
+            {row.monthlyIndex.map((value) => (
+              <span
+                class={`kfp-heatmap-cell ${
+                  value >= 140 ? "kfp-heatmap-cell--very-high" : value >= 120 ? "kfp-heatmap-cell--high" : value >= 100 ? "kfp-heatmap-cell--mid" : "kfp-heatmap-cell--low"
+                }`}
+              >
+                {value}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section kfp-booking-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">예약 시점</p>
+        <h2>막판 특가보다 조기 비교가 더 안정적입니다</h2>
+        <p>출발 60일 전을 100으로 둔 상대 지수입니다. 단거리, 중거리, 장거리의 상승 속도가 서로 다릅니다.</p>
+      </div>
+
+      <div class="kfp-booking-tabs" role="tablist" aria-label="예약 시점 선택">
+        {BOOKING_INDEX.map((point) => (
+          <button
+            type="button"
+            class={`kfp-tab${point.window === "d60" ? " is-active" : ""}`}
+            data-kfp-window={point.window}
+            role="tab"
+            aria-selected={point.window === "d60" ? "true" : "false"}
+          >
+            {point.label}
+          </button>
+        ))}
+      </div>
+
+      <div class="kfp-booking-grid">
+        <div class="kfp-chart-shell">
+          <canvas id="kfpBookingChart"></canvas>
+        </div>
+        <article class="kfp-booking-comment">
+          <p>선택 시점</p>
+          <strong id="kfpBookingLabel">{defaultBookingPoint.label}</strong>
+          <span id="kfpBookingComment">{defaultBookingPoint.comment}</span>
+          <ul>
+            <li>단거리 지수 <b id="kfpShortIndex">{defaultBookingPoint.shortHaulIndex}</b></li>
+            <li>중거리 지수 <b id="kfpMidIndex">{defaultBookingPoint.midHaulIndex}</b></li>
+            <li>장거리 지수 <b id="kfpLongIndex">{defaultBookingPoint.longHaulIndex}</b></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section kfp-option-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">옵션 포함 총비용</p>
+        <h2>항공권은 최저가만 보면 틀릴 수 있습니다</h2>
+        <p>수하물, 좌석, 기내식, 공항 이동비, 보험까지 더하면 실제 출국 비용이 달라집니다.</p>
+      </div>
+
+      <div class="kfp-option-compare">
+        {OPTION_SCENARIOS.map((scenario) => (
+          <article class="kfp-option-card">
+            <p class="kfp-option-card__eyebrow">{scenario.partyLabel}</p>
+            <h3>{scenario.title}</h3>
+            <ul>
+              <li><span>기본 운임</span><b>{formatWon(scenario.baseFare)}</b></li>
+              <li><span>수하물·좌석·기내식</span><b>{formatWon(scenario.baggage + scenario.seatSelection + scenario.meal)}</b></li>
+              <li><span>이동·보험</span><b>{formatWon(scenario.airportTransfer + scenario.insurance)}</b></li>
+              <li class="is-total"><span>총비용</span><b>{formatWon(scenario.total)}</b></li>
+            </ul>
+            <p>{scenario.message}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section kfp-reversal-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">LCC vs FSC</p>
+        <h2>LCC가 유리한 구간과 FSC가 더 합리적인 구간은 다릅니다</h2>
+      </div>
+
+      <div class="kfp-reversal-grid">
+        <article class="kfp-reversal-card">
+          <p>LCC 유리</p>
+          <strong>단기·기내용 수하물·날짜 유연</strong>
+          <span>오사카, 후쿠오카, 타이베이처럼 짧은 노선은 기본가 차이가 그대로 체감될 수 있습니다.</span>
+        </article>
+        <article class="kfp-reversal-card">
+          <p>격차 축소</p>
+          <strong>동남아 4박 이상·위탁수하물 필요</strong>
+          <span>방콕, 다낭, 세부는 수하물과 좌석 옵션을 더하면 FSC와의 차이가 작아집니다.</span>
+        </article>
+        <article class="kfp-reversal-card">
+          <p>FSC 유리 가능</p>
+          <strong>장거리·가족 여행·스케줄 안정성</strong>
+          <span>유럽·미주 장거리에서는 수하물 포함 조건과 환승 시간을 비용처럼 봐야 합니다.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section kfp-airport-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">출발 공항</p>
+        <h2>항공권이 5만원 싸도 공항 이동비와 전날 숙박비가 붙으면 총비용은 달라집니다</h2>
+      </div>
+
+      <div class="kfp-table-wrap">
+        <table class="kfp-airport-table">
+          <thead>
+            <tr>
+              <th>공항</th>
+              <th>유리한 경우</th>
+              <th>항공권 포인트</th>
+              <th>이동비</th>
+              <th>주의점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {AIRPORT_COMPARISONS.map((item) => (
+              <tr>
+                <td><strong>{item.airportKo}</strong><span>{item.airport}</span></td>
+                <td>{item.bestFor}</td>
+                <td>{item.flightPriceNote}</td>
+                <td>{item.accessCost}</td>
+                <td>{item.risk}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section kfp-tip-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">실전 팁</p>
+        <h2>예약 전 5가지만 확인해도 항공권 총액 판단이 훨씬 정확해집니다</h2>
+      </div>
+
+      <ol class="kfp-tip-list">
+        {SAVING_TIPS.map((tip) => <li>{tip}</li>)}
+      </ol>
+    </section>
+
+    <section class="content-section kfp-cta-section">
+      <div class="kfp-cta-card">
+        <div>
+          <p class="kfp-cta-card__eyebrow">다음 단계</p>
+          <h2>항공권 가격대를 확인했다면 숙박·식비·보험까지 합친 여행 총예산을 계산하세요</h2>
+          <p>항공권은 전체 여행비의 일부입니다. 실제 예산은 숙소, 식비, 현지교통, 보험, 쇼핑, 비상금까지 함께 봐야 합니다.</p>
+        </div>
+        <div class="kfp-cta-links">
+          {RELATED_LINKS.map((item) => (
+            <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 항공권 가격 비교를 읽는 방법"
+      intro={[
+        "이 리포트는 한국 출발 해외 항공권을 권역별, 노선별, 예약 시점별로 비교하기 위한 페이지입니다.",
+        "항공권은 같은 목적지라도 출발 요일, 성수기, 항공사, 수하물 포함 여부에 따라 가격이 크게 달라집니다.",
+        "따라서 단일 최저가보다 비수기·일반·성수기 범위와 옵션 포함 총비용을 함께 보는 방식이 더 현실적입니다.",
+      ]}
+      inputPoints={[
+        "먼저 권역별 노선 표에서 대략적인 왕복 가격대를 확인합니다.",
+        "예약 시점 그래프에서 지금 예약해야 할지, 조금 더 지켜볼지 판단합니다.",
+        "마지막으로 LCC/FSC 옵션 포함 총액과 출발 공항 이동비를 더해 실제 출국 비용을 비교합니다.",
+      ]}
+      criteria={[
+        "모든 노선 가격은 성인 1인 왕복 일반석 기준 추정 범위값입니다.",
+        "옵션 포함 총비용은 수하물, 좌석 지정, 기내식, 공항 이동비, 보험을 포함한 별도 예시입니다.",
+        "실제 예약 전에는 항공사와 여행사 검색 결과에서 세금, 유류할증료, 수하물 포함 조건을 확인해야 합니다.",
+      ]}
+      faq={faq}
+      related={RELATED_LINKS}
+    />
+  </main>
+
+  <script id="koreaFlightPriceComparison2026Data" type="application/json" set:html={JSON.stringify(seed)} />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/korea-flight-price-comparison-2026.js")}></script>
+</BaseLayout>

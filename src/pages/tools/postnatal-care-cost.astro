@@ -1,0 +1,368 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  POSTNATAL_BIRTH_TYPE_OPTIONS,
+  POSTNATAL_CARE_DEFAULT_INPUT,
+  POSTNATAL_CARE_RATES_2026,
+  POSTNATAL_CARE_TIME_OPTIONS,
+  POSTNATAL_CHILD_ORDER_OPTIONS,
+  POSTNATAL_COST_FAQ,
+  POSTNATAL_INCOME_OPTIONS,
+  POSTNATAL_REFERENCE_CARDS,
+  POSTNATAL_REGION_OPTIONS,
+  POSTNATAL_RELATED_LINKS,
+  POSTNATAL_SERVICE_PERIOD_OPTIONS,
+} from "../../data/postnatalCareCost";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  POSTNATAL_CARE_DEFAULT_INPUT,
+  POSTNATAL_CARE_RATES_2026,
+  POSTNATAL_CARE_TIME_OPTIONS,
+};
+
+const faqSchema = POSTNATAL_COST_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="산후도우미 비용 계산기 | 정부지원 바우처 본인부담금 계산 | 비교계산소"
+  description="거주 지역, 출산 유형, 소득 구간, 이용 기간을 입력하면 2026년 산모·신생아 건강관리 지원사업 기준으로 산후도우미 정부지원금과 예상 본인부담금을 계산합니다."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "산후도우미 비용 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description:
+      "거주 지역, 출산 유형, 소득 구간, 이용 기간을 입력하면 정부지원 바우처 적용 후 산후도우미 예상 본인부담금을 계산하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/postnatal-care-cost/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="postnatal-care-cost" pageClass="postnatal-care-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="출산·산후관리"
+        title="산후도우미 비용, 바우처 적용 후 본인부담금까지 봅니다"
+        description="거주 지역, 출산 유형, 소득 구간, 이용 기간을 입력하면 정부지원금 차감 후 예상 부담금을 계산합니다. 야간·입주형 같은 민간 추가 비용도 따로 반영할 수 있습니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetPostnatalCareBtn" copyId="copyPostnatalCareLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 정보</p>
+            <h2 class="panel__title">지원 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">정부지원금 표와 매칭되는 핵심 조건입니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>거주 지역</span>
+            <select id="pncRegion" class="select">
+              {POSTNATAL_REGION_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === POSTNATAL_CARE_DEFAULT_INPUT.region}>{item.label}</option>
+              ))}
+            </select>
+            <small>지역별 추가 지원은 직접 입력으로 반영합니다.</small>
+          </label>
+
+          <label class="field">
+            <span>출산 유형</span>
+            <select id="pncBirthType" class="select">
+              {POSTNATAL_BIRTH_TYPE_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === POSTNATAL_CARE_DEFAULT_INPUT.birthType}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>출산 순위</span>
+            <select id="pncChildOrder" class="select">
+              {POSTNATAL_CHILD_ORDER_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === POSTNATAL_CARE_DEFAULT_INPUT.childOrder}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>소득 구간</span>
+            <select id="pncIncomeType" class="select">
+              {POSTNATAL_INCOME_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === POSTNATAL_CARE_DEFAULT_INPUT.incomeType}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>정부지원 바우처</span>
+            <select id="pncUseVoucher" class="select">
+              <option value="yes" selected={POSTNATAL_CARE_DEFAULT_INPUT.useVoucher}>적용</option>
+              <option value="no">미적용</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">이용 조건</p>
+            <h2 class="panel__title">기간과 추가 비용</h2>
+          </div>
+          <p class="panel-heading__summary">제공기관별 추가금은 실제 계약 전 확인이 필요합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>이용 기간</span>
+            <select id="pncServicePeriod" class="select">
+              {POSTNATAL_SERVICE_PERIOD_OPTIONS.map((item) => (
+                <option value={item.key} selected={item.key === POSTNATAL_CARE_DEFAULT_INPUT.servicePeriod}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>이용 시간 유형</span>
+            <select id="pncCareTimeType" class="select">
+              {POSTNATAL_CARE_TIME_OPTIONS.map((item) => (
+                <option value={item.careTimeType} selected={item.careTimeType === POSTNATAL_CARE_DEFAULT_INPUT.careTimeType}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>지자체 추가 지원금 (만원)</span>
+            <input id="pncLocalSubsidy" type="text" inputmode="numeric" class="input-number" placeholder="예: 20" />
+            <small>환급형 지원금이 있다면 직접 입력하세요.</small>
+          </label>
+
+          <label class="field">
+            <span>민간 추가 비용 (만원)</span>
+            <input id="pncPrivateExtraCost" type="text" inputmode="numeric" class="input-number" placeholder="예: 10" />
+            <small>주말, 프리미엄 관리사, 제공기관 추가금을 넣습니다.</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="pnc-section">
+      <div class="pnc-section__head">
+        <p class="pnc-section__eyebrow">계산 결과</p>
+        <h2>정부지원금과 본인부담금을 분리해서 봅니다</h2>
+        <p class="pnc-section__sub" id="pncResultSubcopy">조건을 바꾸면 결과가 바로 업데이트됩니다.</p>
+      </div>
+
+      <div class="pnc-result-grid">
+        <article class="pnc-result-card">
+          <p>총 서비스 가격</p>
+          <strong id="pncTotalPrice">-</strong>
+          <span id="pncTotalPriceNote">바우처 차감 전</span>
+        </article>
+        <article class="pnc-result-card pnc-result-card--support">
+          <p>정부지원금</p>
+          <strong id="pncGovernmentSubsidy">-</strong>
+          <span id="pncGovernmentNote">공식표 기준</span>
+        </article>
+        <article class="pnc-result-card">
+          <p>기본 본인부담금</p>
+          <strong id="pncBaseUserPayment">-</strong>
+          <span>정부지원금 차감 후</span>
+        </article>
+        <article class="pnc-result-card pnc-result-card--final">
+          <p>최종 예상 부담금</p>
+          <strong id="pncFinalUserPayment">-</strong>
+          <span id="pncFinalNote">추가 지원·추가 비용 반영</span>
+        </article>
+      </div>
+
+      <article class="panel pnc-status-panel">
+        <div class="pnc-status-row">
+          <span id="pncSourceBadge" class="pnc-badge pnc-badge--official">공식</span>
+          <p id="pncSourceText">2026년 공개표 기준입니다.</p>
+        </div>
+        <p id="pncInterpretation" class="pnc-interpretation">-</p>
+      </article>
+    </section>
+
+    <section class="pnc-section">
+      <div class="pnc-section__head">
+        <p class="pnc-section__eyebrow">비용 분해</p>
+        <h2>어떤 항목이 최종 부담금을 바꾸는지 확인합니다</h2>
+      </div>
+      <article class="panel">
+        <div class="pnc-chart-wrap">
+          <canvas id="postnatalCareChart"></canvas>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>금액</th>
+                <th>기준</th>
+              </tr>
+            </thead>
+            <tbody id="pncBreakdownTableBody">
+              <tr>
+                <td colspan="3">입력값을 넣으면 항목별 금액이 표시됩니다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="pnc-section">
+      <div class="pnc-section__head">
+        <p class="pnc-section__eyebrow">신청 안내</p>
+        <h2>기간과 유효기간을 놓치지 않는 것이 먼저입니다</h2>
+      </div>
+      <div class="pnc-guide-grid">
+        <article class="pnc-guide-card">
+          <span>신청 가능 기간</span>
+          <strong>출산 예정일 40일 전부터 출산 후 60일 이내</strong>
+          <p>미숙아·선천성 이상아 입원 등은 퇴원일 기준 별도 기한이 적용될 수 있습니다.</p>
+        </article>
+        <article class="pnc-guide-card">
+          <span>바우처 유효기간</span>
+          <strong>대체로 출산일로부터 90일 이내</strong>
+          <p>유효기간이 지나면 잔여 바우처가 소멸될 수 있어 이용 시작일을 먼저 확인해야 합니다.</p>
+        </article>
+        <article class="pnc-guide-card">
+          <span>최종 확인처</span>
+          <strong>거주지 보건소·복지로·제공기관</strong>
+          <p>소득 구간, 예외지원, 지자체 환급, 추가금은 지역과 기관에 따라 다릅니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="pnc-section">
+      <div class="pnc-section__head">
+        <p class="pnc-section__eyebrow">비교 포인트</p>
+        <h2>산후조리원과 비교할 때 같이 봐야 할 항목</h2>
+      </div>
+      <div class="pnc-compare-grid">
+        <article class="panel">
+          <h3 class="pnc-mini-title">산후도우미가 유리한 경우</h3>
+          <ul class="pnc-list">
+            <li>집에서 회복하고 가족 지원을 함께 받을 수 있는 경우</li>
+            <li>산후조리원 2주 비용이 부담스러운 경우</li>
+            <li>둘째아 이상이라 기존 생활 동선을 유지해야 하는 경우</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3 class="pnc-mini-title">산후조리원이 유리한 경우</h3>
+          <ul class="pnc-list">
+            <li>첫째아 출산으로 신생아 케어 교육이 필요한 경우</li>
+            <li>산모 회복과 식사, 수면 확보가 가장 중요한 경우</li>
+            <li>집안 환경이나 가족 지원이 부족한 경우</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section pnc-related-section">
+      <div class="panel pnc-related-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">같이 보기</p>
+            <h2 class="panel__title">출산 전후 비용을 이어서 확인하세요</h2>
+          </div>
+          <p class="panel-heading__summary">산후도우미 비용만 보면 놓치기 쉬운 조리원, 출산비, 첫해 육아비용까지 연결했습니다.</p>
+        </div>
+        <div class="pnc-related-grid">
+          {POSTNATAL_RELATED_LINKS.map((item) => (
+            <a href={withBase(item.href)} class="pnc-related-card">{item.label}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section pnc-reference-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">공식 자료</p>
+            <h2 class="panel__title">최종 신청 전 확인할 링크</h2>
+          </div>
+          <p class="panel-heading__summary">계산기는 예산 점검용입니다. 신청 전에는 거주지 기준을 다시 확인하세요.</p>
+        </div>
+        <div class="pnc-reference-grid">
+          {POSTNATAL_REFERENCE_CARDS.map((item) => (
+            <a class="pnc-reference-card" href={item.href} target="_blank" rel="noopener noreferrer">
+              <span>{item.source}</span>
+              <strong>{item.title}</strong>
+              <p>{item.desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <InfoNotice
+      title="계산 전 주의사항"
+      lines={[
+        "이 계산기는 공개된 2026년 기준표와 추정 옵션 비용을 함께 사용하는 예산 점검 도구입니다.",
+        "정확한 지원 가능 여부와 본인부담금은 소득 구간, 출산 유형, 거주지, 제공기관 계약 조건에 따라 달라질 수 있습니다.",
+        "공식표에 없는 조합은 추정 배지로 구분되며, 실제 신청 전에는 보건소 또는 복지로에서 최신 기준을 확인해야 합니다.",
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="산후도우미 비용 계산기를 보는 방법"
+        intro={[
+          "산후도우미 비용 계산기는 산모·신생아 건강관리 지원사업의 정부지원금과 본인부담금 구조를 빠르게 이해하기 위한 도구입니다. 총 서비스 가격에서 정부지원금을 빼고, 지자체 추가 지원금과 민간 추가 비용을 따로 반영해 최종 예상 부담금을 보여줍니다.",
+          "산후도우미는 산후조리원보다 비용 부담이 낮을 수 있지만, 제공기관 추가금과 이용 시간대에 따라 실제 결제 금액이 달라질 수 있습니다. 계산 결과는 예산 기준점으로 보고 최종 신청 전에는 거주지 보건소와 제공기관에서 최신 기준을 확인하세요."
+        ]}
+        inputPoints={[
+          "단태아 첫째아 표준형 10일처럼 공식표와 직접 매칭되는 조건은 공식 배지로 확인할 수 있습니다.",
+          "야간형, 입주형, 프리미엄 관리사 비용은 제공기관별 차이가 커서 추정 또는 직접 입력으로 처리합니다.",
+          "지자체 본인부담금 환급이 있다면 추가 지원금 칸에 넣어 최종 예상 부담금을 다시 볼 수 있습니다."
+        ]}
+        criteria={[
+          "기본 계산식은 총 서비스 가격에서 정부지원금과 지자체 추가 지원금을 뺀 뒤 민간 추가 비용을 더하는 방식입니다.",
+          "정부지원 바우처를 미적용으로 선택하면 정부지원금은 0원으로 계산합니다.",
+          "공식표에 없는 조합은 임의 확정값으로 말하지 않고 추정값과 직접 확인 안내를 함께 표시합니다."
+        ]}
+        faq={POSTNATAL_COST_FAQ}
+        related={POSTNATAL_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="postnatalCareConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/postnatal-care-cost.js")}></script>
+</BaseLayout>

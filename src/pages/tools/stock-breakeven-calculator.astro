@@ -1,0 +1,383 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SBC_MARKET_PRESETS,
+  SBC_DEFAULT_INPUT,
+  SBC_SCENARIO_PRESETS,
+  SBC_FAQ,
+  SBC_RELATED_LINKS,
+} from "../../data/stockBreakevenCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  SBC_MARKET_PRESETS,
+  SBC_DEFAULT_INPUT,
+  SBC_SCENARIO_PRESETS,
+};
+
+const faqSchema = SBC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="주식 손익분기점 계산기 | 수수료·거래세 포함 실제 본전 매도가 계산"
+  description="주식 매수 후 수수료와 증권거래세를 모두 반영한 손익분기점 매도가를 즉시 계산합니다. 현재가 입력 시 지금 내 손익도 바로 확인하세요."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "주식 손익분기점 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: "주식 매수가, 수수료, 증권거래세를 반영해 손익분기점 매도가와 현재 손익을 계산하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/stock-breakeven-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="stock-breakeven-calculator" pageClass="sbc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="주식 계산기"
+        title="매수가에 팔면 손해입니다. 진짜 본전가부터 먼저 확인합니다"
+        description="매수가, 수량, 수수료, 증권거래세를 입력하면 실제 손익분기점 매도가를 즉시 계산합니다. 현재 주가를 넣으면 지금 내 손익도 바로 확인할 수 있습니다."
+      />
+      <InfoNotice
+        lines={[
+          "이 계산기는 매매 수수료와 증권거래세(거래 시 자동 부과)만 반영합니다.",
+          "국내 상장주식 개인투자자(비대주주)는 원칙적으로 양도소득세 과세 대상이 아닙니다.",
+          "실제 수수료율과 거래세율은 증권사와 시장에 따라 다를 수 있으니 확인 후 활용하세요.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="sbcResetBtn" copyId="sbcCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">매수 정보</p>
+            <h2 class="panel__title">매수 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">주당 매수가와 수량, 수수료를 입력합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>주당 매수가 (원)</span>
+            <input
+              id="sbcBuyPrice"
+              type="text"
+              inputmode="numeric"
+              class="input-number"
+              value={SBC_DEFAULT_INPUT.buyPrice.toLocaleString("ko-KR")}
+            />
+            <small id="sbcBuyPriceHint" class="sbc-input-hint">약 5만원</small>
+          </label>
+
+          <label class="field">
+            <span>매수 수량 (주)</span>
+            <input
+              id="sbcQuantity"
+              type="number"
+              min="1"
+              step="1"
+              class="input-number"
+              value={SBC_DEFAULT_INPUT.quantity}
+            />
+          </label>
+
+          <label class="field">
+            <span>매수 수수료율 (%)</span>
+            <input
+              id="sbcBuyFeeRate"
+              type="number"
+              min="0"
+              max="10"
+              step="0.001"
+              class="input-number"
+              value={(SBC_DEFAULT_INPUT.buyFeeRate * 100).toFixed(3)}
+            />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">매도 조건</p>
+            <h2 class="panel__title">시장 구분 및 매도 수수료</h2>
+          </div>
+        </div>
+
+        <div class="sbc-market-tabs" id="sbcMarketTabs">
+          {SBC_MARKET_PRESETS.map((m, i) => (
+            <button
+              type="button"
+              class={`sbc-market-tab${i === 0 ? " is-active" : ""}`}
+              data-market={m.id}
+              data-tx-rate={m.transactionTaxRate}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        <p class="sbc-help-text" id="sbcMarketNote">{SBC_MARKET_PRESETS[0].note}</p>
+
+        <div class="form-grid" style="margin-top:12px;">
+          <label class="field" id="sbcTxTaxField">
+            <span>증권거래세율 (%)</span>
+            <input
+              id="sbcTxTaxRate"
+              type="number"
+              min="0"
+              max="5"
+              step="0.001"
+              class="input-number"
+              value={(SBC_DEFAULT_INPUT.transactionTaxRate * 100).toFixed(3)}
+              disabled
+            />
+          </label>
+
+          <label class="field">
+            <span>매도 수수료율 (%)</span>
+            <input
+              id="sbcSellFeeRate"
+              type="number"
+              min="0"
+              max="10"
+              step="0.001"
+              class="input-number"
+              value={(SBC_DEFAULT_INPUT.sellFeeRate * 100).toFixed(3)}
+            />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">현재가 · 목표</p>
+            <h2 class="panel__title">현재 손익 및 목표 수익률</h2>
+          </div>
+          <p class="panel-heading__summary">현재가 입력 시 지금 내 손익을 바로 확인합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>현재 주가 (원, 선택)</span>
+            <input
+              id="sbcCurrentPrice"
+              type="text"
+              inputmode="numeric"
+              class="input-number"
+              placeholder="예: 48,000"
+            />
+            <small id="sbcCurrentPriceHint" class="sbc-input-hint"></small>
+          </label>
+
+          <label class="field">
+            <span>목표 수익률 (%)</span>
+            <input
+              id="sbcTargetReturnRate"
+              type="number"
+              min="0"
+              max="1000"
+              step="0.5"
+              class="input-number"
+              value={SBC_DEFAULT_INPUT.targetReturnRate}
+            />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 예시</p>
+            <h2 class="panel__title">버튼으로 바로 넣어보기</h2>
+          </div>
+        </div>
+
+        <div class="sbc-scenario-presets" id="sbcScenarioPresets">
+          {SBC_SCENARIO_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`sbc-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset-id={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="sbc-section">
+      <div class="sbc-section__head">
+        <p class="sbc-section__eyebrow">핵심 결과</p>
+        <h2>수수료와 거래세를 모두 낸 뒤 본전이 되는 매도가입니다</h2>
+        <p class="sbc-section__sub" id="sbcResultSubcopy">입력값을 바꾸면 손익분기점이 바로 바뀝니다.</p>
+      </div>
+
+      <div class="sbc-result-cards">
+        <article class="sbc-result-card sbc-result-card--main">
+          <p class="sbc-result-label">손익분기점 매도가</p>
+          <strong class="sbc-result-value sbc-result-value--hl" id="sbcBreakevenPrice">-</strong>
+          <span class="sbc-result-note">매수가 대비 <span id="sbcBreakevenRiseRate">-</span> 상승해야 본전</span>
+        </article>
+
+        <article class="sbc-result-card">
+          <p class="sbc-result-label">총 매수비용</p>
+          <strong class="sbc-result-value" id="sbcTotalBuyCost">-</strong>
+          <span class="sbc-result-note">매수금액 + 수수료</span>
+        </article>
+
+        <article class="sbc-result-card">
+          <p class="sbc-result-label">예상 총 비용</p>
+          <strong class="sbc-result-value" id="sbcTotalCost">-</strong>
+          <span class="sbc-result-note">매수·매도 수수료 + 거래세</span>
+        </article>
+
+        <article class="sbc-result-card">
+          <p class="sbc-result-label">목표 수익률 매도가</p>
+          <strong class="sbc-result-value" id="sbcTargetPrice">-</strong>
+          <span class="sbc-result-note">목표 <span id="sbcTargetRateLabel">-</span>% 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="sbc-section" id="sbcCurrentSection" style="display:none;">
+      <div class="sbc-current-box" id="sbcCurrentBox">
+        <div class="sbc-current-box__header">
+          <span>현재가 기준 손익</span>
+          <span class="sbc-status-badge" id="sbcStatusBadge">-</span>
+        </div>
+        <div class="sbc-current-grid">
+          <div class="sbc-current-cell">
+            <p class="sbc-current-label">예상 손익</p>
+            <p class="sbc-current-value" id="sbcCurrentProfitLoss">-</p>
+          </div>
+          <div class="sbc-current-cell">
+            <p class="sbc-current-label">수익률</p>
+            <p class="sbc-current-value" id="sbcCurrentReturnRate">-</p>
+          </div>
+          <div class="sbc-current-cell">
+            <p class="sbc-current-label">손익분기점까지</p>
+            <p class="sbc-current-value" id="sbcGapToBreakeven">-</p>
+          </div>
+          <div class="sbc-current-cell">
+            <p class="sbc-current-label">필요 상승률</p>
+            <p class="sbc-current-value" id="sbcGapRate">-</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sbc-section">
+      <div class="sbc-callout">
+        <strong>참고용 추정값입니다</strong>
+        <p>실제 수수료율과 거래세율은 증권사, 시장, 계좌 유형에 따라 다를 수 있습니다. 대주주이거나 비상장주식 거래라면 양도소득세가 별도로 부과될 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="sbc-section">
+      <div class="sbc-section__head">
+        <p class="sbc-section__eyebrow">상세 계산표</p>
+        <h2>수수료와 거래세가 어디에서 붙는지 항목별로 나눠서 봅니다</h2>
+      </div>
+
+      <article class="panel">
+        <div class="table-wrap">
+          <table class="sbc-breakdown-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>금액</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>주당 매수가</td><td id="sbcDBuyPrice">-</td></tr>
+              <tr><td>매수 수량</td><td id="sbcDQuantity">-</td></tr>
+              <tr><td>총 매수금액</td><td id="sbcDBuyAmount">-</td></tr>
+              <tr><td>매수 수수료</td><td id="sbcDBuyFee">-</td></tr>
+              <tr><td>총 매수비용</td><td id="sbcDTotalBuyCost">-</td></tr>
+              <tr class="sbc-separator"><td colspan="2">손익분기점 기준 매도 시</td></tr>
+              <tr><td>손익분기점 매도가</td><td id="sbcDBePrice">-</td></tr>
+              <tr><td>매도 수수료</td><td id="sbcDSellFee">-</td></tr>
+              <tr><td>증권거래세</td><td id="sbcDTxTax">-</td></tr>
+              <tr><td>총 비용 합계</td><td id="sbcDTotalCost">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">이어보기</p>
+            <h2 class="panel__title">함께 쓰면 좋은 계산기</h2>
+          </div>
+          <p class="panel-heading__summary">주식·투자·세금과 관련된 계산기들을 함께 확인해보세요.</p>
+        </div>
+        <div class="related-links">
+          {SBC_RELATED_LINKS.map((link) => (
+            <a href={link.href} class="related-link">{link.label}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="주식 손익분기점 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 주식을 매수한 뒤 수수료와 증권거래세를 모두 포함한 실제 손익분기점 매도가를 즉시 확인하기 위한 도구입니다. 매수가와 동일한 가격에 매도하면 수수료와 거래세 만큼 손해가 납니다. 진짜 본전이 되는 매도가를 먼저 파악해야 합리적인 매도 판단이 가능합니다.",
+          "현재 주가를 입력하면 지금 내 포지션이 수익 상태인지 손실 상태인지, 손익분기점까지 얼마나 더 올라야 하는지를 즉시 확인할 수 있습니다. 목표 수익률을 넣으면 그 수익률을 달성하기 위한 매도가도 함께 계산됩니다.",
+        ]}
+        inputPoints={[
+          "대표 예시 버튼으로 대형주, 코스닥 중형주, 하락 회복 시나리오를 바로 불러와 볼 수 있습니다.",
+          "시장 구분(코스피·코스닥·코넥스·직접 입력)을 선택하면 증권거래세율이 자동으로 바뀝니다.",
+          "현재가를 입력하면 수익·손실 상태와 손익분기점까지 필요한 상승률이 함께 표시됩니다.",
+        ]}
+        criteria={[
+          "손익분기점 매도가 = 총 매수비용 ÷ (수량 × (1 − 매도수수료율 − 거래세율)) 공식으로 계산합니다.",
+          "매도 수수료와 증권거래세는 매도금액 기준으로 부과되는 구조를 정확히 반영했습니다.",
+          "목표 수익률 매도가는 수수료·거래세 차감 후 목표 순이익이 남는 매도가를 역산해 표시합니다.",
+          "이 계산기는 국내 상장주식 개인투자자(비대주주) 기준이며 양도소득세는 반영하지 않습니다.",
+        ]}
+        faq={SBC_FAQ}
+        related={SBC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="stockBreakevenCalculatorConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/stock-breakeven-calculator.js")}></script>
+</BaseLayout>

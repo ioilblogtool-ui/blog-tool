@@ -1,0 +1,436 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  RP26_META,
+  RETIREMENT_PENSION_BRIEF,
+  RETIREMENT_PENSION_CASES,
+  RETIREMENT_PENSION_COMPARISON_ROWS,
+  RETIREMENT_PENSION_DC_STRATEGIES,
+  RETIREMENT_PENSION_FAQ,
+  RETIREMENT_PENSION_FEE_CHECKLIST,
+  RETIREMENT_PENSION_POLICY_UPDATES,
+  RETIREMENT_PENSION_RELATED_LINKS,
+  RETIREMENT_PENSION_RETURN_COMPARISON,
+  RETIREMENT_PENSION_SCENARIOS,
+  RETIREMENT_PENSION_SUMMARIES,
+  RETIREMENT_PENSION_TAX_EXAMPLES,
+  RETIREMENT_PENSION_WITHDRAWAL_COMPARE,
+  type PensionPlanId,
+} from "../../data/retirementPensionDcDbIrp2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const planLabel = (id: PensionPlanId) => ({ db: "DB형", dc: "DC형", irp: "IRP" }[id]);
+const formatWon = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만 원`;
+const formatRate = (value: number) => `${(value * 100).toFixed(1)}%`;
+
+const faqItems = RETIREMENT_PENSION_FAQ.map((item) => ({
+  question: item.q,
+  answer: item.a,
+}));
+
+const faqSchema = RETIREMENT_PENSION_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.q,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.a,
+  },
+}));
+---
+
+<BaseLayout
+  title={RP26_META.title}
+  description={RP26_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: RP26_META.title,
+    description: RP26_META.description,
+    inLanguage: "ko-KR",
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page rp26-page">
+    <CalculatorHero
+      eyebrow={RP26_META.eyebrow}
+      title={RP26_META.heroTitle}
+      description={RP26_META.heroDescription}
+      badges={["퇴직연금", "DB", "DC", "IRP", "2026"]}
+    />
+
+    <InfoNotice
+      title="읽기 전 기준"
+      lines={[
+        "이 리포트는 퇴직연금 DB형, DC형, IRP의 구조 차이를 이해하기 위한 일반 정보입니다.",
+        "세액공제·과세·수수료·중도인출은 개인 상황과 실제 금융회사 약관에 따라 달라질 수 있습니다.",
+        "수익률과 미래가치 예시는 공식 확정값이 아니라 비교 방향을 이해하기 위한 참고·시뮬레이션으로 읽어야 합니다.",
+      ]}
+    />
+
+    <nav class="rp26-anchor-nav" aria-label="퇴직연금 비교 리포트 빠른 이동">
+      <a href="#summary">30초 결론</a>
+      <a href="#structure">구조 비교</a>
+      <a href="#policy-update">2026 기준</a>
+      <a href="#return-comparison">수익률 해석</a>
+      <a href="#tax-credit">세액공제</a>
+      <a href="#scenario">상황별 추천</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <section class="content-section rp26-brief-section" id="summary">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">30초 결론</p>
+        <h2>DB·DC·IRP는 수익률보다 먼저 구조를 나눠 봐야 합니다</h2>
+        <p>
+          DB형은 회사가 운용 책임을 지는 구조, DC형은 내가 운용성과를 가져가는 구조, IRP는 퇴직금 이전과
+          추가납입 세액공제를 연결하는 개인 계좌입니다.
+        </p>
+      </div>
+      <div class="rp26-brief-grid">
+        {RETIREMENT_PENSION_BRIEF.map((item, index) => (
+          <article class={`rp26-brief-card ${index === 1 ? "is-dc" : index === 2 ? "is-irp" : "is-db"}`}>
+            <p>{item.title}</p>
+            <strong>{item.conclusion}</strong>
+            <span>{item.description}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" id="structure">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">제도 구조</p>
+        <h2>DB형·DC형·IRP 핵심 차이</h2>
+        <p>각 제도는 누가 운용 책임을 지는지, 어떤 방식으로 퇴직급여가 정해지는지가 다릅니다.</p>
+      </div>
+      <div class="rp26-plan-grid">
+        {RETIREMENT_PENSION_SUMMARIES.map((plan) => (
+          <article class={`rp26-plan-card rp26-plan-card--${plan.id}`}>
+            <p class="rp26-plan-badge">{plan.shortName}</p>
+            <h3>{plan.name}</h3>
+            <strong>{plan.oneLine}</strong>
+            <div class="rp26-plan-list">
+              <span>잘 맞는 경우</span>
+              <ul>
+                {plan.bestFor.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+            <div class="rp26-plan-list">
+              <span>확인할 점</span>
+              <ul>
+                {plan.watchPoints.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="table-wrap rp26-table-wrap">
+        <table class="rp26-compare-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>DB형</th>
+              <th>DC형</th>
+              <th>IRP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RETIREMENT_PENSION_COMPARISON_ROWS.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                <td>{row.db}</td>
+                <td>{row.dc}</td>
+                <td>{row.irp}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="rp26-note">
+        <span class="rp26-badge rp26-badge--note">참고</span>
+        DC형 사용자부담금은 세액공제 대상 납입액에서 제외됩니다. 근로자 본인 추가납입과 구분해서 보세요.
+      </p>
+    </section>
+
+    <section class="content-section" id="policy-update">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2026 기준</p>
+        <h2>세액공제·법령·비교공시에서 먼저 확인할 업데이트</h2>
+      </div>
+      <div class="rp26-policy-grid">
+        {RETIREMENT_PENSION_POLICY_UPDATES.map((item) => (
+          <article class="rp26-policy-card">
+            <span class={`rp26-badge ${item.badge === "공식" ? "rp26-badge--official" : "rp26-badge--note"}`}>
+              {item.badge}
+            </span>
+            <h3>{item.title}</h3>
+            <strong>{item.summary}</strong>
+            <p>{item.detail}</p>
+            <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel} 기준 보기</a>
+          </article>
+        ))}
+      </div>
+      <p class="rp26-note">
+        세법·노동법 기준은 개정될 수 있으므로 실제 신고·수령 전에는 국세청, 고용노동부, 금융회사 안내를 확인해야 합니다.
+      </p>
+    </section>
+
+    <section class="content-section" id="return-comparison">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수익률 해석</p>
+        <h2>DB형 수익률과 DC·IRP 수익률은 같은 의미가 아닙니다</h2>
+        <p>수익률 표를 볼 때는 제도 구분, 상품 구분, 기간을 맞춰야 합니다.</p>
+      </div>
+      <div class="table-wrap rp26-table-wrap">
+        <table class="rp26-compare-table rp26-compare-table--compact">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>DB형</th>
+              <th>DC형</th>
+              <th>IRP</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RETIREMENT_PENSION_RETURN_COMPARISON.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                <td>{row.db}</td>
+                <td>{row.dc}</td>
+                <td>{row.irp}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="rp26-warning-box">
+        <strong>DB형 수익률은 내 퇴직급여 증가율과 바로 같지 않습니다.</strong>
+        <p>
+          DB형은 회사가 부담금을 운용하고, 개인의 퇴직급여는 규약과 산식에 따라 정해집니다. DC형과 IRP는
+          내가 담은 상품과 운용 비중이 실제 계좌 결과에 더 직접적으로 반영됩니다.
+        </p>
+      </div>
+    </section>
+
+    <section class="content-section" id="dc-strategy">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">DC형 운용</p>
+        <h2>DC형은 제도보다 운용 방식이 결과를 크게 가릅니다</h2>
+      </div>
+      <div class="rp26-strategy-grid">
+        {RETIREMENT_PENSION_DC_STRATEGIES.map((item) => (
+          <article class="rp26-strategy-card">
+            <p>{item.title}</p>
+            <strong>{item.returnDirection}</strong>
+            <dl>
+              <div>
+                <dt>변동성</dt>
+                <dd>{item.volatility}</dd>
+              </div>
+              <div>
+                <dt>추천 대상</dt>
+                <dd>{item.bestFor}</dd>
+              </div>
+              <div>
+                <dt>주의점</dt>
+                <dd>{item.risk}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" id="tax-credit">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">IRP 세액공제</p>
+        <h2>900만 원은 환급액이 아니라 세액공제 대상 납입한도입니다</h2>
+        <p>국세청 기준 공제율은 15% 또는 12%이며, 지방소득세를 포함한 체감 공제율은 16.5% 또는 13.2%로 설명할 수 있습니다.</p>
+      </div>
+      <div class="rp26-tax-grid">
+        {RETIREMENT_PENSION_TAX_EXAMPLES.map((item) => (
+          <article class="rp26-tax-card">
+            <p>{item.incomeLabel}</p>
+            <strong>{formatWon(item.expectedCredit)}</strong>
+            <span>{formatWon(item.contribution)} 납입 · 체감 공제율 {formatRate(item.creditRate)}</span>
+            <small>{item.note}</small>
+          </article>
+        ))}
+      </div>
+      <div class="rp26-link-box">
+        <strong>내 적립금 기준 월 수령액은 계산기로 이어서 확인하세요.</strong>
+        <div>
+          <a class="button button--primary" href={withBase("/tools/irp-pension-calculator/")}>IRP 예상 수령액 계산하기</a>
+          <a class="button button--secondary" href={withBase("/reports/pension-irp-comparison-2026/")}>연금저축 vs IRP 비교 보기</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" id="scenario">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상황별 선택</p>
+        <h2>내 상황에 따라 먼저 볼 제도가 달라집니다</h2>
+      </div>
+      <div class="rp26-scenario-grid">
+        {RETIREMENT_PENSION_SCENARIOS.map((item) => (
+          <article class="rp26-scenario-card">
+            <p>{item.title}</p>
+            <strong>{item.userProfile}</strong>
+            <div class="rp26-fit-row">
+              {item.likelyFit.map((id) => <span class={`rp26-plan-tag rp26-plan-tag--${id}`}>{planLabel(id)}</span>)}
+            </div>
+            <span>{item.reason}</span>
+            <small>{item.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" id="withdrawal-tax">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수령 전략</p>
+        <h2>퇴직 후 일시금과 연금 수령은 현금흐름이 다릅니다</h2>
+      </div>
+      <div class="table-wrap rp26-table-wrap">
+        <table class="rp26-compare-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>일시금 수령</th>
+              <th>IRP 이전 후 연금 수령</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RETIREMENT_PENSION_WITHDRAWAL_COMPARE.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                <td>{row.lumpSum}</td>
+                <td>{row.annuity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="rp26-sim-box">
+        <span class="rp26-badge rp26-badge--sim">시뮬레이션</span>
+        <strong>지금 인출하는 1,000만 원은 20년 뒤 더 큰 차이로 돌아올 수 있습니다.</strong>
+        <p>
+          예를 들어 연 4%로 20년 복리 운용하면 1,000만 원은 약 2,191만 원이 됩니다. 단기 현금 필요가
+          명확하지 않다면 중도인출 전 복리 손실과 세금 영향을 함께 봐야 합니다.
+        </p>
+      </div>
+    </section>
+
+    <section class="content-section" id="fee-check">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수수료 체크</p>
+        <h2>수익률만 보지 말고 비용이 남기는 차이도 확인해야 합니다</h2>
+      </div>
+      <div class="rp26-check-grid">
+        {RETIREMENT_PENSION_FEE_CHECKLIST.map((item) => (
+          <article class="rp26-check-card">{item}</article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" id="cases">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">케이스 스터디</p>
+        <h2>실제 직장인 상황으로 바꿔 읽기</h2>
+      </div>
+      <div class="rp26-case-grid">
+        {RETIREMENT_PENSION_CASES.map((item) => (
+          <article class="rp26-case-card">
+            <h3>{item.title}</h3>
+            <ul>
+              {item.bullets.map((bullet) => <li>{bullet}</li>)}
+            </ul>
+            <strong>{item.result}</strong>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="rp26-cta-panel">
+        <div>
+          <p class="rp26-cta-panel__eyebrow">계산기로 이어보기</p>
+          <h2>구조를 이해했다면 내 적립금 기준 월 수령액을 확인하세요</h2>
+          <p>리포트는 판단 프레임이고, 실제 은퇴 현금흐름은 계산기로 이어졌을 때 더 선명해집니다.</p>
+        </div>
+        <div class="rp26-cta-links">
+          <a class="button button--primary" href={withBase("/tools/irp-pension-calculator/")}>IRP 예상 수령액 계산하기</a>
+          <a class="button button--secondary" href={withBase("/tools/retirement/")}>은퇴 계산기 보기</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 페이지</p>
+        <h2>퇴직연금 다음에 같이 보면 좋은 계산기와 리포트</h2>
+      </div>
+      <div class="rp26-related-grid">
+        {RETIREMENT_PENSION_RELATED_LINKS.map((item, index) => (
+          <a class={`rp26-related-card ${index === 0 ? "is-primary" : ""}`} href={withBase(item.href)}>
+            <p>{index === 0 ? "추천 계산기" : "관련 콘텐츠"}</p>
+            <strong>{item.label}</strong>
+            <span>바로 이동</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" id="faq">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">FAQ</p>
+        <h2>퇴직연금 DB·DC·IRP 비교에서 자주 묻는 질문</h2>
+      </div>
+      <div class="rp26-faq-list">
+        {RETIREMENT_PENSION_FAQ.map((item, index) => (
+          <details class="rp26-faq-item" open={index === 0}>
+            <summary>{item.q}</summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="퇴직연금 DC·DB·IRP 비교 2026 읽는 법"
+      intro={[
+        "이 리포트는 DB형, DC형, IRP를 수익률 순위로만 비교하지 않고 제도 구조와 실제 선택 기준을 먼저 나눠 보여주는 페이지입니다.",
+        "DB형은 회사 운용 구조, DC형은 개인 운용 구조, IRP는 개인 계좌·세액공제·퇴직금 통합관리 구조라는 차이를 기준으로 읽으면 오해가 줄어듭니다.",
+      ]}
+      inputPoints={[
+        "장기근속과 임금상승 가능성이 크면 DB형의 산식 효과를 먼저 확인합니다.",
+        "직접 운용과 이직 가능성이 중요하면 DC형 운용 방식과 IRP 이전 구조를 함께 봅니다.",
+        "연말정산 환급과 퇴직 후 월 수령액이 중요하면 IRP 계산기로 이어서 확인합니다.",
+      ]}
+      criteria={[
+        "세액공제 한도와 공제율은 국세청 안내 기준을 따르되, 실제 환급액은 개인의 산출세액에 따라 달라질 수 있습니다.",
+        "수익률 자료는 기준 기간과 상품 구분을 맞춰 봐야 하며, DB형 수익률은 개인 계좌 수익률과 같은 의미가 아닙니다.",
+        "미래가치와 중도인출 손실 예시는 시뮬레이션이며 투자 결과를 보장하지 않습니다.",
+      ]}
+      faq={faqItems}
+      related={RETIREMENT_PENSION_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

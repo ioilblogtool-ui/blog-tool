@@ -1,0 +1,307 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PNC_META,
+  PNC_HERO_STATS,
+  PNC_COMPARISON_ROWS,
+  PNC_COST_SUMMARY,
+  PNC_DECISION_QUESTIONS,
+  PNC_RESULT_COPY,
+  PNC_RECOMMENDATION_SCENARIOS,
+  PNC_HYBRID_SCENARIOS,
+  PNC_SUPPORT_STEPS,
+  PNC_CHECKLIST,
+  PNC_SAVING_TIPS,
+  PNC_RELATED_LINKS,
+  PNC_FAQ,
+} from "../../data/postnatalCareComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const careTypeLabel: Record<string, string> = {
+  center: "산후조리원",
+  helper: "산후도우미",
+  hybrid: "병행 검토",
+};
+
+const careTypeMod: Record<string, string> = {
+  center: "center",
+  helper: "helper",
+  hybrid: "hybrid",
+};
+
+const faqItems = PNC_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+
+const scriptData = {
+  questions: PNC_DECISION_QUESTIONS,
+  resultCopy: PNC_RESULT_COPY,
+};
+---
+
+<BaseLayout
+  title={PNC_META.seoTitle}
+  description={PNC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: PNC_META.seoTitle,
+    description: PNC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/reports/postnatal-care-comparison-2026/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  }}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page pnc-page">
+    <CalculatorHero
+      eyebrow="출산 준비 리포트"
+      title="2026 산후도우미 vs 산후조리원 완전 비교"
+      description="산후조리원 2주 비용, 산후도우미 정부지원, 첫째·둘째·쌍태아 상황별 추천 기준을 한 번에 비교합니다."
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        PNC_META.dataNote,
+        "산후도우미(산모·신생아 건강관리 지원사업) 지원금은 소득 구간·출산 순위·태아 유형별로 다르므로 반드시 보건소 또는 복지로에서 확인하세요.",
+      ]}
+    />
+
+    <!-- KPI 카드 -->
+    <section class="content-section pnc-kpi-section">
+      <div class="pnc-kpi-grid">
+        {PNC_HERO_STATS.map((stat) => (
+          <article class="pnc-kpi-card">
+            <span class={`pnc-badge pnc-badge--${stat.badge}`}>{stat.badge}</span>
+            <p class="pnc-kpi-card__label">{stat.label}</p>
+            <strong class="pnc-kpi-card__value">{stat.value}</strong>
+            <small class="pnc-kpi-card__note">{stat.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 핵심 비교표 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">핵심 비교</p>
+        <h2>산후조리원과 산후도우미, 무엇이 다른가요?</h2>
+        <p>장소, 비용 구조, 케어 방식, 리스크를 나란히 놓고 비교합니다.</p>
+      </div>
+      <div class="pnc-table-wrap">
+        <table class="pnc-compare-table">
+          <thead>
+            <tr>
+              <th>비교 항목</th>
+              <th class="pnc-col--center">산후조리원</th>
+              <th class="pnc-col--helper">산후도우미</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PNC_COMPARISON_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.label}</strong></td>
+                <td>{row.center}</td>
+                <td>{row.helper}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 30초 선택 테스트 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">30초 선택 테스트</p>
+        <h2>우리 집은 어느 방식이 맞을까?</h2>
+        <p>아래 질문에 예/아니오로 답하면 우리 가정에 맞는 방식을 추천해 드립니다.</p>
+      </div>
+
+      <div class="pnc-test" data-pnc-test>
+        <div class="pnc-question-list" id="pncQuestionList"></div>
+
+        <aside class="pnc-test-result" id="pncTestResult" aria-live="polite">
+          <p class="pnc-test-result__eyebrow">추천 결과</p>
+          <strong class="pnc-test-result__title" id="pncResultTitle">질문에 답하면 추천이 표시됩니다</strong>
+          <p class="pnc-test-result__copy" id="pncResultCopy"></p>
+          <a class="pnc-cta-btn" id="pncResultCta" href="/reports/postpartum-center-cost-2026/" style="display:none;">
+            자세히 보기
+          </a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 비용 요약 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">비용 비교</p>
+        <h2>비용은 어디서 가장 크게 갈리나</h2>
+        <p>조리원은 기본요금 외 추가비가 붙고, 산후도우미는 정부지원 차감 후 실부담금이 핵심입니다.</p>
+      </div>
+      <div class="pnc-cost-grid">
+        {PNC_COST_SUMMARY.map((item) => (
+          <article class="pnc-cost-card">
+            <div class="pnc-cost-card__top">
+              <span class={`pnc-badge pnc-badge--${item.badge}`}>{item.badge}</span>
+              <span class="pnc-cost-card__period">{item.period}</span>
+            </div>
+            <p class="pnc-cost-card__label">{item.label}</p>
+            <strong class="pnc-cost-card__value">{item.costRange}</strong>
+            <dl class="pnc-cost-dl">
+              <dt>정부지원</dt><dd>{item.support}</dd>
+              <dt>본인부담</dt><dd>{item.outOfPocket}</dd>
+            </dl>
+            <p class="pnc-cost-card__note">{item.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 산후도우미 지원 구조 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">정부지원 구조</p>
+        <h2>산후도우미는 정부지원 후 실부담금이 핵심</h2>
+        <p>공식 명칭은 <strong>산모·신생아 건강관리 지원사업</strong>입니다. 아래 순서로 준비하는 것이 효율적입니다.</p>
+      </div>
+      <ol class="pnc-support-steps">
+        {PNC_SUPPORT_STEPS.map((step, i) => (
+          <li class="pnc-support-step">
+            <span class="pnc-support-step__num">{i + 1}</span>
+            <div>
+              <strong>{step.title}</strong>
+              <p>{step.detail}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <div class="pnc-support-cta">
+        <p>정확한 지원금은 거주지 보건소 또는 복지로(www.bokjiro.go.kr)에서 확인해야 합니다.</p>
+      </div>
+    </section>
+
+    <!-- 상황별 추천 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">상황별 추천</p>
+        <h2>첫째·둘째·쌍태아 상황별 추천</h2>
+        <p>가족 구성과 상황에 따라 최적의 선택이 달라집니다.</p>
+      </div>
+      <div class="pnc-rec-grid">
+        {PNC_RECOMMENDATION_SCENARIOS.map((scenario) => (
+          <article class={`pnc-rec-card pnc-rec-card--${careTypeMod[scenario.recommended]}`}>
+            <div class="pnc-rec-card__top">
+              <span class={`pnc-badge pnc-badge--type-${careTypeMod[scenario.recommended]}`}>
+                {careTypeLabel[scenario.recommended]} 추천
+              </span>
+            </div>
+            <h3 class="pnc-rec-card__title">{scenario.title}</h3>
+            <p class="pnc-rec-card__summary">{scenario.summary}</p>
+            <ul class="pnc-rec-card__reasons">
+              {scenario.reasons.map((r) => <li>✓ {r}</li>)}
+            </ul>
+            {scenario.cautions.length > 0 && (
+              <ul class="pnc-rec-card__cautions">
+                {scenario.cautions.map((c) => <li>⚠ {c}</li>)}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 병행 시나리오 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">시나리오 비교</p>
+        <h2>조리원 2주만이 답은 아닙니다</h2>
+        <p>예산, 회복 환경, 가족 지원 상황에 따라 조합 방식이 다양합니다.</p>
+      </div>
+      <div class="pnc-scenario-grid">
+        {PNC_HYBRID_SCENARIOS.map((s) => (
+          <article class="pnc-scenario-card">
+            <strong class="pnc-scenario-card__title">{s.title}</strong>
+            <p class="pnc-scenario-card__comp">{s.composition}</p>
+            <p class="pnc-scenario-card__budget">{s.budgetDirection}</p>
+            <ul class="pnc-scenario-card__for">
+              {s.suitableFor.map((f) => <li>{f}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 체크리스트 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">준비 체크리스트</p>
+        <h2>신청 전 체크리스트</h2>
+      </div>
+      <ul class="pnc-checklist">
+        {PNC_CHECKLIST.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 비용 절약 팁 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">절약 포인트</p>
+        <h2>산후조리 비용을 줄이는 방법</h2>
+      </div>
+      <ul class="pnc-tip-list">
+        {PNC_SAVING_TIPS.map((tip) => <li>{tip}</li>)}
+      </ul>
+    </section>
+
+    <!-- 관련 링크 -->
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">이어보기</p>
+        <h2>같이 보면 좋은 계산기·리포트</h2>
+      </div>
+      <div class="pnc-link-grid">
+        {PNC_RELATED_LINKS.map((link) => (
+          <a class="pnc-link-card" href={withBase(link.href)}>
+            <span>{link.type}</span>
+            <strong>{link.title}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 산후도우미 vs 산후조리원 비교 가이드"
+      intro={[
+        "이 리포트는 산후조리원과 산후도우미 중 어느 방식을 선택할지 고민하는 임산부와 가족을 위한 비교 자료입니다. 단순 가격 비교가 아니라 비용 구조, 정부지원 적용 방식, 가족 상황별 적합도를 함께 살펴볼 수 있도록 구성했습니다.",
+        "첫째 출산인지 둘째 이상인지, 배우자 지원이 가능한지, 예산이 어느 수준인지에 따라 최적의 선택이 달라집니다. 30초 선택 테스트로 우선 방향을 잡고, 관련 계산기로 실제 비용을 확인해보세요.",
+      ]}
+      criteria={[
+        "산후조리원 비용은 전국 평균과 서울 체감 기준을 별도 표기했습니다.",
+        "산후도우미 지원금은 소득 구간·출산 순위·태아 유형별로 달라지므로 범위 안내로 표기합니다.",
+        "모든 금액 정보는 참고용이며, 실제 신청 전 거주지 보건소 및 공식 기관에서 확인해야 합니다.",
+      ]}
+      faq={faqItems}
+      related={PNC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.title }))}
+    />
+  </main>
+
+  <script id="pncData" type="application/json" set:html={JSON.stringify(scriptData)}></script>
+  <script src={withBase("/scripts/postnatal-care-comparison-2026.js")} defer></script>
+</BaseLayout>

@@ -1,0 +1,385 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  AIRLINE_FACTORS,
+  BAGGAGE_INCLUDED_EXTRA,
+  BOOKING_WINDOW_RULES,
+  DAY_FACTORS,
+  FLIGHT_BASE_FARES,
+  FLIGHT_TIMING_DEFAULT_INPUT,
+  FLIGHT_TIMING_FAQ,
+  FLIGHT_TIMING_PRESETS,
+  FLIGHT_TIMING_RELATED_LINKS,
+  MONTH_SEASON_FACTORS,
+  ORIGIN_FACTORS,
+  REGION_BOOKING_GUIDES,
+  TIME_FACTORS,
+} from "../../data/flightCheapestTimingCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  DEFAULT_INPUT: FLIGHT_TIMING_DEFAULT_INPUT,
+  PRESETS: FLIGHT_TIMING_PRESETS,
+  BASE_FARES: FLIGHT_BASE_FARES,
+  ORIGIN_FACTORS,
+  SEASON_FACTORS: MONTH_SEASON_FACTORS,
+  BOOKING_WINDOW_RULES,
+  DAY_FACTORS,
+  TIME_FACTORS,
+  AIRLINE_FACTORS,
+  BAGGAGE_INCLUDED_EXTRA,
+  REGION_GUIDES: REGION_BOOKING_GUIDES,
+};
+
+const faqSchema = FLIGHT_TIMING_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="항공권 최저가 시기 계산기 | 지금 예매 vs 기다리기 비용 비교"
+  description="출발지, 목적지 권역, 출발 월, 인원수를 입력하면 항공권 권장 예매 시점과 지금 예매 대비 예상 절약액을 계산합니다."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "항공권 최저가 시기 계산기",
+    applicationCategory: "TravelApplication",
+    operatingSystem: "All",
+    description:
+      "출발지, 목적지 권역, 출발 월, 인원수를 기준으로 항공권 예매 타이밍과 예상 절약액을 계산하는 추정 시뮬레이션 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/flight-cheapest-timing-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="flight-cheapest-timing-calculator" pageClass="fct-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="여행 항공권 계산"
+        title="항공권, 지금 살까 기다릴까?"
+        description="출발 월과 목적지 권역을 기준으로 권장 예매 시점, 지금 예매 예상가, 기다렸을 때의 예상 차이를 시뮬레이션합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetFlightTimingBtn" copyId="copyFlightTimingLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 시작</p>
+            <h2 class="panel__title">대표 여행 프리셋</h2>
+          </div>
+          <p class="panel-heading__summary" id="fctPresetSummary">일본 주말 여행 기준으로 시작합니다.</p>
+        </div>
+
+        <div class="fct-preset-row">
+          {FLIGHT_TIMING_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`fct-preset-chip${index === 0 ? " is-active" : ""}`}
+              data-fct-preset={preset.id}
+            >
+              <span>{preset.label}</span>
+              <small>{preset.description}</small>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">여행과 출발 시점</h2>
+          </div>
+          <p class="panel-heading__summary" id="fctRegionHint">일본은 출발 4~8주 전을 참고 구간으로 봅니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>출발지</span>
+            <select id="fct-origin" class="select">
+              <option value="icn" selected>인천</option>
+              <option value="gmp">김포</option>
+              <option value="pus">부산</option>
+              <option value="tae">대구</option>
+              <option value="cju">제주</option>
+              <option value="regional">기타 지방</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>목적지 권역</span>
+            <select id="fct-region" class="select">
+              <option value="japan" selected>일본</option>
+              <option value="southeast-asia">동남아</option>
+              <option value="china-hk-tw">중국·홍콩·대만</option>
+              <option value="europe">유럽</option>
+              <option value="americas">미주</option>
+              <option value="oceania">대양주</option>
+            </select>
+          </label>
+
+          <label class="field field--full">
+            <span>세부 목적지</span>
+            <input id="fct-destination-label" type="text" class="input-number" value={FLIGHT_TIMING_DEFAULT_INPUT.destinationLabel} />
+            <small>예: 오사카/도쿄, 방콕/다낭, 파리/런던</small>
+          </label>
+
+          <label class="field">
+            <span>출발 희망 월</span>
+            <select id="fct-month" class="select">
+              {Array.from({ length: 12 }, (_, index) => index + 1).map((month) => (
+                <option value={month} selected={month === FLIGHT_TIMING_DEFAULT_INPUT.departureMonth}>
+                  {month}월
+                </option>
+              ))}
+            </select>
+            <small id="fct-season-note">여름 성수기 계수가 적용됩니다.</small>
+          </label>
+
+          <label class="field">
+            <span>출발까지 남은 기간</span>
+            <input id="fct-weeks-before" type="number" min="0" max="52" step="1" class="input-number" value={FLIGHT_TIMING_DEFAULT_INPUT.weeksBeforeDeparture} />
+            <small>현재 기준 몇 주 뒤 출발인지 입력</small>
+          </label>
+
+          <label class="field">
+            <span>여행 인원</span>
+            <input id="fct-persons" type="number" min="1" max="10" step="1" class="input-number" value={FLIGHT_TIMING_DEFAULT_INPUT.persons} />
+          </label>
+
+          <label class="field">
+            <span>여행 박 수</span>
+            <input id="fct-nights" type="number" min="1" max="30" step="1" class="input-number" value={FLIGHT_TIMING_DEFAULT_INPUT.nights} />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">항공권 조건</p>
+            <h2 class="panel__title">요일·시간대·항공사 성향</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>출발 요일 선호</span>
+            <select id="fct-day" class="select">
+              <option value="any">상관없음</option>
+              <option value="weekday">평일</option>
+              <option value="friday" selected>금요일</option>
+              <option value="saturday">토요일</option>
+              <option value="sunday">일요일</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>편명 시간대</span>
+            <select id="fct-time" class="select">
+              <option value="any">상관없음</option>
+              <option value="early">조조편</option>
+              <option value="late-night">심야편</option>
+              <option value="regular" selected>일반 시간대</option>
+            </select>
+            <small id="fctTimeSaving">조조·심야 선택 시 절약 가능성을 계산합니다.</small>
+          </label>
+
+          <label class="field">
+            <span>항공사 성향</span>
+            <select id="fct-airline" class="select">
+              <option value="lowest">최저가 우선</option>
+              <option value="lcc-ok" selected>LCC 가능</option>
+              <option value="fsc">FSC 선호</option>
+            </select>
+          </label>
+
+          <label class="field fct-toggle-field">
+            <span>수하물 포함</span>
+            <input id="fct-baggage" type="checkbox" checked />
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="fct-section">
+      <div class="fct-section__head">
+        <p class="fct-section__eyebrow">추정 시뮬레이션</p>
+        <h2>지금 예매와 기다리기를 비교합니다</h2>
+        <p class="fct-section__sub">입력값을 바꾸면 권장 예매 시점, 1인 예상가, 인원수 기준 총액이 즉시 다시 계산됩니다.</p>
+      </div>
+
+      <div class="fct-summary-cards" aria-live="polite">
+        <article class="fct-kpi-card">
+          <p class="fct-kpi-label">권장 예매 시점</p>
+          <strong class="fct-kpi-value" id="fct-recommended-weeks">-</strong>
+          <span class="fct-kpi-note">권역별 참고 구간</span>
+        </article>
+        <article class="fct-kpi-card">
+          <p class="fct-kpi-label">지금 예매 예상가</p>
+          <strong class="fct-kpi-value" id="fct-current-fare">-</strong>
+          <span class="fct-kpi-note" id="fctCurrentTotal">전체 총액 -</span>
+        </article>
+        <article class="fct-kpi-card">
+          <p class="fct-kpi-label">최적 시점 예상가</p>
+          <strong class="fct-kpi-value" id="fct-optimal-fare">-</strong>
+          <span class="fct-kpi-note" id="fctOptimalTotal">전체 총액 -</span>
+        </article>
+        <article class="fct-kpi-card fct-kpi-card--accent">
+          <p class="fct-kpi-label">예상 절약액</p>
+          <strong class="fct-kpi-value" id="fct-total-saving">-</strong>
+          <span class="fct-kpi-note" id="fctSavingPerPerson">1인 기준 -</span>
+        </article>
+        <article class="fct-kpi-card">
+          <p class="fct-kpi-label">판단</p>
+          <strong class="fct-advice-badge" id="fct-advice-badge">-</strong>
+          <span class="fct-kpi-note">현재 조건 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="fct-advice-card">
+      <div>
+        <p class="fct-section__eyebrow">해석</p>
+        <h2 id="fctAdviceTitle">입력값 기준 판단을 계산 중입니다</h2>
+      </div>
+      <p id="fct-advice-message">조건을 입력하면 지금 예매와 대기 전략 중 어느 쪽이 유리한지 안내합니다.</p>
+      <ul class="fct-factor-list">
+        <li id="fctSeasonPremium">성수기 프리미엄: -</li>
+        <li id="fct-time-saving">시간대 절약 효과: -</li>
+        <li id="fctWindowLabel">현재 예매 구간: -</li>
+      </ul>
+    </section>
+
+    <section class="fct-chart-card">
+      <div class="fct-section__head">
+        <p class="fct-section__eyebrow">예매 시점별 예상가</p>
+        <h2>기다릴수록 무조건 싸지는 것은 아닙니다</h2>
+        <p class="fct-section__sub">같은 조건에서 예매 시점만 바꿨을 때의 1인 예상가를 비교합니다.</p>
+      </div>
+      <div class="fct-chart-wrap">
+        <canvas id="fct-chart" aria-label="예매 시점별 항공권 예상가 차트"></canvas>
+      </div>
+      <div class="fct-table-wrap">
+        <table class="fct-scenario-table">
+          <thead>
+            <tr>
+              <th>예매 시점</th>
+              <th>출발 전</th>
+              <th>1인 예상가</th>
+              <th>전체 총액</th>
+            </tr>
+          </thead>
+          <tbody id="fct-scenario-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="fct-region-guide">
+      <div class="fct-section__head">
+        <p class="fct-section__eyebrow">권역별 참고 구간</p>
+        <h2>목적지마다 유리한 예매 시점이 다릅니다</h2>
+      </div>
+      <div class="fct-guide-grid">
+        {REGION_BOOKING_GUIDES.map((guide) => (
+          <article class="fct-guide-card">
+            <span>{guide.label}</span>
+            <strong>{guide.recommendedWeeksLabel}</strong>
+            <p>{guide.shortTip}</p>
+            <small>{guide.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="fct-saving-tips">
+      <article class="fct-tip-card">
+        <span>성수기 주의</span>
+        <p>설·여름휴가·추석·연말은 좌석이 줄수록 가격이 빠르게 오를 수 있어 조기 확정 쪽이 안전합니다.</p>
+      </article>
+      <article class="fct-tip-card">
+        <span>요일 선택</span>
+        <p>금요일과 토요일 출발은 수요가 높아지는 편입니다. 평일 출발이 가능하면 총액 차이가 커질 수 있습니다.</p>
+      </article>
+      <article class="fct-tip-card">
+        <span>시간대 선택</span>
+        <p>조조·심야편은 저렴할 수 있지만 공항 이동비와 숙박 체크인 시간을 함께 봐야 합니다.</p>
+      </article>
+    </section>
+
+    <InfoNotice
+      title="계산 결과 활용 전 확인하세요"
+      lines={[
+        "이 계산 결과는 실시간 항공권 조회가 아닌 입력 조건 기반 추정 시뮬레이션입니다.",
+        "실제 가격은 항공사, 좌석 등급, 프로모션, 환율, 유류할증료, 결제 시점에 따라 달라질 수 있습니다.",
+        "최종 결제 전에는 항공권 비교 서비스에서 수하물·좌석·환불 조건을 포함한 총액을 확인하세요.",
+      ]}
+    />
+
+    <section class="fct-related-cta">
+      <div>
+        <p class="fct-section__eyebrow">다음 계산</p>
+        <h2>항공권만 아껴도 끝이 아닙니다</h2>
+        <p>환전, 숙박, 현지 교통비까지 더하면 실제 여행 예산 판단이 쉬워집니다.</p>
+      </div>
+      <div class="fct-related-actions">
+        {FLIGHT_TIMING_RELATED_LINKS.map((item) => (
+          <a href={withBase(item.href)}>{item.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="항공권 최저가 시기 계산기는 어떤 기준으로 보나요?"
+        intro={[
+          "항공권 가격은 출발지, 목적지, 출발 월, 남은 기간, 출발 요일, 시간대, 항공사 성향에 따라 달라집니다. 이 도구는 실시간 가격을 가져오는 대신 권역별 기준 운임과 계수를 조합해 예매 타이밍을 판단하는 참고용 계산기입니다.",
+          "사용자는 지금 예매 예상가와 권장 예매 구간의 예상가를 비교해 대기할지, 지금 확정할지에 대한 방향을 잡을 수 있습니다.",
+        ]}
+        inputPoints={[
+          "일본·동남아·유럽·미주 등 권역별 권장 예매 시점을 빠르게 확인합니다.",
+          "인원수를 반영해 1인 차이가 전체 여행비에서 얼마나 커지는지 봅니다.",
+          "성수기, 금·토 출발, 조조·심야편 선택 효과를 함께 확인합니다.",
+        ]}
+        criteria={[
+          "기준 운임은 권역별 평균 범위에 기반한 추정값이며 실제 항공권 조회 결과가 아닙니다.",
+          "예매 시점은 출발까지 남은 주 수를 기준으로 U자형 가격 곡선에 가깝게 계산합니다.",
+          "성수기와 출발 임박 조건은 대기 전략의 위험을 더 크게 반영합니다.",
+        ]}
+        faq={FLIGHT_TIMING_FAQ}
+        related={FLIGHT_TIMING_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script define:vars={{ config }}>
+    window.FLIGHT_TIMING_CONFIG = config;
+  </script>
+  <script type="module" src={withBase("/scripts/flight-cheapest-timing-calculator.js")}></script>
+</BaseLayout>

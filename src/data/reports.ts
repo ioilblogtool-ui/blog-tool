@@ -190,6 +190,13 @@ export const reports: ReportMeta[] = [
     badges: ["연금", "IRP", "절세", "2026"],
   },
   {
+    slug: "retirement-pension-dc-db-irp-2026",
+    title: "퇴직연금 DC·DB·IRP 비교 2026",
+    description: "퇴직연금 DB형, DC형, IRP의 구조 차이와 2026년 세액공제 한도, 수익률 해석, 수수료, 퇴직 후 일시금·연금 수령 전략을 한 번에 정리합니다.",
+    order: 25.7,
+    badges: ["퇴직연금", "DB", "DC", "IRP", "2026"],
+  },
+  {
     slug: "bitcoin-gold-sp500-10year-comparison-2026",
     title: "비트코인 vs 금 vs S&P500 10년 수익 비교 2026",
     description: "2016~2026년 비트코인, 금, S&P500, 나스닥100, 코스피에 같은 돈을 투자했을 때의 결과를 수익률, MDD, 회복 기간, 실질 수익까지 함께 비교하는 인터랙티브 리포트입니다.",
@@ -209,6 +216,13 @@ export const reports: ReportMeta[] = [
     description: "도쿄, 오사카, 방콕, 하노이, 파리 등 주요 도시의 항공권·숙소·식비·교통비를 기준으로 2026년 해외여행 총비용을 비교하는 리포트입니다.",
     order: 28,
     badges: ["여행", "비용비교", "2026"],
+  },
+  {
+    slug: "korea-flight-price-comparison-2026",
+    title: "2026 한국인 해외여행 항공권 가격 완전 비교",
+    description: "한국 출발 주요 해외 항공권을 노선별·항공사별·예약 시점별·옵션 포함 총비용 기준으로 비교하는 리포트입니다.",
+    order: 28.5,
+    badges: ["항공권", "해외여행", "2026"],
   },
   {
     slug: "fetal-insurance-guide-2026",
@@ -244,5 +258,12 @@ export const reports: ReportMeta[] = [
     description: "KODEX200, TIGER200 같은 국내 ETF와 삼성전자·SK하이닉스 등 개별주를 10년 수익률, MDD, 세후 순수익 기준으로 비교하는 장기투자 리포트입니다.",
     order: 33,
     badges: ["ETF", "개별주", "10년비교", "2026"],
+  },
+  {
+    slug: "postnatal-care-comparison-2026",
+    title: "2026 산후도우미 vs 산후조리원 완전 비교",
+    description: "산후조리원 2주 비용과 산후도우미 정부지원, 첫째·둘째·쌍태아 상황별 추천 기준을 비교합니다.",
+    order: 34,
+    badges: ["출산", "산후조리", "정부지원", "2026"],
   },
 ];

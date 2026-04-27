@@ -1,0 +1,234 @@
+.postnatal-care-page {
+  .pnc-section {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pnc-section__head {
+    display: grid;
+    gap: 4px;
+  }
+
+  .pnc-section__eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0f6e56;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .pnc-section__sub {
+    font-size: 12px;
+    color: #6c6a64;
+  }
+
+  .pnc-result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .pnc-result-card {
+    display: grid;
+    gap: 6px;
+    padding: 14px 12px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #ebe8df;
+
+    p { font-size: 11px; color: #6c6a64; margin: 0; }
+    strong { font-size: 18px; font-weight: 800; color: #1a1a18; line-height: 1.2; }
+    span { font-size: 11px; line-height: 1.5; color: #6c6a64; }
+
+    &--support {
+      border-color: #1d9e75;
+      background: #f0faf6;
+      strong { color: #0f6e56; }
+    }
+
+    &--final {
+      border-color: #e8a000;
+      background: #fffbeb;
+      strong { color: #92400e; font-size: 20px; }
+    }
+  }
+
+  .pnc-status-panel {
+    display: grid;
+    gap: 8px;
+  }
+
+  .pnc-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #4d4a43;
+    p { margin: 0; }
+  }
+
+  .pnc-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.6;
+    flex-shrink: 0;
+
+    &--official { background: #e6f4ea; color: #1a6b3a; }
+    &--ref      { background: #eef4ff; color: #1a3e8c; }
+    &--estimate { background: #fff4e5; color: #7a4600; }
+  }
+
+  .pnc-interpretation {
+    font-size: 12px;
+    color: #4d4a43;
+    line-height: 1.65;
+    margin: 0;
+    padding: 10px 12px;
+    background: #f8f7f3;
+    border-radius: 8px;
+  }
+
+  .pnc-chart-wrap {
+    max-width: 360px;
+    margin: 0 auto 16px;
+    canvas { max-height: 240px; }
+  }
+
+  .pnc-guide-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .pnc-guide-card {
+    padding: 14px 16px;
+    border: 1px solid #ebe8df;
+    border-radius: 10px;
+    background: #fff;
+    display: grid;
+    gap: 6px;
+
+    span { font-size: 11px; font-weight: 700; color: #6c6a64; }
+    strong { font-size: 14px; font-weight: 800; color: #1a1a18; line-height: 1.4; }
+    p { font-size: 12px; color: #4d4a43; line-height: 1.6; margin: 0; }
+  }
+
+  .pnc-compare-grid {
+    display: grid;
+    gap: 10px;
+
+    @media (min-width: 560px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .pnc-mini-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a18;
+    margin: 0 0 10px;
+  }
+
+  .pnc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+
+    li {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #4d4a43;
+      padding-left: 14px;
+      position: relative;
+
+      &::before {
+        content: "·";
+        position: absolute;
+        left: 0;
+        color: #1a56db;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .pnc-related-grid {
+    display: grid;
+    gap: 8px;
+
+    @media (min-width: 560px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .pnc-related-card {
+    display: block;
+    padding: 12px 14px;
+    border: 1.5px solid #e2e2dc;
+    border-radius: 10px;
+    background: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a18;
+    transition: border-color 0.12s, background 0.12s;
+
+    &:hover {
+      border-color: #1d9e75;
+      background: #f0faf6;
+    }
+  }
+
+  .pnc-reference-grid {
+    display: grid;
+    gap: 8px;
+
+    @media (min-width: 560px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .pnc-reference-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border: 1.5px solid #e2e2dc;
+    border-radius: 10px;
+    background: #fff;
+    text-decoration: none;
+    transition: border-color 0.12s, background 0.12s;
+
+    &:hover {
+      border-color: #1d9e75;
+      background: #f0faf6;
+    }
+
+    span {
+      align-self: start;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #f4f3f0;
+      color: #5f5e5a;
+    }
+
+    strong { font-size: 13px; font-weight: 700; color: #1a1a18; line-height: 1.4; }
+    p { font-size: 11px; color: #5f5e5a; line-height: 1.5; margin: 0; }
+  }
+}
