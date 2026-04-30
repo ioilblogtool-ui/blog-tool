@@ -214,6 +214,16 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     category: "asset",
     isNew: true,
   },
+  "personal-vs-national-pension-2026": {
+    eyebrow: "연금 수령액",
+    tags: [
+      { label: "국민연금", mod: "asset" },
+      { label: "개인연금", mod: "asset" },
+      { label: "노후", mod: "asset" },
+    ],
+    category: "asset",
+    isNew: true,
+  },
   "bitcoin-gold-sp500-10year-comparison-2026": {
     eyebrow: "투자 비교",
     tags: [
@@ -240,6 +250,16 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
       { label: "산후도우미", mod: "salary" },
       { label: "산후조리원", mod: "salary" },
       { label: "정부지원", mod: "salary" },
+    ],
+    category: "life",
+    isNew: true,
+  },
+  "domestic-vs-overseas-travel-cost-2026": {
+    eyebrow: "여행비 비교",
+    tags: [
+      { label: "국내vs해외", mod: "salary" },
+      { label: "2박3일", mod: "salary" },
+      { label: "2026", mod: "salary" },
     ],
     category: "life",
     isNew: true,
@@ -317,12 +337,81 @@ const reportToToolBridges = [
     ],
   },
 ];
+
+const reportBasisCards = [
+  {
+    title: "공개 자료 우선",
+    desc: "연봉, 부동산, 연금, 생활비 리포트는 정부·공공기관·기업 공개자료 또는 원문 기준을 먼저 확인하고, 페이지 안에서 기준일과 해석 범위를 함께 안내합니다.",
+  },
+  {
+    title: "비교 기준 통일",
+    desc: "서로 다른 출처의 숫자를 비교할 때는 연도, 단위, 세전/세후, 면적, 환율처럼 결과를 흔드는 기준을 먼저 맞춥니다.",
+  },
+  {
+    title: "해석은 참고용",
+    desc: "리포트는 시장과 제도 흐름을 빠르게 읽기 위한 참고 콘텐츠입니다. 실제 계약, 신청, 투자 판단 전에는 원출처와 최신 공지를 다시 확인해야 합니다.",
+  },
+];
+
+const reportUsageExamples = [
+  {
+    title: "예시 1. 집을 살 수 있을지 감을 잡고 싶을 때",
+    desc: "서울 집값 리포트로 지역별 84㎡ 가격과 소득 대비 체감을 먼저 읽고, 집 마련 자금 계산기로 내 소득·자산 기준 대출 가능성과 초기 자금을 다시 계산합니다.",
+    links: [
+      { href: "/reports/seoul-84-apartment-prices/", label: "서울 국평 가격 비교" },
+      { href: "/reports/seoul-housing-2016-vs-2026/", label: "서울 집값 10년 비교" },
+      { href: "/tools/home-purchase-fund/", label: "집 마련 자금 계산기" },
+    ],
+  },
+  {
+    title: "예시 2. 노후 준비 방향을 잡고 싶을 때",
+    desc: "국민연금과 개인연금 리포트로 제도 흐름을 먼저 보고, 국민연금·IRP 계산기로 내 납입기간과 예상 수령액을 넣어 현실적인 범위를 확인합니다.",
+    links: [
+      { href: "/reports/personal-vs-national-pension-2026/", label: "개인연금 vs 국민연금" },
+      { href: "/tools/national-pension-calculator/", label: "국민연금 계산기" },
+      { href: "/tools/irp-pension-calculator/", label: "IRP 연금 계산기" },
+    ],
+  },
+];
+
+const reportFaq = [
+  {
+    question: "비교 리포트는 계산기와 무엇이 다른가요?",
+    answer: "계산기는 사용자가 직접 입력한 값으로 결과를 계산하는 도구이고, 리포트는 공개 데이터와 비교 기준을 바탕으로 시장 흐름과 제도 차이를 읽는 콘텐츠입니다.",
+  },
+  {
+    question: "리포트의 수치를 공식 자료로 봐도 되나요?",
+    answer: "리포트는 원출처를 바탕으로 재구성한 참고용 정보입니다. 실제 계약, 신청, 투자, 세금 신고 전에는 반드시 원문 자료와 최신 공지를 다시 확인해야 합니다.",
+  },
+  {
+    question: "어떤 리포트부터 읽는 것이 좋나요?",
+    answer: "지금 의사결정과 가장 가까운 주제부터 읽는 것이 좋습니다. 이직 중이면 연봉 리포트, 집 마련을 고민 중이면 부동산 리포트, 노후 준비 중이면 연금·투자 리포트부터 보세요.",
+  },
+  {
+    question: "리포트를 읽은 뒤에는 무엇을 하면 좋나요?",
+    answer: "리포트로 시장 기준과 비교 축을 파악한 뒤 관련 계산기에 내 소득, 자산, 지출, 납입기간 같은 값을 넣어 개인 상황으로 다시 확인하는 흐름을 권장합니다.",
+  },
+];
+
+const reportFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: reportFaq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
 ---
 
 <BaseLayout
   title="비교 리포트 모음 | 비교계산소"
   description="직접 입력 없이 공개 데이터를 선택하고 비교해서 읽는 인터랙티브 리포트 모음입니다. 연봉, 자산, 부동산 데이터를 빠르게 비교할 수 있습니다."
   ogImage="/og/reports-index.png"
+  jsonLd={reportFaqJsonLd}
 >
   <SiteHeader />
 
@@ -368,6 +457,46 @@ const reportToToolBridges = [
           <strong class="reports-intro-card__title">리포트로 맥락을 읽고 계산기로 내 상황 확인</strong>
           <p class="reports-intro-card__desc">시장 흐름과 공개 데이터를 먼저 이해한 뒤 개인 입력값으로 다시 계산하면 훨씬 실전적인 판단이 가능합니다.</p>
         </article>
+      </div>
+    </section>
+
+    <section class="reports-basis">
+      <div class="reports-section-head">
+        <div>
+          <p class="reports-section-head__eyebrow">작성 기준</p>
+          <h2>리포트는 기준을 맞춘 뒤 읽습니다</h2>
+        </div>
+        <p class="reports-section-head__summary">비교 리포트는 수치 자체보다 단위, 기준일, 해석 범위를 먼저 맞추는 것이 중요합니다.</p>
+      </div>
+      <div class="reports-basis__grid">
+        {reportBasisCards.map((item) => (
+          <article class="reports-basis-card">
+            <strong>{item.title}</strong>
+            <p>{item.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="reports-examples">
+      <div class="reports-section-head">
+        <div>
+          <p class="reports-section-head__eyebrow">활용 예시</p>
+          <h2>리포트와 계산기를 이어서 보는 방법</h2>
+        </div>
+      </div>
+      <div class="reports-examples__grid">
+        {reportUsageExamples.map((example) => (
+          <article class="reports-example-card">
+            <h3>{example.title}</h3>
+            <p>{example.desc}</p>
+            <div class="reports-example-card__links">
+              {example.links.map((link) => (
+                <a href={withBase(link.href)}>{link.label}</a>
+              ))}
+            </div>
+          </article>
+        ))}
       </div>
     </section>
 
@@ -563,6 +692,23 @@ const reportToToolBridges = [
               ))}
             </div>
           </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="reports-faq">
+      <div class="reports-section-head">
+        <div>
+          <p class="reports-section-head__eyebrow">FAQ</p>
+          <h2>비교 리포트 자주 묻는 질문</h2>
+        </div>
+      </div>
+      <div class="reports-faq__list">
+        {reportFaq.map((item, index) => (
+          <details class="reports-faq-item" open={index === 0}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
         ))}
       </div>
     </section>

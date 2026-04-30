@@ -28,7 +28,10 @@
 
 .reports-intro,
 .reports-picks,
-.reports-bridge {
+.reports-bridge,
+.reports-basis,
+.reports-examples,
+.reports-faq {
   margin: 24px 0;
 }
 
@@ -276,14 +279,22 @@
 }
 
 .reports-picks__grid,
-.reports-bridge__grid {
+.reports-bridge__grid,
+.reports-basis__grid,
+.reports-examples__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
+.reports-basis__grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .reports-pick-card,
-.reports-bridge-card {
+.reports-bridge-card,
+.reports-basis-card,
+.reports-example-card {
   border: 0.5px solid #cecdca;
   border-radius: 10px;
   padding: 16px 18px;
@@ -301,7 +312,8 @@
 }
 
 .reports-pick-card strong,
-.reports-bridge-card strong {
+.reports-bridge-card strong,
+.reports-basis-card strong {
   display: block;
   margin-bottom: 8px;
   font-size: 14px;
@@ -311,21 +323,38 @@
 }
 
 .reports-pick-card p,
-.reports-bridge-card p {
+.reports-bridge-card p,
+.reports-basis-card p,
+.reports-example-card p,
+.reports-faq-item p {
   margin: 0;
   font-size: 12px;
   color: #6f6d67;
   line-height: 1.7;
 }
 
-.reports-bridge-card__links {
+.reports-example-card {
+  background: #fbfaf7;
+}
+
+.reports-example-card h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a18;
+  line-height: 1.45;
+}
+
+.reports-bridge-card__links,
+.reports-example-card__links {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
   margin-top: 12px;
 }
 
-.reports-bridge-card__links a {
+.reports-bridge-card__links a,
+.reports-example-card__links a {
   display: inline-flex;
   align-items: center;
   padding: 5px 10px;
@@ -336,6 +365,31 @@
   font-size: 11px;
   font-weight: 500;
   text-decoration: none;
+}
+
+.reports-faq__list {
+  display: grid;
+  gap: 10px;
+}
+
+.reports-faq-item {
+  border: 0.5px solid #cecdca;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0 16px;
+}
+
+.reports-faq-item summary {
+  cursor: pointer;
+  padding: 14px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a18;
+  line-height: 1.5;
+}
+
+.reports-faq-item p {
+  padding-bottom: 14px;
 }
 
 .reports-series {
@@ -498,6 +552,8 @@
 
   .reports-picks__grid,
   .reports-bridge__grid,
+  .reports-basis__grid,
+  .reports-examples__grid,
   .reports-card-grid,
   .reports-coming__grid {
     grid-template-columns: 1fr;

@@ -2,11 +2,99 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import CalculatorHero from "../components/CalculatorHero.astro";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const sourcePrinciples = [
+  {
+    title: "공식 기준",
+    desc: "정부·공공기관·기업 공개자료처럼 원문 기준이 있는 수치는 공식 기준을 우선 확인합니다.",
+  },
+  {
+    title: "참고 기준",
+    desc: "시장 평균, 공개 기사, 비교 자료처럼 해석이 필요한 값은 참고 성격을 분명히 표시합니다.",
+  },
+  {
+    title: "시뮬레이션",
+    desc: "투자수익률, 생활비, 성과급처럼 개인 조건에 따라 크게 달라지는 값은 추정 범위로 안내합니다.",
+  },
+];
+
+const workflowSteps = [
+  "사용자가 실제로 궁금해하는 비교 질문을 먼저 정리합니다.",
+  "공식 기준, 공개 자료, 기존 계산식을 확인하고 페이지 안에 기준일과 가정을 남깁니다.",
+  "기본값만 보여주지 않고 보수적 값, 평균적 값, 여유값을 비교할 수 있게 구성합니다.",
+  "FAQ, 관련 계산기, 리포트 링크를 추가해 검색에서 바로 들어와도 다음 행동을 찾을 수 있게 합니다.",
+];
+
+const exampleUseCases = [
+  {
+    title: "이직·연봉 판단",
+    desc: "연봉 인상률, 실수령, 협상안, 성과급을 나눠 보고 세전 금액과 체감 금액의 차이를 이해할 수 있게 돕습니다.",
+    links: [
+      { href: "/tools/salary/", label: "연봉 인상 계산기" },
+      { href: "/tools/negotiation/", label: "연봉 협상 계산기" },
+      { href: "/reports/new-employee-salary-2026/", label: "신입 초봉 리포트" },
+    ],
+  },
+  {
+    title: "출산·육아 계획",
+    desc: "지원금, 육아휴직 급여, 단축근무, 양육비처럼 시점별로 달라지는 현금흐름을 함께 볼 수 있게 연결합니다.",
+    links: [
+      { href: "/tools/birth-support-total/", label: "출산 지원금 계산기" },
+      { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+      { href: "/reports/baby-cost-guide-first-year/", label: "첫해 육아비 리포트" },
+    ],
+  },
+];
+
+const policyLinks = [
+  { href: "/tools/", title: "계산기 모음", desc: "현재 제공 중인 계산기와 주제별 탐색 경로를 확인합니다." },
+  { href: "/reports/", title: "비교 리포트", desc: "공개 데이터를 비교해 읽는 리포트 목록을 확인합니다." },
+  { href: "/disclaimer/", title: "이용 안내와 면책", desc: "계산 결과의 참고 범위와 실제 차이가 생길 수 있는 이유를 확인합니다." },
+  { href: "/contact/", title: "문의와 오류 제보", desc: "수정 요청, 오류 제보, 업데이트 제안을 보낼 수 있습니다." },
+];
+
+const aboutFaq = [
+  {
+    question: "비교계산소의 계산 결과는 공식 결과인가요?",
+    answer: "아니요. 비교계산소의 계산 결과는 입력값과 공개 기준을 바탕으로 한 참고용 정보입니다. 실제 신청, 계약, 세금 신고, 급여 정산 전에는 공식 기관이나 회사 기준을 다시 확인해야 합니다.",
+  },
+  {
+    question: "계산 기준은 어떻게 정하나요?",
+    answer: "공식 자료가 있는 항목은 정부·공공기관·기업 공개자료를 우선하고, 변동성이 큰 값은 참고 또는 시뮬레이션 성격으로 구분해 설명합니다.",
+  },
+  {
+    question: "오류나 업데이트 요청은 어디로 보내면 되나요?",
+    answer: "문의 페이지를 통해 계산 오류, 기준 변경, 추가했으면 하는 계산기나 리포트 주제를 보낼 수 있습니다.",
+  },
+  {
+    question: "개인정보를 입력해야 하나요?",
+    answer: "대부분의 계산기는 회원가입 없이 사용할 수 있으며, 민감한 개인정보를 요구하지 않습니다. 사이트 운영과 분석 관련 원칙은 개인정보처리방침에서 확인할 수 있습니다.",
+  },
+];
+
+const aboutFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: aboutFaq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
 ---
 
 <BaseLayout
-  title="비교계산소 소개 | About"
-  description="비교계산소가 어떤 기준으로 계산 도구와 설명형 콘텐츠를 제공하는지 소개합니다."
+  title="비교계산소 소개 | 운영 기준과 계산 원칙"
+  description="비교계산소가 연봉, 육아휴직, 투자, 부동산 계산기와 리포트를 어떤 기준으로 만들고 해석하는지 안내합니다."
+  jsonLd={aboutFaqJsonLd}
 >
   <SiteHeader />
 
@@ -35,6 +123,21 @@ import CalculatorHero from "../components/CalculatorHero.astro";
         </div>
       </article>
 
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Source Policy</p>
+          <h2 class="ip-section__title">공식값과 추정값을 구분합니다</h2>
+        </div>
+        <div class="info-grid">
+          {sourcePrinciples.map((item) => (
+            <div class="info-card">
+              <strong>{item.title}</strong>
+              <p>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </article>
+
       <article class="panel info-panel">
         <div class="ip-section__head">
           <p class="ip-section__eyebrow">Editorial Policy</p>
@@ -47,6 +150,16 @@ import CalculatorHero from "../components/CalculatorHero.astro";
           <li>계산 결과는 참고용으로 제공되며, 중요한 판단이 필요한 경우에는 반드시 회사 공지, 기관 안내, 공식 자료를 함께 확인해야 합니다.</li>
           <li>개인별 상황, 회사별 지급 기준, 예외 조건에 따라 실제 결과는 달라질 수 있습니다.</li>
         </ul>
+      </article>
+
+      <article class="panel info-panel">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Workflow</p>
+          <h2 class="ip-section__title">페이지를 만들 때 확인하는 순서</h2>
+        </div>
+        <ol class="info-steps">
+          {workflowSteps.map((item) => <li>{item}</li>)}
+        </ol>
       </article>
 
       <article class="panel info-panel info-panel--wide">
@@ -67,6 +180,56 @@ import CalculatorHero from "../components/CalculatorHero.astro";
             <strong>설명 보강</strong>
             <p>단순한 계산 도구를 넘어 실제 판단에 도움이 되는 설명형 콘텐츠를 함께 제공하는 사이트를 지향합니다.</p>
           </div>
+        </div>
+      </article>
+
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Use Cases</p>
+          <h2 class="ip-section__title">이런 상황에서 비교계산소를 활용할 수 있습니다</h2>
+        </div>
+        <div class="info-example-grid">
+          {exampleUseCases.map((item) => (
+            <section class="info-example-card">
+              <h3>{item.title}</h3>
+              <p>{item.desc}</p>
+              <div class="info-link-row">
+                {item.links.map((link) => (
+                  <a href={withBase(link.href)}>{link.label}</a>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Navigation</p>
+          <h2 class="ip-section__title">운영 기준과 관련 페이지</h2>
+        </div>
+        <div class="info-link-grid">
+          {policyLinks.map((link) => (
+            <a class="info-link-card" href={withBase(link.href)}>
+              <strong>{link.title}</strong>
+              <p>{link.desc}</p>
+            </a>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">FAQ</p>
+          <h2 class="ip-section__title">비교계산소 소개 FAQ</h2>
+        </div>
+        <div class="info-faq-list">
+          {aboutFaq.map((item, index) => (
+            <details class="info-faq-item" open={index === 0}>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
         </div>
       </article>
     </section>

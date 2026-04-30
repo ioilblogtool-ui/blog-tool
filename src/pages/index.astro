@@ -36,6 +36,7 @@ const topicBySlug: Record<string, string> = {
   "child-tutoring-cost-calculator": "육아·양육",
   "fetal-insurance-calculator": "육아·복지·출산",
   "home-purchase-fund": "부동산·내집마련",
+  "mortgage-prepayment-penalty": "부동산·내집마련",
   "jeonwolse-conversion": "부동산·내집마련",
   "apt-cheonyak-gajum-calculator": "부동산·내집마련",
   "salary-tier": "연봉·이직",
@@ -48,9 +49,11 @@ const topicBySlug: Record<string, string> = {
   "coin-tax-calculator": "투자·재테크",
   "domestic-stock-capital-gains-tax": "투자·재테크",
   "retirement-fund-depletion": "투자·재테크",
+  "savings-vs-etf-retirement": "투자·재테크",
   "stock-breakeven-calculator": "투자·재테크",
   "ai-stack-cost-calculator": "AI·생산성",
   "ai-automation-hourly-roi": "AI·생산성",
+  "ai-subscription-cost": "AI·생산성",
   "postnatal-care-cost": "육아휴직·출산",
   "pregnancy-birth-cost": "육아휴직·출산",
 };
@@ -94,6 +97,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "fetal-insurance-guide-2026": { category: "life", isNew: true },
   "national-pension-generational-comparison-2026": { category: "asset", isNew: true },
   "pension-irp-comparison-2026": { category: "asset", isNew: true },
+  "personal-vs-national-pension-2026": { category: "asset", isNew: true },
   "ai-job-salary-impact-2026": { category: "salary", isNew: true },
   "etf-vs-direct-stock-10year-2026": { category: "asset", isNew: true },
 };
@@ -109,17 +113,101 @@ const reportCategoryLabels: Record<HomeReportCategory, string> = {
 const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "estate", "asset", "life", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
+const homeIntroPoints = [
+  {
+    title: "빠른 계산",
+    desc: "연봉, 성과급, 육아휴직, 투자처럼 자주 비교하는 숫자를 입력값 중심으로 바로 확인합니다.",
+  },
+  {
+    title: "맥락 해석",
+    desc: "결과가 왜 달라지는지, 어떤 조건을 보수적으로 봐야 하는지 각 계산기와 리포트에서 함께 설명합니다.",
+  },
+  {
+    title: "다음 행동",
+    desc: "계산 결과만 보고 끝나지 않도록 관련 계산기, 리포트, 공식 기준 확인 동선을 연결합니다.",
+  },
+];
+
+const homeBasisCards = [
+  {
+    title: "공식 기준 우선",
+    desc: "국민연금, 육아휴직, 세금, 지원금처럼 제도와 연결된 계산은 정부·공공기관·공개 고시 기준을 우선 확인합니다.",
+  },
+  {
+    title: "추정값 분리",
+    desc: "성과급, 생활비, 투자수익률처럼 확정하기 어려운 값은 참고 또는 시뮬레이션 성격으로 안내하고 단정 표현을 피합니다.",
+  },
+  {
+    title: "기준일 확인",
+    desc: "정책과 제도는 바뀔 수 있으므로 개별 페이지의 기준일을 확인하고, 실제 신청 전에는 원문 공지와 최신 조건을 다시 보는 것이 좋습니다.",
+  },
+];
+
+const homeExamples = [
+  {
+    title: "이직 제안이 들어왔을 때",
+    desc: "세전 연봉 인상률만 보면 실제 체감액을 놓치기 쉽습니다. 연봉 인상 계산기로 실수령 변화를 보고, 연봉 협상 계산기로 제안안과 목표안을 비교한 뒤, 연봉 티어 계산기로 시장 위치를 함께 확인해 보세요.",
+    links: [
+      { href: "/tools/salary/", label: "연봉 인상 계산기" },
+      { href: "/tools/negotiation/", label: "연봉 협상 계산기" },
+      { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+    ],
+  },
+  {
+    title: "출산과 육아휴직을 준비할 때",
+    desc: "지원금 총액보다 더 중요한 것은 월별 현금흐름입니다. 출산지원금, 육아휴직 급여, 6+6 제도 적용 가능성을 이어서 보면 언제 소득이 줄고 언제 보전되는지 더 분명해집니다.",
+    links: [
+      { href: "/tools/birth-support-total/", label: "출산~2세 지원금 계산기" },
+      { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+      { href: "/tools/six-plus-six/", label: "6+6 육아휴직 계산기" },
+    ],
+  },
+];
+
+const homeFaq = [
+  {
+    question: "비교계산소는 어떤 사이트인가요?",
+    answer: "연봉, 성과급, 육아휴직, 출산지원금, 투자, 부동산처럼 일상에서 자주 비교하는 숫자를 계산기와 리포트 형태로 정리한 한국어 정보 사이트입니다.",
+  },
+  {
+    question: "계산 결과를 그대로 신청 금액이나 확정 금액으로 봐도 되나요?",
+    answer: "아니요. 계산 결과는 입력값과 공개 기준을 바탕으로 한 참고용 결과입니다. 실제 신청, 계약, 세금 신고, 급여 정산 전에는 공식 기관, 회사, 금융기관의 최신 기준을 다시 확인해야 합니다.",
+  },
+  {
+    question: "처음 방문했다면 어디부터 보면 좋나요?",
+    answer: "가장 가까운 의사결정부터 시작하는 것이 좋습니다. 이직 중이면 연봉·협상 계산기, 출산 준비 중이면 육아휴직·지원금 계산기, 장기 자금 계획 중이면 투자·연금 계산기를 먼저 확인해 보세요.",
+  },
+  {
+    question: "리포트와 계산기는 어떻게 다르나요?",
+    answer: "계산기는 내 입력값으로 결과를 빠르게 확인하는 도구이고, 리포트는 여러 기준을 비교해 배경과 흐름을 해석하는 콘텐츠입니다. 둘을 함께 보면 숫자의 맥락을 더 쉽게 잡을 수 있습니다.",
+  },
+];
+
 const trustLinks = [
   { href: withBase("/about/"), title: "비교계산소 소개", desc: "운영 기준과 계산기 구성 방식을 확인합니다." },
   { href: withBase("/privacy/"), title: "개인정보처리방침", desc: "쿠키·외부 서비스·수집 정보 처리 원칙" },
   { href: withBase("/contact/"), title: "문의 안내", desc: "오류 제보·기능 제안·제휴 문의 범위" },
   { href: withBase("/disclaimer/"), title: "이용안내 및 면책", desc: "결과 해석 방법과 실제 지급액 차이 안내" },
 ];
+
+const homeFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: homeFaq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
 ---
 
 <BaseLayout
-  title="비교계산소 — 연봉·성과급·육아휴직 계산기"
-  description="연봉, 퇴직금, 성과급, 육아휴직처럼 자주 확인하는 수치를 빠르게 계산하고 비교할 수 있도록 정리한 정보형 계산 사이트입니다."
+  title="비교계산소 | 연봉·성과급·육아휴직·투자 계산기"
+  description="연봉, 성과급, 육아휴직, 출산지원금, 투자, 부동산 계산기를 한곳에서 찾고 기준일, 가정, 해석 방법까지 함께 확인하세요."
+  jsonLd={homeFaqJsonLd}
 >
   <SiteHeader />
 
@@ -162,6 +250,27 @@ const trustLinks = [
       <div class="home-actions">
         <a class="button button--primary" href={withBase("/tools/")}>계산기 보기</a>
         <a class="home-actions__link" href={withBase("/reports/")}>리포트 보기</a>
+      </div>
+    </section>
+
+    <section class="home-section home-intro">
+      <div class="home-section__head home-section__head--stack">
+        <div>
+          <p class="home-section__eyebrow">사이트 안내</p>
+          <h2>비교계산소는 숫자 판단을 돕는 계산기 허브입니다</h2>
+        </div>
+        <div class="home-section__copy">
+          <p>비교계산소는 연봉, 성과급, 출산·육아 제도, 투자, 부동산처럼 생활 속에서 자주 비교해야 하는 숫자를 한국어 계산기와 리포트로 정리합니다. 검색에서 바로 들어온 사용자도 입력값, 계산 기준, 결과 해석을 한 화면에서 이해할 수 있도록 구성하는 것이 목표입니다.</p>
+          <p>계산 결과는 중요한 결정을 앞두고 빠르게 방향을 잡기 위한 참고 정보입니다. 공식 기준이 있는 항목은 원문 기준을 우선하고, 생활비·투자수익률·성과급처럼 변동성이 큰 항목은 추정 또는 시뮬레이션으로 구분해 안내합니다.</p>
+        </div>
+      </div>
+      <div class="home-intro-grid">
+        {homeIntroPoints.map((item) => (
+          <article class="home-info-card">
+            <strong>{item.title}</strong>
+            <p>{item.desc}</p>
+          </article>
+        ))}
       </div>
     </section>
 
@@ -217,6 +326,46 @@ const trustLinks = [
           </div>
           <span class="home-feat-card__link">→</span>
         </a>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <div class="home-section__head home-section__head--stack">
+        <div>
+          <p class="home-section__eyebrow">계산 기준</p>
+          <h2>공식 기준과 추정값을 나눠서 봅니다</h2>
+        </div>
+        <p class="home-section__summary">제도형 계산기는 기준일과 출처 확인이 중요하고, 생활형 계산기는 입력값 변화에 따른 범위 해석이 중요합니다.</p>
+      </div>
+      <div class="home-basis-grid">
+        {homeBasisCards.map((item) => (
+          <article class="home-info-card">
+            <strong>{item.title}</strong>
+            <p>{item.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="home-section">
+      <div class="home-section__head home-section__head--stack">
+        <div>
+          <p class="home-section__eyebrow">활용 예시</p>
+          <h2>이런 상황에서 바로 이어서 볼 수 있습니다</h2>
+        </div>
+      </div>
+      <div class="home-example-grid">
+        {homeExamples.map((example) => (
+          <article class="home-example-card">
+            <h3>{example.title}</h3>
+            <p>{example.desc}</p>
+            <div class="home-example-card__links">
+              {example.links.map((link) => (
+                <a href={withBase(link.href)}>{link.label}</a>
+              ))}
+            </div>
+          </article>
+        ))}
       </div>
     </section>
 
@@ -368,6 +517,23 @@ const trustLinks = [
             </a>
           </Fragment>
         )}
+      </div>
+    </section>
+
+    <section class="home-section">
+      <div class="home-section__head home-section__head--stack">
+        <div>
+          <p class="home-section__eyebrow">FAQ</p>
+          <h2>처음 방문한 분들이 자주 묻는 질문</h2>
+        </div>
+      </div>
+      <div class="home-faq-list">
+        {homeFaq.map((item, index) => (
+          <details class="home-faq-item" open={index === 0}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
       </div>
     </section>
 
