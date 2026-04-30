@@ -90,10 +90,10 @@
 | 2 | `/tools/` | 계산기 허브 보강 | `검수필요` | 기준/해석, 활용 예시 2개, FAQ, 운영 기준 링크 보강. `npm run build` 통과 |
 | 3 | `/reports/` | 리포트 허브 보강 | `검수필요` | 작성 기준/해석, 활용 예시 2개, FAQ, JSON-LD 보강. `npm run build` 통과 |
 | 4 | `/about/` | 사이트 신뢰도 보강 | `검수필요` | 운영 목적, 공식/참고/시뮬레이션 기준, 작업 절차, 활용 예시 2개, 정책 링크, FAQ, JSON-LD 보강. `npm run build` 통과 |
-| 5 | `/tools/national-pension-calculator/` | 정책형 계산기 | `대기` | `SeoContent` 블록 추가 필요 |
-| 6 | `/tools/negotiation/` | 급여형 계산기 | `대기` | 협상 결과 해석과 예시 보강 |
-| 7 | `/tools/birth-support-total/` | 정책형 계산기 | `대기` | 지원금 기준일과 지역 차이 설명 보강 |
-| 8 | `/tools/retirement/` | 장기 추정 계산기 | `대기` | 은퇴자금 가정과 민감도 해석 보강 |
+| 5 | `/tools/national-pension-calculator/` | 정책형 계산기 | `검수필요` | `SeoContent` 추가, 2026 기준/가정, 조기·정상·연기 해석, 예시 2개, FAQ/관련 링크 보강. `npm run build` 통과 |
+| 6 | `/tools/negotiation/` | 급여형 계산기 | `검수필요` | 협상 결과 해석, 2026 간이 실수령 기준, 예시 2개, FAQ/관련 링크 보강. `npm run build` 통과 |
+| 7 | `/tools/birth-support-total/` | 정책형 계산기 | `검수필요` | 지원금 기준일, 지역별 지원 제외 안내, 예시 2개, FAQ/관련 링크 보강. `npm run build` 통과 |
+| 8 | `/tools/retirement/` | 장기 추정 계산기 | `검수필요` | 평균임금/세후 추정 기준, 퇴사 시점 민감도 예시 2개, FAQ/관련 링크 보강. `npm run build` 통과 |
 | 9 | `/tools/parental-leave/` | 정책형 계산기 | `대기` | 제도 기준과 급여 해석 보강 |
 | 10 | `/tools/parental-leave-pay/` | 정책형 계산기 | `대기` | 급여 산식, 상한/하한 설명 보강 |
 | 11 | `/tools/salary/` | 급여형 계산기 | `대기` | 공제 기준과 실수령 해석 보강 |

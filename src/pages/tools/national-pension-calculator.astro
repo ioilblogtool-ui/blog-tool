@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
 import SimpleToolShell from "../../components/SimpleToolShell.astro";
 import {
@@ -13,6 +14,7 @@ import {
   NPC_LIFE_EXPECTANCY_PRESETS,
   NPC_NEXT_CONTENT,
   NPC_REFERENCE_CARDS,
+  NPC_RELATED_LINKS,
   NPC_RULES,
 } from "../../data/nationalPensionCalculator";
 
@@ -347,42 +349,29 @@ const faqSchema = NPC_FAQ.map((item) => ({
       </div>
     </section>
 
-    <section slot="seo" class="content-section npc-section">
-      <div class="panel">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-heading__eyebrow">상세 안내</p>
-            <h2 class="panel__title">국민연금 계산기를 이렇게 읽으면 됩니다</h2>
-          </div>
-          <p class="panel-heading__summary">검색에서 바로 들어와도 계산 기준과 해석 포인트를 한 번에 파악할 수 있게 정리했습니다.</p>
-        </div>
-        <div class="stack">
-          <p>이 계산기는 국민연금공단 공식 조회를 대신하는 서비스가 아니라, 현재 나이와 소득, 가입기간을 기준으로 조기·정상·연기 수령 차이를 빠르게 비교하는 추정 도구입니다.</p>
-          <p>예상 월 연금, 총 납입액, 손익분기 연령, 목표 생활비 대비 부족분을 같이 보여주기 때문에 노후 자금 흐름을 감으로 보지 않고 숫자로 확인하는 용도에 맞습니다.</p>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2 class="panel__title">계산 기준과 해석 포인트</h2>
-        <ul class="seo-list">
-          <li>2026년 기준 보험료율 9.5%, 소득대체율 43%, A값 319.4만원을 추정 모델에 반영했습니다.</li>
-          <li>조기노령연금은 매월 0.5% 감액, 연기연금은 매월 0.6% 증액 규칙을 적용합니다.</li>
-          <li>실질가치는 입력한 물가상승률 가정을 반영한 참고값입니다.</li>
-        </ul>
-      </div>
-
-      <div class="panel">
-        <h2 class="panel__title">자주 묻는 질문</h2>
-        <div class="faq-list">
-          {NPC_FAQ.map((item, index) => (
-            <details class="faq-item" open={index === 0}>
-              <summary>{item.question}</summary>
-              <p>{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="국민연금 예상수령액 계산기를 이렇게 읽으면 됩니다"
+        intro={[
+          "국민연금 예상수령액 계산기는 국민연금공단 공식 조회를 대신하는 서비스가 아니라, 현재 나이와 소득, 가입기간을 기준으로 조기·정상·연기 수령 차이를 빠르게 비교하는 추정 도구입니다.",
+          "예상 월 연금, 총 납입액, 손익분기 연령, 목표 생활비 대비 부족분을 같이 보여주기 때문에 노후 자금 흐름을 감으로 보지 않고 숫자로 확인하는 용도에 맞습니다. 특히 은퇴 전후 현금흐름을 처음 점검하거나, 개인연금·IRP를 얼마나 추가로 준비할지 가늠할 때 유용합니다.",
+        ]}
+        inputPoints={[
+          "현재 나이, 가입 시작 연도, 월소득 또는 보험료를 입력해 예상 월 연금과 총 납입액을 확인할 수 있습니다.",
+          "조기 수령, 정상 수령, 연기 수령을 같은 기준에서 비교해 월 수령액과 손익분기 연령 차이를 볼 수 있습니다.",
+          "목표 노후 생활비를 넣으면 국민연금만으로 부족한 월 금액을 바로 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "기준일은 2026년 가정이며 보험료율 9.5%, 소득대체율 43%, A값 319.4만원을 추정 모델에 반영했습니다.",
+          "조기노령연금은 매월 0.5% 감액, 연기연금은 매월 0.6% 증액 규칙을 적용합니다.",
+          "예시 1: 40세, 2010년 가입, 월소득 300만원, 60세까지 납입 가정으로 정상 수령과 연기 수령의 월액 차이를 비교할 수 있습니다.",
+          "예시 2: 납입 공백 3년과 물가상승률 3%를 넣어 실질가치 월 연금과 생활비 부족분이 얼마나 달라지는지 점검할 수 있습니다.",
+          "실제 수령액은 개인별 가입 이력, 소득 재평가, 수급 시점 제도 변화에 따라 달라질 수 있으므로 공식 조회 전 참고값으로만 봐야 합니다.",
+        ]}
+        faq={NPC_FAQ}
+        related={NPC_RELATED_LINKS}
+      />
+    </Fragment>
   </SimpleToolShell>
 
   <script id="npcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
