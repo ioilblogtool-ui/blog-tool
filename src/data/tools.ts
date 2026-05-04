@@ -561,6 +561,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "travel-expense-split",
+    title: "여행 경비 분담 계산기",
+    description: "친구·커플·가족 여행 후 선결제자, 불참 항목, 더치페이와 비율 분담을 반영해 누가 누구에게 얼마 보내면 되는지 계산합니다.",
+    order: 27.1,
+    eyebrow: "여행 정산 계산기",
+    category: "lifestyle",
+    iframeReady: true,
+    badges: ["신규", "여행"],
+    previewStats: [
+      { label: "정산 방식", value: "더치페이·비율" },
+      { label: "핵심 결과", value: "송금 내역" },
+    ],
+  },
+  {
     slug: "flight-cheapest-timing-calculator",
     title: "항공권 최저가 시기 계산기",
     description: "출발지, 목적지 권역, 출발 월, 인원수를 기준으로 지금 예매와 기다렸다 예매하는 경우의 예상 항공권 차이를 계산합니다.",

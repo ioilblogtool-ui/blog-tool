@@ -281,6 +281,13 @@ export const reports: ReportMeta[] = [
     badges: ["ETF", "개별주", "10년비교", "2026"],
   },
   {
+    slug: "stock-brokerage-fee-comparison-2026",
+    title: "국내 증권사 수수료·혜택 비교 2026",
+    description: "국내주식·미국주식 수수료, 환전 우대, 신용공여 이자율, ISA 연계, 자동투자·소수점 투자, 신규 계좌 혜택까지 2026년 기준으로 비교합니다.",
+    order: 33.2,
+    badges: ["주식", "증권사", "수수료", "2026"],
+  },
+  {
     slug: "postnatal-care-comparison-2026",
     title: "2026 산후도우미 vs 산후조리원 완전 비교",
     description: "산후조리원 2주 비용과 산후도우미 정부지원, 첫째·둘째·쌍태아 상황별 추천 기준을 비교합니다.",

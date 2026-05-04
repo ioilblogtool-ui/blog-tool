@@ -1,0 +1,439 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  BROKER_RECOMMENDATIONS,
+  CHECKLIST_ITEMS,
+  CREDIT_INTEREST_ROWS,
+  DOMESTIC_FEE_ROWS,
+  EVENT_TRAPS,
+  FEATURE_ROWS,
+  FEE_SIMULATION_ROWS,
+  OVERSEAS_FEE_ROWS,
+  SBF_FAQ,
+  SBF_META,
+  SBF_RELATED_LINKS,
+  SBF_SOURCE_LINKS,
+  brokerNameById,
+  formatFeeLabel,
+  formatWon,
+  type FeeValueStatus,
+  type InvestorType,
+} from "../../data/stockBrokerageFeeComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const statusLabel: Record<FeeValueStatus, string> = {
+  confirmed: "확인값",
+  needsUpdate: "공식 확인 필요",
+  eventOnly: "이벤트 확인",
+  notSupported: "지원 확인",
+  unknown: "확인 필요",
+};
+
+const yesNoLabel = {
+  yes: "지원",
+  limited: "제한적 지원",
+  no: "미지원",
+  unknown: "확인 필요",
+};
+
+const lifetimeLabel = {
+  yes: "평생 우대",
+  conditional: "조건부",
+  no: "없음",
+  unknown: "확인 필요",
+};
+
+const sourceLinks = SBF_SOURCE_LINKS.slice(0, 5);
+const defaultRecommendation = BROKER_RECOMMENDATIONS[0];
+const faqItems = SBF_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+
+const recommendationSeed = BROKER_RECOMMENDATIONS.map((item) => ({
+  ...item,
+  brokerNames: item.brokerCandidates.map((id) => brokerNameById(id)),
+}));
+
+const pageSeed = {
+  recommendations: recommendationSeed,
+  simulationPresets: FEE_SIMULATION_ROWS,
+  defaultInvestorType: defaultRecommendation.investorType,
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: SBF_META.title,
+      description: SBF_META.description,
+      inLanguage: "ko-KR",
+      dateModified: "2026-04-27",
+      mainEntityOfPage: `https://bigyocalc.com/reports/${SBF_META.slug}/`,
+      publisher: {
+        "@type": "Organization",
+        name: "비교계산소",
+        url: "https://bigyocalc.com",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: SBF_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.a,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={`${SBF_META.title} | 수수료·환전·신용이자 비교`} description={SBF_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sbf-report-page">
+    <CalculatorHero
+      eyebrow="증권사 수수료 비교"
+      title={SBF_META.title}
+      description="국내주식, 미국주식, 환전 우대, 신용공여 이자율, ISA 연계, 자동투자·소수점 투자, 신규 계좌 혜택을 투자자 유형별로 비교합니다."
+    />
+
+    <div class="sbf-hero-badges" aria-label="비교 범위">
+      <span>국내주식</span>
+      <span>미국주식</span>
+      <span>환전 우대</span>
+      <span>신용이자</span>
+      <span>2026</span>
+    </div>
+
+    <InfoNotice
+      title="수수료 비교 전 확인하세요"
+      lines={[
+        "수수료와 이벤트는 기준일 이후 바뀔 수 있으므로 실제 계좌 개설 전 각 증권사 공식 페이지 확인이 필요합니다.",
+        "수수료 무료여도 유관기관 제비용, 세금, 환전 스프레드, 해외 현지 비용은 별도로 발생할 수 있습니다.",
+        "신용거래는 이자비용과 반대매매 위험이 있으므로 단순 수수료 비교와 분리해서 봐야 합니다.",
+      ]}
+    />
+
+    <section class="content-section sbf-brief-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 결론</p>
+        <h2>증권사는 “가장 싼 곳”보다 내 거래 방식에 맞는 곳을 골라야 합니다</h2>
+        <p>{SBF_META.baseLabel}. 이 페이지의 수수료·혜택 표시는 최종 가입 조건이 아니라 확인 체크리스트입니다.</p>
+      </div>
+      <div class="sbf-kpi-grid">
+        <article class="sbf-kpi-card">
+          <p>국내주식</p>
+          <strong>기본·이벤트 분리</strong>
+          <span>무료 문구보다 종료 후 수수료와 유관기관 제비용을 봅니다.</span>
+        </article>
+        <article class="sbf-kpi-card">
+          <p>미국주식</p>
+          <strong>수수료 + 환전</strong>
+          <span>환전 우대, 배당 입금, 세금 자료까지 함께 확인합니다.</span>
+        </article>
+        <article class="sbf-kpi-card">
+          <p>신용거래</p>
+          <strong>이자율 우선</strong>
+          <span>매매 수수료보다 이자와 반대매매 위험이 더 큽니다.</span>
+        </article>
+        <article class="sbf-kpi-card">
+          <p>이벤트</p>
+          <strong>조건부 혜택</strong>
+          <span>신규, 비대면, 신청 여부, 기간 제한을 반드시 확인합니다.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sbf-recommend-section" id="investor-type">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">투자자 유형별 후보</p>
+        <h2>내 투자 방식에 맞춰 먼저 볼 증권사를 좁혀보세요</h2>
+        <p>아래 후보는 추천 확정이 아니라 비교 시작점입니다. 실제 선택 전 최신 수수료표와 이벤트 조건을 다시 확인하세요.</p>
+      </div>
+      <div class="sbf-tab-list" role="tablist" aria-label="투자자 유형">
+        {BROKER_RECOMMENDATIONS.map((item, index) => (
+          <button
+            type="button"
+            class:list={["sbf-tab-button", { "is-active": index === 0 }]}
+            data-sbf-investor-type={item.investorType}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <article class="sbf-recommend-panel" id="sbfRecommendationPanel">
+        <p class="sbf-panel-eyebrow">{defaultRecommendation.keyCriteria}</p>
+        <h3>{defaultRecommendation.label}</h3>
+        <div class="sbf-broker-chip-row">
+          {defaultRecommendation.brokerCandidates.map((id) => <span>{brokerNameById(id)}</span>)}
+        </div>
+        <p>{defaultRecommendation.reason}</p>
+        <p class="sbf-caution">{defaultRecommendation.caution}</p>
+      </article>
+    </section>
+
+    <section class="content-section sbf-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">국내주식 수수료</p>
+        <h2>기본 수수료와 비대면 이벤트를 따로 확인하세요</h2>
+      </div>
+      <div class="sbf-table-wrap">
+        <table class="sbf-table">
+          <thead>
+            <tr>
+              <th>증권사</th>
+              <th>기본 수수료</th>
+              <th>이벤트 수수료</th>
+              <th>유관기관 비용</th>
+              <th>평생 우대</th>
+              <th>추천 기준</th>
+              <th>주의사항</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DOMESTIC_FEE_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.brokerName}</strong></td>
+                <td><span class={`sbf-status sbf-status--${row.domesticBaseFee.status}`}>{statusLabel[row.domesticBaseFee.status]}</span>{formatFeeLabel(row.domesticBaseFee)}</td>
+                <td><span class={`sbf-status sbf-status--${row.domesticEventFee.status}`}>{statusLabel[row.domesticEventFee.status]}</span>{formatFeeLabel(row.domesticEventFee)}</td>
+                <td>{row.includesAgencyFee === "unknown" ? "공식 확인 필요" : "포함 확인"}</td>
+                <td>{lifetimeLabel[row.lifetimeBenefit]}</td>
+                <td>{row.domesticRecommendation}</td>
+                <td>{row.domesticCaution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section sbf-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">미국주식·환전</p>
+        <h2>해외주식은 매매 수수료와 환전 비용을 한 번에 봐야 합니다</h2>
+      </div>
+      <div class="sbf-table-wrap">
+        <table class="sbf-table">
+          <thead>
+            <tr>
+              <th>증권사</th>
+              <th>미국주식 수수료</th>
+              <th>미국 ETF</th>
+              <th>환전 우대</th>
+              <th>프리·애프터</th>
+              <th>소수점</th>
+              <th>확인 우선도</th>
+              <th>주의사항</th>
+            </tr>
+          </thead>
+          <tbody>
+            {OVERSEAS_FEE_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.brokerName}</strong></td>
+                <td><span class={`sbf-status sbf-status--${row.usStockFee.status}`}>{statusLabel[row.usStockFee.status]}</span>{formatFeeLabel(row.usStockFee)}</td>
+                <td>{row.usEtfSameFee === "unknown" ? "확인 필요" : "동일 가능"}</td>
+                <td><span class={`sbf-status sbf-status--${row.fxDiscountRate.status}`}>{statusLabel[row.fxDiscountRate.status]}</span>{formatFeeLabel(row.fxDiscountRate)}</td>
+                <td>{yesNoLabel[row.preAfterMarket]}</td>
+                <td>{yesNoLabel[row.fractionalTrading]}</td>
+                <td>{"★".repeat(row.recommendationScore)}</td>
+                <td>{row.caution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section sbf-event-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">무료 이벤트의 함정</p>
+        <h2>무료, 평생, 0원 문구는 적용 범위를 먼저 봐야 합니다</h2>
+      </div>
+      <div class="sbf-event-grid">
+        {EVENT_TRAPS.map((item) => (
+          <article class="sbf-event-card">
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sbf-credit-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">신용공여 이자율</p>
+        <h2>신용거래는 수수료 비교가 아니라 위험 비용 확인입니다</h2>
+        <p>아래 표는 공식 확인 항목입니다. 실제 이자율은 기간, 고객 등급, 담보 유형, 증권사 정책에 따라 달라질 수 있습니다.</p>
+      </div>
+      <div class="sbf-table-wrap">
+        <table class="sbf-table sbf-credit-table">
+          <thead>
+            <tr>
+              <th>증권사</th>
+              <th>1~7일</th>
+              <th>8~15일</th>
+              <th>16~30일</th>
+              <th>31~60일</th>
+              <th>90일 초과</th>
+              <th>확인 메모</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CREDIT_INTEREST_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.brokerName}</strong></td>
+                <td>{formatFeeLabel(row.day1to7)}</td>
+                <td>{formatFeeLabel(row.day8to15)}</td>
+                <td>{formatFeeLabel(row.day16to30)}</td>
+                <td>{formatFeeLabel(row.day31to60)}</td>
+                <td>{formatFeeLabel(row.day90Plus)}</td>
+                <td>{row.sourceNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="sbf-caution sbf-credit-warning">신용거래와 주식담보대출은 손실이 원금보다 빠르게 커질 수 있습니다. 수수료 이벤트와 별도로 판단하세요.</p>
+    </section>
+
+    <section class="content-section sbf-feature-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">계좌·기능 비교</p>
+        <h2>ISA, 자동투자, 소수점 투자는 지원 범위가 증권사마다 다릅니다</h2>
+      </div>
+      <div class="sbf-table-wrap">
+        <table class="sbf-table">
+          <thead>
+            <tr>
+              <th>증권사</th>
+              <th>HTS 강점</th>
+              <th>MTS 강점</th>
+              <th>ISA</th>
+              <th>국내 소수점</th>
+              <th>해외 소수점</th>
+              <th>자동투자</th>
+              <th>주의사항</th>
+            </tr>
+          </thead>
+          <tbody>
+            {FEATURE_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.brokerName}</strong></td>
+                <td>{row.htsStrength}</td>
+                <td>{row.mtsStrength}</td>
+                <td>{yesNoLabel[row.isaSupport]}</td>
+                <td>{yesNoLabel[row.domesticFractional]}</td>
+                <td>{yesNoLabel[row.overseasFractional]}</td>
+                <td>{yesNoLabel[row.autoInvestment]}</td>
+                <td>{row.caution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section sbf-simulation-section" id="fee-simulation">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수수료 예시 계산</p>
+        <h2>거래 횟수가 많을수록 작은 수수료 차이도 누적됩니다</h2>
+        <p>아래 계산은 증권사 실제 수수료가 아니라 입력값 기반 예시입니다. 세금, 환전, 유관기관 비용은 제외했습니다.</p>
+      </div>
+      <div class="sbf-simulation-grid">
+        <article class="sbf-simulation-form">
+          <div class="sbf-preset-row">
+            {FEE_SIMULATION_ROWS.map((preset) => (
+              <button type="button" data-sbf-simulation-preset={preset.id}>{preset.label}</button>
+            ))}
+          </div>
+          <label>
+            1회 거래금액
+            <input id="sbfSimulationAmount" type="number" min="0" step="10000" value={FEE_SIMULATION_ROWS[0].tradeAmount} />
+          </label>
+          <label>
+            연간 거래 횟수
+            <input id="sbfSimulationCount" type="number" min="0" step="1" value={FEE_SIMULATION_ROWS[0].annualTradeCount} />
+          </label>
+          <label>
+            낮은 수수료율 예시(%)
+            <input id="sbfLowFeeRate" type="number" min="0" step="0.001" value={FEE_SIMULATION_ROWS[0].lowFeeRate} />
+          </label>
+          <label>
+            높은 수수료율 예시(%)
+            <input id="sbfHighFeeRate" type="number" min="0" step="0.001" value={FEE_SIMULATION_ROWS[0].highFeeRate} />
+          </label>
+        </article>
+        <article class="sbf-simulation-result">
+          <p>연간 예상 수수료 차이</p>
+          <strong id="sbfFeeDiff">{formatWon(1440)}</strong>
+          <div class="sbf-result-row">
+            <span>낮은 수수료율</span>
+            <b id="sbfLowFee">{formatWon(360)}</b>
+          </div>
+          <div class="sbf-result-row">
+            <span>높은 수수료율</span>
+            <b id="sbfHighFee">{formatWon(1800)}</b>
+          </div>
+          <p class="sbf-result-note">예시 계산이며 실제 청구 금액이 아닙니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sbf-check-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">최종 체크리스트</p>
+        <h2>계좌 개설 전 이 항목만은 다시 확인하세요</h2>
+      </div>
+      <div class="sbf-check-grid">
+        {CHECKLIST_ITEMS.map((item) => <span>{item}</span>)}
+      </div>
+      <div class="sbf-source-links">
+        {sourceLinks.map((item) => <a href={item.href} target="_blank" rel="noreferrer">{item.label}</a>)}
+      </div>
+    </section>
+
+    <section class="content-section sbf-cta-section">
+      <div>
+        <p class="section-header__eyebrow">다음 단계</p>
+        <h2>수수료를 본 뒤에는 손익분기와 세금까지 같이 확인하세요</h2>
+      </div>
+      <div class="sbf-cta-links">
+        {SBF_RELATED_LINKS.slice(0, 3).map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="증권사 수수료 비교는 이벤트 표만 보면 부족합니다"
+      intro={[
+        "국내주식 수수료가 낮아도 거래 빈도, 유관기관 제비용, 주문 채널, 이벤트 종료 후 기본 수수료에 따라 실제 비용은 달라집니다.",
+        "미국주식 투자자는 매매 수수료와 함께 환전 스프레드, 배당 입금, 양도세 자료, 프리마켓·애프터마켓 지원 범위를 함께 확인해야 합니다.",
+        "신용거래는 별도 고위험 영역입니다. 낮은 매매 수수료보다 신용공여 이자율, 담보 유지비율, 반대매매 기준이 더 중요합니다.",
+      ]}
+      inputPoints={[
+        "국내주식과 미국주식 거래 비중을 먼저 나눠 비교합니다.",
+        "이벤트 수수료와 기본 수수료를 같은 표에서 분리해 확인합니다.",
+        "신용거래를 쓸 계획이 있다면 이자율 공시를 별도 기준으로 봅니다.",
+      ]}
+      criteria={[
+        "수수료·이벤트 값은 변동 가능성이 있어 공식 확인 필요 상태로 표시했습니다.",
+        "예시 계산은 입력값 기반 시뮬레이션이며 세금, 환전, 유관기관 비용은 제외했습니다.",
+        "투자자 유형별 후보는 절대 추천이 아니라 비교 시작점입니다.",
+      ]}
+      faq={faqItems}
+      related={SBF_RELATED_LINKS}
+    />
+  </main>
+
+  <script id="stockBrokerageFeeComparison2026Data" type="application/json" set:html={JSON.stringify(pageSeed)}></script>
+  <script type="module" src={withBase("/scripts/stock-brokerage-fee-comparison-2026.js")}></script>
+</BaseLayout>

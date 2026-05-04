@@ -1,0 +1,289 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CURRENCY_OPTIONS,
+  EXPENSE_CATEGORY_LABELS,
+  TES_DEFAULT_EXPENSES,
+  TES_DEFAULT_PARTICIPANTS,
+  TES_FAQ,
+  TES_META,
+  TES_PRESETS,
+  TES_RELATED_LINKS,
+} from "../../data/travelExpenseSplit";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const categoryOptions = Object.entries(EXPENSE_CATEGORY_LABELS);
+const seed = {
+  meta: TES_META,
+  participants: TES_DEFAULT_PARTICIPANTS,
+  expenses: TES_DEFAULT_EXPENSES,
+  presets: TES_PRESETS,
+  categories: EXPENSE_CATEGORY_LABELS,
+  currencies: CURRENCY_OPTIONS,
+};
+
+const faqSchema = TES_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="여행 경비 분담 계산기 | 더치페이·선결제자·송금 정산"
+  description={TES_META.subtitle}
+  ogImage="/og/sample-tool.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: TES_META.title,
+    applicationCategory: "TravelApplication",
+    operatingSystem: "All",
+    description: TES_META.subtitle,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${TES_META.slug}/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={TES_META.slug} pageClass="tes-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="여행 정산 계산기"
+        title={TES_META.title}
+        description={TES_META.subtitle}
+        badges={["더치페이", "선결제자", "불참 제외", "송금 내역"]}
+      />
+      <InfoNotice
+        title="정산 전 확인"
+        lines={[
+          "이 계산기는 입력한 비용과 참여자 기준으로 정산 금액을 계산합니다.",
+          "실제 송금 전에는 여행 구성원과 비용 포함 기준을 한 번 더 확인하세요.",
+          "반올림 단위를 사용하면 1원 단위 결과와 일부 차이가 날 수 있습니다.",
+          "참여자 이름과 비용 항목은 서버에 저장하지 않고 브라우저에서만 계산합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="tesResetBtn" copyId="tesCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel tes-form-panel">
+        <div class="tes-section-head">
+          <p class="tes-eyebrow">빠른 시작</p>
+          <h2>여행 유형 프리셋</h2>
+          <p id="tesPresetSummary">친구 4인 여행 기본값으로 시작합니다.</p>
+        </div>
+        <div class="tes-preset-row">
+          {TES_PRESETS.map((preset, index) => (
+            <button class={`tes-preset-btn${index === 0 ? " is-active" : ""}`} type="button" data-tes-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel tes-form-panel">
+        <div class="tes-section-head">
+          <p class="tes-eyebrow">기본 정보</p>
+          <h2>여행명과 정산 기준</h2>
+        </div>
+        <div class="tes-basic-grid">
+          <label>
+            <span>여행 이름</span>
+            <input id="tesTripName" type="text" value="오사카 3박 4일" maxlength="32" />
+          </label>
+          <label>
+            <span>정산 방식</span>
+            <select id="tesSplitMode">
+              <option value="equal">더치페이</option>
+              <option value="ratio">비율 분담</option>
+            </select>
+          </label>
+          <label>
+            <span>기본 통화</span>
+            <select id="tesDefaultCurrency">
+              {CURRENCY_OPTIONS.map((currency) => (
+                <option value={currency.code} selected={currency.code === TES_META.defaultCurrency}>
+                  {currency.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>반올림 단위</span>
+            <select id="tesRoundingUnit">
+              <option value="1">1원</option>
+              <option value="10">10원</option>
+              <option value="100" selected>100원</option>
+              <option value="1000">1,000원</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel tes-form-panel">
+        <div class="tes-section-head">
+          <p class="tes-eyebrow">참여자</p>
+          <h2>누가 여행 경비를 나누나요?</h2>
+          <p>비율 분담 모드에서는 각 참여자의 비율 합계를 기준으로 다시 나눕니다.</p>
+        </div>
+        <div id="tesParticipantList" class="tes-participant-list"></div>
+        <button id="tesAddParticipant" class="tes-add-btn" type="button">참여자 추가</button>
+      </article>
+
+      <article class="panel tes-form-panel">
+        <div class="tes-section-head">
+          <p class="tes-eyebrow">비용 항목</p>
+          <h2>누가 결제했고 누가 참여했나요?</h2>
+        </div>
+        <div class="tes-quick-row">
+          {[
+            ["hotel", "숙박"],
+            ["food", "식비"],
+            ["transport", "교통"],
+            ["ticket", "입장료"],
+            ["food", "카페"],
+            ["etc", "기타"],
+          ].map(([category, label]) => (
+            <button type="button" data-tes-quick-expense={category} data-tes-quick-title={label}>{label}</button>
+          ))}
+        </div>
+        <div id="tesExpenseList" class="tes-expense-list"></div>
+        <button id="tesAddExpense" class="tes-add-btn" type="button">비용 항목 추가</button>
+      </article>
+    </Fragment>
+
+    <section class="tes-section">
+      <div class="tes-section-head">
+        <p class="tes-eyebrow">핵심 결과</p>
+        <h2>아래 송금 내역대로 보내면 정산이 끝납니다</h2>
+        <p id="tesResultSubcopy">참여자와 비용 항목을 바꾸면 즉시 다시 계산합니다.</p>
+      </div>
+
+      <section class="tes-kpi-grid">
+        <article class="tes-kpi-card tes-kpi-card--main">
+          <p>총 여행 경비</p>
+          <strong id="tesTotalCost">0원</strong>
+          <span id="tesTripNameSummary">입력한 항목 합계</span>
+        </article>
+        <article class="tes-kpi-card">
+          <p>1인 평균 부담액</p>
+          <strong id="tesAverageCost">0원</strong>
+          <span>단순 평균 기준</span>
+        </article>
+        <article class="tes-kpi-card">
+          <p>송금 건수</p>
+          <strong id="tesTransferCount">0건</strong>
+          <span>정산 완료에 필요한 송금</span>
+        </article>
+        <article class="tes-kpi-card">
+          <p>반올림 차액</p>
+          <strong id="tesRoundingDiff">0원</strong>
+          <span>선택한 반올림 단위 기준</span>
+        </article>
+      </section>
+    </section>
+
+    <section class="tes-result-grid">
+      <article class="panel tes-transfer-panel">
+        <div class="tes-section-head">
+          <p class="tes-eyebrow">최종 정산</p>
+          <h2>송금 내역</h2>
+        </div>
+        <ol id="tesTransferList" class="tes-transfer-list"></ol>
+        <button id="tesCopyResult" class="tes-copy-btn" type="button">정산 결과 복사</button>
+      </article>
+
+      <article class="panel tes-copy-panel">
+        <div class="tes-section-head">
+          <p class="tes-eyebrow">단톡방 공유</p>
+          <h2>복사용 문구</h2>
+        </div>
+        <pre id="tesCopyText" class="tes-copy-box"></pre>
+      </article>
+    </section>
+
+    <section class="panel tes-table-panel">
+      <div class="tes-section-head">
+        <p class="tes-eyebrow">개인별 정산표</p>
+        <h2>선결제액과 실제 부담액 비교</h2>
+      </div>
+      <div class="tes-table-wrap">
+        <table class="tes-settlement-table">
+          <thead>
+            <tr>
+              <th>참여자</th>
+              <th>선결제</th>
+              <th>실제 부담</th>
+              <th>받을 돈/보낼 돈</th>
+            </tr>
+          </thead>
+          <tbody id="tesSettlementBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel tes-checklist-panel">
+      <div class="tes-section-head">
+        <p class="tes-eyebrow">여행 전 체크리스트</p>
+        <h2>미리 정하면 정산이 깔끔해지는 것</h2>
+      </div>
+      <ul class="tes-checklist">
+        <li>숙박비는 누가 먼저 결제할지 정하기</li>
+        <li>식비는 매번 더치페이할지, 마지막에 한 번에 정산할지 정하기</li>
+        <li>술값·카페비를 전체 경비에 포함할지 정하기</li>
+        <li>불참 액티비티 비용은 제외할지 정하기</li>
+        <li>렌터카·주유비·주차비 부담 기준 정하기</li>
+        <li>커플/가족 여행은 분담 비율 미리 정하기</li>
+        <li>해외여행은 환율 기준일 정하기</li>
+      </ul>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="여행 경비 분담 계산기 이용 안내"
+        intro={[
+          "여행 경비는 총액을 인원수로 나누면 끝나는 경우도 있지만, 실제로는 선결제자, 불참 일정, 가족·커플 분담률 때문에 정산이 복잡해질 수 있습니다.",
+          "이 계산기는 항목별로 누가 결제했는지, 누가 해당 비용을 함께 부담하는지 입력해 개인별 부담액과 최종 송금 내역을 계산합니다.",
+          "결과 복사 문구를 사용하면 카카오톡 단톡방에 정산 결과를 바로 공유할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "참여자 이름과 비용 항목을 행 단위로 빠르게 추가할 수 있습니다.",
+          "항목별 선결제자와 참여자를 따로 지정해 불참 일정을 제외할 수 있습니다.",
+          "더치페이와 비율 분담을 모두 지원해 친구·커플·가족 여행에 함께 쓸 수 있습니다.",
+        ]}
+        criteria={[
+          "더치페이는 항목별 참여자 수 기준으로 N분의 1 계산합니다.",
+          "비율 분담은 해당 항목 참여자의 분담률 합계를 기준으로 재계산합니다.",
+          "외화 금액은 입력한 환율로 원화 환산한 뒤 정산합니다.",
+          "반올림 단위를 적용하면 1원 단위 결과와 일부 차이가 날 수 있습니다.",
+        ]}
+        faq={TES_FAQ}
+        related={TES_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="travelExpenseSplitData" type="application/json" set:html={JSON.stringify(seed)}></script>
+  <script type="module" src={withBase("/scripts/travel-expense-split.js")}></script>
+</BaseLayout>
