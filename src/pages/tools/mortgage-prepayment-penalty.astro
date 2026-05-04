@@ -1,0 +1,310 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  MPC_DEFAULT_INPUT,
+  MPC_FAQ,
+  MPC_INFO_LINES,
+  MPC_LOAN_TYPE_PRESETS,
+  MPC_META,
+  MPC_RELATED_LINKS,
+  MPC_SCENARIO_PRESETS,
+} from "../../data/mortgagePrepaymentPenalty";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const defaultLoan = MPC_LOAN_TYPE_PRESETS.find((item) => item.id === MPC_DEFAULT_INPUT.loanType) ?? MPC_LOAN_TYPE_PRESETS[0];
+const faqItems = MPC_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "중도상환 수수료 계산기",
+      "url": `${import.meta.env.SITE}/tools/mortgage-prepayment-penalty/`,
+      "description": MPC_META.description,
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "inLanguage": "ko-KR",
+      "isAccessibleForFree": true,
+      "provider": { "@type": "Organization", "name": "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": MPC_FAQ.map((item) => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={MPC_META.title}
+  description={MPC_META.description}
+  ogImage="/og/tools/mortgage-prepayment-penalty.png"
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="mortgage-prepayment-penalty"
+    pageClass="mpc-page"
+    resultFirst={true}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="대출 계산기"
+        title="지금 중도상환하면 수수료 얼마? 갚는 게 유리한지까지 계산합니다"
+        description="잔여 원금, 수수료율, 잔여 기간, 금리를 입력하면 수수료 금액과 이자 절감액을 비교해 중도상환 유불리를 바로 확인합니다."
+        badges={["주담대", "전세대출", "신용대출", "추정"]}
+      />
+      <InfoNotice title="2026년 기준 안내" lines={MPC_INFO_LINES} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="mpcResetBtn" copyId="mpcCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대출 유형</p>
+            <h2 class="panel__title">대출 종류 선택</h2>
+          </div>
+        </div>
+        <div class="mpc-loan-tabs" id="mpcLoanTabs">
+          {MPC_LOAN_TYPE_PRESETS.map((preset) => (
+            <button
+              type="button"
+              class={`mpc-loan-tab${preset.id === MPC_DEFAULT_INPUT.loanType ? " is-active" : ""}`}
+              data-loan-type={preset.id}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+        <p class="mpc-loan-note" id="mpcLoanNote">{defaultLoan.note}</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">상환 방식</p>
+            <h2 class="panel__title">전액 또는 부분 상환</h2>
+          </div>
+        </div>
+        <div class="mpc-mode-tabs" id="mpcModeTabs">
+          <button class="mpc-mode-tab is-active" type="button" data-mode="full">전액 상환</button>
+          <button class="mpc-mode-tab" type="button" data-mode="partial">부분 상환</button>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력값</p>
+            <h2 class="panel__title">대출 조건</h2>
+          </div>
+        </div>
+        <div class="mpc-form-grid">
+          <label class="mpc-field">
+            <span>잔여 원금</span>
+            <input id="mpcRemainingPrincipal" type="text" inputmode="numeric" value="300,000,000" />
+            <small>현재 남아 있는 대출 원금</small>
+          </label>
+          <label class="mpc-field" id="mpcPartialAmountField" hidden>
+            <span>부분 상환 금액</span>
+            <input id="mpcPartialAmount" type="text" inputmode="numeric" value="100,000,000" />
+            <small>잔여 원금보다 크면 자동 보정</small>
+          </label>
+          <label class="mpc-field">
+            <span>중도상환 수수료율</span>
+            <input id="mpcPenaltyRate" type="number" min="0" max="5" step="0.001" value="1.400" />
+            <small>예: 1.4%는 1.400 입력</small>
+          </label>
+          <label class="mpc-field">
+            <span>대출 약정 기간</span>
+            <input id="mpcLoanTermMonths" type="number" min="1" max="600" step="1" value="360" />
+            <small>개월 기준</small>
+          </label>
+          <label class="mpc-field">
+            <span>잔여 기간</span>
+            <input id="mpcRemainingMonths" type="number" min="0" max="600" step="1" value="24" />
+            <small>수수료 부과 잔여 기간</small>
+          </label>
+          <label class="mpc-field">
+            <span>현재 대출 금리</span>
+            <input id="mpcAnnualRate" type="number" min="0" max="20" step="0.001" value="4.200" />
+            <small>연 이율 기준</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 선택</p>
+            <h2 class="panel__title">시나리오 프리셋</h2>
+          </div>
+        </div>
+        <div class="mpc-presets" id="mpcPresets">
+          {MPC_SCENARIO_PRESETS.map((preset) => (
+            <button class="mpc-preset-btn" type="button" data-preset-id={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="mpc-section">
+      <div class="mpc-section__head">
+        <p class="mpc-section__eyebrow">계산 결과</p>
+        <h2>수수료와 절감 이자를 비교합니다</h2>
+        <p id="mpcResultSummary">조건을 입력하면 중도상환 유불리를 바로 계산합니다.</p>
+      </div>
+      <div class="mpc-kpi-grid">
+        <article class="mpc-kpi-card mpc-kpi-card--main">
+          <p>중도상환 수수료</p>
+          <strong id="mpcPenaltyAmount">-</strong>
+          <span>잔여원금 × 수수료율 × 잔여비율</span>
+        </article>
+        <article class="mpc-kpi-card">
+          <p>예상 이자 절감액</p>
+          <strong id="mpcInterestSavings">-</strong>
+          <span class="mpc-kpi-note">단순 근사값</span>
+        </article>
+        <article class="mpc-kpi-card">
+          <p>순 절약 금액</p>
+          <strong id="mpcNetSavings">-</strong>
+          <span>절감 이자 - 수수료</span>
+        </article>
+        <article class="mpc-kpi-card">
+          <p>수수료 회수 기간</p>
+          <strong id="mpcBreakEvenMonths">-</strong>
+          <span>수수료 ÷ 월 절감 이자</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="mpc-section">
+      <div class="mpc-verdict-box" id="mpcVerdictBox">
+        <span class="mpc-verdict-badge" id="mpcVerdictBadge">-</span>
+        <p id="mpcVerdictCopy">조건을 입력하면 유불리 해석이 표시됩니다.</p>
+      </div>
+    </section>
+
+    <section class="mpc-section">
+      <div class="mpc-section__head">
+        <p class="mpc-section__eyebrow">상세 계산표</p>
+        <h2>계산에 사용한 항목</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="mpc-breakdown-table">
+          <tbody>
+            <tr><td>상환 원금</td><td id="mpcDPrepaymentAmount">-</td></tr>
+            <tr><td>중도상환 수수료율</td><td id="mpcDPenaltyRate">-</td></tr>
+            <tr><td>잔여 기간 비율</td><td id="mpcDRemainingRatio">-</td></tr>
+            <tr><td>중도상환 수수료</td><td id="mpcDPenalty">-</td></tr>
+            <tr class="mpc-separator"><td colspan="2">이자 절감 추정</td></tr>
+            <tr><td>월 이자 기준</td><td id="mpcDMonthlyInterest">-</td></tr>
+            <tr><td>잔여 기간</td><td id="mpcDRemainingMonths">-</td></tr>
+            <tr><td>예상 이자 절감액</td><td id="mpcDInterestSavings">-</td></tr>
+            <tr><td>순 절약 금액</td><td id="mpcDNetSavings">-</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mpc-section">
+      <div class="mpc-reference-box">
+        <strong>제도 참고 기준</strong>
+        <p>금융위원회는 2025년 1월 13일 신규 대출부터 중도상환수수료를 실비용 범위에서 산정하도록 개편했고, 2026년 1월 1일부터는 신규 취급 상호금융권 대출에도 같은 취지의 개선을 적용할 예정이라고 안내했습니다.</p>
+        <div class="mpc-reference-links">
+          <a href="https://www.fsc.go.kr/no010101/83833" target="_blank" rel="noopener noreferrer">금융위원회 2025년 1월 보도자료</a>
+          <a href="https://www.fsc.go.kr/no010101/85455" target="_blank" rel="noopener noreferrer">금융위원회 2025년 10월 보도자료</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="mpc-section">
+      <div class="mpc-related-grid">
+        {MPC_RELATED_LINKS.map((item) => (
+          <a class="mpc-related-card" href={withBase(item.href)}>
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mpc-section">
+      <div class="mpc-section__head">
+        <p class="mpc-section__eyebrow">FAQ</p>
+        <h2>중도상환 수수료 FAQ</h2>
+      </div>
+      <div class="mpc-faq-list">
+        {MPC_FAQ.map((item, index) => (
+          <details class="mpc-faq-item" open={index === 0}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="중도상환 수수료 계산기를 보는 방법"
+        intro={[
+          "중도상환 수수료 계산기는 대출을 미리 갚을 때 발생할 수 있는 수수료와 앞으로 줄어드는 이자를 함께 비교하는 도구입니다.",
+          "수수료만 보면 판단이 어렵기 때문에, 이 계산기는 예상 수수료, 예상 이자 절감액, 순 절약 금액, 수수료 회수 기간을 한 화면에 표시합니다.",
+          "결과는 약정서 확인 전 참고용 추정값이며 실제 상환 전에는 금융기관에서 최종 수수료를 확인해야 합니다.",
+        ]}
+        inputPoints={[
+          "잔여 원금과 실제 상환할 금액을 입력합니다.",
+          "대출 약정 기간, 잔여 기간, 중도상환 수수료율, 현재 대출 금리를 입력합니다.",
+          "주택담보대출, 전세대출, 신용대출 프리셋을 선택하면 기본 수수료율과 기간이 자동으로 바뀝니다.",
+        ]}
+        criteria={[
+          "수수료 = 상환원금 × 수수료율 × 잔여개월/약정개월",
+          "예상 이자 절감액 = 상환원금 × 월 이율 × 잔여개월",
+          "순 절약 금액 = 예상 이자 절감액 - 중도상환 수수료",
+          "2025년 1월 13일 이후 신규 대출은 실비용 기준 개편이 적용될 수 있으나 기존 대출은 약정 조건을 확인해야 합니다.",
+        ]}
+        formulaTitle="계산 공식"
+        formula={[
+          "중도상환 수수료는 잔여 기간이 길수록 커지고, 약정 기간이 끝나면 0에 가까워집니다.",
+          "이자 절감액은 단순 근사 방식이므로 원리금균등, 원금균등, 만기일시 상환 방식별 실제 절감액과 다를 수 있습니다.",
+          "수수료보다 절감 이자가 크면 금액상 유리하지만, 비상금과 투자 기회비용까지 같이 판단해야 합니다.",
+        ]}
+        faqTitle="자주 묻는 질문"
+        faqItems={faqItems}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script
+    id="mpcConfig"
+    type="application/json"
+    set:html={JSON.stringify({
+      defaultInput: MPC_DEFAULT_INPUT,
+      loanTypePresets: MPC_LOAN_TYPE_PRESETS,
+      scenarioPresets: MPC_SCENARIO_PRESETS,
+    })}
+  />
+  <script type="module" src={withBase("/scripts/mortgage-prepayment-penalty.js")}></script>
+</BaseLayout>

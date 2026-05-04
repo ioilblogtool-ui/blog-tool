@@ -1,0 +1,394 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  AI_DUPLICATE_RULES,
+  AI_SUBSCRIPTION_FAQ,
+  AI_SUBSCRIPTION_META,
+  AI_SUBSCRIPTION_PRESETS,
+  AI_SUBSCRIPTION_RELATED_LINKS,
+  AI_SUBSCRIPTION_TOOLS,
+} from "../../data/aiSubscriptionCost";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const seed = {
+  meta: AI_SUBSCRIPTION_META,
+  tools: AI_SUBSCRIPTION_TOOLS,
+  presets: AI_SUBSCRIPTION_PRESETS,
+  duplicateRules: AI_DUPLICATE_RULES,
+  defaults: {
+    mode: "personal",
+    headcount: 1,
+    exchangeRate: AI_SUBSCRIPTION_META.defaultExchangeRate,
+    includeVat: false,
+    includeCardFee: false,
+    cardFeeRate: 0.015,
+    monthlyWorkHours: AI_SUBSCRIPTION_META.defaultMonthlyWorkHours,
+    hourlyValueKrw: AI_SUBSCRIPTION_META.defaultHourlyValueKrw,
+    monthlySavedHours: AI_SUBSCRIPTION_META.defaultMonthlySavedHours,
+    selectedToolIds: AI_SUBSCRIPTION_TOOLS.filter((tool) => tool.defaultSelected).map((tool) => tool.id),
+    toolPrices: Object.fromEntries(AI_SUBSCRIPTION_TOOLS.map((tool) => [tool.id, tool.defaultMonthlyKrw ?? tool.defaultMonthlyUsd])),
+  },
+};
+
+const faqSchema = AI_SUBSCRIPTION_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title={`${AI_SUBSCRIPTION_META.title} | ChatGPT·Claude·Copilot 구독비 ROI 계산`}
+  description={AI_SUBSCRIPTION_META.subtitle}
+  ogImage="/og/sample-tool.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: AI_SUBSCRIPTION_META.title,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "All",
+    description: AI_SUBSCRIPTION_META.subtitle,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${AI_SUBSCRIPTION_META.slug}/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={AI_SUBSCRIPTION_META.slug} pageClass="ai-subscription-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="AI 구독비 계산"
+        title={AI_SUBSCRIPTION_META.title}
+        description="ChatGPT, Claude, Copilot, Perplexity, Notion AI 등 사용 중인 AI 구독료를 합산하고, 월 절감 시간 대비 ROI와 중복 구독 여부를 확인합니다."
+        badges={["월 구독비", "연간 비용", "ROI", "중복 구독 점검"]}
+      />
+      <InfoNotice
+        title="추정 계산 안내"
+        lines={[
+          AI_SUBSCRIPTION_META.caution,
+          "달러 결제 도구는 환율, 부가세, 카드 수수료에 따라 실제 카드 청구액이 달라질 수 있습니다.",
+          "ROI는 사용자가 입력한 절감 시간과 시간당 가치를 바탕으로 한 추정값입니다.",
+          `업데이트 기준: ${AI_SUBSCRIPTION_META.updatedAt}`,
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="aisResetBtn" copyId="aisCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <form id="aisForm" class="calculator-form ais-form-panel">
+        <div class="ais-section-head">
+          <p class="ais-eyebrow">빠른 프리셋</p>
+          <h2>대표 AI 구독 조합</h2>
+        </div>
+        <div class="ais-preset-row">
+          {AI_SUBSCRIPTION_PRESETS.map((preset) => (
+            <button class="ais-preset-btn" type="button" data-ais-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="ais-section-head">
+          <p class="ais-eyebrow">사용 조건</p>
+          <h2>개인 또는 팀 기준</h2>
+        </div>
+        <div class="ais-mode-row">
+          <label class="ais-mode-card">
+            <input type="radio" name="aisMode" value="personal" checked />
+            <strong>개인</strong>
+            <span>내가 직접 결제하는 구독료 기준</span>
+          </label>
+          <label class="ais-mode-card">
+            <input type="radio" name="aisMode" value="team" />
+            <strong>팀</strong>
+            <span>seat 단위 도구는 인원 수를 반영</span>
+          </label>
+        </div>
+
+        <div class="form-grid">
+          <label>
+            <span>사용 인원 수</span>
+            <input id="aisHeadcount" type="number" min="1" max="100" step="1" value="1" />
+          </label>
+          <label>
+            <span>환율</span>
+            <input id="aisExchangeRate" type="number" min="500" max="3000" step="10" value={AI_SUBSCRIPTION_META.defaultExchangeRate} />
+          </label>
+          <label>
+            <span>월 업무 시간</span>
+            <input id="aisMonthlyWorkHours" type="number" min="1" max="400" step="1" value={AI_SUBSCRIPTION_META.defaultMonthlyWorkHours} />
+          </label>
+          <label>
+            <span>시간당 가치</span>
+            <input id="aisHourlyValue" type="number" min="0" max="1000000" step="1000" value={AI_SUBSCRIPTION_META.defaultHourlyValueKrw} />
+          </label>
+          <label>
+            <span>AI로 절감되는 월 시간</span>
+            <input id="aisMonthlySavedHours" type="number" min="0" max="400" step="0.5" value={AI_SUBSCRIPTION_META.defaultMonthlySavedHours} />
+          </label>
+          <label>
+            <span>카드 수수료율</span>
+            <input id="aisCardFeeRate" type="number" min="0" max="10" step="0.1" value="1.5" />
+          </label>
+        </div>
+
+        <div class="ais-check-row">
+          <label class="ais-inline-check">
+            <input id="aisVatCheck" type="checkbox" />
+            <span>부가세 10% 포함</span>
+          </label>
+          <label class="ais-inline-check">
+            <input id="aisCardFeeCheck" type="checkbox" />
+            <span>카드 해외결제 수수료 포함</span>
+          </label>
+        </div>
+
+        <div class="ais-validation" id="aisValidation" hidden></div>
+      </form>
+
+      <article class="panel ais-form-panel">
+        <div class="ais-section-head">
+          <p class="ais-eyebrow">AI 도구 선택</p>
+          <h2>구독 중인 도구와 가격</h2>
+          <p>기본값은 참고용입니다. 실제 월 결제액이나 연간 결제 월 환산액으로 직접 수정하세요.</p>
+        </div>
+        <div class="ais-tool-list" id="aisToolList">
+          {AI_SUBSCRIPTION_TOOLS.map((tool) => (
+            <label class="ais-tool-row" data-ais-tool-row={tool.id}>
+              <input type="checkbox" data-ais-tool={tool.id} checked={Boolean(tool.defaultSelected)} />
+              <span class="ais-tool-main">
+                <strong>{tool.name}</strong>
+                <small>{tool.categoryLabel} · 기본값 ${tool.defaultMonthlyUsd}/월 · {tool.note}</small>
+              </span>
+              <span class="ais-tool-price">
+                <input
+                  type="number"
+                  data-ais-price={tool.id}
+                  value={tool.defaultMonthlyKrw ?? tool.defaultMonthlyUsd}
+                  min="0"
+                  max={tool.currency === "KRW" ? "1000000" : "1000"}
+                  step={tool.currency === "KRW" ? "1000" : "0.01"}
+                />
+                <span>{tool.currency}/월</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel ais-form-panel">
+        <div class="ais-section-head">
+          <p class="ais-eyebrow">직접 추가</p>
+          <h2>목록에 없는 AI 도구</h2>
+          <p>업무용 SaaS, 이미지 도구, 회의록 도구처럼 목록에 없는 구독은 최대 3개까지 더할 수 있습니다.</p>
+        </div>
+        <div class="ais-custom-tool-list" id="aisCustomToolList">
+          {[1, 2, 3].map((index) => (
+            <div class="ais-custom-tool-row" data-ais-custom-row={index}>
+              <label class="ais-custom-check">
+                <input type="checkbox" data-ais-custom-enabled={index} />
+                <span>{index}번</span>
+              </label>
+              <label>
+                <span>도구명</span>
+                <input type="text" data-ais-custom-name={index} value={index === 1 ? "직접 입력 도구" : ""} maxlength="24" />
+              </label>
+              <label>
+                <span>월 비용</span>
+                <input type="number" data-ais-custom-price={index} value="0" min="0" max="1000000" step="100" />
+              </label>
+              <label>
+                <span>통화</span>
+                <select data-ais-custom-currency={index}>
+                  <option value="KRW">KRW</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+              <label>
+                <span>과금</span>
+                <select data-ais-custom-unit={index}>
+                  <option value="account">계정</option>
+                  <option value="seat">seat</option>
+                </select>
+              </label>
+            </div>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel ais-side-note">
+        <div class="ais-section-head">
+          <p class="ais-eyebrow">계산 기준</p>
+          <h2>이렇게 계산합니다</h2>
+        </div>
+        <ul>
+          <li>USD 도구는 입력 가격에 환율을 곱해 원화로 환산합니다.</li>
+          <li>팀 모드에서는 seat 단위 도구만 사용 인원 수를 곱합니다.</li>
+          <li>ROI는 월 절감 시간 가치 ÷ 최종 월 구독비로 추정합니다.</li>
+        </ul>
+        <div class="ais-related-links">
+          {AI_SUBSCRIPTION_RELATED_LINKS.slice(0, 3).map((link) => <a href={link.href}>{link.label}</a>)}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="ais-section">
+      <div class="ais-section-head">
+        <p class="ais-eyebrow">핵심 결과</p>
+        <h2>이번 달 AI 구독비와 본전 기준</h2>
+        <p id="aisResultSubcopy">기본 추천값 기준으로 추정 계산합니다.</p>
+      </div>
+
+      <section class="ais-result-grid">
+        <article class="ais-kpi-card ais-kpi-card--main">
+          <p>월 총 구독비</p>
+          <strong id="aisMonthlyCost">약 0원</strong>
+          <span id="aisMonthlyUsd">$0 기준</span>
+        </article>
+        <article class="ais-kpi-card">
+          <p>연간 환산 비용</p>
+          <strong id="aisYearlyCost">약 0원</strong>
+          <span>월 비용 × 12</span>
+        </article>
+        <article class="ais-kpi-card">
+          <p>1인당 월 비용</p>
+          <strong id="aisPerUserCost">약 0원</strong>
+          <span id="aisHeadcountNote">개인 기준</span>
+        </article>
+        <article class="ais-kpi-card">
+          <p>월 시간 절감 가치</p>
+          <strong id="aisSavedValueKpi">약 0원</strong>
+          <span>절감 시간 × 시간당 가치</span>
+        </article>
+        <article class="ais-kpi-card">
+          <p>월 순효과</p>
+          <strong id="aisNetBenefit">약 0원</strong>
+          <span id="aisNetBenefitNote">절감 시간 가치 - 구독비</span>
+        </article>
+      </section>
+    </section>
+
+    <section class="ais-section ais-result-layout">
+      <article class="ais-roi-card" id="aisRoiCard">
+        <p class="ais-roi-label">ROI 점수</p>
+        <strong id="aisRoiScore">0점</strong>
+        <span id="aisRoiMessage">AI 도구를 선택하면 비용 대비 효과를 계산합니다.</span>
+        <dl>
+          <div>
+            <dt>월 절감 시간 가치</dt>
+            <dd id="aisSavedValue">약 0원</dd>
+          </div>
+          <div>
+            <dt>본전 필요 절감 시간</dt>
+            <dd id="aisBreakEvenHours">0시간</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="ais-chart-shell">
+        <div class="ais-section-head">
+          <p class="ais-eyebrow">비용 비중</p>
+          <h2>선택 도구별 월 비용</h2>
+        </div>
+        <div class="ais-chart-wrap">
+          <canvas id="aisCostChart"></canvas>
+          <div id="aisChartFallback" class="ais-chart-fallback"></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="ais-section ais-warning-section">
+      <div class="ais-section-head">
+        <p class="ais-eyebrow">중복 구독 점검</p>
+        <h2>비슷한 역할의 도구가 겹치는지 확인하세요</h2>
+      </div>
+      <div id="aisDuplicateWarnings" class="ais-warning-list"></div>
+    </section>
+
+    <section class="ais-section">
+      <article class="panel ais-table-panel">
+        <div class="ais-section-head">
+          <p class="ais-eyebrow">가격표</p>
+          <h2>기본 추천 가격과 공식 확인 링크</h2>
+          <p>아래 가격은 입력 기본값입니다. 실제 결제 전 공식 요금과 결제 통화를 확인하세요.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="ais-tool-table">
+            <thead>
+              <tr>
+                <th>도구</th>
+                <th>카테고리</th>
+                <th>기본값</th>
+                <th>과금 단위</th>
+                <th>메모</th>
+                <th>공식 링크</th>
+              </tr>
+            </thead>
+            <tbody>
+              {AI_SUBSCRIPTION_TOOLS.map((tool) => (
+                <tr>
+                  <td><strong>{tool.name}</strong></td>
+                  <td>{tool.categoryLabel}</td>
+                  <td>{tool.currency === "USD" ? `$${tool.defaultMonthlyUsd}` : `${tool.defaultMonthlyKrw?.toLocaleString("ko-KR")}원`}</td>
+                  <td>{tool.pricingUnit === "seat" ? "seat 단위" : "계정 단위"}</td>
+                  <td>{tool.note}</td>
+                  <td>
+                    {tool.officialUrl && <a href={tool.officialUrl} target="_blank" rel="noopener noreferrer">요금 확인</a>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="AI 도구 월비용 계산기 이용 안내"
+        intro={[
+          "AI 도구는 한두 개만 구독할 때는 부담이 작아 보이지만, ChatGPT, Claude, Copilot, Perplexity, Notion AI처럼 여러 도구가 쌓이면 월 고정비가 빠르게 커집니다.",
+          "이 계산기는 사용 중인 AI 도구를 선택하고 환율과 절감 시간을 입력해 월 구독비, 연간 비용, ROI를 함께 보여줍니다.",
+          "가격은 기본 추천값이며 실제 결제 전에는 각 서비스 공식 요금과 결제 통화를 확인해야 합니다.",
+        ]}
+        inputPoints={[
+          "사용 유형을 개인 또는 팀으로 선택하고, 팀 모드에서는 사용 인원 수를 입력합니다.",
+          "각 AI 도구의 월 비용은 달러 또는 원화 기준으로 직접 수정할 수 있습니다.",
+          "월 절감 시간과 시간당 가치는 보수적으로 입력할수록 현실적인 추정 결과에 가까워집니다.",
+        ]}
+        criteria={[
+          "월 비용은 사용자가 입력한 도구별 가격과 환율 기준으로 계산합니다.",
+          "팀 모드는 seat 단위 도구에만 인원 수를 곱해 계산합니다.",
+          "ROI는 월 절감 시간과 시간당 가치를 바탕으로 한 추정값입니다.",
+          "중복 구독 경고는 해지 권고가 아니라 사용 빈도 점검용 안내입니다.",
+        ]}
+        faq={AI_SUBSCRIPTION_FAQ}
+        related={AI_SUBSCRIPTION_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="aiSubscriptionCostData" type="application/json" set:html={JSON.stringify(seed)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/ai-subscription-cost.js")}></script>
+</BaseLayout>

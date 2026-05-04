@@ -1,0 +1,351 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  categoryLabels,
+  categoryOrder,
+  destinations,
+  faqItems,
+  recommendationReasons,
+  recommendations,
+  relatedLinks,
+  reportMeta,
+  savingTips,
+  seasonInsights,
+} from "../../data/domesticVsOverseasTravelCost2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const formatWon = (value: number) => `${Math.round(value / 10_000).toLocaleString("ko-KR")}만원`;
+const formatRange = (range: { min: number; max: number }) => `${formatWon(range.min)}~${formatWon(range.max)}`;
+const midpoint = (range: { min: number; max: number }) => Math.round((range.min + range.max) / 2);
+
+const sortedByCost = [...destinations].sort((a, b) => a.total.min - b.total.min);
+const sortedByValue = [...destinations].sort((a, b) => b.valueScore - a.valueScore);
+const cheapest = sortedByCost[0];
+const valueBest = sortedByValue[0];
+const domesticMax = Math.max(...destinations.filter((item) => item.type === "domestic").map((item) => item.total.max));
+const overseasMin = Math.min(...destinations.filter((item) => item.type === "overseas").map((item) => item.total.min));
+
+const kpis = [
+  {
+    label: "최저 총액 후보",
+    value: cheapest.name,
+    note: `${formatRange(cheapest.total)} · 자가용/가성비 숙소 기준`,
+  },
+  {
+    label: "해외 가성비 후보",
+    value: valueBest.name,
+    note: `${formatRange(valueBest.total)} · 항공권 특가가 핵심`,
+  },
+  {
+    label: "체감 역전 구간",
+    value: `${formatWon(overseasMin)}부터`,
+    note: `국내 상단 ${formatWon(domesticMax)}과 겹치는 해외 하단 구간`,
+  },
+  {
+    label: "고비용 주의",
+    value: "괌",
+    note: "리조트·렌터카·외식·액티비티가 동시에 상승",
+  },
+];
+
+const seed = {
+  destinations,
+  categoryLabels,
+  categoryOrder,
+};
+
+const seoFaqItems = faqItems.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout
+  title="2026 국내 여행 vs 해외 여행 총비용 비교 | 제주·일본·베트남 2박 3일 경비"
+  description={reportMeta.description}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page dvotc-page">
+    <CalculatorHero
+      eyebrow="여행비 비교 리포트"
+      title="국내여행과 해외여행, 어디가 진짜 더 저렴할까요?"
+      description="제주, 부산, 강원과 일본, 베트남, 괌의 2박 3일 2인 기준 총비용을 교통, 숙박, 식비, 현지 이동, 액티비티, 보험·통신까지 같은 기준으로 비교합니다."
+      badges={["국내 vs 해외", "2박 3일", "2인 기준", "추정"]}
+    />
+
+    <InfoNotice
+      title="비교 기준"
+      lines={[
+        "실시간 항공권·숙박 조회가 아니라 2026년 4월 기준 공개 시세와 시장 범위를 바탕으로 한 추정 비교입니다.",
+        "모든 금액은 성인 2인, 2박 3일, 서울·수도권 출발 기준이며 쇼핑비는 기본 총액에서 제외했습니다.",
+        "성수기, 환율, 숙소 등급, 렌터카 여부, 수하물 추가에 따라 실제 비용은 달라질 수 있습니다.",
+      ]}
+    />
+
+    <section class="content-section dvotc-kpi-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">핵심 결론</p>
+        <h2>국내가 항상 싸고 해외가 항상 비싼 구조는 아닙니다</h2>
+        <p>국내는 숙소·렌터카·카페·체험비가 쪼개져 붙고, 해외는 항공권·환율·수하물이 먼저 크게 잡힙니다.</p>
+      </div>
+      <div class="dvotc-kpi-grid">
+        {kpis.map((item) => (
+          <article class="dvotc-kpi-card">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dvotc-compare-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">총비용 비교</p>
+        <h2>국내 3곳과 해외 3곳을 같은 항목으로 놓고 비교했습니다</h2>
+        <p>필터를 바꾸면 표, 차트, 비용 분해 카드가 함께 갱신됩니다.</p>
+      </div>
+
+      <div class="dvotc-filter-row" role="group" aria-label="여행지 필터">
+        <button type="button" class="dvotc-filter is-active" id="dvotc-filter-all" data-dvotc-view="all">전체</button>
+        <button type="button" class="dvotc-filter" id="dvotc-filter-domestic" data-dvotc-view="domestic">국내</button>
+        <button type="button" class="dvotc-filter" id="dvotc-filter-overseas" data-dvotc-view="overseas">해외</button>
+      </div>
+
+      <div class="dvotc-chart-wrap">
+        <canvas id="dvotc-cost-chart" aria-label="여행지별 총비용 중앙값 차트"></canvas>
+      </div>
+
+      <div class="table-wrap">
+        <table class="dvotc-cost-table">
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>여행지</th>
+              <th>구분</th>
+              <th>2박 3일 2인 예상 총비용</th>
+              <th>가성비 판단</th>
+              <th>핵심 변수</th>
+            </tr>
+          </thead>
+          <tbody id="dvotc-summary-grid">
+            {sortedByCost.map((item, index) => (
+              <tr data-type={item.type}>
+                <td>{index + 1}</td>
+                <td>
+                  <strong>{item.name}</strong>
+                  <span>{item.summary}</span>
+                </td>
+                <td>{item.regionLabel}</td>
+                <td class="is-total">{formatRange(item.total)}</td>
+                <td>{item.valueScore}점</td>
+                <td>{item.keyVariables.slice(0, 3).join(" · ")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section dvotc-breakdown-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">비용 항목 분해</p>
+        <h2>총액보다 중요한 것은 어떤 항목이 비용을 밀어 올리는지입니다</h2>
+        <p>각 카드의 금액은 항목별 추정 범위이며, 주의 포인트를 함께 표시했습니다.</p>
+      </div>
+      <div class="dvotc-breakdown-grid" id="dvotc-breakdown-grid">
+        {destinations.map((item) => (
+          <article class="dvotc-destination-card" data-type={item.type}>
+            <div class="dvotc-destination-card__head">
+              <p>{item.regionLabel}</p>
+              <h3>{item.name}</h3>
+              <strong>{formatRange(item.total)}</strong>
+            </div>
+            <div class="dvotc-cost-list">
+              {categoryOrder.map((category) => (
+                <div class="dvotc-cost-row">
+                  <span>{categoryLabels[category]}</span>
+                  <b>{formatRange(item.costs[category])}</b>
+                </div>
+              ))}
+            </div>
+            <p class="dvotc-card-note">{item.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dvotc-reason-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">체감 비용 분석</p>
+        <h2>국내여행이 비싸게 느껴지는 이유는 결제 항목이 흩어져 있기 때문입니다</h2>
+      </div>
+      <div class="dvotc-reason-grid">
+        {recommendationReasons.map((item) => (
+          <article class="dvotc-reason-card">
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dvotc-rank-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">순위</p>
+        <h2>비용 최소화 순위와 만족도 대비 가성비 순위는 다르게 봐야 합니다</h2>
+      </div>
+      <div class="dvotc-rank-grid">
+        <article class="dvotc-rank-card">
+          <h3>비용 최소화 기준</h3>
+          <ol id="dvotc-rank-cost">
+            {sortedByCost.map((item) => (
+              <li>
+                <span>{item.name}</span>
+                <strong>{formatRange(item.total)}</strong>
+              </li>
+            ))}
+          </ol>
+        </article>
+        <article class="dvotc-rank-card">
+          <h3>만족도 대비 가성비 기준</h3>
+          <ol id="dvotc-rank-value">
+            {sortedByValue.map((item) => (
+              <li>
+                <span>{item.name}</span>
+                <strong>{item.valueScore}점 · {formatWon(midpoint(item.total))}</strong>
+              </li>
+            ))}
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section dvotc-season-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">시즌 변수</p>
+        <h2>시즌이 바뀌면 국내와 해외의 비용 상승 방식도 달라집니다</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="dvotc-cost-table dvotc-cost-table--wide">
+          <thead>
+            <tr>
+              <th>시즌</th>
+              <th>국내 여행 흐름</th>
+              <th>해외 여행 흐름</th>
+              <th>추천 전략</th>
+            </tr>
+          </thead>
+          <tbody>
+            {seasonInsights.map((item) => (
+              <tr>
+                <td><strong>{item.season}</strong></td>
+                <td>{item.domestic}</td>
+                <td>{item.overseas}</td>
+                <td>{item.strategy}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section dvotc-recommend-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">추천 유형</p>
+        <h2>동행자와 예산 목적에 따라 추천 목적지가 달라집니다</h2>
+      </div>
+      <div class="dvotc-recommend-grid">
+        {recommendations.map((item) => (
+          <article class="dvotc-recommend-card">
+            <p>{item.budgetLabel}</p>
+            <h3>{item.title}</h3>
+            <strong>{item.destinations.join(" · ")}</strong>
+            <span>{item.reason}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dvotc-tip-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">예약 팁</p>
+        <h2>비교 전에 빠뜨리기 쉬운 항목만 챙겨도 총액 오차가 줄어듭니다</h2>
+      </div>
+      <ul class="dvotc-tip-list">
+        {savingTips.map((tip) => <li>{tip}</li>)}
+      </ul>
+    </section>
+
+    <section class="content-section dvotc-cta-section">
+      <div class="dvotc-cta-band">
+        <div>
+          <p class="dvotc-cta-band__eyebrow">다음 단계</p>
+          <h2>내 여행 조건으로 총비용을 다시 계산해보세요.</h2>
+          <p>리포트는 평균 구조를 보여주고, 계산기는 항공권·숙소·식비·환율을 직접 넣어 내 일정에 맞춘 총액을 확인합니다.</p>
+        </div>
+        <div class="dvotc-cta-links">
+          {relatedLinks.map((item) => (
+            <a class="button button--secondary" href={withBase(item.href)}>
+              <span>{item.label}</span>
+              <small>{item.description}</small>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section dvotc-faq-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">FAQ</p>
+        <h2>국내·해외 여행비 비교에서 자주 묻는 질문</h2>
+      </div>
+      <div class="dvotc-faq-list">
+        {faqItems.map((item, index) => (
+          <details class="dvotc-faq-item" open={index === 0}>
+            <summary>{item.q}</summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="국내 여행과 해외 여행 비용을 같은 기준으로 비교하는 방법"
+      intro={[
+        "국내 여행과 해외 여행은 비용이 발생하는 구조가 다릅니다. 국내는 숙박, 렌터카, 주차, 카페, 체험비가 쪼개져 결제되고 해외는 항공권, 수하물, 환율, 통신, 보험이 먼저 크게 보입니다.",
+        "이 리포트는 제주, 부산, 강원과 일본, 베트남, 괌을 성인 2인 2박 3일 기준으로 묶어 총비용 범위를 비교합니다.",
+        "쇼핑비는 개인차가 커서 제외했고, 여행 자체에 따라오는 부대비용은 숨은 비용 항목으로 따로 반영했습니다.",
+      ]}
+      inputPoints={[
+        "먼저 총비용 표에서 하단·상단 범위가 겹치는 목적지를 확인합니다.",
+        "그다음 비용 항목 분해 카드에서 항공권, 숙박, 현지 이동, 액티비티 중 어느 항목이 총액을 밀어 올리는지 봅니다.",
+        "마지막으로 동행자 유형과 시즌 변수를 적용해 내 일정에 더 가까운 목적지를 고르면 됩니다.",
+      ]}
+      criteria={[
+        reportMeta.baseLabel,
+        "모든 비용은 추정 범위이며 공식 고정 가격이 아닙니다.",
+        "국내 여행은 렌터카와 숙소 등급, 해외 여행은 항공권과 환율이 총액을 크게 좌우합니다.",
+        "2박 3일처럼 짧은 일정에서는 비용뿐 아니라 이동 시간도 만족도에 직접 영향을 줍니다.",
+      ]}
+      formulaTitle="총비용 계산 방식"
+      formula={[
+        "총비용 = 교통/항공 + 숙박 + 식비/카페 + 현지 이동 + 액티비티 + 보험/통신/환전 + 기타 숨은 비용",
+        "각 항목은 하단과 상단을 범위로 두고, 표와 차트의 순위는 총비용 하단 및 중앙값을 함께 참고합니다.",
+        "해외 여행은 환율과 수하물, 국내 여행은 렌터카와 성수기 숙박비를 별도 변수로 봐야 합니다.",
+      ]}
+      faqTitle="자주 묻는 질문"
+      faqItems={seoFaqItems}
+    />
+  </main>
+
+  <script id="dvotc-data" type="application/json" set:html={JSON.stringify(seed)} />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/domestic-vs-overseas-travel-cost-2026.js")}></script>
+</BaseLayout>

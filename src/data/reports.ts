@@ -197,6 +197,13 @@ export const reports: ReportMeta[] = [
     badges: ["퇴직연금", "DB", "DC", "IRP", "2026"],
   },
   {
+    slug: "personal-vs-national-pension-2026",
+    title: "개인연금 vs 국민연금 2026 수령액 완전 비교",
+    description: "2026년 국민연금 평균 수령액과 개인연금 연금저축·IRP 수령액을 비교합니다. 세대별 예상 수령액, 세금, 수령 개시 나이, 노후 소득 갭까지 정리했습니다.",
+    order: 25.9,
+    badges: ["국민연금", "개인연금", "IRP", "노후", "2026"],
+  },
+  {
     slug: "bitcoin-gold-sp500-10year-comparison-2026",
     title: "비트코인 vs 금 vs S&P500 10년 수익 비교 2026",
     description: "2016~2026년 비트코인, 금, S&P500, 나스닥100, 코스피에 같은 돈을 투자했을 때의 결과를 수익률, MDD, 회복 기간, 실질 수익까지 함께 비교하는 인터랙티브 리포트입니다.",
@@ -216,6 +223,13 @@ export const reports: ReportMeta[] = [
     description: "도쿄, 오사카, 방콕, 하노이, 파리 등 주요 도시의 항공권·숙소·식비·교통비를 기준으로 2026년 해외여행 총비용을 비교하는 리포트입니다.",
     order: 28,
     badges: ["여행", "비용비교", "2026"],
+  },
+  {
+    slug: "domestic-vs-overseas-travel-cost-2026",
+    title: "2026 국내 여행 vs 해외 여행 총비용 비교",
+    description: "제주, 부산, 강원과 일본, 베트남, 괌의 2박 3일 2인 기준 여행 총비용을 교통·숙박·식비·액티비티까지 같은 기준으로 비교하는 리포트입니다.",
+    order: 28.2,
+    badges: ["여행", "국내vs해외", "2026"],
   },
   {
     slug: "korea-flight-price-comparison-2026",
@@ -244,6 +258,13 @@ export const reports: ReportMeta[] = [
     description: "서울·수도권 주요 아파트 청약 당첨 가점 사례를 바탕으로 지역, 면적, 공급유형별 커트라인과 점수대별 전략을 비교하는 데이터 리포트입니다.",
     order: 31,
     badges: ["서울", "청약", "부동산", "2026"],
+  },
+  {
+    slug: "seoul-mortgage-refinancing-2026",
+    title: "서울 주요 구별 대환대출 갈아타기 손익 비교 2026",
+    description: "서울 주요 10개 구의 추정 평균 주담대 잔액과 금리 차이를 기준으로 대환대출 갈아타기 시 이자 절감액, 중도상환수수료, 부대비용, DSR 리스크를 비교합니다.",
+    order: 31.2,
+    badges: ["서울", "주담대", "대환대출", "2026"],
   },
   {
     slug: "ai-job-salary-impact-2026",

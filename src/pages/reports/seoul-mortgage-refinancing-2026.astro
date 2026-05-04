@@ -1,0 +1,399 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  caseStudies,
+  districtRows,
+  dsrChecks,
+  faqItems,
+  formatWon,
+  policyLoanRows,
+  preferenceChecks,
+  processSteps,
+  rateSwitchScenarios,
+  references,
+  relatedLinks,
+  reportMeta,
+  summaryCards,
+  timingChecklist,
+  timingRows,
+} from "../../data/seoulMortgageRefinancing2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const faqForSeo = faqItems.map((item) => ({ question: item.q, answer: item.a }));
+const topRows = [...districtRows].sort((a, b) => b.estimatedNetBenefit - a.estimatedNetBenefit).slice(0, 3);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": reportMeta.title,
+      "description": reportMeta.description,
+      "inLanguage": "ko-KR",
+      "dateModified": "2026-04-27",
+      "author": { "@type": "Organization", "name": "비교계산소" },
+      "publisher": { "@type": "Organization", "name": "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": faqItems.map((item) => ({
+        "@type": "Question",
+        "name": item.q,
+        "acceptedAnswer": { "@type": "Answer", "text": item.a },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={reportMeta.title} description={reportMeta.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page smr-page">
+    <CalculatorHero
+      eyebrow="서울 주담대 대환 리포트"
+      title="서울 주요 구별 대환대출 갈아타기 손익 비교 2026"
+      description="서울 주요 구별 추정 평균 주담대 잔액과 금리 차이를 기준으로 이자 절감액, 중도상환수수료, 신규 부대비용, DSR 리스크를 함께 비교합니다."
+      badges={["서울", "주담대", "대환대출", "추정"]}
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[
+        "이 페이지는 특정 금융상품 추천이 아니며, 구별 대출잔액은 공개 자료 기반 참고 지표입니다.",
+        "구별 추정 평균 잔액은 대출잔액을 대출건수로 나눈 예시 시뮬레이션이며 개인별 평균 주담대 잔액을 보장하지 않습니다.",
+        "실제 대환 승인과 금리는 금융기관 심사, DSR, LTV, 소득, 신용점수, 기존 부채, 은행별 한도 관리에 따라 달라질 수 있습니다.",
+        "중도상환수수료는 기존 대출 실행일과 약정 조건에 따라 달라지므로 실행 전 금융기관에서 최종 확인해야 합니다.",
+      ]}
+    />
+
+    <section class="content-section smr-hero-board">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 결론</p>
+        <h2>대환대출은 금리 차이보다 비용 회수 기간이 먼저입니다</h2>
+        <p>같은 0.9%p 금리 차이라도 잔액 3.4억 원과 1.6억 원의 절감액은 다릅니다. 실제 판단은 수수료와 부대비용을 뺀 뒤 최소 2~3년 유지할 수 있는지로 봐야 합니다.</p>
+      </div>
+      <div class="smr-summary-grid">
+        {summaryCards.map((item) => (
+          <article class="smr-summary-card">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">절감액 상위 예시</p>
+        <h2>추정 순이익이 크게 보이는 구간</h2>
+        <p>아래 숫자는 중도상환수수료와 신규 부대비용을 단순 추정으로 반영한 예시입니다.</p>
+      </div>
+      <div class="smr-top-grid" id="smr-summary-cards">
+        {topRows.map((row) => (
+          <article class="smr-top-card">
+            <span class={`smr-risk-badge is-${row.riskLevel}`}>{row.riskLevel === "high" ? "심사 변수 큼" : "조건 확인"}</span>
+            <p>{row.district}</p>
+            <strong>{formatWon(row.estimatedNetBenefit)}</strong>
+            <small>3년 추정 순이익 · 금리 차이 {row.rateGapPercentPoint}%p 기준</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section smr-control-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">시나리오 조정</p>
+        <h2>금리 차이와 정렬 기준을 바꿔 보세요</h2>
+        <p>기본값은 기존 4.8%, 대환 3.9%의 0.9%p 차이입니다. 결과는 참고용 예시 시뮬레이션입니다.</p>
+      </div>
+      <div class="smr-control-row">
+        <label class="smr-field" for="smr-rate-gap">
+          <span>금리 차이</span>
+          <select id="smr-rate-gap">
+            <option value="0.3">0.3%p</option>
+            <option value="0.5">0.5%p</option>
+            <option value="0.9" selected>0.9%p</option>
+            <option value="1.2">1.2%p</option>
+          </select>
+        </label>
+        <label class="smr-field" for="smr-sort-select">
+          <span>정렬</span>
+          <select id="smr-sort-select">
+            <option value="benefit" selected>3년 순이익 높은 순</option>
+            <option value="balance">추정 잔액 높은 순</option>
+            <option value="district">구 이름순</option>
+          </select>
+        </label>
+      </div>
+      <div class="smr-chart-panel">
+        <div class="smr-chart-wrap">
+          <canvas id="smr-benefit-chart" aria-label="구별 연간 이자 절감액 차트"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">서울 주요 구별 비교</p>
+        <h2>구별 추정 평균 잔액과 대환 절감액</h2>
+      </div>
+      <div class="smr-table-wrap">
+        <table class="smr-district-table">
+          <thead>
+            <tr>
+              <th>구</th>
+              <th>대출건수</th>
+              <th>대출잔액</th>
+              <th>건당 추정 잔액</th>
+              <th>기존/대환 금리</th>
+              <th>연간 절감액</th>
+              <th>3년 추정 순이익</th>
+              <th>판단 메모</th>
+            </tr>
+          </thead>
+          <tbody id="smr-district-table-body">
+            {districtRows.map((row) => (
+              <tr>
+                <td><strong>{row.district}</strong></td>
+                <td>{row.loanCountLabel}</td>
+                <td>{row.totalLoanBalanceLabel}</td>
+                <td>{formatWon(row.estimatedAverageBalance)}</td>
+                <td>{row.currentRatePercent}% → {row.refinanceRatePercent}%</td>
+                <td>{formatWon(row.annualInterestSaving)}</td>
+                <td>{formatWon(row.estimatedNetBenefit)}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="smr-district-grid" id="smr-district-grid">
+        {districtRows.map((row) => (
+          <article class="smr-district-card">
+            <div>
+              <p>{row.district}</p>
+              <strong>{formatWon(row.estimatedAverageBalance)}</strong>
+            </div>
+            <span>연간 절감액 {formatWon(row.annualInterestSaving)}</span>
+            <small>{row.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section smr-formula-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">손익 공식</p>
+        <h2>대환대출 손익은 네 항목을 빼고 남는 금액입니다</h2>
+      </div>
+      <div class="smr-formula-grid">
+        <article class="smr-formula-card">
+          <p>대환대출 순이익</p>
+          <strong>기존 대출 이자비용 - 신규 대출 이자비용 - 중도상환수수료 - 신규대출 부대비용</strong>
+          <span>간단히는 연간 이자 절감액 × 예상 유지기간 - 수수료 - 부대비용으로 볼 수 있습니다.</span>
+        </article>
+        <article class="smr-example-card">
+          <p>예시 시뮬레이션</p>
+          <ul>
+            <li><span>대출잔액</span><strong>3억 원</strong></li>
+            <li><span>기존 → 대환 금리</span><strong>4.8% → 3.9%</strong></li>
+            <li><span>연간 절감액</span><strong>270만 원</strong></li>
+            <li><span>3년 총 절감액</span><strong>810만 원</strong></li>
+            <li><span>수수료·부대비용</span><strong>170만 원</strong></li>
+            <li><span>최종 순이익</span><strong>640만 원 추정</strong></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">중도상환수수료</p>
+        <h2>면제 시점이 가까우면 기다리는 선택도 비교해야 합니다</h2>
+      </div>
+      <div class="smr-timing-grid">
+        {timingRows.map((row) => (
+          <article class="smr-timing-card">
+            <p>{row.elapsedLabel}</p>
+            <strong>{row.judgment}</strong>
+            <span>수수료 부담: {row.feeLevel}</span>
+            <small>{row.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">금리 유형</p>
+        <h2>고정·변동·혼합형 전환은 절감액과 안정성을 같이 봅니다</h2>
+      </div>
+      <div class="smr-switch-grid">
+        {rateSwitchScenarios.map((item) => (
+          <article class="smr-switch-card">
+            <h3>{item.type}</h3>
+            <p><strong>유리한 상황</strong>{item.favorableWhen}</p>
+            <p><strong>불리한 상황</strong>{item.unfavorableWhen}</p>
+            <span>{item.keyCheck}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">신청 전 체크</p>
+        <h2>우대금리와 DSR 재심사를 먼저 걸러야 합니다</h2>
+      </div>
+      <div class="smr-check-grid">
+        <article class="smr-check-panel">
+          <h3>우대금리 조건</h3>
+          {preferenceChecks.map((item) => (
+            <div class="smr-check-item">
+              <strong>{item.title}</strong>
+              <span>{item.body}</span>
+            </div>
+          ))}
+        </article>
+        <article class="smr-check-panel">
+          <h3>DSR 재심사</h3>
+          {dsrChecks.map((item) => (
+            <div class="smr-check-item">
+              <strong>{item.title}</strong>
+              <span>{item.body}</span>
+            </div>
+          ))}
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">예시 사례</p>
+        <h2>대환대출은 성공과 실패가 모두 비용 회수 기간에서 갈립니다</h2>
+      </div>
+      <div class="smr-case-grid">
+        {caseStudies.map((item) => (
+          <article class={`smr-case-card is-${item.id}`}>
+            <p>예시 시나리오 · {item.district}</p>
+            <h3>{item.title}</h3>
+            <ul>
+              <li><span>대출잔액</span><strong>{formatWon(item.loanBalance)}</strong></li>
+              <li><span>금리</span><strong>{item.currentRatePercent}% → {item.newRatePercent}%</strong></li>
+              <li><span>연간 절감액</span><strong>{formatWon(item.annualSaving)}</strong></li>
+              <li><span>수수료·부대비용</span><strong>{formatWon(item.penaltyCost + item.extraCost)}</strong></li>
+            </ul>
+            <span>{item.judgment}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">적기 판단</p>
+        <h2>갈아타기 전 마지막으로 확인할 항목</h2>
+      </div>
+      <div class="smr-mini-grid">
+        {timingChecklist.map((item) => (
+          <article class="smr-mini-card">
+            <strong>{item.title}</strong>
+            <span>{item.body}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">정책대출</p>
+        <h2>정책대출 전환은 자격 요건이 먼저입니다</h2>
+      </div>
+      <div class="smr-table-wrap">
+        <table class="smr-policy-table">
+          <thead>
+            <tr>
+              <th>상품</th>
+              <th>검토 포인트</th>
+              <th>주의사항</th>
+            </tr>
+          </thead>
+          <tbody>
+            {policyLoanRows.map((row) => (
+              <tr>
+                <td><strong>{row.product}</strong></td>
+                <td>{row.checkPoint}</td>
+                <td>{row.caution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">신청 절차</p>
+        <h2>조건 확인부터 실행일까지 순서대로 맞춥니다</h2>
+      </div>
+      <ol class="smr-step-list">
+        {processSteps.map((step, index) => (
+          <li><span>Step {index + 1}</span><p>{step}</p></li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section smr-cta-section">
+      <div>
+        <p class="smr-cta-eyebrow">다음 계산</p>
+        <h2>내 조건은 수수료와 자금 계획까지 이어서 확인하세요</h2>
+        <p>현재 존재하는 내부 페이지만 연결했습니다. 실제 대환 상품 추천이나 승인 가능성 판정은 제공하지 않습니다.</p>
+      </div>
+      <div class="smr-cta-links">
+        {relatedLinks.map((item) => <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자료 기준</p>
+        <h2>공식 자료와 보도 기반으로 참고 지표를 구성했습니다</h2>
+      </div>
+      <div class="smr-reference-links">
+        {references.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="서울 구별 대환대출 손익 리포트 읽는 법"
+      intro={[
+        "이 리포트는 서울 주요 구별 추정 평균 주담대 잔액과 금리 차이를 기준으로 대환대출의 이자 절감액과 비용 회수 가능성을 비교합니다.",
+        "핵심은 낮은 금리 자체가 아니라 중도상환수수료, 신규 부대비용, DSR 재심사, 금리 유형 변경 위험을 차감한 뒤에도 이득이 남는지 확인하는 것입니다.",
+      ]}
+      inputPoints={[
+        "구별 잔액 차이에 따라 같은 금리 차이의 절감액이 얼마나 달라지는지 확인합니다.",
+        "수수료 면제일까지 기다릴지 즉시 대환할지 비교합니다.",
+        "우대금리 조건과 DSR 재심사 항목을 신청 전에 점검합니다.",
+      ]}
+      criteria={[
+        "연간 이자 절감액 = 대출잔액 × 금리 차이",
+        "3년 추정 순이익 = 연간 절감액 × 3 - 중도상환수수료 - 신규대출 부대비용",
+        "구별 평균 잔액은 공개 통계와 보도 기반 참고 지표이며 공식 개인 평균값이 아닙니다.",
+      ]}
+      faq={faqForSeo}
+      related={relatedLinks}
+    />
+  </main>
+
+  <script id="smr-data" type="application/json" set:html={JSON.stringify({ districtRows })}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/seoul-mortgage-refinancing-2026.js")}></script>
+</BaseLayout>

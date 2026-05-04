@@ -225,6 +225,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "mortgage-prepayment-penalty",
+    title: "중도상환 수수료 계산기",
+    description: "대출 잔여 원금, 수수료율, 잔여 기간을 입력하면 중도상환 수수료와 이자 절감액을 비교해 갚는 게 유리한지 바로 확인합니다.",
+    order: 14.5,
+    eyebrow: "대출 계산기",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규", "부동산"],
+    previewStats: [
+      { label: "수수료 공식", value: "원금×율×잔여비율", context: "은행 일반 기준" },
+      { label: "결과", value: "유불리 자동 판정" },
+    ],
+  },
+  {
     slug: "formula-cost",
     title: "아기 분유 값 계산기",
     description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 매일 앱솔루트·남양 임페리얼·일동후디스 등 브랜드별 총비용을 비교하는 페이지",
@@ -407,6 +421,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "savings-vs-etf-retirement",
+    title: "월 적금 vs ETF 노후 계산기",
+    description: "현재 나이, 은퇴 목표 나이, 월 투자금, 적금 금리, ETF 기대수익률, 물가상승률을 입력하면 은퇴 시점 자산과 실질 구매력, 생활비 커버 기간을 비교합니다.",
+    order: 24.68,
+    eyebrow: "노후 준비 계산",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규", "시뮬레이션"],
+    previewStats: [
+      { label: "비교", value: "적금 vs ETF" },
+      { label: "결과", value: "고갈 시점" }
+    ]
+  },
+  {
     slug: "coin-tax-calculator",
     title: "코인 세금 계산기",
     description: "비트코인·이더리움 등 가상자산 매도 시 양도차익, 250만원 공제, 예상 세금, 세후 순이익을 바로 계산하는 페이지",
@@ -460,6 +488,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "핵심 입력", value: "월급·절감시간" },
       { label: "결과 지표", value: "시급·회수기간" },
+    ],
+  },
+  {
+    slug: "ai-subscription-cost",
+    title: "AI 도구 월비용 계산기",
+    description: "ChatGPT, Claude, Copilot, Perplexity, Notion AI 등 AI 구독료를 합산하고 월 절감 시간 대비 ROI와 중복 구독 가능성을 점검하는 계산기",
+    order: 26.2,
+    eyebrow: "AI 구독비 계산",
+    category: "ai",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교 도구", value: "8종" },
+      { label: "핵심 결과", value: "월비용·ROI" },
     ],
   },
   {
