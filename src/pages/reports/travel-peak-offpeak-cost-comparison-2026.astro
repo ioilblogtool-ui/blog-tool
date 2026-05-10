@@ -1,0 +1,102 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { travelPeakDestinations } from "../../data/travelPeakOffpeakCostComparison2026";
+
+const won = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만 원`;
+const rate = (offPeak: number, peak: number) => Math.round(((peak - offPeak) / offPeak) * 100);
+const faq = [
+  {
+    question: "여행 성수기는 언제인가요?",
+    answer: "한국 출발 기준으로 설 연휴(1~2월), 벚꽃 시즌(3~4월), 여름휴가(7~8월), 추석 연휴(9~10월), 크리스마스·연말(12월)이 대표 성수기입니다. 이 시기에는 항공권과 숙박비가 동시에 오르고 예약 경쟁도 치열합니다.",
+  },
+  {
+    question: "비수기에 여행하면 얼마나 아낄 수 있나요?",
+    answer: "여행지와 예약 시점에 따라 다르지만, 항공권과 숙박비를 합쳐 20~50% 이상 차이 나는 경우가 많습니다. 예를 들어 도쿄 3박 4일 기준 성수기 115만 원, 비수기 75만 원으로 약 40만 원(35%) 차이가 납니다.",
+  },
+  {
+    question: "성수기 여행은 언제 예약해야 하나요?",
+    answer: "설·추석 연휴 여행은 최소 3~4개월 전, 7~8월 여름휴가는 4~6개월 전에 항공권을 검색하는 것이 좋습니다. 인기 노선은 좌석이 빨리 소진되며, 늦게 예약할수록 가격이 오르는 경향이 있습니다.",
+  },
+  {
+    question: "항공권과 숙박비 중 어느 것이 성수기에 더 많이 오르나요?",
+    answer: "일반적으로 항공권이 먼저, 그리고 더 크게 오릅니다. 특히 인기 노선(일본, 동남아)은 성수기에 항공권이 비수기 대비 50~100% 이상 비싸지는 경우도 있습니다. 숙박비도 오르지만 상대적으로 예약 여유가 있는 경우가 많습니다.",
+  },
+  {
+    question: "성수기에도 저렴하게 여행하는 방법이 있나요?",
+    answer: "성수기 중에서도 평일 출발·도착을 선택하거나, 얼리버드 항공권을 5~6개월 전에 구매하면 가격을 낮출 수 있습니다. 또한 인기 여행지를 피해 주변 소도시로 이동하거나, 비주류 항공사를 이용하는 것도 방법입니다.",
+  },
+  {
+    question: "국내 여행도 성수기 가격 차이가 크나요?",
+    answer: "네. 제주도 기준으로 여름휴가·추석 연휴에는 항공권·숙박비 합산이 비수기 대비 70% 이상 비싸질 수 있습니다. 리포트의 제주 데이터를 보면 비수기 38만 원, 성수기 65만 원으로 약 27만 원 차이입니다.",
+  },
+  {
+    question: "유럽 여행은 언제가 비수기인가요?",
+    answer: "유럽은 7~8월이 극성수기(유럽 현지 여름 바캉스 시즌)입니다. 비수기는 11월~2월이며, 3월과 10월은 날씨와 가격을 함께 고려하기 좋은 준비수기입니다. 크리스마스 시즌(12월 중순~1월 초)도 가격이 올라갑니다.",
+  },
+  {
+    question: "여행 적금은 성수기 비용 기준으로 모아야 하나요?",
+    answer: "출발 시기가 성수기라면 성수기 비용을 기준으로 목표를 설정하는 것이 안전합니다. 비수기로 출발 시기를 바꾸면 같은 기간에 더 많은 금액을 모을 수 있어 여행 퀄리티를 높이거나 적립 기간을 단축할 수 있습니다.",
+  },
+];
+---
+
+<BaseLayout title="2026 여행 성수기 vs 비수기 항공권·숙박비 실비용 비교" description="2026년 일본·동남아·유럽·제주 여행을 성수기와 비수기에 떠날 때 항공권, 숙박비, 현지 비용이 얼마나 차이 나는지 비교했습니다.">
+  <SiteHeader />
+  <main class="container page-shell report-page op-page tpo-page">
+    <CalculatorHero eyebrow="여행비 비교 리포트" title="2026 여행 성수기 vs 비수기 항공·숙박 실비용 비교" description="일본, 동남아, 유럽, 제주 여행을 성수기와 비수기로 나눠 항공권·숙박비·총비용 차이를 비교합니다." />
+    <InfoNotice title="가격 기준" lines={["아래 금액은 표본 가격과 시장 범위를 바탕으로 한 추정 비교입니다.", "실제 가격은 예약 시점, 항공사, 숙소 등급, 환율, 프로모션에 따라 달라질 수 있습니다.", "성수기 기준은 2026년 설, 여름휴가, 추석, 연말 수요를 중심으로 잡았습니다."]} />
+      <DesignTrustPanel title="성수기·비수기 여행비 비교 기준" updatedAt="2026-05-05" notes={["항공권과 숙박비는 예약 시점, 환율, 프로모션, 객실 등급에 따라 달라집니다.", "금액은 표본 기반 추정 비교이며 실제 예약 가격을 보장하지 않습니다."]} />
+
+    <section class="op-section">
+      <div class="op-card-grid">
+        <article><strong>극성수기</strong><p>설 연휴, 7~8월, 추석, 연말은 항공권과 숙박비가 동시에 오를 수 있습니다.</p></article>
+        <article><strong>준성수기</strong><p>5월 연휴와 10월 징검다리 연휴는 평일 조합에 따라 가격 차이가 큽니다.</p></article>
+        <article><strong>비수기</strong><p>3월, 6월 초, 11월은 비용과 혼잡도를 함께 낮추기 좋은 구간입니다.</p></article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>여행지별 성수기·비수기 총비용 차이</h2>
+      <div class="op-table-wrap"><table><thead><tr><th>여행지</th><th>구분</th><th>비수기</th><th>성수기</th><th>차이</th><th>상승률</th><th>추천 비수기</th></tr></thead><tbody>{travelPeakDestinations.map((item) => <tr><td>{item.name}</td><td>{item.region}</td><td>{won(item.offPeak)}</td><td>{won(item.peak)}</td><td>{won(item.peak - item.offPeak)}</td><td>{rate(item.offPeak, item.peak)}%</td><td>{item.best}</td></tr>)}</tbody></table></div>
+    </section>
+
+    <section class="op-section">
+      <h2>여행지별 최적 출발 시기</h2>
+      <div class="op-card-grid">{travelPeakDestinations.map((item) => <article><strong>{item.name}</strong><p>추천: {item.best}</p><p>피하기: {item.avoid}</p></article>)}</div>
+    </section>
+
+    <section class="op-section op-cta"><h2>여행비를 모으려면 월 적립액부터 확인하세요</h2><p>성수기 비용 차이를 봤다면 내 출발월 기준으로 매달 얼마를 모아야 하는지 계산해보세요.</p><a class="button button--secondary" href="/tools/travel-savings-goal-calculator/">여행 적금 목표 계산기</a></section>
+
+    <SeoContent
+      introTitle="성수기와 비수기 여행비를 비교하는 방법"
+      intro={[
+        "같은 여행지, 같은 숙소라도 출발 시기에 따라 항공권과 숙박비가 크게 달라집니다. 이 리포트는 일본·동남아·유럽·제주 5개 여행지의 성수기와 비수기 총비용을 비교해, 시기 선택만으로 얼마나 절약할 수 있는지 보여줍니다.",
+        "한국 출발 기준 성수기는 크게 네 구간입니다. 설 연휴(1~2월), 벚꽃·황금연휴(3~5월), 여름휴가(7~8월), 추석·연말(9~12월). 이 시기에는 항공권이 비수기 대비 50~100% 비싸지고 숙박도 동시에 오르면서 총비용이 30~50% 이상 높아질 수 있습니다.",
+        "비수기 여행의 실익은 단순 절약에 그치지 않습니다. 관광지 혼잡도가 낮아져 이동이 편하고, 인기 레스토랑이나 투어 예약도 수월합니다. 3월·6월 초·11월은 날씨와 비용, 혼잡도 세 가지를 동시에 고려하기 좋은 구간입니다.",
+        "성수기 여행을 피할 수 없다면 예약 시기가 중요합니다. 항공권은 출발 3~6개월 전에 검색을 시작하고, 숙박은 환불 가능한 상품을 미리 예약해 두었다가 더 좋은 조건이 나오면 교체하는 방법이 효과적입니다.",
+        "여행 출발 시기와 목표 예산이 정해졌다면 월 적립액을 계산해 보세요. 성수기 기준 비용으로 목표를 설정하면 예산 초과 없이 여행을 즐길 수 있습니다. 비수기로 시기를 바꾸면 같은 적립 기간에 더 높은 퀄리티의 여행을 계획할 수도 있습니다.",
+      ]}
+      criteria={[
+        "총비용은 항공권, 숙박비, 현지 이동·식비 등을 합산한 표본 기반 추정입니다.",
+        "성수기 상승률은 비수기 대비 성수기 총비용 차이를 비율로 계산한 참고값입니다.",
+        "실제 예약 가격은 항공사, 예약 시점, 환율, 프로모션에 따라 달라질 수 있습니다.",
+        "성수기 기준은 2026년 설·벚꽃·여름휴가·추석·연말 수요를 중심으로 설정했습니다.",
+      ]}
+      faq={faq}
+      related={[
+        { href: "/tools/travel-savings-goal-calculator/", label: "여행 적금 목표 계산기" },
+        { href: "/tools/flight-cheapest-timing-calculator/", label: "항공권 최저가 시기 계산기" },
+        { href: "/tools/overseas-travel-cost/", label: "해외여행 비용 계산기" },
+        { href: "/tools/travel-expense-split/", label: "여행 경비 분담 계산기" },
+        { href: "/reports/domestic-vs-overseas-travel-cost-2026/", label: "국내 vs 해외 여행비 비교" },
+      ]}
+    />
+  </main>
+</BaseLayout>
+
+

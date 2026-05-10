@@ -1,0 +1,81 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { pregnancyCostCases, pregnancyReportFaq, pregnancyReportTimeline, pregnancySavingsTips } from "../../data/pregnancyCheckupCost2026";
+
+const won = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만 원`;
+---
+
+<BaseLayout title="2026 임신 주수별 검사 비용 완전 정리 - 니프티·기형아검사·정밀초음파 얼마?" description="임신 4주 확인부터 분만 직전까지 주수별 산전검사 종류와 예상 비용을 정리했습니다. 니프티, 기형아검사, 정밀초음파, 임신성 당뇨, GBS 검사 비용과 바우처 차감 전략까지 확인하세요.">
+  <SiteHeader />
+  <main class="container page-shell report-page op-page pcr-page">
+    <CalculatorHero eyebrow="임신 검사비 리포트" title="2026 임신 주수별 검사 비용 완전 정리" description="임신 4주부터 40주까지 주요 산전검사 종류, 예상 비용, 바우처 차감 구조를 한 번에 정리했습니다." />
+    <InfoNotice title="의료·비용 안내" lines={["비용은 병원, 지역, 검사 방식, 급여·비급여 여부, 의료진 소견에 따라 달라집니다.", "NIPT, 양수검사, 입체초음파는 선택 검사로 표현합니다.", "보험 청구 가능 여부는 가입 약관과 진료 목적에 따라 달라질 수 있습니다."]} />
+      <DesignTrustPanel title="임신검진 비용 리포트 기준" updatedAt="2026-05-05" notes={["검진 비용은 의료기관과 검사 항목에 따라 차이가 큽니다.", "지원금과 본인부담금은 기준일 이후 변경될 수 있어 최신 안내 확인이 필요합니다."]} />
+
+    <section class="op-section">
+      <h2>임신 주수별 검사 타임라인</h2>
+      <div class="op-table-wrap"><table><thead><tr><th>주수</th><th>검사</th><th>구분</th><th>예상 비용</th></tr></thead><tbody>{pregnancyReportTimeline.map((item) => <tr><td>{item.startWeek}~{item.endWeek}주</td><td>{item.name}</td><td>{item.type}</td><td>{won(item.minCost)}~{won(item.maxCost)}</td></tr>)}</tbody></table></div>
+    </section>
+
+    <section class="op-section">
+      <h2>케이스별 총비용 시뮬레이션</h2>
+      <div class="op-result-grid">
+        {pregnancyCostCases.map((item) => (
+          <article class="op-result-card">
+            <p>{item.label}</p>
+            <strong>{won(item.oop)}</strong>
+            <span>총 {won(item.total)} · 바우처 {won(item.voucher)}</span>
+            <p class="pcr-case-desc">{item.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>검사비 절약 실전 팁</h2>
+      <div class="op-card-grid">
+        {pregnancySavingsTips.map((tip) => (
+          <article><strong>{tip.title}</strong><p>{tip.desc}</p></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section op-cta">
+      <h2>내 임신 주수 기준으로 남은 검사비를 계산해보세요</h2>
+      <p>현재 주수와 선택 검사 여부를 입력하면 바우처 차감 후 예상 부담액을 확인할 수 있습니다.</p>
+      <a class="button button--secondary" href="/tools/pregnancy-checkup-cost/">임신 주수별 검사비 계산기</a>
+    </section>
+
+    <SeoContent
+      introTitle="임신 검사비는 왜 주수별로 달라질까?"
+      intro={[
+        "임신 중 산부인과 검사비는 매달 일정하게 나가지 않습니다. 임신 초기(5~13주)에는 임신 확인 초음파와 산전 기본 혈액검사, 1차 기형아 검사가 몰리고, 중기(14~27주)에는 2차 기형아 검사·정밀초음파·임신성 당뇨 검사가 집중됩니다. 후기(28~40주)에는 GBS 검사와 막달 진료가 있습니다.",
+        "NIPT(니프티) 검사나 양수검사를 선택하면 비용 구조가 크게 달라집니다. NIPT는 40~70만 원, 양수검사는 60~120만 원의 비급여 비용이 추가되며, 이 선택이 총 임신 검사비를 100만 원 이상 늘릴 수 있습니다. 고령 임신이거나 기형아 검사 결과가 고위험군으로 나온 경우 의료진과 상담해 결정해야 합니다.",
+        "국민행복카드 임신·출산 바우처는 단태아 100만 원, 다태아 140만 원이 지급됩니다. 초기에 NIPT를 선택하면 바우처의 40~70%가 조기 소진될 수 있습니다. 정밀초음파(20~24주), 임신성 당뇨 검사(24~28주), 막달 진료(36~40주) 비용을 감안해 바우처 사용 순서를 미리 계획하는 것이 중요합니다.",
+        "비급여 항목(NIPT, 정밀초음파, 3D·4D 초음파 등)은 병원마다 가격 차이가 큽니다. 진료 전 전화로 비용을 확인하고 비교하면 수십만 원을 절약할 수 있습니다. 또한 비급여 항목은 실손보험에서 일부 청구가 가능한 경우가 있으므로 영수증을 꼭 보관해 두세요.",
+        "보건소에서는 초기 혈액검사(혈액형, B형 간염, 풍진, 매독 등)를 무료 또는 저렴하게 받을 수 있습니다. 거주 지역 지자체에 따라 국비 바우처 외에 추가 임신·출산 지원금이 있는 경우도 있으니, 임신 확인 후 주민센터나 보건소에 지원 가능 항목을 문의해 보세요.",
+      ]}
+      criteria={[
+        "기본·권장·선택 검사를 구분해 합산 기준을 명확히 해야 합니다.",
+        "바우처는 임신 확인 직후 신청해야 이전 진료비 소급이 불가한 손실을 막을 수 있습니다.",
+        "비급여 항목 비용은 병원·지역·의료진에 따라 크게 다르며 이 리포트의 금액은 참고 범위입니다.",
+        "의료진 소견에 따라 실제 검사 일정과 항목은 달라질 수 있습니다.",
+      ]}
+      faq={pregnancyReportFaq}
+      related={[
+        { href: "/tools/pregnancy-checkup-cost/", label: "임신 주수별 검사비 계산기" },
+        { href: "/tools/pregnancy-birth-cost/", label: "임신·출산 비용 계산기" },
+        { href: "/tools/birth-support-total/", label: "출산 지원금 총합 계산기" },
+        { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+        { href: "/reports/baby-cost-guide-first-year/", label: "첫해 육아비 리포트" },
+      ]}
+    />
+  </main>
+</BaseLayout>
+
+

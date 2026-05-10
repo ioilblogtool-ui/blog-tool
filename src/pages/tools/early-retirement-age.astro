@@ -1,0 +1,148 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  earlyRetirementActionChecklist,
+  earlyRetirementAssetStrategy,
+  earlyRetirementDefaults,
+  earlyRetirementFaq,
+  earlyRetirementFireTypes,
+  earlyRetirementSavingRateGuide,
+  earlyRetirementSources,
+  earlyRetirementWithdrawalRows,
+} from "../../data/earlyRetirementAge";
+---
+
+<BaseLayout title="조기 은퇴 가능 나이 계산기 - 나는 몇 살에 파이어할 수 있을까" description="월 소득, 지출, 현재 자산, 투자수익률을 입력하면 목표 은퇴자산과 조기 은퇴 가능 나이를 계산합니다. 4% 룰, 3.5% 인출률, 저축률별 FIRE 시나리오를 함께 비교하세요.">
+  <SiteHeader />
+  <SimpleToolShell calculatorId="early-retirement-age" pageClass="op-page era-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero eyebrow="FIRE 계산기" title="조기 은퇴 가능 나이 계산기" description="현재 자산, 월 저축액, 투자수익률, 은퇴 후 생활비를 입력해 목표 은퇴 시점을 추정합니다." />
+      <InfoNotice title="시뮬레이션 안내" lines={["이 계산기는 입력값 기반 추정 도구이며 실제 은퇴 가능 여부를 보장하지 않습니다.", "투자수익률, 물가, 세금, 건강보험료, 주거비는 별도로 검토해야 합니다.", "조기 은퇴자는 4% 룰보다 보수적인 인출률도 함께 확인하는 것이 좋습니다."]} />
+      <DesignTrustPanel title="조기 은퇴 시뮬레이션 기준" updatedAt="2026-05-05" notes={["투자수익률, 물가, 세금, 건강보험료는 실제 은퇴 가능 시점을 크게 바꿀 수 있습니다.", "결과는 목표 자산 도달 시점을 계산한 추정이며 은퇴 실행을 권유하지 않습니다."]} />
+    </Fragment>
+    <Fragment slot="actions"><ToolActionBar resetId="resetEraBtn" copyId="copyEraLinkBtn" /></Fragment>
+    <Fragment slot="aside">
+      <section class="op-panel" data-era-root>
+        <div class="op-panel__head"><p>입력</p><h2>현재 재무 상태</h2></div>
+        <label class="op-field"><span>현재 나이</span><input data-era-input="currentAge" type="number" value={earlyRetirementDefaults.currentAge} /></label>
+        <label class="op-field"><span>월 세후소득</span><input data-era-input="income" inputmode="numeric" value={earlyRetirementDefaults.monthlyIncome} /></label>
+        <label class="op-field"><span>월 지출</span><input data-era-input="expense" inputmode="numeric" value={earlyRetirementDefaults.monthlyExpense} /></label>
+        <label class="op-field"><span>현재 총자산</span><input data-era-input="assets" inputmode="numeric" value={earlyRetirementDefaults.currentAssets} /></label>
+        <label class="op-field"><span>예상 연 투자수익률(%)</span><input data-era-input="returnRate" type="number" step="0.1" value={earlyRetirementDefaults.annualReturnRate} /></label>
+        <label class="op-field"><span>은퇴 후 월 생활비</span><input data-era-input="retireExpense" inputmode="numeric" value={earlyRetirementDefaults.retirementMonthlyExpense} /></label>
+        <label class="op-field"><span>안전 인출률(%)</span><input data-era-input="withdrawal" type="number" step="0.1" value={earlyRetirementDefaults.withdrawalRate} /></label>
+        <details class="op-details">
+          <summary>고급 옵션</summary>
+          <label class="op-field"><span>월 국민연금·개인연금</span><input data-era-input="pension" inputmode="numeric" value={earlyRetirementDefaults.monthlyPension} /></label>
+          <label class="op-field"><span>은퇴 후 월 부수입</span><input data-era-input="passive" inputmode="numeric" value={earlyRetirementDefaults.passiveIncome} /></label>
+          <label class="op-field"><span>안전마진(%)</span><input data-era-input="margin" type="number" value={earlyRetirementDefaults.safetyMargin} /></label>
+        </details>
+      </section>
+    </Fragment>
+    <section class="op-section">
+      <div class="op-result-grid">
+        <article class="op-result-card op-result-card--main"><p>은퇴 가능 예상 나이</p><strong data-era-output="age">-</strong><span>추정</span></article>
+        <article class="op-result-card"><p>은퇴까지 남은 기간</p><strong data-era-output="years">-</strong><span>목표자산 도달 기준</span></article>
+        <article class="op-result-card"><p>필요 은퇴자산</p><strong data-era-output="required">-</strong><span>인출률 기준</span></article>
+        <article class="op-result-card"><p>목표까지 부족한 금액</p><strong data-era-output="gap">-</strong><span>현재 자산 차감</span></article>
+        <article class="op-result-card"><p>월 저축액</p><strong data-era-output="saving">-</strong><span>소득 - 지출</span></article>
+        <article class="op-result-card"><p>현재 저축률</p><strong data-era-output="rate">-</strong><span>세후 소득 기준</span></article>
+      </div>
+      <p class="op-message" data-era-output="message">입력값을 조정하면 결과가 바로 표시됩니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>현재 입력값 기준 시나리오 비교</h2>
+      <div class="op-table-wrap">
+        <table>
+          <thead><tr><th>시나리오</th><th>은퇴 가능 나이</th><th>은퇴까지 기간</th><th>필요 은퇴자산</th><th>월 저축액</th><th>해석</th></tr></thead>
+          <tbody data-era-scenarios>
+            <tr><td colspan="6">입력값을 기준으로 시나리오를 계산하는 중입니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">지출 10% 절감은 월 생활비와 필요 은퇴자산을 동시에 낮추기 때문에 조기 은퇴 시점을 크게 앞당길 수 있습니다. 수익률 1%p 개선은 장기 복리에서는 의미가 있지만, 보장 수익률처럼 입력하면 결과가 과도하게 낙관적으로 보일 수 있습니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>은퇴 후 월 생활비별 필요 자산</h2>
+      <div class="op-table-wrap">
+        <table>
+          <thead><tr><th>은퇴 후 월 생활비</th><th>연 생활비</th><th>4.0% 기준</th><th>3.5% 기준</th><th>3.0% 기준</th></tr></thead>
+          <tbody>
+            {earlyRetirementWithdrawalRows.map((row) => (
+              <tr><td>{row.monthlyExpense}</td><td>{row.annualExpense}</td><td>{row.rate4}</td><td>{row.rate35}</td><td>{row.rate3}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">안전 인출률을 낮게 잡을수록 필요한 은퇴자산은 커집니다. 30대·40대 조기 은퇴처럼 은퇴 기간이 길면 4.0%만 보지 말고 3.0~3.5% 기준도 함께 확인하는 편이 보수적입니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>저축률별 은퇴 속도 해석</h2>
+      <div class="op-card-grid">
+        {earlyRetirementSavingRateGuide.map((item) => (
+          <article><strong>{item.range} · {item.label}</strong><p>{item.description}</p></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>현재 자산별 조기 은퇴 전략</h2>
+      <div class="op-table-wrap">
+        <table>
+          <thead><tr><th>현재 자산</th><th>우선 전략</th><th>해석</th></tr></thead>
+          <tbody>
+            {earlyRetirementAssetStrategy.map((item) => (
+              <tr><td>{item.range}</td><td>{item.strategy}</td><td>{item.description}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>내 목표는 어떤 FIRE에 가까운가</h2>
+      <div class="op-card-grid">
+        {earlyRetirementFireTypes.map((item) => (
+          <article><strong>{item.name}</strong><p>{item.condition}</p><p>{item.description}</p></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>은퇴 결정 전 체크리스트</h2>
+      <div class="op-card-grid">
+        {earlyRetirementActionChecklist.map((item) => (
+          <article><strong>{item.title}</strong><p>{item.description}</p></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>계산 기준과 참고 자료</h2>
+      <div class="op-card-grid">
+        {earlyRetirementSources.map((source) => (
+          <article>
+            <strong>{source.label}</strong>
+            <p>{source.basis}</p>
+            <a href={source.href} target={source.href.startsWith("/") ? "_self" : "_blank"} rel={source.href.startsWith("/") ? undefined : "noopener noreferrer"}>확인하기</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo"><SeoContent introTitle="조기 은퇴 가능 나이 계산 기준" intro={["조기 은퇴 시점은 월 저축액, 현재 자산, 투자수익률, 은퇴 후 생활비에 따라 크게 달라집니다.", "이 계산기는 목표 은퇴자산에 도달하는 최소 개월 수를 찾아 예상 은퇴 나이로 표시합니다.", "은퇴 가능 나이가 빠르게 나오더라도 실제 실행 전에는 국민연금 수령 전 공백, 건강보험료, 세금, 의료비, 주거비를 별도로 점검해야 합니다."]} criteria={["필요 은퇴자산은 은퇴 후 월 생활비에서 연금·부수입을 뺀 뒤 안전 인출률로 나누고 안전마진을 더해 계산합니다.", "현재 자산과 매월 저축액은 월복리로 불어난다고 가정합니다.", "투자수익률은 보장되지 않으므로 3.0%, 3.5%, 4.0% 인출률과 보수적 수익률을 함께 확인해야 합니다.", "실거주 주택처럼 바로 생활비로 쓰기 어려운 자산은 별도 자산으로 분리해 보는 편이 보수적입니다."]} faq={earlyRetirementFaq} related={[{ href: "/tools/fire-calculator/", label: "파이어 목표자산 계산기" }, { href: "/tools/retirement-fund-depletion/", label: "노후 자금 고갈 계산기" }, { href: "/tools/irp-pension-calculator/", label: "IRP·퇴직연금 수령액 계산기" }, { href: "/reports/worker-retirement-reality-2026/", label: "직장인 은퇴 준비 실태 분석" }]} /></Fragment>
+  </SimpleToolShell>
+  <script src="/scripts/early-retirement-age.js" defer></script>
+</BaseLayout>
+
+

@@ -1,0 +1,154 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  USEP_DEFAULT_INPUT,
+  USEP_FAQ,
+  USEP_META,
+  USEP_PRESETS,
+  USEP_RELATED_LINKS,
+} from "../../data/usStockExchangeProfitCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const config = { defaults: USEP_DEFAULT_INPUT, presets: USEP_PRESETS };
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: USEP_META.title,
+  description: USEP_META.description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${USEP_META.slug}/`,
+};
+---
+
+<BaseLayout title="미국주식 환차손익 계산기 | 달러 수익률·원화 수익률 계산" description={USEP_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={USEP_META.slug} pageClass="usep-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="미국주식 환율 계산"
+        title="달러로는 벌었는데 원화로는 얼마나 남았을까?"
+        description="매수·매도 환율과 미국주식 가격을 입력하면 달러 기준 수익률, 실제 원화 수익률, 환차손익을 함께 계산합니다."
+      />
+      <InfoNotice title="추정 계산 안내" lines={[USEP_META.caution, `업데이트 기준: ${USEP_META.updatedAt}`]} />
+      <DesignTrustPanel title="미국주식 환차익 계산 기준" updatedAt="2026-05-05" notes={["매수·매도 환율, 수수료, 세금 조건은 사용자별로 다르므로 입력값 기준으로 해석해야 합니다.", "수익률은 투자 조언이 아니라 원화 기준 손익 분해를 위한 참고값입니다."]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="usepResetBtn" copyId="usepCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <form id="usepForm" class="panel usep-form">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">매수·매도 조건</h2>
+          </div>
+          <p class="panel-heading__summary">환율은 원/달러 기준으로 입력합니다.</p>
+        </div>
+        <div class="form-grid">
+          <label class="field"><span>매수 환율</span><input id="usepBuyRate" type="number" value={USEP_DEFAULT_INPUT.buyExchangeRate} min="1" /></label>
+          <label class="field"><span>매도 환율</span><input id="usepSellRate" type="number" value={USEP_DEFAULT_INPUT.sellExchangeRate} min="1" /></label>
+          <label class="field"><span>매수 주가($)</span><input id="usepBuyPrice" type="number" value={USEP_DEFAULT_INPUT.buyPriceUsd} min="0" step="0.01" /></label>
+          <label class="field"><span>매도 주가($)</span><input id="usepSellPrice" type="number" value={USEP_DEFAULT_INPUT.sellPriceUsd} min="0" step="0.01" /></label>
+          <label class="field"><span>수량</span><input id="usepQuantity" type="number" value={USEP_DEFAULT_INPUT.quantity} min="1" step="1" /></label>
+          <label class="field"><span>수수료율(%)</span><input id="usepFeeRate" type="number" value={USEP_DEFAULT_INPUT.feeRate} min="0" step="0.001" /></label>
+          <label class="usep-check"><input id="usepIncludeFee" type="checkbox" checked={USEP_DEFAULT_INPUT.includeFee} /> <span>매수·매도 수수료 반영</span></label>
+        </div>
+      </form>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">예시</p>
+            <h2 class="panel__title">대표 시나리오</h2>
+          </div>
+        </div>
+        <div class="usep-preset-grid">
+          {USEP_PRESETS.map((preset, index) => (
+            <button type="button" class:list={["usep-preset", { "is-active": index === 0 }]} data-usep-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="usep-section">
+      <div class="usep-kpi-grid">
+        <article class="usep-kpi usep-kpi--main"><p>실제 원화 수익률</p><strong id="usepKrwReturn">-</strong><span id="usepComment">입력값을 계산 중입니다.</span></article>
+        <article class="usep-kpi"><p>달러 기준 수익률</p><strong id="usepUsdReturn">-</strong></article>
+        <article class="usep-kpi"><p>원화 투자금</p><strong id="usepBuyKrw">-</strong></article>
+        <article class="usep-kpi"><p>원화 회수금</p><strong id="usepSellKrw">-</strong></article>
+        <article class="usep-kpi"><p>환차손익</p><strong id="usepFxProfit">-</strong></article>
+        <article class="usep-kpi"><p>환율 영향</p><strong id="usepFxImpact">-</strong></article>
+      </div>
+    </section>
+
+    <section class="usep-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상세 계산</p>
+        <h2>달러 손익과 원화 손익을 분리해서 봅니다</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="usep-table"><tbody id="usepDetailBody"></tbody></table>
+      </div>
+    </section>
+
+    <section class="usep-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">환율 시뮬레이션</p>
+        <h2>매도 환율이 달라지면 원화 수익률이 바뀝니다</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="usep-table">
+          <thead><tr><th>매도 환율</th><th>원화 회수금</th><th>원화 손익</th><th>원화 수익률</th></tr></thead>
+          <tbody id="usepSimulationBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="미국주식 환차손익 계산기 활용법"
+        intro={[
+          "미국주식에 투자할 때 달러 기준 수익률과 원화 기준 수익률은 다를 수 있습니다. 주가가 30% 올라도 그 기간 환율이 15% 떨어지면 실제 원화 수익률은 10%대에 그칠 수 있습니다. 이 계산기는 주가 변화와 환율 변화를 함께 반영해 두 수익률을 분리해서 보여줍니다.",
+          "환차손익은 달러로 번 금액을 원화로 환산하는 과정에서 발생합니다. 매수 시점보다 매도 시점 환율이 낮으면 환차손, 높으면 환차익입니다. 주가 수익률이 같아도 환율 방향에 따라 원화 수익률이 수십 %p 이상 차이 날 수 있습니다.",
+          "대표 시나리오 3가지(주가 상승·환율 하락 / 주가 보합·환율 상승 / 주가 하락·환율 완충)를 제공합니다. 시나리오를 먼저 확인한 뒤 내 실제 매수·매도 조건을 입력해 환율이 수익률에 미친 영향을 확인해 보세요.",
+          "하단의 환율 시뮬레이션 표는 매도 환율이 달라질 때 원화 수익률이 어떻게 변하는지 보여줍니다. 현재 환율보다 높을 때 매도하면 얼마나 유리해지는지, 낮을 때 매도하면 얼마나 손해인지 한눈에 파악할 수 있습니다.",
+          "세금과 환전 스프레드는 이 계산기에 반영되지 않습니다. 해외주식 양도차익은 연간 250만 원 공제 후 22%가 부과되며, 증권사마다 환전 스프레드(0.5~1%)가 다릅니다. 정확한 세금 계산은 국세청 안내 또는 세무 전문가에게 확인하세요.",
+        ]}
+        inputPoints={[
+          "매수 환율과 매도 환율을 함께 입력해야 환차손익이 계산됩니다.",
+          "수수료를 포함하면 실제 체감 수익률에 더 가까운 결과를 얻습니다.",
+          "환율 시뮬레이션 표로 매도 타이밍별 원화 수익률 변화를 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "원화 수익률 = (매도 원화 회수금 − 매수 원화 투자금) ÷ 매수 원화 투자금.",
+          "환차손익 = 매도 달러 금액 × (매도 환율 − 매수 환율).",
+          "수수료는 체크박스 선택 시 매수·매도 양쪽에 동일 비율 적용합니다.",
+          "세금·환전 스프레드는 별도 확인이 필요하며 이 계산기에는 반영되지 않습니다.",
+        ]}
+        faq={USEP_FAQ}
+        related={USEP_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="usepConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/us-stock-exchange-profit-calculator.js")}></script>
+</BaseLayout>
+
+
+

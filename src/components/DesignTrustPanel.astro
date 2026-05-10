@@ -1,0 +1,62 @@
+---
+interface TrustItem {
+  label: string;
+  title: string;
+  description: string;
+}
+
+interface Props {
+  title?: string;
+  updatedAt?: string;
+  items?: TrustItem[];
+  notes?: string[];
+}
+
+const {
+  title = "계산 기준과 데이터 신뢰도",
+  updatedAt = "2026-05-05",
+  items = [
+    {
+      label: "공식",
+      title: "공개 기준값",
+      description: "정부·공공기관·공식 가격표처럼 출처 확인이 가능한 값은 기준일과 함께 표기합니다.",
+    },
+    {
+      label: "참고",
+      title: "비교용 표본",
+      description: "가격, 비용, 시장 범위는 사용자가 판단 흐름을 잡기 위한 참고값으로 다룹니다.",
+    },
+    {
+      label: "추정",
+      title: "입력값 기반 결과",
+      description: "계산 결과는 사용자가 입력한 가정에 따라 달라지는 시뮬레이션입니다.",
+    },
+  ],
+  notes = [
+    "실제 결제, 계약, 투자, 의료비 청구 전에는 최신 조건을 다시 확인해야 합니다.",
+    "큰 숫자는 기간과 단위를 함께 읽어야 하며, 평균값은 개인 상황을 대신하지 않습니다.",
+  ],
+} = Astro.props;
+---
+
+<section class="design-trust-panel" aria-labelledby="design-trust-title">
+  <div class="design-trust-panel__head">
+    <p>검증 기준</p>
+    <h2 id="design-trust-title">{title}</h2>
+    <span>업데이트 기준: {updatedAt}</span>
+  </div>
+
+  <div class="design-trust-panel__grid">
+    {items.map((item) => (
+      <article class="design-trust-card">
+        <span>{item.label}</span>
+        <strong>{item.title}</strong>
+        <p>{item.description}</p>
+      </article>
+    ))}
+  </div>
+
+  <ul class="design-trust-panel__notes">
+    {notes.map((note) => <li>{note}</li>)}
+  </ul>
+</section>

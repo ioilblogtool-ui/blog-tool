@@ -184,6 +184,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "birth-support-money",
+    title: "출산지원금 총수령액 계산기",
+    description: "출생일, 거주 지역, 출생순위를 입력하면 첫만남이용권, 부모급여, 아동수당과 일부 지자체 출산지원금을 합산해 예상 총수령액을 계산합니다.",
+    order: 11.5,
+    eyebrow: "출산지원금 계산",
+    category: "support",
+    iframeReady: true,
+    badges: ["출산지원금", "육아", "지자체"],
+    previewStats: [
+      { label: "국가 공통", value: "3종" },
+      { label: "기간 선택", value: "12·24·95개월" }
+    ]
+  },
+  {
     slug: "single-parental-leave-total",
     title: "한 명만 육아휴직 총수령액 계산기",
     description: "육아휴직 급여, 부모급여, 아동수당, 첫만남이용권을 합쳐 아이 두 돌까지 가구 총수령액을 계산하는 페이지",
@@ -505,6 +519,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "ai-work-roi-calculator",
+    title: "AI 업무 ROI 계산기",
+    description: "월급, 반복업무 시간, AI 도구 비용을 입력해 시간절감액과 연간 ROI를 계산합니다.",
+    order: 26.25,
+    eyebrow: "AI ROI 계산",
+    category: "ai",
+    iframeReady: true,
+    badges: ["신규", "ROI"],
+    previewStats: [
+      { label: "핵심 결과", value: "월 순이익" },
+      { label: "판정", value: "ROI 등급" },
+    ],
+  },
+  {
     slug: "child-tutoring-cost-calculator",
     title: "아이 사교육비 계산기",
     description: "자녀 수, 학교급, 과목, 지역을 입력하면 월·연간·누적 교육비와 또래 평균 대비 수준을 한 번에 계산. 기회비용 시뮬레이션 포함.",
@@ -614,6 +642,76 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "거래세 기본값", value: "0.18%", context: "코스피·코스닥 기준" },
       { label: "계산 항목", value: "수수료+거래세", context: "매수·매도 모두 반영" },
+    ],
+  },
+  {
+    slug: "us-stock-exchange-profit-calculator",
+    title: "미국주식 환차손익 계산기",
+    description: "매수·매도 환율과 주가를 반영해 달러 수익률과 실제 원화 수익률 차이를 계산합니다.",
+    order: 27.32,
+    eyebrow: "미국주식 환율 계산",
+    category: "investment",
+    iframeReady: true,
+    badges: ["미국주식", "환율"],
+    previewStats: [
+      { label: "비교", value: "달러 vs 원화" },
+      { label: "핵심 결과", value: "환차손익" },
+    ],
+  },
+  {
+    slug: "travel-savings-goal-calculator",
+    title: "여행 적금 목표 계산기",
+    description: "목표 여행 예산과 출발 예정월을 입력하면 매달 필요한 여행 적금 금액과 하루 절약액을 계산합니다.",
+    order: 27.25,
+    eyebrow: "여행 예산",
+    category: "lifestyle",
+    iframeReady: true,
+    badges: ["여행", "적금"],
+    previewStats: [
+      { label: "핵심 결과", value: "월 적립액" },
+      { label: "시나리오", value: "0~4% 금리" },
+    ],
+  },
+  {
+    slug: "early-retirement-age",
+    title: "조기 은퇴 가능 나이 계산기",
+    description: "월 소득, 지출, 현재 자산, 투자수익률을 입력해 목표 은퇴자산과 조기 은퇴 가능 나이를 계산합니다.",
+    order: 24.66,
+    eyebrow: "FIRE 계산기",
+    category: "investment",
+    iframeReady: true,
+    badges: ["은퇴", "FIRE", "추정"],
+    previewStats: [
+      { label: "핵심 결과", value: "은퇴 나이" },
+      { label: "기준", value: "인출률" },
+    ],
+  },
+  {
+    slug: "jeonse-vs-wolse-calculator",
+    title: "아파트 월세 vs 전세 손익 계산기",
+    description: "전세대출 이자, 보증금 기회비용, 월세 납부액을 비교해 전세와 월세 중 유리한 선택을 계산합니다.",
+    order: 24.55,
+    eyebrow: "부동산 비용",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["전세", "월세"],
+    previewStats: [
+      { label: "핵심 결과", value: "손익 차이" },
+      { label: "보조 지표", value: "손익분기 월세" },
+    ],
+  },
+  {
+    slug: "pregnancy-checkup-cost",
+    title: "임신 주수별 검사비 계산기",
+    description: "현재 임신 주수를 기준으로 남은 산부인과 검사 항목, 예상 검사비, 바우처 차감 후 본인부담액을 계산합니다.",
+    order: 23.5,
+    eyebrow: "임신 검사비",
+    category: "support",
+    iframeReady: true,
+    badges: ["임신", "검사비", "추정"],
+    previewStats: [
+      { label: "핵심 결과", value: "남은 검사비" },
+      { label: "지원금", value: "바우처 차감" },
     ],
   },
 ];

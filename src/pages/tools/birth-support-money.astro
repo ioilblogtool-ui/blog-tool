@@ -1,0 +1,320 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import TimelineToolShell from "../../components/TimelineToolShell.astro";
+import {
+  BSM_FAQ,
+  BSM_LOCAL_RULES,
+  BSM_META,
+  BSM_NATIONAL_POLICIES,
+  BSM_REFERENCE_LINKS,
+  BSM_REGION_OPTIONS,
+  BSM_RELATED_LINKS,
+} from "../../data/birthSupportMoney";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  meta: BSM_META,
+  nationalPolicies: BSM_NATIONAL_POLICIES,
+  localRules: BSM_LOCAL_RULES,
+  regionOptions: BSM_REGION_OPTIONS,
+};
+
+const faqSchema = BSM_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="출산지원금 총수령액 계산기 2026 | 첫만남이용권·부모급여·아동수당"
+  description="출생일, 거주 지역, 출생순위를 입력하면 2026년 첫만남이용권, 부모급여, 아동수당, 지자체 출산지원금을 합산해 예상 총수령액과 월별 수령 타임라인을 계산합니다."
+  ogImage="/og/tools/birth-support-total.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "출산지원금 총수령액 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: BSM_META.description,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/birth-support-money/`,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "KRW",
+    },
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <TimelineToolShell calculatorId="birth-support-money" pageClass="birth-support-money-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="출산지원금 합산"
+        title="출산지원금 총수령액 계산기"
+        description="출생일과 거주 지역, 출생순위를 입력하면 국가 공통 지원금과 일부 지자체 지원금을 합산해 총수령액과 월별 수령 흐름을 보여줍니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="bsm-reset-btn" copyId="bsm-copy-link-btn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel bsm-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">지원 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">지역별 금액은 확인된 데이터만 반영하고, 미확정 지역은 확인 필요로 구분합니다.</p>
+        </div>
+
+        <div class="form-grid bsm-input-grid">
+          <label class="field">
+            <span>출생일 또는 예정일</span>
+            <input id="bsm-birth-date" type="date" />
+          </label>
+
+          <label class="field">
+            <span>거주 지역</span>
+            <select id="bsm-region" class="select">
+              {BSM_REGION_OPTIONS.map((item) => (
+                <option value={item.regionCode}>{item.sido} {item.sigungu}</option>
+              ))}
+            </select>
+            <small>지자체 지원금은 주소지 기준과 신청일 기준이 다를 수 있습니다.</small>
+          </label>
+
+          <label class="field">
+            <span>출생순위</span>
+            <select id="bsm-birth-order" class="select">
+              <option value="1">첫째</option>
+              <option value="2">둘째</option>
+              <option value="3">셋째 이상</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>출산 유형</span>
+            <select id="bsm-multiple-birth" class="select">
+              <option value="single">단태아</option>
+              <option value="twins">쌍둥이</option>
+              <option value="triplets">세쌍둥이 이상</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>양육 방식</span>
+            <select id="bsm-childcare-type" class="select">
+              <option value="home">가정양육 중심</option>
+              <option value="daycare">어린이집 이용 예정</option>
+            </select>
+            <small>어린이집 이용 시 부모급여의 실제 현금 수령 구조가 달라질 수 있습니다.</small>
+          </label>
+
+          <label class="field">
+            <span>계산 기간</span>
+            <select id="bsm-calculation-months" class="select">
+              <option value="12">출생~12개월</option>
+              <option value="24" selected>출생~24개월</option>
+              <option value="95">출생~95개월</option>
+            </select>
+          </label>
+        </div>
+
+        <button id="bsm-calc-btn" class="button button--primary" type="button">총수령액 계산하기</button>
+      </article>
+    </Fragment>
+
+    <SummaryCards
+      columns={4}
+      items={[
+        { label: "예상 총수령액", id: "bsm-r-total" },
+        { label: "첫 달 예상 수령액", id: "bsm-r-first-month" },
+        { label: "12개월 누적", id: "bsm-r-12m-total" },
+        { label: "24개월 누적", id: "bsm-r-24m-total" },
+      ]}
+    />
+
+    <article class="panel bsm-status-panel">
+      <div class="bsm-status-row">
+        <span id="bsm-result-badge" class="bsm-badge bsm-badge--official">공식+참고</span>
+        <p id="bsm-result-note">{BSM_META.caution}</p>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">항목별 분해</p>
+          <h2 class="panel__title">어떤 지원금이 총액을 만드는지 봅니다</h2>
+        </div>
+        <p class="panel-heading__summary" id="bsm-breakdown-note">조건을 바꾸면 결과가 바로 업데이트됩니다.</p>
+      </div>
+
+      <div class="bsm-breakdown-grid">
+        <article class="bsm-breakdown-card">
+          <span>첫만남이용권</span>
+          <strong id="bsm-r-first-voucher">-</strong>
+          <small>출생 초기 바우처</small>
+        </article>
+        <article class="bsm-breakdown-card">
+          <span>부모급여 총액</span>
+          <strong id="bsm-r-parent-benefit">-</strong>
+          <small>0~23개월 구간</small>
+        </article>
+        <article class="bsm-breakdown-card">
+          <span>아동수당 총액</span>
+          <strong id="bsm-r-child-allowance">-</strong>
+          <small>선택 기간 기준</small>
+        </article>
+        <article class="bsm-breakdown-card">
+          <span>지자체 지원금</span>
+          <strong id="bsm-r-local-support">-</strong>
+          <small id="bsm-r-local-note">확인된 지역만 반영</small>
+        </article>
+        <article class="bsm-breakdown-card">
+          <span>일시금·바우처 합계</span>
+          <strong id="bsm-r-onetime-total">-</strong>
+          <small>초기 비용 대응</small>
+        </article>
+        <article class="bsm-breakdown-card">
+          <span>신청 필요 항목</span>
+          <strong id="bsm-r-application-count">-</strong>
+          <small>체크리스트 기준</small>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="계산 전 확인할 점"
+      lines={[
+        "국가 공통 지원금은 첫만남이용권, 부모급여, 아동수당 기준으로 계산합니다.",
+        "지자체 지원금은 공개 금액을 확인한 일부 지역만 반영하며, 확인 필요 지역은 0원으로 계산합니다.",
+        "95개월 계산은 장기 아동수당 누적을 보는 참고 시뮬레이션이므로 공식 확정 총액처럼 보지 않아야 합니다.",
+      ]}
+    />
+
+    <Fragment slot="timeline">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">월별 타임라인</p>
+            <h2 class="panel__title">월별 예상 수령 흐름</h2>
+          </div>
+          <p class="panel-heading__summary">일시금과 매월 지급분을 분리해서 봅니다.</p>
+        </div>
+        <div class="bsm-timeline-chart-wrap">
+          <canvas id="bsm-timeline-chart"></canvas>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>개월</th>
+                <th>첫만남이용권</th>
+                <th>부모급여</th>
+                <th>아동수당</th>
+                <th>지자체 지원</th>
+                <th>월 합계</th>
+                <th>구분</th>
+              </tr>
+            </thead>
+            <tbody id="bsm-timeline-table-body">
+              <tr>
+                <td colspan="7">조건을 입력하면 월별 수령 흐름이 표시됩니다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <section class="bsm-section">
+        <div class="bsm-section__head">
+          <p class="bsm-section__eyebrow">신청 체크리스트</p>
+          <h2>계산 결과와 함께 신청 경로를 확인하세요</h2>
+        </div>
+        <div id="bsm-checklist" class="bsm-checklist"></div>
+      </section>
+
+      <section class="bsm-section">
+        <div class="bsm-section__head">
+          <p class="bsm-section__eyebrow">공식 확인 링크</p>
+          <h2>최종 신청 전에는 최신 기준을 다시 확인합니다</h2>
+        </div>
+        <div class="bsm-reference-grid">
+          {BSM_REFERENCE_LINKS.map((item) => (
+            <a class="bsm-reference-card" href={item.href} target="_blank" rel="noopener noreferrer">
+              <span>{item.source}</span>
+              <strong>{item.title}</strong>
+              <p>{item.desc}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section class="content-section bsm-related-section">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">같이 보기</p>
+              <h2 class="panel__title">출산 전후 지원과 비용을 이어서 확인하세요</h2>
+            </div>
+            <p class="panel-heading__summary">지역별 지원금, 산후도우미 비용, 육아휴직 급여까지 함께 보면 예산 흐름이 더 선명해집니다.</p>
+          </div>
+          <div class="bsm-related-grid">
+            {BSM_RELATED_LINKS.map((item) => (
+              <a href={withBase(item.href)} class="bsm-related-card">{item.label}</a>
+            ))}
+          </div>
+        </div>
+      </section>
+    </Fragment>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="출산지원금 총수령액 계산기를 보는 방법"
+        intro={[
+          "출산지원금 총수령액 계산기는 출생 직후 받을 수 있는 일시금과 매월 들어오는 국가 공통 지원금을 한 화면에서 합산하는 도구입니다. 첫만남이용권, 부모급여, 아동수당을 월별 타임라인으로 나눠 보여주기 때문에 초기 비용과 월별 현금흐름을 함께 점검할 수 있습니다.",
+          "지자체 출산지원금은 지역마다 금액, 거주요건, 신청기한이 다르므로 공식 금액이 확인된 일부 지역만 계산에 반영했습니다. 확인되지 않은 지역은 0원으로 두고 확인 필요로 표시해 과장된 총액이 나오지 않게 했습니다.",
+        ]}
+        inputPoints={[
+          "출생일, 거주 지역, 출생순위, 출산 유형, 양육 방식, 계산 기간을 입력합니다.",
+          "첫째와 둘째 이상은 첫만남이용권 금액이 달라지므로 출생순위를 먼저 확인하세요.",
+          "95개월 선택은 아동수당 장기 누적을 보는 참고 시뮬레이션입니다.",
+        ]}
+        criteria={[
+          "첫만남이용권은 첫째 200만원, 둘째 이상 300만원 기준으로 계산합니다.",
+          "부모급여는 0~11개월 월 100만원, 12~23개월 월 50만원 기준으로 누적합니다.",
+          "아동수당은 월 10만원을 선택 기간까지 반영합니다.",
+          "지자체 지원금은 데이터에 금액이 있는 지역만 0개월차 일시 지원으로 계산합니다.",
+          "금액이 확인되지 않은 지자체 지원금은 공식 금액처럼 표시하지 않고 확인 필요로 안내합니다.",
+        ]}
+        faq={BSM_FAQ}
+        related={BSM_RELATED_LINKS}
+      />
+    </Fragment>
+  </TimelineToolShell>
+
+  <script id="birthSupportMoneyConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/birth-support-money.js")}></script>
+</BaseLayout>

@@ -1,0 +1,167 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  USKR_ANNUAL_RETURNS,
+  USKR_CHECKLIST,
+  USKR_COST_FACTORS,
+  USKR_FAQ,
+  USKR_FORMULA_STEPS,
+  USKR_INDEX_COMPARISON,
+  USKR_META,
+  USKR_RELATED_LINKS,
+  USKR_SCENARIOS,
+  USKR_SOURCE_LINKS,
+  USKR_TAKEAWAYS,
+  USKR_TAX_EXAMPLE,
+} from "../../data/usStockKoreanRealReturn2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const pct = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`;
+const won = (v: number) => `${v < 0 ? "-" : ""}${Math.abs(v).toLocaleString("ko-KR")}원`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: USKR_META.title,
+  description: USKR_META.description,
+  inLanguage: "ko-KR",
+  dateModified: USKR_META.updatedAt,
+  mainEntityOfPage: `https://bigyocalc.com/reports/${USKR_META.slug}/`,
+};
+---
+
+<BaseLayout title="국내 투자자 미국주식 실수익률 2026 | 환율·세금·수수료 반영" description={USKR_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell report-page uskr-page">
+    <CalculatorHero
+      eyebrow="미국주식 투자 리포트"
+      title={USKR_META.title}
+      description="주가 수익률, 환율, 환전수수료, 양도소득세를 반영해 한국 투자자의 원화 기준 실수익률을 분석합니다."
+    />
+    <InfoNotice title="투자 판단 전 확인하세요" lines={["이 리포트는 투자 권유가 아니며, 수익률 표 일부는 시뮬레이션 예시입니다.", "환율과 세법은 변동될 수 있으므로 실제 신고 전 공식 안내를 확인해야 합니다.", `업데이트 기준: ${USKR_META.updatedAt}`]} />
+      <DesignTrustPanel title="한국인 미국주식 실질수익률 기준" updatedAt={USKR_META.updatedAt} notes={["달러 수익률, 환율, 세금, 물가를 분리해 봐야 원화 기준 체감 수익률을 해석할 수 있습니다.", "시장 지표는 기간 선택에 민감하므로 특정 투자 결론으로 단정하지 않습니다."]} />
+
+    <section class="content-section uskr-summary-section">
+      <div class="uskr-summary-grid">
+        <article><p>달러 수익률</p><strong>주가 성과</strong><span>미국 현지 기준</span></article>
+        <article><p>원화 수익률</p><strong>환율 반영</strong><span>한국 투자자 체감</span></article>
+        <article><p>세후 수익률</p><strong>양도세·수수료</strong><span>실현 시 별도 계산</span></article>
+        <article><p>환율 리스크</p><strong>매수·매도 환율</strong><span>고환율 매수 주의</span></article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 결론</p>
+        <h2>미국주식 실수익률은 네 단계로 나눠야 보입니다</h2>
+      </div>
+      <div class="uskr-card-grid">
+        {USKR_TAKEAWAYS.map((item) => <article class="uskr-card"><strong>{item.title}</strong><p>{item.body}</p></article>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도별 비교</p>
+        <h2>S&P500 달러 수익률과 원화 환산 수익률</h2>
+        <p>아래 표는 주가 수익률과 환율 변동률을 분리해 체감 방향을 보여주는 참고·시뮬레이션 표입니다. 실제 투자 성과는 매수일, 매도일, 배당 재투자, 거래 비용에 따라 달라집니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="uskr-table">
+          <thead><tr><th>연도</th><th>지수</th><th>달러 수익률</th><th>환율 변동률</th><th>원화 환산 수익률</th><th>상태</th></tr></thead>
+          <tbody>{USKR_ANNUAL_RETURNS.map((row) => <tr><td>{row.year}</td><td>{row.index}</td><td>{pct(row.usdReturnRate)}</td><td>{pct(row.fxReturnRate)}</td><td><strong>{pct(row.krwReturnRate)}</strong></td><td><span class="uskr-badge">{row.badge}</span></td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">계산 순서</p><h2>달러 평가이익을 바로 세후 원화 수익으로 읽으면 안 됩니다</h2></div>
+      <div class="uskr-step-grid">
+        {USKR_FORMULA_STEPS.map((item) => <article class="uskr-step-card"><strong>{item.title}</strong><p>{item.body}</p></article>)}
+      </div>
+      <div class="uskr-formula-box">
+        <span>원화 수익률 기본식</span>
+        <strong>(1 + 달러수익률) × (매도환율 ÷ 매수환율) - 1</strong>
+        <p>세후 수익률은 여기에 매매수수료, 환전 스프레드, 양도소득세, 배당세를 차감해 다시 계산합니다.</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">지수 비교</p><h2>나스닥·S&P500·다우는 환율까지 함께 봐야 합니다</h2></div>
+      <div class="uskr-card-grid">
+        {USKR_INDEX_COMPARISON.map((item) => <article class="uskr-card"><strong>{item.index}</strong><p>{item.note}</p><span>변동성: {item.volatility}</span><em>{item.krwView}</em></article>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">비용 항목</p><h2>실수익률을 깎는 항목은 주가 그래프 밖에 있습니다</h2></div>
+      <div class="uskr-card-grid uskr-card-grid--two">
+        {USKR_COST_FACTORS.map((item) => <article class="uskr-card"><strong>{item.title}</strong><p>{item.body}</p></article>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">환율 시나리오</p><h2>같은 주가 수익률도 매수·매도 환율에 따라 달라집니다</h2></div>
+      <div class="table-wrap">
+        <table class="uskr-table"><thead><tr><th>매수 환율</th><th>매도 환율</th><th>주가 수익률</th><th>원화 수익률</th><th>해석</th></tr></thead><tbody>{USKR_SCENARIOS.map((row) => <tr><td>{row.buyRate.toLocaleString("ko-KR")}원</td><td>{row.sellRate.toLocaleString("ko-KR")}원</td><td>{pct(row.stockReturn)}</td><td><strong>{pct(row.krwReturn)}</strong></td><td>{row.note}</td></tr>)}</tbody></table>
+      </div>
+    </section>
+
+    <section class="content-section uskr-tax-section">
+      <div><p class="section-header__eyebrow">세후 예시</p><h2>해외주식 양도차익은 기본공제와 세율을 따로 봅니다</h2><p>연간 해외주식 양도차익에서 기본공제 250만 원을 제외한 금액에 대해 지방세 포함 22% 구조로 안내되는 경우가 많습니다. 실제 신고 기준은 최신 세법과 국세청 안내를 확인하세요.</p></div>
+      <a href={withBase("/tools/us-stock-exchange-profit-calculator/")}>환차손익 계산기로 내 조건 계산하기</a>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">세후 계산 예시</p>
+        <h2>1,200만 원이 1,800만 원이 되어도 세후 이익은 다르게 남습니다</h2>
+        <p>아래는 구조 이해를 위한 단순 시뮬레이션입니다. 실제 신고에서는 종목별 매수·매도일, 필요경비, 같은 해 손익통산, 증권사 자료를 확인해야 합니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="uskr-table">
+          <thead><tr><th>항목</th><th>금액</th><th>해석</th></tr></thead>
+          <tbody>{USKR_TAX_EXAMPLE.map((row) => <tr><td>{row.label}</td><td><strong>{won(row.amount)}</strong></td><td>{row.note}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section uskr-check-section">
+      <div>
+        <p class="section-header__eyebrow">실전 체크리스트</p>
+        <h2>매도 전에는 수익률보다 신고 자료를 먼저 정리합니다</h2>
+      </div>
+      <ul class="uskr-check-list">
+        {USKR_CHECKLIST.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="content-section uskr-source-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">참고 출처</p><h2>세금과 시장 수치는 원출처를 다시 확인해야 합니다</h2></div>
+      <div class="uskr-source-grid">
+        {USKR_SOURCE_LINKS.map((item) => (
+          <a class="uskr-source-card" href={item.href} target="_blank" rel="noopener noreferrer">
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="한국 투자자의 미국주식 수익률을 보는 법"
+      intro={["미국주식 수익률은 달러 기준 주가 성과만으로 판단하기 어렵습니다.", "한국 투자자는 매수 환율, 매도 환율, 환전수수료, 양도소득세, 배당세까지 반영해야 실제 손에 남는 수익률을 볼 수 있습니다.", "특히 고환율에 매수한 뒤 원화 강세 구간에 매도하면 달러 기준 이익과 원화 기준 이익의 차이가 크게 벌어질 수 있습니다."]}
+      criteria={["원화 환산 수익률은 (1+달러수익률) × (매도환율÷매수환율) - 1로 계산합니다.", "표의 시뮬레이션 값은 구조 이해를 위한 참고값이며 공식 투자 성과가 아닙니다.", "세금과 수수료는 실제 신고/거래 조건에 따라 달라질 수 있습니다."]}
+      faq={USKR_FAQ}
+      related={USKR_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>
+
+
+

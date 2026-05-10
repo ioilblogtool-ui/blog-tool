@@ -1,0 +1,106 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { jeonseVsWolseDefaults, jeonseVsWolseFaq } from "../../data/jeonseVsWolseCalculator";
+---
+
+<BaseLayout title="전세 vs 월세 손익 계산기 - 전세대출 이자와 월세 총비용 비교" description="전세대출 이자, 보증금 기회비용, 월세 납부액을 비교해 같은 조건에서 전세와 월세 중 어느 쪽이 더 유리한지 계산합니다.">
+  <SiteHeader />
+  <SimpleToolShell calculatorId="jeonse-vs-wolse-calculator" pageClass="op-page jvw-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero eyebrow="부동산 비용 계산기" title="전세 vs 월세 손익 계산기" description="전세대출 이자, 보증금 기회비용, 월세 납부액을 합쳐 실제 거주 총비용을 비교합니다." />
+      <InfoNotice title="계산 기준" lines={["이 도구는 법정 전월세전환율 검증이 아니라 거주 총비용 비교 도구입니다.", "보증금 운용수익률은 예금 또는 투자 기대수익률을 단순 적용한 추정값입니다.", "전세 보증 리스크, 중개수수료, 이사비, 세금은 별도로 확인해야 합니다."]} />
+      <DesignTrustPanel title="전세·월세 비교 기준" updatedAt="2026-05-05" notes={["전세대출 금리와 보증금 운용수익률은 사용자가 직접 입력한 가정입니다.", "전세보증 리스크, 중개보수, 이사비, 세금은 별도 확인이 필요합니다."]} />
+    </Fragment>
+    <Fragment slot="actions"><ToolActionBar resetId="resetJvwBtn" copyId="copyJvwLinkBtn" /></Fragment>
+    <Fragment slot="aside">
+      <section class="op-panel" data-jvw-root>
+        <div class="op-panel__head"><p>입력</p><h2>전세와 월세 조건</h2></div>
+        <label class="op-field"><span>전세보증금</span><input data-jvw-input="jeonseDeposit" inputmode="numeric" value={jeonseVsWolseDefaults.jeonseDeposit} /></label>
+        <label class="op-field"><span>전세대출금</span><input data-jvw-input="jeonseLoan" inputmode="numeric" value={jeonseVsWolseDefaults.jeonseLoan} /></label>
+        <label class="op-field"><span>전세대출 금리(%)</span><input data-jvw-input="loanRate" type="number" step="0.1" value={jeonseVsWolseDefaults.jeonseLoanRate} /></label>
+        <label class="op-field"><span>월세 보증금</span><input data-jvw-input="wolseDeposit" inputmode="numeric" value={jeonseVsWolseDefaults.wolseDeposit} /></label>
+        <label class="op-field"><span>월세</span><input data-jvw-input="rent" inputmode="numeric" value={jeonseVsWolseDefaults.monthlyRent} /></label>
+        <label class="op-field"><span>월 관리비</span><input data-jvw-input="maintenance" inputmode="numeric" value={jeonseVsWolseDefaults.maintenanceFee} /></label>
+        <label class="op-check"><input data-jvw-input="includeMaintenance" type="checkbox" /> 관리비를 월세 비용에 포함</label>
+        <label class="op-field"><span>보증금 운용 수익률(%)</span><input data-jvw-input="returnRate" type="number" step="0.1" value={jeonseVsWolseDefaults.returnRate} /></label>
+        <label class="op-field"><span>거주 예정 기간(개월)</span><input data-jvw-input="months" type="number" value={jeonseVsWolseDefaults.months} /></label>
+      </section>
+    </Fragment>
+    <section class="op-section">
+      <div class="op-result-grid">
+        <article class="op-result-card op-result-card--main"><p>최종 판정</p><strong data-jvw-output="better">-</strong><span>실제 총비용 기준</span></article>
+        <article class="op-result-card"><p>총비용 차이</p><strong data-jvw-output="difference">-</strong><span>거주 기간 전체</span></article>
+        <article class="op-result-card"><p>전세 총비용</p><strong data-jvw-output="jeonseTotal">-</strong><span>이자 + 기회비용</span></article>
+        <article class="op-result-card"><p>월세 실제 비용</p><strong data-jvw-output="wolseTotal">-</strong><span>월세 - 남는 현금 수익</span></article>
+        <article class="op-result-card op-result-card--accent"><p>손익분기 월세</p><strong data-jvw-output="breakeven">-</strong><span>이하이면 월세 유리</span></article>
+      </div>
+      <p class="op-message" data-jvw-output="message">입력값을 조정하면 결과가 바로 표시됩니다.</p>
+    </section>
+    <section class="op-section">
+      <h2>전세와 월세를 비교할 때 봐야 할 것</h2>
+      <div class="op-card-grid">
+        <article>
+          <strong>전세의 실제 비용</strong>
+          <p>대출 이자 + 자기자본 기회비용의 합이 전세의 실제 월 부담입니다. 보증금 전액을 자기자본으로 낸 경우라도 기회비용은 발생합니다.</p>
+        </article>
+        <article>
+          <strong>월세의 실제 비용</strong>
+          <p>월세 납부액에서 전세 대비 남는 현금을 운용했을 때의 수익을 차감하면 실제 부담이 나옵니다. 운용수익률이 높을수록 월세가 유리해집니다.</p>
+        </article>
+        <article>
+          <strong>거주 기간이 결과를 바꾼다</strong>
+          <p>전세는 입·퇴실 비용(이사비, 중개수수료)이 고정이라 짧게 살수록 월 환산 부담이 커집니다. 2년 이하 단기 거주라면 월세가 유리한 경우가 많습니다.</p>
+        </article>
+        <article>
+          <strong>손익분기 월세 활용법</strong>
+          <p>계산 결과의 손익분기 월세보다 낮은 매물이면 월세가 유리, 높으면 전세가 유리합니다. 매물 협상 시 기준점으로 활용할 수 있습니다.</p>
+        </article>
+        <article>
+          <strong>전세 보증 리스크 별도 검토</strong>
+          <p>이 계산기는 비용만 비교합니다. 전세를 선택한다면 HUG 전세보증보험 가입, 등기부등본 확인, 공시가 대비 보증금 비율을 반드시 별도로 확인하세요.</p>
+        </article>
+        <article>
+          <strong>시나리오 비교 방법</strong>
+          <p>대출 금리와 운용수익률을 보수적(3%)·중립적(4%)·적극적(5%)으로 바꿔보면 전세·월세 유불리가 달라지는 조건을 직접 확인할 수 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="전세와 월세 총비용 비교 기준"
+        intro={[
+          "전세는 월세를 내지 않지만 '공짜'가 아닙니다. 전세대출 이자와 자기자본 기회비용이 매달 발생합니다. 반대로 월세는 매달 지출이 있지만, 더 적은 보증금으로 남는 현금을 운용할 수 있는 장점이 있습니다. 이 계산기는 두 선택지의 실제 총비용을 같은 기준으로 비교합니다.",
+          "전세 총비용은 ① 전세대출 이자(대출금 × 금리 ÷ 12)와 ② 자기자본 기회비용((전세보증금 − 대출금) × 운용수익률 ÷ 12)의 합입니다. 보증금 전액을 자기자본으로 납부한 경우라도 그 돈을 예금이나 투자로 운용했을 때의 수익이 기회비용이 됩니다.",
+          "월세 실제 비용은 ① 월세 납부액에서 ② 전세 대비 남는 현금(전세보증금 − 월세 보증금)의 운용수익을 차감한 값입니다. 남는 현금의 운용수익률을 높게 설정할수록 월세의 실제 부담이 줄어드는 구조입니다.",
+          "손익분기 월세는 '전세와 총비용이 같아지는 월세 금액'입니다. 보고 있는 월세 매물의 월세가 이 금액보다 낮으면 월세가 유리하고, 높으면 전세가 유리합니다. 매물 탐색 단계에서 협상 기준점으로 활용할 수 있습니다.",
+          "전세 보증 리스크(집주인 파산, 역전세 위험)는 이 계산기에 반영되지 않습니다. 전세를 선택하는 경우 HUG 전세보증보험 가입 여부, 주택 공시가격 대비 보증금 비율, 등기부등본 확인은 반드시 별도로 검토해야 합니다. 비용 비교와 리스크 관리를 함께 고려해 최종 결정을 내리세요.",
+        ]}
+        criteria={[
+          "전세 총비용 = 전세대출 이자 + 자기자본 기회비용 (월 환산 합산).",
+          "월세 실제 비용 = 월세 납부액 − 전세 대비 남는 현금의 월 운용수익.",
+          "손익분기 월세는 전세 총비용과 같아지는 월세 금액으로 협상 기준으로 활용 가능합니다.",
+          "전세 보증 리스크, 중개수수료, 이사비, 세금은 계산에 포함되지 않으며 별도 확인이 필요합니다.",
+        ]}
+        faq={jeonseVsWolseFaq}
+        related={[
+          { href: "/tools/jeonwolse-conversion/", label: "전월세 전환율 계산기" },
+          { href: "/tools/home-purchase-fund/", label: "내 집 마련 자금 계산기" },
+          { href: "/reports/seoul-jeonwolse-ratio-2026/", label: "서울 전월세 전환 지표 리포트" },
+          { href: "/reports/seoul-apartment-jeonse-report/", label: "서울 아파트 전세 리포트" },
+          { href: "/reports/seoul-housing-2016-vs-2026/", label: "서울 주거비 2016→2026 변화" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script src="/scripts/jeonse-vs-wolse-calculator.js" defer></script>
+</BaseLayout>
+
+

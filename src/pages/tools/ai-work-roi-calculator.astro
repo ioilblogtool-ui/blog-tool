@@ -1,0 +1,163 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  AWR_DEFAULT_INPUT,
+  AWR_FAQ,
+  AWR_JOB_PRESETS,
+  AWR_META,
+  AWR_NEXT_STEPS,
+  AWR_RELATED_LINKS,
+  AWR_TOOL_COST_PRESETS,
+  AWR_USE_CASES,
+} from "../../data/aiWorkRoiCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const config = { presets: AWR_JOB_PRESETS, toolCosts: AWR_TOOL_COST_PRESETS };
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: AWR_META.title,
+  description: AWR_META.description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${AWR_META.slug}/`,
+};
+---
+
+<BaseLayout title="AI 업무 ROI 계산기 | AI 도구 구독료와 시간절감액 계산" description={AWR_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={AWR_META.slug} pageClass="awr-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="AI 생산성 계산"
+        title="AI 도구 구독료, 실제로 본전 뽑고 있을까?"
+        description="월급, 반복업무 시간, AI 도구 비용을 입력하면 시간절감액과 연간 ROI를 계산합니다."
+      />
+      <InfoNotice title="추정 계산 안내" lines={[AWR_META.caution, `업데이트 기준: ${AWR_META.updatedAt}`]} />
+      <DesignTrustPanel title="AI 업무 ROI 계산 기준" updatedAt="2026-05-05" notes={["AI 절감률은 사용자가 입력한 업무 가정에 따라 달라지는 추정값입니다.", "월간·연간 ROI는 도구 비용과 시간가치를 비교하기 위한 참고 지표입니다."]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="awrResetBtn" copyId="awrCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <form id="awrForm" class="panel awr-form">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">업무와 비용 입력</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field"><span>사용자 유형</span><select id="awrUserType"><option value="employee">직장인</option><option value="developer">개발자</option><option value="freelancer">프리랜서</option><option value="smallBusiness">소상공인</option><option value="team">팀</option></select></label>
+          <label class="field"><span>월 소득/월급</span><input id="awrMonthlyIncome" type="number" value={AWR_DEFAULT_INPUT.monthlyIncome} min="0" step="10000" /></label>
+          <label class="field"><span>주당 근무시간</span><input id="awrWeeklyWorkHours" type="number" value={AWR_DEFAULT_INPUT.weeklyWorkHours} min="1" step="1" /></label>
+          <label class="field"><span>주당 반복업무 시간</span><input id="awrRepetitiveHours" type="number" value={AWR_DEFAULT_INPUT.weeklyRepetitiveHours} min="0" step="0.5" /></label>
+          <label class="field"><span>AI 절감률 <b id="awrSavingRateLabel">{AWR_DEFAULT_INPUT.aiSavingRate}%</b></span><input id="awrSavingRate" type="range" value={AWR_DEFAULT_INPUT.aiSavingRate} min="0" max="100" step="5" /></label>
+          <label class="field"><span>AI 도구 월비용</span><input id="awrMonthlyAiCost" type="number" value={AWR_DEFAULT_INPUT.monthlyAiCost} min="0" step="1000" /></label>
+          <label class="field"><span>초기 세팅 비용</span><input id="awrInitialCost" type="number" value={AWR_DEFAULT_INPUT.initialSetupCost} min="0" step="10000" /></label>
+          <label class="field"><span>적용 인원 수</span><input id="awrMemberCount" type="number" value={AWR_DEFAULT_INPUT.memberCount} min="1" step="1" /></label>
+        </div>
+      </form>
+
+      <article class="panel">
+        <div class="panel-heading"><div><p class="panel-heading__eyebrow">프리셋</p><h2 class="panel__title">대표 시나리오</h2></div></div>
+        <div class="awr-preset-grid">
+          {AWR_JOB_PRESETS.map((preset, index) => (
+            <button type="button" class:list={["awr-preset", { "is-active": index === 0 }]} data-awr-preset={preset.id}>
+              <strong>{preset.label}</strong><span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading"><div><p class="panel-heading__eyebrow">비용 프리셋</p><h2 class="panel__title">AI 도구 월비용</h2></div></div>
+        <div class="awr-cost-grid">
+          {AWR_TOOL_COST_PRESETS.map((item) => <button type="button" data-awr-cost={item.monthlyCostKrw}><strong>{item.label}</strong><span>{item.note}</span></button>)}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="awr-section">
+      <div class="awr-kpi-grid">
+        <article class="awr-kpi awr-kpi--main"><p>월간 순이익</p><strong id="awrMonthlyNetProfit">-</strong><span>시간가치 - 도구비</span></article>
+        <article class="awr-kpi"><p>추정 시급</p><strong id="awrHourlyWage">-</strong></article>
+        <article class="awr-kpi"><p>월간 절감 시간</p><strong id="awrMonthlySavedHours">-</strong></article>
+        <article class="awr-kpi"><p>월간 시간가치</p><strong id="awrMonthlySavedValue">-</strong></article>
+        <article class="awr-kpi"><p>연간 순이익</p><strong id="awrAnnualNetProfit">-</strong></article>
+        <article class="awr-kpi"><p>투자회수 기간</p><strong id="awrBreakEven">-</strong></article>
+        <article class="awr-kpi"><p>ROI</p><strong id="awrRoi">-</strong></article>
+        <article class="awr-kpi"><p>추천 티어</p><strong id="awrTier">-</strong></article>
+      </div>
+      <article class="awr-grade" id="awrGradeBox" data-grade="neutral">
+        <h2 id="awrGradeTitle">계산 중입니다</h2>
+        <p id="awrGradeText">입력값에 맞춰 ROI를 분석합니다.</p>
+      </article>
+    </section>
+
+    <section class="awr-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">상세</p><h2>비용과 시간가치를 분해해서 봅니다</h2></div>
+      <div class="table-wrap"><table class="awr-table"><tbody id="awrDetailBody"></tbody></table></div>
+    </section>
+
+    <section class="awr-section awr-guide-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">해석</p>
+        <h2>계산 결과를 이렇게 판단하세요</h2>
+      </div>
+      <div class="awr-use-case-grid">
+        {AWR_USE_CASES.map((item) => (
+          <article class="awr-use-case">
+            <strong>{item.title}</strong>
+            <span>{item.metric}</span>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="awr-section awr-next-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다음 계산</p>
+        <h2>AI 비용과 효과를 이어서 점검하세요</h2>
+      </div>
+      <div class="awr-next-grid">
+        {AWR_NEXT_STEPS.map((item) => (
+          <a class="awr-next-card" href={withBase(item.href)}>
+            <span>{item.eyebrow}</span>
+            <strong>{item.label}</strong>
+            <p>{item.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="AI 업무 ROI 계산기 활용법"
+        intro={["AI 도구 비용은 구독료만 보면 비싸 보일 수 있지만, 반복업무 절감 시간을 돈으로 환산하면 판단이 달라집니다.", "이 계산기는 월 소득과 반복업무 시간을 기준으로 AI 도입 효과를 월간·연간 금액으로 바꿔 보여줍니다.", "결과가 높게 나오더라도 실제로 줄어든 시간이 다른 고부가 업무로 전환되는지까지 함께 봐야 합니다."]}
+        inputPoints={["반복업무 시간은 과장하지 말고 보수적으로 입력합니다.", "팀 단위 도입은 1인 기준 월급과 인원 수를 함께 반영합니다.", "개인 구독은 월비용 회수 여부, 팀 도입은 교육·보안·운영 비용까지 감안해 판단합니다.", "ROI가 낮으면 무료 또는 저가 플랜부터 검토합니다."]}
+        criteria={["월 근무시간은 주당 근무시간 × 4.3으로 계산합니다.", "월간 시간절감액은 월간 절감 시간 × 추정 시급 × 인원 수입니다.", "ROI는 연간 순이익을 연간 총비용으로 나눈 참고 지표입니다.", "절감률은 AI가 대체하는 시간이 아니라 실제로 업무 시간이 줄어드는 비율로 입력하는 것이 보수적입니다."]}
+        faq={AWR_FAQ}
+        related={AWR_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="awrConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/ai-work-roi-calculator.js")}></script>
+</BaseLayout>
+
+
+

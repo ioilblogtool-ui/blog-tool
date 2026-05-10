@@ -1,0 +1,186 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  workerRetirementChecklist,
+  workerRetirementFaq,
+  workerRetirementGapScenarios,
+  workerRetirementLivingCostCases,
+  workerRetirementNationalPensionGapRows,
+  workerRetirementPensionLayers,
+  workerRetirementPreparationMethods,
+  workerRetirementRealEstateRisks,
+  workerRetirementSources,
+  workerRetirementStats,
+} from "../../data/workerRetirementReality2026";
+
+const formatWon = (value: number) => value >= 100000000 ? `${(value / 100000000).toFixed(1).replace(".0", "")}억 원` : `${Math.round(value / 10000).toLocaleString("ko-KR")}만 원`;
+const formatTrillionWon = (value: number) => `${(value / 1000000000000).toFixed(1).replace(".0", "")}조 원`;
+const formatPercent = (value: number) => `${value.toFixed(1).replace(".0", "")}%`;
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: "2026 직장인 노후 준비 실태 완전 분석",
+  description: "국민연금, 퇴직연금, 연금저축·IRP 기준으로 한국 직장인의 노후 준비 현실과 은퇴자금 부족액을 분석한 리포트입니다.",
+  inLanguage: "ko-KR",
+  dateModified: "2026-05-10",
+  author: {
+    "@type": "Organization",
+    name: "비교계산소",
+  },
+};
+---
+
+<BaseLayout title="2026 직장인 노후 준비 실태 완전 분석: 국민연금만으로 얼마나 부족할까?" description="2026년 직장인의 노후 준비 현실을 국민연금, 퇴직연금, 연금저축·IRP, 은퇴 후 생활비 기준으로 분석합니다. 30대·40대·50대별 은퇴자금 부족액과 체크리스트를 확인하세요." jsonLd={articleJsonLd}>
+  <SiteHeader />
+  <main class="container page-shell report-page op-page wrr-page">
+    <CalculatorHero eyebrow="노후 준비 리포트" title="2026 직장인 노후 준비 실태 완전 분석" description="국민연금, 퇴직연금, 개인연금, 현재 자산 수준을 기준으로 직장인의 은퇴 후 부족액을 데이터로 정리했습니다." />
+    <InfoNotice title="데이터 해석 기준" lines={["공개 통계와 보도자료를 바탕으로 한 일반 정보입니다.", "연령대별 부족액은 생활비와 연금수령액 가정에 따른 시뮬레이션입니다.", "특정 금융상품 가입이나 투자를 권유하는 내용이 아닙니다."]} />
+      <DesignTrustPanel title="직장인 은퇴 준비 리포트 기준" updatedAt="2026-05-05" notes={["연금 수령액과 생활비는 개인의 가입 이력, 주거 형태, 가족 구성에 따라 달라집니다.", "부족액은 시뮬레이션이며 특정 금융상품 가입을 권유하지 않습니다."]} />
+
+    <section class="op-section">
+      <div class="op-result-grid">
+        <article class="op-result-card op-result-card--main"><p>노후 준비 중 비율</p><strong>{formatPercent(workerRetirementStats.preparedRate)}</strong><span>2025년 사회조사 기준</span></article>
+        <article class="op-result-card"><p>주된 준비 방법</p><strong>국민연금</strong><span>{formatPercent(workerRetirementStats.pensionDependence)} 수준</span></article>
+        <article class="op-result-card"><p>가구 평균 순자산</p><strong>{formatWon(workerRetirementStats.averageAssets - workerRetirementStats.averageDebt)}</strong><span>평균값 주의</span></article>
+        <article class="op-result-card"><p>퇴직연금 적립금</p><strong>{formatTrillionWon(workerRetirementStats.retirementPensionAssets)}</strong><span>2024년 말 기준</span></article>
+      </div>
+      <p class="op-message">노후 준비율 자체는 70%를 넘었지만, 준비 방법의 중심이 국민연금에 몰려 있습니다. 이 리포트는 “준비하고 있는가”보다 “은퇴 후 월 생활비를 실제로 메울 수 있는가”를 기준으로 읽는 편이 좋습니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>노후 준비 방법 1위가 국민연금이라는 의미</h2>
+      <div class="op-table-wrap">
+        <table>
+          <thead><tr><th>준비 방법</th><th>비중</th><th>해석</th></tr></thead>
+          <tbody>
+            {workerRetirementPreparationMethods.map((item) => (
+              <tr><td>{item.method}</td><td>{formatPercent(item.rate)}</td><td>{item.interpretation}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">국민연금은 노후 소득의 기초 역할을 하지만, 월 생활비 전체를 대체하는 구조는 아닙니다. 예금·적금과 사적연금 비중이 낮다면 은퇴 후 부족액은 개인이 별도로 메워야 합니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>국민연금만으로 부족한 금액 예시</h2>
+      <div class="op-table-wrap">
+        <table>
+          <thead><tr><th>은퇴 후 월 생활비</th><th>국민연금 월 수령액 가정</th><th>월 부족액</th><th>연 부족액</th><th>25년 부족액</th></tr></thead>
+          <tbody>
+            {workerRetirementNationalPensionGapRows.map((item) => (
+              <tr>
+                <td>{formatWon(item.monthlyExpense)}</td>
+                <td>{formatWon(item.nationalPension)}</td>
+                <td>{formatWon(item.monthlyGap)}</td>
+                <td>{formatWon(item.annualGap)}</td>
+                <td>{formatWon(item.gapFor25Years)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">월 70만 원 수준의 국민연금을 가정하면, 은퇴 후 월 생활비 250만 원 가구는 매월 약 180만 원의 현금흐름을 별도로 만들어야 합니다. 부족액은 작아 보여도 25년으로 늘리면 수억 원 단위가 됩니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>연령대별 은퇴 후 월 부족액 시뮬레이션</h2>
+      <div class="op-table-wrap">
+        <table>
+          <thead><tr><th>연령대</th><th>목표 월 생활비</th><th>예상 월 연금</th><th>월 부족액</th><th>4% 기준 필요 추가자산</th><th>핵심 리스크</th></tr></thead>
+          <tbody>
+            {workerRetirementGapScenarios.map((item) => (
+              <tr><td>{item.age}</td><td>{formatWon(item.expense)}</td><td>{formatWon(item.pension)}</td><td>{formatWon(item.gap)}</td><td>{formatWon(item.gap * 12 / 0.04)}</td><td>{item.risk}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">4% 기준 필요 추가자산은 연 부족액을 0.04로 나눈 참고값입니다. 실제 은퇴자금은 투자수익률, 세금, 건강보험료, 물가상승률, 주거비에 따라 달라집니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>3층 연금 구조로 다시 나누어 보기</h2>
+      <div class="op-table-wrap">
+        <table>
+          <thead><tr><th>층</th><th>자산</th><th>역할</th><th>확인할 것</th></tr></thead>
+          <tbody>
+            {workerRetirementPensionLayers.map((item) => (
+              <tr><td>{item.layer}</td><td>{item.asset}</td><td>{item.role}</td><td>{item.check}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>평균 자산이 있어도 부족할 수 있는 이유</h2>
+      <div class="op-card-grid">
+        <article><strong>평균 총자산</strong><p>{formatWon(workerRetirementStats.averageAssets)} 중 상당 부분은 실물자산입니다.</p></article>
+        <article><strong>평균 금융자산</strong><p>{formatWon(workerRetirementStats.averageFinancialAssets)} 수준으로, 생활비 계좌와 투자자산을 나누어 봐야 합니다.</p></article>
+        <article><strong>평균 부채</strong><p>{formatWon(workerRetirementStats.averageDebt)}는 은퇴 전 상환 계획과 함께 봐야 합니다.</p></article>
+      </div>
+      <div class="op-card-grid">
+        {workerRetirementRealEstateRisks.map((item) => (
+          <article><strong>{item.risk}</strong><p>{item.description}</p></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>은퇴 후 생활비 체감 케이스</h2>
+      <div class="op-table-wrap">
+        <table>
+          <thead><tr><th>유형</th><th>월 생활비 범위</th><th>체감 포인트</th></tr></thead>
+          <tbody>
+            {workerRetirementLivingCostCases.map((item) => (
+              <tr><td>{item.type}</td><td>{item.monthlyCost}</td><td>{item.note}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">은퇴 후 생활비는 식비와 공과금만의 문제가 아닙니다. 건강보험료, 병원비, 경조사비, 주거 수선비, 자녀 지원비까지 포함하면 체감 생활비는 예상보다 커질 수 있습니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>직장인이 지금 확인해야 할 체크리스트</h2>
+      <div class="op-card-grid">
+        {workerRetirementChecklist.map((group) => (
+          <article>
+            <strong>{group.age}</strong>
+            <ul>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>참고 출처와 기준일</h2>
+      <div class="op-card-grid">
+        {workerRetirementSources.map((source) => (
+          <article>
+            <strong>{source.label}</strong>
+            <p>{source.basis}</p>
+            <a href={source.href} target="_blank" rel="noopener noreferrer">원문 확인</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section op-cta">
+      <h2>내 조건으로 은퇴 가능 나이를 계산해보세요</h2>
+      <p>리포트의 평균값보다 중요한 것은 내 월 생활비와 실제 저축률입니다.</p>
+      <a class="button button--secondary" href="/tools/early-retirement-age/">조기 은퇴 가능 나이 계산기</a>
+    </section>
+
+    <SeoContent introTitle="직장인 노후 준비를 숫자로 봐야 하는 이유" intro={["노후 준비는 막연한 불안보다 매월 부족한 현금흐름을 계산하는 일이 먼저입니다.", "국민연금, 퇴직연금, 개인연금, 금융자산을 함께 봐야 은퇴 후 부족액을 현실적으로 추정할 수 있습니다.", "평균 자산이 높아 보여도 실거주 부동산과 부채를 제외하면 실제 생활비로 쓸 수 있는 자금은 다를 수 있습니다."]} criteria={["월 부족액은 목표 생활비에서 예상 월 연금수령액을 뺀 값입니다.", "필요 추가자산은 연 부족액을 안전 인출률로 나눠 계산합니다.", "부동산 자산은 생활비로 바로 쓰기 어려우므로 현금흐름과 분리해서 봐야 합니다.", "이 페이지의 부족액은 개인별 확정값이 아니라 가정 기반 시뮬레이션입니다."]} faq={workerRetirementFaq} related={[{ href: "/tools/early-retirement-age/", label: "조기 은퇴 가능 나이 계산기" }, { href: "/tools/national-pension-calculator/", label: "국민연금 예상 수령액 계산기" }, { href: "/reports/retirement-pension-dc-db-irp-2026/", label: "퇴직연금 DC·DB·IRP 비교" }, { href: "/reports/personal-vs-national-pension-2026/", label: "개인연금 vs 국민연금 비교" }]} />
+  </main>
+</BaseLayout>
+
+

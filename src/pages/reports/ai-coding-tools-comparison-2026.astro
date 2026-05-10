@@ -1,0 +1,158 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  AIC_FAQ,
+  AIC_META,
+  AIC_RELATED_LINKS,
+  AIC_ROLE_RECOMMENDATIONS,
+  AIC_TOOLS,
+} from "../../data/aiCodingToolsComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: AIC_META.title,
+  description: AIC_META.description,
+  inLanguage: "ko-KR",
+  dateModified: "2026-05-05",
+  mainEntityOfPage: `https://bigyocalc.com/reports/${AIC_META.slug}/`,
+};
+---
+
+<BaseLayout title="AI 코딩 도구 비교 2026 | Copilot·Cursor·Claude Code·Windsurf·Tabnine" description={AIC_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell report-page aic-page">
+    <CalculatorHero
+      eyebrow="개발자 AI 도구 리포트"
+      title={AIC_META.title}
+      description="Copilot, Cursor, Claude Code, Windsurf, Tabnine을 가격·기능·보안·직군 적합도 기준으로 비교합니다."
+    />
+    <InfoNotice title="가격·기능 확인 안내" lines={["가격과 기능은 빠르게 바뀔 수 있어 실제 결제 전 공식 가격 페이지 재확인이 필요합니다.", "점수는 실사용 비교를 위한 참고 지표이며 절대 성능 평가가 아닙니다.", `업데이트 기준: ${AIC_META.updatedAt}`]} />
+      <DesignTrustPanel title="AI 코딩 도구 비교 기준" updatedAt="2026-05-05" notes={["가격과 기능은 빠르게 바뀌므로 실제 도입 전 공식 가격 페이지를 다시 확인해야 합니다.", "점수는 실사용 비교를 돕기 위한 참고 지표이며 절대 성능 순위가 아닙니다."]} />
+
+    <section class="content-section aic-summary-section">
+      <div class="aic-summary-grid">
+        <article><p>범용 추천</p><strong>GitHub Copilot</strong><span>GitHub·VS Code 흐름</span></article>
+        <article><p>AI IDE</p><strong>Cursor</strong><span>멀티파일 수정</span></article>
+        <article><p>장문 분석</p><strong>Claude Code</strong><span>레거시·리팩터링</span></article>
+        <article><p>보안조직</p><strong>Tabnine</strong><span>온프레미스·망분리</span></article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">요약 비교</p><h2>도구별 포지션과 가격을 먼저 확인하세요</h2></div>
+      <div class="table-wrap">
+        <table class="aic-table">
+          <thead><tr><th>도구</th><th>포지션</th><th>개인 요금</th><th>팀/기업 요금</th><th>추천 사용자</th><th>공식</th></tr></thead>
+          <tbody>{AIC_TOOLS.map((tool) => <tr><td><strong>{tool.name}</strong></td><td>{tool.position}</td><td>{tool.personalPrice}</td><td>{tool.teamPrice}</td><td>{tool.bestFor}</td><td><a href={tool.officialUrl} target="_blank" rel="noreferrer">확인</a></td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">기능 점수</p><h2>자동완성보다 멀티파일·보안·문서화 기준을 함께 봅니다</h2></div>
+      <div class="aic-score-grid">
+        {AIC_TOOLS.map((tool) => (
+          <article class="aic-score-card">
+            <h3>{tool.name}</h3>
+            <dl>
+              <div><dt>자동완성</dt><dd>{tool.scores.autocomplete.toFixed(1)}</dd></div>
+              <div><dt>멀티파일</dt><dd>{tool.scores.multiFile.toFixed(1)}</dd></div>
+              <div><dt>리팩터링</dt><dd>{tool.scores.refactoring.toFixed(1)}</dd></div>
+              <div><dt>문서화</dt><dd>{tool.scores.docs.toFixed(1)}</dd></div>
+              <div><dt>보안</dt><dd>{tool.scores.security.toFixed(1)}</dd></div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">직군별 추천</p><h2>업무 흐름에 따라 1순위 도구가 달라집니다</h2></div>
+      <div class="aic-role-grid">
+        {AIC_ROLE_RECOMMENDATIONS.map((item) => <article class="aic-role-card"><p>{item.role}</p><strong>{item.first}</strong><span>보조: {item.second}</span><small>{item.reason}</small></article>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">강점 · 약점</p><h2>도구별 실사용 강점과 주의할 점</h2></div>
+      <div class="aic-detail-grid">
+        {AIC_TOOLS.map((tool) => (
+          <article class="aic-detail-card">
+            <h3>{tool.name}</h3>
+            <div class="aic-detail-body">
+              <div class="aic-detail-col aic-detail-col--pro">
+                <p class="aic-detail-label">강점</p>
+                <ul>{tool.strengths.map((s) => <li>{s}</li>)}</ul>
+              </div>
+              <div class="aic-detail-col aic-detail-col--con">
+                <p class="aic-detail-label">주의</p>
+                <ul>{tool.weaknesses.map((w) => <li>{w}</li>)}</ul>
+              </div>
+            </div>
+            <p class="aic-detail-best">추천 대상: <strong>{tool.bestFor}</strong></p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">도입 전 체크리스트</p><h2>팀·개인 도입 전 반드시 확인할 사항</h2></div>
+      <div class="aic-checklist-grid">
+        <article class="aic-checklist-card">
+          <h3>개인 개발자</h3>
+          <ul>
+            <li>현재 메인 IDE와 호환 여부 확인</li>
+            <li>무료 플랜 기능 한도 파악 후 유료 전환 기준 설정</li>
+            <li>자동완성 위주인지 에이전트 방식이 필요한지 파악</li>
+            <li>월 구독료 대비 절감 시간 추정 (ROI 계산기 활용)</li>
+          </ul>
+        </article>
+        <article class="aic-checklist-card">
+          <h3>팀 · 조직 도입</h3>
+          <ul>
+            <li>회사 보안 정책상 코드 외부 전송 허용 여부 확인</li>
+            <li>SSO, 감사로그, 온프레미스 요건 검토</li>
+            <li>사용량 기반 vs 정액 플랜 총비용 비교</li>
+            <li>라이선스 수량·계약 기간·갱신 조건 사전 협의</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section aic-cta-section">
+      <div><p class="section-header__eyebrow">ROI 확인</p><h2>월 구독료가 비싼지보다 몇 시간을 아끼는지가 중요합니다</h2><p>개발자 시간이 월 1~2시간만 절감되어도 개인 플랜 비용은 회수 가능성이 큽니다.</p></div>
+      <a href={withBase("/tools/ai-work-roi-calculator/")}>AI 업무 ROI 계산하기</a>
+    </section>
+
+    <SeoContent
+      introTitle="AI 코딩 도구 비교 리포트 읽는 법"
+      intro={[
+        "2026년 기준 AI 코딩 도구 시장은 GitHub Copilot, Cursor, Claude Code, Windsurf, Tabnine이 각자의 포지션으로 경쟁하고 있습니다. 단순히 가장 유명한 도구를 선택하기보다, 나의 개발 방식과 팀의 보안 요건에 맞는 도구를 고르는 것이 중요합니다.",
+        "GitHub Copilot은 GitHub 생태계와의 통합이 강점으로, 이미 GitHub을 주력으로 사용하는 팀이라면 추가 설정 없이 PR·코드 리뷰·테스트 흐름과 자연스럽게 연결됩니다. Pro 플랜은 월 $10로 진입 비용이 낮은 편입니다.",
+        "Cursor는 VS Code 기반의 AI 네이티브 IDE로, 코드베이스 전체를 맥락으로 활용하는 멀티파일 수정이 강점입니다. 프론트엔드나 풀스택 개발자처럼 컴포넌트 단위 작업이 많은 경우 편의성이 높습니다.",
+        "Claude Code는 CLI 방식의 에이전트형 도구로, 자동완성보다는 레거시 코드 분석, 대형 리팩터링, 복잡한 버그 추적처럼 긴 맥락이 필요한 작업에서 두드러집니다. 사용량 기반 과금이라 비용 예측이 중요합니다.",
+        "Tabnine은 온프레미스·VPC 배포, 감사로그, 망분리 환경을 지원해 금융·공공·대기업처럼 보안 요건이 엄격한 조직에 적합합니다. 개인 사용자보다는 팀·기업 단위 도입 시 가치가 높습니다.",
+        "어떤 도구를 선택하든, 월 구독료보다 실제로 얼마나 개발 시간을 절감하느냐가 핵심 판단 기준입니다. AI 업무 ROI 계산기로 본인의 시간당 가치와 절감 시간을 입력해 손익분기점을 먼저 확인해 보세요.",
+      ]}
+      criteria={[
+        "가격과 기능은 빠르게 바뀌므로 실제 결제 전 공식 가격 페이지를 반드시 재확인해야 합니다.",
+        "점수는 실사용 비교를 위한 참고 지표이며 절대 성능 순위가 아닙니다.",
+        "회사 코드는 조직 보안정책·데이터 보존 조건을 먼저 확인한 후 도입을 검토해야 합니다.",
+        "업데이트 기준: 2026년 5월. 플랜 변경 시 본 페이지 기준과 차이가 생길 수 있습니다.",
+      ]}
+      faq={AIC_FAQ}
+      related={AIC_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>
+
+
+

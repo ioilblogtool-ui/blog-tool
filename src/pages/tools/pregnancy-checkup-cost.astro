@@ -1,0 +1,104 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { pregnancyCheckupFaq, pregnancyTestItems } from "../../data/pregnancyCheckupCost";
+---
+
+<BaseLayout title="임신 주수별 검사비 계산기 - 산부인과 검사비와 바우처 차감액 계산" description="현재 임신 주수를 입력하면 출산 전까지 남은 산부인과 검사 항목, 예상 검사비, 국민행복카드 바우처 차감 후 본인부담액을 계산합니다.">
+  <SiteHeader />
+  <SimpleToolShell calculatorId="pregnancy-checkup-cost" pageClass="op-page pcc-page">
+    <Fragment slot="hero">
+      <CalculatorHero eyebrow="임신 검사비 계산기" title="임신 주수별 검사비 계산기" description="현재 임신 주수를 기준으로 남은 산부인과 검사 항목과 바우처 차감 후 예상 부담액을 계산합니다." />
+      <InfoNotice title="의료·비용 안내" lines={["이 계산기는 일반적인 검사 일정과 예시 비용을 바탕으로 한 예상 계산입니다.", "실제 검사 여부와 비용은 산모 상태, 태아 상태, 병원, 지역, 급여·비급여 여부, 의료진 판단에 따라 달라질 수 있습니다.", "NIPT와 양수검사는 선택 검사로 표시하며 필수 검사처럼 단정하지 않습니다."]} />
+      <DesignTrustPanel title="임신검진 비용 계산 기준" updatedAt="2026-05-05" notes={["검진 항목과 본인부담금은 의료기관, 보험 적용, 지역 지원에 따라 달라질 수 있습니다.", "계산 결과는 예산 수립용 추정이며 실제 청구액을 보장하지 않습니다."]} />
+    </Fragment>
+    <Fragment slot="actions"><ToolActionBar resetId="resetPccBtn" copyId="copyPccLinkBtn" /></Fragment>
+    <Fragment slot="aside">
+      <section class="op-panel" data-pcc-root>
+        <div class="op-panel__head"><p>입력</p><h2>현재 임신 상태</h2></div>
+        <label class="op-field"><span>현재 임신 주수</span><input data-pcc-input="week" type="number" min="4" max="40" value="12" /></label>
+        <label class="op-field"><span>현재까지 사용한 바우처</span><input data-pcc-input="usedVoucher" inputmode="numeric" value="200000" /></label>
+        <label class="op-check"><input data-pcc-input="multiple" type="checkbox" /> 다태아 임신</label>
+        <label class="op-check"><input data-pcc-input="underserved" type="checkbox" /> 분만취약지 추가지원 반영</label>
+        <label class="op-check"><input data-pcc-input="nipt" type="checkbox" checked /> NIPT 비용 포함</label>
+        <label class="op-check"><input data-pcc-input="amnio" type="checkbox" /> 양수검사 비용 포함</label>
+        <script id="pcc-tests" type="application/json" set:html={JSON.stringify(pregnancyTestItems)} />
+      </section>
+    </Fragment>
+    <section class="op-section">
+      <div class="op-result-grid">
+        <article class="op-result-card op-result-card--main"><p>남은 예상 검사비</p><strong data-pcc-output="total">-</strong><span>예상 범위</span></article>
+        <article class="op-result-card"><p>바우처 예상 잔액</p><strong data-pcc-output="voucher">-</strong><span>사용분 차감 후</span></article>
+        <article class="op-result-card op-result-card--accent"><p>예상 본인부담액</p><strong data-pcc-output="oop">-</strong><span>바우처 차감 후</span></article>
+        <article class="op-result-card"><p>남은 주요 검사</p><strong data-pcc-output="count">-</strong><span>현재 주수 이후</span></article>
+      </div>
+    </section>
+    <section class="op-section"><h2>남은 검사 타임라인</h2><ul class="op-timeline" data-pcc-output="timeline"></ul></section>
+
+    <section class="op-section">
+      <h2>임신 시기별 주요 검사 한눈에 보기</h2>
+      <div class="op-card-grid">
+        <article>
+          <strong>초기 (5~13주)</strong>
+          <p>임신 확인 초음파, 산전 기본 혈액검사, 1차 기형아 검사(NT 초음파)가 집중됩니다. NIPT를 원한다면 10주 이후부터 가능합니다.</p>
+        </article>
+        <article>
+          <strong>중기 (14~27주)</strong>
+          <p>2차 기형아 검사(15~18주), 정밀초음파(20~24주), 임신성 당뇨 검사(24~28주)가 이 기간에 몰립니다. 검사비 지출이 가장 큰 시기입니다.</p>
+        </article>
+        <article>
+          <strong>후기 (28~40주)</strong>
+          <p>GBS 검사(35~37주), 막달 진료·태동 검사·초음파가 있습니다. 분만 준비를 위한 검사 위주로, 비용 비중은 상대적으로 낮습니다.</p>
+        </article>
+        <article>
+          <strong>바우처 활용 전략</strong>
+          <p>NIPT를 선택하면 바우처의 40~70%가 조기 소진될 수 있습니다. 중기 정밀초음파, 후기 검사비를 감안해 사용 순서를 계획하세요.</p>
+        </article>
+        <article>
+          <strong>비급여 항목 주의</strong>
+          <p>NIPT, 양수검사, 3D·4D 초음파는 비급여 항목으로 병원마다 가격 차이가 큽니다. 여러 산부인과의 비용을 미리 비교해 보는 것이 좋습니다.</p>
+        </article>
+        <article>
+          <strong>예비비 10% 확보</strong>
+          <p>추가 초음파, 재검사, 약제비 등 예상치 못한 지출이 발생할 수 있습니다. 총 예상 검사비의 10% 정도를 여유분으로 준비해 두세요.</p>
+        </article>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="임신 주수별 검사비 계산 기준"
+        intro={[
+          "임신 중 산부인과 검사비는 주수에 따라 발생하는 검사 항목이 달라지기 때문에 전체 비용을 한번에 파악하기 어렵습니다. 이 계산기는 현재 임신 주수를 기준으로 출산 전까지 남은 검사 항목과 예상 비용 범위, 국민행복카드 바우처 차감 후 실제 본인부담액을 계산합니다.",
+          "임신 초기(5~13주)에는 임신 확인 초음파, 산전 기본 혈액검사, 1차 기형아 검사가 집중됩니다. NIPT(니프티 검사)를 선택하는 경우 이 시기에 40~70만 원의 비급여 비용이 추가됩니다. 중기(14~27주)에는 2차 기형아 검사, 정밀초음파, 임신성 당뇨 검사가 몰리며 검사비 지출이 가장 큰 구간입니다.",
+          "국민행복카드 임신·출산 바우처는 단태아 100만 원, 다태아 140만 원이 기본 지급됩니다. NIPT를 선택하면 바우처의 40~70%가 초기에 소진될 수 있으므로, 중기·후기 검사비를 감안해 바우처 사용 순서를 미리 계획하는 것이 중요합니다.",
+          "NIPT와 양수검사는 선택 검사입니다. NIPT는 혈액 검사로 주요 염색체 이상을 선별하는 비침습적 방법이며, 양수검사는 확진 목적의 침습적 검사입니다. 두 검사의 필요 여부는 산모 나이, 기존 검사 결과, 가족력 등을 바탕으로 담당 의료진과 상담해 결정해야 합니다.",
+          "모든 검사비는 병원, 지역, 급여·비급여 적용 여부에 따라 실제 청구액이 달라집니다. 이 계산기의 금액은 예산 수립을 위한 참고 범위이며, 실제 비용은 산부인과에서 사전 확인하는 것이 정확합니다. 예상 검사비의 10% 정도를 예비비로 추가 확보해 두는 것을 권장합니다.",
+        ]}
+        criteria={[
+          "현재 임신 주수 이후 발생 예정인 검사만 합산합니다.",
+          "NIPT와 양수검사는 체크박스 선택 여부에 따라 반영·제외됩니다.",
+          "바우처 잔액은 기본 지급액에서 현재까지 사용한 금액을 차감해 계산합니다.",
+          "모든 비용은 병원·지역별 차이가 있는 예상 범위이며 실제 청구액을 보장하지 않습니다.",
+        ]}
+        faq={pregnancyCheckupFaq}
+        related={[
+          { href: "/reports/pregnancy-checkup-cost-2026/", label: "2026 임신 주수별 검사 비용 정리" },
+          { href: "/tools/pregnancy-birth-cost/", label: "임신·출산 비용 계산기" },
+          { href: "/tools/birth-support-total/", label: "출산 지원금 총합 계산기" },
+          { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+          { href: "/reports/baby-cost-guide-first-year/", label: "첫해 육아비 리포트" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script src="/scripts/pregnancy-checkup-cost.js" defer></script>
+</BaseLayout>
+
+

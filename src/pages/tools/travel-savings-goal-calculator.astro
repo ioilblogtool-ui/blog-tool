@@ -1,0 +1,112 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { travelSavingsFaq, travelSavingsPresets } from "../../data/travelSavingsGoalCalculator";
+---
+
+<BaseLayout
+  title="여행 적금 목표 계산기 - 매달 얼마를 모아야 할까"
+  description="여행지, 출발까지 남은 기간, 현재 저축액과 항목별 여행비를 입력하면 월 적금액과 하루 저축액을 계산합니다."
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId="travel-savings-goal-calculator" pageClass="op-page tsg-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="여행 예산 계산기"
+        title="여행 적금 목표 계산기"
+        description="항공권, 숙박, 식비, 쇼핑비까지 나누어 입력하고 출발일까지 매달 필요한 저축액을 확인하세요."
+      />
+      <InfoNotice
+        title="계산 기준"
+        lines={[
+          "단기 여행 적금은 이자보다 매달 자동으로 모으는 금액 관리가 더 중요합니다.",
+          "적금 이자는 세전 단순 추정이며 실제 상품 금리와 세금에 따라 달라질 수 있습니다.",
+          "항공권과 숙박비는 예약 시점, 환율, 성수기 여부에 따라 크게 달라질 수 있습니다.",
+        ]}
+      />
+      <DesignTrustPanel title="여행 적금 목표 계산 기준" updatedAt="2026-05-05" notes={["환율, 성수기 요금, 현지 물가는 목표 여행비를 바꿀 수 있어 버퍼를 함께 봐야 합니다.", "월 적립액은 입력한 목표액과 기간 기준의 단순 추정입니다."]} />
+    </Fragment>
+    <Fragment slot="actions"><ToolActionBar resetId="resetTsgBtn" copyId="copyTsgLinkBtn" /></Fragment>
+    <Fragment slot="aside">
+      <section class="op-panel" data-tsg-root>
+        <div class="op-panel__head"><p>입력</p><h2>여행비 목표</h2></div>
+        <div class="op-chip-row">
+          {travelSavingsPresets.map((preset) => <button type="button" data-tsg-preset={preset.id}>{preset.label}</button>)}
+        </div>
+        <label class="op-field"><span>여행지</span><input data-tsg-input="destination" value="일본 오사카" /></label>
+        <label class="op-field"><span>출발까지 남은 개월</span><input data-tsg-input="months" type="number" value="6" min="0" /></label>
+        <label class="op-field"><span>동행 인원</span><input data-tsg-input="people" type="number" value="1" min="1" /></label>
+        <label class="op-field"><span>현재 보유 여행 자금</span><input data-tsg-input="saved" inputmode="numeric" value="100000" /></label>
+        <label class="op-field"><span>예상 적금 이율(%)</span><input data-tsg-input="rate" type="number" step="0.1" value="3" /></label>
+        <div class="op-grid-two">
+          <label class="op-field"><span>항공비</span><input data-tsg-input="flight" inputmode="numeric" value="300000" /></label>
+          <label class="op-field"><span>숙박비</span><input data-tsg-input="lodging" inputmode="numeric" value="300000" /></label>
+          <label class="op-field"><span>식비</span><input data-tsg-input="food" inputmode="numeric" value="180000" /></label>
+          <label class="op-field"><span>교통비</span><input data-tsg-input="transport" inputmode="numeric" value="60000" /></label>
+          <label class="op-field"><span>액티비티</span><input data-tsg-input="activity" inputmode="numeric" value="80000" /></label>
+          <label class="op-field"><span>쇼핑/기타</span><input data-tsg-input="shopping" inputmode="numeric" value="100000" /></label>
+        </div>
+        <script id="tsg-presets" type="application/json" set:html={JSON.stringify(travelSavingsPresets)} />
+      </section>
+    </Fragment>
+
+    <section class="op-section">
+      <div class="op-result-grid">
+        <article class="op-result-card op-result-card--main"><p>목표 여행 예산</p><strong data-tsg-output="total">-</strong><span>항목별 예산 합계</span></article>
+        <article class="op-result-card"><p>현재 부족 금액</p><strong data-tsg-output="shortage">-</strong><span>보유 자금 차감 후</span></article>
+        <article class="op-result-card op-result-card--accent"><p>월 적립 필요액</p><strong data-tsg-output="monthly">-</strong><span>월복리 단순 추정</span></article>
+        <article class="op-result-card"><p>하루 저축액</p><strong data-tsg-output="daily">-</strong><span>30일 기준</span></article>
+        <article class="op-result-card"><p>1인당 예산</p><strong data-tsg-output="perPerson">-</strong><span>동행 인원 기준</span></article>
+      </div>
+      <p class="op-message" data-tsg-output="message">입력값을 조정하면 결과가 바로 표시됩니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>여행 예산은 항목별로 나누면 관리하기 쉽습니다</h2>
+      <div class="op-card-grid">
+        <article><strong>항공·숙박 먼저 확정</strong><p>여행비 변동의 대부분은 항공권과 숙박비에서 발생합니다. 이 두 항목을 먼저 조사하고 예산의 기준을 잡으세요.</p></article>
+        <article><strong>단기 적금은 자동이체</strong><p>이자보다 매달 정해진 금액을 밀리지 않고 모으는 구조가 더 중요합니다. 급여일 직후 자동이체를 설정하면 관리가 쉽습니다.</p></article>
+        <article><strong>예비비 10~15% 확보</strong><p>환율, 현지 교통, 카드 수수료, 예상 외 지출을 감안해 총 예산의 10~15%는 여유로 남겨두세요.</p></article>
+        <article><strong>출발 6개월 전 항공권</strong><p>국제선 항공권은 출발 3~6개월 전이 가격 안정 구간입니다. 성수기라면 더 일찍 비교해야 합니다.</p></article>
+        <article><strong>환율 변동 여유분 포함</strong><p>출발이 6개월 이상 남았다면 현재 환율보다 5~10% 높은 기준으로 예산을 잡아두면 환율 리스크를 줄일 수 있습니다.</p></article>
+        <article><strong>1인당 예산으로 분담 확인</strong><p>2인 이상 여행은 총 예산과 1인당 예산을 함께 확인해 동행과 분담 금액을 사전에 맞춰두는 것이 좋습니다.</p></article>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="여행 적금 목표 계산기 사용법"
+        intro={[
+          "여행 적금 목표 계산기는 항공비·숙박비·식비·교통비·액티비티·쇼핑비를 항목별로 나눠 입력하고, 출발일까지 매달 얼마를 모아야 하는지 역산합니다. 막연히 '한 달에 20만 원씩 모으면 되겠지'가 아니라, 실제 여행 비용 구조를 파악한 뒤 필요한 적립액을 계산할 수 있습니다.",
+          "오사카 3박 4일, 다낭 4박 5일, 제주 2박 3일, 방콕 5박 6일, 도쿄 4박 5일 등 5개의 여행지 프리셋을 제공합니다. 프리셋을 선택하면 평균적인 예산이 자동으로 채워지며, 항목별로 조정해 나만의 예산을 만들 수 있습니다.",
+          "여행 예산에서 항공권과 숙박비가 차지하는 비중은 단거리(일본·동남아) 기준 50~60%, 장거리(유럽·미주)는 60~70%에 달합니다. 이 두 항목의 예산을 먼저 조사하고 확정하는 것이 전체 여행비 관리의 출발점입니다.",
+          "여행 적금 기간이 짧을수록 월 적립액이 커집니다. 예산이 정해졌다면 출발 시기를 조정하거나, 현재 보유한 여행 자금을 늘려 월 부담을 줄이는 방법을 함께 검토해 보세요. '출발까지 남은 개월'과 '현재 보유 여행 자금' 슬롯을 조정하면 시나리오별 월 적립액을 바로 비교할 수 있습니다.",
+          "환율은 여행 예산의 변수 중 하나입니다. 출발이 6개월 이상 남았다면 현재 환율보다 5~10% 높은 기준으로 예산을 잡아두거나, 쇼핑·기타 항목에 예비비를 포함해 두는 것이 좋습니다. 카드 포인트나 항공 마일리지 사용이 확정된 경우에는 해당 항목 예산을 줄여 실제 필요한 적립액을 파악하세요.",
+        ]}
+        criteria={[
+          "부족 금액은 목표 여행비 합계에서 현재 보유 여행 자금을 뺀 값입니다.",
+          "월 적립액은 남은 개월 수와 입력한 적금 이율을 기준으로 역산한 단순 추정값입니다.",
+          "하루 저축액은 월 적립액을 30일로 나눈 참고값입니다.",
+          "항공권·숙박비는 예약 시점, 환율, 성수기 여부에 따라 실제 금액이 달라질 수 있습니다.",
+        ]}
+        faq={travelSavingsFaq}
+        related={[
+          { href: "/tools/flight-cheapest-timing-calculator/", label: "항공권 최저가 시기 계산기" },
+          { href: "/tools/overseas-travel-cost/", label: "해외여행 비용 계산기" },
+          { href: "/tools/travel-expense-split/", label: "여행 경비 분담 계산기" },
+          { href: "/reports/travel-peak-offpeak-cost-comparison-2026/", label: "성수기 vs 비수기 여행비 비교" },
+          { href: "/reports/domestic-vs-overseas-travel-cost-2026/", label: "국내 vs 해외 여행비 비교" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script src="/scripts/travel-savings-goal-calculator.js" defer></script>
+</BaseLayout>
+
+
