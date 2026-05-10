@@ -1,0 +1,179 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import CalculatorHero from "../components/CalculatorHero.astro";
+
+const effectiveDate = "2026년 1월 1일";
+
+const termsSections = [
+  {
+    eyebrow: "제1조",
+    title: "목적",
+    content: [
+      "이 이용약관(이하 '약관')은 비교계산소(bigyocalc.com, 이하 '서비스')가 제공하는 계산기, 비교 리포트, 정보 콘텐츠 등 모든 서비스의 이용 조건과 운영자 및 이용자의 권리·의무를 규정합니다.",
+    ],
+  },
+  {
+    eyebrow: "제2조",
+    title: "서비스 내용",
+    content: [
+      "비교계산소는 연봉, 퇴직금, 성과급, 육아휴직 급여, 출산지원금, 부동산, 투자 등 실생활 금융 판단에 필요한 계산기와 비교 리포트를 제공합니다.",
+      "모든 서비스는 회원가입 없이 무료로 이용할 수 있으며, 서비스 내용은 운영 정책에 따라 사전 예고 없이 변경·추가·중단될 수 있습니다.",
+    ],
+  },
+  {
+    eyebrow: "제3조",
+    title: "계산 결과의 성격 및 면책",
+    content: [
+      "비교계산소의 모든 계산 결과와 리포트 내용은 이용자의 입력값과 공개된 자료를 바탕으로 제공하는 참고용 추정치이며, 법적 효력을 갖는 공식 결과가 아닙니다.",
+      "실제 급여, 세금, 지원금, 투자 수익은 개인 상황, 회사 정책, 기관 지침, 법령 변경에 따라 달라질 수 있습니다. 중요한 의사결정 전에는 반드시 공식 기관 또는 전문가의 확인을 거쳐야 합니다.",
+      "비교계산소는 계산 결과를 참고하여 이용자가 내린 판단이나 행동으로 발생한 손실·손해에 대해 법적 책임을 지지 않습니다.",
+    ],
+  },
+  {
+    eyebrow: "제4조",
+    title: "이용자의 의무",
+    content: [
+      "이용자는 서비스를 합법적인 목적으로만 이용해야 하며, 타인의 권리를 침해하거나 서비스 운영을 방해하는 행위를 해서는 안 됩니다.",
+      "이용자는 계산 결과를 상업적 목적으로 무단 재배포하거나 서비스 화면을 무단으로 크롤링·스크래핑하는 행위를 할 수 없습니다.",
+    ],
+  },
+  {
+    eyebrow: "제5조",
+    title: "저작권 및 지식재산권",
+    content: [
+      "비교계산소의 콘텐츠, 디자인, 계산 로직, 데이터 구조 등에 대한 저작권은 운영자에게 귀속됩니다.",
+      "이용자는 개인적·비상업적 목적으로 콘텐츠를 참고할 수 있으며, 인용 시 출처(bigyocalc.com)를 명시해야 합니다. 상업적 목적의 복제·배포는 운영자의 사전 서면 동의가 필요합니다.",
+    ],
+  },
+  {
+    eyebrow: "제6조",
+    title: "광고 및 외부 링크",
+    content: [
+      "비교계산소는 서비스 운영 비용 충당을 위해 Google AdSense 등 제3자 광고 서비스를 이용합니다. 광고는 콘텐츠 영역과 명확히 구분되며, 광고 내용이 계산 결과나 리포트 내용에 영향을 주지 않습니다.",
+      "서비스 내 외부 링크는 참고 정보를 제공하기 위한 것이며, 외부 사이트의 콘텐츠·정확성·운영에 대해 비교계산소는 책임을 지지 않습니다.",
+    ],
+  },
+  {
+    eyebrow: "제7조",
+    title: "서비스 변경 및 중단",
+    content: [
+      "비교계산소는 운영 정책, 기술 환경, 법령 변경에 따라 서비스 내용을 사전 예고 없이 변경하거나 일시 중단할 수 있습니다.",
+      "서비스 중단이나 변경으로 인한 손해에 대해 운영자는 별도의 보상을 제공하지 않습니다.",
+    ],
+  },
+  {
+    eyebrow: "제8조",
+    title: "약관 변경",
+    content: [
+      "이 약관은 서비스 운영 방향이나 법령 변경에 따라 수정될 수 있습니다. 변경된 약관은 비교계산소 웹사이트에 게시함으로써 효력이 발생하며, 계속 이용하는 경우 변경된 약관에 동의한 것으로 간주합니다.",
+    ],
+  },
+  {
+    eyebrow: "제9조",
+    title: "준거법 및 관할",
+    content: [
+      "이 약관은 대한민국 법률에 따라 해석·적용되며, 서비스 이용과 관련한 분쟁은 대한민국 법원을 관할 법원으로 합니다.",
+    ],
+  },
+];
+
+const termsFaq = [
+  {
+    question: "비교계산소는 무료로 이용할 수 있나요?",
+    answer: "네. 모든 계산기와 비교 리포트는 회원가입 없이 무료로 이용할 수 있습니다. 서비스 운영 비용은 광고를 통해 충당합니다.",
+  },
+  {
+    question: "계산 결과를 실제 신청이나 계약에 바로 사용해도 되나요?",
+    answer: "아니요. 비교계산소의 계산 결과는 참고용 추정치입니다. 실제 급여 정산, 세금 신고, 지원금 신청, 투자 판단 등 중요한 의사결정 전에는 반드시 공식 기관 또는 전문가의 확인을 거쳐야 합니다.",
+  },
+  {
+    question: "콘텐츠를 블로그나 SNS에 공유해도 되나요?",
+    answer: "개인적·비상업적 목적의 인용과 링크 공유는 가능합니다. 출처(bigyocalc.com)를 명시해 주세요. 상업적 복제·재배포는 사전 동의가 필요합니다.",
+  },
+  {
+    question: "서비스 이용 중 문제가 발생하면 어떻게 하나요?",
+    answer: "계산 오류, 데이터 오류, 표시 문제 등은 문의 페이지 또는 ioilblogtool@gmail.com으로 제보해 주시면 검토 후 반영합니다.",
+  },
+];
+---
+
+<BaseLayout
+  title="이용약관 | 비교계산소"
+  description="비교계산소 서비스 이용약관입니다. 서비스 내용, 계산 결과의 성격, 저작권, 광고 정책 등 이용 조건을 안내합니다."
+>
+  <SiteHeader />
+
+  <main class="container page-shell info-page">
+    <CalculatorHero
+      eyebrow="Terms of Service"
+      title="이용약관"
+      description="비교계산소를 이용하기 전에 아래 약관을 확인해 주세요. 서비스를 이용하면 이 약관에 동의한 것으로 간주합니다."
+    />
+
+    <section class="info-layout">
+      <article class="panel info-panel">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Effective Date</p>
+          <h2 class="ip-section__title">시행일</h2>
+        </div>
+        <div class="info-copy">
+          <p>이 약관은 <strong>{effectiveDate}</strong>부터 시행됩니다.</p>
+          <p>서비스 운영자: 비교계산소 | 문의: <a href="mailto:ioilblogtool@gmail.com">ioilblogtool@gmail.com</a></p>
+        </div>
+      </article>
+
+      {termsSections.map((section) => (
+        <article class="panel info-panel">
+          <div class="ip-section__head">
+            <p class="ip-section__eyebrow">{section.eyebrow}</p>
+            <h2 class="ip-section__title">{section.title}</h2>
+          </div>
+          <div class="info-copy">
+            {section.content.map((para) => <p>{para}</p>)}
+          </div>
+        </article>
+      ))}
+
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">FAQ</p>
+          <h2 class="ip-section__title">이용약관 FAQ</h2>
+        </div>
+        <div class="info-faq-list">
+          {termsFaq.map((item, index) => (
+            <details class="info-faq-item" open={index === 0}>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">Navigation</p>
+          <h2 class="ip-section__title">관련 페이지</h2>
+        </div>
+        <div class="info-link-grid">
+          <a class="info-link-card" href="/privacy/">
+            <strong>개인정보처리방침</strong>
+            <p>비교계산소의 개인정보 처리 기준과 쿠키 사용 안내를 확인합니다.</p>
+          </a>
+          <a class="info-link-card" href="/disclaimer/">
+            <strong>이용안내 및 면책</strong>
+            <p>계산 결과의 참고 범위와 실제 차이가 생길 수 있는 이유를 확인합니다.</p>
+          </a>
+          <a class="info-link-card" href="/about/">
+            <strong>사이트 소개</strong>
+            <p>비교계산소의 운영 원칙과 콘텐츠 기준을 확인합니다.</p>
+          </a>
+          <a class="info-link-card" href="/contact/">
+            <strong>문의 안내</strong>
+            <p>계산 오류 제보, 업데이트 요청, 기타 문의를 보낼 수 있습니다.</p>
+          </a>
+        </div>
+      </article>
+    </section>
+  </main>
+</BaseLayout>
