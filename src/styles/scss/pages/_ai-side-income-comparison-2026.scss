@@ -1,0 +1,285 @@
+.asicr-page {
+  // ─── 인사이트 카드 그리드 ───────────────────────────────
+  .asicr-insight-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .asicr-insight-card {
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+
+    &__title {
+      font-weight: 700;
+      font-size: 0.92rem;
+      margin: 0 0 8px;
+      color: #17382d;
+    }
+
+    &__body {
+      font-size: 0.83rem;
+      color: #555;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+
+  // ─── 비교 표 ────────────────────────────────────────────
+  .asicr-table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8ede9;
+      text-align: left;
+      vertical-align: middle;
+      font-size: 0.87rem;
+    }
+
+    th {
+      background: #f8fcfa;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    td strong { font-weight: 700; }
+  }
+
+  // ─── AI 임팩트 배지 ─────────────────────────────────────
+  .asicr-impact-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &--high   { background: #d1fae5; color: #065f46; }
+    &--medium { background: #dbeafe; color: #1e40af; }
+    &--low    { background: #f1f5f9; color: #475569; }
+  }
+
+  // ─── TOP 카드 (AI 임팩트 High 업종) ─────────────────────
+  .asicr-top-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1100px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .asicr-top-card {
+    border: 1px solid #dce6e2;
+    border-top: 3px solid #0f6e56;
+    border-radius: 12px;
+    padding: 18px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    &__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    &__name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    &__range {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f6e56;
+      margin: 0;
+    }
+
+    &__rate {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin: 0;
+    }
+
+    &__tools {
+      list-style: none;
+      padding: 0;
+      margin: 4px 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+
+      li {
+        font-size: 0.72rem;
+        background: #f1f5f9;
+        color: #374151;
+        padding: 2px 8px;
+        border-radius: 8px;
+      }
+    }
+
+    &__note {
+      font-size: 0.8rem;
+      color: #555;
+      line-height: 1.55;
+      margin: 4px 0 0;
+      border-top: 1px solid #edf2f0;
+      padding-top: 8px;
+    }
+
+    &__best {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin: 0;
+
+      strong { color: #374151; }
+    }
+  }
+
+  // ─── 막대 시뮬레이션 ─────────────────────────────────────
+  .asicr-sim-note {
+    font-size: 0.82rem;
+    color: #6b7280;
+    margin: 0 0 14px;
+  }
+
+  .asicr-bar-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .asicr-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .asicr-bar-label {
+    min-width: 130px;
+    font-size: 0.85rem;
+    color: #374151;
+
+    @media (max-width: 480px) {
+      min-width: 90px;
+      font-size: 0.78rem;
+    }
+  }
+
+  .asicr-bar-wrap {
+    flex: 1;
+    background: #f1f5f9;
+    border-radius: 4px;
+    height: 14px;
+    overflow: hidden;
+  }
+
+  .asicr-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: #1a56db;
+    transition: width 0.4s ease;
+  }
+
+  .asicr-bar-value {
+    min-width: 58px;
+    text-align: right;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #17382d;
+  }
+
+  // ─── 선택 기준 가이드 ────────────────────────────────────
+  .asicr-guide-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1100px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .asicr-guide-card {
+    border: 1px solid #dce6e2;
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: #f8fcfa;
+
+    &__situation {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin: 0 0 4px;
+    }
+
+    &__recommend {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #17382d;
+      margin-bottom: 4px;
+    }
+
+    &__reason {
+      font-size: 0.8rem;
+      color: #555;
+      margin: 0;
+    }
+  }
+
+  // ─── CTA ─────────────────────────────────────────────────
+  .asicr-cta-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #dce6e2;
+    border-radius: 14px;
+    padding: 20px;
+    background: #f1f8f5;
+
+    p { margin: 6px 0 0; font-size: 0.9rem; color: #555; }
+
+    a {
+      display: inline-block;
+      border-radius: 10px;
+      background: #17382d;
+      color: #fff;
+      padding: 12px 18px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: stretch;
+
+      a { text-align: center; }
+    }
+  }
+}

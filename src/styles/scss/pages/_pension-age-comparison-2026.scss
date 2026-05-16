@@ -1,0 +1,304 @@
+.pac-page {
+  .pac-note {
+    font-size: 0.82rem;
+    color: #6b7280;
+    margin: 0 0 12px;
+    line-height: 1.6;
+  }
+
+  // ─── 공통 표 ─────────────────────────────────────────────
+  .pac-rate-table,
+  .pac-cumulative-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #e8ede9;
+      text-align: right;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      background: #f8fcfa;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    // 조기수령 행
+    tr.is-early td.pac-diff { color: #b91c1c; }
+
+    // 정상수령 행
+    tr.is-normal {
+      background: #f0faf6;
+      font-weight: 700;
+    }
+
+    // 연기수령 행
+    tr.is-delayed td.pac-diff { color: #0f6e56; font-weight: 700; }
+  }
+
+  .pac-cumulative-table {
+    min-width: 640px;
+
+    tr.is-early td:first-child  { color: #b91c1c; }
+    tr.is-normal td:first-child { color: #0f6e56; }
+    tr.is-delayed td:first-child { color: #1a56db; }
+  }
+
+  // ─── 감액·가산 규칙 카드 ─────────────────────────────────
+  .pac-rule-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+    margin-top: 16px;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .pac-rule-card {
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 16px 20px;
+
+    &__label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0 0 6px;
+    }
+
+    strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: #555;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    &--early {
+      border-left: 4px solid #b91c1c;
+      .pac-rule-card__label { color: #b91c1c; }
+    }
+
+    &--delayed {
+      border-left: 4px solid #0f6e56;
+      .pac-rule-card__label { color: #0f6e56; }
+    }
+  }
+
+  // ─── 손익분기 인사이트 박스 ──────────────────────────────
+  .pac-insight-box {
+    margin-top: 16px;
+    background: #f8fcfa;
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 16px 20px;
+
+    strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      color: #17382d;
+    }
+
+    p {
+      font-size: 0.88rem;
+      margin: 0 0 6px;
+      color: #374151;
+
+      strong { display: inline; font-size: inherit; margin: 0; }
+    }
+
+    &__caution {
+      font-size: 0.78rem !important;
+      color: #6b7280 !important;
+      margin-top: 8px !important;
+      border-top: 1px solid #e8ede9;
+      padding-top: 8px;
+    }
+  }
+
+  // ─── 3층 연금 레이어 ─────────────────────────────────────
+  .pac-layer-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1100px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .pac-layer-card {
+    border: 1px solid #dce6e2;
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: #fff;
+
+    &__age {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin: 0 0 6px;
+    }
+
+    &__source {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #17382d;
+      margin-bottom: 4px;
+    }
+
+    &__role {
+      font-size: 0.8rem;
+      color: #555;
+      margin: 0;
+    }
+  }
+
+  // ─── 체크리스트 ─────────────────────────────────────────
+  .pac-checklist {
+    background: #f8fcfa;
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 20px 24px;
+
+    ul {
+      margin: 0;
+      padding-left: 1.3em;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    li {
+      font-size: 0.88rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+  }
+
+  // ─── 사례 카드 ───────────────────────────────────────────
+  .pac-case-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .pac-case-card {
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 18px;
+    background: #fff;
+
+    &--early   { border-top: 3px solid #b91c1c; }
+    &--normal  { border-top: 3px solid #0f6e56; }
+    &--delayed { border-top: 3px solid #1a56db; }
+
+    &__type {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #6b7280;
+      margin: 0 0 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    &__title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+    }
+
+    &__profile {
+      font-size: 0.82rem;
+      color: #6b7280;
+      margin: 0 0 12px;
+    }
+
+    &__pros-cons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+
+      p {
+        font-size: 0.82rem;
+        color: #374151;
+        margin: 0;
+        line-height: 1.55;
+      }
+    }
+
+    &__best {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin: 0;
+      border-top: 1px solid #edf2f0;
+      padding-top: 10px;
+
+      strong { color: #374151; }
+    }
+  }
+
+  .pac-badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-right: 4px;
+
+    &--pro { background: #d1fae5; color: #065f46; }
+    &--con { background: #fee2e2; color: #991b1b; }
+  }
+
+  // ─── CTA ─────────────────────────────────────────────────
+  .pac-cta-box {
+    background: #f0faf6;
+    border: 1px solid #0f6e56;
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+
+    h2 { margin: 8px 0 12px; }
+    p  { color: #555; margin: 0 0 16px; font-size: 0.9rem; }
+
+    a {
+      display: inline-block;
+      background: #17382d;
+      color: #fff;
+      padding: 13px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.95rem;
+
+      &:hover { background: #0f6e56; }
+    }
+  }
+}

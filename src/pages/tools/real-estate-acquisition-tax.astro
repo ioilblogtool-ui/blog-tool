@@ -1,0 +1,286 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  REAT_DEFAULTS,
+  REAT_FAQ,
+  REAT_META,
+  REAT_QUICK_PRICES,
+  REAT_RELATED_LINKS,
+  REAT_SIMULATION_CASES,
+  REAT_SOURCE_LINKS,
+  REAT_TIPS,
+} from "../../data/realEstateAcquisitionTax";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: REAT_META.title,
+      url: `${import.meta.env.SITE}/tools/${REAT_META.slug}/`,
+      description: REAT_META.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: REAT_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={REAT_META.seoTitle} description={REAT_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="real-estate-acquisition-tax" pageClass="op-page reat-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="부동산 세금 계산기"
+        title={REAT_META.title}
+        description="매매·증여·상속 취득세와 지방교육세·농어촌특별세까지 한 번에 계산합니다."
+      />
+      <InfoNotice
+        title="세무 신고 전 확인하세요"
+        lines={[
+          REAT_META.caution,
+          "생애최초, 출산가구, 일시적 2주택, 지방 미분양 등 감면·특례는 자동 반영하지 않습니다.",
+          "조정대상지역과 주택 수 산정은 취득일 기준 실제 상황에 따라 달라질 수 있습니다.",
+        ]}
+      />
+      <DesignTrustPanel
+        title="부동산 취득세 계산 기준"
+        updatedAt={REAT_META.updatedAt}
+        notes={[
+          "주택 유상거래 기본세율은 6억 이하 1%, 6억 초과~9억 이하 비례세율, 9억 초과 3% 구조를 사용합니다.",
+          "중과세율 적용 시 지방교육세와 농어촌특별세는 일반세율과 계산 방식이 다를 수 있어 결과 노트에 별도로 표시합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetReatBtn" copyId="copyReatLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="op-panel" data-reat-root>
+        <div class="op-panel__head">
+          <p>입력</p>
+          <h2>취득 조건</h2>
+        </div>
+
+        <div class="reat-type-tabs" role="tablist" aria-label="취득 유형">
+          <button class="reat-tab-btn is-active" type="button" data-reat-tab="buy">매매</button>
+          <button class="reat-tab-btn" type="button" data-reat-tab="gift">증여</button>
+          <button class="reat-tab-btn" type="button" data-reat-tab="inherit">상속</button>
+        </div>
+
+        <label class="op-field">
+          <span>부동산 유형</span>
+          <select data-reat-input="propertyType">
+            <option value="housing" selected>주택 (아파트·단독·다세대)</option>
+            <option value="nonHousing">비주택 (상가·토지·업무용 오피스텔)</option>
+          </select>
+        </label>
+
+        <label class="op-field">
+          <span>취득가액</span>
+          <input data-reat-input="price" inputmode="numeric" value={REAT_DEFAULTS.price.toLocaleString("ko-KR")} />
+        </label>
+
+        <div class="reat-quick-row" aria-label="취득가액 빠른 선택">
+          {REAT_QUICK_PRICES.map((item) => (
+            <button type="button" data-reat-price={item.value}>{item.label}</button>
+          ))}
+        </div>
+
+        <label class="op-field" data-reat-field="count">
+          <span>취득 후 주택 수</span>
+          <select data-reat-input="houseCountAfter">
+            <option value="1" selected>1주택</option>
+            <option value="2">2주택</option>
+            <option value="3">3주택 이상</option>
+            <option value="4">4주택 이상·법인</option>
+          </select>
+        </label>
+
+        <label class="op-check" data-reat-field="adjusted">
+          <input data-reat-input="isAdjusted" type="checkbox" />
+          조정대상지역
+        </label>
+
+        <label class="op-field" data-reat-field="appraisal" hidden>
+          <span>증여 주택 공시가격</span>
+          <input data-reat-input="giftAppraisalPrice" inputmode="numeric" placeholder="예: 300,000,000" />
+        </label>
+
+        <label class="op-field" data-reat-field="area">
+          <span>전용면적(㎡)</span>
+          <input data-reat-input="area" type="number" min="1" step="0.01" value={REAT_DEFAULTS.area} />
+        </label>
+
+        <div class="reat-warning-card">
+          <strong>주의</strong>
+          <p>오피스텔은 주거용 사용 여부, 주택 수 포함 여부에 따라 결과가 달라질 수 있습니다.</p>
+        </div>
+      </section>
+    </Fragment>
+
+    <section class="op-section">
+      <div class="op-result-grid reat-result-grid">
+        <article class="op-result-card op-result-card--main">
+          <p>적용 취득세율</p>
+          <strong data-reat-output="rate">-</strong>
+          <span data-reat-output="rateNote">입력 조건 기준</span>
+        </article>
+        <article class="op-result-card">
+          <p>취득세액</p>
+          <strong data-reat-output="acquisitionTax">-</strong>
+          <span>취득가액 × 세율</span>
+        </article>
+        <article class="op-result-card">
+          <p>지방교육세</p>
+          <strong data-reat-output="localEducationTax">-</strong>
+          <span data-reat-output="localEducationNote">취득세 기준</span>
+        </article>
+        <article class="op-result-card">
+          <p>농어촌특별세</p>
+          <strong data-reat-output="ruralSpecialTax">-</strong>
+          <span data-reat-output="ruralNote">85㎡ 초과 여부</span>
+        </article>
+        <article class="op-result-card op-result-card--accent">
+          <p>총 납부세액</p>
+          <strong data-reat-output="totalTax">-</strong>
+          <span>3개 세목 합계</span>
+        </article>
+      </div>
+      <p class="op-message" data-reat-output="message">입력값을 조정하면 결과가 바로 표시됩니다.</p>
+    </section>
+
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">세금 구성</p>
+        <h2>세목별 계산 내역</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="reat-breakdown-table">
+          <thead>
+            <tr>
+              <th>세목</th>
+              <th>계산 기준</th>
+              <th>금액</th>
+            </tr>
+          </thead>
+          <tbody data-reat-output="breakdown"></tbody>
+        </table>
+      </div>
+      <ul class="reat-note-list" data-reat-output="notes"></ul>
+    </section>
+
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">시뮬레이션 표</p>
+        <h2>취득가액별 주요 예시</h2>
+        <p>감면 특례를 제외한 대표 조건 예시입니다. 실제 신고액은 지자체 해석에 따라 달라질 수 있습니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="reat-simulation-table">
+          <thead>
+            <tr>
+              <th>케이스</th>
+              <th>조건</th>
+              <th>취득가액</th>
+              <th>세율</th>
+              <th>취득세</th>
+              <th>지방교육세</th>
+              <th>농특세</th>
+              <th>총 납부</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REAT_SIMULATION_CASES.map((item) => (
+              <tr>
+                <td>{item.label}</td>
+                <td>{item.condition}</td>
+                <td>{item.price.toLocaleString("ko-KR")}원</td>
+                <td>{item.rateLabel}</td>
+                <td>{item.acquisitionTax.toLocaleString("ko-KR")}원</td>
+                <td>{item.localEducationTax.toLocaleString("ko-KR")}원</td>
+                <td>{item.ruralSpecialTax.toLocaleString("ko-KR")}원</td>
+                <td>{item.totalTax.toLocaleString("ko-KR")}원</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">유형별 주의사항</p>
+        <h2>매매·증여·상속은 신고 기준이 다릅니다</h2>
+      </div>
+      <div class="reat-tip-grid">
+        {REAT_TIPS.map((tip) => (
+          <article class="reat-tip-card">
+            <strong>{tip.title}</strong>
+            <ul>
+              {tip.points.map((point) => <li>{point}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <div class="reat-source-links">
+        {REAT_SOURCE_LINKS.map((item) => (
+          <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="부동산 취득세 계산기 — 매매·증여·상속 세금을 파악하는 법"
+        intro={[
+          "부동산을 취득할 때는 매매대금 외에 취득세, 지방교육세, 농어촌특별세를 납부해야 합니다. 5억 원 주택 1채를 처음 살 때는 총 납부세액이 약 550만 원이지만, 조정대상지역 2주택이나 3주택 이상이면 같은 가격대에서도 세금이 크게 늘어날 수 있습니다.",
+          "1주택 매매 취득세율은 취득가액에 따라 1~3%입니다. 6억 원 이하는 1%, 9억 원 초과는 3%, 6억~9억 원 구간은 비례 세율이 적용됩니다. 예를 들어 7.5억 원 주택은 취득세율 2%가 됩니다.",
+          "다주택자는 조정대상지역 여부가 중요합니다. 취득 후 2주택이면서 조정대상지역 주택을 취득하면 8%, 3주택 이상 또는 법인 주택 취득은 12% 중과 가능성이 있습니다.",
+          "증여는 기본 세율 3.5%이지만, 조정대상지역 내 공시가격 3억 원 이상 주택 증여는 12%가 적용될 수 있습니다. 상속은 주택 기준 2.8%가 기본이며 상속세와는 별도입니다.",
+          "이 계산기는 2026년 공개 법령 기준의 일반적인 경우를 계산합니다. 감면 특례, 일시적 2주택, 오피스텔 주거용 판단, 세대별 주택 수 산정은 실제 신고 전 위택스나 관할 지자체에 확인해야 합니다.",
+        ]}
+        criteria={[
+          "주택 유상취득 기본세율은 지방세법 제11조의 6억 이하 1%, 6억 초과~9억 이하 비례세율, 9억 초과 3% 구조를 따릅니다.",
+          "지방교육세와 농어촌특별세는 일반세율과 중과세율에서 계산 방식이 달라질 수 있어 계산 노트와 함께 표시합니다.",
+          "생애최초·출산가구·일시적 2주택·지방 미분양 감면은 자동 반영하지 않는 보수적 추정입니다.",
+          "최종 신고 전에는 취득일 기준 법령, 조정대상지역, 주택 수 산정, 감면 요건을 확인해야 합니다.",
+        ]}
+        faq={REAT_FAQ}
+        related={REAT_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="reatConfig" type="application/json" set:html={JSON.stringify({ defaults: REAT_DEFAULTS })}></script>
+  <script type="module" src={withBase("/scripts/real-estate-acquisition-tax.js")}></script>
+</BaseLayout>

@@ -1,0 +1,296 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CDCA_DEFAULT_INPUT,
+  CDCA_FAQ,
+  CDCA_NEXT_LINKS,
+  CDCA_PRESETS,
+  CDCA_RELATED_LINKS,
+  CDCA_STRATEGY_CARDS,
+} from "../../data/coinDcaCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaultInput: CDCA_DEFAULT_INPUT,
+  presets: CDCA_PRESETS,
+};
+
+const faqSchema = CDCA_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+---
+
+<BaseLayout
+  title="코인 DCA 계산기 - 비트코인·이더리움 적립식 투자 평균 매수가·수익률 계산"
+  description="비트코인, 이더리움 등 코인을 매달 정액 투자할 때 평균 매수가, 현재 평가액, 수익률, 손익분기 가격을 계산합니다. 현재가 시나리오 표로 가격 변동별 결과도 확인하세요."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "코인 DCA 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description:
+      "비트코인, 이더리움 등 가상자산을 정기 적립식으로 매수했을 때 평균 매수가와 수익률을 계산하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/coin-dca-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="coin-dca-calculator" pageClass="op-page cdca-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="가상자산 DCA 시뮬레이터"
+        title="코인 DCA 계산기"
+        description="매달 같은 금액으로 비트코인·이더리움 등을 샀을 때 평균 매수가, 보유 수량, 현재 평가액, 수익률을 계산합니다."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          "이 계산기는 단순화된 선형 보간 모델을 사용하며 실제 시장 가격 변동을 반영하지 않습니다.",
+          "계산 결과는 투자 조언이 아닌 참고용 추정입니다. 가상자산 투자는 원금 손실 위험이 있습니다.",
+          "프리셋 가격은 2026년 5월 기준 참고값이며, 실제 투자 전 거래소 현재가를 직접 확인해야 합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetCoinDcaBtn" copyId="copyCoinDcaLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 예시</p>
+            <h2 class="panel__title">프리셋으로 바로 계산</h2>
+          </div>
+          <p class="panel-heading__summary">2026년 5월 참고 가격 기준의 예시입니다.</p>
+        </div>
+
+        <div class="cdca-preset-grid" id="cdcaPresetGrid">
+          {CDCA_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`cdca-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-cdca-preset={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 입력</p>
+            <h2 class="panel__title">적립 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">시작가를 비워두면 전 기간 현재가로 매수한 것으로 계산합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>코인 이름</span>
+            <input data-cdca-input="coin" type="text" class="input-number" value={CDCA_DEFAULT_INPUT.coinName} />
+          </label>
+
+          <label class="field">
+            <span>월 적립액 (원)</span>
+            <input data-cdca-input="monthly" type="text" inputmode="numeric" class="input-number" value={CDCA_DEFAULT_INPUT.monthlyAmount.toLocaleString("ko-KR")} />
+            <small>매달 정기적으로 투자하는 금액을 입력하세요. 최소 1,000원입니다.</small>
+          </label>
+
+          <label class="field">
+            <span>적립 기간 (개월)</span>
+            <input data-cdca-input="months" type="number" min="1" max="120" step="1" class="input-number" value={CDCA_DEFAULT_INPUT.months} />
+            <small>1개월부터 120개월까지 계산합니다.</small>
+          </label>
+
+          <label class="field">
+            <span>현재 코인 가격 (원)</span>
+            <input data-cdca-input="price" type="text" inputmode="numeric" class="input-number" value={CDCA_DEFAULT_INPUT.currentPrice.toLocaleString("ko-KR")} />
+            <small>업비트·빗썸 등에서 오늘 기준 가격을 확인 후 입력하세요.</small>
+          </label>
+
+          <label class="field">
+            <span>첫 매수 시점 가격 (원)</span>
+            <input data-cdca-input="startPrice" type="text" inputmode="numeric" class="input-number" value={CDCA_DEFAULT_INPUT.startPrice.toLocaleString("ko-KR")} />
+            <small>비워두면 전 기간 현재가로 계산되어 수익률은 0%가 됩니다.</small>
+          </label>
+        </div>
+
+        <p class="cdca-error" id="cdcaError" hidden>현재가와 적립 조건을 다시 확인하세요.</p>
+      </article>
+    </Fragment>
+
+    <section class="cdca-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">핵심 결과</p>
+        <h2>평균 매수가와 현재 수익률을 먼저 확인합니다</h2>
+        <p class="cdca-section__sub" id="cdcaResultSubcopy">입력값을 바꾸면 결과가 바로 다시 계산됩니다.</p>
+      </div>
+
+      <div class="cdca-result-grid">
+        <article class="cdca-result-card cdca-result-card--main">
+          <p>평균 매수가</p>
+          <strong id="cdcaAvgPrice">-</strong>
+          <span>DCA로 형성된 평균 단가</span>
+        </article>
+        <article class="cdca-result-card">
+          <p>총 투자금</p>
+          <strong id="cdcaTotalInvested">-</strong>
+          <span>월 적립액 × 기간</span>
+        </article>
+        <article class="cdca-result-card">
+          <p>현재 평가액</p>
+          <strong id="cdcaCurrentValue">-</strong>
+          <span>총 보유 수량 × 현재가</span>
+        </article>
+        <article class="cdca-result-card cdca-result-card--accent">
+          <p>수익률</p>
+          <strong id="cdcaReturnRate">-</strong>
+          <span id="cdcaReturnNote">세금·수수료 전</span>
+        </article>
+        <article class="cdca-result-card">
+          <p>보유 수량</p>
+          <strong id="cdcaTotalCoins">-</strong>
+          <span>코인 단위 추정 수량</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="cdca-section">
+      <article class="cdca-message-card" id="cdcaMessage">계산 결과가 여기에 표시됩니다.</article>
+    </section>
+
+    <section class="cdca-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">가격 시나리오</p>
+        <h2>현재가가 바뀌면 평가액도 이렇게 달라집니다</h2>
+      </div>
+      <article class="panel">
+        <div class="table-wrap">
+          <table class="cdca-scenario-table">
+            <thead>
+              <tr>
+                <th>가격 기준</th>
+                <th>평가액</th>
+                <th>손익</th>
+                <th>수익률</th>
+              </tr>
+            </thead>
+            <tbody id="cdcaScenarioBody">
+              <tr><td colspan="4">계산 중입니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="cdca-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">월별 누적 현황</p>
+        <h2>주요 시점의 평균 매수가 변화를 봅니다</h2>
+      </div>
+      <article class="panel">
+        <div class="table-wrap">
+          <table class="cdca-monthly-table">
+            <thead>
+              <tr>
+                <th>차수</th>
+                <th>매수 가격</th>
+                <th>이번 달 수량</th>
+                <th>누적 수량</th>
+                <th>평균 매수가</th>
+              </tr>
+            </thead>
+            <tbody id="cdcaMonthlyBody">
+              <tr><td colspan="5">계산 중입니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="cdca-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">전략 해석</p>
+        <h2>DCA 결과를 읽을 때 같이 봐야 할 점</h2>
+      </div>
+      <div class="cdca-tip-grid">
+        {CDCA_STRATEGY_CARDS.map((card) => (
+          <article class="cdca-tip-card">
+            <strong>{card.title}</strong>
+            {card.body.map((paragraph) => <p>{paragraph}</p>)}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cdca-next-section">
+      <div class="cdca-next-grid">
+        {CDCA_NEXT_LINKS.map((item) => (
+          <a href={withBase(item.href)} class="cdca-next-card">
+            <div class="cdca-next-card__badges">
+              {item.badges.map((badge) => <span>{badge}</span>)}
+            </div>
+            <strong>{item.title}</strong>
+            <p>{item.desc}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="코인 DCA 계산기 — 적립식 투자의 평균 매수가와 수익률을 계산합니다"
+        intro={[
+          "DCA(Dollar Cost Averaging, 정기적립식 투자)는 가격과 무관하게 매달 정해진 금액을 투자하는 전략입니다. 코인 시장처럼 가격 변동성이 큰 자산에서 많이 활용되며, 한꺼번에 큰 금액을 투자하는 것보다 여러 번에 나눠 매수해 타이밍 리스크를 줄이는 데 목적이 있습니다.",
+          "이 계산기는 월 적립액, 적립 기간, 시작 가격, 현재 가격을 입력해 평균 매수가와 현재 수익률을 계산합니다. 가격이 낮을 때 더 많은 수량을 매수하고 높을 때 적게 매수하므로, 평균 매수가가 단순 기간 평균 가격보다 낮아질 수 있습니다.",
+          "시작 가격을 입력하지 않으면 전 기간 동일한 현재 가격으로 계산되어 수익률은 0%가 됩니다. 이 경우에는 내가 매달 이 금액을 투자하면 총 몇 코인을 모을 수 있는지 확인하는 용도로 사용하세요.",
+          "현재가 시나리오 표에서는 코인 가격이 -30%, -10%, 현재, +10%, +30%로 변할 때 평가액과 수익률이 어떻게 달라지는지 볼 수 있습니다.",
+          "이 계산기는 단순화된 선형 가격 모델을 사용하며 실제 시장의 급등, 급락, 횡보 구간을 반영하지 않습니다. 계산 결과는 투자 결정의 참고 자료이며 투자 수익을 보장하지 않습니다.",
+        ]}
+        inputPoints={[
+          "코인 이름, 월 적립액, 적립 기간, 현재가, 첫 매수 시점 가격을 입력하면 평균 매수가와 수익률이 바로 계산됩니다.",
+          "프리셋으로 BTC 1년, ETH 2년, BTC 5년 장기 적립 예시를 빠르게 불러올 수 있습니다.",
+          "시작가를 비워 둔 단순 모드는 수익률보다 총 보유 수량을 확인하는 용도입니다.",
+        ]}
+        criteria={[
+          "시작가와 현재가를 입력하면 각 월의 매수 가격을 선형 보간해 월별 매수 수량을 추정합니다.",
+          "평균 매수가는 총 투자금액을 총 보유 수량으로 나눈 값이며, 손익분기 가격과 같은 의미로 표시합니다.",
+          "수익률은 현재 평가액에서 총 투자금을 뺀 뒤 총 투자금으로 나누어 계산합니다.",
+          "거래 수수료, 세금, 슬리피지, 실제 월별 가격 경로는 반영하지 않습니다.",
+        ]}
+        faq={CDCA_FAQ}
+        related={CDCA_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="coinDcaCalculatorConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/coin-dca-calculator.js")}></script>
+</BaseLayout>
+

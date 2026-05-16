@@ -1,0 +1,347 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  CEC_FAQ,
+  CEC_META,
+  CHECKLIST_ITEMS,
+  EXCHANGES,
+  FEE_SIMULATION_ROWS,
+  RECOMMENDATIONS,
+  RELATED_LINKS,
+  SOURCE_LINKS,
+  SUMMARY_CARDS,
+  type CoinExchange,
+  type SupportLevel,
+} from "../../data/coinExchangeComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const domesticExchanges = EXCHANGES.filter((exchange) => exchange.type === "domestic");
+const globalExchanges = EXCHANGES.filter((exchange) => exchange.type === "global");
+
+const supportLabel: Record<SupportLevel, string> = {
+  yes: "지원",
+  limited: "제한",
+  no: "미지원",
+};
+
+const boolLabel = (value: boolean) => (value ? "가능" : "불가");
+const won = (value: number) => `${value.toLocaleString("ko-KR")}원`;
+const feeDiffAtTenMillion =
+  FEE_SIMULATION_ROWS.find((row) => row.exchange === "코인베이스")!.feeRate * 10_000_000 * 12 -
+  FEE_SIMULATION_ROWS.find((row) => row.exchange === "빗썸 쿠폰")!.feeRate * 10_000_000 * 12;
+
+const renderExchangeTable = (rows: CoinExchange[]) => rows;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: CEC_META.title,
+      description: CEC_META.description,
+      inLanguage: "ko-KR",
+      dateModified: CEC_META.updatedAt,
+      mainEntityOfPage: `https://bigyocalc.com/reports/${CEC_META.slug}/`,
+      publisher: {
+        "@type": "Organization",
+        name: "비교계산소",
+        url: "https://bigyocalc.com",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: CEC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={CEC_META.seoTitle} description={CEC_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page cec-page">
+    <CalculatorHero
+      eyebrow="가상자산 거래소 비교"
+      title={CEC_META.title}
+      description="업비트·빗썸·코인원·코빗·바이낸스·코인베이스·OKX를 수수료, 원화 입출금, 보안, 기능 기준으로 비교합니다."
+      badges={["코인", "거래소", "수수료", "보안", "2026"]}
+    />
+
+    <InfoNotice
+      title="거래 전 반드시 확인하세요"
+      lines={[
+        CEC_META.caution,
+        "이 리포트는 특정 거래소 가입이나 투자를 권유하지 않습니다.",
+        "가상자산 투자는 원금 손실 위험이 있고 해외 거래소 이용 시 국내 보호 체계가 제한될 수 있습니다.",
+      ]}
+    />
+
+    <DesignTrustPanel
+      title="코인 거래소 비교 기준"
+      updatedAt={CEC_META.updatedAt}
+      notes={[
+        "수수료는 일반 거래, 쿠폰, VIP, Open API 조건이 다를 수 있어 표 안에 적용 조건을 함께 표시했습니다.",
+        "원화 입출금과 규제 체계는 국내 이용자에게 중요한 안전 기준이므로 수수료와 분리해서 봐야 합니다.",
+      ]}
+    />
+
+    <section class="content-section cec-brief-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>거래소는 “가장 싼 곳”보다 내 거래 방식에 맞는 곳을 골라야 합니다</h2>
+        <p>{CEC_META.baseLabel}. 표시는 최종 가입 조건이 아니라 비교를 시작하기 위한 체크 포인트입니다.</p>
+      </div>
+      <div class="cec-summary-grid">
+        {SUMMARY_CARDS.map((card) => (
+          <article class="cec-summary-card">
+            <p>{card.title}</p>
+            <strong>{card.value}</strong>
+            <span>{card.body}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cec-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">국내 거래소</p>
+        <h2>원화 입출금이 필요하면 국내 거래소 4곳부터 비교하세요</h2>
+        <p>국내 거래소는 실명계좌와 고객확인 절차를 거쳐 원화 입출금이 가능합니다. 수수료는 이벤트 조건을 반드시 같이 봐야 합니다.</p>
+      </div>
+      <div class="cec-table-wrap">
+        <table class="cec-table">
+          <thead>
+            <tr>
+              <th>거래소</th>
+              <th>수수료</th>
+              <th>원화 입출금</th>
+              <th>제휴 은행</th>
+              <th>상장 코인</th>
+              <th>보안·규제</th>
+              <th>추천 대상</th>
+            </tr>
+          </thead>
+          <tbody>
+            {renderExchangeTable(domesticExchanges).map((exchange) => (
+              <tr>
+                <td>
+                  <strong>{exchange.name}</strong>
+                  <span>{exchange.nameEn}</span>
+                </td>
+                <td>
+                  <b class={exchange.id === "bithumb" ? "cec-fee-low" : ""}>{exchange.makerFee} / {exchange.takerFee}</b>
+                  <small>{exchange.feeNote}</small>
+                </td>
+                <td>
+                  <span class="cec-badge cec-badge--yes">{boolLabel(exchange.wonDeposit)}</span>
+                  <span class="cec-badge cec-badge--yes">{boolLabel(exchange.wonWithdrawal)}</span>
+                </td>
+                <td>{exchange.bankPartner}</td>
+                <td>{exchange.coinCount}</td>
+                <td>
+                  <span class="cec-badge cec-badge--yes">KYC</span>
+                  <span class="cec-badge cec-badge--yes">2FA</span>
+                  <span class={`cec-badge cec-badge--${exchange.regulated}`}>VASP {supportLabel[exchange.regulated]}</span>
+                </td>
+                <td>{exchange.bestFor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section cec-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">해외 거래소</p>
+        <h2>알트코인과 파생상품은 넓지만 원화·규제 리스크를 같이 봐야 합니다</h2>
+        <p>해외 거래소는 수수료만 낮게 보지 말고 원화 입출금 불가, 스테이블코인 전송, 고객센터 언어, 국내 보호 체계 한계를 함께 확인해야 합니다.</p>
+      </div>
+      <div class="cec-table-wrap">
+        <table class="cec-table">
+          <thead>
+            <tr>
+              <th>거래소</th>
+              <th>수수료</th>
+              <th>원화 입출금</th>
+              <th>상장 코인</th>
+              <th>한국어 지원</th>
+              <th>강점</th>
+              <th>주의사항</th>
+            </tr>
+          </thead>
+          <tbody>
+            {renderExchangeTable(globalExchanges).map((exchange) => (
+              <tr>
+                <td>
+                  <strong>{exchange.name}</strong>
+                  <span>{exchange.nameEn}</span>
+                </td>
+                <td>
+                  <b>{exchange.makerFee} / {exchange.takerFee}</b>
+                  <small>{exchange.feeNote}</small>
+                </td>
+                <td>
+                  <span class="cec-badge cec-badge--no">{boolLabel(exchange.wonDeposit)}</span>
+                </td>
+                <td>{exchange.coinCount}</td>
+                <td><span class={`cec-badge cec-badge--${exchange.koreanSupport}`}>{supportLabel[exchange.koreanSupport]}</span></td>
+                <td>{exchange.pros[0]}</td>
+                <td>{exchange.cons.join(" · ")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section cec-recommend-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상황별 선택</p>
+        <h2>내 목적에 맞춰 먼저 볼 거래소를 좁혀보세요</h2>
+        <p>아래 추천은 확정 답이 아니라 비교 시작점입니다. 실제 선택 전 공식 수수료표와 공지를 다시 확인하세요.</p>
+      </div>
+      <div class="cec-recommend-grid">
+        {RECOMMENDATIONS.map((item) => (
+          <article class="cec-recommend-card">
+            <p>{item.situation}</p>
+            <strong>{item.exchange}</strong>
+            <span>{item.reason}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cec-detail-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">거래소별 강점과 약점</p>
+        <h2>표시 수수료보다 실제 이용 조건을 함께 읽어야 합니다</h2>
+      </div>
+      <div class="cec-detail-grid">
+        {EXCHANGES.map((exchange) => (
+          <article class="cec-detail-card">
+            <div class="cec-detail-card__head">
+              <div>
+                <p>{exchange.type === "domestic" ? "국내 거래소" : "해외 거래소"}</p>
+                <h3>{exchange.name}</h3>
+              </div>
+              <a href={exchange.officialUrl} target="_blank" rel="noopener noreferrer">공식 확인</a>
+            </div>
+            <div class="cec-pro-con">
+              <div>
+                <strong>강점</strong>
+                <ul>
+                  {exchange.pros.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+              <div>
+                <strong>주의</strong>
+                <ul>
+                  {exchange.cons.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cec-fee-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수수료 예시</p>
+        <h2>월 100만원 거래 기준 연간 비용을 비교합니다</h2>
+        <p>아래 표는 단순 예시입니다. 세금, 스프레드, 출금 수수료, 네트워크 수수료, 이벤트 종료 조건은 제외했습니다.</p>
+      </div>
+      <div class="cec-fee-board">
+        <div class="cec-fee-copy">
+          <p>월 1,000만원씩 거래하면 빗썸 쿠폰 예시와 코인베이스 taker 예시의 연간 차이는 약</p>
+          <strong>{won(feeDiffAtTenMillion)}</strong>
+          <span>입니다. 거래 금액이 커질수록 작은 수수료율 차이도 누적됩니다.</span>
+        </div>
+        <div class="cec-table-wrap">
+          <table class="cec-fee-table">
+            <thead>
+              <tr>
+                <th>거래소</th>
+                <th>수수료율</th>
+                <th>월 수수료</th>
+                <th>연간 수수료</th>
+                <th>비고</th>
+              </tr>
+            </thead>
+            <tbody>
+              {FEE_SIMULATION_ROWS.map((row, index) => (
+                <tr>
+                  <td>{row.exchange}</td>
+                  <td class={index === 0 ? "lowest" : row.exchange === "코인베이스" ? "highest" : ""}>{row.feeLabel}</td>
+                  <td>{won(row.monthlyFee)}</td>
+                  <td>{won(row.annualFee)}</td>
+                  <td>{row.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section cec-check-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">최종 체크리스트</p>
+        <h2>가입 전 이 항목만은 다시 확인하세요</h2>
+      </div>
+      <div class="cec-checklist">
+        <ul>
+          {CHECKLIST_ITEMS.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div class="cec-source-links">
+        {SOURCE_LINKS.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+      </div>
+    </section>
+
+    <section class="content-section cec-cta-section">
+      <div>
+        <p class="section-header__eyebrow">다음 단계</p>
+        <h2>거래소를 고른 뒤에는 적립식 투자와 세금까지 같이 계산하세요</h2>
+      </div>
+      <div class="cec-cta-links">
+        {RELATED_LINKS.slice(0, 3).map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="코인 거래소 비교 2026 — 수수료·보안·기능을 기준으로 선택하는 법"
+      intro={[
+        "2026년 국내에서 원화로 가상자산을 거래하려면 업비트, 빗썸, 코인원, 코빗 같은 국내 거래소를 먼저 비교하게 됩니다. 해외 거래소로는 바이낸스, 코인베이스, OKX가 대표적이지만 원화 입출금과 국내 고객 보호 측면에서는 조건이 다릅니다.",
+        "수수료는 장기 투자자와 빈번 거래자에게 중요합니다. 다만 거래소마다 기본 수수료, 쿠폰 수수료, API 수수료, VIP 수수료가 다르므로 가장 낮은 숫자만 보고 선택하면 실제 적용 조건을 놓칠 수 있습니다.",
+        "원화 입출금은 국내 거래소 선택의 핵심입니다. 해외 거래소는 USDT 같은 스테이블코인 전송을 거치는 경우가 많아 네트워크 수수료, 트래블룰, 입금 주소 오류 위험을 함께 관리해야 합니다.",
+        "보안과 규제 준수도 수수료만큼 중요합니다. FIU 신고 여부, 2FA, 출금 화이트리스트, 고객센터 접근성을 확인하고, 장기 보유 자산은 거래소 한 곳에만 두지 않는 방식도 검토해야 합니다.",
+        "이 리포트의 정보는 2026년 5월 기준 공개 안내를 바탕으로 정리했습니다. 거래소 정책은 자주 바뀌므로 실제 거래 전 공식 홈페이지에서 최신 수수료와 약관을 반드시 재확인하세요.",
+      ]}
+      criteria={[
+        "수수료 표시는 기준일의 공식 안내와 고객센터 공개 정보를 바탕으로 하되 적용 조건을 함께 표시했습니다.",
+        "상장 코인 수와 한국어 지원 여부는 거래소 정책 변경에 따라 달라질 수 있는 참고 항목입니다.",
+        "상황별 추천은 투자 권유가 아니라 비교 시작점을 좁히기 위한 분류입니다.",
+      ]}
+      faq={CEC_FAQ}
+      related={RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

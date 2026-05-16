@@ -1,0 +1,199 @@
+.tec-page {
+  // ─── 국가 프리셋 칩 ──────────────────────────────────────────
+  .tec-preset-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .tec-preset-chip {
+    border: 1px solid #dce6e2;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    background: #fff;
+    transition: background 0.15s, color 0.15s;
+
+    &.is-active {
+      background: #1a56db;
+      color: #fff;
+      border-color: #1a56db;
+    }
+
+    &:hover:not(.is-active) {
+      background: #f0f7ff;
+    }
+  }
+
+  // ─── 힌트 텍스트 ─────────────────────────────────────────────
+  .tec-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin: 4px 0 12px;
+    line-height: 1.5;
+  }
+
+  // ─── 상세 수수료 설정 ─────────────────────────────────────────
+  .tec-advanced {
+    margin-top: 16px;
+    border: 1px solid #e8ede9;
+    border-radius: 8px;
+    padding: 0;
+    overflow: hidden;
+
+    summary {
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #6b7280;
+      cursor: pointer;
+      background: #f8fcfa;
+      list-style: none;
+
+      &::-webkit-details-marker { display: none; }
+    }
+
+    &[open] summary {
+      border-bottom: 1px solid #e8ede9;
+    }
+  }
+
+  .tec-advanced-grid {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tec-adv-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .tec-adv-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .tec-adv-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    span {
+      font-size: 0.68rem;
+      color: #9ca3af;
+    }
+
+    input {
+      border: 1px solid #dce6e2;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.82rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  // ─── 결과 KPI 그리드 ─────────────────────────────────────────
+  .tec-result-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  // ─── 방법별 비교 표 ──────────────────────────────────────────
+  .tec-comparison-table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8ede9;
+      text-align: right;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+
+    th:first-child,
+    td:first-child { text-align: left; }
+
+    th { background: #f8fcfa; font-weight: 700; white-space: nowrap; }
+
+    tr.is-best { background: #f0faf6; }
+    tr.is-best .tec-method { font-weight: 700; color: #0f6e56; }
+    tr.is-worst .tec-fee { color: #b91c1c; }
+  }
+
+  .tec-rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #374151;
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-right: 6px;
+    flex-shrink: 0;
+
+    &--1 { background: #0f6e56; color: #fff; }
+  }
+
+  .tec-best-badge {
+    display: inline-block;
+    background: #0f6e56;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 6px;
+    margin-left: 4px;
+  }
+
+  // ─── 환율 민감도 표 ──────────────────────────────────────────
+  .tec-sensitivity-table {
+    width: 100%;
+    min-width: 480px;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e8ede9;
+      text-align: right;
+      font-size: 0.83rem;
+    }
+
+    th:first-child,
+    td:first-child { text-align: left; }
+
+    th { background: #f8fcfa; font-weight: 700; }
+
+    tr.is-current { background: #f0f7ff; font-weight: 700; }
+  }
+
+  // ─── 국가별 팁 ───────────────────────────────────────────────
+  .tec-country-tip {
+    background: #f8fcfa;
+    border: 1px solid #dce6e2;
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 0.88rem;
+    color: #374151;
+    line-height: 1.65;
+  }
+}

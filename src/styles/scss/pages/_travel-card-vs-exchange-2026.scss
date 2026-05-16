@@ -1,0 +1,307 @@
+.tcve-page {
+  .tcve-note {
+    font-size: 0.82rem;
+    color: #6b7280;
+    margin: 0 0 12px;
+    line-height: 1.6;
+  }
+
+  // ─── 핵심 요약 카드 ──────────────────────────────────────────
+  .tcve-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .tcve-summary-card {
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+
+    &__title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #6b7280;
+      margin: 0 0 8px;
+    }
+
+    &__body {
+      font-size: 0.88rem;
+      color: #374151;
+      line-height: 1.55;
+      margin: 0;
+    }
+  }
+
+  // ─── 카드 비교 표 ────────────────────────────────────────────
+  .tcve-card-table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8ede9;
+      font-size: 0.83rem;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #f8fcfa;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    a {
+      color: #1a56db;
+      font-size: 0.78rem;
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  .tcve-provider {
+    font-size: 0.72rem;
+    color: #6b7280;
+  }
+
+  // ─── 방법별 카드 ─────────────────────────────────────────────
+  .tcve-method-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1100px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .tcve-method-card {
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+
+    &--best { border-top: 3px solid #0f6e56; }
+
+    &__label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin: 0 0 4px;
+    }
+
+    &__fee {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin: 0 0 12px;
+    }
+
+    &__pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 4px 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        li {
+          font-size: 0.78rem;
+          color: #374151;
+          line-height: 1.5;
+        }
+      }
+    }
+
+    &__best {
+      font-size: 0.78rem;
+      color: #555;
+      margin: 0;
+      border-top: 1px solid #edf2f0;
+      padding-top: 10px;
+    }
+  }
+
+  .tcve-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 4px;
+
+    &--pro { color: #065f46; }
+    &--con { color: #991b1b; }
+  }
+
+  // ─── 시뮬레이션 표 ───────────────────────────────────────────
+  .tcve-sim-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #e8ede9;
+      text-align: right;
+      font-size: 0.88rem;
+    }
+
+    th:first-child,
+    td:first-child,
+    th:nth-child(2),
+    td:nth-child(2) { text-align: left; }
+
+    th { background: #f8fcfa; font-weight: 700; }
+
+    tr.is-best { background: #f0faf6; }
+    tr.is-best td { color: #0f6e56; font-weight: 700; }
+    tr.is-worst .tcve-diff { color: #b91c1c; }
+  }
+
+  // ─── 인라인 CTA ──────────────────────────────────────────────
+  .tcve-cta-inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    background: #f8fcfa;
+    border: 1px solid #dce6e2;
+    border-radius: 10px;
+    padding: 14px 18px;
+
+    p { margin: 0; font-size: 0.88rem; color: #555; }
+
+    a {
+      display: inline-block;
+      background: #17382d;
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 540px) {
+      flex-direction: column;
+      align-items: stretch;
+      a { text-align: center; }
+    }
+  }
+
+  // ─── 국가별 매트릭스 표 ──────────────────────────────────────
+  .tcve-matrix-table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #e8ede9;
+      font-size: 0.83rem;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th { background: #f8fcfa; font-weight: 700; white-space: nowrap; }
+  }
+
+  .tcve-matrix-tip {
+    font-size: 0.78rem;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  // ─── DCC 경고 박스 ───────────────────────────────────────────
+  .tcve-dcc-warning {
+    background: #fff7ed;
+    border: 1px solid #fcd34d;
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    padding: 20px 22px;
+    font-size: 0.9rem;
+    line-height: 1.65;
+
+    strong {
+      display: block;
+      color: #b45309;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    p { margin: 0; color: #374151; }
+  }
+
+  // ─── 체크리스트 ──────────────────────────────────────────────
+  .tcve-checklist {
+    background: #f8fcfa;
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 20px 24px;
+
+    ul {
+      margin: 0;
+      padding-left: 1.2em;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    li {
+      font-size: 0.88rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+  }
+
+  // ─── CTA 섹션 ────────────────────────────────────────────────
+  .tcve-cta-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #dce6e2;
+    border-radius: 14px;
+    padding: 20px;
+    background: #f1f8f5;
+
+    p { margin: 6px 0 0; font-size: 0.9rem; color: #555; }
+
+    a {
+      display: inline-block;
+      border-radius: 10px;
+      background: #17382d;
+      color: #fff;
+      padding: 12px 18px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: stretch;
+      a { text-align: center; }
+    }
+  }
+}

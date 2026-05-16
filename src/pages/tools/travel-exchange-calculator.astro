@@ -1,0 +1,255 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  COUNTRY_PRESETS,
+  CURRENCIES,
+  METHOD_CONFIGS,
+  TEC_FAQ,
+  TEC_RELATED_LINKS,
+} from "../../data/travelExchangeCalculator";
+---
+
+<BaseLayout
+  title="여행 환전 손익 계산기 — 은행·공항·트래블카드·ATM 환전 수수료 비교"
+  description="여행 환전 계산기로 은행 창구, 공항 환전, 트래블카드, 현지 ATM 인출 방식별 실수령 외화와 수수료를 비교합니다. 일본 엔화, 미국 달러, 유로, 동남아 통화 환전 손익을 계산할 수 있습니다."
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId="travel-exchange-calculator" pageClass="op-page tec-page" resultFirst={true}>
+
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="여행 환전 손익 계산기"
+        title="여행 환전 손익 계산기"
+        description="어디서 환전하는 게 제일 이득인지 계산합니다. 트래블카드·은행·공항·ATM 5가지 방법의 실수령 외화와 수수료를 한 번에 비교하세요."
+      />
+      <InfoNotice
+        title="환율·수수료 안내"
+        lines={[
+          "환율과 수수료는 실시간으로 변동됩니다. 실제 환전 전 해당 기관 최신 조건을 반드시 확인하세요.",
+          "이 계산기의 수수료는 일반적인 추정값이며 실제와 다를 수 있습니다.",
+          "현지 ATM 수수료는 카드사 면제와 별도로 ATM 운영사가 부과할 수 있습니다.",
+        ]}
+      />
+      <DesignTrustPanel
+        title="여행 환전 수수료 비교 기준"
+        updatedAt="2026-05-11"
+        notes={[
+          "트래블카드: 주요 통화 스프레드 0% 가정. 상품별 실제 조건을 확인하세요.",
+          "현지 ATM: 트래블카드 기준 + 사업자 수수료 약 3,000원 추정 포함.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="tecResetBtn" copyId="tecCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="op-panel" id="tecInputPanel">
+        <div class="op-panel__head"><p>입력</p><h2>환전 조건</h2></div>
+
+        {/* 국가 프리셋 */}
+        <div class="tec-preset-grid">
+          {COUNTRY_PRESETS.map((p) => (
+            <button
+              type="button"
+              class="tec-preset-chip"
+              data-tec-preset={p.country}
+              data-currency={p.currency}
+              data-unit={p.unit}
+              data-rate={p.defaultRate}
+            >
+              {p.flag} {p.country}
+            </button>
+          ))}
+        </div>
+
+        {/* 통화·환율 */}
+        <label class="op-field">
+          <span>통화</span>
+          <select id="tecCurrency">
+            {CURRENCIES.map((c) => (
+              <option value={c.code} data-unit={c.unit} data-rate={c.defaultRate}>{c.label}</option>
+            ))}
+          </select>
+        </label>
+        <label class="op-field">
+          <span id="tecRateLabel">기준 환율 (100엔 기준, 원)</span>
+          <input id="tecRate" type="number" value="900" min="0.01" step="0.01" />
+        </label>
+        <p class="tec-hint">네이버에서 '엔화 환율' 검색 → 매매기준율 참고 입력</p>
+
+        {/* 금액·여행 정보 */}
+        <label class="op-field">
+          <span>환전 원화 금액</span>
+          <input id="tecAmount" type="number" value="1000000" min="10000" step="10000" />
+        </label>
+        <div class="op-grid-two">
+          <label class="op-field">
+            <span>여행 인원</span>
+            <input id="tecTravelers" type="number" value="1" min="1" max="20" />
+          </label>
+          <label class="op-field">
+            <span>여행 기간 (일)</span>
+            <input id="tecDays" type="number" value="4" min="1" max="60" />
+          </label>
+        </div>
+
+        {/* 상세 수수료 설정 */}
+        <details class="tec-advanced">
+          <summary>상세 수수료 설정 (선택)</summary>
+          <div class="tec-advanced-grid">
+            {METHOD_CONFIGS.map((cfg) => (
+              <div class="tec-adv-row">
+                <span class="tec-adv-label">{cfg.label}</span>
+                <label class="tec-adv-field">
+                  <span>우대율(%)</span>
+                  <input
+                    type="number"
+                    class="tec-adv-input"
+                    data-method={cfg.method}
+                    data-field="preferentialRate"
+                    value={cfg.preferentialRate}
+                    min="0" max="100" step="1"
+                  />
+                </label>
+                <label class="tec-adv-field">
+                  <span>고정수수료(원)</span>
+                  <input
+                    type="number"
+                    class="tec-adv-input"
+                    data-method={cfg.method}
+                    data-field="fixedFee"
+                    value={cfg.fixedFee}
+                    min="0" step="100"
+                  />
+                </label>
+              </div>
+            ))}
+          </div>
+        </details>
+      </section>
+
+      {/* JSON 데이터 주입 */}
+      <script id="tec-presets" type="application/json" set:html={JSON.stringify(COUNTRY_PRESETS)} />
+      <script id="tec-methods" type="application/json" set:html={JSON.stringify(METHOD_CONFIGS)} />
+    </Fragment>
+
+    {/* ─── 결과 KPI ─── */}
+    <section class="op-section">
+      <div class="tec-result-grid">
+        <article class="op-result-card op-result-card--main">
+          <p>추천 환전 방법</p>
+          <strong id="tecBestMethod">-</strong>
+          <span id="tecBestNote">실수령 외화 최대 기준</span>
+        </article>
+        <article class="op-result-card">
+          <p>예상 실수령 외화</p>
+          <strong id="tecBestForeign">-</strong>
+          <span>추천 방법 기준</span>
+        </article>
+        <article class="op-result-card op-result-card--accent">
+          <p>공항 환전 대비 절약</p>
+          <strong id="tecSavingVsAirport">-</strong>
+          <span>원화 기준</span>
+        </article>
+        <article class="op-result-card">
+          <p>하루 사용 가능 외화</p>
+          <strong id="tecDailyBudget">-</strong>
+          <span id="tecDailyNote">인원·기간 기준</span>
+        </article>
+      </div>
+      <p class="op-message" id="tecMessage">국가를 선택하거나 금액을 입력하면 결과가 표시됩니다.</p>
+    </section>
+
+    {/* ─── 방법별 비교 표 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">방법별 비교</p>
+        <h2>5가지 환전 방법 실수령 외화 · 수수료 · 절약액 비교</h2>
+      </div>
+      <div class="op-table-wrap">
+        <table class="tec-comparison-table">
+          <thead>
+            <tr>
+              <th>환전 방법</th>
+              <th>적용 환율</th>
+              <th>실수령 외화</th>
+              <th>총 수수료</th>
+              <th>공항 대비 절약</th>
+              <th>순위</th>
+            </tr>
+          </thead>
+          <tbody id="tecComparisonBody">
+            <tr><td colspan="6" style="text-align:center;color:#aaa;">입력값을 조정하면 표가 채워집니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* ─── 환율 민감도 표 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">환율 민감도</p>
+        <h2>기준 환율이 변할 때 실수령 외화 변화</h2>
+      </div>
+      <div class="op-table-wrap">
+        <table class="tec-sensitivity-table">
+          <thead>
+            <tr>
+              <th>기준 환율</th>
+              <th>트래블카드</th>
+              <th>은행 앱</th>
+              <th>공항 환전</th>
+              <th>차이 (트래블카드 vs 공항)</th>
+            </tr>
+          </thead>
+          <tbody id="tecSensitivityBody">
+            <tr><td colspan="5" style="text-align:center;color:#aaa;">-</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* ─── 국가별 환전 팁 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">여행 국가별 팁</p>
+        <h2>선택 국가의 환전·결제 전략</h2>
+      </div>
+      <div class="tec-country-tip" id="tecCountryTip">
+        국가 프리셋을 선택하면 해당 국가의 환전 팁이 표시됩니다.
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="여행 환전 손익 계산기 — 어디서 환전하면 가장 이득인지 계산합니다"
+        intro={[
+          "같은 100만 원을 환전해도 어디서 환전하느냐에 따라 실제 받는 외화가 달라집니다. 트래블카드(수수료 0%), 은행 앱 환전(우대 90%), 은행 창구 환전(우대 50%), 공항 환전(우대 없음), 현지 ATM 인출을 같은 조건으로 비교하면 실수령 외화 차이가 발생합니다. 이 계산기는 5가지 환전 방법의 실수령 외화와 수수료를 한 번에 비교해 어떤 방법이 가장 유리한지 알려줍니다.",
+          "환전 수수료는 '환율 스프레드'와 '우대율'로 결정됩니다. 은행이 붙이는 기본 스프레드는 약 1.75%이며, 우대율 90%를 적용하면 실효 수수료는 0.175%로 줄어듭니다. 트래블카드처럼 스프레드가 0%에 가까운 경우 수수료 없이 기준 환율에 가까운 금액을 받을 수 있습니다. '환율 우대 90%'는 환율이 90% 싸진다는 뜻이 아니라, 스프레드의 90%를 깎아준다는 의미입니다.",
+          "현지 ATM 인출은 카드사 수수료가 면제되어도 현지 ATM 운영사가 별도 수수료를 부과할 수 있습니다. 태국은 약 220밧(약 8,360원), 일본 우체국 ATM은 110엔 수준의 수수료가 붙을 수 있습니다. 이 계산기의 현지 ATM 항목에는 약 3,000원의 ATM 사업자 수수료가 기본 포함되어 있으며, 상세 설정에서 실제 국가 조건에 맞게 조정할 수 있습니다.",
+          "여행 인원과 기간을 입력하면 하루 예산과 1인당 환전 금액을 자동으로 계산합니다. 2인 여행에서 방법 차이로 절약하는 금액은 2배가 되고, 환전 금액이 클수록 수수료 차이가 커집니다. 300만 원을 환전한다면 트래블카드와 공항 환전의 차이는 약 5만 원 이상이 될 수 있습니다.",
+          "이 계산기는 기준 환율을 직접 입력하는 방식입니다. 네이버 검색에서 '엔화 환율'을 검색하면 나오는 매매기준율을 입력하면 됩니다. 실시간 환율이 반영되지 않으므로 실제 환전 당일 환율을 입력해 계산하는 것이 가장 정확합니다. 모든 수수료는 추정값이며 실제 환전 전 해당 기관 최신 조건을 확인하세요.",
+        ]}
+        criteria={[
+          "실효 스프레드율 = 기본 스프레드(1.75%) × (1 - 우대율/100).",
+          "실수령 외화 = (환전금액 - 고정수수료) ÷ 적용환율 × 단위.",
+          "총 수수료 = 환전금액 - 실수령외화/단위 × 기준환율 (원화 환산).",
+          "현지 ATM 수수료는 카드사 면제와 별도로 ATM 운영사가 추가 부과할 수 있습니다.",
+        ]}
+        faq={TEC_FAQ}
+        related={TEC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="/scripts/travel-exchange-calculator.js" defer></script>
+</BaseLayout>

@@ -1,0 +1,300 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  CHANGE_POINTS,
+  ELIGIBILITY_CHECKS,
+  FHBB_FAQ,
+  FHBB_META,
+  FHBB_RELATED_LINKS,
+  FHBB_SOURCE_LINKS,
+  FIRST_HOME_BENEFITS,
+  FIRST_HOME_CASES,
+  HOUSEHOLD_COMPARISON,
+  LOAN_COMPARISON,
+  MISTAKE_TOP5,
+} from "../../data/firstHomeBuyerBenefits2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const formatWon = (value: number) => `${Math.round(value / 100000000).toLocaleString("ko-KR")}억 원`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: FHBB_META.seoTitle,
+      description: FHBB_META.description,
+      inLanguage: "ko-KR",
+      dateModified: FHBB_META.updatedAt,
+      mainEntityOfPage: `https://bigyocalc.com/reports/${FHBB_META.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: FHBB_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={FHBB_META.seoTitle} description={FHBB_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page fhbb-page">
+    <CalculatorHero
+      eyebrow="생애최초 주택 구입 리포트"
+      title={FHBB_META.title}
+      description="취득세 감면·정책대출·청약 특별공급·출산가구 특례를 가구 형태와 주택가격 기준으로 한 번에 정리합니다."
+      badges={["부동산", "정책대출", "2026", "공식 확인"]}
+    />
+
+    <InfoNotice
+      title="신청 전 공식 확인 안내"
+      lines={[
+        "이 리포트는 2026년 5월 11일 공개 자료 기준 정보성 콘텐츠입니다. 실제 혜택 여부는 신청 시점의 법령, 공고, 금융기관 심사 결과에 따라 달라질 수 있습니다.",
+        "취득세 감면은 지방세특례제한법과 행정안전부 운영기준, 관할 지자체 해석을 함께 확인해야 합니다.",
+        "대출 한도와 금리는 소득, 자산, LTV, DTI, 담보평가, 선순위채권, 은행별 심사에 따라 달라집니다.",
+        "표와 사례는 예시 시뮬레이션이며 세무·법률·금융 자문이나 대출 승인 보장이 아닙니다.",
+      ]}
+    />
+
+    <DesignTrustPanel
+      title="생애최초 혜택 비교 기준"
+      updatedAt={FHBB_META.updatedAt}
+      notes={[
+        "공식 기관이 공개한 한도와 자격 요건을 우선 반영했습니다.",
+        "취득세 감면 가능성은 개인별 세대 이력과 취득 시점에 따라 달라져 확정값으로 표시하지 않습니다.",
+        "신생아 특례 구입자금 한도는 마이홈 공식 안내 기준 최대 4억 원으로 반영했습니다.",
+      ]}
+    />
+
+    <section class="content-section fhbb-hero-board">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 결론</p>
+        <h2>생애최초 혜택은 한 가지가 아니라 세금·대출·청약 조건을 묶어서 봐야 합니다</h2>
+        <p>취득세 감면만 확인하면 대출 한도를 놓치고, 대출 한도만 보면 세대원 주택 이력이나 실거주 요건을 놓치기 쉽습니다. 계약 전에는 아래 네 축을 동시에 확인하세요.</p>
+      </div>
+      <div class="fhbb-benefit-grid">
+        {FIRST_HOME_BENEFITS.map((item) => (
+          <article class="fhbb-benefit-card">
+            <span>{item.id === "acquisition-tax" ? "세금" : item.id === "newborn-special" ? "출산가구" : "정책대출"}</span>
+            <h3>{item.title}</h3>
+            <p>{item.summary}</p>
+            <strong>{item.maxBenefit}</strong>
+            <ul>
+              {item.conditions.slice(0, 3).map((condition) => <li>{condition}</li>)}
+            </ul>
+            {item.relatedCalculatorUrl && <a href={withBase(item.relatedCalculatorUrl)}>관련 계산기 보기</a>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section fhbb-checklist">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자격 체크</p>
+        <h2>생애최초 판단은 본인만 보는 것이 아닙니다</h2>
+        <p>계약금 납입 전에 주택 보유 이력, 실거주, 대출 심사를 함께 확인해야 합니다.</p>
+      </div>
+      <ul>
+        {ELIGIBILITY_CHECKS.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">취득세 감면</p>
+        <h2>감면 여부는 취득 시점과 세대 이력으로 최종 판단합니다</h2>
+        <p>생애최초 취득세 감면은 행정안전부 운영기준과 관할 지자체 판단이 중요합니다. 감면 대상이라고 예상해도 계약 전 관할 구청 세무과에 확인해야 합니다.</p>
+      </div>
+      <div class="fhbb-tax-grid">
+        <article>
+          <strong>확인 순서</strong>
+          <ol>
+            <li>본인·배우자·세대원 주택 소유 이력 확인</li>
+            <li>취득가액과 주택 유형 확인</li>
+            <li>전입·실거주 요건 확인</li>
+            <li>관할 지자체 감면 신청 서류 확인</li>
+          </ol>
+        </article>
+        <article>
+          <strong>계산으로 이어보기</strong>
+          <p>현재 사이트의 기존 계산기 중에서는 주택 구입 자금 계산기로 초기 필요 현금과 대출 가능 범위를 먼저 확인할 수 있습니다.</p>
+          <a href={withBase("/tools/home-purchase-fund/")}>내 집 마련 자금 계산기 열기</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">정책대출 비교</p>
+        <h2>디딤돌·보금자리론·신생아 특례는 한도보다 자격 기준이 먼저입니다</h2>
+      </div>
+      <div class="fhbb-table-wrap">
+        <table class="fhbb-loan-table">
+          <thead>
+            <tr>
+              <th>상품</th><th>주요 대상</th><th>주택가격 기준</th><th>소득 기준</th><th>생애최초·특례 한도</th><th>LTV</th><th>DTI</th><th>만기</th><th>적합한 경우</th>
+            </tr>
+          </thead>
+          <tbody>
+            {LOAN_COMPARISON.map((row) => (
+              <tr>
+                <td><strong>{row.name}</strong></td>
+                <td>{row.target}</td>
+                <td>{row.housePriceLimit}</td>
+                <td>{row.incomeLimit}</td>
+                <td>{row.firstHomeLoanLimit}</td>
+                <td>{row.ltv}</td>
+                <td>{row.dti}</td>
+                <td>{row.tenure}</td>
+                <td>{row.bestFor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section fhbb-newborn-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출산가구 특례</p>
+        <h2>2년 내 출산 가구라면 신생아 특례를 먼저 비교합니다</h2>
+        <p>신생아 특례는 소득 기준이 일반 정책대출보다 넓지만 자산, 주택가격, 대환 조건, LTV 제한을 함께 봐야 합니다.</p>
+      </div>
+      <div class="fhbb-highlight-row">
+        <article><span>소득</span><strong>1.3억 원 이하</strong><p>맞벌이는 2억 원 이하 기준 확인</p></article>
+        <article><span>한도</span><strong>최대 4억 원</strong><p>마이홈 공식 안내 기준</p></article>
+        <article><span>LTV·DTI</span><strong>70%·60%</strong><p>생애최초 LTV 80% 가능, 수도권·규제지역 70%</p></article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">청약 특별공급</p>
+        <h2>생애최초 청약은 공고문별 소득 구간과 공급 물량을 따로 봅니다</h2>
+        <p>생애최초 특별공급은 주택 소유 이력, 소득세 납부, 혼인·자녀 요건, 소득 구간별 배분이 함께 적용됩니다. 공공분양과 민영주택, 지역별 공고마다 세부 기준이 다르므로 청약홈과 입주자모집공고문을 기준으로 확인하세요.</p>
+      </div>
+      <div class="fhbb-supply-grid">
+        <article><strong>우선공급</strong><p>소득이 낮은 구간에서 먼저 배정되는 구조를 확인합니다.</p></article>
+        <article><strong>일반공급</strong><p>우선공급 이후 남은 물량과 소득 기준을 공고문에서 확인합니다.</p></article>
+        <article><strong>추첨공급</strong><p>소득 초과 가구도 일부 추첨 기회가 있는지 확인합니다.</p></article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">예시 시뮬레이션</p>
+        <h2>3억·5억·7억 매수 사례로 보는 필요 현금</h2>
+        <p>아래 사례는 계약금, 취득세, 중개보수, 이사비, 대출 가능액을 단순화한 예시입니다. 공식 산출 결과가 아닙니다.</p>
+      </div>
+      <div class="fhbb-case-grid">
+        {FIRST_HOME_CASES.map((item) => (
+          <article class="fhbb-case-card">
+            <span>예시 시뮬레이션</span>
+            <h3>{item.label}</h3>
+            <dl>
+              <div><dt>주택가격</dt><dd>{formatWon(item.housePrice)}</dd></div>
+              <div><dt>소득</dt><dd>{formatWon(item.annualIncome)} 이하</dd></div>
+              <div><dt>대출 활용</dt><dd>{item.loanLimit}</dd></div>
+              <div><dt>취득세</dt><dd>{item.acquisitionTaxEstimate}</dd></div>
+              <div><dt>필요 현금</dt><dd>{item.cashNeeded}</dd></div>
+            </dl>
+            <ul>{item.tips.map((tip) => <li>{tip}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">가구 유형별 비교</p>
+        <h2>1인·신혼·맞벌이·출산가구는 유리한 축이 다릅니다</h2>
+      </div>
+      <div class="fhbb-table-wrap">
+        <table class="fhbb-household-table">
+          <thead><tr><th>가구 유형</th><th>취득세</th><th>대출</th><th>청약</th></tr></thead>
+          <tbody>
+            {HOUSEHOLD_COMPARISON.map((row) => (
+              <tr><td><strong>{row.type}</strong></td><td>{row.tax}</td><td>{row.loan}</td><td>{row.subscription}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2025 vs 2026</p>
+        <h2>변경 포인트는 공식 기준일과 계약일을 같이 봐야 합니다</h2>
+      </div>
+      <div class="fhbb-change-grid">
+        {CHANGE_POINTS.map((item) => <article><strong>{item.title}</strong><p>{item.body}</p></article>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">실수 예방</p>
+        <h2>혜택을 놓치는 실수 TOP 5</h2>
+      </div>
+      <div class="fhbb-mistake-grid">
+        {MISTAKE_TOP5.map((item, index) => <article><span>{index + 1}</span><p>{item}</p></article>)}
+      </div>
+    </section>
+
+    <section class="content-section fhbb-cta-section">
+      <div>
+        <p class="section-header__eyebrow">다음 계산</p>
+        <h2>정책 조건을 확인했다면 내 자금 계획으로 이어서 계산하세요</h2>
+        <p>취득세 감면은 지자체 확인이 필요하므로, 먼저 초기 필요 현금과 대출 가능 범위를 보수적으로 잡는 흐름을 권장합니다.</p>
+      </div>
+      <div class="fhbb-cta-links">
+        {FHBB_RELATED_LINKS.slice(0, 3).map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공식 출처</p>
+        <h2>최종 신청 전 확인할 공식 페이지</h2>
+      </div>
+      <div class="fhbb-source-grid">
+        {FHBB_SOURCE_LINKS.map((item) => <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>)}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="생애최초 주택 구입 혜택을 볼 때 중요한 기준"
+      intro={[
+        "생애최초로 주택을 구입하면 취득세 감면, 정책 대출 한도 우대, 청약 특별공급, 출산가구 특례까지 여러 혜택을 검토할 수 있습니다. 하지만 소득, 주택가격, 지역, 가구 형태에 따라 실제 받을 수 있는 혜택은 크게 달라집니다.",
+        "생애최초 취득세 감면은 행정안전부 운영기준과 관할 지자체 판단을 함께 봐야 합니다. 실제 감면 여부는 취득가액, 세대원 주택 보유 이력, 취득 시점, 실거주 요건 등을 종합적으로 판단합니다.",
+        "정책 대출 측면에서는 디딤돌대출, 보금자리론, 신생아 특례 디딤돌대출이 핵심입니다. 소득 기준을 충족한다면 디딤돌이 유리할 수 있지만, 한도가 부족하면 보금자리론이나 신생아 특례를 비교해야 합니다.",
+        "2년 내 출산 가구라면 신생아 특례 디딤돌대출을 반드시 검토해야 합니다. 2026년 5월 11일 확인 기준 마이홈 공식 안내는 구입자금 최대 4억 원 한도를 안내하고 있습니다.",
+        "청약 생애최초 특별공급은 세대 구성원 전원의 주택 소유 이력, 소득세 납부 요건, 소득 구간별 배분 구조를 함께 봐야 합니다. 실제 청약 전에는 청약홈과 개별 입주자모집공고문을 확인하세요.",
+      ]}
+      inputPoints={[
+        "취득세 감면, 대출 한도, 청약 특별공급을 한 화면에서 비교합니다.",
+        "1인 가구, 신혼부부, 맞벌이, 출산가구별로 먼저 확인할 조건을 구분합니다.",
+        "예시 시뮬레이션으로 주택가격별 필요 현금 범위를 보수적으로 봅니다.",
+      ]}
+      criteria={[
+        "정책 한도와 자격은 2026년 5월 11일 공식 공개 자료 확인 기준입니다.",
+        "취득세 감면은 확정 계산값이 아니라 관할 지자체 확인이 필요한 항목으로 표시했습니다.",
+        "사례별 필요 현금은 예시 시뮬레이션이며 금융기관 승인 금액이나 실제 세액을 보장하지 않습니다.",
+      ]}
+      faq={FHBB_FAQ}
+      related={FHBB_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

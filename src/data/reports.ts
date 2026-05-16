@@ -267,6 +267,13 @@ export const reports: ReportMeta[] = [
     badges: ["서울", "주담대", "대환대출", "2026"],
   },
   {
+    slug: "first-home-buyer-benefits-2026",
+    title: "2026 생애최초 주택 구입 혜택 완전 분석",
+    description: "취득세 감면, 디딤돌대출, 보금자리론, 신생아 특례대출, 청약 특별공급을 가구 유형별로 비교합니다.",
+    order: 31.4,
+    badges: ["생애최초", "부동산", "정책대출", "2026"],
+  },
+  {
     slug: "ai-job-salary-impact-2026",
     title: "직군별 AI 도입 전후 연봉 효과 비교 2026",
     description: "개발자, 마케터, 디자이너, PM, 회계, 번역 등 10개 직군 기준으로 AI 도입 이후 연봉 격차와 채용시장 변화를 비교하는 인터랙티브 리포트입니다.",
@@ -286,6 +293,13 @@ export const reports: ReportMeta[] = [
     description: "국내주식·미국주식 수수료, 환전 우대, 신용공여 이자율, ISA 연계, 자동투자·소수점 투자, 신규 계좌 혜택까지 2026년 기준으로 비교합니다.",
     order: 33.2,
     badges: ["주식", "증권사", "수수료", "2026"],
+  },
+  {
+    slug: "coin-exchange-comparison-2026",
+    title: "코인 거래소 비교 2026",
+    description: "업비트·빗썸·코인원·코빗·바이낸스 등 국내외 주요 거래소 수수료, 원화 입출금, 보안 기능을 비교합니다.",
+    order: 33.3,
+    badges: ["코인", "거래소", "수수료", "2026"],
   },
   {
     slug: "postnatal-care-comparison-2026",
@@ -342,5 +356,26 @@ export const reports: ReportMeta[] = [
     description: "Copilot, Cursor, Claude Code, Windsurf, Tabnine을 가격·기능·보안 기준으로 비교합니다.",
     order: 41,
     badges: ["AI", "개발자", "2026"],
+  },
+  {
+    slug: "ai-side-income-comparison-2026",
+    title: "AI 부업 수입 비교 2026",
+    description: "개발 외주, 프리랜서, 강의, 콘텐츠 등 AI 활용 부업 7개 업종의 월 수입 범위, AI 생산성 향상률, 시간당 효율을 비교합니다.",
+    order: 42,
+    badges: ["AI", "부업", "2026"],
+  },
+  {
+    slug: "pension-age-comparison-2026",
+    title: "연금 수령 나이별 실수령액 완전 비교 2026",
+    description: "국민연금 조기수령, 정상수령, 연기수령 시 월수령액과 생애 누적 수령액을 비교합니다. 손익분기점, 건강수명별 전략, 2026 제도 변경까지 정리했습니다.",
+    order: 43,
+    badges: ["국민연금", "연금수령", "노후", "2026"],
+  },
+  {
+    slug: "travel-card-vs-exchange-2026",
+    title: "트래블카드 vs 환전 vs ATM 실비용 비교 2026",
+    description: "트래블월렛, 트래블로그, 토스, 신한 SOL트래블 등 주요 트래블카드와 은행 환전, 공항 환전, 현지 ATM의 실제 비용을 비교합니다.",
+    order: 44,
+    badges: ["트래블카드", "환전", "여행", "2026"],
   },
 ];

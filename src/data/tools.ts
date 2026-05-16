@@ -253,6 +253,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "real-estate-acquisition-tax",
+    title: "부동산 취득세 계산기",
+    description: "매매·증여·상속 시 취득세, 지방교육세, 농어촌특별세, 총 납부세액을 주택 수·조정지역 여부에 따라 자동 계산합니다.",
+    order: 14.6,
+    eyebrow: "부동산 세금 계산",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규", "세금", "2026"],
+    previewStats: [
+      { label: "지원 유형", value: "매매·증여·상속" },
+      { label: "결과", value: "총 납부세액" },
+    ],
+  },
+  {
     slug: "formula-cost",
     title: "아기 분유 값 계산기",
     description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 매일 앱솔루트·남양 임페리얼·일동후디스 등 브랜드별 총비용을 비교하는 페이지",
@@ -449,6 +463,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "coin-dca-calculator",
+    title: "코인 DCA 계산기",
+    description: "비트코인·이더리움 등 가상자산을 매달 정액으로 적립했을 때 평균 매수가, 보유 수량, 현재 평가액, 수익률을 계산합니다.",
+    order: 24.9,
+    eyebrow: "가상자산 적립식 투자",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규", "시뮬레이션"],
+    previewStats: [
+      { label: "핵심 결과", value: "평균 매수가" },
+      { label: "시나리오", value: "±30%" },
+    ],
+  },
+  {
     slug: "coin-tax-calculator",
     title: "코인 세금 계산기",
     description: "비트코인·이더리움 등 가상자산 매도 시 양도차익, 250만원 공제, 예상 세금, 세후 순이익을 바로 계산하는 페이지",
@@ -530,6 +558,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "핵심 결과", value: "월 순이익" },
       { label: "판정", value: "ROI 등급" },
+    ],
+  },
+  {
+    slug: "ai-side-income-calculator",
+    title: "AI 부업 수입 계산기",
+    description: "부업 시간, 예상 시급, AI 생산성 향상률, 도구 구독료를 입력하면 AI 사용 전후 수입과 도구비 차감 후 순수입을 계산합니다.",
+    order: 26.26,
+    eyebrow: "AI 부업 계산",
+    category: "ai",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "업종 프리셋", value: "6종" },
+      { label: "핵심 결과", value: "순수입" },
     ],
   },
   {
@@ -712,6 +754,34 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "핵심 결과", value: "남은 검사비" },
       { label: "지원금", value: "바우처 차감" },
+    ],
+  },
+  {
+    slug: "pension-optimal-age",
+    title: "연금 수령 최적 나이 계산기",
+    description: "국민연금, 개인연금, 퇴직연금을 언제부터 받는 게 유리한지 계산합니다. 수령 나이별 누적액과 손익분기 나이를 비교합니다.",
+    order: 24,
+    eyebrow: "연금 수령 최적 나이",
+    category: "retire",
+    iframeReady: true,
+    badges: ["연금", "노후", "국민연금"],
+    previewStats: [
+      { label: "추천 수령 나이", value: "건강수명 기준" },
+      { label: "손익분기 나이", value: "조기 vs 정상" },
+    ],
+  },
+  {
+    slug: "travel-exchange-calculator",
+    title: "여행 환전 손익 계산기",
+    description: "트래블카드, 은행 앱, 은행 창구, 공항, 현지 ATM 5가지 환전 방법의 실수령 외화와 수수료를 한 번에 비교합니다.",
+    order: 25,
+    eyebrow: "여행 환전 비교",
+    category: "travel",
+    iframeReady: true,
+    badges: ["환전", "트래블카드", "여행"],
+    previewStats: [
+      { label: "추천 방법", value: "트래블카드" },
+      { label: "5가지 방법 비교", value: "수수료 한눈에" },
     ],
   },
 ];

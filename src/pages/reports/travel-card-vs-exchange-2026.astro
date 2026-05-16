@@ -1,0 +1,285 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  CHECKLIST,
+  COUNTRY_MATRIX,
+  PAYMENT_METHODS,
+  SIMULATION_ROWS,
+  SUMMARY_CARDS,
+  TCVE_FAQ,
+  TCVE_META,
+  TCVE_RELATED_LINKS,
+  TRAVEL_CARDS,
+  TRENDS_2026,
+} from "../../data/travelCardVsExchange2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const cardLevelLabel: Record<string, string> = {
+  very_high: "매우 높음", high: "높음", medium: "중간", low: "낮음",
+};
+const cashLevelLabel: Record<string, string> = {
+  high: "높음", medium: "중간", low: "낮음",
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TCVE_META.title,
+  description: TCVE_META.description,
+  inLanguage: "ko-KR",
+  dateModified: "2026-05-11",
+  mainEntityOfPage: `https://bigyocalc.com/reports/${TCVE_META.slug}/`,
+};
+---
+
+<BaseLayout
+  title="트래블카드 비교 2026 — 환전·공항환전·ATM 인출 실비용 총정리"
+  description={TCVE_META.description}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main class="container page-shell report-page op-page tcve-page">
+
+    <CalculatorHero
+      eyebrow="트래블카드 vs 환전 리포트"
+      title={TCVE_META.title}
+      description="트래블월렛·트래블로그·토스·신한 등 주요 트래블카드와 은행 환전, 공항 환전, 현지 ATM의 실제 비용을 비교합니다."
+    />
+
+    <InfoNotice
+      title="수수료·기능 안내"
+      lines={[
+        "수수료와 기능은 자주 변경됩니다. 실제 발급·환전 전 공식 페이지에서 최신 조건을 반드시 재확인하세요.",
+        "이 리포트는 특정 카드사를 권유하지 않으며, 상황별 비교 참고 자료입니다.",
+        `업데이트 기준: ${TCVE_META.updatedAt}`,
+      ]}
+    />
+    <DesignTrustPanel
+      title="트래블카드 실비용 비교 기준"
+      updatedAt="2026-05-11"
+      notes={[
+        "카드별 수수료는 각 카드사 공식 안내 기준이며 프로모션 종료 등으로 변경될 수 있습니다.",
+        "현지 ATM 수수료는 카드사 면제와 별도로 현지 운영사가 추가 부과할 수 있습니다.",
+      ]}
+    />
+
+    {/* ─── 1. 핵심 요약 카드 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>2026 해외 결제·환전 실비용 핵심 포인트</h2>
+      </div>
+      <div class="tcve-summary-grid">
+        {SUMMARY_CARDS.map((card) => (
+          <article class="tcve-summary-card">
+            <p class="tcve-summary-card__title">{card.title}</p>
+            <p class="tcve-summary-card__body">{card.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {/* ─── 2. 트래블카드 5종 비교표 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">카드 비교</p>
+        <h2>주요 트래블카드 4종 수수료·기능 비교</h2>
+      </div>
+      <p class="tcve-note">아래 정보는 2026년 5월 기준이며, 프로모션 종료 등으로 변경될 수 있습니다. 발급 전 공식 페이지 확인 필수.</p>
+      <div class="op-table-wrap">
+        <table class="tcve-card-table">
+          <thead>
+            <tr>
+              <th>카드</th>
+              <th>구조</th>
+              <th>지원 통화</th>
+              <th>환전 수수료</th>
+              <th>해외 결제</th>
+              <th>ATM 수수료</th>
+              <th>추천 대상</th>
+              <th>공식</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TRAVEL_CARDS.map((card) => (
+              <tr>
+                <td><strong>{card.name}</strong><br /><span class="tcve-provider">{card.provider}</span></td>
+                <td>{card.structure}</td>
+                <td>{card.supportedCurrencies}</td>
+                <td>{card.exchangeFeeSummary}</td>
+                <td>{card.overseasPaymentFeeSummary}</td>
+                <td>{card.atmFeeSummary}</td>
+                <td>{card.bestFor}</td>
+                <td><a href={card.sourceUrl} target="_blank" rel="noopener noreferrer">확인</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* ─── 3. 환전 방법별 장단점 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">방법별 비교</p>
+        <h2>5가지 환전 방법 장단점과 최적 상황</h2>
+      </div>
+      <div class="tcve-method-grid">
+        {PAYMENT_METHODS.map((m, i) => (
+          <article class={`tcve-method-card${i === 0 ? " tcve-method-card--best" : ""}`}>
+            <p class="tcve-method-card__label">{m.label}</p>
+            <p class="tcve-method-card__fee">{m.exchangeFeeNote}</p>
+            <div class="tcve-method-card__pros-cons">
+              <div>
+                <p class="tcve-tag tcve-tag--pro">장점</p>
+                <ul>{m.pros.map((p) => <li>{p}</li>)}</ul>
+              </div>
+              <div>
+                <p class="tcve-tag tcve-tag--con">주의</p>
+                <ul>{m.cons.map((c) => <li>{c}</li>)}</ul>
+              </div>
+            </div>
+            <p class="tcve-method-card__best">추천: {m.bestCase}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {/* ─── 4. 100만 원 환전 시뮬레이션 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">100만 원 환전 시뮬레이션</p>
+        <h2>일본 여행 100만 원 환전 시 방법별 실수령 엔화 비교</h2>
+      </div>
+      <p class="tcve-note">기준: 100엔=900원, 스프레드 1.75% 가정. 실제 수수료는 카드사·환전 시점에 따라 달라집니다.</p>
+      <div class="op-table-wrap">
+        <table class="tcve-sim-table">
+          <thead>
+            <tr><th>환전 방법</th><th>가정 조건</th><th>실수령 엔화</th><th>손해액 (원화)</th></tr>
+          </thead>
+          <tbody>
+            {SIMULATION_ROWS.map((row) => (
+              <tr class={row.isBest ? "is-best" : row.isWorst ? "is-worst" : ""}>
+                <td>{row.method}{row.isBest ? " ✓" : ""}</td>
+                <td>{row.assumption}</td>
+                <td><strong>{row.foreignAmount.toLocaleString("ko-KR")}엔</strong></td>
+                <td class="tcve-diff">
+                  {row.costDiff === 0 ? "기준" : `약 ${row.costDiff.toLocaleString("ko-KR")}원${row.method === "현지 ATM" ? "+α" : ""} 손해`}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="tcve-cta-inline">
+        <p>내 환전 금액·통화에 맞게 직접 계산해보세요.</p>
+        <a href={withBase("/tools/travel-exchange-calculator/")}>여행 환전 손익 계산기로 계산하기</a>
+      </div>
+    </section>
+
+    {/* ─── 5. 국가별 환전 매트릭스 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">국가별 전략</p>
+        <h2>여행 국가별 최적 환전·결제 조합</h2>
+      </div>
+      <div class="op-table-wrap">
+        <table class="tcve-matrix-table">
+          <thead>
+            <tr><th>여행지</th><th>통화</th><th>카드 결제 환경</th><th>현금 필요도</th><th>추천 조합</th><th>핵심 팁</th></tr>
+          </thead>
+          <tbody>
+            {COUNTRY_MATRIX.map((row) => (
+              <tr>
+                <td><strong>{row.country}</strong></td>
+                <td>{row.currency}</td>
+                <td>{cardLevelLabel[row.cardUsageLevel]}</td>
+                <td>{cashLevelLabel[row.cashNeedLevel]}</td>
+                <td>{row.recommendedCombination}</td>
+                <td class="tcve-matrix-tip">{row.tips}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* ─── 6. DCC 함정 경고 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">DCC 원화결제 주의</p>
+        <h2>해외에서 "원화로 결제하시겠습니까?" — 대부분 거절이 유리합니다</h2>
+      </div>
+      <div class="tcve-dcc-warning">
+        <strong>DCC(Dynamic Currency Conversion)란?</strong>
+        <p>해외 가맹점에서 결제 시 현지 통화가 아닌 원화(KRW)로 결제하도록 제안하는 방식입니다. 금액이 바로 보여 편리해 보이지만, 가맹점 또는 결제 대행사가 적용한 환율과 DCC 수수료가 포함되어 실제 청구액이 현지 통화 결제보다 많아질 수 있습니다.</p>
+        <p style="margin-top:10px;"><strong>대응 방법:</strong> 결제 화면에 KRW와 현지 통화 선택지가 나오면 반드시 <strong>현지 통화</strong>를 선택하세요. 일부 카드사는 앱에서 DCC 자동 거절 기능을 설정할 수 있습니다.</p>
+      </div>
+    </section>
+
+    {/* ─── 7. 출국 전 체크리스트 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출국 전 체크리스트</p>
+        <h2>여행 환전·결제 준비 출국 전 확인 사항</h2>
+      </div>
+      <div class="tcve-checklist">
+        <ul>
+          {CHECKLIST.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    {/* ─── 8. 2026 트렌드 ─── */}
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2025→2026 트렌드</p>
+        <h2>2026년 트래블카드·해외 결제 주요 변화</h2>
+      </div>
+      <div class="op-card-grid">
+        {TRENDS_2026.map((t) => (
+          <article><strong>{t.trend}</strong><p>{t.desc}</p></article>
+        ))}
+      </div>
+    </section>
+
+    {/* ─── 9. CTA ─── */}
+    <section class="op-section tcve-cta-section">
+      <div>
+        <p class="section-header__eyebrow">내 여행 조건으로 직접 계산</p>
+        <h2>국가·금액·환율을 입력해 가장 유리한 환전 방법을 찾아보세요</h2>
+        <p>트래블카드·은행·공항·ATM 5가지 방법의 실수령 외화와 수수료를 한 번에 비교합니다.</p>
+      </div>
+      <a href={withBase("/tools/travel-exchange-calculator/")}>여행 환전 손익 계산기</a>
+    </section>
+
+    <SeoContent
+      introTitle="트래블카드 vs 환전 vs ATM — 2026 해외 결제 실비용 완전 비교"
+      intro={[
+        "해외여행 전 '어디서 환전하는 게 가장 이득일까?'는 매번 고민되는 질문입니다. 2026년 기준으로 트래블월렛, 트래블로그, 토스뱅크 외화체크카드, 신한 SOL트래블 등 주요 트래블카드들이 경쟁하면서 주요 통화 환전 수수료 무료가 일반화됐습니다. 하지만 수수료 무료가 항상 '가장 유리한 선택'은 아닙니다. ATM 사업자 수수료, 충전 한도, 지원 통화 조건, 현지 결제 환경까지 함께 봐야 합니다.",
+        "환전 방법을 수수료로만 비교하면 트래블카드 > 은행 앱 > 은행 창구 > 공항 순입니다. 100만 원을 일본 엔화로 바꿀 때, 트래블카드(수수료 0%)와 공항 환전(우대 0%, 스프레드 1.75%)의 실수령 엔화 차이는 약 17,000원 이상입니다. 여행 인원이 2명이면 35,000원, 3명이면 50,000원 이상 차이가 납니다. 큰 금액일수록 환전 방법 선택이 중요합니다.",
+        "하지만 트래블카드가 항상 최선은 아닙니다. 태국·베트남·필리핀처럼 현금 사용 비중이 높은 동남아 국가에서는 현지 ATM 인출이 불가피한데, ATM 사업자가 별도로 부과하는 수수료(태국 기준 약 220밧)는 트래블카드의 카드사 수수료 면제와 별개로 발생합니다. 'ATM 수수료 무료'는 카드사 수수료 면제를 의미하며, 현지 ATM 운영사 수수료는 별도임을 반드시 확인해야 합니다.",
+        "DCC(Dynamic Currency Conversion) 함정도 주의해야 합니다. 해외 가맹점에서 'KRW로 결제하시겠습니까?' 화면이 나오면 대부분 현지 통화 선택이 유리합니다. 원화결제는 금액이 바로 보여 편하지만, 가맹점 또는 결제사가 적용한 환율과 DCC 수수료 때문에 실제 청구액이 현지 통화 결제보다 많아질 수 있습니다.",
+        "이 리포트의 수수료와 기능 정보는 2026년 5월 기준이며, 카드사 정책 변경에 따라 달라질 수 있습니다. 실제 카드 발급이나 환전 전에는 각 카드사 공식 홈페이지에서 최신 수수료와 약관을 반드시 재확인하세요. 100만 원 기준 환전 방법별 실수령액은 여행 환전 손익 계산기로 본인 조건에 맞게 직접 계산해 보세요.",
+      ]}
+      criteria={[
+        "카드별 수수료는 2026년 5월 기준이며, 프로모션 종료 등으로 변경될 수 있습니다.",
+        "현지 ATM 수수료는 카드사 면제와 별도로 현지 운영사가 추가 부과할 수 있습니다.",
+        "100만 원 시뮬레이션은 100엔=900원, 스프레드 1.75% 가정의 단순 추정값입니다.",
+        "특정 카드사를 권유하지 않으며, 상황별 비교 참고 자료입니다.",
+      ]}
+      faq={TCVE_FAQ}
+      related={TCVE_RELATED_LINKS}
+    />
+
+  </main>
+</BaseLayout>
