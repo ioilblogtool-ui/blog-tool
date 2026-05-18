@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import {
   HOUSING_SNAPSHOTS,
@@ -86,46 +87,57 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
       eyebrow="결혼/웨딩 리포트"
       title="2026 신혼부부 결혼·신혼집 비용 완전 분석"
       description="예식장 비용이 아닌, 결혼 이후 신혼집·혼수·정착에 실제로 드는 돈을 14개 섹션으로 분석합니다"
+      badges={["신혼", "주거비", "혼수", "2026"]}
     />
 
     <InfoNotice
+      title="데이터 기준 안내"
       lines={[
         "이 리포트는 공개 통계와 편집 추정 데이터를 종합한 참고 자료입니다.",
         "2026.05 기준이며, 대출 조건·지원금은 변경될 수 있습니다. 추정 데이터는 '추정' 배지로 구분합니다.",
+        "대출 승인, 세금 감면, 지원금 수령 여부는 개인 조건과 신청 시점의 공식 기준에 따라 달라집니다.",
       ]}
     />
 
-    <!-- Editor's Brief -->
-    <section class="content-section nwc-lead-section">
-      <div class="nwc-lead">
-        <p class="nwc-lead__eyebrow">Editor's Brief</p>
-        <h2>결혼식은 끝났는데 진짜 돈 드는 건 지금부터입니다</h2>
-        <p class="nwc-lead__body">
-          예식장·드레스·신혼여행 이후, 신혼부부가 실제로 부딪히는 현실은 신혼집 보증금·혼수·초기 생활비입니다.
-          수도권 평균 전세 보증금은 2.8억 원, 혼수·가전은 평균 2천만 원 수준으로 추정됩니다.
-          이 리포트는 정착 비용 전체를 14개 섹션으로 정리합니다.
+    <DesignTrustPanel
+      title="신혼 비용 비교 기준"
+      updatedAt="2026년 5월"
+      notes={[
+        "공식 제도와 공개 시세는 공식·참고 배지로 구분하고, 편집 추정값은 추정 배지로 표시했습니다.",
+        "예식 비용보다 신혼집 보증금, 혼수, 대출 이자, 초기 고정비를 우선 확인하도록 구성했습니다.",
+        "전세·매매 판단은 개인의 자산, 소득, 거주 기간에 따라 달라져 계산기에서 다시 확인할 수 있게 연결했습니다.",
+      ]}
+    />
+
+    <section class="content-section nwc-summary-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 결론</p>
+        <h2>신혼 비용은 결혼식 예산보다 신혼집과 정착 비용에서 크게 갈립니다</h2>
+        <p>
+          예식장·드레스·신혼여행 이후 실제 가계에 남는 부담은 보증금, 혼수, 대출 이자, 월 고정비입니다.
+          먼저 큰 비용 축을 잡고, 지원금과 특례대출로 줄일 수 있는 금액을 따로 확인하는 흐름이 좋습니다.
         </p>
-        <div class="nwc-lead__chips">
-          <span>14개 섹션</span>
-          <span>신혼집·혼수·지원금 총망라</span>
-          <span>2016 vs 2026 비교</span>
-        </div>
       </div>
-      <div class="nwc-lead__stats">
+      <div class="nwc-summary-grid">
         <article>
           <span>수도권 전세 보증금</span>
-          <strong>약 2.8억</strong>
-          <p>추정 · KB부동산 편집</p>
+          <strong>약 2.8억 원</strong>
+          <p>국토부·KB부동산 공개 자료 기반 편집 추정</p>
         </article>
         <article>
           <span>혼수·가전 평균</span>
-          <strong>약 2천만원</strong>
-          <p>추정 · 가전양판점 편집</p>
+          <strong>약 2,000만 원</strong>
+          <p>알뜰형과 프리미엄 구성의 차이가 큼</p>
         </article>
         <article>
-          <span>정부 지원금 총액</span>
-          <strong>1,600만원+</strong>
-          <p>첫 2년 기준 · 공식 기준</p>
+          <span>지원금 확인 포인트</span>
+          <strong>1,600만 원+</strong>
+          <p>결혼·출산·주거 지원을 모두 받을 때의 참고 범위</p>
+        </article>
+        <article>
+          <span>먼저 계산할 것</span>
+          <strong>전세 vs 매매</strong>
+          <p>거주 기간과 금리 조건에 따라 손익분기점이 달라짐</p>
         </article>
       </div>
     </section>
@@ -133,7 +145,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ① 신혼집 현황 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 01 — 신혼집 현황</p>
+        <p class="section-header__eyebrow">신혼집 현황</p>
         <h2>2026 신혼부부 평균 신혼집 현황</h2>
         <p>신혼부부 주거 유형과 지역별 평균 전세 보증금 <span class="nwc-badge nwc-badge--est">추정</span></p>
       </div>
@@ -193,7 +205,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ② 지역별 전세 보증금 -->
     <section class="content-section nwc-chart-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 02 — 지역 격차</p>
+        <p class="section-header__eyebrow">지역 격차</p>
         <h2>수도권 vs 지방 신혼집 비용 격차</h2>
         <p>지역별 평균 전세 보증금 비교 <span class="nwc-badge nwc-badge--est">추정</span></p>
       </div>
@@ -206,7 +218,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ③ 혼수·가전·가구 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 03 — 혼수</p>
+        <p class="section-header__eyebrow">혼수 비용</p>
         <h2>혼수·가전·가구 항목별 평균 지출</h2>
         <p>알뜰형·표준형·프리미엄 3단계 구성 예시 <span class="nwc-badge nwc-badge--est">추정</span></p>
       </div>
@@ -249,7 +261,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ④ 특례대출 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 04 — 특례대출</p>
+        <p class="section-header__eyebrow">특례대출</p>
         <h2>신혼부부 특례대출·청약 혜택 총정리</h2>
         <p>2026년 기준 신혼부부 주택금융 지원 <span class="nwc-badge nwc-badge--official">공식</span></p>
       </div>
@@ -272,14 +284,14 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
       </div>
 
       <div class="nwc-notice">
-        ⚠️ 대출 조건은 자주 변경됩니다. 신청 전 반드시 <a href="https://www.hf.go.kr" target="_blank" rel="noopener noreferrer">주택금융공사 공식 사이트</a>에서 최신 조건을 확인하세요.
+        대출 조건은 자주 변경됩니다. 신청 전 반드시 <a href="https://www.hf.go.kr" target="_blank" rel="noopener noreferrer">주택금융공사 공식 사이트</a>에서 최신 조건을 확인하세요.
       </div>
     </section>
 
     <!-- ⑤ 가계부 시뮬레이션 -->
     <section class="content-section nwc-chart-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 05 — 가계부</p>
+        <p class="section-header__eyebrow">가계부 시뮬레이션</p>
         <h2>맞벌이 vs 외벌이 신혼 가계부 시뮬레이션</h2>
         <p>소득 시나리오별 월 수입·지출·저축 구조 <span class="nwc-badge nwc-badge--est">추정</span></p>
       </div>
@@ -316,7 +328,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ⑥ 전세 보증금 마련 기간 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 06 — 목돈 마련</p>
+        <p class="section-header__eyebrow">목돈 마련</p>
         <h2>전세 보증금 마련 기간 시뮬레이션</h2>
         <p>월 저축액별 목표 보증금 달성 기간 <span class="nwc-badge nwc-badge--est">시뮬레이션</span></p>
       </div>
@@ -355,7 +367,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ⑦ 전세가율 비교 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 07 — 전세가율</p>
+        <p class="section-header__eyebrow">전세가율</p>
         <h2>신혼집 지역별 전세가율 비교</h2>
         <p>전세가율이 높을수록 보증 사고 리스크 상승 <span class="nwc-badge nwc-badge--est">추정</span></p>
       </div>
@@ -382,14 +394,14 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
         </table>
       </div>
       <div class="nwc-notice">
-        ⚠️ 전세가율 70% 이상 지역은 역전세 리스크가 높습니다. 전세보증보험(HUG) 가입을 강력히 권장합니다.
+        전세가율 70% 이상 지역은 역전세 리스크가 높습니다. 전세보증보험(HUG) 가입을 강력히 권장합니다.
       </div>
     </section>
 
     <!-- ⑧ 신혼 1년차 고정비 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 08 — 1년차 지출</p>
+        <p class="section-header__eyebrow">1년차 지출</p>
         <h2>신혼 1년차 예상 밖 지출 3가지</h2>
       </div>
       <div class="nwc-surprise-grid">
@@ -410,7 +422,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ⑨ 자산 수준별 전략 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 09 — 전략</p>
+        <p class="section-header__eyebrow">자산 수준별 전략</p>
         <h2>결혼 전 자산 수준별 신혼집 전략</h2>
       </div>
       <div class="nwc-strategy-grid">
@@ -429,7 +441,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ⑩ 중고 활용 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 10 — 절약</p>
+        <p class="section-header__eyebrow">혼수 절약</p>
         <h2>혼수 절약 팁 · 중고 활용 비율</h2>
       </div>
       <div class="table-wrap">
@@ -457,7 +469,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ⑪ 정부 지원금 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 11 — 지원금</p>
+        <p class="section-header__eyebrow">정부 지원금</p>
         <h2>신혼부부 정부 지원금·바우처 총정리</h2>
         <p>2026년 기준 주요 지원 항목 <span class="nwc-badge nwc-badge--official">공식</span></p>
       </div>
@@ -486,7 +498,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ⑫ 2016 vs 2026 -->
     <section class="content-section nwc-chart-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 12 — 10년 변화</p>
+        <p class="section-header__eyebrow">10년 변화</p>
         <h2>10년 전(2016) vs 2026 신혼 비용 변화</h2>
         <p>주거·혼수·소득 상승률 비교 <span class="nwc-badge nwc-badge--est">추정</span></p>
       </div>
@@ -516,7 +528,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ⑬ 전문가 코멘트 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 13 — 전문가 관점</p>
+        <p class="section-header__eyebrow">전문가 관점</p>
         <h2>재무설계 조언</h2>
         <p>일반적인 관점의 참고 의견입니다 <span class="nwc-badge nwc-badge--ref">참고</span></p>
       </div>
@@ -534,7 +546,7 @@ const withGrowth = COST_COMPARISON_2016_2026.map(c => ({
     <!-- ⑭ CTA + 관련 링크 -->
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">Section 14 — 다음 단계</p>
+        <p class="section-header__eyebrow">다음 단계</p>
         <h2>바로 계산해보기 + 관련 콘텐츠</h2>
       </div>
 
