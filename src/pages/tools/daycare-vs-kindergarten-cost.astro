@@ -1,0 +1,269 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  AGE_SUPPORT_TABLE,
+  CARE_REGION_OPTIONS,
+  DAYCARE_COST_PROFILES,
+  DAYCARE_KINDERGARTEN_FAQ,
+  DAYCARE_KINDERGARTEN_RELATED_TOOLS,
+  DAYCARE_TYPE_OPTIONS,
+  HOUSEHOLD_OPTIONS,
+  KINDERGARTEN_COST_PROFILES,
+  KINDERGARTEN_TYPE_OPTIONS,
+} from "../../data/daycareVsKindergartenCost";
+
+const config = {
+  AGE_SUPPORT_TABLE,
+  CARE_REGION_OPTIONS,
+  DAYCARE_COST_PROFILES,
+  DAYCARE_TYPE_OPTIONS,
+  HOUSEHOLD_OPTIONS,
+  KINDERGARTEN_COST_PROFILES,
+  KINDERGARTEN_TYPE_OPTIONS,
+};
+
+const faqSchema = DAYCARE_KINDERGARTEN_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title="어린이집 vs 유치원 비용 계산기 | 월 실부담금·연간 차이 비교"
+  description="아이 나이, 지역, 맞벌이 여부, 기관 유형을 입력하면 어린이집과 유치원 월 실부담금과 연간 비용 차이를 비교합니다. 보육료·유아학비 지원금 차감 후 숨은 비용까지 확인하세요."
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "어린이집 vs 유치원 비용 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description:
+      "아이 나이, 거주 지역, 맞벌이 여부, 기관 유형을 입력해 어린이집과 유치원 실부담금을 비교하는 계산기.",
+    url: `${siteBase}/tools/daycare-vs-kindergarten-cost/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="daycare-vs-kindergarten-cost" pageClass="dk-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="육아 비용 비교"
+        title="어린이집 vs 유치원 비용 계산기"
+        description="보육료·유아학비 지원금을 차감한 뒤 특별활동비, 방과후 과정비, 급식비, 차량비까지 포함해 월 실부담금을 비교합니다."
+      />
+      <InfoNotice
+        lines={[
+          "2026년 공개 지원 단가를 기준으로 하되, 특별활동비·급식비·차량비 등은 지역별 추정값입니다.",
+          "만 0~2세는 어린이집 중심, 만 3~5세는 어린이집·유치원 비교 중심으로 해석하는 것이 적절합니다.",
+          "실제 고지 금액은 기관별 수납한도액, 지자체 추가 지원, 원 운영 방식에 따라 달라질 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="dkResetBtn" copyId="dkCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="dk-input-panel">
+        <div class="dk-field">
+          <label class="dk-field__label" for="dkAge">아이 나이</label>
+          <select class="dk-select" id="dkAge">
+            {AGE_SUPPORT_TABLE.map((age) => (
+              <option value={age.age}>{age.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="dk-field">
+          <label class="dk-field__label" for="dkRegion">거주 지역</label>
+          <select class="dk-select" id="dkRegion">
+            {CARE_REGION_OPTIONS.map((region) => (
+              <option value={region.id}>{region.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="dk-field">
+          <span class="dk-field__label">가구 유형</span>
+          <div class="dk-segment" id="dkHousehold">
+            {HOUSEHOLD_OPTIONS.map((item, index) => (
+              <button class:list={["dk-segment__btn", index === 0 && "is-active"]} data-value={item.id} type="button">
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="dk-field">
+          <label class="dk-field__label" for="dkDaycareType">어린이집 유형</label>
+          <select class="dk-select" id="dkDaycareType">
+            {DAYCARE_TYPE_OPTIONS.map((type) => (
+              <option value={type.id}>{type.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="dk-field">
+          <label class="dk-field__label" for="dkKindergartenType">유치원 유형</label>
+          <select class="dk-select" id="dkKindergartenType">
+            {KINDERGARTEN_TYPE_OPTIONS.map((type) => (
+              <option value={type.id}>{type.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <details class="dk-advanced">
+          <summary>숨은 비용 직접 조정</summary>
+          <div class="dk-advanced__grid">
+            <label class="dk-mini-field">
+              <span>어린이집 특별활동비</span>
+              <input id="dkDaycareSpecial" type="number" min="0" step="10000" />
+            </label>
+            <label class="dk-mini-field">
+              <span>어린이집 급식·간식·차량</span>
+              <input id="dkDaycareHidden" type="number" min="0" step="10000" />
+            </label>
+            <label class="dk-mini-field">
+              <span>유치원 방과후·특성화</span>
+              <input id="dkKindergartenAfterschool" type="number" min="0" step="10000" />
+            </label>
+            <label class="dk-mini-field">
+              <span>유치원 급식·차량·교재</span>
+              <input id="dkKindergartenHidden" type="number" min="0" step="10000" />
+            </label>
+          </div>
+          <p class="dk-advanced__note">비워두면 지역·기관 유형별 추정 기본값을 사용합니다.</p>
+        </details>
+      </section>
+    </Fragment>
+
+    <section class="dk-result-panel">
+      <div class="dk-kpi-grid">
+        <article class="dk-kpi-card dk-kpi-card--accent">
+          <span class="dk-kpi-card__label">더 저렴한 선택</span>
+          <strong class="dk-kpi-card__value" id="dkWinner">-</strong>
+          <span class="dk-kpi-card__context" id="dkWinnerContext">입력값 기준</span>
+        </article>
+        <article class="dk-kpi-card">
+          <span class="dk-kpi-card__label">어린이집 월 실부담</span>
+          <strong class="dk-kpi-card__value" id="dkDaycareMonthly">-</strong>
+          <span class="dk-kpi-card__context" id="dkDaycareContext">지원금 차감 후</span>
+        </article>
+        <article class="dk-kpi-card">
+          <span class="dk-kpi-card__label">유치원 월 실부담</span>
+          <strong class="dk-kpi-card__value" id="dkKindergartenMonthly">-</strong>
+          <span class="dk-kpi-card__context" id="dkKindergartenContext">지원금 차감 후</span>
+        </article>
+        <article class="dk-kpi-card">
+          <span class="dk-kpi-card__label">연간 차이</span>
+          <strong class="dk-kpi-card__value" id="dkAnnualDiff">-</strong>
+          <span class="dk-kpi-card__context" id="dkAnnualDiffContext">12개월 기준</span>
+        </article>
+      </div>
+
+      <div class="dk-compare-bars" aria-live="polite">
+        <div class="dk-bar-row">
+          <div class="dk-bar-row__head">
+            <strong>어린이집</strong>
+            <span id="dkDaycareBarValue">-</span>
+          </div>
+          <div class="dk-bar-track"><div class="dk-bar dk-bar--daycare" id="dkDaycareBar"></div></div>
+        </div>
+        <div class="dk-bar-row">
+          <div class="dk-bar-row__head">
+            <strong>유치원</strong>
+            <span id="dkKindergartenBarValue">-</span>
+          </div>
+          <div class="dk-bar-track"><div class="dk-bar dk-bar--kindergarten" id="dkKindergartenBar"></div></div>
+        </div>
+      </div>
+
+      <section class="dk-breakdown">
+        <div class="dk-section-head">
+          <h2>월 비용 구성</h2>
+          <p>공식 지원금과 추정 숨은 비용을 분리해서 보여줍니다.</p>
+        </div>
+        <div class="dk-breakdown-grid">
+          <article class="dk-breakdown-card">
+            <h3>어린이집</h3>
+            <dl id="dkDaycareBreakdown"></dl>
+          </article>
+          <article class="dk-breakdown-card">
+            <h3>유치원</h3>
+            <dl id="dkKindergartenBreakdown"></dl>
+          </article>
+        </div>
+      </section>
+
+      <section class="dk-insight">
+        <div class="dk-section-head">
+          <h2>해석 메모</h2>
+        </div>
+        <div class="dk-insight__body" id="dkInsight">
+          입력값을 바꾸면 비용 차이와 주의할 점이 자동으로 바뀝니다.
+        </div>
+      </section>
+
+      <section class="dk-support-note">
+        <h2>2026년 지원 기준 요약</h2>
+        <div class="dk-support-grid">
+          <article>
+            <strong>어린이집 보육료</strong>
+            <p>만 0세 58.4만 원, 만 1세 51.5만 원, 만 2세 42.6만 원, 만 3~5세 28만 원을 기본 지원 단가로 반영했습니다.</p>
+          </article>
+          <article>
+            <strong>유치원 유아학비</strong>
+            <p>만 3~5세 기준 국공립 교육과정 10만 원, 사립 교육과정 28만 원, 방과후 과정 국공립 5만 원·사립 7만 원을 반영했습니다.</p>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="어린이집 유치원 비용 비교 가이드"
+        intro={[
+          "어린이집과 유치원은 모두 정부 지원이 있지만, 부모가 실제로 내는 돈은 기관 유형과 숨은 비용에서 크게 갈립니다. 기본 보육료나 유아학비는 지원금으로 줄어들어도 특별활동비, 방과후 과정비, 급식비, 차량비, 교재비가 남기 때문입니다.",
+          "이 계산기는 아이 나이, 지역, 맞벌이 여부, 기관 유형을 넣으면 어린이집과 유치원의 월 실부담금과 연간 차이를 한 화면에서 비교합니다. 만 3~5세처럼 두 선택지가 모두 현실적인 구간에서는 비용 차이와 운영 시간까지 함께 보는 출발점으로 활용할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "만 0~2세는 어린이집 중심, 만 3~5세는 어린이집과 유치원 비교 중심으로 결과를 해석하세요.",
+          "맞벌이 가정은 연장보육과 방과후 과정 이용 가능성이 높아 숨은 비용 기본값이 조금 더 보수적으로 반영됩니다.",
+          "고지서가 이미 있다면 숨은 비용 직접 조정 영역에 실제 금액을 넣어 우리 집 기준으로 다시 계산할 수 있습니다.",
+        ]}
+        criteria={[
+          "어린이집 보육료 지원 단가는 2026년 보육사업안내 개정사항 공개 단가를 기준으로 반영했습니다.",
+          "유치원 유아학비는 2026년 3~5세 누리과정 지원 기준인 교육과정비와 방과후 과정비를 분리해 반영했습니다.",
+          "특별활동비, 방과후 과정비 초과분, 급식비, 차량비, 교재비는 지역과 기관별 편차가 커 추정값으로 표시합니다.",
+          "만 6~7세 결과는 초등 취학·취학유예 여부에 따라 달라지므로 공식 지원금 계산이 아닌 참고 시뮬레이션으로 봐야 합니다.",
+        ]}
+        faq={DAYCARE_KINDERGARTEN_FAQ}
+        related={DAYCARE_KINDERGARTEN_RELATED_TOOLS.map((tool) => ({
+          href: `/tools/${tool.slug}/`,
+          label: tool.label,
+        }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="dkConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/daycare-vs-kindergarten-cost.js")}></script>
+</BaseLayout>

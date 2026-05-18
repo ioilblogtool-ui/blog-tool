@@ -1,0 +1,350 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  YETC_FAQ,
+  YETC_META,
+  YETC_PRESETS,
+  YETC_RELATED_LINKS,
+} from "../../data/yearEndTaxRefundCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = { presets: YETC_PRESETS };
+
+const faqSchema = YETC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={YETC_META.seoTitle}
+  description={YETC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: YETC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: YETC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/year-end-tax-refund-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="year-end-tax-refund-calculator"
+    pageClass="op-page yetc-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="연말정산 절세"
+        title="연말정산 환급액 계산기"
+        description="공제 항목을 입력하면 예상 환급액을 자동 계산합니다. 연금저축·IRP 한도 미달 시 추가 납입 효과도 확인하세요."
+        badges={["연말정산", "환급액", "절세", "참고용"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          YETC_META.dataNote,
+          "기납부세액을 입력하지 않으면 총급여 기준으로 자동 추정합니다. 정확한 값은 원천징수영수증에서 확인하세요.",
+          "연금저축+IRP 납입액이 900만 원을 초과하면 자동으로 한도에 맞게 조정됩니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="yetcResetBtn" copyId="yetcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <!-- 프리셋 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 예시</p>
+            <h2 class="panel__title">프리셋으로 바로 계산</h2>
+          </div>
+          <p class="panel-heading__summary">상황에 맞는 예시를 선택 후 수치를 조정하세요.</p>
+        </div>
+        <div class="yetc-preset-grid">
+          {YETC_PRESETS.map((p) => (
+            <button type="button" class="yetc-preset-btn" data-preset={p.id}>
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <!-- 탭 입력 -->
+      <article class="panel">
+        <div class="yetc-tab-nav">
+          <button class="yetc-tab-btn is-active" data-tab="basic">기본 정보</button>
+          <button class="yetc-tab-btn" data-tab="income">소득공제</button>
+          <button class="yetc-tab-btn" data-tab="tax">세액공제</button>
+        </div>
+
+        <!-- 탭 1: 기본 정보 -->
+        <div class="yetc-tab-panel" data-panel="basic">
+          <div class="form-grid">
+            <label class="field">
+              <span>총급여 (원)</span>
+              <input data-yetc="grossSalary" type="text" inputmode="numeric" class="input-number" value="50,000,000" />
+              <small>비과세(식대·교통비 등) 제외한 과세 대상 연간 급여</small>
+            </label>
+            <label class="field">
+              <span>기납부세액 (원) <span id="yetcAutoBadge" class="yetc-auto-badge">자동 추정</span></span>
+              <input data-yetc="withheldTax" type="text" inputmode="numeric" class="input-number" value="0" placeholder="비워두면 자동 추정" />
+              <small>비워두면 총급여 기준 자동 추정 (원천징수영수증으로 확인 권장)</small>
+            </label>
+            <label class="field">
+              <span>부양가족 수 (본인 포함)</span>
+              <input data-yetc="dependents" type="number" min="1" max="10" class="input-number" value="1" />
+              <small>본인 포함, 연간 소득 100만 원 이하 가족</small>
+            </label>
+            <label class="field">
+              <span>경로우대 부양가족 (70세 이상)</span>
+              <input data-yetc="elderlyDependents" type="number" min="0" max="10" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>장애인 부양가족</span>
+              <input data-yetc="disabledDependents" type="number" min="0" max="10" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>자녀 수 (8~20세)</span>
+              <input data-yetc="children" type="number" min="0" max="10" class="input-number" value="0" />
+              <small>자녀세액공제 대상 (1명 15만, 2명 35만, 3명↑ 추가 30만)</small>
+            </label>
+          </div>
+        </div>
+
+        <!-- 탭 2: 소득공제 -->
+        <div class="yetc-tab-panel" data-panel="income" hidden>
+          <div class="form-grid">
+            <label class="field">
+              <span>신용카드 사용액 (원)</span>
+              <input data-yetc="creditCardAmount" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>총급여 25% 초과분의 15% 공제</small>
+            </label>
+            <label class="field">
+              <span>체크카드·현금영수증 (원)</span>
+              <input data-yetc="debitCashAmount" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>총급여 25% 초과분의 30% 공제 (신용카드보다 유리)</small>
+            </label>
+            <label class="field">
+              <span>주택청약저축 납입액 (원)</span>
+              <input data-yetc="housingSubscription" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>납입액 × 40% 소득공제 (한도 300만 원)</small>
+            </label>
+            <label class="field">
+              <span>전세대출 원리금 상환액 (원)</span>
+              <input data-yetc="mortgageRepayment" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>상환액 × 40% 소득공제 (한도 400만 원)</small>
+            </label>
+          </div>
+        </div>
+
+        <!-- 탭 3: 세액공제 -->
+        <div class="yetc-tab-panel" data-panel="tax" hidden>
+          <div class="form-grid">
+            <label class="field">
+              <span>의료비 지출 (원)</span>
+              <input data-yetc="medicalExpense" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>총급여 3% 초과분의 15% 세액공제</small>
+            </label>
+            <label class="field">
+              <span>교육비 지출 (원)</span>
+              <input data-yetc="educationExpense" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>한도 내 × 15% 세액공제</small>
+            </label>
+            <label class="field">
+              <span>연금저축 납입액 (원)</span>
+              <input data-yetc="pensionSaving" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>한도 600만 원. 5,500만↓ 16.5% / 5,500만↑ 13.2%</small>
+            </label>
+            <label class="field">
+              <span>IRP 납입액 (원)</span>
+              <input data-yetc="irpAmount" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>연금저축 포함 합산 900만 원 한도</small>
+            </label>
+            <label class="field">
+              <span>보장성 보험료 (원)</span>
+              <input data-yetc="insurance" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>한도 100만 원 × 12% 세액공제</small>
+            </label>
+            <label class="field">
+              <span>기부금 (원)</span>
+              <input data-yetc="donation" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>× 15% 세액공제</small>
+            </label>
+            <label class="field">
+              <span>월세 연간 합계 (원)</span>
+              <input data-yetc="monthlyRent" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>총급여 7천만 원 이하, 무주택 세대주 조건</small>
+            </label>
+            <div class="field">
+              <span class="field__label">무주택 세대주 여부</span>
+              <label class="checkbox-option">
+                <input type="checkbox" data-yetc="isRenter" checked />
+                <span>무주택 세대주 (월세 공제 요건)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- 결과 -->
+    <section class="bvf-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">계산 결과</p>
+        <h2>예상 환급액</h2>
+        <p class="cdca-section__sub">공제 항목을 변경하면 즉시 재계산됩니다.</p>
+      </div>
+
+      <div class="yetc-kpi-grid">
+        <article class="yetc-kpi-card yetc-kpi-card--refund" id="yetcKpiMain">
+          <p id="yetcRefundLabel">예상 환급액</p>
+          <strong id="yetcRefund">-</strong>
+          <span>기납부세액 - 결정세액</span>
+        </article>
+        <article class="yetc-kpi-card">
+          <p>결정세액</p>
+          <strong id="yetcFinalTax">-</strong>
+          <span>산출세액 - 세액공제</span>
+        </article>
+        <article class="yetc-kpi-card">
+          <p>세액공제 합계</p>
+          <strong id="yetcTotalCredit">-</strong>
+          <span>연금·의료비·보험 등</span>
+        </article>
+        <article class="yetc-kpi-card yetc-kpi-card--warn">
+          <p>추가 공제 여력</p>
+          <strong id="yetcPensionRemaining">-</strong>
+          <span>연금저축·IRP 추가 납입 시</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- 공제 기여도 테이블 -->
+    <section class="bvf-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">공제 기여도</p>
+        <h2>항목별 절세 기여액</h2>
+      </div>
+      <article class="panel">
+        <div class="table-wrap">
+          <table class="yetc-deduction-table">
+            <thead>
+              <tr>
+                <th>공제 항목</th>
+                <th style="text-align:right">공제액</th>
+                <th style="text-align:right">절세 기여액</th>
+              </tr>
+            </thead>
+            <tbody id="yetcTableBody">
+              <tr><td colspan="3">계산 중입니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- 연금저축 시나리오 카드 -->
+    <div class="yetc-scenario-card" id="yetcScenarioCard">
+      <div class="yetc-scenario-title">💡 연금저축·IRP 한도를 더 채우면</div>
+      <div class="yetc-scenario-rows" id="yetcScenarioRows"></div>
+      <a href={withBase("/tools/irp-pension-calculator/")} class="yetc-scenario-cta">
+        IRP·연금저축 계산기 →
+      </a>
+    </div>
+
+    <!-- 제휴 배너 -->
+    <div class="yetc-affiliate-banner" id="yetcAffiliateBanner">
+      <span class="yetc-banner-text">연금저축 납입 한도가 남아있습니다. 12월 31일까지 납입해야 공제됩니다.</span>
+      <a href="#" class="yetc-banner-btn" rel="noopener sponsored">연금저축 가입하기 →</a>
+    </div>
+
+    <!-- 결과 메시지 -->
+    <section class="bvf-section">
+      <p class="yetc-message" id="yetcMessage">공제 항목을 입력하면 결과가 여기에 표시됩니다.</p>
+    </section>
+
+    <!-- 파이 차트 -->
+    <section class="bvf-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">세액공제 구성</p>
+        <h2>항목별 비율</h2>
+      </div>
+      <article class="panel">
+        <div class="yetc-chart-wrap">
+          <canvas id="yetcChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <!-- 절세 전략 리포트 CTA -->
+    <div class="yetc-report-cta">
+      <span class="yetc-report-text">더 많이 환급받는 절세 전략이 궁금하다면?</span>
+      <a href={withBase("/reports/2026-year-end-tax-saving-guide/")} class="yetc-report-btn">
+        절세 전략 완전 정복 →
+      </a>
+    </div>
+
+    <!-- 관련 계산기 -->
+    <section class="content-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">함께 확인하세요</p>
+        <h2>관련 계산기</h2>
+      </div>
+      <div class="yetc-next-grid">
+        {YETC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="yetc-next-link">{link.label} →</a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="연말정산 환급액 계산기 — 공제 항목을 입력하고 예상 환급액을 바로 확인하세요"
+        intro={[
+          "연말정산에서 환급받는 금액은 기납부세액(1년간 원천징수로 납부한 세금)과 결정세액(실제 내야 할 세금)의 차이입니다. 공제 항목을 많이 챙길수록 결정세액이 낮아져 환급액이 늘어납니다. 이 계산기는 주요 공제 항목을 입력하면 예상 환급액을 자동으로 계산해 드립니다.",
+          "세액공제는 산출세액에서 직접 차감되므로 소득 구간과 무관하게 동일한 금액을 돌려받습니다. 연금저축 900만 원을 납입하면 연봉 5,500만 원 이하 기준 최대 약 148만 원을, 5,500만 원 초과 기준 최대 약 119만 원을 환급받을 수 있습니다. 연말 납입 기한(12월 31일)까지 한도를 채우는 것이 가장 직접적인 절세 방법입니다.",
+          "신용카드 공제는 총급여의 25%를 초과한 사용분부터 적용됩니다. 초과분 중 신용카드는 15%, 체크카드·현금영수증은 30%를 공제받습니다. 총급여 25%까지는 혜택이 많은 신용카드로 쓰고, 그 이상은 체크카드나 현금영수증으로 결제하는 것이 절세 효과가 큽니다.",
+          "월세 납부자라면 월세 세액공제도 놓치지 마세요. 총급여 7,000만 원 이하 무주택 세대주라면 연간 월세 합계의 15~17%를 세액공제받을 수 있습니다. 임대차계약서와 월세 납입 증빙을 꼭 보관해 두세요.",
+          "이 계산기는 주요 공제 항목만 반영한 참고용 추정값입니다. 실제 환급액은 국세청 홈택스 연말정산 간소화 서비스에서 확인하고, 누락된 항목은 경정청구(5년 이내)를 통해 소급 신청할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "총급여·부양가족 수를 입력하면 인적공제와 세율이 자동 반영됩니다.",
+          "프리셋으로 미혼·기혼·고소득·월세 4가지 대표 시나리오를 빠르게 비교할 수 있습니다.",
+          "연금저축·IRP 한도가 남아있으면 추가 납입 시 예상 환급액 증가분을 바로 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "2026년 소득세법 기준 소득세율 8구간 및 주요 공제 항목 적용. 참고용 추정값입니다.",
+          "기납부세액 미입력 시 산출세액 기준 자동 추정 (실제와 다를 수 있음).",
+          "연금저축+IRP 합산 900만 원 초과 입력 시 자동으로 한도 내 조정.",
+          "신용카드 공제는 총급여 25% 초과분부터 적용, 한도는 총급여 구간별 상이.",
+        ]}
+        faq={YETC_FAQ}
+        related={YETC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script id="yetcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/year-end-tax-refund-calculator.js")}></script>
+</BaseLayout>

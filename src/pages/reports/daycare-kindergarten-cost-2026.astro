@@ -1,0 +1,386 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  DKC_CHECKLIST,
+  DKC_DAYCARE_ROWS,
+  DKC_DUAL_INCOME_ROWS,
+  DKC_FAQ,
+  DKC_HERO_STATS,
+  DKC_KINDERGARTEN_ROWS,
+  DKC_META,
+  DKC_OPTION_COST_ROWS,
+  DKC_REGION_ROWS,
+  DKC_SELECTION_CRITERIA,
+  DKC_SOURCE_LINKS,
+  DKC_STRATEGY_ROWS,
+  DKC_SUPPORT_ROWS,
+  DKC_WAITING_ROWS,
+} from "../../data/daycareKindergartenCost2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const faqItems = DKC_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+---
+
+<BaseLayout
+  title={DKC_META.seoTitle}
+  description={DKC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: DKC_META.seoTitle,
+    description: DKC_META.seoDescription,
+    dateModified: "2026-05-16",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/reports/daycare-kindergarten-cost-2026/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  }}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page dkc-page">
+    <CalculatorHero
+      eyebrow="육아 비용 리포트"
+      title="2026 어린이집·유치원 실비용 완전 비교"
+      description="보육료와 유아학비 지원금만으로는 보이지 않는 특별활동비, 방과후, 차량비, 대기 변수까지 한 번에 비교합니다."
+      badges={["어린이집", "유치원", "실비용", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        DKC_META.dataNote,
+        "유치원·어린이집 실제 고지 금액은 기관, 지자체 수납한도, 방과후·특별활동 선택 여부에 따라 달라집니다.",
+        "영어유치원은 일반적으로 유치원이 아닌 유아 대상 영어학원 성격이므로 유아학비 지원과 분리해 해석해야 합니다.",
+      ]}
+    />
+
+    <section class="content-section">
+      <div class="dkc-kpi-grid">
+        {DKC_HERO_STATS.map((stat) => (
+          <article class="dkc-kpi-card">
+            <span class={`dkc-badge dkc-badge--${stat.badge}`}>{stat.badge}</span>
+            <p class="dkc-kpi-card__label">{stat.label}</p>
+            <strong class="dkc-kpi-card__value">{stat.value}</strong>
+            <small>{stat.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dkc-conclusion">
+      <p class="section-header__eyebrow">30초 결론</p>
+      <h2>“어디가 더 싸요?”의 답은 나이와 운영 시간에 따라 갈립니다</h2>
+      <div class="dkc-conclusion-grid">
+        <article>
+          <strong>0~2세</strong>
+          <p>어린이집 보육료 지원이 크기 때문에 기본 선택지는 어린이집입니다. 비용 차이는 특별활동비, 차량비, 연장보육에서 생깁니다.</p>
+        </article>
+        <article>
+          <strong>3~5세</strong>
+          <p>국공립 유치원이 잡히면 실비용은 낮아질 수 있습니다. 다만 맞벌이는 방과후 정원, 방학 돌봄, 하원 시간이 비용만큼 중요합니다.</p>
+        </article>
+        <article>
+          <strong>사립·영어 옵션</strong>
+          <p>사립유치원은 지원금 이후 선택경비가 핵심이고, 영어유치원은 유아학비 지원 대상이 아닌 사교육비로 따로 봐야 합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">어린이집 비용</p>
+        <h2>국공립·민간·가정·직장 어린이집 월 실부담금</h2>
+        <p>공식 보육료 지원은 기본료를 줄여주지만, 3~5세 차액과 필요경비가 실제 고지서를 좌우합니다.</p>
+      </div>
+      <div class="dkc-table-wrap">
+        <table class="dkc-table">
+          <thead>
+            <tr>
+              <th>유형</th>
+              <th>연령</th>
+              <th>기본 비용</th>
+              <th>지원금</th>
+              <th>숨은 비용</th>
+              <th>월 실부담</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DKC_DAYCARE_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.type}</strong><span class={`dkc-badge dkc-badge--${row.badge}`}>{row.badge}</span></td>
+                <td>{row.age}</td>
+                <td>{row.gross}</td>
+                <td>{row.support}</td>
+                <td>{row.hidden}</td>
+                <td><strong>{row.net}</strong></td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">유치원 비용</p>
+        <h2>국공립·사립 유치원과 영어유치원 비용 차이</h2>
+        <p>유아학비 지원금은 공식 단가가 있지만, 실제 차이는 방과후·특성화·교재·급식·차량비에서 발생합니다.</p>
+      </div>
+      <div class="dkc-table-wrap">
+        <table class="dkc-table">
+          <thead>
+            <tr>
+              <th>유형</th>
+              <th>연령</th>
+              <th>기본 비용</th>
+              <th>지원금</th>
+              <th>숨은 비용</th>
+              <th>월 실부담</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DKC_KINDERGARTEN_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.type}</strong><span class={`dkc-badge dkc-badge--${row.badge}`}>{row.badge}</span></td>
+                <td>{row.age}</td>
+                <td>{row.gross}</td>
+                <td>{row.support}</td>
+                <td>{row.hidden}</td>
+                <td><strong>{row.net}</strong></td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">맞벌이 시뮬레이션</p>
+        <h2>맞벌이·외벌이별로 비용 판단이 달라집니다</h2>
+      </div>
+      <div class="dkc-card-grid dkc-card-grid--three">
+        {DKC_DUAL_INCOME_ROWS.map((row) => (
+          <article class="dkc-info-card">
+            <strong>{row.family}</strong>
+            <p class="dkc-info-card__highlight">{row.likelyChoice}</p>
+            <p>{row.monthlyFlow}</p>
+            <small>{row.risk}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">지역별 격차</p>
+        <h2>서울·경기·지방 비용 격차는 필요경비와 대기에서 벌어집니다</h2>
+      </div>
+      <div class="dkc-table-wrap">
+        <table class="dkc-table dkc-table--region">
+          <thead>
+            <tr>
+              <th>지역</th>
+              <th>어린이집 필요경비</th>
+              <th>유치원 추가비</th>
+              <th>대기 압력</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DKC_REGION_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.region}</strong></td>
+                <td>{row.daycareExtra}</td>
+                <td>{row.kindergartenExtra}</td>
+                <td>{row.pressure}</td>
+                <td>{row.read}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">대기·당첨 변수</p>
+        <h2>국공립은 싸지만 “잡히는지”가 별도 문제입니다</h2>
+        <p>당첨 확률은 공식 확률이 아니라 대기순번·모집 예정 인원·배점 조건을 바탕으로 추정해야 합니다.</p>
+      </div>
+      <div class="dkc-card-grid dkc-card-grid--three">
+        {DKC_WAITING_ROWS.map((row) => (
+          <article class="dkc-info-card">
+            <strong>{row.item}</strong>
+            <p>{row.signal}</p>
+            <p class="dkc-info-card__highlight">{row.probability}</p>
+            <small>{row.action}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">전환 전략</p>
+        <h2>어린이집에서 유치원으로 언제 옮기는 게 유리할까?</h2>
+      </div>
+      <div class="dkc-table-wrap">
+        <table class="dkc-table">
+          <thead>
+            <tr>
+              <th>시점</th>
+              <th>추천 방향</th>
+              <th>비용 효과</th>
+              <th>주의점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DKC_STRATEGY_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.timing}</strong></td>
+                <td>{row.recommended}</td>
+                <td>{row.costImpact}</td>
+                <td>{row.caution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">옵션 비용</p>
+        <h2>특별활동·방과후·영어유치원 옵션 추가 비용</h2>
+      </div>
+      <div class="dkc-option-grid">
+        {DKC_OPTION_COST_ROWS.map((row) => (
+          <article class="dkc-option-card">
+            <span class={`dkc-badge dkc-badge--${row.badge}`}>{row.badge}</span>
+            <strong>{row.option}</strong>
+            <p class="dkc-option-card__monthly">{row.monthly}</p>
+            <p>{row.yearly}</p>
+            <small>{row.read}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">정부 지원금</p>
+        <h2>아이행복카드·보육료·유아학비 지원 조건 총정리</h2>
+      </div>
+      <div class="dkc-table-wrap">
+        <table class="dkc-table">
+          <thead>
+            <tr>
+              <th>지원</th>
+              <th>대상</th>
+              <th>금액</th>
+              <th>조건</th>
+              <th>신청</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DKC_SUPPORT_ROWS.map((row) => (
+              <tr>
+                <td><strong>{row.name}</strong></td>
+                <td>{row.target}</td>
+                <td>{row.amount}</td>
+                <td>{row.condition}</td>
+                <td>{row.channel}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">전문가식 선택 기준</p>
+        <h2>기관 선택은 비용표보다 운영 조건표가 먼저입니다</h2>
+      </div>
+      <ul class="dkc-check-list">
+        {DKC_SELECTION_CRITERIA.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="content-section dkc-cta-section">
+      <div class="dkc-cta-card">
+        <div>
+          <p class="section-header__eyebrow">계산기 CTA</p>
+          <h2>우리 집 조건으로 다시 계산해보세요</h2>
+          <p>나이, 지역, 맞벌이 여부, 기관 유형을 넣으면 월 실부담금과 연간 차이를 바로 볼 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/daycare-vs-kindergarten-cost/")}>어린이집 vs 유치원 비용 계산기</a>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">최종 체크리스트</p>
+        <h2>상담·입소 신청 전 확인할 것</h2>
+      </div>
+      <ul class="dkc-check-list dkc-check-list--columns">
+        {DKC_CHECKLIST.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">근거 자료</p>
+        <h2>공식·공개 자료 링크</h2>
+      </div>
+      <div class="dkc-source-grid">
+        {DKC_SOURCE_LINKS.map((source) => (
+          <a class="dkc-source-card" href={source.href} target="_blank" rel="noopener noreferrer">
+            <strong>{source.label}</strong>
+            <p>{source.note}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 어린이집·유치원 실비용 비교 읽는 법"
+      intro={[
+        "이 리포트는 0~7세 자녀를 둔 부모가 가장 자주 묻는 ‘어린이집이 싸나, 유치원이 싸나’라는 질문을 나이, 기관 유형, 지역, 맞벌이 여부로 나눠 답합니다.",
+        "공식 지원금만 보면 어린이집과 유치원이 비슷해 보이지만 실제 고지서는 특별활동비, 방과후 과정비, 차량비, 급식비, 교재비, 방학 돌봄 비용에서 갈립니다.",
+        "결론부터 보면 0~2세는 어린이집, 3~5세는 국공립 유치원이 비용상 유리한 경우가 많습니다. 다만 맞벌이 가정은 운영 시간과 방학 돌봄까지 포함해 총비용으로 비교해야 합니다.",
+      ]}
+      criteria={[
+        "보육료와 유아학비는 2026년 공개 지원 단가를 기준으로 표기했습니다.",
+        "특별활동비, 차량비, 급식비, 방과후·특성화비는 지자체 수납한도와 공개 사례를 기반으로 한 추정 범위입니다.",
+        "국공립 당첨 확률은 공식 확률이 아니라 대기순번과 모집 예정 인원으로 계산하는 참고 지표입니다.",
+        "영어유치원은 일반 유치원이 아닌 학원 비용으로 분리해 해석했습니다.",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/daycare-vs-kindergarten-cost/", label: "어린이집 vs 유치원 비용 계산기" },
+        { href: "/reports/baby-cost-guide-first-year/", label: "신생아~돌까지 육아 비용 총정리" },
+        { href: "/reports/elementary-school-ready-cost-2026/", label: "초등학교 입학 준비 비용 총정리" },
+      ]}
+    />
+  </main>
+</BaseLayout>

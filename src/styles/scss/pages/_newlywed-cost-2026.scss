@@ -1,0 +1,371 @@
+.nwc-page {
+
+  // ── 배지 ──
+  .nwc-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 2px 6px;
+    vertical-align: middle;
+    margin-left: 4px;
+
+    &--est      { background: #fef3c7; color: #92400e; }
+    &--official { background: #d1fae5; color: #065f46; }
+    &--ref      { background: #f3f4f6; color: #374151; }
+  }
+
+  // ── Editor's Brief ──
+  .nwc-lead-section {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr auto;
+      align-items: start;
+    }
+  }
+
+  .nwc-lead {
+    &__eyebrow {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #0f6e56;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 10px;
+    }
+
+    h2 { font-size: 1.2rem; font-weight: 800; margin: 0 0 12px; }
+
+    &__body { font-size: 0.92rem; color: #374151; line-height: 1.75; margin: 0 0 16px; }
+
+    &__chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      span {
+        background: #f0fdf4;
+        border: 1px solid #6ee7b7;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #065f46;
+      }
+    }
+  }
+
+  .nwc-lead__stats {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr;
+      min-width: 180px;
+    }
+
+    article {
+      background: #f8faf9;
+      border: 1px solid #e8ede9;
+      border-radius: 12px;
+      padding: 16px;
+
+      span { font-size: 0.75rem; color: #6b7280; display: block; margin-bottom: 4px; }
+      strong { font-size: 1.1rem; font-weight: 800; color: #111827; display: block; margin-bottom: 4px; }
+      p { font-size: 0.72rem; color: #9ca3af; margin: 0; }
+    }
+  }
+
+  // ── 공통 테이블 ──
+  .nwc-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8ede9;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    th { background: #f8fcfa; font-weight: 700; }
+    td:not(:first-child) { text-align: right; }
+
+    &__highlight { color: #0f6e56; font-weight: 700; }
+    &__muted     { color: #6b7280; font-size: 0.82rem !important; }
+    &__link      { font-size: 0.78rem; color: #1a56db; text-decoration: none; }
+  }
+
+  // ── 출처 ──
+  .nwc-source {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    margin: 8px 0 0;
+    line-height: 1.5;
+  }
+
+  // ── 신혼집 유형 분포 ──
+  .nwc-housing-grid {
+    display: grid;
+    gap: 16px;
+    margin-top: 20px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 640px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .nwc-housing-card { padding: 16px; }
+  .nwc-housing-card__region {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: #374151;
+  }
+
+  .nwc-bar-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 40px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .nwc-bar-label { font-size: 0.78rem; color: #6b7280; }
+  .nwc-bar-track { background: #e8ede9; border-radius: 4px; height: 8px; overflow: hidden; }
+  .nwc-bar-fill  { height: 100%; border-radius: 4px; }
+  .nwc-bar-pct   { font-size: 0.78rem; color: #374151; text-align: right; }
+
+  // ── 인라인 CTA ──
+  .nwc-cta-inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #f0fdf4;
+    border: 1px solid #6ee7b7;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+
+    p { margin: 0; font-size: 0.88rem; color: #065f46; font-weight: 600; }
+  }
+
+  // ── 차트 래퍼 ──
+  .nwc-chart-section { }
+  .nwc-chart-wrap { max-width: 640px; margin: 0 auto; }
+
+  // ── 혼수 티어 카드 ──
+  .nwc-tier-cards {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 640px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .nwc-tier-card {
+    border: 1px solid #e8ede9;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+
+    &__label  { display: block; font-size: 0.85rem; font-weight: 700; color: #374151; margin-bottom: 4px; }
+    &__budget { display: block; font-size: 1.2rem; font-weight: 800; color: #0f6e56; margin-bottom: 8px; }
+    &__desc   { font-size: 0.8rem; color: #6b7280; margin: 0; }
+  }
+
+  // ── 대출 카드 ──
+  .nwc-loan-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .nwc-loan-card {
+    padding: 18px 20px;
+
+    &__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+
+      strong { font-size: 0.9rem; color: #111827; }
+    }
+
+    &__rate  { font-size: 1.3rem; font-weight: 800; color: #0f6e56; margin: 0 0 4px; }
+    &__limit { font-size: 0.8rem; color: #6b7280; margin: 0 0 10px; }
+
+    &__conditions {
+      padding-left: 16px;
+      margin: 0 0 12px;
+
+      li { font-size: 0.82rem; color: #374151; line-height: 1.7; }
+    }
+
+    &__link {
+      font-size: 0.82rem;
+      color: #1a56db;
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  // ── 경고 박스 ──
+  .nwc-notice {
+    background: #fff5f5;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.86rem;
+    color: #7f1d1d;
+    margin-top: 16px;
+    line-height: 1.6;
+
+    a { color: #b91c1c; }
+  }
+
+  // ── 전세가율 강조 ──
+  .nwc-rate-high   { color: #b91c1c; font-weight: 700; }
+  .nwc-rate-normal { color: #0f6e56; font-weight: 600; }
+
+  // ── 놀랍지! 지출 ──
+  .nwc-surprise-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 640px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .nwc-surprise-card {
+    padding: 18px;
+    background: #fffbeb;
+    border-color: #fde68a;
+
+    &__title { font-size: 0.88rem; font-weight: 700; color: #92400e; margin: 0 0 4px; }
+    &__val   { display: block; font-size: 1.1rem; font-weight: 800; color: #78350f; margin-bottom: 10px; }
+    &__desc  { font-size: 0.82rem; color: #374151; margin: 0; line-height: 1.6; }
+  }
+
+  // ── 자산 전략 카드 ──
+  .nwc-strategy-grid {
+    display: grid;
+    gap: 16px;
+
+    @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .nwc-strategy-card {
+    padding: 18px 20px;
+
+    &__label    { font-size: 0.75rem; font-weight: 700; color: #6b7280; margin: 0 0 6px; }
+    &__strategy { font-size: 0.92rem; font-weight: 700; color: #111827; margin: 0 0 12px; }
+    &__tips     {
+      padding-left: 16px;
+      margin: 0;
+
+      li { font-size: 0.82rem; color: #374151; line-height: 1.8; }
+    }
+  }
+
+  // ── 중고 추천 배지 ──
+  .nwc-recommend {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+
+    &--yes { background: #d1fae5; color: #065f46; }
+    &--no  { background: #fee2e2; color: #991b1b; }
+  }
+
+  // ── 전문가 카드 ──
+  .nwc-expert-grid {
+    display: grid;
+    gap: 16px;
+
+    @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .nwc-expert-card {
+    padding: 18px 20px;
+
+    &__role { font-size: 0.78rem; color: #0f6e56; font-weight: 600; margin: 0 0 8px; }
+    &__tip  { font-size: 0.88rem; color: #374151; line-height: 1.7; margin: 0; font-style: italic; }
+  }
+
+  // ── CTA 카드 ──
+  .nwc-cta-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+    border: 1.5px solid #6ee7b7;
+    border-radius: 16px;
+    padding: 32px 28px;
+    text-align: center;
+    margin: 24px 0;
+
+    &__eyebrow { font-size: 0.75rem; font-weight: 700; color: #0f6e56; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+    &__title   { font-size: 1.1rem; font-weight: 800; margin: 0 0 8px; color: #111827; }
+    &__desc    { font-size: 0.88rem; color: #374151; margin: 0 0 20px; }
+  }
+
+  // ── 관련 링크 ──
+  .nwc-related-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .nwc-related-link {
+    display: block;
+    padding: 12px 16px;
+    background: #f8faf9;
+    border: 1px solid #e8ede9;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: #1a56db;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover { background: #f0f7ff; border-color: #bfdbfe; }
+  }
+
+  // ── 출처 링크 ──
+  .nwc-source-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+    margin-top: 16px;
+
+    @media (min-width: 640px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .nwc-source-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: border-color 0.15s;
+
+    &:hover { border-color: #1a56db; }
+
+    &__source { font-size: 0.72rem; color: #0f6e56; font-weight: 700; }
+    &__title  { font-size: 0.88rem; color: #111827; font-weight: 700; }
+    &__desc   { font-size: 0.78rem; color: #6b7280; }
+  }
+}

@@ -1,0 +1,267 @@
+.nrb-page {
+
+  .nrb-section {
+    margin-top: 32px;
+
+    &__head {
+      margin-bottom: 20px;
+      h2 { font-size: 1.1rem; font-weight: 700; margin: 4px 0 8px; }
+    }
+
+    &__eyebrow {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #0f6e56;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+  }
+
+  // 프리셋
+  .nrb-preset-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .nrb-preset-btn {
+    border: 1px solid #dce6e2;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    background: #fff;
+    color: #374151;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+    &:hover { background: #f0fdf4; border-color: #0f6e56; }
+    &.is-active { background: #0f6e56; color: #fff; border-color: #0f6e56; }
+  }
+
+  // 필드 힌트
+  .nrb-field-hint {
+    display: block;
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  // 체크박스 필드
+  .nrb-checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #374151;
+
+    input[type="checkbox"] { accent-color: #0f6e56; width: 16px; height: 16px; }
+  }
+
+  // 슬라이더 그룹
+  .nrb-slider-group { margin-top: 16px; }
+
+  .nrb-slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  .nrb-slider-value { color: #0f6e56; font-weight: 700; }
+
+  .nrb-slider {
+    width: 100%;
+    accent-color: #0f6e56;
+  }
+
+  // 특례대출 토글
+  .nrb-special-toggle-row {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e8ede9;
+  }
+
+  .nrb-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #374151;
+    user-select: none;
+  }
+
+  .nrb-toggle-checkbox {
+    display: none;
+
+    &:checked + .nrb-toggle-slider {
+      background: #0f6e56;
+      &::before { transform: translateX(20px); }
+    }
+  }
+
+  .nrb-toggle-slider {
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    background: #d1d5db;
+    border-radius: 12px;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: transform 0.2s;
+    }
+  }
+
+  .nrb-special-field {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+    &.is-open { max-height: 160px; }
+  }
+
+  // KPI 카드
+  .nrb-kpi-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+
+    @media (min-width: 900px) { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .nrb-kpi-card {
+    background: #f8faf9;
+    border: 1px solid #e8ede9;
+    border-radius: 12px;
+    padding: 16px;
+
+    &--main { background: #f0fdf4; border-color: #6ee7b7; }
+    &--jeonse { border-left: 3px solid #1a56db; }
+    &--buy    { border-left: 3px solid #0f6e56; }
+  }
+
+  .nrb-kpi-label {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: 0 0 6px;
+    font-weight: 500;
+  }
+
+  .nrb-kpi-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .nrb-kpi-sub { font-size: 0.75rem; color: #6b7280; }
+
+  // 결과 메시지
+  .nrb-result-message {
+    font-size: 0.92rem;
+    color: #374151;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  // 비교표
+  .nrb-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8ede9;
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+
+    th { background: #f8fcfa; font-weight: 700; text-align: left; }
+    td:not(:first-child) { text-align: right; }
+    tr.is-breakeven td { background: #fef9c3; font-weight: 700; }
+    td.is-jeonse-win { color: #1a56db; font-weight: 700; }
+    td.is-buy-win    { color: #0f6e56; font-weight: 700; }
+  }
+
+  // 라인 차트
+  .nrb-chart-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  // 특례대출 카드
+  .nrb-special-card {
+    border: 1.5px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 20px;
+    display: none;
+
+    &.is-visible { display: block; }
+  }
+
+  .nrb-special-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .nrb-special-saving {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f6e56;
+  }
+
+  // CTA 배너
+  .nrb-cta-banner {
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .nrb-cta-text {
+    font-size: 0.92rem;
+    color: #1e3a5f;
+    font-weight: 600;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .nrb-cta-btn {
+    padding: 8px 18px;
+    background: #1a56db;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

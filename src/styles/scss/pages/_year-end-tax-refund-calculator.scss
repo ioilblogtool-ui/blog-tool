@@ -1,0 +1,281 @@
+.yetc-page {
+  .yetc-preset-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .yetc-preset-btn {
+    border: 1px solid #dce6e2;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    background: #fff;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+    &.is-active {
+      background: #0f6e56;
+      color: #fff;
+      border-color: #0f6e56;
+    }
+  }
+
+  // 탭 네비게이션
+  .yetc-tab-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e8ede9;
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+
+  .yetc-tab-btn {
+    padding: 9px 16px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #6b7280;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+
+    &.is-active {
+      color: #0f6e56;
+      border-bottom-color: #0f6e56;
+    }
+  }
+
+  // KPI 카드
+  .yetc-kpi-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .yetc-kpi-card {
+    background: #f8faf9;
+    border: 1px solid #e8ede9;
+    border-radius: 12px;
+    padding: 16px;
+
+    p     { font-size: 0.76rem; color: #6b7280; margin: 0 0 5px; }
+    strong { display: block; font-size: 1.15rem; font-weight: 800; color: #111827; margin-bottom: 4px; }
+    span  { font-size: 0.72rem; color: #9ca3af; }
+
+    &--refund {
+      background: #e1f5ee;
+      border-color: #0f6e56;
+      strong { color: #0f6e56; font-size: 1.35rem; }
+    }
+    &--pay {
+      background: #fff5f5;
+      border-color: #fca5a5;
+      strong { color: #b91c1c; font-size: 1.35rem; }
+    }
+    &--accent {
+      background: #f0f7ff;
+      border-color: #bfdbfe;
+    }
+    &--warn {
+      background: #fff8f0;
+      border-color: #fed7aa;
+      strong { color: #c2410c; }
+    }
+  }
+
+  // 공제 기여도 테이블
+  .yetc-deduction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.86rem;
+
+    th, td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #e8ede9;
+    }
+    th {
+      background: #f8fcfa;
+      font-weight: 700;
+      text-align: left;
+      font-size: 0.82rem;
+    }
+    td:not(:first-child) { text-align: right; }
+    tr.is-total td { font-weight: 700; background: #f0fdf4; }
+    tr.is-zero td  { color: #d1d5db; }
+    td.yetc-contribution { color: #0f6e56; font-weight: 600; }
+  }
+
+  // 연금저축 추가 납입 시나리오 카드
+  .yetc-scenario-card {
+    display: none;
+    background: #fff8e6;
+    border: 1.5px solid #fbbf24;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 20px;
+
+    &.is-visible { display: block; }
+
+    .yetc-scenario-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 12px;
+    }
+
+    .yetc-scenario-rows {
+      display: grid;
+      gap: 8px;
+      @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .yetc-scenario-row {
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px 14px;
+
+      .yetc-scenario-item { font-size: 0.82rem; color: #374151; margin-bottom: 6px; }
+      .yetc-scenario-gain { font-size: 1.15rem; font-weight: 800; color: #0f6e56; }
+      .yetc-scenario-note { font-size: 0.74rem; color: #9ca3af; margin-top: 2px; }
+    }
+
+    .yetc-scenario-cta {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 7px 16px;
+      background: #0f6e56;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+  }
+
+  // 제휴 배너
+  .yetc-affiliate-banner {
+    display: none;
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    &.is-visible { display: flex; }
+
+    .yetc-banner-text {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #1e3a5f;
+    }
+
+    .yetc-banner-btn {
+      padding: 7px 16px;
+      background: #1a56db;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+  }
+
+  // 도넛 차트
+  .yetc-chart-wrap {
+    position: relative;
+    max-width: 280px;
+    margin: 24px auto 0;
+  }
+
+  // 결과 메시지
+  .yetc-message {
+    background: #f8faf9;
+    border-left: 3px solid #0f6e56;
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: #374151;
+    margin-top: 16px;
+  }
+
+  // 절세 전략 리포트 CTA
+  .yetc-report-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: #f0fdf4;
+    border: 1.5px solid #86efac;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 24px;
+
+    .yetc-report-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .yetc-report-btn {
+      padding: 8px 18px;
+      background: #0f6e56;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+  }
+
+  // 자동 추정 배지
+  .yetc-auto-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 1px 7px;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  // 관련 링크
+  .yetc-next-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .yetc-next-link {
+    display: block;
+    padding: 13px 16px;
+    border: 1px solid #e8ede9;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #111827;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover { border-color: #0f6e56; background: #f5fbf8; color: #0f6e56; }
+  }
+}

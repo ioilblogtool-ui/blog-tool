@@ -1,0 +1,334 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  BVF_FAQ,
+  BVF_META,
+  BVF_PRESETS,
+  BVF_RELATED_LINKS,
+  BVF_TIP_CARDS,
+  CAN_GRAMS,
+  DAILY_FORMULA_GRAMS,
+  FORMULA_GRADE_LABEL,
+  FORMULA_PRICE,
+  MIXED_FORMULA_RATIO,
+  PUMP_COST,
+  SUPPLIES_MONTHLY,
+} from "../../data/breastfeedingVsFormulaCost";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  DAILY_FORMULA_GRAMS,
+  FORMULA_PRICE,
+  FORMULA_GRADE_LABEL,
+  PUMP_COST,
+  SUPPLIES_MONTHLY,
+  MIXED_FORMULA_RATIO,
+  CAN_GRAMS,
+  PRESETS: BVF_PRESETS,
+};
+
+const faqItems = BVF_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+---
+
+<BaseLayout
+  title={BVF_META.seoTitle}
+  description={BVF_META.seoDescription}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: BVF_META.title,
+    url: `${import.meta.env.SITE ?? "https://bigyocalc.com"}/tools/breastfeeding-vs-formula-cost/`,
+    description: BVF_META.seoDescription,
+    applicationCategory: "LifestyleApplication",
+    operatingSystem: "All",
+    inLanguage: "ko-KR",
+    isAccessibleForFree: true,
+    provider: { "@type": "Organization", name: "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="breastfeeding-vs-formula-cost" pageClass="bvf-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="육아 비용 계산기"
+        title="모유수유 vs 분유 비용 계산기"
+        description="완모·혼합·완분 수유 방식별 12개월 누적 비용과 유축기 구매 손익분기점을 한 번에 비교합니다."
+        badges={["모유수유", "분유", "유축기", "추정"]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetBvfBtn" copyId="copyBvfLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 설정</p>
+            <h2 class="panel__title">프리셋</h2>
+          </div>
+          <p class="panel-heading__summary">자주 보는 수유 시나리오를 먼저 고른 뒤 세부값을 조정하세요.</p>
+        </div>
+        <div class="bvf-preset-grid">
+          {BVF_PRESETS.map((preset) => (
+            <button
+              class:list={["bvf-preset-btn", preset.id === "preset-formula-standard" && "is-active"]}
+              type="button"
+              data-bvf-preset={preset.id}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">수유 방식</p>
+            <h2 class="panel__title">기본 조건</h2>
+          </div>
+          <p class="panel-heading__summary">현재 월령을 고르면 남은 기간 기준으로 계산합니다.</p>
+        </div>
+
+        <div class="bvf-method-toggle">
+          <label>
+            <input type="radio" name="bvf-method" value="breast" data-bvf-input="method" />
+            <span>완모</span>
+          </label>
+          <label>
+            <input type="radio" name="bvf-method" value="mixed" data-bvf-input="method" />
+            <span>혼합</span>
+          </label>
+          <label>
+            <input type="radio" name="bvf-method" value="formula" data-bvf-input="method" checked />
+            <span>완분</span>
+          </label>
+        </div>
+
+        <label class="bvf-field">
+          <span>아기 현재 월령</span>
+          <select data-bvf-input="age">
+            {Array.from({ length: 12 }, (_, age) => (
+              <option value={age}>{age}개월</option>
+            ))}
+          </select>
+          <small>현재 월령부터 12개월 전까지 남은 기간만 합산합니다.</small>
+        </label>
+      </article>
+
+      <article class="panel bvf-field-group" data-bvf-group="grade">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">분유 단가</p>
+            <h2 class="panel__title">분유 등급</h2>
+          </div>
+          <p class="panel-heading__summary">800g 1캔 기준 추정 단가입니다.</p>
+        </div>
+        <div class="bvf-radio-stack">
+          {Object.entries(FORMULA_GRADE_LABEL).map(([value, label]) => (
+            <label>
+              <input type="radio" name="bvf-grade" value={value} data-bvf-input="grade" checked={value === "standard"} />
+              <span>
+                <strong>{label}</strong>
+                <small>{FORMULA_PRICE[value as keyof typeof FORMULA_PRICE].toLocaleString("ko-KR")}원 / 800g</small>
+              </span>
+            </label>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel bvf-field-group" data-bvf-group="pump">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">유축기</p>
+            <h2 class="panel__title">취득 방식</h2>
+          </div>
+          <p class="panel-heading__summary">완분 선택 시 유축기 비용은 결과에서 제외됩니다.</p>
+        </div>
+        <div class="bvf-radio-stack">
+          {Object.entries(PUMP_COST).map(([value, item]) => (
+            <label>
+              <input type="radio" name="bvf-pump" value={value} data-bvf-input="pump" checked={value === "none"} />
+              <span>
+                <strong>{item.label}</strong>
+                <small>
+                  {item.initial > 0 ? `초기 ${item.initial.toLocaleString("ko-KR")}원` : ""}
+                  {item.initial > 0 && item.monthly > 0 ? " · " : ""}
+                  {item.monthly > 0 ? `월 ${item.monthly.toLocaleString("ko-KR")}원` : item.initial === 0 ? "추가 비용 없음" : ""}
+                </small>
+              </span>
+            </label>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <label class="bvf-check">
+          <input type="checkbox" data-bvf-input="supplies" checked />
+          <span>
+            <strong>수유 소모품 포함</strong>
+            <small>수유패드·모유 저장팩 등 월 {SUPPLIES_MONTHLY.toLocaleString("ko-KR")}원 추정</small>
+          </span>
+        </label>
+      </article>
+    </Fragment>
+
+    <section class="bvf-section">
+      <div class="bvf-section__head">
+        <p class="bvf-section__eyebrow">계산 결과</p>
+        <h2 id="bvfResultTitle">수유 방식별 누적 비용</h2>
+        <p id="bvfResultSub" class="bvf-section__sub">조건을 바꾸면 남은 기간 기준 비용이 즉시 갱신됩니다.</p>
+      </div>
+      <div class="bvf-kpi-grid">
+        <article class="bvf-kpi-card bvf-kpi-card--accent">
+          <p>예상 절감액</p>
+          <strong id="bvfSavings">-</strong>
+          <span>완모 vs 완분 차이</span>
+        </article>
+        <article class="bvf-kpi-card">
+          <p>완분 누적 비용</p>
+          <strong id="bvfFormulaTotal">-</strong>
+          <span>분유 등급 기준</span>
+        </article>
+        <article class="bvf-kpi-card">
+          <p>완모 누적 비용</p>
+          <strong id="bvfBreastTotal">-</strong>
+          <span>유축기·소모품 포함</span>
+        </article>
+        <article class="bvf-kpi-card bvf-kpi-card--save">
+          <p>손익분기점</p>
+          <strong id="bvfBreakEven">-</strong>
+          <span id="bvfBreakEvenNote">유축기 구매 기준</span>
+        </article>
+      </div>
+      <div class="bvf-summary-row">
+        <article class="bvf-summary-card">
+          <span class="bvf-summary-label">분유 총 소비량</span>
+          <strong class="bvf-summary-value" id="bvfFormulaGrams">-</strong>
+        </article>
+        <article class="bvf-summary-card">
+          <span class="bvf-summary-label">필요 캔 수</span>
+          <strong class="bvf-summary-value" id="bvfFormulaCans">-</strong>
+        </article>
+      </div>
+      <p class="bvf-result-message" id="bvfMessage"></p>
+    </section>
+
+    <section class="bvf-section">
+      <div class="bvf-section__head">
+        <p class="bvf-section__eyebrow">월별 비교</p>
+        <h2>남은 월령별 비용표</h2>
+        <p class="bvf-section__sub">현재 월령 이전 구간은 회색으로 표시하고 합계에는 포함하지 않습니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="bvf-compare-table">
+          <thead>
+            <tr>
+              <th>월령</th>
+              <th>완모</th>
+              <th>혼합</th>
+              <th>완분</th>
+              <th>분유 사용량</th>
+            </tr>
+          </thead>
+          <tbody id="bvfMonthlyRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="bvf-section">
+      <div class="bvf-section__head">
+        <p class="bvf-section__eyebrow">누적 흐름</p>
+        <h2>수유 방식별 누적 비용 추이</h2>
+      </div>
+      <article class="panel">
+        <div class="bvf-chart-wrap">
+          <canvas id="bvfChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="bvf-section">
+      <div class="bvf-section__head">
+        <p class="bvf-section__eyebrow">선택 기준</p>
+        <h2>수유 방식별 비용 해석</h2>
+      </div>
+      <div class="bvf-tip-grid">
+        {BVF_TIP_CARDS.map((card) => (
+          <article class="bvf-tip-card">
+            <h3 class="bvf-tip-title">{card.title}</h3>
+            {card.body.map((line) => <p>{line}</p>)}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <InfoNotice
+      title="계산 기준 안내"
+      lines={[
+        BVF_META.dataNote,
+        "월령별 분유량은 완전 분유 수유 기준 참고값이며, 아기 체중·이유식 진행·의료진 안내에 따라 달라질 수 있습니다.",
+        "모유수유의 상담비, 치료비, 시간 비용은 개인차가 커서 계산에 포함하지 않았습니다.",
+      ]}
+    />
+
+    <section class="content-section bvf-next-section">
+      <div class="panel bvf-next-card">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">다음 계산</p>
+            <h2 class="panel__title">분유 브랜드와 기저귀 비용도 이어서 확인하세요</h2>
+          </div>
+          <p class="panel-heading__summary">수유 방식이 정해졌다면 반복 구매 소모품의 총비용을 같이 보는 편이 정확합니다.</p>
+        </div>
+        <div class="bvf-related-links">
+          {BVF_RELATED_LINKS.map((item) => (
+            <a class="button button--secondary" href={withBase(item.href)}>{item.label}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="모유수유 vs 분유 비용 계산기를 보는 방법"
+        intro={[
+          "출산 후 수유 방식은 건강, 편의, 가족 상황이 함께 얽힌 선택입니다. 이 계산기는 그중 비용만 따로 떼어 완모, 혼합, 완분의 12개월 누적 지출을 비교합니다.",
+          "완모는 분유 구매 비용이 없지만 유축기와 수유 소모품이 필요할 수 있습니다. 반대로 완분은 초기 장비 부담은 적지만 매달 분유 비용이 반복됩니다.",
+          "혼합 수유는 두 방식의 중간 구조입니다. 분유 사용량을 절반으로 가정하고, 모유수유 소모품 비용은 함께 반영했습니다.",
+          "유축기 구매와 렌탈은 사용 기간에 따라 유리한 선택이 달라집니다. 손익분기점 카드는 구매 비용이 몇 개월 뒤 분유 지출 절감으로 회수되는지 보여줍니다.",
+          "모든 금액은 추정값입니다. 실제 분유 단가와 수유량, 의료적 상황은 달라질 수 있으므로 예산 참고용으로 사용하세요.",
+        ]}
+        inputPoints={[
+          "수유 방식은 완모, 혼합, 완분 중 선택합니다.",
+          "현재 월령은 0~11개월 중 선택하며, 남은 기간만 누적 비용에 반영합니다.",
+          "분유 등급과 유축기 취득 방식, 수유 소모품 포함 여부를 조정할 수 있습니다.",
+        ]}
+        criteria={[
+          "분유 1캔은 800g 기준으로 계산합니다.",
+          "혼합 수유는 분유 사용량 50% 기준으로 단순화했습니다.",
+          "수유 소모품은 월 18,000원, 전동 유축기 구매는 220,000원으로 추정했습니다.",
+        ]}
+        faq={faqItems}
+        related={BVF_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script id="bvf-data" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/breastfeeding-vs-formula-cost.js")}></script>
+</BaseLayout>

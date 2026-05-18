@@ -1,0 +1,519 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  AMENDMENT_ITEMS,
+  MISTAKE_LIST,
+  PENSION_CREDIT_ROWS,
+  SIMULATION_CASES,
+  TAX_BRACKET_ROWS,
+  YETS_FAQ,
+  YETS_META,
+  YETS_RELATED_LINKS,
+} from "../../data/yearEndTaxSavingGuide2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const manWon = (n: number) => {
+  const m = Math.floor(n / 10000);
+  const r = n % 10000;
+  return m > 0 ? (r > 0 ? `${m}만 ${r.toLocaleString()}원` : `${m}만 원`) : n.toLocaleString() + "원";
+};
+
+const faqSchema = YETS_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: YETS_META.seoTitle,
+      description: YETS_META.description,
+      inLanguage: "ko-KR",
+      dateModified: "2026-05",
+      mainEntityOfPage: `https://bigyocalc.com/reports/${YETS_META.slug}/`,
+      publisher: { "@type": "Organization", name: "비교계산소", url: "https://bigyocalc.com" },
+    },
+    { "@type": "FAQPage", mainEntity: faqSchema },
+  ],
+};
+
+// 차트 데이터
+const bracketChartData = {
+  labels: TAX_BRACKET_ROWS.map((r) => r.salary),
+  incomeData: TAX_BRACKET_ROWS.map((r) => r.incomeDeduction100),
+  creditData:  TAX_BRACKET_ROWS.map(() => 1000000),
+};
+
+const simChartData = {
+  labels: SIMULATION_CASES.map((c) => c.desc),
+  data:   SIMULATION_CASES.map((c) => c.refund),
+};
+---
+
+<BaseLayout
+  title={YETS_META.seoTitle}
+  description={YETS_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page yets-page">
+    <CalculatorHero
+      eyebrow="연말정산 절세 가이드"
+      title="2026 연말정산 절세 전략 완전 정복"
+      description="공제 항목 하나만 더 챙겨도 수십만 원이 달라집니다. 직장인이 최대로 환급받는 절세 전략을 총정리합니다."
+      badges={["연말정산", "절세", "2026", "참고용"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        YETS_META.dataNote,
+        "세법 개정 예고 항목(섹션 ⑬)은 확정 전 예고안이며 실제 적용 내용과 다를 수 있습니다.",
+        "이 리포트는 특정 금융 상품 가입을 권유하지 않습니다.",
+      ]}
+    />
+
+    <DesignTrustPanel updatedAt="2026년 소득세법 기준" />
+
+    <!-- 핵심 요약 카드 -->
+    <section class="content-section">
+      <div class="bfc-summary-grid">
+        <div class="bfc-summary-card bfc-summary-card--accent">
+          <span class="bfc-summary-label">최대 환급 포인트</span>
+          <span class="bfc-summary-value">최대 약 148만 원</span>
+          <span class="bfc-summary-note">연금저축+IRP 900만 원 납입 시 (5,500만 원 이하 기준, 추정)</span>
+        </div>
+        <div class="bfc-summary-card">
+          <span class="bfc-summary-label">신용카드 공제 기준</span>
+          <span class="bfc-summary-value">총급여 × 25%</span>
+          <span class="bfc-summary-note">이 금액 초과분부터 공제 시작 (신용카드 15%, 체크카드 30%)</span>
+        </div>
+        <div class="bfc-summary-card bfc-summary-card--warn">
+          <span class="bfc-summary-label">누락 1위 공제</span>
+          <span class="bfc-summary-value">월세 세액공제</span>
+          <span class="bfc-summary-note">서류 미제출로 누락 가장 많음 — 직접 제출 필요</span>
+        </div>
+        <div class="bfc-summary-card">
+          <span class="bfc-summary-label">에버그린 절세 행동</span>
+          <span class="bfc-summary-value">12월 31일 전</span>
+          <span class="bfc-summary-note">연금저축·IRP 한도 확인 및 납입 완료</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ① 연말정산 기본 구조 -->
+    <section class="content-section">
+      <h2>① 연말정산 기본 구조 및 2026년 달라진 세법</h2>
+      <div class="yets-flow">
+        <div class="yets-flow-step">
+          <span class="yets-flow-num">①</span>
+          <strong>총급여</strong>
+          <small>비과세 제외</small>
+        </div>
+        <div class="yets-flow-arrow">→</div>
+        <div class="yets-flow-step">
+          <span class="yets-flow-num">②</span>
+          <strong>근로소득공제</strong>
+          <small>자동 차감</small>
+        </div>
+        <div class="yets-flow-arrow">→</div>
+        <div class="yets-flow-step">
+          <span class="yets-flow-num">③</span>
+          <strong>소득공제</strong>
+          <small>카드·부양가족</small>
+        </div>
+        <div class="yets-flow-arrow">→</div>
+        <div class="yets-flow-step">
+          <span class="yets-flow-num">④</span>
+          <strong>과세표준</strong>
+          <small>× 세율 = 산출세액</small>
+        </div>
+        <div class="yets-flow-arrow">→</div>
+        <div class="yets-flow-step">
+          <span class="yets-flow-num">⑤</span>
+          <strong>세액공제</strong>
+          <small>연금·의료비 등</small>
+        </div>
+        <div class="yets-flow-arrow">→</div>
+        <div class="yets-flow-step yets-flow-step--result">
+          <span class="yets-flow-num">⑥</span>
+          <strong>결정세액</strong>
+          <small>기납부 - 결정 = 환급</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② 소득공제 vs 세액공제 -->
+    <section class="content-section">
+      <h2>② 소득공제 vs 세액공제 — 절세 임팩트 비교</h2>
+      <p>세액공제는 소득 구간과 무관하게 <strong>동일한 금액</strong>을 돌려받습니다. 소득공제는 고소득자일수록 절세 효과가 큽니다.</p>
+      <div class="yets-table-wrap">
+        <table class="yets-impact-table">
+          <thead>
+            <tr>
+              <th>연봉</th>
+              <th>한계세율</th>
+              <th>소득공제 100만 원 절세액</th>
+              <th>세액공제 100만 원 절세액</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TAX_BRACKET_ROWS.map((row) => (
+              <tr>
+                <td>{row.salary}</td>
+                <td style="text-align:right">{row.marginalRate}</td>
+                <td class={
+                  row.incomeDeduction100 < 200000 ? "yets-deduct-low"
+                  : row.incomeDeduction100 < 300000 ? "yets-deduct-mid"
+                  : "yets-deduct-high"
+                }>{row.incomeDeduction100.toLocaleString("ko-KR")}원</td>
+                <td class="yets-credit">1,000,000원</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="yets-insight-box">
+        💡 세액공제 항목(연금저축·의료비·월세 등)은 소득 구간 무관하게 동일하게 유리합니다. 한도까지 채우는 것이 최우선 전략입니다.
+      </div>
+      <div class="yets-chart-wrap">
+        <canvas id="yetsBracketChart"></canvas>
+      </div>
+    </section>
+
+    <!-- ③ 신용카드 최적 비율 -->
+    <section class="content-section">
+      <h2>③ 신용카드·체크카드·현금영수증 최적 비율</h2>
+      <p>총급여의 25%까지는 어떤 결제 수단이든 공제 대상이 아닙니다. 25% 초과분부터 공제가 시작됩니다.</p>
+      <div class="yets-card-strategy">
+        <div class="yets-card-box yets-card-box--credit">
+          <div class="yets-card-type">신용카드</div>
+          <div class="yets-card-rate">15%</div>
+          <div class="yets-card-desc">공제율 낮지만 포인트·혜택 최대화<br/>총급여 25%까지 우선 사용</div>
+        </div>
+        <div class="yets-card-box yets-card-box--debit">
+          <div class="yets-card-type">체크카드·현금영수증</div>
+          <div class="yets-card-rate">30%</div>
+          <div class="yets-card-desc">공제율이 2배 높음<br/>총급여 25% 초과분부터 전환</div>
+        </div>
+      </div>
+      <div class="yets-insight-box" style="margin-top:16px;">
+        💡 최적 전략: 총급여 25%까지 신용카드 → 초과분은 체크카드·현금영수증. 단, 공제 한도(총급여 7천만 원 이하 기준 300만 원)도 확인하세요.
+      </div>
+    </section>
+
+    <!-- ④ 의료비·교육비·주택자금 -->
+    <section class="content-section">
+      <h2>④ 의료비·교육비·주택자금 공제 예시</h2>
+      <div class="yets-deduction-grid">
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">의료비 세액공제</div>
+          <div class="yets-deduction-amount">× 15%</div>
+          <div class="yets-deduction-note">총급여 3% 초과분부터 적용. 난임·장애인은 30%. 예시: 총급여 5천만 원, 의료비 300만 원 → (300만 - 150만) × 15% = 22.5만 원 환급 (추정)</div>
+        </div>
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">교육비 세액공제</div>
+          <div class="yets-deduction-amount">× 15%</div>
+          <div class="yets-deduction-note">취학 전·초중고 1인당 300만 원, 대학생 900만 원 한도. 예시: 대학생 자녀 등록금 400만 원 → 400만 × 15% = 60만 원 (추정)</div>
+        </div>
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">주택청약 소득공제</div>
+          <div class="yets-deduction-amount">× 40%</div>
+          <div class="yets-deduction-note">연 240만 원 납입 시 96만 원 소득공제 (한도 300만 원). 무주택 세대주 조건. 예시: 연봉 5천만 원 기준 절세액 약 23.6만 원 (추정)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑤ 연금저축·IRP -->
+    <section class="content-section">
+      <h2>⑤ 연금저축·IRP 납입 세액공제 효과</h2>
+      <p>연금저축+IRP 합산 최대 <strong>900만 원</strong>까지 세액공제 받을 수 있습니다. 12월 31일까지 납입해야 당해 연도 공제 적용됩니다.</p>
+      <div class="yets-pension-grid">
+        {PENSION_CREDIT_ROWS.map((row) => (
+          <div class="yets-pension-card">
+            <div class="yets-pension-label">{row.salaryLabel}</div>
+            <div class="yets-pension-rate">{(row.creditRate * 100).toFixed(1)}%</div>
+            <div class="yets-pension-max">
+              최대 납입 900만 원 → 환급 <strong>약 {manWon(row.maxCredit)}</strong> (추정)
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="yets-cta-box">
+        <span>내 연봉 기준 연금저축·IRP 세액공제 효과를 계산해보세요.</span>
+        <a href={withBase("/tools/year-end-tax-refund-calculator/")}>환급액 계산기 →</a>
+      </div>
+      <div class="yets-affiliate-banner">
+        <span class="yets-banner-text">연금저축 납입 한도를 아직 못 채우셨나요? 12월 31일까지 납입해야 공제됩니다.</span>
+        <a href="#" class="yets-banner-btn" rel="noopener sponsored">연금저축 가입하기 →</a>
+      </div>
+    </section>
+
+    <!-- ⑥ 월세 vs 전세대출 -->
+    <section class="content-section">
+      <h2>⑥ 월세 세액공제 vs 전세대출 공제 비교</h2>
+      <div class="yets-deduction-grid">
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">월세 세액공제</div>
+          <div class="yets-deduction-amount">15~17%</div>
+          <div class="yets-deduction-note">총급여 7,000만 원 이하, 무주택 세대주, 85㎡ 이하. 한도 750만 원. 예시: 월세 80만 원 × 12 = 960만 원 → 한도 750만 × 17% = 127.5만 원 환급 (추정)</div>
+        </div>
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">전세대출 원리금 공제</div>
+          <div class="yets-deduction-amount">× 40%</div>
+          <div class="yets-deduction-note">무주택 세대주, 국민주택규모 이하. 상환액 × 40% 소득공제 (한도 400만 원). 예시: 연 상환액 800만 원 → 400만 소득공제 → 연봉 5천 기준 약 98만 원 절세 (추정)</div>
+        </div>
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">월세 공제 서류</div>
+          <div class="yets-deduction-amount">직접 제출</div>
+          <div class="yets-deduction-note">간소화 자료에 자동 반영되지 않음. 임대차계약서 + 계좌이체 증빙 + 전입신고·확정일자 확인 후 직접 제출 필요.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑦ 부양가족 공제 누락 TOP5 -->
+    <section class="content-section">
+      <h2>⑦ 부양가족 인정 기준 & 공제 누락 TOP5</h2>
+      <p style="font-size:0.88rem;color:#374151;margin-bottom:14px;">부양가족 기본 요건: 연간 소득금액 100만 원 이하 (근로소득만 있으면 총급여 500만 원 이하)</p>
+      <div class="yets-deduction-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+        {[
+          { rank: 1, title: "따로 사는 부모님", desc: "주민등록상 별거여도 실질 부양이면 가능" },
+          { rank: 2, title: "대학생 자녀",       desc: "아르바이트 소득 100만 원 초과 여부 확인" },
+          { rank: 3, title: "장인·장모",         desc: "배우자 부모도 요건 충족 시 공제 가능" },
+          { rank: 4, title: "형제자매",           desc: "20세 이하 or 60세 이상 + 소득 요건" },
+          { rank: 5, title: "이혼 후 자녀",       desc: "실질 부양자 기준으로 한 명만 신청" },
+        ].map((item) => (
+          <div class="yets-deduction-card">
+            <div class="yets-deduction-title">TOP {item.rank}. {item.title}</div>
+            <div class="yets-deduction-note">{item.desc}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ⑧ 맞벌이 공제 최적화 -->
+    <section class="content-section">
+      <h2>⑧ 맞벌이 부부 공제 쪼개기 최적화</h2>
+      <div class="yets-insight-box">
+        부양가족(자녀)은 소득이 높은 쪽에 몰아주세요. 소득공제 효과는 한계세율이 높을수록 커집니다.<br/>
+        단, 교육비·의료비는 실제 지출한 사람만 공제 가능합니다. 같은 부양가족을 두 명이 중복 신청하면 <strong>가산세</strong>가 발생합니다.
+      </div>
+      <div class="yets-cta-box">
+        <span>맞벌이 각자 공제 항목을 직접 입력해 환급액을 비교해보세요.</span>
+        <a href={withBase("/tools/year-end-tax-refund-calculator/")}>환급액 계산기 →</a>
+      </div>
+    </section>
+
+    <!-- ⑨ 중소기업 취업자 감면 -->
+    <section class="content-section">
+      <h2>⑨ 중소기업 취업자·청년 특별 세액감면</h2>
+      <div class="yets-deduction-grid">
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">청년 (만 34세 이하)</div>
+          <div class="yets-deduction-amount">90% 감면</div>
+          <div class="yets-deduction-note">취업일부터 5년간 소득세 90% 감면 (한도 연 200만 원)</div>
+        </div>
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">고령자·장애인·경력단절여성</div>
+          <div class="yets-deduction-amount">70% 감면</div>
+          <div class="yets-deduction-note">취업일부터 3년간 소득세 70% 감면 (한도 연 200만 원)</div>
+        </div>
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">신청 방법</div>
+          <div class="yets-deduction-amount">서류 제출</div>
+          <div class="yets-deduction-note">회사 인사팀에 '중소기업 취업자 소득세 감면 신청서' 제출. 이직 후에도 누적 5년까지 적용.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑩ 기부금 공제 -->
+    <section class="content-section">
+      <h2>⑩ 기부금 공제 절세 효과</h2>
+      <div class="yets-deduction-grid">
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">법정기부금</div>
+          <div class="yets-deduction-amount">15~30%</div>
+          <div class="yets-deduction-note">소득금액 100% 한도, 국가·지자체·공익법인 등. 1,000만 원 초과분 30% 적용.</div>
+        </div>
+        <div class="yets-deduction-card">
+          <div class="yets-deduction-title">지정기부금</div>
+          <div class="yets-deduction-amount">15%</div>
+          <div class="yets-deduction-note">소득금액 30% 한도 (종교단체 10%). 기부금 영수증 미발급 시 공제 불가.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑪ 연봉 구간별 환급 시뮬레이션 -->
+    <section class="content-section">
+      <h2>⑪ 연봉 구간별 환급액 시뮬레이션</h2>
+      <p style="font-size:0.84rem;color:#6b7280;margin-bottom:16px;">주요 공제 항목 적용 기준 추정값입니다. 실제 환급액은 개인 상황에 따라 다릅니다.</p>
+      <div class="yets-bar-chart-wrap">
+        <canvas id="yetsSimulationChart"></canvas>
+      </div>
+      <div class="yets-simulation-grid" style="margin-top:16px;">
+        {SIMULATION_CASES.map((c) => (
+          <div class="yets-simulation-card">
+            <div class="yets-sim-label">{c.label}</div>
+            <div class="yets-sim-desc">{c.desc}</div>
+            <div class="yets-sim-refund">약 {manWon(c.refund)}</div>
+            <div class="yets-sim-note">(추정)</div>
+          </div>
+        ))}
+      </div>
+      <div class="yets-cta-box">
+        <span>내 조건으로 직접 계산해보세요.</span>
+        <a href={withBase("/tools/year-end-tax-refund-calculator/")}>환급액 계산기 →</a>
+      </div>
+    </section>
+
+    <!-- ⑫ 절세 실수 TOP10 -->
+    <section class="content-section">
+      <h2>⑫ 절세 실수 TOP10 체크리스트</h2>
+      <div class="yets-checklist">
+        {MISTAKE_LIST.map((item) => (
+          <div class="yets-checklist-item">
+            <div class="yets-checklist-rank">#{item.rank}</div>
+            <div class="yets-checklist-body">
+              <strong>{item.title}</strong>
+              <p>{item.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="yets-affiliate-banner" style="margin-top:20px;">
+        <span class="yets-banner-text">복잡한 공제 항목이 걱정된다면 세무사 상담을 받아보세요.</span>
+        <a href="#" class="yets-banner-btn" rel="noopener sponsored">세무사 무료 상담 →</a>
+      </div>
+    </section>
+
+    <!-- ⑬ 2026 세법 개정 예고 -->
+    <section class="content-section">
+      <h2>⑬ 2026 세법 개정 예고 항목</h2>
+      <div class="yets-amendment-box">
+        <ul>
+          {AMENDMENT_ITEMS.map((item) => <li>{item}</li>)}
+        </ul>
+        <p class="yets-amendment-warning">
+          ⚠ 위 항목은 예고안이며 확정된 내용이 아닙니다. 실제 신고 전 국세청 공식 홈페이지(nts.go.kr) 또는 홈택스에서 최신 내용을 반드시 확인하세요.
+        </p>
+      </div>
+    </section>
+
+    <!-- ⑭ 관련 계산기 CTA -->
+    <section class="content-section">
+      <h2>⑭ 관련 계산기</h2>
+      <div class="yets-next-grid">
+        {YETS_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="yets-next-link">{link.label} →</a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 연말정산 절세 전략 완전 정복 — 공제 항목 하나가 수십만 원을 바꿉니다"
+      intro={[
+        "연말정산은 1년간 원천징수로 납부한 세금과 실제 내야 할 세금(결정세액)의 차액을 정산하는 절차입니다. 공제 항목을 많이 챙길수록 결정세액이 낮아져 환급액이 늘어납니다. 가장 직접적인 방법은 세액공제 항목을 한도까지 채우는 것입니다.",
+        "소득공제와 세액공제는 절세 방식이 다릅니다. 소득공제는 과세표준을 낮춰 고소득자일수록 절세 효과가 크고, 세액공제는 산출세액에서 직접 차감해 소득 구간과 무관하게 동일한 금액을 돌려받습니다. 세액공제 항목을 우선 한도까지 채우는 것이 일반적으로 유리합니다.",
+        "신용카드 공제는 총급여의 25%를 초과한 사용분부터 적용됩니다. 최적 전략은 총급여 25%까지는 혜택이 많은 신용카드로 쓰고, 초과분은 공제율이 두 배 높은(30%) 체크카드나 현금영수증으로 결제하는 것입니다.",
+        "부양가족 공제는 가장 쉽게 놓치는 항목 중 하나입니다. 따로 사는 부모님도 실질적으로 부양한다면 공제 대상이 될 수 있고, 배우자의 부모(장인·장모)도 요건 충족 시 등록 가능합니다. 반대로 소득이 100만 원을 초과한 부양가족을 잘못 등록하면 가산세가 발생합니다.",
+        "이 리포트의 계산 예시는 2026년 소득세법 기준 참고용 추정값입니다. 실제 공제 조건과 한도는 개인 상황에 따라 다를 수 있으므로 국세청 홈택스 연말정산 간소화 서비스에서 최종 확인하세요. 과거 연도에 누락된 공제는 경정청구(5년 이내)로 소급 신청할 수 있습니다.",
+      ]}
+      faq={YETS_FAQ}
+      related={YETS_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script define:vars={{ bracketChartData, simChartData }}>
+  window.addEventListener("load", () => {
+    if (typeof window.Chart === "undefined") return;
+
+    // ② 소득공제 vs 세액공제 그룹 막대 차트
+    const bracketCtx = document.getElementById("yetsBracketChart");
+    if (bracketCtx) {
+      new window.Chart(bracketCtx, {
+        type: "bar",
+        data: {
+          labels: bracketChartData.labels,
+          datasets: [
+            {
+              label: "소득공제 100만 원 절세액",
+              data: bracketChartData.incomeData,
+              backgroundColor: "#93C5BE",
+            },
+            {
+              label: "세액공제 100만 원 절세액",
+              data: bracketChartData.creditData,
+              backgroundColor: "#0F6E56",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "top", labels: { font: { size: 12 }, padding: 10 } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.dataset.label}: ${Math.round(ctx.parsed.y / 10000).toLocaleString()}만 원`,
+              },
+            },
+          },
+          scales: {
+            y: { ticks: { callback: (v) => Math.round(Number(v) / 10000) + "만" } },
+            x: { grid: { display: false } },
+          },
+        },
+      });
+    }
+
+    // ⑪ 연봉 구간별 환급 시뮬레이션 가로 막대 차트
+    const simCtx = document.getElementById("yetsSimulationChart");
+    if (simCtx) {
+      new window.Chart(simCtx, {
+        type: "bar",
+        data: {
+          labels: simChartData.labels,
+          datasets: [{
+            label: "예상 환급액 (추정)",
+            data: simChartData.data,
+            backgroundColor: ["#4DC4A0", "#1D9E75", "#0F6E56", "#0a5a46"],
+            borderRadius: 4,
+          }],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` 약 ${Math.round(Number(ctx.parsed.x) / 10000).toLocaleString()}만 원`,
+              },
+            },
+          },
+          scales: {
+            x: { ticks: { callback: (v) => Math.round(Number(v) / 10000) + "만" } },
+            y: { grid: { display: false } },
+          },
+        },
+      });
+    }
+  });
+</script>

@@ -1,0 +1,355 @@
+.yets-page {
+  // 연말정산 흐름도
+  .yets-flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 20px;
+    background: #f8faf9;
+    border: 1px solid #e8ede9;
+    border-radius: 14px;
+    margin-top: 16px;
+  }
+
+  .yets-flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    min-width: 76px;
+    padding: 8px;
+
+    strong { font-size: 0.84rem; font-weight: 700; color: #111827; }
+    small  { font-size: 0.7rem; color: #6b7280; }
+
+    &--result {
+      background: #e1f5ee;
+      border-radius: 10px;
+      strong { color: #0f6e56; }
+    }
+  }
+
+  .yets-flow-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #0f6e56;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .yets-flow-arrow {
+    color: #9ca3af;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 639px) {
+    .yets-flow {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .yets-flow-arrow { transform: rotate(90deg); align-self: center; }
+  }
+
+  // 소득공제 vs 세액공제 비교표
+  .yets-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 16px;
+  }
+
+  .yets-impact-table {
+    width: 100%;
+    min-width: 540px;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+
+    th, td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e8ede9;
+      text-align: right;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: #f8fcfa; font-weight: 700; }
+
+    td.yets-credit       { color: #0f6e56; font-weight: 700; }
+    td.yets-deduct-low   { color: #9ca3af; }
+    td.yets-deduct-mid   { color: #374151; }
+    td.yets-deduct-high  { color: #b45309; font-weight: 600; }
+  }
+
+  .yets-insight-box {
+    background: #e1f5ee;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.88rem;
+    color: #065f46;
+    font-weight: 600;
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  // 신용카드 전략 카드
+  .yets-card-strategy {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .yets-card-box {
+    border-radius: 12px;
+    padding: 18px;
+
+    &--credit {
+      background: #fff8f0;
+      border: 1px solid #fed7aa;
+      .yets-card-rate { color: #c2410c; }
+    }
+    &--debit {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      .yets-card-rate { color: #0f6e56; }
+    }
+
+    .yets-card-type { font-size: 0.78rem; color: #6b7280; margin-bottom: 4px; }
+    .yets-card-rate { font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
+    .yets-card-desc { font-size: 0.83rem; color: #374151; line-height: 1.55; }
+  }
+
+  // 연금저축·IRP 카드
+  .yets-pension-grid {
+    display: grid;
+    gap: 12px;
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .yets-pension-card {
+    border: 1px solid #dce6e2;
+    border-radius: 12px;
+    padding: 20px;
+    background: #fff;
+
+    .yets-pension-label { font-size: 0.82rem; color: #6b7280; margin-bottom: 6px; }
+    .yets-pension-rate  {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0f6e56;
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+    .yets-pension-max {
+      font-size: 0.86rem;
+      color: #374151;
+      line-height: 1.6;
+      strong { color: #0f6e56; }
+    }
+  }
+
+  // 계산기 CTA 박스
+  .yets-cta-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: #f0fdf4;
+    border: 1.5px solid #86efac;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 20px 0;
+
+    span { font-size: 0.9rem; font-weight: 600; color: #111827; }
+
+    a {
+      padding: 8px 18px;
+      background: #0f6e56;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+
+      &:hover { background: #0a5a46; }
+    }
+  }
+
+  // 제휴 배너
+  .yets-affiliate-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 16px;
+
+    .yets-banner-text { font-size: 0.88rem; font-weight: 600; color: #1e3a5f; }
+    .yets-banner-btn {
+      padding: 7px 16px;
+      background: #1a56db;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+  }
+
+  // 시뮬레이션 케이스 카드
+  .yets-simulation-grid {
+    display: grid;
+    gap: 12px;
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 1000px) { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .yets-simulation-card {
+    border: 1px solid #e8ede9;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+
+    .yets-sim-label  { font-size: 0.74rem; font-weight: 700; color: #0f6e56; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+    .yets-sim-desc   { font-size: 0.82rem; color: #374151; margin-bottom: 12px; line-height: 1.55; min-height: 48px; }
+    .yets-sim-refund { font-size: 1.2rem; font-weight: 800; color: #0f6e56; }
+    .yets-sim-note   { font-size: 0.72rem; color: #9ca3af; margin-top: 2px; }
+  }
+
+  // 막대 차트
+  .yets-chart-wrap {
+    position: relative;
+    height: 280px;
+    margin-top: 16px;
+    @media (min-width: 760px) { height: 340px; }
+  }
+
+  .yets-bar-chart-wrap {
+    position: relative;
+    height: 220px;
+    margin-top: 16px;
+    @media (min-width: 760px) { height: 260px; }
+  }
+
+  // 절세 실수 체크리스트
+  .yets-checklist {
+    border: 1px solid #e8ede9;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .yets-checklist-item {
+    display: flex;
+    gap: 14px;
+    padding: 13px 16px;
+    background: #fff;
+    border-bottom: 1px solid #f3f4f6;
+    align-items: flex-start;
+
+    &:last-child { border-bottom: none; }
+
+    .yets-checklist-rank {
+      min-width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    &:nth-child(-n+3) .yets-checklist-rank {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .yets-checklist-body {
+      flex: 1;
+      strong { display: block; font-size: 0.9rem; font-weight: 700; color: #111827; margin-bottom: 2px; }
+      p      { font-size: 0.81rem; color: #6b7280; margin: 0; line-height: 1.5; }
+    }
+  }
+
+  // 세법 개정 예고 박스
+  .yets-amendment-box {
+    background: #fef9ee;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 16px;
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 1.4em;
+      line-height: 2;
+      li { font-size: 0.88rem; color: #374151; }
+    }
+
+    .yets-amendment-warning {
+      font-size: 0.78rem;
+      color: #92400e;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #fde68a;
+      line-height: 1.5;
+    }
+  }
+
+  // 관련 링크
+  .yets-next-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .yets-next-link {
+    display: block;
+    padding: 13px 16px;
+    border: 1px solid #e8ede9;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #111827;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover { border-color: #0f6e56; background: #f5fbf8; color: #0f6e56; }
+  }
+
+  // 섹션별 인물 공제 박스
+  .yets-deduction-grid {
+    display: grid;
+    gap: 12px;
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 1000px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .yets-deduction-card {
+    border: 1px solid #e8ede9;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+
+    .yets-deduction-title { font-size: 0.9rem; font-weight: 700; color: #111827; margin-bottom: 8px; }
+    .yets-deduction-amount { font-size: 1.1rem; font-weight: 800; color: #0f6e56; margin-bottom: 6px; }
+    .yets-deduction-note { font-size: 0.8rem; color: #6b7280; line-height: 1.55; }
+  }
+}

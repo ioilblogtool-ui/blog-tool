@@ -1,0 +1,425 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  CASE_SIMULATIONS,
+  DISPUTE_STATS,
+  GENDER_AGE_OVERTIME,
+  INDUSTRY_STATS,
+  OPJ_FAQ,
+  OPJ_META,
+  OPJ_REFERENCE_LINKS,
+  OPJ_STEPS,
+  OPJ_STRATEGIES,
+  SUMMARY_CARDS,
+  formatManwon,
+  formatPercent,
+  formatWon,
+} from "../../data/overtimePayByJob2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const sortedByOvertime = [...INDUSTRY_STATS].sort((a, b) => b.monthlyOvertimeHours - a.monthlyOvertimeHours);
+const topOvertime = sortedByOvertime[0];
+const lowestPayRate = [...INDUSTRY_STATS].sort((a, b) => a.overtimePayRate - b.overtimePayRate)[0];
+const highestPopal = [...INDUSTRY_STATS].sort((a, b) => b.popalRate - a.popalRate)[0];
+const highestDispute = [...INDUSTRY_STATS].sort((a, b) => b.disputeIndex - a.disputeIndex)[0];
+const avgOvertime = Math.round(INDUSTRY_STATS.reduce((sum, item) => sum + item.monthlyOvertimeHours, 0) / INDUSTRY_STATS.length);
+const avgPopal = INDUSTRY_STATS.reduce((sum, item) => sum + item.popalRate, 0) / INDUSTRY_STATS.length;
+const latestDispute = DISPUTE_STATS[DISPUTE_STATS.length - 1];
+
+const rateClass = (value: number) => {
+  if (value >= 0.75) return "opj-rate--high";
+  if (value <= 0.4) return "opj-rate--low";
+  return "opj-rate--mid";
+};
+
+const chartData = {
+  industries: INDUSTRY_STATS,
+  disputes: DISPUTE_STATS,
+  genderAge: GENDER_AGE_OVERTIME,
+};
+
+const faqItems = OPJ_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+const reportUrl = `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/reports/overtime-pay-by-job-2026/`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: OPJ_META.title,
+    description: OPJ_META.subtitle,
+    dateModified: "2026-05-16",
+    mainEntityOfPage: reportUrl,
+    author: {
+      "@type": "Organization",
+      name: "비교계산소",
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: OPJ_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title={`${OPJ_META.title} | IT·병원·생산직·사무직 야근수당 비교`}
+  description={OPJ_META.subtitle}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page opj-page">
+    <CalculatorHero
+      eyebrow="직종별 수당 리포트"
+      title={OPJ_META.title}
+      description={OPJ_META.subtitle}
+    />
+
+    <InfoNotice
+      title="추정값 및 법률 정보 안내"
+      lines={[OPJ_META.methodology, OPJ_META.caution, OPJ_META.updatedAt]}
+    />
+
+    <section class="content-section opj-hero-board">
+      <div class="opj-hero-copy">
+        <p class="opj-eyebrow">Editor&apos;s Brief</p>
+        <h2>야근이 많은 직종과 수당을 제대로 받는 직종은 다릅니다</h2>
+        <p>
+          생산직과 의료직은 야근·야간·휴일근로 시간이 크지만 기록 체계가 비교적 명확한 편입니다.
+          반대로 IT와 중소기업 사무직은 포괄임금제와 기록 부재 때문에 실제 수당 체감이 낮아질 수 있습니다.
+          이 리포트는 직종별 차이를 먼저 읽고, 내 상황은 야근수당 계산기로 이어서 확인하도록 구성했습니다.
+        </p>
+        <div class="opj-hero-chips">
+          <span>6개 업종 비교</span>
+          <span>모든 직종 수치 추정 표시</span>
+          <span>포괄임금 초과 사례 포함</span>
+        </div>
+      </div>
+
+      <div class="opj-hero-stats">
+        <article>
+          <span>평균 야근</span>
+          <strong>{avgOvertime}시간</strong>
+          <p>6개 업종 월평균 추정</p>
+        </article>
+        <article>
+          <span>최다 야근</span>
+          <strong>{topOvertime.shortLabel}</strong>
+          <p>월 {topOvertime.monthlyOvertimeHours}시간 추정</p>
+        </article>
+        <article>
+          <span>포괄임금 평균</span>
+          <strong>{formatPercent(avgPopal)}</strong>
+          <p>업종별 적용률 단순 평균</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>2026 직종별 야근수당 리포트에서 먼저 봐야 할 4가지</h2>
+      </div>
+      <div class="opj-summary-grid">
+        {SUMMARY_CARDS.map((card, index) => (
+          <article class={`opj-summary-card ${index === 0 ? "is-primary" : ""}`}>
+            <span>{card.label}</span>
+            <strong>{card.value}</strong>
+            <p>{card.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section opj-chart-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">야근 시간 순위</p>
+        <h2>월평균 연장근로 시간은 생산직·의료직·IT 순으로 높습니다</h2>
+        <p>단위는 월 기준 시간이며, 모든 값은 직종별 비교를 위한 추정값입니다.</p>
+      </div>
+      <div class="opj-chart-wrap opj-chart-wrap--bar">
+        <canvas id="opjOvertimeChart" aria-label="직종별 월평균 야근 시간 차트"></canvas>
+      </div>
+      <div class="opj-rank-cards">
+        {sortedByOvertime.slice(0, 3).map((item, index) => (
+          <article class={`opj-rank-card opj-rank-card--${index + 1}`}>
+            <span class="opj-rank-num">TOP {index + 1}</span>
+            <span class="opj-rank-label">{item.label}</span>
+            <strong class="opj-rank-value">월 {item.monthlyOvertimeHours}시간</strong>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section opj-pay-basis">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">통상임금 기준</p>
+        <h2>수당 계산은 “기본급”이 아니라 통상임금 시간급에서 시작합니다</h2>
+      </div>
+      <div class="opj-basis-grid">
+        <article>
+          <strong>연장근로</strong>
+          <p>통상임금 시간급에 50% 가산을 붙여 계산하는 것이 기본 구조입니다.</p>
+        </article>
+        <article>
+          <strong>야간근로</strong>
+          <p>22시부터 6시 사이 근로는 야간 가산을 별도로 검토해야 합니다.</p>
+        </article>
+        <article>
+          <strong>휴일근로</strong>
+          <p>8시간 이내와 초과 구간의 가산 구조가 달라질 수 있습니다.</p>
+        </article>
+      </div>
+      <div class="opj-cta-box">
+        <p class="opj-cta-text">내 통상임금과 이번 달 야근수당을 바로 계산해보세요.</p>
+        <a href={withBase("/tools/overtime-pay-calculator/")} class="opj-cta-btn">야근수당 계산기 열기</a>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지급률 비교</p>
+        <h2>포괄임금제가 많은 직종일수록 실제 수당 체감이 낮아질 수 있습니다</h2>
+      </div>
+      <div class="opj-table-wrap">
+        <table class="opj-stat-table">
+          <thead>
+            <tr>
+              <th>직종</th>
+              <th>월 야근</th>
+              <th>연장수당 지급률</th>
+              <th>야간수당 지급률</th>
+              <th>휴일수당 지급률</th>
+              <th>포괄임금제 적용</th>
+              <th>대표 직무</th>
+            </tr>
+          </thead>
+          <tbody>
+            {INDUSTRY_STATS.map((item) => (
+              <tr>
+                <td>
+                  <strong>{item.label}</strong>
+                  <span>{item.overtimeNote}</span>
+                </td>
+                <td>{item.monthlyOvertimeHours}시간</td>
+                <td class={rateClass(item.overtimePayRate)}>{formatPercent(item.overtimePayRate)}</td>
+                <td class={rateClass(item.nightPayRate)}>{formatPercent(item.nightPayRate)}</td>
+                <td class={rateClass(item.holidayPayRate)}>{formatPercent(item.holidayPayRate)}</td>
+                <td class={item.popalRate >= 0.6 ? "opj-popal--high" : "opj-popal--low"}>{formatPercent(item.popalRate)}</td>
+                <td>{item.representativeJob}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section opj-popal-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">포괄임금제</p>
+        <h2>IT와 중소기업 사무직은 포괄임금제 초과 여부를 특히 확인해야 합니다</h2>
+        <p>포괄임금제는 약정 자체보다 실제 법정 수당과 약정액의 차액이 핵심입니다.</p>
+      </div>
+      <div class="opj-split-grid">
+        <div class="opj-chart-wrap">
+          <canvas id="opjPopalChart" aria-label="직종별 포괄임금제 적용 비율 차트"></canvas>
+        </div>
+        <div class="opj-callout-list">
+          <article>
+            <span>포괄임금제 최다</span>
+            <strong>{highestPopal.label}</strong>
+            <p>{formatPercent(highestPopal.popalRate)} 적용 추정. 초과분 정산 기준이 불명확하면 분쟁 위험이 커집니다.</p>
+          </article>
+          <article>
+            <span>지급률 최저</span>
+            <strong>{lowestPayRate.label}</strong>
+            <p>연장수당 지급률 {formatPercent(lowestPayRate.overtimePayRate)} 추정. 근무시간 기록 확보가 우선입니다.</p>
+          </article>
+        </div>
+      </div>
+      <div class="opj-cta-box opj-cta-box--warning">
+        <p class="opj-cta-text">포괄임금제라면 약정액보다 실제 법정 수당이 큰지 먼저 확인하세요.</p>
+        <a href={withBase("/tools/overtime-pay-calculator/")} class="opj-cta-btn">포괄임금 초과 확인</a>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">가산율 해석</p>
+        <h2>야간·휴일근로가 많은 직종은 총수당이 급격히 커질 수 있습니다</h2>
+      </div>
+      <div class="opj-rule-grid">
+        <article><strong>연장</strong><span>통상임금의 1.5배 구조</span></article>
+        <article><strong>야간</strong><span>22:00~06:00 구간 0.5배 가산 검토</span></article>
+        <article><strong>휴일 8시간 이내</strong><span>휴일근로 1.5배 구조</span></article>
+        <article><strong>휴일 8시간 초과</strong><span>초과 구간은 2.0배 구조로 검토</span></article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">실수령 시뮬레이션</p>
+        <h2>같은 야근이라도 야간·휴일이 섞이면 수당 규모가 달라집니다</h2>
+      </div>
+      <div class="opj-case-grid">
+        {CASE_SIMULATIONS.map((item) => (
+          <article class="opj-case-card">
+            <div class="opj-case-header">
+              <span class="opj-case-label">{item.label}</span>
+              <span class={`opj-case-tag ${item.popalExcess > 0 ? "opj-case-tag--warning" : "opj-case-tag--ok"}`}>
+                {item.popalExcess > 0 ? "포괄임금 초과" : "별도 정산"}
+              </span>
+            </div>
+            <div class="opj-case-body">
+              <div class="opj-case-row"><span>기본급</span><span>{formatManwon(item.basePay)}</span></div>
+              <div class="opj-case-row"><span>통상임금 시간급</span><span>{formatWon(item.hourlyWage)}</span></div>
+              <div class="opj-case-row"><span>연장·야간·휴일</span><span>{item.overtimeHours}h · {item.nightHours}h · {item.holidayUnder8 + item.holidayOver8}h</span></div>
+              <div class="opj-case-row opj-case-row--total"><span>세전 법정 수당</span><span class="opj-amount">{formatWon(item.totalGross)}</span></div>
+              <div class="opj-case-row opj-case-row--net"><span>세후 추정</span><span>{formatWon(item.totalNet)}</span></div>
+              {item.popalExcess > 0 && (
+                <div class="opj-case-popal-warning">
+                  포괄임금 {formatWon(item.popalAmount)} 초과 추정: {formatWon(item.popalExcess)}
+                </div>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="opj-cta-box">
+        <p class="opj-cta-text">내 직종·기본급·근무시간으로 직접 다시 계산해보세요.</p>
+        <a href={withBase("/tools/overtime-pay-calculator/")} class="opj-cta-btn">내 조건으로 계산하기</a>
+      </div>
+    </section>
+
+    <section class="content-section opj-dispute-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">분쟁 통계</p>
+        <h2>임금체불·수당 미지급 분쟁은 최근에도 계속 늘어나는 흐름입니다</h2>
+        <p>아래 추이는 리포트 해석용 표준화 지수이며, 공식 접수 건수로 보아서는 안 됩니다.</p>
+      </div>
+      <div class="opj-split-grid">
+        <div class="opj-chart-wrap">
+          <canvas id="opjDisputeChart" aria-label="연도별 임금체불 분쟁 추이 차트"></canvas>
+        </div>
+        <div class="opj-callout-list">
+          <article>
+            <span>2026 분쟁 지수</span>
+            <strong>{latestDispute.totalCases}천건</strong>
+            <p>평균 청구액 {formatManwon(latestDispute.avgAmount)} 추정. 오래된 임금은 시효를 먼저 확인해야 합니다.</p>
+          </article>
+          <article>
+            <span>분쟁 위험 업종</span>
+            <strong>{highestDispute.label}</strong>
+            <p>수당 규모가 크거나 근무 기록이 흩어진 업종은 증거 정리가 중요합니다.</p>
+          </article>
+        </div>
+      </div>
+      <div class="opj-consult-banner">
+        <div class="opj-consult-text">
+          <strong>수당 미지급이 의심된다면</strong>
+          근로계약서와 급여명세서, 출퇴근 기록을 모아 고용노동부 민원마당에서 절차를 확인하세요.
+        </div>
+        <a href="https://minwon.moel.go.kr/" class="opj-consult-btn" target="_blank" rel="noopener noreferrer">민원마당 확인</a>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">진정 절차</p>
+        <h2>수당 미지급 대응은 증거 정리에서 시작합니다</h2>
+      </div>
+      <ol class="opj-step-list">
+        {OPJ_STEPS.map((step) => <li>{step}</li>)}
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">성별·연령별 교차</p>
+        <h2>30대 남성 구간에서 야근 시간이 가장 높게 잡힙니다</h2>
+        <p>육아·돌봄 부담, 직급 상승, 프로젝트 책임이 겹치면서 연령대별 체감 차이가 발생합니다.</p>
+      </div>
+      <div class="opj-chart-wrap opj-chart-wrap--bar">
+        <canvas id="opjGenderAgeChart" aria-label="성별 연령별 야근 시간 비교 차트"></canvas>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">협상 전략</p>
+        <h2>직종별로 야근을 줄이는 대화 방식도 달라야 합니다</h2>
+      </div>
+      <div class="opj-strategy-grid">
+        {OPJ_STRATEGIES.map((item) => (
+          <article class="opj-strategy-card">
+            <p class="opj-strategy-title">{item.title}</p>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section opj-reference-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 계산기와 참고 링크</p>
+        <h2>리포트에서 내 상황 계산으로 이어가기</h2>
+      </div>
+      <div class="opj-reference-grid">
+        {OPJ_REFERENCE_LINKS.map((link) => (
+          <a href={link.href.startsWith("/") ? withBase(link.href) : link.href} target={link.href.startsWith("/") ? undefined : "_blank"} rel={link.href.startsWith("/") ? undefined : "noopener noreferrer"}>
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 직종별 야근·수당 실태 리포트 읽는 법"
+      intro={[
+        "이 페이지는 IT·소프트웨어, 대기업 사무직, 중소기업 사무직, 의료·간호, 생산직·제조업, 공공기관 6개 업종의 야근 시간과 수당 지급 체감을 비교하는 리포트입니다.",
+        "핵심은 야근 시간이 많은 직종과 수당을 안정적으로 받는 직종이 같지 않다는 점입니다. 포괄임금제가 많은 직종은 실제 근무시간이 늘어도 추가 수당 체감이 낮아질 수 있습니다.",
+        "리포트 수치는 공식 확정값이 아니라 공개 자료와 사례를 바탕으로 표준화한 추정값입니다. 실제 청구나 협상 전에는 근로계약서, 급여명세서, 출퇴근 기록을 기준으로 다시 계산해야 합니다.",
+        "연장·야간·휴일근로는 통상임금 시간급을 기준으로 보아야 하며, 포괄임금제라도 실제 법정 수당이 약정액을 넘는지 확인하는 과정이 필요합니다.",
+        "리포트를 읽은 뒤에는 야근수당 계산기에 기본급과 근무시간을 입력해 개인별 세전·세후 수당, 포괄임금 초과액을 직접 확인하는 흐름을 권장합니다.",
+      ]}
+      inputPoints={[
+        "직종별 월평균 야근 시간과 주 52시간 초과 위험을 비교합니다.",
+        "연장·야간·휴일수당 지급률과 포괄임금제 적용률을 함께 봅니다.",
+        "세 가지 사례로 실제 수당과 포괄임금 초과액을 확인합니다.",
+      ]}
+      criteria={[
+        "직종별 수치는 리포트용 추정값입니다.",
+        "법정 가산 구조는 고용노동부 안내와 근로기준법 해석을 참고해야 합니다.",
+        "5인 미만 사업장, 감시·단속적 근로, 포괄임금 약정 등은 별도 판단이 필요합니다.",
+        "수당 미지급 청구 전에는 근무시간 증거와 급여자료를 먼저 확보해야 합니다.",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/overtime-pay-calculator/", label: "야근수당 계산기" },
+        { href: "/reports/it-si-sm-salary-comparison-2026/", label: "IT SI·SM 연봉 비교 리포트" },
+        { href: "/reports/large-company-salary-growth-by-years-2026/", label: "대기업 연차별 연봉 성장 비교" },
+        { href: "/tools/salary/", label: "연봉 인상 계산기" },
+      ]}
+    />
+  </main>
+
+  <script id="opjChartData" type="application/json" set:html={JSON.stringify(chartData)}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/overtime-pay-by-job-2026.js")}></script>
+</BaseLayout>

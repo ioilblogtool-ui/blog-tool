@@ -1,0 +1,407 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  JOB_TYPE_LABELS,
+  OVERTIME_RATE,
+  NET_RATE,
+  OPC_PRESETS,
+  OPC_FAQ,
+  OPC_RELATED_LINKS,
+} from "../../data/overtimePayCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = { JOB_TYPE_LABELS, OVERTIME_RATE, NET_RATE, PRESETS: OPC_PRESETS };
+
+const faqSchema = OPC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title="야근수당 계산기 - 연장·야간·휴일 수당 자동 계산 + 포괄임금 초과 확인"
+  description="기본급과 연장·야간·휴일 근로 시간을 입력하면 통상임금 기반 수당을 자동 계산합니다. 포괄임금제 한도 초과 여부 확인 및 세후 실수령 증가액까지 한눈에 확인하세요."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "야근수당 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: "통상임금 기반 연장·야간·휴일 수당을 자동 계산하고 포괄임금 초과 여부를 확인하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/overtime-pay-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="overtime-pay-calculator" pageClass="op-page opc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="직종별 야근수당 계산기"
+        title="직종별 야근수당 계산기"
+        description="통상임금 기반 연장·야간·휴일 수당을 계산하고 포괄임금 초과 여부를 확인합니다"
+      />
+      <InfoNotice
+        lines={[
+          "이 계산기는 근로기준법 기준 일반적인 산정 방식을 적용합니다.",
+          "실제 수당은 근로계약·단체협약에 따라 다를 수 있으며, 정확한 판단은 노무사 상담을 권장합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="opcResetBtn" copyId="opcCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <!-- 프리셋 버튼 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 예시</p>
+            <h2 class="panel__title">직종별 예시로 바로 넣기</h2>
+          </div>
+        </div>
+        <div class="opc-preset-grid" id="opcPresetGrid">
+          {OPC_PRESETS.map((p, i) => (
+            <button
+              type="button"
+              class={`opc-preset-btn${i === 0 ? " is-active" : ""}`}
+              data-preset-id={p.id}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <!-- 입력 패널 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 입력</p>
+            <h2 class="panel__title">근로 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">기본급과 근로 시간을 입력하면 법정 수당을 자동 계산합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>직종 유형</span>
+            <select data-opc-input="jobType" class="select" id="opcJobType">
+              {Object.entries(JOB_TYPE_LABELS).map(([val, label]) => (
+                <option value={val} selected={val === 'office'}>{label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>기본급 (원)</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              data-opc-input="basePay"
+              id="opcBasePay"
+              class="input-number"
+              value="3,000,000"
+            />
+            <small class="opc-field-hint">식대·교통비 등 각종 수당을 제외한 기본급만 입력하세요</small>
+          </label>
+
+          <label class="field">
+            <span>월 소정근로시간 (시간)</span>
+            <input
+              type="number"
+              min="1"
+              max="300"
+              data-opc-input="scheduledHours"
+              id="opcScheduledHours"
+              class="input-number"
+              value="209"
+            />
+            <small class="opc-field-hint">일반적으로 주 40시간 기준 월 209시간입니다</small>
+          </label>
+
+          <label class="field">
+            <span>연장근로 시간 (이번 달)</span>
+            <input
+              type="number"
+              min="0"
+              max="200"
+              data-opc-input="overtimeHours"
+              id="opcOvertimeHours"
+              class="input-number"
+              value="0"
+            />
+          </label>
+
+          <label class="field">
+            <span>야간근로 시간 (이번 달)</span>
+            <input
+              type="number"
+              min="0"
+              max="200"
+              data-opc-input="nightHours"
+              id="opcNightHours"
+              class="input-number"
+              value="0"
+            />
+            <small class="opc-field-hint">오후 10시~오전 6시 사이 실제 근무 시간</small>
+          </label>
+
+          <label class="field">
+            <span>휴일근로 8시간 이내 (시간)</span>
+            <input
+              type="number"
+              min="0"
+              max="8"
+              data-opc-input="holidayUnder8"
+              id="opcHolidayUnder8"
+              class="input-number"
+              value="0"
+            />
+          </label>
+
+          <label class="field">
+            <span>휴일근로 8시간 초과 (시간)</span>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              data-opc-input="holidayOver8"
+              id="opcHolidayOver8"
+              class="input-number"
+              value="0"
+            />
+          </label>
+        </div>
+
+        <!-- 사업장 규모 -->
+        <div class="opc-company-size-group">
+          <p class="opc-group-label">사업장 규모</p>
+          <div class="opc-radio-group">
+            <label class="opc-radio-label">
+              <input type="radio" name="opcCompanySize" data-opc-input="companySize" value="over30" checked />
+              <span>30인 이상</span>
+            </label>
+            <label class="opc-radio-label">
+              <input type="radio" name="opcCompanySize" data-opc-input="companySize" value="under30" />
+              <span>5~29인</span>
+            </label>
+            <label class="opc-radio-label">
+              <input type="radio" name="opcCompanySize" data-opc-input="companySize" value="under5" />
+              <span>5인 미만</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 5인 미만 안내 배너 -->
+        <div class="opc-warning-banner" id="opcUnder5Banner">
+          <span class="opc-warning-icon">ℹ️</span>
+          <span>5인 미만 사업장은 연장·휴일 가산율(+50%)이 적용되지 않습니다. 야간 가산(+50%)은 적용됩니다.</span>
+        </div>
+
+        <!-- 포괄임금 토글 -->
+        <div class="opc-popal-toggle-row">
+          <label class="opc-toggle-label">
+            <span>포괄임금제 적용</span>
+            <input type="checkbox" data-opc-input="isPopal" id="opcIsPopal" class="opc-toggle-checkbox" />
+            <span class="opc-toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="opc-popal-field" id="opcPopalField">
+          <label class="field">
+            <span>포괄임금 내 수당 합계 (원)</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              data-opc-input="popalAmount"
+              id="opcPopalAmount"
+              class="input-number"
+              value="0"
+            />
+            <small class="opc-field-hint">급여명세서에서 연장·야간·휴일 수당으로 표기된 금액의 합계</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- 결과 영역 -->
+    <section class="opc-section">
+      <div class="opc-section__head">
+        <p class="opc-section__eyebrow">계산 결과</p>
+        <h2>이번 달 야근 기준 법정 수당 내역</h2>
+        <p class="opc-result-message" id="opcResultMessage">입력값을 바꾸면 수당이 즉시 계산됩니다.</p>
+      </div>
+
+      <!-- KPI 카드 4개 -->
+      <div class="opc-kpi-grid">
+        <article class="opc-kpi-card opc-kpi-card--main">
+          <p class="opc-kpi-label">수당 합계 (세전)</p>
+          <strong class="opc-kpi-value" id="opcTotalGrossValue">-</strong>
+          <span class="opc-kpi-sub">이번 달 추가 수령 예상액</span>
+        </article>
+        <article class="opc-kpi-card">
+          <p class="opc-kpi-label">통상임금 (시간급)</p>
+          <strong class="opc-kpi-value" id="opcHourlyWageValue">-</strong>
+          <span class="opc-kpi-sub">기본급 ÷ 소정근로시간</span>
+        </article>
+        <article class="opc-kpi-card">
+          <p class="opc-kpi-label">수당 합계 (세후 추정)</p>
+          <strong class="opc-kpi-value" id="opcTotalNetValue">-</strong>
+          <span class="opc-kpi-sub">소득세·4대보험 공제 후 추정</span>
+        </article>
+        <article class="opc-kpi-card" id="opcPopalStatusCard">
+          <p class="opc-kpi-label">포괄임금 상태</p>
+          <strong class="opc-kpi-value" id="opcPopalStatusValue">미적용</strong>
+          <span class="opc-kpi-sub" id="opcPopalStatusSub">포괄임금제 토글을 켜면 확인됩니다</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- 경고 배너들 -->
+    <div class="opc-warning-banner" id="opcPopalWarningBanner">
+      <span class="opc-warning-icon">⚠️</span>
+      <div>
+        <strong id="opcPopalWarningText">포괄임금 한도를 초과했습니다.</strong>
+        <p>이번 달 야근 기준 포괄임금 한도를 초과했습니다. 사업주에게 차액 지급을 요구할 수 있습니다.</p>
+        <a href="#" class="opc-warning-cta" rel="noopener noreferrer">노무사 무료 상담 받기 →</a>
+      </div>
+    </div>
+
+    <div class="opc-warning-banner" id="opc52hrWarningBanner">
+      <span class="opc-warning-icon">⚠️</span>
+      <div>
+        <strong>주 52시간 초과 경고</strong>
+        <p>이번 달 연장근로 시간이 주 52시간 환산 기준을 초과합니다. 사업주는 근로기준법 위반으로 처벌받을 수 있습니다.</p>
+      </div>
+    </div>
+
+    <!-- 수당 상세 분해 테이블 -->
+    <section class="opc-section">
+      <div class="opc-section__head">
+        <p class="opc-section__eyebrow">수당 상세 내역</p>
+        <h2>항목별 수당 분해</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="opc-detail-table" id="opcDetailTable">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>시간</th>
+              <th>가산율</th>
+              <th>수당 (원)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>연장근로 수당</td>
+              <td id="opcOvertimeHoursCell">-</td>
+              <td class="rate-label" id="opcOvertimeRateCell">×1.5</td>
+              <td id="opcOvertimePayCell">-</td>
+            </tr>
+            <tr>
+              <td>야간근로 가산</td>
+              <td id="opcNightHoursCell">-</td>
+              <td class="rate-label">×0.5</td>
+              <td id="opcNightPayCell">-</td>
+            </tr>
+            <tr>
+              <td>휴일근로 (8h 이내)</td>
+              <td id="opcHoliday1HoursCell">-</td>
+              <td class="rate-label" id="opcHoliday1RateCell">×1.5</td>
+              <td id="opcHoliday1PayCell">-</td>
+            </tr>
+            <tr>
+              <td>휴일근로 (8h 초과)</td>
+              <td id="opcHoliday2HoursCell">-</td>
+              <td class="rate-label" id="opcHoliday2RateCell">×2.0</td>
+              <td id="opcHoliday2PayCell">-</td>
+            </tr>
+            <tr class="is-total">
+              <td colspan="3">합계 (세전)</td>
+              <td id="opcTotalGrossCell">-</td>
+            </tr>
+            <tr class="is-total">
+              <td colspan="3">합계 (세후 추정) <small style="font-weight:400;font-size:0.78rem;">간이 추정값</small></td>
+              <td id="opcTotalNetCell">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 포괄임금 비교 카드 -->
+    <div class="opc-popal-card" id="opcPopalCard">
+      <p class="opc-section__eyebrow" style="margin-bottom:12px;">포괄임금 비교</p>
+      <div class="opc-popal-row">
+        <span>법정 수당 합계</span>
+        <strong id="opcPopalLegalPay">-</strong>
+      </div>
+      <div class="opc-popal-row">
+        <span>포괄임금 내 수당</span>
+        <strong id="opcPopalIncluded">-</strong>
+      </div>
+      <div class="opc-popal-row">
+        <span>차액</span>
+        <strong class="opc-popal-excess" id="opcPopalExcess">-</strong>
+      </div>
+      <div style="margin-top:14px;">
+        <a href="#" class="opc-warning-cta" rel="noopener noreferrer" id="opcPopalConsultLink" style="display:none;">노무사 무료 상담 받기 →</a>
+      </div>
+    </div>
+
+    <!-- 수당 구성 파이 차트 -->
+    <section class="opc-section">
+      <div class="opc-section__head">
+        <p class="opc-section__eyebrow">수당 구성 비율</p>
+        <h2>항목별 비중</h2>
+      </div>
+      <div class="opc-chart-wrap">
+        <canvas id="opcChart" width="280" height="280"></canvas>
+        <div class="opc-chart-center" id="opcChartCenter">-</div>
+      </div>
+    </section>
+
+    <!-- 직종별 안내 카드 -->
+    <div class="opc-job-tip" id="opcJobTip"></div>
+
+    <!-- 노무사 제휴 CTA 배너 -->
+    <div class="opc-consult-banner">
+      <span class="opc-consult-text">수당 미지급이 의심되거나 포괄임금 초과가 확인됐다면 노무사 무료 상담을 받아보세요</span>
+      <a href="#" class="opc-consult-btn" rel="noopener noreferrer">노무사 무료 상담 →</a>
+    </div>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="야근수당 계산기 — 통상임금 기반 연장·야간·휴일 수당과 포괄임금 초과 여부를 확인하세요"
+        intro={[
+          "야근수당은 근로기준법에 따라 통상임금을 기준으로 산정됩니다. 연장근로는 통상임금의 50%를 가산한 1.5배, 야간근로(22:00~06:00)는 0.5배 추가, 휴일근로는 8시간 이내 1.5배·8시간 초과 2.0배를 적용합니다. 이 계산기는 기본급과 근로 시간만 입력하면 법정 수당을 자동으로 계산해 드립니다.",
+          "포괄임금제를 적용 중이라면, 실제 야근 시간에 따른 법정 수당이 포괄임금 범위를 초과하는지 반드시 확인해야 합니다. 법원은 포괄임금이 법정 수당에 미치지 못하는 경우 사업주가 차액을 지급해야 한다고 판결하고 있습니다. 특히 IT·사무직에서 포괄임금 초과 사례가 빈번하므로 이 계산기로 먼저 확인해보세요.",
+          "5인 미만 사업장의 경우 근로기준법 일부 조항이 적용되지 않아 연장·휴일 가산율(+50%)이 적용되지 않습니다. 야간 가산(+50%)은 5인 미만도 적용됩니다. 이 계산기는 사업장 규모를 선택하면 자동으로 적용 가산율을 달리 적용합니다.",
+          "세후 추정 수당은 간이 소득세율과 4대보험 근로자 부담분을 반영한 추정값입니다. 실제 세후 금액은 전체 소득 규모와 공제 항목에 따라 달라질 수 있으며, 정확한 계산은 급여명세서를 기준으로 확인하세요.",
+          "이 계산기의 결과는 근로기준법 일반 기준에 따른 참고값입니다. 실제 수당은 근로계약서, 단체협약, 취업규칙에 따라 달라질 수 있습니다. 수당 미지급이 의심된다면 고용노동부 민원마당을 통해 진정을 신청하거나 노무사 상담을 받는 것을 권장합니다.",
+        ]}
+        faq={OPC_FAQ}
+        related={OPC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="opcData" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/overtime-pay-calculator.js")}></script>
+</BaseLayout>

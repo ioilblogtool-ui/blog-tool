@@ -1,0 +1,352 @@
+.opc-page {
+
+  .opc-section {
+    margin-top: 32px;
+
+    &__head {
+      margin-bottom: 20px;
+
+      h2 { font-size: 1.1rem; font-weight: 700; margin: 4px 0 6px; }
+    }
+
+    &__eyebrow {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #0f6e56;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+  }
+
+  .opc-result-message {
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  // 프리셋 버튼
+  .opc-preset-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .opc-preset-btn {
+    border: 1px solid #dce6e2;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    background: #fff;
+    color: #374151;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+    &:hover { background: #f0fdf4; border-color: #0f6e56; }
+    &.is-active { background: #0f6e56; color: #fff; border-color: #0f6e56; }
+  }
+
+  // 입력 보조 텍스트
+  .opc-field-hint {
+    display: block;
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  // 사업장 규모 라디오
+  .opc-company-size-group {
+    margin-top: 20px;
+  }
+
+  .opc-group-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 10px;
+  }
+
+  .opc-radio-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .opc-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: #374151;
+
+    input[type="radio"] { accent-color: #0f6e56; }
+  }
+
+  // 포괄임금 토글
+  .opc-popal-toggle-row {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e8ede9;
+  }
+
+  .opc-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #374151;
+    user-select: none;
+  }
+
+  .opc-toggle-checkbox {
+    display: none;
+
+    &:checked + .opc-toggle-slider {
+      background: #0f6e56;
+
+      &::before { transform: translateX(20px); }
+    }
+  }
+
+  .opc-toggle-slider {
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    background: #d1d5db;
+    border-radius: 12px;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+    }
+  }
+
+  // 포괄임금 입력 슬라이드
+  .opc-popal-field {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+    &.is-open { max-height: 140px; }
+  }
+
+  // KPI 카드
+  .opc-kpi-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+
+    @media (min-width: 900px) { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .opc-kpi-card {
+    background: #f8faf9;
+    border: 1px solid #e8ede9;
+    border-radius: 12px;
+    padding: 16px;
+
+    &--main {
+      background: #f0fdf4;
+      border-color: #6ee7b7;
+    }
+
+    &.is-warning {
+      background: #fff5f5;
+      border-color: #fca5a5;
+
+      .opc-kpi-value { color: #b91c1c; }
+    }
+  }
+
+  .opc-kpi-label {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: 0 0 6px;
+    font-weight: 500;
+  }
+
+  .opc-kpi-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .opc-kpi-sub {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  // 수당 분해 테이블
+  .opc-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8ede9;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: #f8fcfa;
+      font-weight: 700;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    td:not(:first-child) { text-align: right; }
+
+    tr.is-total td {
+      font-weight: 700;
+      background: #f0fdf4;
+    }
+
+    td.rate-label {
+      color: #6b7280;
+      font-size: 0.82rem;
+    }
+  }
+
+  // 포괄임금 비교 카드
+  .opc-popal-card {
+    border: 1.5px solid #e8ede9;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 20px;
+    display: none;
+
+    &.is-visible { display: block; }
+  }
+
+  .opc-popal-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .opc-popal-excess {
+    font-size: 1.05rem;
+    font-weight: 700;
+
+    &.is-over { color: #b91c1c; }
+    &.is-ok   { color: #0f6e56; }
+  }
+
+  // 경고 배너
+  .opc-warning-banner {
+    display: none;
+    background: #fff5f5;
+    border: 1px solid #fca5a5;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 0.88rem;
+    color: #7f1d1d;
+    gap: 10px;
+    align-items: flex-start;
+
+    &.is-visible { display: flex; }
+
+    p { margin: 4px 0 0; line-height: 1.5; }
+  }
+
+  .opc-warning-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+  .opc-warning-cta {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 14px;
+    background: #b91c1c;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  // 노무사 제휴 배너
+  .opc-consult-banner {
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .opc-consult-text {
+    font-size: 0.92rem;
+    color: #1e3a5f;
+    font-weight: 600;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .opc-consult-btn {
+    padding: 8px 18px;
+    background: #1a56db;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  // 파이 차트
+  .opc-chart-wrap {
+    position: relative;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .opc-chart-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
+    font-weight: 800;
+    color: #111827;
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  // 직종별 안내 카드
+  .opc-job-tip {
+    background: #f8faf9;
+    border-left: 3px solid #0f6e56;
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin-top: 20px;
+    font-size: 0.88rem;
+    color: #374151;
+    line-height: 1.7;
+    display: none;
+  }
+}

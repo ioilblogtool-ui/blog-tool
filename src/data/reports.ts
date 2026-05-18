@@ -50,6 +50,13 @@ export const reports: ReportMeta[] = [
     badges: ["연차별", "연봉성장", "2026"],
   },
   {
+    slug: "overtime-pay-by-job-2026",
+    title: "2026 직종별 야근·수당 실태 완전 비교",
+    description: "IT·사무직·의료·생산직·공공기관 6개 업종의 야근 시간, 수당 지급률, 포괄임금제 위험 구간을 비교하는 리포트입니다.",
+    order: 6.3,
+    badges: ["야근수당", "포괄임금", "2026"],
+  },
+  {
     slug: "lee-jaemyung-government-officials-assets-salary-2026",
     title: "2026 이재명 정부 핵심 공직자 재산·보수 비교 리포트",
     description: "정기 재산변동 공개 기준으로 이재명 정부 핵심 공직자 15명의 총재산, 세부 자산, 공직 보수를 한 화면에서 비교하는 인터랙티브 리포트입니다.",
@@ -218,6 +225,13 @@ export const reports: ReportMeta[] = [
     badges: ["교육", "입학준비", "2026"],
   },
   {
+    slug: "daycare-kindergarten-cost-2026",
+    title: "2026 어린이집·유치원 실비용 완전 비교",
+    description: "보육료·유아학비 지원금, 특별활동비, 방과후, 지역별 격차, 맞벌이 시나리오까지 어린이집과 유치원 실비용을 비교합니다.",
+    order: 27.2,
+    badges: ["육아", "어린이집", "유치원", "2026"],
+  },
+  {
     slug: "overseas-travel-cost-compare-2026",
     title: "일본·동남아·유럽 해외여행 비용 비교 2026",
     description: "도쿄, 오사카, 방콕, 하노이, 파리 등 주요 도시의 항공권·숙소·식비·교통비를 기준으로 2026년 해외여행 총비용을 비교하는 리포트입니다.",
@@ -377,5 +391,26 @@ export const reports: ReportMeta[] = [
     description: "트래블월렛, 트래블로그, 토스, 신한 SOL트래블 등 주요 트래블카드와 은행 환전, 공항 환전, 현지 ATM의 실제 비용을 비교합니다.",
     order: 44,
     badges: ["트래블카드", "환전", "여행", "2026"],
+  },
+  {
+    slug: "newlywed-cost-2026",
+    title: "2026 신혼부부 결혼·신혼집 비용 완전 분석",
+    description: "신혼집 보증금·혼수·정착 비용·정부 지원금을 14개 섹션으로 분석. 맞벌이·외벌이 가계부 시뮬레이션, 특례대출 총정리, 2016 vs 2026 비용 변화 포함.",
+    order: 46,
+    badges: ["신규", "신혼", "결혼", "2026"],
+  },
+  {
+    slug: "baby-formula-brand-cost-comparison-2026",
+    title: "2026 분유 브랜드별 실비용 완전 비교",
+    description: "아이엠마더·앱솔루트·압타밀·히프·시밀락 등 9개 브랜드를 단가·월 비용·12개월 누적 기준으로 비교합니다.",
+    order: 45,
+    badges: ["분유", "브랜드 비교", "육아비용", "2026"],
+  },
+  {
+    slug: "2026-year-end-tax-saving-guide",
+    title: "2026 연말정산 절세 전략 완전 정복",
+    description: "공제 항목별 절세 전략, 연봉 구간별 환급 시뮬레이션, 절세 실수 TOP10 체크리스트를 총정리합니다.",
+    order: 46,
+    badges: ["연말정산", "절세", "세금", "2026"],
   },
 ];
