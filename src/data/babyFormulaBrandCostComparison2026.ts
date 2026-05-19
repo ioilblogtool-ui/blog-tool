@@ -437,7 +437,7 @@ export const BFC_FAQ: BfcFaq[] = [
 
 // ── 관련 링크 ────────────────────────────────────────────
 export const BFC_RELATED_LINKS: BfcLink[] = [
-  { href: "/tools/breastfeeding-vs-formula-cost/", label: "모유수유 vs 분유 비용 계산기" },
+  { href: "/tools/formula-cost/", label: "월령별 분유 비용 계산기" },
   { href: "/tools/diaper-cost/", label: "기저귀 비용 계산기" },
   { href: "/reports/baby-cost-guide-first-year/", label: "신생아부터 돌까지 육아비용 총정리" },
   { href: "/reports/baby-cost-2016-vs-2026/", label: "아이 키우는 비용 2016 vs 2026" },

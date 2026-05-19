@@ -338,7 +338,7 @@ const barChartData = {
       </div>
       <div class="bfc-cta-box">
         <span class="bfc-cta-text">내 아기 월령 기준으로 남은 기간 비용을 직접 계산해보세요.</span>
-        <a href={withBase("/tools/breastfeeding-vs-formula-cost/")} class="bfc-cta-btn">분유 비용 계산기</a>
+        <a href={withBase("/tools/formula-cost/")} class="bfc-cta-btn">분유 비용 계산기</a>
       </div>
     </section>
 
@@ -420,10 +420,9 @@ const barChartData = {
             <div class="bfc-sub-discount">{sub.discountRate}</div>
             <div class="bfc-sub-saving">월 약 {sub.monthlySaving.toLocaleString("ko-KR")}원 절감 (추정)</div>
             <div class="bfc-sub-condition">{sub.condition}</div>
-            {sub.affiliateUrl
-              ? <a class="bfc-sub-link" href={sub.affiliateUrl} target="_blank" rel="noopener sponsored">신청하기</a>
-              : <span class="bfc-sub-empty">링크 준비 중</span>
-            }
+            {sub.affiliateUrl && (
+              <a class="bfc-sub-link" href={sub.affiliateUrl} target="_blank" rel="noopener sponsored">신청하기</a>
+            )}
           </div>
         ))}
       </div>
@@ -437,8 +436,8 @@ const barChartData = {
       </div>
       <p>완전 분유 대비 혼합 수유(모유 50% 병행)를 하면 분유 소비량이 절반으로 줄어 12개월 기준 약 30~65만 원을 절감할 수 있습니다. (일반 분유 기준, 추정) 비용 절감 외에도 수유 부담 분산 효과가 있습니다.</p>
       <div class="bfc-cta-box">
-        <span class="bfc-cta-text">모유수유 vs 분유 비용을 수유 방식·월령별로 직접 계산해보세요.</span>
-        <a href={withBase("/tools/breastfeeding-vs-formula-cost/")} class="bfc-cta-btn">비용 계산기</a>
+        <span class="bfc-cta-text">월령별 분유 사용량과 캔 단가를 바탕으로 남은 기간 비용을 직접 계산해보세요.</span>
+        <a href={withBase("/tools/formula-cost/")} class="bfc-cta-btn">비용 계산기</a>
       </div>
     </section>
 
