@@ -42,6 +42,12 @@ export interface HyundaiPackageConfig {
   stockReferencePrice: number;
 }
 
+export interface YearBonusScenario {
+  conservative: number;
+  base: number;
+  aggressive: number;
+}
+
 export interface CompanyConfig {
   companyCode: CompanyCode;
   companyName: string;
@@ -54,6 +60,7 @@ export interface CompanyConfig {
   presets: BonusPreset[];
   presetHeading: string;
   futureProjection: ProjectionConfig;
+  bonusRatioByYear?: Partial<Record<"2026" | "2027" | "2028", YearBonusScenario>>;
   notes: string[];
   payoutLabels: string[];
   hyundaiPackage?: HyundaiPackageConfig;
@@ -86,23 +93,23 @@ export const companyConfigs: CompanyConfig[] = [
     heroLabel: "TAI + OPI",
     bonusModel: "SAMSUNG_TAI_OPI",
     baseSalaryByRank: {
-      STAFF: 54000000,
-      ASSISTANT_MANAGER: 70000000,
-      MANAGER: 86000000,
-      DEPUTY_GM: 103000000,
-      GM: 124000000
+      STAFF: 70000000,
+      ASSISTANT_MANAGER: 90000000,
+      MANAGER: 110000000,
+      DEPUTY_GM: 135000000,
+      GM: 160000000
     },
     defaultRank: "MANAGER",
     defaultPresetKey: "STANDARD",
     scenarioMultiplier: {
-      CONSERVATIVE: 0.82,
+      CONSERVATIVE: 0.74,
       BASE: 1,
-      AGGRESSIVE: 1.1
+      AGGRESSIVE: 1.08
     },
     presets: [
-      { key: "SUPPORT", label: "보수적 조직", description: "지원조직 또는 낮은 지급률 구간 느낌", bonusRatio: 0.2 },
-      { key: "STANDARD", label: "평균 조직", description: "평균적 사업부 지급률 가정", bonusRatio: 0.41 },
-      { key: "UPSIDE", label: "상위 조직", description: "2026년 1월 공지된 OPI 상단 구간에 가까운 상위 사업부 느낌", bonusRatio: 0.58 }
+      { key: "SUPPORT", label: "낮은 OPI 조직", description: "CSS 등 낮은 지급률 구간에 가까운 2026 실제 참고값", bonusRatio: 0.11 },
+      { key: "STANDARD", label: "DS 반도체 기준", description: "2026 실제 참고 OPI 47%와 TAI를 함께 보는 기준값", bonusRatio: 0.55 },
+      { key: "UPSIDE", label: "MX 상단 조직", description: "2026 실제 참고 OPI 50% 상단에 가까운 조직", bonusRatio: 0.58 }
     ],
     presetHeading: "조직 프리셋",
     futureProjection: {
@@ -111,9 +118,9 @@ export const companyConfigs: CompanyConfig[] = [
       scenarioAdjust: { CONSERVATIVE: -0.01, BASE: 0, AGGRESSIVE: 0.01 }
     },
     notes: [
-      "삼성전자는 TAI와 OPI 구조를 단순화했습니다. 삼성 자료 기준 OPI는 연봉의 최대 50%, TAI는 월급의 최대 200% 범위입니다.",
-      "연합뉴스 2026년 1월 16일 보도에서는 2025년분 OPI가 사업부별로 상단 47~50% 수준까지 공지됐습니다.",
-      "이 계산기는 사업부, 개인평가, 반기 공지를 모두 단순화한 시나리오형 결과입니다."
+      "삼성전자는 TAI와 OPI 구조를 단순화했습니다. OPI는 현행 구조상 연봉 50% 상한을 기준으로 보되, 사업부별 2026 실제 참고 지급률 편차를 반영했습니다.",
+      "개별 삼성전자 계산기에서 반영한 DS 47%, MX 50%, CSS 11%, 지원조직 34~39% 흐름을 상위 비교용 프리셋으로 압축했습니다.",
+      "최근 노조 요구안의 영업이익 연동 OPI 쟁점은 개별 삼성전자 계산기에서 상세 계산하고, 이 페이지에서는 3사 비교가 흐트러지지 않도록 OPI 비율 프리셋으로만 반영합니다."
     ],
     payoutLabels: ["TAI 추정", "OPI 추정"]
   },
@@ -123,34 +130,39 @@ export const companyConfigs: CompanyConfig[] = [
     heroLabel: "PI + PS",
     bonusModel: "SK_PI_PS",
     baseSalaryByRank: {
-      STAFF: 58000000,
-      ASSISTANT_MANAGER: 76000000,
-      MANAGER: 95000000,
-      DEPUTY_GM: 114000000,
-      GM: 135000000
+      STAFF: 80000000,
+      ASSISTANT_MANAGER: 100000000,
+      MANAGER: 120000000,
+      DEPUTY_GM: 150000000,
+      GM: 180000000
     },
     defaultRank: "MANAGER",
     defaultPresetKey: "NORMAL",
     scenarioMultiplier: {
-      CONSERVATIVE: 0.72,
+      CONSERVATIVE: 0.79,
       BASE: 1,
-      AGGRESSIVE: 1.18
+      AGGRESSIVE: 1.16
     },
     presets: [
-      { key: "DOWN", label: "다운사이클", description: "업황 둔화와 메모리 회복 지연 가정", bonusRatio: 0.45 },
-      { key: "NORMAL", label: "노멀", description: "평균 업황과 기준 지급률 가정", bonusRatio: 1.2 },
-      { key: "SUPER", label: "슈퍼사이클", description: "2026년 2월 PS 2964% 사례를 일부 반영한 강한 업황 가정", bonusRatio: 2.35 }
+      { key: "DOWN", label: "보수 지급", description: "PS 2400%와 낮은 PI를 반영한 보수 구간", bonusRatio: 1.23 },
+      { key: "NORMAL", label: "2026 실제 기준", description: "PS 2964%와 PI 기준값을 함께 반영한 구간", bonusRatio: 1.56 },
+      { key: "SUPER", label: "슈퍼사이클", description: "PS 3300%와 높은 PI를 반영한 공격 구간", bonusRatio: 1.8 }
     ],
     presetHeading: "업황 프리셋",
     futureProjection: {
       salaryGrowth: { LOW: 0.03, NORMAL: 0.05, HIGH: 0.07 },
-      bonusGrowth: { LOW: -0.05, NORMAL: 0.05, HIGH: 0.13 },
+      bonusGrowth: { LOW: 0.06, NORMAL: 0.42, HIGH: 0.72 },
       scenarioAdjust: { CONSERVATIVE: -0.02, BASE: 0, AGGRESSIVE: 0.02 }
+    },
+    bonusRatioByYear: {
+      "2026": { conservative: 1.23, base: 1.56, aggressive: 1.8 },
+      "2027": { conservative: 2.78, base: 3.08, aggressive: 3.45 },
+      "2028": { conservative: 2.98, base: 3.28, aggressive: 3.65 }
     },
     notes: [
       "SK하이닉스는 PI와 PS를 업황 프리셋 중심으로 단순화했습니다.",
-      "SK hynix Newsroom의 2026년 1월 28일 FY2025 공시에 따르면 매출 97.1467조 원, 영업이익 47.2063조 원을 기록했습니다.",
-      "2026년 2월 공개된 PS 2964% 사례처럼 업황 민감도가 매우 큰 구조라 3개년 차이를 크게 보이도록 설계했습니다."
+      "개별 SK하이닉스 계산기와 동일하게 2026 실제 참고 PS 2,964%, 2027년 기준 6,000%, 2028년 기준 6,400% 시나리오 흐름을 상위 비교에 반영했습니다.",
+      "2026·2027 영업이익 컨센서스 업데이트 이후 하이닉스는 3사 중 업황 민감도가 가장 크게 보이도록 조정했습니다."
     ],
     payoutLabels: ["PI 추정", "PS 추정"]
   },
@@ -160,11 +172,11 @@ export const companyConfigs: CompanyConfig[] = [
     heroLabel: "패키지 보상",
     bonusModel: "HYUNDAI_PACKAGE",
     baseSalaryByRank: {
-      STAFF: 51000000,
-      ASSISTANT_MANAGER: 64000000,
-      MANAGER: 79000000,
-      DEPUTY_GM: 94000000,
-      GM: 112000000
+      STAFF: 65000000,
+      ASSISTANT_MANAGER: 82000000,
+      MANAGER: 98000000,
+      DEPUTY_GM: 118000000,
+      GM: 142000000
     },
     defaultRank: "MANAGER",
     defaultPresetKey: "PACKAGE",
@@ -174,9 +186,9 @@ export const companyConfigs: CompanyConfig[] = [
       AGGRESSIVE: 1.06
     },
     presets: [
-      { key: "PACKAGE", label: "임단협 패키지", description: "2025년 9월 잠정합의안 기준 패키지를 중심으로 반영한 가정", bonusRatio: 1 },
-      { key: "STEADY", label: "안정 증가", description: "패키지는 유지하되 보수적으로 반영한 가정", bonusRatio: 0.95 },
-      { key: "UPSIDE", label: "주식 포함 업사이드", description: "패키지와 주식 반영을 조금 더 강하게 잡은 가정", bonusRatio: 1.04 }
+      { key: "PACKAGE", label: "기존 합의 패키지", description: "성과급 450% + 정액 1,580만 원 + 자사주 30주 기준", bonusRatio: 1 },
+      { key: "STEADY", label: "보수 패키지", description: "기존 합의 패키지를 보수적으로 반영한 가정", bonusRatio: 0.92 },
+      { key: "UPSIDE", label: "요구안 참고", description: "2026 임협 요구안 이슈를 반영한 참고 상단 시나리오", bonusRatio: 1.12 }
     ],
     presetHeading: "패키지 프리셋",
     futureProjection: {
@@ -186,17 +198,18 @@ export const companyConfigs: CompanyConfig[] = [
     },
     notes: [
       "현대자동차는 임단협형 패키지 보상을 단순화해 월 기준급과 정액 보상을 합산합니다.",
-      "2025년 9월 9일 보도 기준 잠정합의안에는 성과급 450% + 1,580만 원, 주식 30주, 상품권 20만 원이 포함됐습니다.",
-      "주식 포함 토글은 참고용이며 실제 주가와 지급 시점에 따라 체감이 달라질 수 있습니다."
+      "개별 현대자동차 계산기와 동일하게 성과급 450%, 정액 1,580만 원, 자사주 30주, 상품권 20만 원을 기존 패키지 기준으로 둡니다.",
+      "2026년 임협 요구안의 2025년 순이익 30% 성과급 요구와 2026·2027 영업이익 컨센서스는 개별 현대차 계산기에서 상세 확인하도록 분리했습니다.",
+      "상위 시뮬레이터에서는 요구안 참고 프리셋을 제공하되, 확정 지급안처럼 보이지 않도록 시나리오로만 계산합니다."
     ],
     payoutLabels: ["현금 성과급", "기타 보상"],
     hyundaiPackage: {
-      monthlyBaseRatio: 0.68,
+      monthlyBaseRatio: 0.76,
       packageRate: 4.5,
       fixedCashBonus: 15800000,
       giftValue: 200000,
       stockShares: 30,
-      stockReferencePrice: 215000
+      stockReferencePrice: 210000
     }
   }
 ];

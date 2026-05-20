@@ -19,6 +19,14 @@ export interface ScenarioPreset {
   stockShares: number;
 }
 
+export interface OperatingProfitConsensus {
+  year: TargetYear;
+  label: string;
+  operatingProfit: number;
+  source: string;
+  note: string;
+}
+
 export const rankPresets: RankPreset[] = [
   { code: "STAFF", label: "사원", defaultSalary: 65000000, defaultMonthlyBase: 4200000 },
   { code: "ASSISTANT_MANAGER", label: "대리", defaultSalary: 82000000, defaultMonthlyBase: 5100000 },
@@ -45,12 +53,62 @@ export const scenarioPresets: ScenarioPreset[] = [
 ];
 
 export const factAnchors = [
-  { label: "성과급", value: "월급 450%", note: "2025 임단협 패키지 기준" },
-  { label: "정액 현금", value: "1,580만 원", note: "2025 임단협 패키지 기준" },
-  { label: "자사주", value: "30주", note: "2025 임단협 패키지 기준" },
+  { label: "기존 합의 성과급", value: "월급 450%", note: "2025 임단협 패키지 기준" },
+  { label: "기존 합의 정액 현금", value: "1,580만 원", note: "2025 임단협 패키지 기준" },
+  { label: "기존 합의 자사주", value: "30주", note: "2025 임단협 패키지 기준" },
   { label: "상품권", value: "20만 원", note: "전통시장 상품권" },
-  { label: "월 기본급 인상", value: "10만 원", note: "합의안 기준" }
+  { label: "2026 노조 요구", value: "순이익 30%", note: "확정안이 아닌 임협 요구안" }
 ];
+
+export const unionDemandHighlights = [
+  {
+    label: "성과급 요구",
+    value: "2025년 순이익의 30%",
+    note: "현대차 노조 2026년 임금협상 요구안 기준"
+  },
+  {
+    label: "기본급 요구",
+    value: "월 14만 9,600원 인상",
+    note: "호봉승급분 제외"
+  },
+  {
+    label: "임금 구조 요구",
+    value: "완전 월급제·상여금 800%",
+    note: "AI·로봇 도입에 따른 고용·소득 안정 의제 포함"
+  }
+];
+
+export const demandVerificationSteps = [
+  "현대차 노조 또는 금속노조 현대차지부 공지에서 임시 대의원대회 요구안 원문을 먼저 확인합니다.",
+  "교섭 시작·상견례 이후에는 회사 측 제시안, 노조 수정안, 잠정합의안을 구분해서 봅니다.",
+  "언론 기사 수치는 요구안인지 합의안인지 표기를 확인하고, 계산기에는 요구안·추정·확정값 배지를 분리합니다.",
+  "성과급 산식은 순이익 기준인지 영업이익 기준인지 반드시 구분합니다."
+];
+
+export const operatingProfitConsensus: OperatingProfitConsensus[] = [
+  {
+    year: "2026",
+    label: "2026E",
+    operatingProfit: 12766000000000,
+    source: "FnGuide 컨센서스, KB증권 2026년 4월 리포트 인용",
+    note: "KB증권 추정치 11.63조 원 대비 컨센서스는 약 12.77조 원"
+  },
+  {
+    year: "2027",
+    label: "2027E",
+    operatingProfit: 13897000000000,
+    source: "FnGuide 컨센서스, KB증권 2026년 4월 리포트 인용",
+    note: "KB증권 추정치 11.90조 원 대비 컨센서스는 약 13.90조 원"
+  }
+];
+
+export const operatingProfitSensitivityRates = [
+  { label: "보수 참고", rate: 0.1, note: "영업이익 10% 가정" },
+  { label: "중간 참고", rate: 0.15, note: "영업이익 15% 가정" },
+  { label: "요구안 비교선", rate: 0.3, note: "노조 요구안은 순이익 30%라 직접 비교 시 주의" }
+];
+
+export const defaultEmployeeCount = 72000;
 
 export const comparisonCards = [
   { code: "SAMSUNG", label: "현대자동차 vs 삼성전자", annualTotal: 158000000, note: "평균 보수 기사 기준 비교선" },

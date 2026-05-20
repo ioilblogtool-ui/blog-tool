@@ -67,6 +67,18 @@
   color: #0F6E56;
 }
 
+.samsung-bonus-page .mode-chip--highlight span {
+  border-color: #B45309;
+  background: #FFF7ED;
+  color: #854F0B;
+}
+
+.samsung-bonus-page .mode-chip--highlight input:checked + span {
+  border-color: #B45309;
+  background: #FDE68A;
+  color: #713F12;
+}
+
 // ── 그리드 공통 ───────────────────────────────────────────────────────────────
 .samsung-bonus-page .toggle-grid,
 .samsung-bonus-page .fact-anchor-grid,
@@ -74,6 +86,7 @@
 .samsung-bonus-page .samsung-detail-grid,
 .samsung-bonus-page .scenario-year-grid,
 .samsung-bonus-page .comparison-grid,
+.samsung-bonus-page .union-result-grid,
 .samsung-bonus-page .logic-grid {
   display: grid;
   gap: 8px;
@@ -84,10 +97,91 @@
 .samsung-bonus-page .kpi-grid,
 .samsung-bonus-page .scenario-year-grid,
 .samsung-bonus-page .comparison-grid,
+.samsung-bonus-page .union-result-grid,
 .samsung-bonus-page .logic-grid,
 .samsung-bonus-page .samsung-detail-grid,
 .samsung-bonus-page .form-grid--compact {
   grid-template-columns: 1fr;
+}
+
+.samsung-bonus-page .union-result-grid {
+  margin-bottom: 10px;
+}
+
+.samsung-bonus-page .union-result-card,
+.samsung-bonus-page .union-comparison-panel {
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  background: #FFFFFF;
+}
+
+.samsung-bonus-page .union-result-card {
+  padding: 16px 14px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 6px;
+  }
+
+  strong {
+    display: block;
+    font-size: 19px;
+    font-weight: 600;
+    color: #1A1A18;
+    line-height: 1.15;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 10px;
+    color: #888780;
+    line-height: 1.5;
+  }
+}
+
+.samsung-bonus-page .union-result-card--accent {
+  border-color: #B45309;
+  background: #FFF7ED;
+
+  strong {
+    color: #854F0B;
+  }
+}
+
+.samsung-bonus-page .union-comparison-panel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  background: #F7F6F4;
+
+  strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A1A18;
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    color: #5F5E5A;
+    line-height: 1.6;
+  }
+}
+
+.samsung-bonus-page .estimate-badge {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #FEF3C7;
+  color: #854F0B;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 // ── 팩트 앵커 카드 ────────────────────────────────────────────────────────────
@@ -399,7 +493,8 @@
   }
 
   .samsung-bonus-page .fact-anchor-grid,
-  .samsung-bonus-page .comparison-grid {
+  .samsung-bonus-page .comparison-grid,
+  .samsung-bonus-page .union-result-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -413,6 +508,10 @@
   .samsung-bonus-page .comparison-grid,
   .samsung-bonus-page .logic-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .samsung-bonus-page .union-result-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .samsung-bonus-page .fact-anchor-grid {

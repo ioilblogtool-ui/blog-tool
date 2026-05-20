@@ -12,12 +12,17 @@ import {
   actualGiftValue,
   actualStockShares,
   comparisonCards,
+  defaultEmployeeCount,
   defaultBenefits,
   defaultStockPrice,
+  demandVerificationSteps,
   factAnchors,
+  operatingProfitConsensus,
+  operatingProfitSensitivityRates,
   packageModes,
   rankPresets,
   scenarioPresets,
+  unionDemandHighlights,
   yearOptions
 } from "../../data/hyundaiCompensation";
 
@@ -36,7 +41,10 @@ const config = {
   actualBonusMultiplier,
   actualFixedCash,
   actualStockShares,
-  actualGiftValue
+  actualGiftValue,
+  operatingProfitConsensus,
+  operatingProfitSensitivityRates,
+  defaultEmployeeCount
 };
 ---
 
@@ -52,7 +60,7 @@ const config = {
       <CalculatorHero
         eyebrow="현대자동차 총보상 시뮬레이터"
         title="현대자동차 성과급 계산기"
-        description="월급 450% + 1,580만 원 + 자사주 30주 패키지를 기준으로 개인·부부 총보상과 월 체감값을 한 번에 확인합니다."
+        description="기존 임단협 패키지와 2026년 노조 요구안, 2026·2027 영업이익 컨센서스까지 함께 보며 개인·부부 총보상과 월 체감값을 확인합니다."
       />
     </Fragment>
 
@@ -252,6 +260,7 @@ const config = {
       <div class="sb-section__head">
         <p class="sb-section__eyebrow">팩트 앵커</p>
         <h2>핵심 수치</h2>
+        <p class="sb-section__sub">상세 요구안과 컨센서스 민감도는 결과표 아래에서 확인할 수 있습니다.</p>
       </div>
       <div class="fact-anchor-grid">
         {factAnchors.map((item) => (
@@ -365,6 +374,92 @@ const config = {
       <div class="scenario-year-grid" id="scenarioYearGrid"></div>
     </section>
 
+    <section class="sb-section hyundai-reference-section">
+      <details class="hyundai-reference-details">
+        <summary>
+          <span>
+            <em>참고 정보</em>
+            2026 임협 요구안과 2026·2027 영업이익 컨센서스 보기
+          </span>
+        </summary>
+        <div class="hyundai-reference-body">
+          <section class="hyundai-demand-section">
+            <div class="sb-section__head">
+              <p class="sb-section__eyebrow">2026 임협 요구안</p>
+              <h2>최근 노조 요구안 확인 포인트</h2>
+              <p class="sb-section__sub">아래 수치는 확정 지급안이 아니라 2026년 임금협상 요구안입니다.</p>
+            </div>
+            <div class="hyundai-demand-grid">
+              {unionDemandHighlights.map((item) => (
+                <article class="hyundai-demand-card">
+                  <p>{item.label}</p>
+                  <strong>{item.value}</strong>
+                  <span>{item.note}</span>
+                </article>
+              ))}
+            </div>
+            <article class="panel hyundai-verification-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="panel-heading__eyebrow">확인 방법</p>
+                  <h2 class="panel__title">요구안·제시안·합의안 구분하기</h2>
+                </div>
+              </div>
+              <ol class="hyundai-check-list">
+                {demandVerificationSteps.map((step) => <li>{step}</li>)}
+              </ol>
+            </article>
+          </section>
+
+          <section class="hyundai-consensus-section">
+            <div class="sb-section__head">
+              <p class="sb-section__eyebrow">컨센서스 반영</p>
+              <h2>2026·2027 영업이익 기준 성과급 재원</h2>
+              <p class="sb-section__sub">FnGuide 컨센서스 인용치를 기준으로 영업이익 배분율을 단순 계산합니다. 노조 요구안의 기준은 순이익 30%라서 직접 비교는 주의가 필요합니다.</p>
+            </div>
+            <div class="hyundai-consensus-grid">
+              {operatingProfitConsensus.map((item) => (
+                <article class="hyundai-consensus-card">
+                  <p>{item.label} 영업이익 컨센서스</p>
+                  <strong>{Math.round(item.operatingProfit / 100000000000) / 10}조 원</strong>
+                  <span>{item.note}</span>
+                </article>
+              ))}
+            </div>
+            <article class="panel hyundai-profit-tool">
+              <div class="panel-heading">
+                <div>
+                  <p class="panel-heading__eyebrow">민감도 계산</p>
+                  <h2 class="panel__title">영업이익 배분율별 1인당 참고 재원</h2>
+                </div>
+                <p class="panel-heading__summary">배분율과 인원 수를 바꿔 요구안 체감 규모를 확인합니다.</p>
+              </div>
+              <div class="hyundai-profit-controls">
+                <label class="field">
+                  <span>기준 연도</span>
+                  <select id="profitConsensusYear">
+                    {operatingProfitConsensus.map((item) => <option value={item.year}>{item.label}</option>)}
+                  </select>
+                </label>
+                <label class="field">
+                  <span>배분율</span>
+                  <select id="profitShareRate">
+                    {operatingProfitSensitivityRates.map((item) => <option value={item.rate}>{item.label} · {(item.rate * 100).toFixed(0)}%</option>)}
+                  </select>
+                </label>
+                <label class="field">
+                  <span>대상 인원</span>
+                  <input id="profitEmployeeCount" type="number" value={defaultEmployeeCount} min="1" step="100" />
+                  <small>계산 편의를 위한 입력값입니다.</small>
+                </label>
+              </div>
+              <div class="hyundai-profit-result" id="profitPoolResult"></div>
+            </article>
+          </section>
+        </div>
+      </details>
+    </section>
+
     <section class="sb-section">
       <div class="sb-section__head">
         <p class="sb-section__eyebrow">참고 비교</p>
@@ -397,6 +492,10 @@ const config = {
           <strong>총보상 = 연봉 + 성과급 + 정액 현금 + 자사주 + 상품권 + 복지</strong>
           <p>실수령 추정은 참고용입니다.</p>
         </article>
+        <article class="logic-card">
+          <strong>컨센서스 재원 = 영업이익 × 배분율</strong>
+          <p>요구안의 순이익 30%와는 기준 계정이 다르므로 비교용으로만 봅니다.</p>
+        </article>
       </div>
     </article>
 
@@ -405,6 +504,7 @@ const config = {
       lines={[
         "직급별 연봉과 월 기본급은 공식 수치가 아니라 예시값(수정 가능)입니다.",
         "2026은 2025 임단협 패키지 공개값, 2027·2028은 시나리오 시뮬레이션입니다.",
+        "2026년 노조 요구안은 교섭 과정에서 바뀔 수 있으며, 확정 합의안과 다릅니다.",
         "실수령 추정은 세금, 공제, 가족 구성, 상여금 과세 처리 방식에 따라 달라질 수 있습니다."
       ]}
     />
@@ -414,15 +514,18 @@ const config = {
         introTitle="현대자동차 성과급 계산기 활용 가이드"
         intro={[
           "이 페이지는 현대자동차 2025 임단협 패키지를 기준으로 개인 또는 부부 총보상을 계산하는 계산기형 랜딩입니다. 연봉, 월 기본급, 주가를 입력하면 성과급과 자사주 가치까지 포함한 총액을 빠르게 볼 수 있습니다.",
-          "핵심은 2026 실제 참고 패키지와 2027·2028 시나리오를 분리해서 보여주는 것입니다. 공개값이 있는 항목은 팩트 앵커로 두고, 연봉·월 기본급·주가·복지는 수정 가능한 가정값으로 다룹니다."
+          "핵심은 기존 합의 패키지, 2026년 노조 요구안, 2026·2027 영업이익 컨센서스를 분리해서 보여주는 것입니다. 공개값이 있는 항목은 팩트 앵커로 두고, 연봉·월 기본급·주가·복지는 수정 가능한 가정값으로 다룹니다."
         ]}
         inputPoints={[
           "개인·부부 토글에 따라 입력 폼과 결과 문구가 함께 바뀝니다.",
           "월급 450% 성과급, 1,580만 원 정액 현금, 자사주 30주 구조를 기본값으로 반영합니다.",
+          "2026년 임금협상 요구안의 순이익 30% 성과급 요구와 영업이익 컨센서스 기준 민감도를 별도로 확인할 수 있습니다.",
           "연 총보상, 월 체감액, 실수령 추정, 직급별 예시 비교까지 한 화면에서 이어서 확인할 수 있습니다."
         ]}
         criteria={[
           "2026 실제 기준 모드는 월급 450%, 정액 1,580만 원, 자사주 30주, 상품권 20만 원, 월 기본급 10만 원 인상 합의안 공개값을 참고합니다.",
+          "2026년 노조 요구안은 월 기본급 14만 9,600원 인상, 2025년 순이익 30% 성과급, 완전 월급제와 상여금 800% 등을 요구안으로 구분해 표시합니다.",
+          "2026·2027 영업이익 컨센서스는 FnGuide 컨센서스를 인용한 증권사 리포트 수치를 참고하며, 컨센서스 변경 시 재반영이 필요합니다.",
           "2027·2028은 보수적·기준·공격적 패키지 시나리오이며, 보너스 배수·정액 현금·자사주 수를 직접 수정할 수 있습니다.",
           "직급별 추천 연봉과 월 기본급, 복지 금액, 주가 입력값은 모두 예시 또는 운영 가정값입니다."
         ]}
@@ -432,6 +535,8 @@ const config = {
           { question: "직급별 연봉과 월 기본급은 공식표인가요?", answer: "아닙니다. 추천값(수정 가능)이며, 사용자가 자신의 상황에 맞게 연봉과 월 기본급을 직접 수정해서 보는 구조입니다." },
           { question: "부부 계산은 어떤 값을 합산하나요?", answer: "두 사람의 연봉, 성과급, 정액 현금, 자사주 가치, 상품권, 복지, 총보상을 모두 합산해서 보여줍니다." },
           { question: "실수령 추정은 정확한가요?", answer: "실수령 추정은 참고용입니다. 세금, 공제, 가족 구성, 상여금 과세 처리 방식에 따라 실제 수령액은 달라질 수 있습니다." },
+          { question: "노조가 요구한 순이익 30% 성과급은 확정인가요?", answer: "아닙니다. 2026년 임금협상 요구안이며, 실제 지급 규모는 회사 제시안, 교섭, 잠정합의, 조합원 찬반투표 결과에 따라 달라질 수 있습니다." },
+          { question: "영업이익 컨센서스 민감도는 무엇을 보여주나요?", answer: "2026·2027 영업이익 컨센서스에 특정 배분율을 곱해 전체 재원과 1인당 참고 금액을 단순 계산합니다. 노조 요구안의 기준은 순이익이므로 직접 지급액으로 해석하면 안 됩니다." },
           { question: "2027·2028은 왜 공식 전망이 아닌가요?", answer: "미래 연도는 확정 공개 합의안이 없어서 시나리오 시뮬레이션으로만 보여줘야 안전합니다." }
         ]}
         related={[

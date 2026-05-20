@@ -12,9 +12,11 @@ import {
   defaultBenefits,
   divisions,
   factAnchors,
+  operatingProfitScenarios,
   opiModes,
   rankPresets,
   scenarioPresets,
+  unionDemandScenarios,
   yearOptions,
   SAMSUNG_NEXT_CALCULATOR,
   SAMSUNG_RELATED_CALCULATORS,
@@ -32,6 +34,8 @@ const config = {
   yearOptions,
   opiModes,
   scenarioPresets,
+  operatingProfitScenarios,
+  unionDemandScenarios,
   comparisonCards,
   defaultBenefits,
   averageCompensation
@@ -170,6 +174,10 @@ const config = {
                     <input type="radio" name="opiMode" value="SCENARIO" />
                     <span>시나리오</span>
                   </label>
+                  <label class="mode-chip mode-chip--highlight">
+                    <input type="radio" name="opiMode" value="UNION_DEMAND" />
+                    <span>노조 요구안</span>
+                  </label>
                 </div>
                 <small id="opiModeHint"></small>
               </div>
@@ -184,6 +192,20 @@ const config = {
                 <span>복지 금액</span>
                 <input id="benefitsInput" type="number" value={defaultBenefits} />
                 <small id="benefitsHint"></small>
+              </label>
+              <label class="field">
+                <span>영업이익 가정</span>
+                <select id="operatingProfitScenarioSelect">
+                  {operatingProfitScenarios.map((item) => <option value={item.code}>{item.label}</option>)}
+                </select>
+                <small id="operatingProfitHint"></small>
+              </label>
+              <label class="field">
+                <span>노조안 비율</span>
+                <select id="unionDemandScenarioSelect">
+                  {unionDemandScenarios.map((item) => <option value={item.code}>{item.label}</option>)}
+                </select>
+                <small id="unionDemandHint"></small>
               </label>
               <label class="check-field">
                 <input id="includeOpiToggle" type="checkbox" checked />
@@ -217,6 +239,16 @@ const config = {
                   <span>하반기 TAI</span>
                   <input id="taiSecondHalfInput" type="number" value="0.5" step="0.01" />
                 </label>
+                <label class="field">
+                  <span>환산 직원 수</span>
+                  <input id="eligibleEmployeesInput" type="number" value="120000" step="1000" />
+                  <small>노조안 1인 환산용 추정값</small>
+                </label>
+                <label class="field">
+                  <span>영업이익 직접 입력</span>
+                  <input id="customOperatingProfitInput" type="number" value="0" step="1000000000000" />
+                  <small>0이면 위 영업이익 가정 사용</small>
+                </label>
                 <label class="check-field field-span-full">
                   <input id="includeNetEstimateToggle" type="checkbox" checked />
                   <span>월 실수령 추정 같이 보기</span>
@@ -234,34 +266,18 @@ const config = {
       <div class="panel-heading">
         <div>
           <p class="panel-heading__eyebrow">결과 먼저 보기</p>
-          <h2 class="panel__title">연 총액과 월 체감값</h2>
+          <h2 class="panel__title">내 예상 성과급과 총보상</h2>
         </div>
       </div>
       <div class="result-priority-panel__actions">
         <a class="button button--secondary" href="#samsung-bonus-inputs">조건 다시 입력</a>
-        <a class="button button--ghost" href="#samsung-bonus-details">세부 보기</a>
+        <a class="button button--ghost" href="#samsung-bonus-details">세부 내역 보기</a>
       </div>
     </article>
 
     <section class="sb-section">
       <div class="sb-section__head">
-        <p class="sb-section__eyebrow">팩트 앵커</p>
-        <h2>핵심 수치</h2>
-      </div>
-      <div class="fact-anchor-grid">
-        {factAnchors.map((item) => (
-          <article class="fact-anchor-card">
-            <p>{item.label}</p>
-            <strong>{item.value}</strong>
-            <span>{item.note}</span>
-          </article>
-        ))}
-      </div>
-    </section>
-
-    <section class="sb-section">
-      <div class="sb-section__head">
-        <p class="sb-section__eyebrow">핵심 KPI</p>
+        <p class="sb-section__eyebrow">내 계산 결과</p>
         <h2 id="resultHeadline">개인 총보상 핵심 카드</h2>
         <p class="sb-section__sub" id="resultSubcopy">2026 실제 기준 모드</p>
       </div>
@@ -320,6 +336,54 @@ const config = {
       </article>
     </section>
 
+    <section class="sb-section sb-union-section">
+      <div class="sb-section__head">
+        <p class="sb-section__eyebrow">노조 요구안 참고</p>
+        <h2>영업이익 연동 성과급 환산</h2>
+        <p class="sb-section__sub">내 예상 성과급을 먼저 확인한 뒤, 보도된 요구안을 추정 비교선으로만 참고하세요.</p>
+      </div>
+      <div class="union-result-grid">
+        <article class="union-result-card union-result-card--accent">
+          <p>내 연봉 가중 환산</p>
+          <strong id="unionWeightedSummary">-</strong>
+          <span id="unionWeightedNote">평균 보수 대비 가중</span>
+        </article>
+        <article class="union-result-card">
+          <p>1인 단순 환산</p>
+          <strong id="unionPerHeadSummary">-</strong>
+          <span id="unionPerHeadNote">환산 직원 수 기준</span>
+        </article>
+        <article class="union-result-card">
+          <p>성과급 재원</p>
+          <strong id="unionPoolSummary">-</strong>
+          <span id="unionPoolNote">영업이익 × 요구 비율</span>
+        </article>
+      </div>
+      <div class="union-comparison-panel">
+        <div>
+          <strong>현행 OPI 상한과 비교</strong>
+          <p id="unionVsCurrentCopy">노조 요구안 모드를 선택하면 현행 50% 상한 대비 차이를 계산합니다.</p>
+        </div>
+        <span class="estimate-badge">보도·추정</span>
+      </div>
+    </section>
+
+    <section class="sb-section">
+      <div class="sb-section__head">
+        <p class="sb-section__eyebrow">팩트 앵커</p>
+        <h2>핵심 수치</h2>
+      </div>
+      <div class="fact-anchor-grid">
+        {factAnchors.map((item) => (
+          <article class="fact-anchor-card">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
     <section class="content-section">
       <article class="panel rank-panel">
         <div class="panel-heading">
@@ -373,7 +437,11 @@ const config = {
       <div class="logic-grid">
         <article class="logic-card">
           <strong>OPI = 연봉 × 사업부 비율</strong>
-          <p>2026은 공개 기준, 이후는 시나리오를 씁니다.</p>
+          <p>2026 실제 기준은 공개 지급률, 미래 연도는 시나리오를 씁니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>노조안 = 영업이익 × 요구 비율</strong>
+          <p>직원 수와 평균 보수 대비 가중치로 1인 환산합니다.</p>
         </article>
         <article class="logic-card">
           <strong>TAI = 연봉 ÷ 12 × (상반기 + 하반기)</strong>
@@ -394,7 +462,8 @@ const config = {
       title="안내"
       lines={[
         "직급별 연봉과 복지 금액은 공식 수치가 아니라 추천값(수정 가능)입니다.",
-        "2026은 사업부 공개 OPI 참고치, 2027·2028은 시나리오 시뮬레이션입니다.",
+        "2026은 사업부 공개 OPI 참고치, 2027·2028 및 노조 요구안은 시나리오 시뮬레이션입니다.",
+        "영업이익 컨센서스와 노조 요구안은 보도·추정 기반이며 실제 지급액을 보장하지 않습니다.",
         "실수령 추정은 세금과 공제 조건에 따라 달라질 수 있습니다."
       ]}
     />
@@ -480,20 +549,25 @@ const config = {
         introTitle="삼성전자 성과급 계산기 활용 가이드"
         intro={[
           "이 페이지는 삼성전자 OPI와 TAI 구조를 개인 또는 부부 기준 총보상 시뮬레이터로 정리한 계산기형 랜딩입니다. 사업부, 연봉, 시나리오를 넣으면 연 총액과 월 체감값을 빠르게 볼 수 있습니다.",
-          "핵심은 2026 실제 참고치와 2027·2028 시뮬레이션을 분리해서 보여주는 것입니다. 공개 참고치가 있는 값은 앵커로 두고, 연봉·복지·TAI는 사용자가 수정 가능한 가정값으로 다룹니다."
+          "핵심은 2026 실제 참고치, 2027·2028 업황 시뮬레이션, 노조 요구안 기반 영업이익 연동 시나리오를 분리해서 보여주는 것입니다. 공개 참고치가 있는 값은 앵커로 두고, 연봉·복지·TAI·영업이익 가정은 사용자가 수정 가능한 값으로 다룹니다."
         ]}
         inputPoints={[
           "개인·부부 토글에 따라 입력 폼과 결과 문구가 함께 바뀝니다.",
           "사업부별 OPI 차이를 먼저 반영하고, TAI는 프리셋 또는 직접 입력으로 조정할 수 있습니다.",
+          "노조 요구안 모드에서는 영업이익 컨센서스와 요구 비율을 바꿔 성과급 재원과 1인 환산액을 비교합니다.",
           "연 총보상, 월 체감액, 실수령 추정, 직급별 예시 비교까지 한 화면에서 이어서 확인할 수 있습니다."
         ]}
         criteria={[
           "2026 실제 기준 모드는 MX 50%, DS 47%, CSS 11%, 공통/지원 34~39%, VD·DA·네트워크·의료기기 12% 보도치를 참고했습니다.",
+          "노조 요구안 모드는 영업이익의 15% 성과급 재원 요구, 1~2%p 낮춘 수정안 및 OPI 주식보상 확대 요구 보도를 시나리오로 환산합니다.",
+          "2026 영업이익 컨센서스는 보도된 약 297.5조 원을 기본값으로 두고, 2027은 AI 메모리 호황 지속을 가정한 외부 리포트 범위를 별도 추정값으로 표시합니다.",
           "TAI는 반기별 월 기준급 개념을 단순화해 상반기·하반기 비율 프리셋 또는 직접 입력으로 계산합니다.",
           "직급별 추천 연봉과 복지 금액, 2027·2028 OPI 비율은 운영용 가정값이므로 사용자가 수정해서 보는 것이 전제입니다."
         ]}
         faq={[
           { question: "삼성전자 OPI는 어떻게 계산하나요?", answer: "이 페이지에서는 연봉에 사업부별 OPI 비율을 곱해 계산합니다. 2026은 공개 참고 지급률, 2027·2028은 시나리오 비율을 씁니다." },
+          { question: "노조 요구안 모드는 무엇인가요?", answer: "영업이익의 15%를 성과급 재원으로 요구했다는 보도와 1~2%p 낮춘 수정안 흐름을 1인 환산 시뮬레이션으로 보여주는 모드입니다. 확정 지급액이 아니라 추정값입니다." },
+          { question: "영업이익 컨센서스는 어디에 쓰이나요?", answer: "노조 요구안 모드에서 전체 성과급 재원을 계산할 때 사용합니다. 기본값은 2026년 약 297.5조 원 보도 기준이며, 사용자가 직접 바꿀 수 있습니다." },
           { question: "TAI는 왜 시나리오 또는 직접 입력인가요?", answer: "TAI는 반기별 업황과 조직 상황에 따라 달라질 수 있어, 단일 확정값보다 프리셋과 직접 수정 방식이 더 실용적입니다." },
           { question: "직급별 연봉은 공식표인가요?", answer: "아닙니다. 직급별 연봉은 추천값(수정 가능)이며, 사용자가 자신의 상황에 맞게 바꾸는 것을 전제로 합니다." },
           { question: "부부 계산은 어떤 값을 합산하나요?", answer: "두 사람의 연봉, OPI, TAI, 복지, 총보상을 합산하고 월 평균 총보상과 1인당 평균 체감값까지 함께 보여줍니다." },

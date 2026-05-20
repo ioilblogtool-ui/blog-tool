@@ -166,6 +166,14 @@ function calculateBonus(company, annualSalary, monthlyBase, scenarioCode, preset
   };
 }
 
+function getYearScenarioRatio(company, year, scenarioCode) {
+  const yearRatio = company.bonusRatioByYear?.[String(year)];
+  if (!yearRatio) return null;
+  if (scenarioCode === "CONSERVATIVE") return yearRatio.conservative;
+  if (scenarioCode === "AGGRESSIVE") return yearRatio.aggressive;
+  return yearRatio.base;
+}
+
 function projectYears(company, annualSalary, bonusAmount, extras, scenarioCode, growthCode) {
   const years = [2026, 2027, 2028];
   const projection = [];
@@ -178,6 +186,11 @@ function projectYears(company, annualSalary, bonusAmount, extras, scenarioCode, 
     if (index > 0) {
       salary *= 1 + salaryGrowth;
       bonus *= 1 + bonusGrowth;
+    }
+
+    const yearScenarioRatio = getYearScenarioRatio(company, year, scenarioCode);
+    if (typeof yearScenarioRatio === "number") {
+      bonus = salary * yearScenarioRatio;
     }
 
     projection.push({

@@ -23,7 +23,10 @@ const {
   actualBonusMultiplier,
   actualFixedCash,
   actualStockShares,
-  actualGiftValue
+  actualGiftValue,
+  operatingProfitConsensus = [],
+  operatingProfitSensitivityRates = [],
+  defaultEmployeeCount = 72000
 } = JSON.parse(configNode.textContent || "{}");
 
 const rankMap = Object.fromEntries(rankPresets.map((item) => [item.code, item]));
@@ -51,6 +54,9 @@ const modeSingle = $("modeSingle");
 const modeCouple = $("modeCouple");
 const spouseBlock = $("spouseBlock");
 const netPanel = $("netPanel");
+const profitConsensusYear = $("profitConsensusYear");
+const profitShareRate = $("profitShareRate");
+const profitEmployeeCount = $("profitEmployeeCount");
 
 function formatWon(value) {
   return `${new Intl.NumberFormat("ko-KR").format(Math.round(Number(value || 0)))}원`;
@@ -63,6 +69,11 @@ function formatKoreanAmount(value) {
   if (eok > 0 && man > 0) return `${eok}억 ${new Intl.NumberFormat("ko-KR").format(man)}만원`;
   if (eok > 0) return `${eok}억원`;
   return `${new Intl.NumberFormat("ko-KR").format(man)}만원`;
+}
+
+function formatKoreanTrillion(value) {
+  const amount = Number(value || 0);
+  return `${(amount / 1_000_000_000_000).toFixed(2)}조 원`;
 }
 
 function setText(id, value) {
@@ -485,6 +496,32 @@ function renderComparisons(result) {
   }).join("");
 }
 
+function renderProfitPool() {
+  const output = $("profitPoolResult");
+  if (!output || !operatingProfitConsensus.length) return;
+
+  const selectedYear = profitConsensusYear?.value || operatingProfitConsensus[0].year;
+  const consensus = operatingProfitConsensus.find((item) => item.year === selectedYear) || operatingProfitConsensus[0];
+  const selectedRate = Number(profitShareRate?.value || operatingProfitSensitivityRates[0]?.rate || 0.1);
+  const rateMeta = operatingProfitSensitivityRates.find((item) => Number(item.rate) === selectedRate);
+  const employeeCount = Math.max(1, Number(profitEmployeeCount?.value || defaultEmployeeCount));
+  const pool = consensus.operatingProfit * selectedRate;
+  const perPerson = pool / employeeCount;
+
+  output.innerHTML = `
+    <div class="hyundai-profit-result__main">
+      <span>${consensus.label} 영업이익 ${formatKoreanTrillion(consensus.operatingProfit)} × ${(selectedRate * 100).toFixed(0)}%</span>
+      <strong>${formatKoreanTrillion(pool)}</strong>
+    </div>
+    <div class="hyundai-profit-result__grid">
+      <p><span>1인당 참고 재원</span><strong>${formatKoreanAmount(perPerson)}</strong></p>
+      <p><span>대상 인원</span><strong>${new Intl.NumberFormat("ko-KR").format(employeeCount)}명</strong></p>
+      <p><span>기준 설명</span><strong>${rateMeta?.note || "사용자 입력 배분율"}</strong></p>
+    </div>
+    <small>${consensus.source}. ${consensus.note}</small>
+  `;
+}
+
 function render() {
   normalizeControls();
   syncSelfSalarySlider();
@@ -499,6 +536,7 @@ function render() {
   renderRankMatrix();
   renderScenarioYears();
   renderComparisons(result);
+  renderProfitPool();
 }
 
 function flashButton(button, label) {
@@ -529,6 +567,9 @@ function resetPage() {
   fixedCashInput.value = String(actualFixedCash);
   stockSharesInput.value = String(actualStockShares);
   includeNetEstimateToggle.checked = true;
+  if (profitConsensusYear) profitConsensusYear.value = "2026";
+  if (profitShareRate) profitShareRate.value = "0.1";
+  if (profitEmployeeCount) profitEmployeeCount.value = String(defaultEmployeeCount);
   render();
 }
 
@@ -560,6 +601,9 @@ function resetPage() {
   fixedCashInput,
   stockSharesInput,
   includeNetEstimateToggle,
+  profitConsensusYear,
+  profitShareRate,
+  profitEmployeeCount,
   modeSingle,
   modeCouple
 ].forEach((element) => {

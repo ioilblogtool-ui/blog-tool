@@ -55,8 +55,8 @@ export const scenarioOptions: ScenarioOption[] = [
 
 export const psMultipliersByYear: Record<TargetYear, YearScenario> = {
   "2026": { conservative: 24, base: 29.64, aggressive: 33 },
-  "2027": { conservative: 53.38, base: 58.09, aggressive: 62.8 },
-  "2028": { conservative: 50.24, base: 54.95, aggressive: 59.66 }
+  "2027": { conservative: 54, base: 60, aggressive: 66 },
+  "2028": { conservative: 58, base: 64, aggressive: 70 }
 };
 
 export const futurePiRatioByYear: Partial<Record<TargetYear, number>> = {
@@ -79,6 +79,21 @@ export const factAnchors = [
     label: "2026 초 실제 PS",
     value: "기준급 2,964%",
     note: "기준급의 29.64배"
+  },
+  {
+    label: "2026 영업이익 컨센서스",
+    value: "약 77.1조 원",
+    note: "FnGuide 2026/12(E), 2026-05-20 확인"
+  },
+  {
+    label: "2027 영업이익 컨센서스",
+    value: "약 84.5조 원",
+    note: "FnGuide 2027/12(E), 2026-05-20 확인"
+  },
+  {
+    label: "상단 시나리오 참고",
+    value: "KB 177/231조",
+    note: "일부 증권사 상향 리포트는 별도 공격적 참고값"
   },
   {
     label: "평균 직원 보수",
@@ -117,13 +132,13 @@ export const comparisonBenchmarks = [
 export const yearSummaryRows: YearSummaryRow[] = [
   {
     payoutLabel: "2027년 지급분",
-    conservativePsRange: "5338% ~ 6280%",
-    conservativeTotalRange: "5488% ~ 6430%"
+    conservativePsRange: "5400% ~ 6600%",
+    conservativeTotalRange: "5550% ~ 6750%"
   },
   {
     payoutLabel: "2028년 지급분",
-    conservativePsRange: "5024% ~ 5966%",
-    conservativeTotalRange: "5174% ~ 6116%"
+    conservativePsRange: "5800% ~ 7000%",
+    conservativeTotalRange: "5950% ~ 7150%"
   }
 ];
 

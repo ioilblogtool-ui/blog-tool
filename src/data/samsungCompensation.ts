@@ -3,7 +3,7 @@ export type RankCode = "STAFF" | "ASSISTANT_MANAGER" | "MANAGER" | "DEPUTY_GM" |
 export type DivisionCode = "DS" | "MX" | "CSS" | "DEVICE" | "SUPPORT";
 export type TargetYear = "2026" | "2027" | "2028";
 export type ScenarioCode = "CONSERVATIVE" | "BASE" | "AGGRESSIVE";
-export type OpiMode = "ACTUAL" | "SCENARIO";
+export type OpiMode = "ACTUAL" | "SCENARIO" | "UNION_DEMAND";
 
 export interface RankPreset {
   code: RankCode;
@@ -27,6 +27,23 @@ export interface ScenarioPreset {
   taiSecondHalf: number;
 }
 
+export interface OperatingProfitScenario {
+  code: string;
+  label: string;
+  year: TargetYear;
+  operatingProfit: number;
+  sourceLabel: "보도" | "추정" | "사용자";
+  note: string;
+}
+
+export interface UnionDemandScenario {
+  code: string;
+  label: string;
+  payoutRatio: number;
+  stockCompensation: boolean;
+  note: string;
+}
+
 export const rankPresets: RankPreset[] = [
   { code: "STAFF", label: "사원", defaultSalary: 70000000 },
   { code: "ASSISTANT_MANAGER", label: "대리", defaultSalary: 90000000 },
@@ -43,7 +60,8 @@ export const yearOptions: Array<{ code: TargetYear; label: string }> = [
 
 export const opiModes: Array<{ code: OpiMode; label: string; description: string }> = [
   { code: "ACTUAL", label: "2026 실제 기준", description: "2025 실적 기준 사업부 공개 지급률을 반영합니다." },
-  { code: "SCENARIO", label: "시나리오 기준", description: "2027·2028 또는 가정값 비교용 시뮬레이션입니다." }
+  { code: "SCENARIO", label: "시나리오 기준", description: "2027·2028 또는 가정값 비교용 시뮬레이션입니다." },
+  { code: "UNION_DEMAND", label: "노조 요구안", description: "보도된 영업이익 연동 요구안을 1인 환산액으로 추정합니다." }
 ];
 
 export const divisions: DivisionConfig[] = [
@@ -90,8 +108,62 @@ export const scenarioPresets: ScenarioPreset[] = [
   { code: "AGGRESSIVE", label: "공격적", opiAdjustmentLabel: "강한 업황 가정", taiFirstHalf: 1, taiSecondHalf: 1 }
 ];
 
+export const operatingProfitScenarios: OperatingProfitScenario[] = [
+  {
+    code: "FY2026_CONSENSUS",
+    label: "2026 컨센서스",
+    year: "2026",
+    operatingProfit: 297_547_800_000_000,
+    sourceLabel: "보도",
+    note: "에프앤가이드 컨센서스 보도 기준, 약 297.5조 원"
+  },
+  {
+    code: "FY2026_ROUND_300T",
+    label: "2026 300조 시나리오",
+    year: "2026",
+    operatingProfit: 300_000_000_000_000,
+    sourceLabel: "추정",
+    note: "영업이익 300조 원 도달 시나리오"
+  },
+  {
+    code: "FY2027_SUPERCYCLE",
+    label: "2027 슈퍼사이클",
+    year: "2027",
+    operatingProfit: 317_000_000_000_000,
+    sourceLabel: "추정",
+    note: "AI 메모리 호황 지속을 가정한 외부 리포트 보도 범위"
+  }
+];
+
+export const unionDemandScenarios: UnionDemandScenario[] = [
+  {
+    code: "UNION_15",
+    label: "노조 요구안 15%",
+    payoutRatio: 0.15,
+    stockCompensation: false,
+    note: "영업이익의 15%를 성과급 재원으로 요구했다는 보도 기준"
+  },
+  {
+    code: "UNION_ADJUSTED_14",
+    label: "조정안 14%",
+    payoutRatio: 0.14,
+    stockCompensation: true,
+    note: "1~2%p 낮추되 OPI 주식보상 확대를 요구했다는 보도 흐름 반영"
+  },
+  {
+    code: "UNION_ADJUSTED_13",
+    label: "조정안 13%",
+    payoutRatio: 0.13,
+    stockCompensation: true,
+    note: "사후조정 국면의 완화 시나리오"
+  }
+];
+
 export const factAnchors = [
   { label: "OPI 구조", value: "연봉 최대 50%", note: "공개 설명 기준 상한" },
+  { label: "노조 핵심 요구", value: "영업익 15%", note: "성과급 재원 요구 보도" },
+  { label: "2026 컨센서스", value: "약 297.5조", note: "에프앤가이드 보도 기준" },
+  { label: "2027 시나리오", value: "약 317조", note: "외부 리포트 보도 범위" },
   { label: "2026 MX OPI", value: "50%", note: "2025 실적 기준 보도" },
   { label: "2026 DS OPI", value: "47%", note: "2025 실적 기준 보도" },
   { label: "평균 직원 보수", value: "약 1.58억 원", note: "2025 사업보고서 보도 기준" }
@@ -134,6 +206,16 @@ export const SAMSUNG_EXTERNAL_REFERENCE_LINKS = [
     title: "삼성전자 공식 IR 페이지",
     desc: "사업부별 분기 실적과 재무 데이터를 직접 확인할 수 있는 삼성전자 투자자 관계 사이트",
     url: "https://www.samsung.com/sec/ir/",
+  },
+  {
+    title: "에프앤가이드 컨센서스",
+    desc: "증권사 실적 전망 평균과 컨센서스 변화를 확인할 때 참고하는 금융정보 서비스",
+    url: "https://www.fnguide.com/",
+  },
+  {
+    title: "삼성전자 OPI 노사 쟁점 보도",
+    desc: "영업이익 15% 성과급 재원 요구와 OPI 상한 폐지 쟁점을 정리한 최근 보도",
+    url: "https://www.segye.com/newsView/20260512515833",
   },
   {
     title: "국세청 근로소득 원천징수 안내",

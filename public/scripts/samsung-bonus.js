@@ -1,11 +1,9 @@
 /**
- * samsung-bonus.js — 삼성전자 성과급 계산기 (ES 모듈)
- * Chart.js 4.x UMD (window.Chart) 필요 — CDN <script> 먼저 로드 후 type="module".
+ * samsung-bonus.js - 삼성전자 성과급 계산기
  */
 import { formatKRW, buildDefaultOptions, makeLabelPlugin } from "./chart-config.js";
 
 const $ = (id) => document.getElementById(id);
-
 const configNode = $("samsungCompensationConfig");
 
 if (!configNode) {
@@ -18,35 +16,45 @@ const {
   yearOptions,
   opiModes,
   scenarioPresets,
+  operatingProfitScenarios,
+  unionDemandScenarios,
   comparisonCards,
   defaultBenefits,
-  averageCompensation
+  averageCompensation,
 } = JSON.parse(configNode.textContent || "{}");
 
 const rankMap = Object.fromEntries(rankPresets.map((item) => [item.code, item]));
 const divisionMap = Object.fromEntries(divisions.map((item) => [item.code, item]));
 const scenarioMap = Object.fromEntries(scenarioPresets.map((item) => [item.code, item]));
+const operatingProfitMap = Object.fromEntries(operatingProfitScenarios.map((item) => [item.code, item]));
+const unionDemandMap = Object.fromEntries(unionDemandScenarios.map((item) => [item.code, item]));
 
-const selfRankSelect = $("selfRankSelect");
-const spouseRankSelect = $("spouseRankSelect");
-const selfDivisionSelect = $("selfDivisionSelect");
-const spouseDivisionSelect = $("spouseDivisionSelect");
-const selfSalaryInput = $("selfSalaryInput");
-const spouseSalaryInput = $("spouseSalaryInput");
-const targetYearSelect = $("targetYearSelect");
-const scenarioSelect = $("scenarioSelect");
-const benefitsInput = $("benefitsInput");
-const includeOpiToggle = $("includeOpiToggle");
-const includeTaiToggle = $("includeTaiToggle");
-const includeBenefitsToggle = $("includeBenefitsToggle");
-const customOpiRateInput = $("customOpiRateInput");
-const taiFirstHalfInput = $("taiFirstHalfInput");
-const taiSecondHalfInput = $("taiSecondHalfInput");
-const includeNetEstimateToggle = $("includeNetEstimateToggle");
-const modeSingle = $("modeSingle");
-const modeCouple = $("modeCouple");
-const spouseBlock = $("spouseBlock");
-const netPanel = $("netPanel");
+const controls = {
+  selfRank: $("selfRankSelect"),
+  spouseRank: $("spouseRankSelect"),
+  selfDivision: $("selfDivisionSelect"),
+  spouseDivision: $("spouseDivisionSelect"),
+  selfSalary: $("selfSalaryInput"),
+  spouseSalary: $("spouseSalaryInput"),
+  targetYear: $("targetYearSelect"),
+  scenario: $("scenarioSelect"),
+  benefits: $("benefitsInput"),
+  operatingProfitScenario: $("operatingProfitScenarioSelect"),
+  unionDemandScenario: $("unionDemandScenarioSelect"),
+  eligibleEmployees: $("eligibleEmployeesInput"),
+  customOperatingProfit: $("customOperatingProfitInput"),
+  includeOpi: $("includeOpiToggle"),
+  includeTai: $("includeTaiToggle"),
+  includeBenefits: $("includeBenefitsToggle"),
+  customOpiRate: $("customOpiRateInput"),
+  taiFirstHalf: $("taiFirstHalfInput"),
+  taiSecondHalf: $("taiSecondHalfInput"),
+  includeNetEstimate: $("includeNetEstimateToggle"),
+  modeSingle: $("modeSingle"),
+  modeCouple: $("modeCouple"),
+  spouseBlock: $("spouseBlock"),
+  netPanel: $("netPanel"),
+};
 
 function formatWon(value) {
   return `${new Intl.NumberFormat("ko-KR").format(Math.round(Number(value || 0)))}원`;
@@ -54,11 +62,17 @@ function formatWon(value) {
 
 function formatKoreanAmount(value) {
   const amount = Math.round(Number(value || 0));
-  const eok = Math.floor(amount / 100000000);
-  const man = Math.floor((amount % 100000000) / 10000);
-  if (eok > 0 && man > 0) return `${eok}억 ${new Intl.NumberFormat("ko-KR").format(man)}만원`;
-  if (eok > 0) return `${eok}억원`;
-  return `${new Intl.NumberFormat("ko-KR").format(man)}만원`;
+  const sign = amount < 0 ? "-" : "";
+  const abs = Math.abs(amount);
+  const jo = Math.floor(abs / 1_000_000_000_000);
+  const eok = Math.floor((abs % 1_000_000_000_000) / 100_000_000);
+  const man = Math.floor((abs % 100_000_000) / 10_000);
+
+  if (jo > 0 && eok > 0) return `${sign}${jo}조 ${new Intl.NumberFormat("ko-KR").format(eok)}억 원`;
+  if (jo > 0) return `${sign}${jo}조 원`;
+  if (eok > 0 && man > 0) return `${sign}${eok}억 ${new Intl.NumberFormat("ko-KR").format(man)}만 원`;
+  if (eok > 0) return `${sign}${eok}억 원`;
+  return `${sign}${new Intl.NumberFormat("ko-KR").format(man)}만 원`;
 }
 
 function setText(id, value) {
@@ -71,25 +85,50 @@ function toNumber(input) {
 }
 
 function isChecked(input) {
-  return !!(input && input.checked);
+  return Boolean(input && input.checked);
+}
+
+function getMode() {
+  return controls.modeCouple?.checked ? "COUPLE" : "SINGLE";
+}
+
+function getOpiMode() {
+  return document.querySelector('input[name="opiMode"]:checked')?.value || "ACTUAL";
+}
+
+function getOperatingProfitScenario() {
+  return operatingProfitMap[controls.operatingProfitScenario?.value] || operatingProfitScenarios[0];
+}
+
+function getUnionDemandScenario() {
+  return unionDemandMap[controls.unionDemandScenario?.value] || unionDemandScenarios[0];
+}
+
+function getOperatingProfit() {
+  const custom = toNumber(controls.customOperatingProfit);
+  return custom > 0 ? custom : getOperatingProfitScenario().operatingProfit;
+}
+
+function getEligibleEmployees() {
+  return Math.max(1, toNumber(controls.eligibleEmployees) || 120_000);
 }
 
 function estimateNetFromAnnual(annual) {
   const monthlyGross = annual / 12;
-  const mealNonTaxable = Math.min(200000, monthlyGross * 0.04);
+  const mealNonTaxable = Math.min(200_000, monthlyGross * 0.04);
   const taxableMonthly = Math.max(0, monthlyGross - mealNonTaxable);
-  const pension = Math.min(taxableMonthly * 0.045, 280000);
+  const pension = Math.min(taxableMonthly * 0.045, 280_000);
   const health = taxableMonthly * 0.03545;
   const longTermCare = health * 0.1295;
   const employment = taxableMonthly * 0.009;
-  const annualTaxableApprox = Math.max(0, taxableMonthly * 12 - 1500000);
+  const annualTaxableApprox = Math.max(0, taxableMonthly * 12 - 1_500_000);
 
   let incomeTaxRate = 0.06;
-  if (annualTaxableApprox >= 30000000 && annualTaxableApprox < 50000000) incomeTaxRate = 0.1;
-  else if (annualTaxableApprox >= 50000000 && annualTaxableApprox < 70000000) incomeTaxRate = 0.14;
-  else if (annualTaxableApprox >= 70000000 && annualTaxableApprox < 100000000) incomeTaxRate = 0.17;
-  else if (annualTaxableApprox >= 100000000 && annualTaxableApprox < 140000000) incomeTaxRate = 0.2;
-  else if (annualTaxableApprox >= 140000000) incomeTaxRate = 0.24;
+  if (annualTaxableApprox >= 30_000_000 && annualTaxableApprox < 50_000_000) incomeTaxRate = 0.1;
+  else if (annualTaxableApprox >= 50_000_000 && annualTaxableApprox < 70_000_000) incomeTaxRate = 0.14;
+  else if (annualTaxableApprox >= 70_000_000 && annualTaxableApprox < 100_000_000) incomeTaxRate = 0.17;
+  else if (annualTaxableApprox >= 100_000_000 && annualTaxableApprox < 140_000_000) incomeTaxRate = 0.2;
+  else if (annualTaxableApprox >= 140_000_000) incomeTaxRate = 0.24;
 
   const incomeTax = taxableMonthly * incomeTaxRate;
   const localIncomeTax = incomeTax * 0.1;
@@ -97,108 +136,120 @@ function estimateNetFromAnnual(annual) {
   return Math.max(0, monthlyGross - deductions);
 }
 
-function getMode() {
-  return modeCouple.checked ? "COUPLE" : "SINGLE";
-}
-
-function getOpiMode() {
-  return document.querySelector('input[name="opiMode"]:checked')?.value || "ACTUAL";
-}
-
 function syncRecommendedSalary(select, input, hintId) {
-  const preset = rankMap[select.value] || rankPresets[0];
-  input.value = String(preset.defaultSalary);
+  const preset = rankMap[select?.value] || rankPresets[0];
+  if (input) input.value = String(preset.defaultSalary);
   setText(hintId, `추천 연봉 예시: ${formatKoreanAmount(preset.defaultSalary)}`);
 }
 
-function syncSelfSalarySlider() {
-  const val = Math.min(Math.max(Math.round(Number(selfSalaryInput?.value) || 0), 30_000_000), 300_000_000);
-  const slider = $("selfSalarySlider");
-  const valEl  = $("selfSalarySliderVal");
-  if (slider) slider.value = val;
-  if (valEl)  valEl.textContent = formatKoreanAmount(val);
-}
-function syncSpouseSalarySlider() {
-  const val = Math.min(Math.max(Math.round(Number(spouseSalaryInput?.value) || 0), 30_000_000), 300_000_000);
-  const slider = $("spouseSalarySlider");
-  const valEl  = $("spouseSalarySliderVal");
-  if (slider) slider.value = val;
-  if (valEl)  valEl.textContent = formatKoreanAmount(val);
+function syncSalarySlider(input, sliderId, valueId) {
+  const val = Math.min(Math.max(Math.round(Number(input?.value) || 0), 30_000_000), 300_000_000);
+  const slider = $(sliderId);
+  const value = $(valueId);
+  if (slider) slider.value = String(val);
+  if (value) value.textContent = formatKoreanAmount(val);
 }
 
 function updateHints() {
-  setText("selfSalaryHint", `추천 연봉 예시: ${formatKoreanAmount((rankMap[selfRankSelect.value] || rankPresets[0]).defaultSalary)}`);
-  setText("spouseSalaryHint", `추천 연봉 예시: ${formatKoreanAmount((rankMap[spouseRankSelect.value] || rankPresets[1]).defaultSalary)}`);
+  setText("selfSalaryHint", `추천 연봉 예시: ${formatKoreanAmount((rankMap[controls.selfRank?.value] || rankPresets[0]).defaultSalary)}`);
+  setText("spouseSalaryHint", `추천 연봉 예시: ${formatKoreanAmount((rankMap[controls.spouseRank?.value] || rankPresets[1]).defaultSalary)}`);
 
   const opiMode = opiModes.find((item) => item.code === getOpiMode()) || opiModes[0];
   setText("opiModeHint", opiMode.description);
 
-  const preset = scenarioMap[scenarioSelect.value] || scenarioPresets[1];
+  const preset = scenarioMap[controls.scenario?.value] || scenarioPresets[1];
   setText("scenarioHint", `TAI 상반기 ${preset.taiFirstHalf.toFixed(2)} / 하반기 ${preset.taiSecondHalf.toFixed(2)}`);
 
-  const benefit = toNumber(benefitsInput);
+  const benefit = toNumber(controls.benefits);
   setText("benefitsHint", getMode() === "COUPLE" ? `1인당 ${formatKoreanAmount(benefit)} / 부부 합산 ${formatKoreanAmount(benefit * 2)}` : `개인 복지 ${formatKoreanAmount(benefit)}`);
+
+  const profitScenario = getOperatingProfitScenario();
+  setText("operatingProfitHint", `${profitScenario.sourceLabel}: ${profitScenario.note}`);
+
+  const unionScenario = getUnionDemandScenario();
+  setText("unionDemandHint", `${Math.round(unionScenario.payoutRatio * 100)}% 기준 · ${unionScenario.note}`);
 }
 
 function normalizeControls() {
-  spouseBlock.hidden = getMode() !== "COUPLE";
+  if (controls.spouseBlock) controls.spouseBlock.hidden = getMode() !== "COUPLE";
 
   const actualInput = document.querySelector('input[name="opiMode"][value="ACTUAL"]');
   const scenarioInput = document.querySelector('input[name="opiMode"][value="SCENARIO"]');
-  const actualChip  = $("opiActualChip");
-  const disable = targetYearSelect.value !== "2026";
-  if (actualInput) actualInput.disabled = disable;
-  if (actualChip) {
-    actualChip.style.opacity = disable ? "0.38" : "1";
-    actualChip.style.pointerEvents = disable ? "none" : "";
-  }
-  if (disable && actualInput?.checked && scenarioInput) {
-    scenarioInput.checked = true;
-  }
+  const actualChip = $("opiActualChip");
+  const disableActual = controls.targetYear?.value !== "2026";
 
-  const preset = scenarioMap[scenarioSelect.value] || scenarioPresets[1];
-  if (document.activeElement !== taiFirstHalfInput) taiFirstHalfInput.value = String(preset.taiFirstHalf);
-  if (document.activeElement !== taiSecondHalfInput) taiSecondHalfInput.value = String(preset.taiSecondHalf);
+  if (actualInput) actualInput.disabled = disableActual;
+  if (actualChip) {
+    actualChip.style.opacity = disableActual ? "0.38" : "1";
+    actualChip.style.pointerEvents = disableActual ? "none" : "";
+  }
+  if (disableActual && actualInput?.checked && scenarioInput) scenarioInput.checked = true;
+
+  const preset = scenarioMap[controls.scenario?.value] || scenarioPresets[1];
+  if (document.activeElement !== controls.taiFirstHalf && controls.taiFirstHalf) controls.taiFirstHalf.value = String(preset.taiFirstHalf);
+  if (document.activeElement !== controls.taiSecondHalf && controls.taiSecondHalf) controls.taiSecondHalf.value = String(preset.taiSecondHalf);
 
   updateHints();
 }
 
+function calculateUnionOpi(annualSalary) {
+  const operatingProfit = getOperatingProfit();
+  const unionScenario = getUnionDemandScenario();
+  const pool = operatingProfit * unionScenario.payoutRatio;
+  const perHead = pool / getEligibleEmployees();
+  const salaryWeight = averageCompensation > 0 ? annualSalary / averageCompensation : 1;
+  const weightedAmount = perHead * salaryWeight;
+
+  return {
+    operatingProfit,
+    pool,
+    perHead,
+    weightedAmount,
+    payoutRatio: unionScenario.payoutRatio,
+    stockCompensation: unionScenario.stockCompensation,
+  };
+}
+
 function resolveOpiRate(divisionCode) {
   const division = divisionMap[divisionCode] || divisions[0];
-  const customRate = toNumber(customOpiRateInput);
+  const customRate = toNumber(controls.customOpiRate);
   if (customRate > 0) return customRate;
-  if (targetYearSelect.value === "2026" && getOpiMode() === "ACTUAL") return division.actual2026Rate;
-  return division.scenarioRates[scenarioSelect.value] || division.scenarioRates.BASE;
+  if (controls.targetYear?.value === "2026" && getOpiMode() === "ACTUAL") return division.actual2026Rate;
+  return division.scenarioRates[controls.scenario?.value] || division.scenarioRates.BASE;
 }
 
 function calculatePerson(annualSalary, divisionCode) {
   const monthlyBase = annualSalary / 12;
+  const taiFirst = toNumber(controls.taiFirstHalf);
+  const taiSecond = toNumber(controls.taiSecondHalf);
+  const union = calculateUnionOpi(annualSalary);
   const opiRate = resolveOpiRate(divisionCode);
-  const taiFirst = toNumber(taiFirstHalfInput);
-  const taiSecond = toNumber(taiSecondHalfInput);
-  const opiAmount = isChecked(includeOpiToggle) ? annualSalary * opiRate : 0;
-  const taiAmount = isChecked(includeTaiToggle) ? monthlyBase * (taiFirst + taiSecond) : 0;
-  const benefitsAmount = isChecked(includeBenefitsToggle) ? toNumber(benefitsInput) : 0;
+  const useUnionMode = getOpiMode() === "UNION_DEMAND";
+  const opiAmount = isChecked(controls.includeOpi)
+    ? useUnionMode ? union.weightedAmount : annualSalary * opiRate
+    : 0;
+  const taiAmount = isChecked(controls.includeTai) ? monthlyBase * (taiFirst + taiSecond) : 0;
+  const benefitsAmount = isChecked(controls.includeBenefits) ? toNumber(controls.benefits) : 0;
   const totalComp = annualSalary + opiAmount + taiAmount + benefitsAmount;
 
   return {
     annualSalary,
-    opiRate,
+    opiRate: useUnionMode ? null : opiRate,
     opiAmount,
     taiAmount,
     benefitsAmount,
     totalComp,
     monthlyBase,
     monthlyCompView: totalComp / 12,
-    monthlyBonusLift: (totalComp - annualSalary) / 12
+    monthlyBonusLift: (totalComp - annualSalary) / 12,
+    union,
   };
 }
 
 function aggregateResults() {
   const mode = getMode();
-  const self = calculatePerson(toNumber(selfSalaryInput), selfDivisionSelect.value);
-  const spouse = mode === "COUPLE" ? calculatePerson(toNumber(spouseSalaryInput), spouseDivisionSelect.value) : null;
-
+  const self = calculatePerson(toNumber(controls.selfSalary), controls.selfDivision?.value);
+  const spouse = mode === "COUPLE" ? calculatePerson(toNumber(controls.spouseSalary), controls.spouseDivision?.value) : null;
   const totals = {
     annualSalary: self.annualSalary + (spouse ? spouse.annualSalary : 0),
     opiAmount: self.opiAmount + (spouse ? spouse.opiAmount : 0),
@@ -207,17 +258,24 @@ function aggregateResults() {
     totalComp: self.totalComp + (spouse ? spouse.totalComp : 0),
     monthlyBase: self.monthlyBase + (spouse ? spouse.monthlyBase : 0),
     monthlyCompView: self.monthlyCompView + (spouse ? spouse.monthlyCompView : 0),
-    monthlyBonusLift: self.monthlyBonusLift + (spouse ? spouse.monthlyBonusLift : 0)
+    monthlyBonusLift: self.monthlyBonusLift + (spouse ? spouse.monthlyBonusLift : 0),
   };
 
   return { mode, self, spouse, totals };
 }
 
+function getCurrentOpiCap(result) {
+  return result.totals.annualSalary * 0.5;
+}
+
 function renderSummary(result) {
   const isCouple = result.mode === "COUPLE";
-  const subtitle = targetYearSelect.value === "2026" && getOpiMode() === "ACTUAL"
-    ? "2026 실제 기준 모드"
-    : `${targetYearSelect.value} ${scenarioMap[scenarioSelect.value].label} 시나리오`;
+  const opiMode = getOpiMode();
+  const subtitle = opiMode === "UNION_DEMAND"
+    ? `${getOperatingProfitScenario().label} · ${getUnionDemandScenario().label} 추정`
+    : controls.targetYear?.value === "2026" && opiMode === "ACTUAL"
+      ? "2026 실제 기준 모드"
+      : `${controls.targetYear?.value} ${scenarioMap[controls.scenario?.value].label} 시나리오`;
 
   setText("resultHeadline", isCouple ? "부부 총보상 핵심 카드" : "개인 총보상 핵심 카드");
   setText("resultSubcopy", subtitle);
@@ -225,13 +283,33 @@ function renderSummary(result) {
   setText("salarySummary", formatKoreanAmount(result.totals.annualSalary));
   setText("salarySummaryNote", isCouple ? `1인당 평균 ${formatKoreanAmount(result.totals.annualSalary / 2)}` : `평균 직원 보수 ${formatKoreanAmount(averageCompensation)}`);
   setText("opiSummary", formatKoreanAmount(result.totals.opiAmount));
-  setText("opiSummaryNote", `${isCouple ? "합산" : divisionMap[selfDivisionSelect.value].actualLabel}`);
+  setText("opiSummaryNote", opiMode === "UNION_DEMAND" ? "노조 요구안 환산" : `${isCouple ? "합산" : divisionMap[controls.selfDivision?.value].actualLabel}`);
   setText("taiSummary", formatKoreanAmount(result.totals.taiAmount));
-  setText("taiSummaryNote", `상반기 ${taiFirstHalfInput.value} / 하반기 ${taiSecondHalfInput.value}`);
+  setText("taiSummaryNote", `상반기 ${controls.taiFirstHalf?.value} / 하반기 ${controls.taiSecondHalf?.value}`);
   setText("totalSummary", formatKoreanAmount(result.totals.totalComp));
   setText("totalSummaryNote", `복지 ${formatKoreanAmount(result.totals.benefitsAmount)}`);
   setText("monthlySummary", formatKoreanAmount(result.totals.monthlyCompView));
   setText("monthlySummaryNote", isCouple ? `1인당 평균 ${formatKoreanAmount(result.totals.monthlyCompView / 2)}` : `월 기본 ${formatKoreanAmount(result.totals.monthlyBase)}`);
+}
+
+function renderUnionSummary(result) {
+  const union = calculateUnionOpi(result.totals.annualSalary / (result.mode === "COUPLE" ? 2 : 1));
+  const totalWeighted = result.mode === "COUPLE" && result.spouse
+    ? result.self.union.weightedAmount + result.spouse.union.weightedAmount
+    : result.self.union.weightedAmount;
+  const cap = getCurrentOpiCap(result);
+  const gap = totalWeighted - cap;
+  const gapCopy = gap >= 0
+    ? `노조안 환산액이 현행 연봉 50% 상한보다 ${formatKoreanAmount(gap)} 높습니다.`
+    : `노조안 환산액이 현행 연봉 50% 상한보다 ${formatKoreanAmount(Math.abs(gap))} 낮습니다.`;
+
+  setText("unionPoolSummary", formatKoreanAmount(union.pool));
+  setText("unionPoolNote", `${formatKoreanAmount(union.operatingProfit)} × ${Math.round(union.payoutRatio * 100)}%`);
+  setText("unionPerHeadSummary", formatKoreanAmount(union.perHead));
+  setText("unionPerHeadNote", `${new Intl.NumberFormat("ko-KR").format(getEligibleEmployees())}명 단순 나눔`);
+  setText("unionWeightedSummary", formatKoreanAmount(totalWeighted));
+  setText("unionWeightedNote", result.mode === "COUPLE" ? "부부 연봉 가중 합산" : "내 연봉 가중 환산");
+  setText("unionVsCurrentCopy", `${gapCopy} 실제 배분 방식, 사업부별 재원, 직급별 배수에 따라 달라질 수 있습니다.`);
 }
 
 function renderSummaryReport(result) {
@@ -241,10 +319,10 @@ function renderSummaryReport(result) {
     [isCouple ? "부부 OPI 합산" : "OPI", formatWon(result.totals.opiAmount), false],
     [isCouple ? "부부 TAI 합산" : "TAI", formatWon(result.totals.taiAmount), false],
     [isCouple ? "부부 복지 합산" : "복지", formatWon(result.totals.benefitsAmount), false],
-    [isCouple ? "부부 연 총보상" : "연 총보상", formatWon(result.totals.totalComp), true],
+    [isCouple ? "부부 총보상" : "총보상", formatWon(result.totals.totalComp), true],
     ["월 기본 체감", formatWon(result.totals.monthlyBase), false],
     [isCouple ? "부부 월평균 총보상" : "월 총보상 체감", formatWon(result.totals.monthlyCompView), true],
-    ["월 성과급 포함 증가분", formatWon(result.totals.monthlyBonusLift), true]
+    ["월 성과급 포함 증가분", formatWon(result.totals.monthlyBonusLift), true],
   ];
 
   $("summaryReportList").innerHTML = rows.map(([label, value, highlight]) => `
@@ -256,8 +334,8 @@ function renderSummaryReport(result) {
 }
 
 function renderNetReport(result) {
-  const enabled = isChecked(includeNetEstimateToggle);
-  if (netPanel) netPanel.hidden = !enabled;
+  const enabled = isChecked(controls.includeNetEstimate);
+  if (controls.netPanel) controls.netPanel.hidden = !enabled;
   if (!enabled) {
     $("netReportList").innerHTML = "";
     return;
@@ -269,7 +347,7 @@ function renderNetReport(result) {
     [result.mode === "COUPLE" ? "부부 월 기본 실수령 추정" : "월 기본 실수령 추정", formatWon(baseNet)],
     [result.mode === "COUPLE" ? "부부 월 총보상 실수령 추정" : "월 총보상 실수령 추정", formatWon(totalNet)],
     [result.mode === "COUPLE" ? "1인당 평균 실수령 추정" : "월 실수령 증가분 추정", formatWon(result.mode === "COUPLE" ? totalNet / 2 : totalNet - baseNet)],
-    ["안내", "참고 추정치"]
+    ["안내", "참고 추정치"],
   ];
 
   $("netReportList").innerHTML = rows.map(([label, value]) => `
@@ -281,7 +359,7 @@ function renderNetReport(result) {
 }
 
 function renderRankMatrix() {
-  const sampleDivision = selfDivisionSelect.value;
+  const sampleDivision = controls.selfDivision?.value;
   $("rankMatrixList").innerHTML = rankPresets.map((rank) => {
     const row = calculatePerson(rank.defaultSalary, sampleDivision);
     return `
@@ -296,26 +374,31 @@ function renderRankMatrix() {
   }).join("");
 }
 
-function renderScenarioYears(result) {
-  const currentYear = targetYearSelect.value;
+function withTemporaryYear(yearCode, callback) {
+  const savedYear = controls.targetYear?.value;
+  const actualInput = document.querySelector('input[name="opiMode"][value="ACTUAL"]');
+  const scenarioInput = document.querySelector('input[name="opiMode"][value="SCENARIO"]');
+  const unionInput = document.querySelector('input[name="opiMode"][value="UNION_DEMAND"]');
+  const savedMode = getOpiMode();
+
+  if (controls.targetYear) controls.targetYear.value = yearCode;
+  if (yearCode !== "2026" && savedMode === "ACTUAL" && scenarioInput) scenarioInput.checked = true;
+
+  const value = callback();
+
+  if (controls.targetYear) controls.targetYear.value = savedYear;
+  if (savedMode === "ACTUAL" && actualInput) actualInput.checked = true;
+  if (savedMode === "SCENARIO" && scenarioInput) scenarioInput.checked = true;
+  if (savedMode === "UNION_DEMAND" && unionInput) unionInput.checked = true;
+
+  return value;
+}
+
+function renderScenarioYears() {
+  const currentYear = controls.targetYear?.value;
   $("scenarioYearGrid").innerHTML = yearOptions.map((year) => {
-    // 임시로 연도를 바꿔서 재계산
-    const savedYear = targetYearSelect.value;
-    targetYearSelect.value = year.code;
-    // OPI 모드는 라디오에서 읽으므로, 2026 아닌 경우 scenarioInput을 임시 체크
-    const actualInput2 = document.querySelector('input[name="opiMode"][value="ACTUAL"]');
-    const scenarioInput2 = document.querySelector('input[name="opiMode"][value="SCENARIO"]');
-    const wasActualChecked = actualInput2?.checked;
-    if (year.code !== "2026" && actualInput2?.checked && scenarioInput2) {
-      scenarioInput2.checked = true;
-    }
-    const rerun = aggregateResults();
-    const total = rerun.totals.totalComp;
-    const note = year.code === "2026" && getOpiMode() === "ACTUAL" ? "실제 기준" : "시뮬레이션";
-    targetYearSelect.value = savedYear;
-    if (wasActualChecked && actualInput2 && scenarioInput2) {
-      actualInput2.checked = true;
-    }
+    const total = withTemporaryYear(year.code, () => aggregateResults().totals.totalComp);
+    const note = getOpiMode() === "UNION_DEMAND" ? "노조안 환산" : year.code === "2026" ? "실제 또는 시나리오" : "시뮬레이션";
     return `
       <article class="scenario-year-card${currentYear === year.code ? " is-active" : ""}">
         <p>${year.label}</p>
@@ -326,25 +409,21 @@ function renderScenarioYears(result) {
   }).join("");
 }
 
-let _samsungDonutChart = null;
+let samsungDonutChart = null;
 function renderDonutChart(totals) {
   const canvas = $("samsung-donut-chart");
   if (!canvas || !window.Chart) return;
-  const data = [
-    totals.annualSalary,
-    totals.opiAmount,
-    totals.taiAmount,
-    totals.benefitsAmount,
-  ];
+  const data = [totals.annualSalary, totals.opiAmount, totals.taiAmount, totals.benefitsAmount];
   const labels = ["연봉", "OPI", "TAI", "복지"];
   const colors = ["rgba(148,163,184,0.80)", "rgba(15,110,86,0.82)", "rgba(186,117,23,0.78)", "rgba(83,74,183,0.65)"];
-  if (_samsungDonutChart) { _samsungDonutChart.destroy(); _samsungDonutChart = null; }
+  if (samsungDonutChart) samsungDonutChart.destroy();
   const total = data.reduce((a, b) => a + b, 0);
   const centerPlugin = {
     id: "samsungDonutCenter",
     afterDraw(chart) {
       const { ctx, chartArea: { left, right, top, bottom } } = chart;
-      const cx = (left + right) / 2, cy = (top + bottom) / 2;
+      const cx = (left + right) / 2;
+      const cy = (top + bottom) / 2;
       ctx.save();
       ctx.font = "700 13px sans-serif";
       ctx.fillStyle = "#475569";
@@ -355,9 +434,9 @@ function renderDonutChart(totals) {
       ctx.fillStyle = "#0f172a";
       ctx.fillText(formatKoreanAmount(total), cx, cy + 11);
       ctx.restore();
-    }
+    },
   };
-  _samsungDonutChart = new window.Chart(canvas.getContext("2d"), {
+  samsungDonutChart = new window.Chart(canvas.getContext("2d"), {
     type: "doughnut",
     data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 1, borderColor: "#fff" }] },
     options: { ...buildDefaultOptions(), cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } } },
@@ -365,24 +444,31 @@ function renderDonutChart(totals) {
   });
 }
 
-let _samsungRankChart = null;
+let samsungRankChart = null;
 function renderRankChart() {
   const canvas = $("samsung-rank-chart");
   if (!canvas || !window.Chart) return;
-  const sampleDivision = selfDivisionSelect.value;
-  const currentSalary = Number(selfSalaryInput?.value || 0);
+  const sampleDivision = controls.selfDivision?.value;
+  const currentSalary = Number(controls.selfSalary?.value || 0);
   const items = rankPresets.map((rank) => {
     const row = calculatePerson(rank.defaultSalary, sampleDivision);
-    const isCurrent = Math.abs(rank.defaultSalary - currentSalary) < 5_000_000;
-    return { label: rank.label, total: row.totalComp, isCurrent };
+    return {
+      label: rank.label,
+      total: row.totalComp,
+      isCurrent: Math.abs(rank.defaultSalary - currentSalary) < 5_000_000,
+    };
   });
-  const bgColors = items.map((it) => it.isCurrent ? "rgba(15,110,86,0.88)" : "rgba(148,163,184,0.60)");
-  if (_samsungRankChart) { _samsungRankChart.destroy(); _samsungRankChart = null; }
-  _samsungRankChart = new window.Chart(canvas.getContext("2d"), {
+  if (samsungRankChart) samsungRankChart.destroy();
+  samsungRankChart = new window.Chart(canvas.getContext("2d"), {
     type: "bar",
     data: {
-      labels: items.map((it) => it.label),
-      datasets: [{ label: "총보상", data: items.map((it) => it.total), backgroundColor: bgColors, borderRadius: 4 }],
+      labels: items.map((item) => item.label),
+      datasets: [{
+        label: "총보상",
+        data: items.map((item) => item.total),
+        backgroundColor: items.map((item) => item.isCurrent ? "rgba(15,110,86,0.88)" : "rgba(148,163,184,0.60)"),
+        borderRadius: 4,
+      }],
     },
     options: {
       ...buildDefaultOptions(),
@@ -395,43 +481,37 @@ function renderRankChart() {
   });
 }
 
-let _samsungScenarioChart = null;
-function renderScenarioChart(result) {
+let samsungScenarioChart = null;
+function renderScenarioChart() {
   const canvas = $("samsung-scenario-chart");
   if (!canvas || !window.Chart) return;
-  const years = yearOptions.map((year) => {
-    const savedYear = targetYearSelect.value;
-    targetYearSelect.value = year.code;
-    const actualInput2 = document.querySelector('input[name="opiMode"][value="ACTUAL"]');
-    const scenarioInput2 = document.querySelector('input[name="opiMode"][value="SCENARIO"]');
-    const wasActualChecked = actualInput2?.checked;
-    if (year.code !== "2026" && actualInput2?.checked && scenarioInput2) {
-      scenarioInput2.checked = true;
-    }
+  const years = yearOptions.map((year) => withTemporaryYear(year.code, () => {
     const r = aggregateResults();
-    targetYearSelect.value = savedYear;
-    if (wasActualChecked && actualInput2 && scenarioInput2) {
-      actualInput2.checked = true;
-    }
-    return { label: year.label, salary: r.totals.annualSalary, opi: r.totals.opiAmount, tai: r.totals.taiAmount, benefits: r.totals.benefitsAmount };
-  });
-  if (_samsungScenarioChart) { _samsungScenarioChart.destroy(); _samsungScenarioChart = null; }
-  _samsungScenarioChart = new window.Chart($("samsung-scenario-chart").getContext("2d"), {
+    return {
+      label: year.label,
+      salary: r.totals.annualSalary,
+      opi: r.totals.opiAmount,
+      tai: r.totals.taiAmount,
+      benefits: r.totals.benefitsAmount,
+    };
+  }));
+  if (samsungScenarioChart) samsungScenarioChart.destroy();
+  samsungScenarioChart = new window.Chart(canvas.getContext("2d"), {
     type: "bar",
     data: {
-      labels: years.map((y) => y.label),
+      labels: years.map((year) => year.label),
       datasets: [
-        { label: "연봉",  data: years.map((y) => y.salary),   backgroundColor: "rgba(148,163,184,0.75)", stack: "s" },
-        { label: "OPI",   data: years.map((y) => y.opi),      backgroundColor: "rgba(15,110,86,0.80)",  stack: "s" },
-        { label: "TAI",   data: years.map((y) => y.tai),      backgroundColor: "rgba(186,117,23,0.75)", stack: "s" },
-        { label: "복지",  data: years.map((y) => y.benefits), backgroundColor: "rgba(83,74,183,0.60)",  stack: "s" },
+        { label: "연봉", data: years.map((year) => year.salary), backgroundColor: "rgba(148,163,184,0.75)", stack: "s" },
+        { label: "OPI", data: years.map((year) => year.opi), backgroundColor: "rgba(15,110,86,0.80)", stack: "s" },
+        { label: "TAI", data: years.map((year) => year.tai), backgroundColor: "rgba(186,117,23,0.75)", stack: "s" },
+        { label: "복지", data: years.map((year) => year.benefits), backgroundColor: "rgba(83,74,183,0.60)", stack: "s" },
       ],
     },
     options: {
       ...buildDefaultOptions(),
       scales: {
         x: { stacked: true, grid: { display: false } },
-        y: { stacked: true, ticks: { callback: (v) => formatKRW(v) } },
+        y: { stacked: true, ticks: { callback: (value) => formatKRW(value) } },
       },
       plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } },
     },
@@ -456,17 +536,18 @@ function renderComparisons(result) {
 
 function render() {
   normalizeControls();
-  syncSelfSalarySlider();
-  syncSpouseSalarySlider();
+  syncSalarySlider(controls.selfSalary, "selfSalarySlider", "selfSalarySliderVal");
+  syncSalarySlider(controls.spouseSalary, "spouseSalarySlider", "spouseSalarySliderVal");
   const result = aggregateResults();
   renderSummary(result);
+  renderUnionSummary(result);
   renderSummaryReport(result);
   renderNetReport(result);
   renderDonutChart(result.totals);
   renderRankChart();
-  renderScenarioChart(result);
+  renderScenarioChart();
   renderRankMatrix();
-  renderScenarioYears(result);
+  renderScenarioYears();
   renderComparisons(result);
 }
 
@@ -480,52 +561,78 @@ function flashButton(button, label) {
 }
 
 function resetPage() {
-  modeSingle.checked = true;
-  selfRankSelect.value = rankPresets[0].code;
-  spouseRankSelect.value = rankPresets[1].code;
-  selfDivisionSelect.value = divisions[1].code;
-  spouseDivisionSelect.value = divisions[0].code;
-  syncRecommendedSalary(selfRankSelect, selfSalaryInput, "selfSalaryHint");
-  syncRecommendedSalary(spouseRankSelect, spouseSalaryInput, "spouseSalaryHint");
-  targetYearSelect.value = "2026";
+  if (controls.modeSingle) controls.modeSingle.checked = true;
+  if (controls.selfRank) controls.selfRank.value = rankPresets[0].code;
+  if (controls.spouseRank) controls.spouseRank.value = rankPresets[1].code;
+  if (controls.selfDivision) controls.selfDivision.value = "DS";
+  if (controls.spouseDivision) controls.spouseDivision.value = divisions[0].code;
+  syncRecommendedSalary(controls.selfRank, controls.selfSalary, "selfSalaryHint");
+  syncRecommendedSalary(controls.spouseRank, controls.spouseSalary, "spouseSalaryHint");
+  if (controls.targetYear) controls.targetYear.value = "2026";
   const opiActual = document.querySelector('input[name="opiMode"][value="ACTUAL"]');
   if (opiActual) opiActual.checked = true;
-  scenarioSelect.value = "BASE";
-  benefitsInput.value = String(defaultBenefits);
-  includeOpiToggle.checked = true;
-  includeTaiToggle.checked = true;
-  includeBenefitsToggle.checked = true;
-  customOpiRateInput.value = "0";
-  taiFirstHalfInput.value = "0.5";
-  taiSecondHalfInput.value = "0.5";
-  includeNetEstimateToggle.checked = true;
+  if (controls.scenario) controls.scenario.value = "BASE";
+  if (controls.operatingProfitScenario) controls.operatingProfitScenario.value = operatingProfitScenarios[0].code;
+  if (controls.unionDemandScenario) controls.unionDemandScenario.value = unionDemandScenarios[0].code;
+  if (controls.benefits) controls.benefits.value = String(defaultBenefits);
+  if (controls.eligibleEmployees) controls.eligibleEmployees.value = "120000";
+  if (controls.customOperatingProfit) controls.customOperatingProfit.value = "0";
+  if (controls.includeOpi) controls.includeOpi.checked = true;
+  if (controls.includeTai) controls.includeTai.checked = true;
+  if (controls.includeBenefits) controls.includeBenefits.checked = true;
+  if (controls.customOpiRate) controls.customOpiRate.value = "0";
+  if (controls.taiFirstHalf) controls.taiFirstHalf.value = "0.5";
+  if (controls.taiSecondHalf) controls.taiSecondHalf.value = "0.5";
+  if (controls.includeNetEstimate) controls.includeNetEstimate.checked = true;
   render();
 }
 
-[selfRankSelect, spouseRankSelect].forEach((select) => {
+[controls.selfRank, controls.spouseRank].forEach((select) => {
   select?.addEventListener("change", () => {
-    if (select === selfRankSelect) syncRecommendedSalary(selfRankSelect, selfSalaryInput, "selfSalaryHint");
-    if (select === spouseRankSelect) syncRecommendedSalary(spouseRankSelect, spouseSalaryInput, "spouseSalaryHint");
+    if (select === controls.selfRank) syncRecommendedSalary(controls.selfRank, controls.selfSalary, "selfSalaryHint");
+    if (select === controls.spouseRank) syncRecommendedSalary(controls.spouseRank, controls.spouseSalary, "spouseSalaryHint");
     render();
   });
 });
 
-[selfDivisionSelect, spouseDivisionSelect, selfSalaryInput, spouseSalaryInput, targetYearSelect, scenarioSelect, benefitsInput, includeOpiToggle, includeTaiToggle, includeBenefitsToggle, customOpiRateInput, taiFirstHalfInput, taiSecondHalfInput, includeNetEstimateToggle, modeSingle, modeCouple].forEach((element) => {
+[
+  controls.selfDivision,
+  controls.spouseDivision,
+  controls.selfSalary,
+  controls.spouseSalary,
+  controls.targetYear,
+  controls.scenario,
+  controls.benefits,
+  controls.operatingProfitScenario,
+  controls.unionDemandScenario,
+  controls.eligibleEmployees,
+  controls.customOperatingProfit,
+  controls.includeOpi,
+  controls.includeTai,
+  controls.includeBenefits,
+  controls.customOpiRate,
+  controls.taiFirstHalf,
+  controls.taiSecondHalf,
+  controls.includeNetEstimate,
+  controls.modeSingle,
+  controls.modeCouple,
+].forEach((element) => {
   element?.addEventListener(element.type === "checkbox" || element.type === "radio" ? "change" : "input", render);
   element?.addEventListener("change", render);
 });
 
 $("selfSalarySlider")?.addEventListener("input", () => {
-  if (selfSalaryInput) selfSalaryInput.value = $("selfSalarySlider").value;
-  syncSelfSalarySlider();
+  if (controls.selfSalary) controls.selfSalary.value = $("selfSalarySlider").value;
+  syncSalarySlider(controls.selfSalary, "selfSalarySlider", "selfSalarySliderVal");
   render();
 });
+
 $("spouseSalarySlider")?.addEventListener("input", () => {
-  if (spouseSalaryInput) spouseSalaryInput.value = $("spouseSalarySlider").value;
-  syncSpouseSalarySlider();
+  if (controls.spouseSalary) controls.spouseSalary.value = $("spouseSalarySlider").value;
+  syncSalarySlider(controls.spouseSalary, "spouseSalarySlider", "spouseSalarySliderVal");
   render();
 });
-// 라디오칩 이벤트
+
 document.querySelectorAll('input[name="opiMode"]').forEach((radio) => {
   radio.addEventListener("change", render);
 });
