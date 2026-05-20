@@ -1,0 +1,595 @@
+.slc-page {
+  --slc-green: #0f6e56;
+  --slc-green-soft: #e8f6f0;
+  --slc-ink: #111827;
+  --slc-muted: #5f6b7a;
+  --slc-border: #e4ebe7;
+  --slc-warn: #92400e;
+
+  .slc-section {
+    margin-top: 28px;
+  }
+
+  .slc-trust-grid,
+  .slc-summary-grid,
+  .slc-market-grid,
+  .slc-condition-grid,
+  .slc-related-grid {
+    display: grid;
+    gap: 12px;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .slc-summary-grid {
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .slc-trust-card,
+  .slc-summary-card,
+  .slc-market-grid article,
+  .slc-condition-grid article,
+  .slc-related-grid a {
+    border: 1px solid var(--slc-border);
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+  }
+
+  .slc-trust-card,
+  .slc-summary-card {
+    span {
+      display: inline-flex;
+      margin-bottom: 8px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: var(--slc-green);
+    }
+
+    strong {
+      display: block;
+      color: var(--slc-ink);
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 7px 0 0;
+      color: var(--slc-muted);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+  }
+
+  .slc-summary-card {
+    background: #f8fbf9;
+
+    &--primary {
+      border-color: var(--slc-green);
+      background: var(--slc-green-soft);
+    }
+
+    &--official {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+  }
+
+  .slc-filter-row,
+  .slc-job-filter-row,
+  .slc-cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .slc-filter-row {
+    margin-bottom: 18px;
+  }
+
+  .slc-job-filter-row {
+    margin-bottom: 14px;
+  }
+
+  .slc-filter-btn {
+    border: 1px solid #d7e2dd;
+    border-radius: 999px;
+    padding: 7px 13px;
+    background: #fff;
+    color: #374151;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+
+    &.is-active {
+      border-color: var(--slc-green);
+      background: var(--slc-green);
+      color: #fff;
+    }
+  }
+
+  .slc-chart-wrap {
+    position: relative;
+    height: 340px;
+    margin-top: 18px;
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    &--short {
+      height: 300px;
+    }
+
+    @media (max-width: 640px) {
+      height: 320px;
+    }
+  }
+
+  .slc-loan-grid,
+  .slc-credit-grid,
+  .slc-job-grid,
+  .slc-checklist-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: 1080px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .slc-loan-card,
+  .slc-credit-card,
+  .slc-job-card,
+  .slc-checklist-card {
+    border: 1px solid var(--slc-border);
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+
+    &[hidden] {
+      display: none;
+    }
+
+    h3 {
+      margin: 10px 0 6px;
+      color: var(--slc-ink);
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0 0 12px;
+      color: #4b5563;
+      font-size: 0.86rem;
+      line-height: 1.65;
+    }
+
+    small {
+      color: var(--slc-muted);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+  }
+
+  .slc-loan-card {
+    a {
+      color: var(--slc-green);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+  }
+
+  .slc-loan-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .slc-source-badge,
+  .slc-dsr-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 3px 8px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: 0.7rem;
+    font-weight: 900;
+  }
+
+  .slc-source-badge--official {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .slc-source-badge--check {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .slc-source-badge--estimate {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .slc-loan-card dl {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .slc-loan-card dl div {
+    display: grid;
+    gap: 2px;
+  }
+
+  .slc-loan-card dt {
+    color: #6b7280;
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+
+  .slc-loan-card dd {
+    margin: 0;
+    color: var(--slc-ink);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .slc-card-caution {
+    margin-top: 12px !important;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f3;
+    color: #6b7280 !important;
+    font-size: 0.78rem !important;
+  }
+
+  .slc-credit-card {
+    background: #f8fbf9;
+
+    span {
+      color: var(--slc-green);
+      font-size: 0.8rem;
+      font-weight: 900;
+    }
+  }
+
+  .slc-job-card ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+
+    li {
+      border-radius: 999px;
+      background: var(--slc-green-soft);
+      color: var(--slc-green);
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 5px 8px;
+    }
+  }
+
+  .slc-table-wrap {
+    overflow-x: auto;
+    margin-top: 18px;
+  }
+
+  .slc-wide-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+
+    th,
+    td {
+      border-bottom: 1px solid var(--slc-border);
+      padding: 10px 12px;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    th:first-child,
+    td:first-child,
+    th:last-child,
+    td:last-child {
+      text-align: left;
+    }
+
+    th {
+      background: #f8fcfa;
+      color: #374151;
+      font-weight: 800;
+    }
+
+    td {
+      color: var(--slc-ink);
+    }
+
+    td.is-highlight {
+      color: var(--slc-green);
+      font-weight: 900;
+    }
+  }
+
+  .slc-warning-box,
+  .slc-data-note {
+    margin-top: 14px;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #fffbeb;
+    color: var(--slc-warn);
+    font-size: 0.86rem;
+    line-height: 1.65;
+  }
+
+  .slc-market-grid article,
+  .slc-condition-grid article {
+    strong {
+      color: var(--slc-ink);
+      font-size: 0.95rem;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: var(--slc-muted);
+      font-size: 0.84rem;
+      line-height: 1.65;
+    }
+
+    small {
+      display: block;
+      margin-top: 8px;
+      color: #92400e;
+      font-size: 0.75rem;
+      line-height: 1.55;
+    }
+  }
+
+  .slc-calculator-cta {
+    border: 1.5px solid #86efac;
+    border-radius: 8px;
+    padding: 22px;
+    margin: 28px 0;
+    background: #f0fdf4;
+
+    h2 {
+      margin: 0 0 8px;
+      color: var(--slc-ink);
+      font-size: 1.18rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0;
+      color: #4b5563;
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+  }
+
+  .slc-cta-eyebrow {
+    margin: 0 0 6px !important;
+    color: var(--slc-green) !important;
+    font-size: 0.76rem !important;
+    font-weight: 900;
+  }
+
+  .slc-refinance-grid {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    article {
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+
+      span {
+        color: var(--slc-green);
+        font-size: 0.76rem;
+        font-weight: 900;
+      }
+
+      strong {
+        display: block;
+        margin-top: 4px;
+        color: var(--slc-ink);
+        font-size: 1.15rem;
+      }
+
+      p {
+        margin-top: 4px;
+        font-size: 0.78rem;
+      }
+    }
+  }
+
+  .slc-cta-button {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 8px;
+    background: var(--slc-green);
+    color: #fff;
+    font-size: 0.86rem;
+    font-weight: 800;
+    padding: 9px 16px;
+    text-decoration: none;
+
+    &--secondary {
+      border: 1px solid var(--slc-green);
+      background: #fff;
+      color: var(--slc-green);
+    }
+  }
+
+  .slc-rank-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+
+    article {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 12px;
+      row-gap: 3px;
+      border: 1px solid var(--slc-border);
+      border-radius: 8px;
+      background: #fff;
+      padding: 13px;
+
+      span {
+        grid-row: span 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: var(--slc-green);
+        color: #fff;
+        font-weight: 900;
+      }
+
+      strong {
+        color: var(--slc-ink);
+      }
+
+      p {
+        margin: 0;
+        color: var(--slc-muted);
+        font-size: 0.84rem;
+      }
+    }
+  }
+
+  .slc-dsr-board {
+    border: 1px solid var(--slc-border);
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+
+    strong {
+      color: var(--slc-ink);
+    }
+
+    ol {
+      margin: 10px 0 0;
+      padding-left: 20px;
+      color: var(--slc-muted);
+      line-height: 1.7;
+    }
+  }
+
+  .slc-plan-list {
+    display: grid;
+    gap: 8px;
+    margin: 14px 0 0;
+    padding-left: 22px;
+
+    li {
+      border-bottom: 1px solid var(--slc-border);
+      padding: 0 0 8px;
+      color: var(--slc-ink);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+  }
+
+  .slc-link-split {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+
+    @media (min-width: 760px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .slc-official-box,
+  .slc-affiliate-box {
+    border: 1px solid var(--slc-border);
+    border-radius: 8px;
+    padding: 18px;
+    background: #fff;
+
+    h3 {
+      margin: 0 0 10px;
+      color: var(--slc-ink);
+      font-size: 1rem;
+    }
+
+    a {
+      display: grid;
+      gap: 2px;
+      border-top: 1px solid #edf2ef;
+      color: var(--slc-green);
+      padding: 10px 0;
+      text-decoration: none;
+
+      span,
+      small {
+        color: var(--slc-muted);
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .slc-affiliate-box {
+    border-color: #bfdbfe;
+    background: #f0f7ff;
+
+    p,
+    small {
+      color: #475569;
+      font-size: 0.84rem;
+      line-height: 1.6;
+    }
+  }
+
+  .slc-related-grid {
+    margin-top: 14px;
+
+    a {
+      display: grid;
+      gap: 5px;
+      color: inherit;
+      text-decoration: none;
+
+      strong {
+        color: var(--slc-ink);
+        font-size: 0.92rem;
+      }
+
+      span {
+        color: var(--slc-muted);
+        font-size: 0.8rem;
+        line-height: 1.55;
+      }
+    }
+  }
+}

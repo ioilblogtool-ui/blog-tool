@@ -198,6 +198,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "welfare-benefit-eligibility",
+    title: "복지급여 수급 자격 계산기",
+    description: "가구원 수, 소득, 재산, 자동차 정보를 입력하면 2026년 기준 중위소득 대비 소득인정액과 생계·의료·주거·교육급여 수급 가능성을 간이 계산합니다.",
+    order: 11.7,
+    eyebrow: "복지급여 계산",
+    category: "support",
+    iframeReady: true,
+    badges: ["복지", "2026", "자가 점검"],
+    previewStats: [
+      { label: "급여 기준", value: "4종", context: "생계·의료·주거·교육" },
+      { label: "핵심 결과", value: "소득인정액" }
+    ]
+  },
+  {
     slug: "single-parental-leave-total",
     title: "한 명만 육아휴직 총수령액 계산기",
     description: "육아휴직 급여, 부모급여, 아동수당, 첫만남이용권을 합쳐 아이 두 돌까지 가구 총수령액을 계산하는 페이지",
@@ -250,6 +264,34 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "수수료 공식", value: "원금×율×잔여비율", context: "은행 일반 기준" },
       { label: "결과", value: "유불리 자동 판정" },
+    ],
+  },
+  {
+    slug: "loan-refinancing-calculator",
+    title: "대출 갈아타기 계산기",
+    description: "현재 대출 잔액·금리·남은 기간과 신규 대출 금리, 중도상환수수료를 입력하면 월 납입금 절감액과 손익분기 시점을 계산합니다.",
+    order: 14.52,
+    eyebrow: "대환대출 계산",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규", "대출", "손익분기"],
+    previewStats: [
+      { label: "핵심 결과", value: "월 절감액" },
+      { label: "판단 기준", value: "회수 기간" },
+    ],
+  },
+  {
+    slug: "silson-insurance-refund-calculator",
+    title: "실손보험 환급액 계산기",
+    description: "병원비 영수증의 급여 본인부담금과 비급여 항목을 입력하면 실손보험 세대별 자기부담률, 통원 공제, 연간 한도를 반영해 예상 환급액을 계산합니다.",
+    order: 14.54,
+    eyebrow: "보험 계산기",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "보험", "비급여"],
+    previewStats: [
+      { label: "핵심 결과", value: "예상 환급액" },
+      { label: "확인 항목", value: "4세대 누적" },
     ],
   },
   {

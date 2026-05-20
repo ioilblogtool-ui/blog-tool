@@ -1,0 +1,530 @@
+.gwb-page {
+  display: grid;
+  gap: 24px;
+
+  .content-section {
+    border: 1px solid #dfe7e4;
+    border-radius: 8px;
+    padding: 22px;
+    background: #fbfdfc;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
+  }
+
+  .section-header--compact {
+    margin-bottom: 16px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      color: #0f6e56;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0;
+      color: #172033;
+      font-size: clamp(1.12rem, 1.9vw, 1.34rem);
+      line-height: 1.35;
+    }
+
+    p {
+      max-width: 880px;
+      margin: 8px 0 0;
+      color: #5f6b7a;
+      font-size: 0.9rem;
+      line-height: 1.75;
+    }
+  }
+
+  .gwb-summary-grid,
+  .gwb-threshold-grid,
+  .gwb-mini-grid,
+  .gwb-recommendation-grid,
+  .gwb-checklist-grid,
+  .gwb-fallback-grid,
+  .gwb-change-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .gwb-summary-grid,
+  .gwb-threshold-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    @media (min-width: 920px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .gwb-mini-grid,
+  .gwb-recommendation-grid,
+  .gwb-checklist-grid,
+  .gwb-fallback-grid,
+  .gwb-change-grid {
+    grid-template-columns: 1fr;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: 1080px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .gwb-summary-card,
+  .gwb-threshold-card,
+  .gwb-benefit-card,
+  .gwb-mini-card,
+  .gwb-recommendation-card,
+  .gwb-checklist-card,
+  .gwb-fallback-grid article,
+  .gwb-change-grid article {
+    border: 1px solid #dce6e2;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+  }
+
+  .gwb-summary-card {
+    min-width: 0;
+
+    span {
+      display: inline-flex;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: #eef7f4;
+      color: #0f6e56;
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    p,
+    small {
+      margin: 0;
+      color: #64748b;
+      line-height: 1.45;
+    }
+
+    p {
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    strong {
+      display: block;
+      margin: 7px 0 4px;
+      color: #111827;
+      font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .gwb-summary-card--primary {
+    border-color: #0f6e56;
+    background: #e7f7f1;
+
+    strong {
+      color: #0f6e56;
+    }
+  }
+
+  .gwb-chart-wrap {
+    position: relative;
+    height: 340px;
+    margin-top: 18px;
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    &--short {
+      height: 300px;
+    }
+
+    @media (max-width: 640px) {
+      height: 320px;
+    }
+  }
+
+  .gwb-table-wrap {
+    overflow-x: auto;
+    margin-top: 18px;
+    border: 1px solid #e3ebe7;
+    border-radius: 8px;
+  }
+
+  .gwb-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+
+    th,
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #e8ede9;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    th {
+      background: #f6faf8;
+      color: #374151;
+      font-weight: 900;
+    }
+
+    .is-highlight {
+      color: #0f6e56;
+      font-weight: 900;
+    }
+  }
+
+  .gwb-threshold-card {
+    span {
+      display: block;
+      margin-bottom: 6px;
+      color: #64748b;
+      font-size: 0.74rem;
+      font-weight: 900;
+    }
+
+    strong {
+      display: block;
+      color: #111827;
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 6px 0 0;
+      color: #0f6e56;
+      font-size: 0.92rem;
+      font-weight: 900;
+    }
+  }
+
+  .gwb-threshold-card--primary {
+    border-color: #0f6e56;
+    background: #e7f7f1;
+  }
+
+  .gwb-calculator-cta,
+  .gwb-public-cta {
+    border: 1px solid #9ae6c8;
+    border-radius: 8px;
+    padding: 22px;
+    background: #f0fdf8;
+
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h2 {
+      color: #111827;
+      font-size: clamp(1.12rem, 2vw, 1.34rem);
+      line-height: 1.35;
+    }
+
+    p {
+      margin-top: 8px;
+      color: #475569;
+      font-size: 0.9rem;
+      line-height: 1.75;
+    }
+  }
+
+  .gwb-cta-eyebrow {
+    color: #0f6e56;
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+
+  .gwb-cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    margin-top: 14px;
+    border-radius: 8px;
+    padding: 0 16px;
+    background: #0f6e56;
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 900;
+    text-decoration: none;
+  }
+
+  .gwb-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .gwb-filter-btn {
+    border: 1px solid #dce6e2;
+    border-radius: 999px;
+    padding: 7px 13px;
+    background: #fff;
+    color: #374151;
+    font-size: 0.82rem;
+    font-weight: 900;
+    cursor: pointer;
+
+    &.is-active {
+      border-color: #0f6e56;
+      background: #0f6e56;
+      color: #fff;
+    }
+  }
+
+  .gwb-benefit-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: 1120px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .gwb-benefit-card {
+    &[hidden] {
+      display: none;
+    }
+
+    h3 {
+      margin: 10px 0 6px;
+      color: #111827;
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0 0 12px;
+      color: #4b5563;
+      font-size: 0.86rem;
+      line-height: 1.65;
+    }
+
+    dl {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    dt {
+      color: #64748b;
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    dd {
+      margin: 0;
+      color: #111827;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    small {
+      display: block;
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+  }
+
+  .gwb-benefit-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .gwb-source-badge,
+  .gwb-priority-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .gwb-source-badge {
+    background: #f3f4f6;
+    color: #4b5563;
+  }
+
+  .gwb-source-badge--official {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .gwb-source-badge--check {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .gwb-source-badge--estimate {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .gwb-source-badge--reference {
+    background: #f1f5f9;
+    color: #334155;
+  }
+
+  .gwb-priority-badge {
+    background: #e7f7f1;
+    color: #0f6e56;
+  }
+
+  .gwb-mini-card,
+  .gwb-recommendation-card,
+  .gwb-checklist-card,
+  .gwb-fallback-grid article,
+  .gwb-change-grid article {
+    h3,
+    strong {
+      display: block;
+      margin: 0 0 8px;
+      color: #111827;
+      font-size: 0.98rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0;
+      color: #475569;
+      font-size: 0.86rem;
+      line-height: 1.65;
+    }
+
+    span,
+    small {
+      color: #0f6e56;
+      font-size: 0.74rem;
+      font-weight: 900;
+    }
+  }
+
+  .gwb-recommendation-card {
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 0;
+      margin: 0 0 10px;
+      list-style: none;
+    }
+
+    li {
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: #eef7f4;
+      color: #0f6e56;
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    a {
+      display: inline-flex;
+      margin-top: 12px;
+      color: #0f6e56;
+      font-size: 0.84rem;
+      font-weight: 900;
+      text-decoration: none;
+    }
+  }
+
+  .gwb-check-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    background: #e7f7f1;
+    color: #0f6e56;
+  }
+
+  .gwb-source-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 16px;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .gwb-source-grid a {
+    display: grid;
+    gap: 4px;
+    border: 1px solid #dce6e2;
+    border-radius: 8px;
+    padding: 13px;
+    background: #fff;
+    text-decoration: none;
+
+    span {
+      color: #0f6e56;
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    strong {
+      color: #111827;
+      font-size: 0.9rem;
+    }
+
+    small {
+      color: #64748b;
+      line-height: 1.5;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .content-section,
+    .gwb-calculator-cta,
+    .gwb-public-cta {
+      padding: 18px 14px;
+    }
+
+    .gwb-summary-grid,
+    .gwb-threshold-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gwb-cta-button {
+      width: 100%;
+    }
+  }
+}

@@ -27,6 +27,7 @@ const topicBySlug: Record<string, string> = {
   "hyundai-bonus": "성과급 비교",
   "birth-support-total": "육아휴직·출산",
   "birth-support-money": "육아휴직·출산",
+  "welfare-benefit-eligibility": "복지·지원금",
   "single-parental-leave-total": "육아휴직·출산",
   "parental-leave-pay": "육아휴직·출산",
   "six-plus-six": "육아휴직·출산",
@@ -41,6 +42,8 @@ const topicBySlug: Record<string, string> = {
   "pregnancy-checkup-cost": "육아휴직·출산",
   "home-purchase-fund": "부동산·내집마련",
   "mortgage-prepayment-penalty": "부동산·내집마련",
+  "loan-refinancing-calculator": "대출·금융",
+  "silson-insurance-refund-calculator": "보험·의료비",
   "real-estate-acquisition-tax": "부동산·내집마련",
   "jeonwolse-conversion": "부동산·내집마련",
   "jeonse-vs-wolse-calculator": "부동산·내집마련",
@@ -73,10 +76,13 @@ const topicBySlug: Record<string, string> = {
   "travel-savings-goal-calculator": "여행·생활",
   "postnatal-care-cost": "육아휴직·출산",
   "pregnancy-birth-cost": "육아휴직·출산",
+  "year-end-tax-refund-calculator": "세금·연말정산",
+  "overtime-pay-calculator": "연봉·이직",
+  "newlywed-rent-vs-buy": "부동산·내집마련",
 };
 
 const categories = [...new Set(orderedTools.map((t) => topicBySlug[t.slug]).filter(Boolean))];
-type HomeReportCategory = "salary" | "estate" | "asset" | "life" | "culture";
+type HomeReportCategory = "salary" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax";
 
 type HomeReportMeta = {
   category: HomeReportCategory;
@@ -88,6 +94,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "it-salary-top10": { category: "salary", isNew: false },
   "it-si-sm-salary-comparison-2026": { category: "salary", isNew: true },
   "insurance-salary-bonus-comparison-2026": { category: "salary", isNew: true },
+  "silson-insurance-generation-comparison-2026": { category: "insurance", isNew: true },
   "construction-salary-bonus-comparison-2026": { category: "salary", isNew: true },
   "large-company-salary-growth-by-years-2026": { category: "salary", isNew: true },
   "overtime-pay-by-job-2026": { category: "salary", isNew: true },
@@ -128,6 +135,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "2026-seoul-apt-cheonyak-cutline": { category: "estate", isNew: true },
   "seoul-mortgage-refinancing-2026": { category: "estate", isNew: true },
   "first-home-buyer-benefits-2026": { category: "estate", isNew: true },
+  "2026-government-welfare-benefits": { category: "support", isNew: true },
   "postnatal-care-comparison-2026": { category: "life", isNew: true },
   "birth-support-by-region-2026": { category: "life", isNew: true },
   "pregnancy-checkup-cost-2026": { category: "life", isNew: true },
@@ -139,6 +147,10 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "ai-coding-tools-comparison-2026": { category: "salary", isNew: true },
   "ai-side-income-comparison-2026": { category: "salary", isNew: true },
   "pension-age-comparison-2026": { category: "asset", isNew: true },
+  "newlywed-cost-2026": { category: "life", isNew: true },
+  "baby-formula-brand-cost-comparison-2026": { category: "life", isNew: true },
+  "2026-year-end-tax-saving-guide": { category: "tax", isNew: true },
+  "2026-salaried-loan-comparison": { category: "asset", isNew: true },
 };
 
 const reportCategoryLabels: Record<HomeReportCategory, string> = {
@@ -147,9 +159,12 @@ const reportCategoryLabels: Record<HomeReportCategory, string> = {
   asset: "자산",
   life: "생활",
   culture: "문화·엔터",
+  support: "복지·지원금",
+  insurance: "보험",
+  tax: "세금",
 };
 
-const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "estate", "asset", "life", "culture", "new"];
+const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "estate", "asset", "life", "support", "insurance", "tax", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
 const homeIntroPoints = [
@@ -458,7 +473,7 @@ const homeFaqJsonLd = {
           const reportMeta = reportMetaBySlug[report.slug];
           const cat = reportMeta?.category ?? "other";
           const reportCategory = reportMeta ? reportCategoryLabels[reportMeta.category] : "기타";
-          const useBar = ["salary", "life", "culture", "other"].includes(cat);
+          const useBar = ["salary", "life", "support", "insurance", "tax", "culture", "other"].includes(cat);
           return (
             <a
               class="home-report-card"

@@ -36,6 +36,13 @@ export const reports: ReportMeta[] = [
     badges: ["보험", "2026"],
   },
   {
+    slug: "silson-insurance-generation-comparison-2026",
+    title: "2026 실손보험 세대별 완전 비교",
+    description: "실손보험 1세대·2세대·3세대·4세대의 보험료, 자기부담률, 비급여 보장 방식, 4세대 전환 손익분기점을 비교합니다.",
+    order: 4.2,
+    badges: ["실손보험", "세대비교", "2026"],
+  },
+  {
     slug: "construction-salary-bonus-comparison-2026",
     title: "국내 TOP 대형 건설사 평균 연봉·성과급 비교 리포트 2026",
     description: "현대건설, GS건설, 대우건설, 롯데건설, 현대엔지니어링, 삼성E&A, SK에코플랜트 등 주요 대형 건설사의 평균 연봉, 신입 초봉, 성과급, 총보상을 함께 비교하는 인터랙티브 리포트입니다.",
@@ -288,6 +295,13 @@ export const reports: ReportMeta[] = [
     badges: ["생애최초", "부동산", "정책대출", "2026"],
   },
   {
+    slug: "2026-government-welfare-benefits",
+    title: "2026 정부 복지지원금 완전 정복",
+    description: "2026년 기준 중위소득과 정부 복지지원금 20개를 생계·주거·청년·가족·장애인·바우처별로 비교합니다.",
+    order: 31.6,
+    badges: ["복지", "지원금", "2026", "기준 중위소득"],
+  },
+  {
     slug: "ai-job-salary-impact-2026",
     title: "직군별 AI 도입 전후 연봉 효과 비교 2026",
     description: "개발자, 마케터, 디자이너, PM, 회계, 번역 등 10개 직군 기준으로 AI 도입 이후 연봉 격차와 채용시장 변화를 비교하는 인터랙티브 리포트입니다.",
@@ -412,5 +426,12 @@ export const reports: ReportMeta[] = [
     description: "공제 항목별 절세 전략, 연봉 구간별 환급 시뮬레이션, 절세 실수 TOP10 체크리스트를 총정리합니다.",
     order: 46,
     badges: ["연말정산", "절세", "세금", "2026"],
+  },
+  {
+    slug: "2026-salaried-loan-comparison",
+    title: "2026 직장인 대출 완전 비교",
+    description: "직장인이 이용하는 신용대출, 마이너스통장, 주택담보대출, 전세자금대출, 사잇돌, 햇살론을 금리·한도·조건·DSR 기준으로 비교합니다.",
+    order: 51,
+    badges: ["대출", "직장인", "금융", "2026"],
   },
 ];

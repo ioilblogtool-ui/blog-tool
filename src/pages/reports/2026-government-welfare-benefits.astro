@@ -1,0 +1,395 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  GWB_APPLICATION_CHECKLIST,
+  GWB_AUDIENCE_RECOMMENDATIONS,
+  GWB_BENEFIT_ITEMS,
+  GWB_CHANGE_ITEMS,
+  GWB_FAQ,
+  GWB_MEDIAN_INCOME_ROWS,
+  GWB_META,
+  GWB_RELATED_LINKS,
+  GWB_SEO_CONTENT,
+  GWB_SOURCE_LINKS,
+} from "../../data/governmentWelfareBenefits2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const won = (value: number) => `${value.toLocaleString("ko-KR")}원`;
+const man = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만 원`;
+const sourceClass = (label: string) => ({
+  공식: "official",
+  "확인 필요": "check",
+  추정: "estimate",
+  참고: "reference",
+}[label] ?? "check");
+const groupLabels = {
+  all: "전체",
+  basic: "기초생활",
+  "low-income": "저소득",
+  family: "가족",
+  youth: "청년",
+  disability: "장애",
+  senior: "노인",
+  voucher: "바우처",
+  region: "지역",
+};
+const fourPerson = GWB_MEDIAN_INCOME_ROWS.find((row) => row.householdSize === 4)!;
+const faqSchema = GWB_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+const chartSeed = {
+  medianRows: GWB_MEDIAN_INCOME_ROWS,
+  thresholdRow: fourPerson,
+};
+---
+
+<BaseLayout
+  title={GWB_META.seoTitle}
+  description={GWB_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        headline: GWB_META.seoTitle,
+        description: GWB_META.seoDescription,
+        inLanguage: "ko-KR",
+        dateModified: GWB_META.updatedAt,
+        mainEntityOfPage: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/reports/2026-government-welfare-benefits/`,
+        author: { "@type": "Organization", name: "비교계산소" },
+        publisher: { "@type": "Organization", name: "비교계산소" },
+      },
+      { "@type": "FAQPage", mainEntity: faqSchema },
+    ],
+  }}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page gwb-page">
+    <CalculatorHero
+      eyebrow="복지/지원금 리포트"
+      title={GWB_META.title}
+      description="2026년 기준 중위소득부터 생계·주거·청년·한부모·장애인·바우처 지원까지 한 번에 비교합니다."
+      badges={["2026", "복지지원금", "기준 중위소득", "신청 서류"]}
+    />
+
+    <InfoNotice
+      title="읽기 전 확인"
+      lines={[
+        GWB_META.dataNote,
+        "609만 원은 2025년 4인 가구 기준 중위소득에 가까운 값입니다. 이 리포트는 2026년 4인 가구 6,494,738원을 기준으로 작성했습니다.",
+        "지원금은 신청 시점, 지자체 예산, 가구 특성, 공적자료 조사 결과에 따라 달라질 수 있습니다.",
+      ]}
+    />
+
+    <DesignTrustPanel
+      title="복지지원금 비교 기준"
+      updatedAt={GWB_META.updatedAt}
+      items={[
+        { label: "공식", title: "기준 중위소득·급여 기준", description: "보건복지부 2026년 기준값을 표와 차트에 반영했습니다." },
+        { label: "확인 필요", title: "청년·바우처·지역 사업", description: "예산과 공고가 바뀌는 제도는 확인 필요 배지로 분리했습니다." },
+        { label: "참고", title: "우선순위 가이드", description: "어떤 제도를 먼저 확인할지 돕는 탐색용 안내입니다." },
+      ]}
+      notes={[
+        "이 리포트는 수급 확정이 아니라 신청 전 점검과 비교를 위한 자료입니다.",
+        "정확한 신청 가능 여부는 복지로, 정부24, 주민센터, 전담기관에서 확인하세요.",
+      ]}
+    />
+
+    <section class="content-section gwb-summary">
+      <div class="gwb-summary-grid">
+        <article class="gwb-summary-card gwb-summary-card--primary">
+          <span>공식</span>
+          <p>2026년 4인 기준 중위소득</p>
+          <strong>{won(fourPerson.median2026)}</strong>
+          <small>2025년 대비 +{(fourPerson.increaseRate * 100).toFixed(2)}%</small>
+        </article>
+        <article class="gwb-summary-card">
+          <span>공식</span>
+          <p>4인 생계급여 선정기준</p>
+          <strong>{won(fourPerson.livelihood)}</strong>
+          <small>기준 중위소득 32%</small>
+        </article>
+        <article class="gwb-summary-card">
+          <span>공식</span>
+          <p>급여별 기준</p>
+          <strong>32·40·48·50%</strong>
+          <small>생계·의료·주거·교육</small>
+        </article>
+        <article class="gwb-summary-card">
+          <span>확인 필요 포함</span>
+          <p>비교 대상 복지제도</p>
+          <strong>{GWB_BENEFIT_ITEMS.length}개</strong>
+          <small>청년·가족·장애·바우처 포함</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="median-income">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2026 기준</p>
+        <h2>기준 중위소득은 얼마까지 올랐나</h2>
+        <p>2026년 4인 가구 기준 중위소득은 {won(fourPerson.median2026)}입니다. 전년도 {won(fourPerson.median2025)}보다 {(fourPerson.increaseRate * 100).toFixed(2)}% 인상되었습니다.</p>
+      </div>
+      <div class="gwb-chart-wrap">
+        <canvas id="gwbMedianChart" aria-label="2025년과 2026년 가구원 수별 기준 중위소득 비교 차트"></canvas>
+      </div>
+      <div class="gwb-table-wrap">
+        <table class="gwb-table">
+          <thead>
+            <tr>
+              <th>가구원 수</th>
+              <th>2025 기준</th>
+              <th>2026 기준</th>
+              <th>인상률</th>
+            </tr>
+          </thead>
+          <tbody>
+            {GWB_MEDIAN_INCOME_ROWS.map((row) => (
+              <tr>
+                <td>{row.householdSize}인</td>
+                <td>{won(row.median2025)}</td>
+                <td class="is-highlight">{won(row.median2026)}</td>
+                <td>{(row.increaseRate * 100).toFixed(2)}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="basic-benefits">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">기초생활보장</p>
+        <h2>생계·의료·주거·교육급여 기준 비교</h2>
+        <p>같은 가구라도 급여마다 기준선이 다릅니다. 생계급여는 32%, 의료급여는 40%, 주거급여는 48%, 교육급여는 50% 기준을 사용합니다.</p>
+      </div>
+      <div class="gwb-threshold-grid">
+        <article class="gwb-threshold-card gwb-threshold-card--primary"><span>생계급여</span><strong>중위 32%</strong><p>4인 {man(fourPerson.livelihood)}</p></article>
+        <article class="gwb-threshold-card"><span>의료급여</span><strong>중위 40%</strong><p>4인 {man(fourPerson.medical)}</p></article>
+        <article class="gwb-threshold-card"><span>주거급여</span><strong>중위 48%</strong><p>4인 {man(fourPerson.housing)}</p></article>
+        <article class="gwb-threshold-card"><span>교육급여</span><strong>중위 50%</strong><p>4인 {man(fourPerson.education)}</p></article>
+      </div>
+      <div class="gwb-chart-wrap gwb-chart-wrap--short">
+        <canvas id="gwbThresholdChart" aria-label="4인 가구 급여별 선정기준 차트"></canvas>
+      </div>
+      <div class="gwb-table-wrap">
+        <table class="gwb-table">
+          <thead>
+            <tr>
+              <th>가구원 수</th>
+              <th>생계 32%</th>
+              <th>의료 40%</th>
+              <th>주거 48%</th>
+              <th>교육 50%</th>
+            </tr>
+          </thead>
+          <tbody>
+            {GWB_MEDIAN_INCOME_ROWS.map((row) => (
+              <tr>
+                <td>{row.householdSize}인</td>
+                <td>{won(row.livelihood)}</td>
+                <td>{won(row.medical)}</td>
+                <td>{won(row.housing)}</td>
+                <td>{won(row.education)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="gwb-calculator-cta" aria-labelledby="gwb-calc-cta-title">
+      <p class="gwb-cta-eyebrow">직접 확인하기</p>
+      <h2 id="gwb-calc-cta-title">우리 집 소득인정액으로 급여 가능성을 계산해보세요</h2>
+      <p>가구원 수, 소득, 재산, 자동차 정보를 입력하면 생계·의료·주거·교육급여 가능성을 한 번에 자가 점검할 수 있습니다.</p>
+      <a href={withBase("/tools/welfare-benefit-eligibility/")} class="gwb-cta-button">복지급여 수급 자격 계산기 열기</a>
+    </section>
+
+    <section class="content-section gwb-section" id="benefit-list">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">20개 제도</p>
+        <h2>정부 복지지원금 한눈에 보기</h2>
+        <p>분류 버튼을 누르면 관심 있는 제도만 좁혀 볼 수 있습니다. 확인 필요 배지는 금액·신청 기간·세부 기준을 공식 공고에서 다시 봐야 한다는 뜻입니다.</p>
+      </div>
+      <div class="gwb-filter-row" role="tablist" aria-label="복지지원금 분류">
+        {Object.entries(groupLabels).map(([group, label], index) => (
+          <button class={`gwb-filter-btn${index === 0 ? " is-active" : ""}`} type="button" data-gwb-filter={group} aria-selected={index === 0 ? "true" : "false"}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <div class="gwb-benefit-grid">
+        {GWB_BENEFIT_ITEMS.map((item) => (
+          <article class="gwb-benefit-card" data-gwb-group={item.group}>
+            <div class="gwb-benefit-card__top">
+              <span class={`gwb-source-badge gwb-source-badge--${sourceClass(item.sourceLabel)}`}>{item.sourceLabel}</span>
+              <span class="gwb-priority-badge">{item.priority}</span>
+            </div>
+            <h3>{item.name}</h3>
+            <p>{item.supportSummary}</p>
+            <dl>
+              <div><dt>대상</dt><dd>{item.target}</dd></div>
+              <div><dt>소득 기준</dt><dd>{item.incomeCriteria}</dd></div>
+              <div><dt>지원 형태</dt><dd>{item.supportType}</dd></div>
+              <div><dt>신청처</dt><dd>{item.applicationChannel}</dd></div>
+            </dl>
+            <small>{item.updatedAt}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="audience-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">대상자별 추천</p>
+        <h2>내 상황이라면 무엇부터 확인할까</h2>
+      </div>
+      <div class="gwb-recommendation-grid">
+        {GWB_AUDIENCE_RECOMMENDATIONS.map((item) => (
+          <article class="gwb-recommendation-card">
+            <span>추천</span>
+            <h3>{item.audience}</h3>
+            <ul>{item.firstCheck.map((benefit) => <li>{benefit}</li>)}</ul>
+            <p>{item.reason}</p>
+            <a href={item.ctaHref.startsWith("/") ? withBase(item.ctaHref) : item.ctaHref}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="youth-benefits">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">청년 지원</p>
+        <h2>월세·자산형성·취업 지원은 기준이 서로 다릅니다</h2>
+        <p>청년 지원은 부모 소득, 원가구 기준, 근로 여부, 주거 요건이 제도마다 다르게 적용됩니다.</p>
+      </div>
+      <div class="gwb-mini-grid">
+        {GWB_BENEFIT_ITEMS.filter((item) => item.group === "youth").map((item) => (
+          <article class="gwb-mini-card">
+            <strong>{item.name}</strong>
+            <p>{item.target}</p>
+            <span>{item.incomeCriteria}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="family-benefits">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">가족·장애·노인</p>
+        <h2>가구 특성별 지원은 별도 기준을 함께 봐야 합니다</h2>
+      </div>
+      <div class="gwb-mini-grid">
+        {GWB_BENEFIT_ITEMS.filter((item) => ["family", "disability", "senior"].includes(item.group)).map((item) => (
+          <article class="gwb-mini-card">
+            <strong>{item.name}</strong>
+            <p>{item.supportSummary}</p>
+            <span>{item.sourceLabel}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="voucher-benefits">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">바우처</p>
+        <h2>에너지·문화·식품 지원은 생활비를 직접 낮춥니다</h2>
+        <p>현금 지원은 아니지만 전기·가스·문화·식품 지출을 줄여 체감 생활비를 낮출 수 있습니다.</p>
+      </div>
+      <div class="gwb-mini-grid">
+        {GWB_BENEFIT_ITEMS.filter((item) => item.group === "voucher").map((item) => (
+          <article class="gwb-mini-card">
+            <strong>{item.name}</strong>
+            <p>{item.supportSummary}</p>
+            <span>{item.applicationChannel}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="checklist">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">신청 준비</p>
+        <h2>상담 전 준비하면 좋은 서류</h2>
+      </div>
+      <div class="gwb-checklist-grid">
+        {GWB_APPLICATION_CHECKLIST.map((item) => (
+          <article class="gwb-checklist-card">
+            <span class="gwb-check-icon" aria-hidden="true">✓</span>
+            <h3>{item.label}</h3>
+            <p>{item.description}</p>
+            <small>{item.requiredFor.join(" · ")}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="fallbacks">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">탈락 시 대안</p>
+        <h2>기준을 조금 넘었다면 다음 제도를 다시 보세요</h2>
+      </div>
+      <div class="gwb-fallback-grid">
+        <article><strong>기초생활보장 경계</strong><p>차상위계층, 긴급복지, 지자체 긴급지원, 바우처 지원을 다시 확인하세요.</p></article>
+        <article><strong>주거급여 경계</strong><p>청년월세지원, 전세보증금 지원, 지자체 주거비 지원을 함께 확인하세요.</p></article>
+        <article><strong>청년 자산형성 탈락</strong><p>국민취업지원제도, 내일배움카드, 지자체 청년수당을 대체 경로로 검토하세요.</p></article>
+      </div>
+    </section>
+
+    <section class="content-section gwb-section" id="changes">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2026 변경 포인트</p>
+        <h2>올해 특히 다시 확인해야 할 것</h2>
+      </div>
+      <div class="gwb-change-grid">
+        {GWB_CHANGE_ITEMS.map((item) => (
+          <article>
+            <span class={`gwb-source-badge gwb-source-badge--${sourceClass(item.label)}`}>{item.label}</span>
+            <h3>{item.title}</h3>
+            <p>{item.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="gwb-public-cta">
+      <p class="gwb-cta-eyebrow">공식 경로</p>
+      <h2>신청 전에는 복지로·정부24·주민센터에서 최종 확인하세요</h2>
+      <p>지원금은 예산과 공고 기간에 따라 달라질 수 있습니다. 특히 청년·지역·바우처 지원은 신청 전 공식 안내를 확인하는 것이 안전합니다.</p>
+      <div class="gwb-source-grid">
+        {GWB_SOURCE_LINKS.map((item) => (
+          <a href={item.href} target="_blank" rel="noopener noreferrer">
+            <span>{item.source}</span>
+            <strong>{item.title}</strong>
+            <small>{item.desc}</small>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle={GWB_SEO_CONTENT.introTitle}
+      intro={GWB_SEO_CONTENT.intro}
+      inputPoints={GWB_SEO_CONTENT.inputPoints}
+      criteria={GWB_SEO_CONTENT.criteria}
+      faq={GWB_FAQ}
+      related={GWB_RELATED_LINKS}
+    />
+  </main>
+
+  <script id="gwb-data" type="application/json" set:html={JSON.stringify(chartSeed)} />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/2026-government-welfare-benefits.js")}></script>
+</BaseLayout>

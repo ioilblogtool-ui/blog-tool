@@ -1,0 +1,351 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SIR_DEFAULT_INPUT,
+  SIR_FAQ,
+  SIR_GENERATION_PRESETS,
+  SIR_INFO_LINES,
+  SIR_META,
+  SIR_PRESETS,
+  SIR_RELATED_LINKS,
+} from "../../data/silsonInsuranceRefundCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const defaultGeneration =
+  SIR_GENERATION_PRESETS.find((item) => item.id === SIR_DEFAULT_INPUT.generation) ??
+  SIR_GENERATION_PRESETS[0];
+const faqItems = SIR_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "실손보험 환급액 계산기",
+      "url": `${import.meta.env.SITE}/tools/silson-insurance-refund-calculator/`,
+      "description": SIR_META.description,
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "inLanguage": "ko-KR",
+      "isAccessibleForFree": true,
+      "provider": { "@type": "Organization", "name": "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": SIR_FAQ.map((item) => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={SIR_META.title}
+  description={SIR_META.description}
+  ogImage="/og/tools/silson-insurance-refund-calculator.png"
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="silson-insurance-refund-calculator"
+    pageClass="sir-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="보험 계산기"
+        title="병원비 영수증으로 실손보험 예상 환급액을 계산합니다"
+        description="급여 본인부담금과 비급여 금액을 입력하면 실손보험 세대별 자기부담금, 통원 공제, 연간 한도를 반영해 예상 환급액을 확인할 수 있습니다."
+        badges={["실손보험", "비급여", "MRI", "도수치료"]}
+      />
+      <InfoNotice title="보험금 예상 계산 안내" lines={SIR_INFO_LINES} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="sirResetBtn" copyId="sirCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 1</p>
+            <h2 class="panel__title">보험 조건</h2>
+          </div>
+        </div>
+        <div class="sir-generation-tabs" id="sirGenerationTabs">
+          {SIR_GENERATION_PRESETS.map((preset) => (
+            <button
+              type="button"
+              class={`sir-pill-btn${preset.id === SIR_DEFAULT_INPUT.generation ? " is-active" : ""}`}
+              data-generation={preset.id}
+              aria-pressed={preset.id === SIR_DEFAULT_INPUT.generation ? "true" : "false"}
+            >
+              {preset.label}
+            </button>
+          ))}
+          <button type="button" class="sir-pill-btn" data-generation="custom" aria-pressed="false">직접 입력</button>
+        </div>
+        <p class="sir-note" id="sirGenerationNote">
+          {defaultGeneration.description} {defaultGeneration.caution}
+        </p>
+        <div class="sir-form-grid sir-form-grid--compact">
+          <label class="sir-field">
+            <span>진료 구분</span>
+            <select id="sirVisitType">
+              <option value="outpatient" selected>통원</option>
+              <option value="inpatient">입원</option>
+            </select>
+          </label>
+          <label class="sir-field">
+            <span>의료기관 유형</span>
+            <select id="sirHospitalType">
+              <option value="clinic" selected>의원·병원</option>
+              <option value="generalHospital">종합병원</option>
+              <option value="tertiaryHospital">상급종합병원</option>
+              <option value="custom">직접 입력</option>
+            </select>
+          </label>
+          <label class="sir-check">
+            <input id="sirHasSpecialRider" type="checkbox" checked />
+            <span>3대 비급여 특약 가입</span>
+          </label>
+          <label class="sir-field">
+            <span>올해 이미 청구한 보험금</span>
+            <input id="sirClaimedThisYear" type="text" inputmode="numeric" value="0" />
+          </label>
+          <label class="sir-field">
+            <span>올해 비급여 보험금 누적액</span>
+            <input id="sirNonCoveredBenefitThisYear" type="text" inputmode="numeric" value="0" />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 2</p>
+            <h2 class="panel__title">영수증 금액</h2>
+          </div>
+        </div>
+        <div class="sir-form-grid">
+          <label class="sir-field">
+            <span>급여 본인부담금</span>
+            <input id="sirCoveredPatientPaid" type="text" inputmode="numeric" value="50,000" />
+            <small>공단부담금은 입력하지 않습니다.</small>
+          </label>
+          <label class="sir-field">
+            <span>일반 비급여</span>
+            <input id="sirNonCoveredGeneral" type="text" inputmode="numeric" value="0" />
+          </label>
+          <label class="sir-field">
+            <span>도수·체외충격파·증식치료</span>
+            <input id="sirManualTherapy" type="text" inputmode="numeric" value="0" />
+          </label>
+          <label class="sir-field">
+            <span>비급여 주사료</span>
+            <input id="sirNonCoveredInjection" type="text" inputmode="numeric" value="0" />
+          </label>
+          <label class="sir-field">
+            <span>MRI/MRA</span>
+            <input id="sirMriMra" type="text" inputmode="numeric" value="0" />
+          </label>
+          <label class="sir-field">
+            <span>처방조제비</span>
+            <input id="sirPrescriptionCost" type="text" inputmode="numeric" value="0" />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 3</p>
+            <h2 class="panel__title">약관 조건 직접 수정</h2>
+          </div>
+        </div>
+        <div class="sir-form-grid">
+          <label class="sir-field">
+            <span>급여 자기부담률</span>
+            <input id="sirCoveredRate" type="number" min="0" max="100" step="1" value="20" />
+            <small>% 기준</small>
+          </label>
+          <label class="sir-field">
+            <span>비급여 자기부담률</span>
+            <input id="sirNonCoveredRate" type="number" min="0" max="100" step="1" value="30" />
+          </label>
+          <label class="sir-field">
+            <span>3대 비급여 자기부담률</span>
+            <input id="sirSpecialRate" type="number" min="0" max="100" step="1" value="30" />
+          </label>
+          <label class="sir-field">
+            <span>통원 최소 공제금액</span>
+            <input id="sirOutpatientDeductible" type="text" inputmode="numeric" value="30,000" />
+          </label>
+          <label class="sir-field">
+            <span>통원 회당 한도</span>
+            <input id="sirOutpatientLimit" type="text" inputmode="numeric" value="200,000" />
+          </label>
+          <label class="sir-field">
+            <span>연간 한도</span>
+            <input id="sirAnnualLimit" type="text" inputmode="numeric" value="50,000,000" />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 선택</p>
+            <h2 class="panel__title">시나리오 프리셋</h2>
+          </div>
+        </div>
+        <div class="sir-presets" id="sirPresets">
+          {SIR_PRESETS.map((preset) => (
+            <button class="sir-preset-btn" type="button" data-preset-id={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="sir-section">
+      <div class="sir-section__head">
+        <p class="sir-section__eyebrow">계산 결과</p>
+        <h2>청구 전 예상 환급액을 확인합니다</h2>
+        <p id="sirResultSummary">영수증 금액을 입력하면 예상 환급액이 표시됩니다.</p>
+      </div>
+      <div class="sir-kpi-grid">
+        <article class="sir-kpi-card sir-kpi-card--main">
+          <p>예상 실수령 환급액</p>
+          <strong id="sirEstimatedRefund">-</strong>
+          <span>통원 공제·회당 한도·연간 한도 반영</span>
+        </article>
+        <article class="sir-kpi-card">
+          <p>보장대상 금액</p>
+          <strong id="sirEligibleAmount">-</strong>
+          <span>입력 금액 중 계산 대상</span>
+        </article>
+        <article class="sir-kpi-card">
+          <p>예상 자기부담금</p>
+          <strong id="sirDeductibleAmount">-</strong>
+          <span>자기부담률 + 통원 공제</span>
+        </article>
+        <article class="sir-kpi-card sir-kpi-card--accent">
+          <p>연간 한도 잔여액</p>
+          <strong id="sirRemainingLimit">-</strong>
+          <span>이번 청구 후 예상</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="sir-section">
+      <div class="sir-tier-box" id="sirTierBox">
+        <span class="sir-tier-badge" id="sirTierBadge">4세대 비급여 누적</span>
+        <p id="sirTierDescription">비급여 누적액을 입력하면 갱신 보험료 영향 구간을 참고로 보여줍니다.</p>
+      </div>
+      <ul class="sir-warning-list" id="sirWarningList" aria-live="polite"></ul>
+    </section>
+
+    <section class="sir-section">
+      <div class="sir-section__head">
+        <p class="sir-section__eyebrow">상세 분해</p>
+        <h2>어떤 항목에서 환급액이 줄었는지 봅니다</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="sir-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>입력 금액</th>
+              <th>보장대상</th>
+              <th>자기부담</th>
+              <th>예상 환급</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody id="sirBreakdownBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sir-section">
+      <div class="sir-section__head">
+        <p class="sir-section__eyebrow">영수증 입력 가이드</p>
+        <h2>공단부담금은 입력하지 않습니다</h2>
+      </div>
+      <div class="sir-guide-grid">
+        <article><strong>급여 본인부담금</strong><span>환자가 실제 낸 급여 금액만 입력</span></article>
+        <article><strong>공단부담금</strong><span>국민건강보험공단 부담분이므로 제외</span></article>
+        <article><strong>비급여</strong><span>일반 비급여와 3대 비급여를 나눠 입력</span></article>
+        <article><strong>진료비 세부내역서</strong><span>MRI·도수치료 등 항목명 확인에 필요</span></article>
+      </div>
+    </section>
+
+    <section class="sir-section">
+      <div class="sir-related-grid">
+        {SIR_RELATED_LINKS.map((item) => (
+          <a class="sir-related-card" href={withBase(item.href)}>
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="실손보험 환급액 계산기 — 영수증 보는 법"
+        intro={[
+          "실손보험 환급액은 병원비 전체가 아니라 환자가 실제 부담한 금액, 급여·비급여 구분, 자기부담률, 통원 공제금액에 따라 달라집니다.",
+          "이 계산기는 병원 영수증의 주요 금액을 입력해 예상 환급액을 빠르게 확인하고, 청구 전 확인해야 할 서류와 약관 조건을 함께 정리합니다.",
+        ]}
+        inputPoints={[
+          "급여 본인부담금과 비급여 금액을 나눠 입력합니다.",
+          "1~4세대 실손보험 기본값을 선택하거나 내 약관 기준으로 직접 수정합니다.",
+          "4세대 실손은 비급여 보험금 누적 구간을 함께 확인합니다.",
+        ]}
+        criteria={[
+          "세대별 대표 자기부담률을 사용한 참고 계산입니다.",
+          "실제 보험금은 보험회사, 약관, 특약, 면책사항, 심사 결과에 따라 달라질 수 있습니다.",
+          "공단부담금은 사용자가 낸 금액이 아니므로 계산에서 제외합니다.",
+          "도수치료·비급여 주사·MRI/MRA는 3대 비급여 특약 가입 여부를 확인해야 합니다.",
+        ]}
+        formulaTitle="계산 공식"
+        formula={[
+          "항목별 환급 기초액 = 보장대상 금액 - 자기부담금입니다.",
+          "통원은 환급 기초액 합계에서 통원 최소 공제금액과 회당 한도를 반영합니다.",
+          "최종 예상 환급액은 연간 잔여 한도 안에서 계산합니다.",
+        ]}
+        faqTitle="자주 묻는 질문"
+        faqItems={faqItems}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script
+    id="sirConfig"
+    type="application/json"
+    set:html={JSON.stringify({
+      defaultInput: SIR_DEFAULT_INPUT,
+      generationPresets: SIR_GENERATION_PRESETS,
+      presets: SIR_PRESETS,
+    })}
+  />
+  <script type="module" src={withBase("/scripts/silson-insurance-refund-calculator.js")}></script>
+</BaseLayout>
