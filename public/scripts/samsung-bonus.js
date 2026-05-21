@@ -274,7 +274,7 @@ function renderSummary(result) {
   const subtitle = opiMode === "UNION_DEMAND"
     ? `${getOperatingProfitScenario().label} · ${getUnionDemandScenario().label} 추정`
     : controls.targetYear?.value === "2026" && opiMode === "ACTUAL"
-      ? "2026 실제 기준 모드"
+      ? "기존 OPI 기준 모드"
       : `${controls.targetYear?.value} ${scenarioMap[controls.scenario?.value].label} 시나리오`;
 
   setText("resultHeadline", isCouple ? "부부 총보상 핵심 카드" : "개인 총보상 핵심 카드");
@@ -283,7 +283,7 @@ function renderSummary(result) {
   setText("salarySummary", formatKoreanAmount(result.totals.annualSalary));
   setText("salarySummaryNote", isCouple ? `1인당 평균 ${formatKoreanAmount(result.totals.annualSalary / 2)}` : `평균 직원 보수 ${formatKoreanAmount(averageCompensation)}`);
   setText("opiSummary", formatKoreanAmount(result.totals.opiAmount));
-  setText("opiSummaryNote", opiMode === "UNION_DEMAND" ? "노조 요구안 환산" : `${isCouple ? "합산" : divisionMap[controls.selfDivision?.value].actualLabel}`);
+  setText("opiSummaryNote", opiMode === "UNION_DEMAND" ? "협의안 환산" : `${isCouple ? "합산" : divisionMap[controls.selfDivision?.value].actualLabel}`);
   setText("taiSummary", formatKoreanAmount(result.totals.taiAmount));
   setText("taiSummaryNote", `상반기 ${controls.taiFirstHalf?.value} / 하반기 ${controls.taiSecondHalf?.value}`);
   setText("totalSummary", formatKoreanAmount(result.totals.totalComp));
@@ -300,8 +300,8 @@ function renderUnionSummary(result) {
   const cap = getCurrentOpiCap(result);
   const gap = totalWeighted - cap;
   const gapCopy = gap >= 0
-    ? `노조안 환산액이 현행 연봉 50% 상한보다 ${formatKoreanAmount(gap)} 높습니다.`
-    : `노조안 환산액이 현행 연봉 50% 상한보다 ${formatKoreanAmount(Math.abs(gap))} 낮습니다.`;
+    ? `협의안 환산액이 기존 연봉 50% 상한보다 ${formatKoreanAmount(gap)} 높습니다.`
+    : `협의안 환산액이 기존 연봉 50% 상한보다 ${formatKoreanAmount(Math.abs(gap))} 낮습니다.`;
 
   setText("unionPoolSummary", formatKoreanAmount(union.pool));
   setText("unionPoolNote", `${formatKoreanAmount(union.operatingProfit)} × ${Math.round(union.payoutRatio * 100)}%`);
@@ -309,7 +309,7 @@ function renderUnionSummary(result) {
   setText("unionPerHeadNote", `${new Intl.NumberFormat("ko-KR").format(getEligibleEmployees())}명 단순 나눔`);
   setText("unionWeightedSummary", formatKoreanAmount(totalWeighted));
   setText("unionWeightedNote", result.mode === "COUPLE" ? "부부 연봉 가중 합산" : "내 연봉 가중 환산");
-  setText("unionVsCurrentCopy", `${gapCopy} 실제 배분 방식, 사업부별 재원, 직급별 배수에 따라 달라질 수 있습니다.`);
+  setText("unionVsCurrentCopy", `${gapCopy} 실제 배분 방식, 사업부별 재원, 직급별 평가, 자사주 가격에 따라 달라질 수 있습니다.`);
 }
 
 function renderSummaryReport(result) {
@@ -398,7 +398,7 @@ function renderScenarioYears() {
   const currentYear = controls.targetYear?.value;
   $("scenarioYearGrid").innerHTML = yearOptions.map((year) => {
     const total = withTemporaryYear(year.code, () => aggregateResults().totals.totalComp);
-    const note = getOpiMode() === "UNION_DEMAND" ? "노조안 환산" : year.code === "2026" ? "실제 또는 시나리오" : "시뮬레이션";
+    const note = getOpiMode() === "UNION_DEMAND" ? "협의안 환산" : year.code === "2026" ? "기존 기준 또는 시나리오" : "시뮬레이션";
     return `
       <article class="scenario-year-card${currentYear === year.code ? " is-active" : ""}">
         <p>${year.label}</p>

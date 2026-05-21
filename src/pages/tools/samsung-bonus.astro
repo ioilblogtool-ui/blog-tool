@@ -43,8 +43,8 @@ const config = {
 ---
 
 <BaseLayout
-  title="삼성전자 성과급 계산기 | 개인·부부 총보상 시뮬레이터"
-  description="삼성전자 사업부별 OPI 참고치와 TAI 시나리오를 바탕으로 개인·부부 총보상과 월 체감액을 계산하는 페이지"
+  title="삼성전자 성과급 협의안 계산기 | 2026 잠정합의안"
+  description="2026년 삼성전자 임금협약 잠정합의안의 DS 특별경영성과급, 자사주 지급, 배분 구조를 개인·부부 총보상으로 환산하는 계산기"
   ogImage="/og/tools/samsung-bonus.png"
 >
   <SiteHeader />
@@ -53,8 +53,8 @@ const config = {
     <Fragment slot="hero">
       <CalculatorHero
         eyebrow="Samsung Electronics Compensation"
-        title="삼성전자 성과급 계산기"
-        description="OPI 참고치와 TAI 시나리오를 바탕으로 개인·부부 총보상, 월 체감값, 직급별 예시를 한 번에 확인합니다."
+        title="삼성전자 성과급 협의안 계산기"
+        description="2026년 5월 20일 잠정합의안의 DS 특별경영성과급, 자사주 지급, 배분 구조를 내 연봉 기준으로 환산합니다."
       />
     </Fragment>
 
@@ -168,7 +168,7 @@ const config = {
                 <div class="toggle-grid">
                   <label class="mode-chip" id="opiActualChip">
                     <input type="radio" name="opiMode" value="ACTUAL" checked />
-                    <span>2026 실제값</span>
+                    <span>기존 OPI</span>
                   </label>
                   <label class="mode-chip">
                     <input type="radio" name="opiMode" value="SCENARIO" />
@@ -176,7 +176,7 @@ const config = {
                   </label>
                   <label class="mode-chip mode-chip--highlight">
                     <input type="radio" name="opiMode" value="UNION_DEMAND" />
-                    <span>노조 요구안</span>
+                    <span>잠정합의안</span>
                   </label>
                 </div>
                 <small id="opiModeHint"></small>
@@ -201,7 +201,7 @@ const config = {
                 <small id="operatingProfitHint"></small>
               </label>
               <label class="field">
-                <span>노조안 비율</span>
+                <span>협의안 비율</span>
                 <select id="unionDemandScenarioSelect">
                   {unionDemandScenarios.map((item) => <option value={item.code}>{item.label}</option>)}
                 </select>
@@ -242,7 +242,7 @@ const config = {
                 <label class="field">
                   <span>환산 직원 수</span>
                   <input id="eligibleEmployeesInput" type="number" value="120000" step="1000" />
-                  <small>노조안 1인 환산용 추정값</small>
+                  <small>협의안 1인 환산용 추정값</small>
                 </label>
                 <label class="field">
                   <span>영업이익 직접 입력</span>
@@ -279,7 +279,7 @@ const config = {
       <div class="sb-section__head">
         <p class="sb-section__eyebrow">내 계산 결과</p>
         <h2 id="resultHeadline">개인 총보상 핵심 카드</h2>
-        <p class="sb-section__sub" id="resultSubcopy">2026 실제 기준 모드</p>
+        <p class="sb-section__sub" id="resultSubcopy">기존 OPI 기준 모드</p>
       </div>
       <div class="kpi-grid">
         <article class="kpi-card kpi-card--accent">
@@ -336,11 +336,41 @@ const config = {
       </article>
     </section>
 
+    <section class="sb-section">
+      <div class="sb-section__head">
+        <p class="sb-section__eyebrow">2026 잠정합의안</p>
+        <h2>삼성전자 성과급 협의안 핵심</h2>
+        <p class="sb-section__sub">아직 조합원 찬반투표 전이라 최종 확정은 아니며, 실제 지급액은 산식·사업부·직급·평가·주가에 따라 달라질 수 있습니다.</p>
+      </div>
+      <div class="logic-grid">
+        <article class="logic-card">
+          <strong>DS 특별경영성과급 신설</strong>
+          <p>기존 OPI는 유지하고, DS부문에 사업성과 10.5% 수준의 특별경영성과급을 별도로 두는 구조입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>상한 없는 10년 제도화</strong>
+          <p>2026~2035년 적용을 전제로 하되, 실제 지급은 합의 기준상 초과 성과 조건을 충족해야 합니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>DS 공통 40%, 사업부 60%</strong>
+          <p>공통 재원과 사업부별 차등 재원을 나누는 절충안입니다. 적자 사업부 적용 방식은 보도 기준 추정으로 봐야 합니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>세후 전액 자사주 지급</strong>
+          <p>현금 일시지급이 아니라 자사주 지급 방식이며, 일부는 즉시 매각 가능하고 일부는 1년·2년 매각 제한이 붙는 구조입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>DX·CSS 600만 원 보완</strong>
+          <p>DS 중심 성과급 신설에 따른 형평성 보완으로 DX부문과 CSS사업팀에는 600만 원 상당 자사주 지급안이 포함됐습니다.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="sb-section sb-union-section">
       <div class="sb-section__head">
-        <p class="sb-section__eyebrow">노조 요구안 참고</p>
-        <h2>영업이익 연동 성과급 환산</h2>
-        <p class="sb-section__sub">내 예상 성과급을 먼저 확인한 뒤, 보도된 요구안을 추정 비교선으로만 참고하세요.</p>
+        <p class="sb-section__eyebrow">협의안 환산</p>
+        <h2>영업이익 연동 성과급 재원 추정</h2>
+        <p class="sb-section__sub">내 예상 성과급을 먼저 확인한 뒤, 보도된 잠정합의안 비율을 추정 비교선으로만 참고하세요.</p>
       </div>
       <div class="union-result-grid">
         <article class="union-result-card union-result-card--accent">
@@ -362,7 +392,7 @@ const config = {
       <div class="union-comparison-panel">
         <div>
           <strong>현행 OPI 상한과 비교</strong>
-          <p id="unionVsCurrentCopy">노조 요구안 모드를 선택하면 현행 50% 상한 대비 차이를 계산합니다.</p>
+          <p id="unionVsCurrentCopy">잠정합의안 모드를 선택하면 기존 OPI 50% 상한 대비 차이를 계산합니다.</p>
         </div>
         <span class="estimate-badge">보도·추정</span>
       </div>
@@ -437,11 +467,11 @@ const config = {
       <div class="logic-grid">
         <article class="logic-card">
           <strong>OPI = 연봉 × 사업부 비율</strong>
-          <p>2026 실제 기준은 공개 지급률, 미래 연도는 시나리오를 씁니다.</p>
+          <p>기존 OPI 기준은 공개 지급률, 미래 연도는 시나리오를 씁니다.</p>
         </article>
         <article class="logic-card">
-          <strong>노조안 = 영업이익 × 요구 비율</strong>
-          <p>직원 수와 평균 보수 대비 가중치로 1인 환산합니다.</p>
+          <strong>협의안 = 사업성과 × 합의 비율</strong>
+          <p>직원 수와 평균 보수 대비 가중치로 1인 추정 환산합니다.</p>
         </article>
         <article class="logic-card">
           <strong>TAI = 연봉 ÷ 12 × (상반기 + 하반기)</strong>
@@ -462,8 +492,8 @@ const config = {
       title="안내"
       lines={[
         "직급별 연봉과 복지 금액은 공식 수치가 아니라 추천값(수정 가능)입니다.",
-        "2026은 사업부 공개 OPI 참고치, 2027·2028 및 노조 요구안은 시나리오 시뮬레이션입니다.",
-        "영업이익 컨센서스와 노조 요구안은 보도·추정 기반이며 실제 지급액을 보장하지 않습니다.",
+        "2026 잠정합의안은 조합원 찬반투표 전 보도 기준이며, 최종 타결 전까지 바뀔 수 있습니다.",
+        "영업이익 컨센서스와 협의안 환산액은 보도·추정 기반이며 실제 지급액을 보장하지 않습니다.",
         "실수령 추정은 세금과 공제 조건에 따라 달라질 수 있습니다."
       ]}
     />
@@ -548,26 +578,28 @@ const config = {
       <SeoContent
         introTitle="삼성전자 성과급 계산기 활용 가이드"
         intro={[
-          "이 페이지는 삼성전자 OPI와 TAI 구조를 개인 또는 부부 기준 총보상 시뮬레이터로 정리한 계산기형 랜딩입니다. 사업부, 연봉, 시나리오를 넣으면 연 총액과 월 체감값을 빠르게 볼 수 있습니다.",
-          "핵심은 2026 실제 참고치, 2027·2028 업황 시뮬레이션, 노조 요구안 기반 영업이익 연동 시나리오를 분리해서 보여주는 것입니다. 공개 참고치가 있는 값은 앵커로 두고, 연봉·복지·TAI·영업이익 가정은 사용자가 수정 가능한 값으로 다룹니다."
+          "이 페이지는 2026년 삼성전자 임금협약 및 성과급 잠정합의안을 개인 또는 부부 기준 총보상 시뮬레이터로 정리한 계산기형 랜딩입니다. 사업부, 연봉, 시나리오를 넣으면 연 총액과 월 체감값을 빠르게 볼 수 있습니다.",
+          "핵심은 기존 OPI 기준, 2027·2028 업황 시뮬레이션, 잠정합의안 기반 영업이익 연동 시나리오를 분리해서 보여주는 것입니다. 공개 참고치가 있는 값은 앵커로 두고, 연봉·복지·TAI·영업이익 가정은 사용자가 수정 가능한 값으로 다룹니다."
         ]}
         inputPoints={[
           "개인·부부 토글에 따라 입력 폼과 결과 문구가 함께 바뀝니다.",
           "사업부별 OPI 차이를 먼저 반영하고, TAI는 프리셋 또는 직접 입력으로 조정할 수 있습니다.",
-          "노조 요구안 모드에서는 영업이익 컨센서스와 요구 비율을 바꿔 성과급 재원과 1인 환산액을 비교합니다.",
+          "잠정합의안 모드에서는 영업이익 컨센서스와 합의 비율을 바꿔 성과급 재원과 1인 환산액을 비교합니다.",
           "연 총보상, 월 체감액, 실수령 추정, 직급별 예시 비교까지 한 화면에서 이어서 확인할 수 있습니다."
         ]}
         criteria={[
-          "2026 실제 기준 모드는 MX 50%, DS 47%, CSS 11%, 공통/지원 34~39%, VD·DA·네트워크·의료기기 12% 보도치를 참고했습니다.",
-          "노조 요구안 모드는 영업이익의 15% 성과급 재원 요구, 1~2%p 낮춘 수정안 및 OPI 주식보상 확대 요구 보도를 시나리오로 환산합니다.",
+          "기존 OPI 기준 모드는 MX 50%, DS 47%, CSS 11%, 공통/지원 34~39%, VD·DA·네트워크·의료기기 12% 보도치를 참고했습니다.",
+          "잠정합의안 모드는 기존 OPI 1.5%와 DS 특별경영성과급 10.5%를 합친 12% 구조, 특별성과급 10.5% 단독 구조, 최초 요구안 15%를 비교 시나리오로 환산합니다.",
           "2026 영업이익 컨센서스는 보도된 약 297.5조 원을 기본값으로 두고, 2027은 AI 메모리 호황 지속을 가정한 외부 리포트 범위를 별도 추정값으로 표시합니다.",
           "TAI는 반기별 월 기준급 개념을 단순화해 상반기·하반기 비율 프리셋 또는 직접 입력으로 계산합니다.",
           "직급별 추천 연봉과 복지 금액, 2027·2028 OPI 비율은 운영용 가정값이므로 사용자가 수정해서 보는 것이 전제입니다."
         ]}
         faq={[
           { question: "삼성전자 OPI는 어떻게 계산하나요?", answer: "이 페이지에서는 연봉에 사업부별 OPI 비율을 곱해 계산합니다. 2026은 공개 참고 지급률, 2027·2028은 시나리오 비율을 씁니다." },
-          { question: "노조 요구안 모드는 무엇인가요?", answer: "영업이익의 15%를 성과급 재원으로 요구했다는 보도와 1~2%p 낮춘 수정안 흐름을 1인 환산 시뮬레이션으로 보여주는 모드입니다. 확정 지급액이 아니라 추정값입니다." },
-          { question: "영업이익 컨센서스는 어디에 쓰이나요?", answer: "노조 요구안 모드에서 전체 성과급 재원을 계산할 때 사용합니다. 기본값은 2026년 약 297.5조 원 보도 기준이며, 사용자가 직접 바꿀 수 있습니다." },
+          { question: "잠정합의안 모드는 무엇인가요?", answer: "2026년 5월 20일 잠정합의안의 총 12%, DS 특별 10.5%, 최초 요구안 15%를 1인 환산 시뮬레이션으로 보여주는 모드입니다. 확정 지급액이 아니라 추정값입니다." },
+          { question: "영업이익 컨센서스는 어디에 쓰이나요?", answer: "잠정합의안 모드에서 전체 성과급 재원을 계산할 때 사용합니다. 기본값은 2026년 약 297.5조 원 보도 기준이며, 사용자가 직접 바꿀 수 있습니다." },
+          { question: "이번 협의안은 최종 확정인가요?", answer: "아닙니다. 2026년 5월 20일 노사가 잠정합의안에 서명했지만, 5월 22일 오후 2시부터 5월 27일 오전 10시까지 진행되는 조합원 찬반투표를 통과해야 공식 타결됩니다." },
+          { question: "자사주 지급은 현금과 같은가요?", answer: "아닙니다. 세후 전액 자사주 지급 방식이며, 일부 물량은 보호예수 조건이 붙는 것으로 보도됐습니다. 실제 체감 가치는 지급 시점과 주가에 따라 달라질 수 있습니다." },
           { question: "TAI는 왜 시나리오 또는 직접 입력인가요?", answer: "TAI는 반기별 업황과 조직 상황에 따라 달라질 수 있어, 단일 확정값보다 프리셋과 직접 수정 방식이 더 실용적입니다." },
           { question: "직급별 연봉은 공식표인가요?", answer: "아닙니다. 직급별 연봉은 추천값(수정 가능)이며, 사용자가 자신의 상황에 맞게 바꾸는 것을 전제로 합니다." },
           { question: "부부 계산은 어떤 값을 합산하나요?", answer: "두 사람의 연봉, OPI, TAI, 복지, 총보상을 합산하고 월 평균 총보상과 1인당 평균 체감값까지 함께 보여줍니다." },

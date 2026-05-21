@@ -59,9 +59,9 @@ export const yearOptions: Array<{ code: TargetYear; label: string }> = [
 ];
 
 export const opiModes: Array<{ code: OpiMode; label: string; description: string }> = [
-  { code: "ACTUAL", label: "2026 실제 기준", description: "2025 실적 기준 사업부 공개 지급률을 반영합니다." },
+  { code: "ACTUAL", label: "기존 OPI 기준", description: "2025 실적 기준 사업부 공개 지급률을 반영합니다." },
   { code: "SCENARIO", label: "시나리오 기준", description: "2027·2028 또는 가정값 비교용 시뮬레이션입니다." },
-  { code: "UNION_DEMAND", label: "노조 요구안", description: "보도된 영업이익 연동 요구안을 1인 환산액으로 추정합니다." }
+  { code: "UNION_DEMAND", label: "잠정합의안", description: "2026년 5월 20일 잠정합의안의 영업이익 연동 구조를 1인 환산액으로 추정합니다." }
 ];
 
 export const divisions: DivisionConfig[] = [
@@ -137,36 +137,36 @@ export const operatingProfitScenarios: OperatingProfitScenario[] = [
 
 export const unionDemandScenarios: UnionDemandScenario[] = [
   {
-    code: "UNION_15",
-    label: "노조 요구안 15%",
+    code: "AGREEMENT_12",
+    label: "잠정합의안 총 12%",
+    payoutRatio: 0.12,
+    stockCompensation: true,
+    note: "기존 OPI 1.5%와 DS 특별경영성과급 10.5%를 합산한 보도 기준"
+  },
+  {
+    code: "SPECIAL_10_5",
+    label: "DS 특별 10.5%",
+    payoutRatio: 0.105,
+    stockCompensation: true,
+    note: "DS부문 특별경영성과급 재원으로 보도된 10.5% 기준"
+  },
+  {
+    code: "UNION_INITIAL_15",
+    label: "최초 요구안 15%",
     payoutRatio: 0.15,
     stockCompensation: false,
-    note: "영업이익의 15%를 성과급 재원으로 요구했다는 보도 기준"
-  },
-  {
-    code: "UNION_ADJUSTED_14",
-    label: "조정안 14%",
-    payoutRatio: 0.14,
-    stockCompensation: true,
-    note: "1~2%p 낮추되 OPI 주식보상 확대를 요구했다는 보도 흐름 반영"
-  },
-  {
-    code: "UNION_ADJUSTED_13",
-    label: "조정안 13%",
-    payoutRatio: 0.13,
-    stockCompensation: true,
-    note: "사후조정 국면의 완화 시나리오"
+    note: "노조가 요구했던 영업이익 15% 성과급 재원 보도 기준"
   }
 ];
 
 export const factAnchors = [
-  { label: "OPI 구조", value: "연봉 최대 50%", note: "공개 설명 기준 상한" },
-  { label: "노조 핵심 요구", value: "영업익 15%", note: "성과급 재원 요구 보도" },
-  { label: "2026 컨센서스", value: "약 297.5조", note: "에프앤가이드 보도 기준" },
-  { label: "2027 시나리오", value: "약 317조", note: "외부 리포트 보도 범위" },
-  { label: "2026 MX OPI", value: "50%", note: "2025 실적 기준 보도" },
-  { label: "2026 DS OPI", value: "47%", note: "2025 실적 기준 보도" },
-  { label: "평균 직원 보수", value: "약 1.58억 원", note: "2025 사업보고서 보도 기준" }
+  { label: "합의 상태", value: "잠정합의", note: "조합원 찬반투표 전" },
+  { label: "총 재원", value: "최대 12%", note: "기존 OPI 1.5% + 특별 10.5%" },
+  { label: "DS 특별성과급", value: "10.5%", note: "노사 합의 사업성과 기준" },
+  { label: "배분 구조", value: "40:60", note: "DS 공통 40%, 사업부 60%" },
+  { label: "지급 방식", value: "자사주", note: "세후 전액, 일부 보호예수" },
+  { label: "DX·CSS", value: "600만 원", note: "별도 자사주 지급안" },
+  { label: "투표 일정", value: "5.22~5.27", note: "가결 시 공식 타결" }
 ];
 
 export const comparisonCards = [
@@ -213,9 +213,9 @@ export const SAMSUNG_EXTERNAL_REFERENCE_LINKS = [
     url: "https://www.fnguide.com/",
   },
   {
-    title: "삼성전자 OPI 노사 쟁점 보도",
-    desc: "영업이익 15% 성과급 재원 요구와 OPI 상한 폐지 쟁점을 정리한 최근 보도",
-    url: "https://www.segye.com/newsView/20260512515833",
+    title: "삼성전자 2026년 임금협상 잠정합의 일지",
+    desc: "2026년 5월 20일 잠정합의안과 조합원 찬반투표 일정을 확인할 수 있는 보도",
+    url: "https://www.yna.co.kr/view/AKR20260520151200003",
   },
   {
     title: "국세청 근로소득 원천징수 안내",

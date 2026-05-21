@@ -129,16 +129,16 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "samsung-bonus",
-    title: "삼성전자 성과급 계산기",
-    description: "개인·부부 모드로 삼성전자 OPI, TAI, 복지 포함 총보상과 월 체감액을 계산하는 페이지",
+    title: "삼성전자 성과급 협의안 계산기",
+    description: "2026년 잠정합의안 기준 삼성전자 DS 특별경영성과급, 자사주 지급, 개인·부부 총보상을 계산하는 페이지",
     order: 8,
     eyebrow: "Samsung Tool",
     category: "simulator",
     iframeReady: true,
     badges: ["신규", "추천"],
     previewStats: [
-      { label: "OPI+TAI", value: "3,600만", context: "사원 기준" },
-      { label: "월 체감", value: "+300만" }
+      { label: "잠정합의안", value: "12%", context: "OPI 포함" },
+      { label: "DS 특별", value: "10.5%" }
     ]
   },
   {
