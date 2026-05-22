@@ -190,6 +190,7 @@ export const SAMSUNG_NEXT_CALCULATOR = {
 
 // ── 관련 계산기 링크 ──────────────────────────────────────────────────────────
 export const SAMSUNG_RELATED_CALCULATORS = [
+  { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기", desc: "세전 성과급이 통장에 얼마 남는지 추정" },
   { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기", desc: "DS 반도체 양강의 성과급 구조를 비교" },
   { href: "/tools/hyundai-bonus/", label: "현대자동차 성과급 계산기", desc: "제조 대기업 보상 체계와 나란히 비교" },
   { href: "/tools/salary/", label: "연봉 인상 계산기", desc: "인상률·실수령 변화를 빠르게 계산" },

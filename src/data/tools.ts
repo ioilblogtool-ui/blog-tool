@@ -46,6 +46,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "bonus-after-tax-calculator",
+    title: "성과급 세후 실수령액 계산기",
+    description: "성과급 총액과 연봉을 입력해 소득세, 지방소득세, 4대보험을 뺀 통장 입금액을 간이 추정하는 계산기",
+    order: 1.5,
+    eyebrow: "Bonus Tax Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "성과급", "세후"],
+    previewStats: [
+      { label: "대표 입력", value: "3,000만원", context: "성과급" },
+      { label: "출력", value: "세후 실수령" }
+    ]
+  },
+  {
     slug: "household-income",
     title: "가구 소득 계산기",
     description: "가구 연 총소득, 월 체감, 실수령 추정, 평균·기준 중위소득 대비 위치를 계산하는 페이지",

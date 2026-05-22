@@ -1,0 +1,390 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  CBC_BONUS_TERMS,
+  CBC_CALCULATOR_HUB,
+  CBC_COMPANIES,
+  CBC_FAQ,
+  CBC_INDUSTRY_CYCLES,
+  CBC_SALARY_SCENARIOS,
+  CBC_SOURCES,
+  CBC_SUMMARY_CARDS,
+  CBC_TAX_WATERFALL,
+  CORPORATE_BONUS_META,
+  badgeClass,
+  formatWon,
+} from "../../data/corporateBonusComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const companyRows = CBC_COMPANIES.filter((company) => company.id !== "integrated");
+const calculatorRelated = CBC_CALCULATOR_HUB.map((item) => ({ href: item.href, label: item.label }));
+const badgeGuideItems = ["확정", "요구안", "제시안", "잠정합의", "컨센서스", "시뮬레이션"] as const;
+const chartSeed = {
+  companies: companyRows,
+  salaryScenarios: CBC_SALARY_SCENARIOS,
+  taxWaterfall: CBC_TAX_WATERFALL,
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: CORPORATE_BONUS_META.title,
+      description: CORPORATE_BONUS_META.description,
+      inLanguage: "ko-KR",
+      dateModified: "2026-05-21",
+      mainEntityOfPage: `https://bigyocalc.com/reports/${CORPORATE_BONUS_META.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: CBC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+    {
+      "@type": "ItemList",
+      name: "대기업 성과급 계산기 모음",
+      itemListElement: CBC_CALCULATOR_HUB.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.label,
+        url: `https://bigyocalc.com${item.href}`,
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={`${CORPORATE_BONUS_META.title} | 삼성전자·SK하이닉스·현대차 성과급 순위`} description={CORPORATE_BONUS_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page cbc-page" data-report="corporate-bonus-comparison-2026">
+    <CalculatorHero
+      eyebrow="성과급 비교 허브"
+      title={CORPORATE_BONUS_META.title}
+      description="삼성전자, SK하이닉스, 현대자동차 등 주요 대기업의 성과급 산식과 지급 기준, 노조 요구안, 확정 지급률, 세후 체감액을 한 번에 비교합니다."
+      badges={["성과급 비교", "2026", "요구안 분리", "시뮬레이션 포함"]}
+    />
+
+    <InfoNotice
+      title="성과급 숫자 해석 안내"
+      lines={[
+        "성과급은 회사별 기준급, 사업부, 직급, 지급 대상, 노사 합의 상태에 따라 달라집니다.",
+        "노조 요구안, 회사 제시안, 잠정합의안, 확정 지급안, 컨센서스, 시뮬레이션을 반드시 구분해서 봐야 합니다.",
+        "세후 금액은 총급여, 가족공제, 비과세, 4대보험 정산, 연말정산 결과에 따라 달라지는 참고값입니다.",
+        "아래 수치는 구조 이해용이며 구현 시점 최신 공시·보도·사내 기준으로 재검증해야 합니다.",
+      ]}
+    />
+
+    <section class="content-section cbc-badge-guide" id="badge-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">숫자 상태</p>
+        <h2>성과급은 금액보다 먼저 배지를 봐야 합니다</h2>
+        <p>같은 기사 숫자라도 요구안인지 확정 지급안인지에 따라 의미가 완전히 달라집니다.</p>
+      </div>
+      <div class="cbc-badge-grid" aria-label="성과급 데이터 상태 배지">
+        {badgeGuideItems.map((badge) => (
+          <span class={`cbc-badge cbc-badge--${badgeClass(badge)}`}>{badge}</span>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cbc-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>대기업 성과급 비교에서 먼저 봐야 할 4가지</h2>
+      </div>
+      <div class="cbc-summary-grid">
+        {CBC_SUMMARY_CARDS.map((card) => (
+          <article class={`cbc-summary-card cbc-summary-card--${card.tone}`}>
+            <span class={`cbc-badge cbc-badge--${badgeClass(card.badge)}`}>{card.badge}</span>
+            <strong>{card.value}</strong>
+            <p class="cbc-summary-card__label">{card.label}</p>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="cbc-overview">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">① 2026 이슈</p>
+        <h2>반도체 슈퍼사이클, 자동차 임협, 인재 확보 경쟁이 성과급 검색을 키웁니다</h2>
+        <p>성과급 headline은 커도 실제 비교는 기준급, 지급률, 대상 범위, 확정 상태를 나눠야 합니다.</p>
+      </div>
+      <div class="cbc-market-grid">
+        <article>
+          <strong>기준급</strong>
+          <p>지급률이 같아도 연봉 기준인지 월 기준급 기준인지에 따라 체감액이 달라집니다.</p>
+        </article>
+        <article>
+          <strong>사업부</strong>
+          <p>삼성전자처럼 사업부별 실적이 갈리는 회사는 단일 평균값만으로 보기 어렵습니다.</p>
+        </article>
+        <article>
+          <strong>확정 상태</strong>
+          <p>노조 요구안과 확정 지급안은 계산기 기본값이 아니라 별도 시나리오로 분리해야 합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="company-comparison">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">② 회사별 비교</p>
+        <h2>삼성전자·SK하이닉스·현대차 성과급 구조를 한 표에서 비교하기</h2>
+      </div>
+      <div class="cbc-table-wrap">
+        <table class="cbc-company-table">
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>핵심 제도</th>
+              <th>상태</th>
+              <th>2026 체크포인트</th>
+              <th>변동성</th>
+              <th>계산기</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CBC_COMPANIES.map((company) => (
+              <tr data-cbc-company={company.id}>
+                <th>{company.shortName}</th>
+                <td>{company.primaryTerms.join(" · ")}</td>
+                <td><span class={`cbc-badge cbc-badge--${badgeClass(company.latestStatus)}`}>{company.latestStatus}</span></td>
+                <td>{company.key2026Point}</td>
+                <td>{company.volatility}</td>
+                <td><a href={withBase(company.calculatorHref)}>{company.ctaLabel}</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="terms">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">③ 용어 정리</p>
+        <h2>OPI·TAI·PS·PI·격려금은 서로 다른 제도입니다</h2>
+      </div>
+      <div class="cbc-term-grid">
+        {CBC_BONUS_TERMS.map((term) => (
+          <article class="cbc-term-card">
+            <span>{term.companies}</span>
+            <strong>{term.term}</strong>
+            <p>{term.meaning}</p>
+            <small>{term.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="company-details">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">④⑤⑥ 회사별 체크포인트</p>
+        <h2>회사별 계산기로 들어가기 전 꼭 봐야 할 차이</h2>
+      </div>
+      <div class="cbc-company-grid">
+        {companyRows.map((company) => (
+          <article class={`cbc-company-card cbc-company-card--${company.id}`}>
+            <div class="cbc-company-card__head">
+              <span class={`cbc-badge cbc-badge--${badgeClass(company.latestStatus)}`}>{company.latestStatus}</span>
+              <h3>{company.name}</h3>
+            </div>
+            <p class="cbc-company-card__headline">{company.headline}</p>
+            <p>{company.formulaSummary}</p>
+            <ul>
+              {company.keyRisks.map((risk) => <li>{risk}</li>)}
+            </ul>
+            <a href={withBase(company.calculatorHref)}>{company.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="total-comp">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">⑦ 총보상 비교법</p>
+        <h2>성과급 순위보다 고정연봉·변동성·세후 체감액이 중요합니다</h2>
+        <p>이직이나 생활비 계획에서는 headline 금액보다 반복 가능성과 세후 현금흐름을 먼저 봐야 합니다.</p>
+      </div>
+      <div class="cbc-check-grid">
+        {["고정연봉", "기준급 산식", "성과급 변동 폭", "세후 실수령", "사업부·직무 편차", "다음 해 지속 가능성"].map((item) => (
+          <article>{item}</article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="salary-scenarios">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">⑧ 연봉별 체감액</p>
+        <h2>연봉 7천·1억·1.5억 기준 성과급 체감 시뮬레이션</h2>
+        <p>아래 금액은 구조 이해용 예시입니다. 회사별 계산기에서 사업부·직급·기준급을 다시 넣어 확인하세요.</p>
+      </div>
+      <div class="cbc-chart-panel">
+        <div class="cbc-chart-wrap">
+          <canvas id="cbcSalaryScenarioChart" aria-label="연봉별 회사 성과급 시뮬레이션 차트"></canvas>
+        </div>
+      </div>
+      <div class="cbc-table-wrap">
+        <table class="cbc-scenario-table">
+          <thead>
+            <tr>
+              <th>연봉 기준</th>
+              <th>삼성전자</th>
+              <th>SK하이닉스</th>
+              <th>현대차</th>
+              <th>주의</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CBC_SALARY_SCENARIOS.map((row) => (
+              <tr>
+                <th>{row.salaryLabel}</th>
+                <td>{formatWon(row.samsungBonus)}</td>
+                <td>{formatWon(row.skHynixBonus)}</td>
+                <td>{formatWon(row.hyundaiBonus)}</td>
+                <td>{row.taxNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="tax">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">⑨ 세후 체감</p>
+        <h2>성과급은 세전 headline과 통장 입금액이 다를 수 있습니다</h2>
+        <p>성과급은 근로소득으로 과세되며, 고액 성과급은 과세표준 상승으로 체감 세율이 높아질 수 있습니다.</p>
+      </div>
+      <div class="cbc-tax-layout">
+        <article class="cbc-tax-notice">
+          <span class="cbc-badge cbc-badge--simulation">시뮬레이션</span>
+          <strong>세후 금액은 참고값입니다</strong>
+          <p>실제 원천징수와 연말정산은 총급여, 가족공제, 비과세, 4대보험 정산에 따라 달라집니다.</p>
+        </article>
+        <div class="cbc-chart-wrap cbc-chart-wrap--short">
+          <canvas id="cbcTaxWaterfallChart" aria-label="성과급 세전 세후 참고 워터폴 차트"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="cycle">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">⑩ 산업 사이클</p>
+        <h2>반도체와 자동차는 성과급이 움직이는 변수가 다릅니다</h2>
+      </div>
+      <div class="cbc-cycle-grid">
+        {CBC_INDUSTRY_CYCLES.map((item) => (
+          <article>
+            <span>{item.volatility}</span>
+            <strong>{item.label}</strong>
+            <p>{item.mainVariable}</p>
+            <small>{item.comment}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="career">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">⑪⑫ 이직자 체크리스트</p>
+        <h2>성과급 협의안과 평균연봉 자료는 이렇게 읽어야 합니다</h2>
+      </div>
+      <div class="cbc-two-column">
+        <article>
+          <h3>취준생·이직자 체크</h3>
+          <ul>
+            <li>평균연봉에 성과급이 포함되어 있는지 확인</li>
+            <li>신입 초봉과 총보상을 구분</li>
+            <li>직무·사업부별 성과급 차이를 확인</li>
+            <li>변동 보상이 줄어도 생활비를 감당할 수 있는지 점검</li>
+          </ul>
+        </article>
+        <article>
+          <h3>협의안 단계 구분</h3>
+          <p><strong>요구안</strong>은 교섭 출발점, <strong>제시안</strong>은 회사 조건, <strong>잠정합의안</strong>은 최종 확정 전 단계, <strong>확정</strong>은 실제 지급 기준입니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section cbc-calculator-hub" id="calculators">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">⑬ 계산기 허브</p>
+        <h2>내 조건으로 직접 계산하기</h2>
+        <p>허브 리포트에서 구조를 잡고, 개별 계산기에서 연봉·사업부·직급·시나리오를 넣어 확인하세요.</p>
+      </div>
+      <div class="cbc-calculator-grid">
+        {CBC_CALCULATOR_HUB.map((item) => (
+          <a class="cbc-calculator-card" href={withBase(item.href)}>
+            <span>{item.badge}</span>
+            <strong>{item.label}</strong>
+            <p>{item.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="outlook">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">⑭ 2027 전망</p>
+        <h2>성과급 리포트는 확정 지급 시즌과 임협 시즌마다 업데이트 가치가 큽니다</h2>
+      </div>
+      <div class="cbc-update-grid">
+        <article><strong>1월</strong><p>전년도 실적 기반 확정 지급률</p></article>
+        <article><strong>4~5월</strong><p>노조 요구안과 임협 시작</p></article>
+        <article><strong>7~9월</strong><p>잠정합의안과 확정 합의</p></article>
+        <article><strong>10~12월</strong><p>다음 해 영업이익 컨센서스</p></article>
+      </div>
+    </section>
+
+    <section class="content-section cbc-section" id="sources">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처 확인</p>
+        <h2>공식 자료와 최신 보도를 나눠 확인합니다</h2>
+      </div>
+      <div class="cbc-source-list">
+        {CBC_SOURCES.map((source) => (
+          <a href={source.url} target="_blank" rel="noopener noreferrer">
+            <span class={`cbc-badge cbc-badge--${badgeClass(source.badge)}`}>{source.badge}</span>
+            <strong>{source.label}</strong>
+            <p>{source.organization} · {source.note}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 대기업 성과급 비교 리포트 활용 가이드"
+      intro={[
+        "대기업 성과급은 회사별 headline만 보면 비교가 쉬워 보이지만 실제 체감액은 기준급, 사업부, 지급률, 세금, 확정 상태에 따라 크게 달라집니다.",
+        "이 리포트는 삼성전자, SK하이닉스, 현대자동차 성과급 구조를 한 페이지에서 비교하고, 개별 계산기로 개인 조건별 예상액을 확인할 수 있도록 구성했습니다.",
+      ]}
+      criteria={[
+        "노조 요구안과 확정 지급안은 반드시 분리합니다.",
+        "세후 금액은 참고값으로만 안내합니다.",
+        "연봉과 기준급이 다른 회사는 지급률만으로 순위를 매기지 않습니다.",
+        "개별 회사 계산기에서 사업부·직급·시나리오를 다시 확인합니다.",
+      ]}
+      faq={CBC_FAQ}
+      related={calculatorRelated}
+    />
+  </main>
+
+  <script id="cbcData" type="application/json" set:html={JSON.stringify(chartSeed)}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src={withBase("/scripts/corporate-bonus-comparison-2026.js")} defer></script>
+</BaseLayout>

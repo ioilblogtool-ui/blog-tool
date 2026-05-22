@@ -29,6 +29,13 @@ export const reports: ReportMeta[] = [
     badges: ["IT서비스", "2026"],
   },
   {
+    slug: "corporate-bonus-comparison-2026",
+    title: "2026 대기업 성과급 완전 비교",
+    description: "삼성전자, SK하이닉스, 현대자동차 등 주요 대기업 성과급 산식과 지급률, 노조 요구안, 확정 지급안, 세후 체감액을 비교하는 허브 리포트입니다.",
+    order: 3.5,
+    badges: ["성과급", "삼성전자", "SK하이닉스", "현대차"],
+  },
+  {
     slug: "insurance-salary-bonus-comparison-2026",
     title: "국내 TOP 보험사 평균 연봉·성과급 비교 리포트 2026",
     description: "삼성화재, 삼성생명, 메리츠화재, 현대해상, DB손해보험, KB손해보험 등 주요 보험사의 평균 연봉, 신입 초봉, 성과급, 총보상을 함께 비교하는 인터랙티브 리포트입니다.",

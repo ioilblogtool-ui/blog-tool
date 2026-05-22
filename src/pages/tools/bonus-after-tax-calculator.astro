@@ -1,0 +1,369 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  BAT_DEFAULT_INPUT,
+  BAT_FAQ,
+  BAT_INSURANCE_CONFIGS,
+  BAT_META,
+  BAT_PRESETS,
+  BAT_RELATED_LINKS,
+  BAT_TAX_BRACKETS,
+} from "../../data/bonusAfterTaxCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaultInput: BAT_DEFAULT_INPUT,
+  insuranceConfigs: BAT_INSURANCE_CONFIGS,
+  taxBrackets: BAT_TAX_BRACKETS,
+  presets: BAT_PRESETS,
+};
+
+const faqSchema = BAT_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={BAT_META.seoTitle}
+  description={BAT_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: BAT_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: BAT_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/bonus-after-tax-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="bonus-after-tax-calculator"
+    pageClass="bat-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="성과급 세금"
+        title="성과급 세후 실수령액 계산기"
+        description="성과급 총액과 연봉을 입력하면 소득세, 지방소득세, 4대보험을 뺀 통장 입금액을 간이 추정합니다."
+        badges={["간이 추정", "4대보험", "원천징수", "연말정산"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          BAT_META.dataNote,
+          "성과급의 4대보험 반영 여부와 공제 시점은 회사 급여 처리 방식에 따라 달라질 수 있습니다.",
+          "지급월 원천징수액은 최종 세금이 아니며 연말정산에서 환급 또는 추가 납부가 발생할 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="batResetBtn" copyId="batCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">성과급 프리셋</h2>
+          </div>
+          <p class="panel-heading__summary">대표 금액을 먼저 선택한 뒤 연봉과 공제 옵션을 조정하세요.</p>
+        </div>
+        <div class="bat-preset-grid">
+          {BAT_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`bat-preset-btn${index === 2 ? " is-active" : ""}`}
+              data-preset={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">성과급과 연봉 입력</h2>
+          </div>
+          <p class="panel-heading__summary">회사별 성과급 계산기에서 나온 세전 금액을 그대로 넣으면 됩니다.</p>
+        </div>
+
+        <p class="bat-source-badge" id="batSourceBadge">직접 입력 기준</p>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>성과급 총액</span>
+            <input data-bat="bonusGrossAmount" data-format="money" type="text" inputmode="numeric" class="input-number" />
+            <small>세전 성과급 또는 특별상여 총액</small>
+          </label>
+
+          <label class="field">
+            <span>연봉</span>
+            <input data-bat="annualSalary" data-format="money" type="text" inputmode="numeric" class="input-number" />
+            <small>기본급·고정급 기준 연봉</small>
+          </label>
+
+          <label class="field">
+            <span>월 급여 직접 입력</span>
+            <input data-bat="monthlySalaryOverride" data-format="money" type="text" inputmode="numeric" class="input-number" placeholder="비우면 자동" />
+            <small id="batMonthlySalaryHint">자동 월급 추정</small>
+          </label>
+
+          <label class="field">
+            <span>지급 방식</span>
+            <select data-bat="paymentMethod">
+              <option value="single">일시 지급</option>
+              <option value="twoInstallments">2회 분할</option>
+              <option value="fourInstallments">4회 분할</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>지급월</span>
+            <select data-bat="paymentMonth">
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+                <option value={month}>{month}월</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field">
+            <span>부양가족 수</span>
+            <input data-bat="dependentCount" data-type="number" type="number" min="1" max="10" class="input-number" />
+            <small>간이 모델에서는 안내용 입력입니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">공제 옵션</p>
+            <h2 class="panel__title">세금과 4대보험</h2>
+          </div>
+        </div>
+
+        <div class="bat-check-list">
+          <label class="check-field">
+            <input data-bat="includeLocalIncomeTax" type="checkbox" />
+            <span>지방소득세 포함</span>
+          </label>
+          <label class="check-field">
+            <input data-bat="includeSocialInsurance" type="checkbox" />
+            <span>4대보험 반영</span>
+          </label>
+          <label class="check-field">
+            <input data-bat="includeNationalPension" type="checkbox" />
+            <span>국민연금</span>
+          </label>
+          <label class="check-field">
+            <input data-bat="includeHealthInsurance" type="checkbox" />
+            <span>건강보험</span>
+          </label>
+          <label class="check-field">
+            <input data-bat="includeLongTermCare" type="checkbox" />
+            <span>장기요양보험</span>
+          </label>
+          <label class="check-field">
+            <input data-bat="includeEmploymentInsurance" type="checkbox" />
+            <span>고용보험</span>
+          </label>
+          <label class="check-field">
+            <input data-bat="assumePensionCapReached" type="checkbox" />
+            <span>국민연금 상한 도달로 보기</span>
+          </label>
+        </div>
+
+        <details class="detail-box detail-box--soft">
+          <summary>고급 입력</summary>
+          <div class="detail-box__content detail-box__content--tight">
+            <div class="form-grid">
+              <label class="field">
+                <span>소득세 추정 방식</span>
+                <select data-bat="incomeTaxMode">
+                  <option value="simple">간이 추정</option>
+                  <option value="conservative">보수적 추정</option>
+                  <option value="manual">직접 세율 입력</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>직접 원천징수율 (%)</span>
+                <input data-bat="manualWithholdingRate" data-type="number" type="number" min="0" max="60" step="0.1" class="input-number" />
+              </label>
+              <label class="field">
+                <span>비과세/제외 금액</span>
+                <input data-bat="nonTaxableAmount" data-format="money" type="text" inputmode="numeric" class="input-number" />
+              </label>
+              <label class="field">
+                <span>20세 이하 자녀 수</span>
+                <input data-bat="childUnder20Count" data-type="number" type="number" min="0" max="10" class="input-number" />
+              </label>
+            </div>
+          </div>
+        </details>
+      </article>
+    </Fragment>
+
+    <section class="bat-summary-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">통장 입금액 간이 추정</h2>
+        </div>
+        <p class="panel-heading__summary" id="batSummaryText">성과급 3,000만 원 기준 세후 실수령액을 계산합니다.</p>
+      </div>
+
+      <div class="bat-result-grid" aria-live="polite">
+        <article class="bat-result-card bat-result-card--main">
+          <span>세후 실수령액</span>
+          <strong id="batNetAmount">-</strong>
+          <small>간이 추정</small>
+        </article>
+        <article class="bat-result-card">
+          <span>총 공제액</span>
+          <strong id="batTotalDeduction">-</strong>
+        </article>
+        <article class="bat-result-card">
+          <span>실수령률</span>
+          <strong id="batNetRate">-</strong>
+        </article>
+        <article class="bat-result-card">
+          <span>세금 합계</span>
+          <strong id="batTaxSum">-</strong>
+        </article>
+        <article class="bat-result-card">
+          <span>4대보험</span>
+          <strong id="batInsuranceSum">-</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">분해</p>
+          <h2 class="panel__title">공제 항목별 차감액</h2>
+        </div>
+        <p class="panel-heading__summary">적용 원천징수율 <strong id="batAppliedRate">-</strong>, 연봉 구간 <strong id="batTaxBracket">-</strong></p>
+      </div>
+
+      <div class="bat-table-wrap">
+        <table class="bat-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>소득세</td><td id="batIncomeTax">-</td><td>간이 추정</td></tr>
+            <tr><td>지방소득세</td><td id="batLocalIncomeTax">-</td><td>소득세의 10%</td></tr>
+            <tr><td>국민연금</td><td id="batNationalPension">-</td><td>상한·정산 가능</td></tr>
+            <tr><td>건강보험</td><td id="batHealthInsurance">-</td><td>보수총액 정산 가능</td></tr>
+            <tr><td>장기요양보험</td><td id="batLongTermCare">-</td><td>건강보험료 연동</td></tr>
+            <tr><td>고용보험</td><td id="batEmploymentInsurance">-</td><td>근로자 부담분</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">지급 방식</p>
+          <h2 class="panel__title">일시 지급 vs 분할 지급 비교</h2>
+        </div>
+        <p class="panel-heading__summary">분할 지급은 실제 회사 원천징수 방식에 따라 달라질 수 있어 현금흐름 참고용으로 봅니다.</p>
+      </div>
+      <div class="bat-table-wrap">
+        <table class="bat-table">
+          <thead>
+            <tr>
+              <th>지급 방식</th>
+              <th>회차별 세전</th>
+              <th>회차별 세후</th>
+              <th>총 세후</th>
+              <th>총 공제</th>
+            </tr>
+          </thead>
+          <tbody id="batInstallmentRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="bat-warning-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">주의</p>
+          <h2 class="panel__title">결과 해석 전 확인하세요</h2>
+        </div>
+      </div>
+      <ul id="batWarnings" class="bat-warning-list"></ul>
+    </section>
+
+    <section class="bat-company-cta panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">성과급 비교</p>
+          <h2 class="panel__title">회사별 세전 성과급도 같이 확인</h2>
+        </div>
+        <p class="panel-heading__summary">세전 성과급을 먼저 계산한 뒤 이 페이지에서 세후 통장 입금액을 확인하세요.</p>
+      </div>
+      <div class="bat-link-grid">
+        {BAT_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)}>{link.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="성과급 세후 실수령액은 왜 세전 금액과 다를까?"
+        intro={[
+          "성과급은 세전 금액으로 발표되는 경우가 많지만, 실제 통장 입금액은 소득세, 지방소득세, 4대보험 공제 여부에 따라 크게 달라질 수 있습니다.",
+          "이 계산기는 성과급 총액과 연봉 구간을 기준으로 세후 실수령액을 간이 추정합니다. 실제 급여명세서와 연말정산 결과는 회사 급여 시스템과 개인 공제 조건에 따라 달라질 수 있습니다.",
+          "삼성전자, SK하이닉스, 현대자동차 등 회사별 성과급 계산기에서 나온 세전 금액을 입력하면 세후 체감 금액을 빠르게 확인할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "성과급 총액과 연봉을 입력하면 세후 실수령액을 바로 확인할 수 있습니다.",
+          "4대보험 반영 여부를 켜고 끄며 통장 입금액 차이를 비교할 수 있습니다.",
+          "일시 지급과 분할 지급의 회차별 현금흐름을 참고할 수 있습니다.",
+        ]}
+        criteria={[
+          "소득세는 연봉 구간별 간이 원천징수율로 추정합니다.",
+          "지방소득세는 소득세의 10%로 계산합니다.",
+          "4대보험은 공개 요율을 기준으로 단순 추정하며 실제 정산 방식과 다를 수 있습니다.",
+          "모든 결과는 간이 추정이며 최종 세액은 연말정산에서 달라질 수 있습니다.",
+        ]}
+        faq={BAT_FAQ}
+        related={BAT_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="batConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/bonus-after-tax-calculator.js")}></script>
+</BaseLayout>
