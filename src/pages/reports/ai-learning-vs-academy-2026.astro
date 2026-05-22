@@ -1,0 +1,400 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  AI_LEARNING_VS_ACADEMY_META,
+  ALVA_COST_SCENARIO,
+  ALVA_FAQ,
+  ALVA_GRADE_ROADMAP,
+  ALVA_PARENT_CHECKLIST,
+  ALVA_PLATFORMS,
+  ALVA_RELATED_LINKS,
+  ALVA_RESEARCH_INSIGHTS,
+  ALVA_REVIEW_SIGNALS,
+  ALVA_SCENARIO_CARDS,
+  ALVA_SOURCES,
+  ALVA_SUBJECT_MATRIX,
+  ALVA_SUMMARY_CARDS,
+  type EvidenceBadge,
+  badgeClass,
+  formatManWon,
+  suitabilityLabel,
+} from "../../data/aiLearningVsAcademy2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const faqItems = ALVA_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+const relatedItems = ALVA_RELATED_LINKS.map((item) => ({ href: item.href, label: item.label }));
+const chartSeed = {
+  platforms: ALVA_PLATFORMS,
+  subjectMatrix: ALVA_SUBJECT_MATRIX,
+  costScenario: ALVA_COST_SCENARIO,
+  gradeRoadmap: ALVA_GRADE_ROADMAP,
+  checklist: ALVA_PARENT_CHECKLIST,
+};
+const badgeGuideItems: EvidenceBadge[] = ["공식 통계", "공식 가격", "연구", "후기", "시뮬레이션", "가격 확인 필요", "정책 변경 가능"];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: AI_LEARNING_VS_ACADEMY_META.title,
+      description: AI_LEARNING_VS_ACADEMY_META.description,
+      inLanguage: "ko-KR",
+      dateModified: "2026-05-22",
+      mainEntityOfPage: `https://bigyocalc.com/reports/${AI_LEARNING_VS_ACADEMY_META.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: ALVA_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+    {
+      "@type": "ItemList",
+      name: "AI 학습 도구와 학원 비교 항목",
+      itemListElement: ALVA_PLATFORMS.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={`${AI_LEARNING_VS_ACADEMY_META.title} | 학원비 절감 시뮬레이션`} description={AI_LEARNING_VS_ACADEMY_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page alva-page" data-report="ai-learning-vs-academy-2026">
+    <CalculatorHero
+      eyebrow="2026 교육비·AI 학습 비교"
+      title={AI_LEARNING_VS_ACADEMY_META.title}
+      description="ChatGPT, 뤼튼, Khanmigo, 온라인 강의형 AI 도구와 전통 학원의 비용·과목별 적합성·학습 관리 리스크를 한 화면에서 비교합니다."
+    />
+
+    <InfoNotice
+      title="이 리포트의 해석 기준"
+      lines={[
+        "AI 학습 도구 가격은 국가, 환율, 프로모션, 플랜 정책에 따라 달라질 수 있어 가격 확인 필요 배지를 함께 표시했습니다.",
+        "비용 절감 시뮬레이션은 학습 효과나 성적 향상을 보장하지 않습니다.",
+        "입시·내신 구간은 완전 대체보다 학원 유지 + AI 보조 또는 과목별 하이브리드 접근을 기본값으로 봅니다.",
+      ]}
+    />
+
+    <section class="content-section alva-trust-panel" aria-labelledby="alva-trust-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">데이터 기준</p>
+        <h2 id="alva-trust-title">가격·통계·연구·후기를 분리해서 읽어야 합니다</h2>
+        <p>학원비는 공식 통계가 있지만 AI 도구 가격은 변동성이 큽니다. 그래서 본문 전체에서 근거 배지를 먼저 보이도록 구성했습니다.</p>
+      </div>
+      <div class="alva-badge-grid">
+        {badgeGuideItems.map((badge) => (
+          <span class={`alva-badge alva-badge--${badgeClass(badge)}`}>{badge}</span>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section alva-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>AI 학습 도구 도입 전에 먼저 볼 4가지</h2>
+      </div>
+      <div class="alva-summary-grid">
+        {ALVA_SUMMARY_CARDS.map((card) => (
+          <article class={`alva-summary-card alva-summary-card--${card.tone}`}>
+            <span class={`alva-badge alva-badge--${badgeClass(card.badge)}`}>{card.badge}</span>
+            <strong>{card.value}</strong>
+            <p class="alva-summary-card__label">{card.label}</p>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section alva-section" id="alva-market">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">01 시장 변화</p>
+        <h2>AI 학습 시장은 커졌지만, 결론은 “무조건 대체”가 아닙니다</h2>
+        <p>2024년 이후 생성형 AI가 숙제, 문제 풀이, 글쓰기, 코딩 학습으로 확산되면서 학원비 절감 대안으로 검색되고 있습니다. 그러나 실제 효율은 과목, 학년, 관리 방식에 따라 크게 달라집니다.</p>
+      </div>
+      <div class="alva-market-grid">
+        <article>
+          <span>비용</span>
+          <strong>월 구독료만 보면 AI가 저렴</strong>
+          <p>다만 부모 관리 시간, 교재비, 검증 비용까지 합쳐야 실제 부담이 보입니다.</p>
+        </article>
+        <article>
+          <span>효과</span>
+          <strong>반복 피드백은 AI 강점</strong>
+          <p>개념 질문, 영어 작문, 코딩 오류 설명은 즉시성이 높습니다.</p>
+        </article>
+        <article>
+          <span>리스크</span>
+          <strong>오답과 입시는 사람 점검 필요</strong>
+          <p>풀이 과정, 평가 기준, 시험 전략은 AI 답변만으로 판단하기 어렵습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section alva-section" id="platforms">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">02 플랫폼 비교</p>
+        <h2>주요 AI 학습 도구 기능·가격 비교</h2>
+      </div>
+      <div class="alva-table-wrap">
+        <table class="alva-platform-table">
+          <thead>
+            <tr>
+              <th>플랫폼</th>
+              <th>주요 용도</th>
+              <th>가격</th>
+              <th>강점</th>
+              <th>주의점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ALVA_PLATFORMS.map((platform) => (
+              <tr>
+                <th>{platform.name}</th>
+                <td>{platform.bestFor}</td>
+                <td>
+                  <span class={`alva-badge alva-badge--${badgeClass(platform.priceBadge)}`}>{platform.priceBadge}</span>
+                  {platform.priceText}
+                </td>
+                <td>{platform.strengths.join(", ")}</td>
+                <td>{platform.cautions.join(", ")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section alva-section" id="subjects">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">03 과목별 판단</p>
+        <h2>AI 대체 가능성 매트릭스</h2>
+      </div>
+      <div class="alva-filter-row" aria-label="과목 필터">
+        <button type="button" class="is-active" data-alva-subject="all">전체</button>
+        {ALVA_SUBJECT_MATRIX.map((subject) => (
+          <button type="button" data-alva-subject={subject.subject}>{subject.label}</button>
+        ))}
+      </div>
+      <div class="alva-subject-grid">
+        {ALVA_SUBJECT_MATRIX.map((subject) => (
+          <article class={`alva-subject-card alva-subject-card--${subject.level}`} data-alva-subject-card={subject.subject}>
+            <div class="alva-card-head">
+              <div>
+                <span>{suitabilityLabel(subject.level)}</span>
+                <h3>{subject.label}</h3>
+              </div>
+              <strong>{subject.score}점</strong>
+            </div>
+            <div class="alva-score-track"><span style={`width: ${subject.score}%`}></span></div>
+            <dl>
+              <div><dt>AI 활용</dt><dd>{subject.aiUseCases.join(", ")}</dd></div>
+              <div><dt>학원 활용</dt><dd>{subject.academyUseCases.join(", ")}</dd></div>
+            </dl>
+            <p>{subject.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section alva-section alva-cost-simulation" id="cost-simulation">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">04 5년 비용 시뮬레이션</p>
+        <h2>학원비 vs AI 구독료 누적 비용 비교</h2>
+        <p>{ALVA_COST_SCENARIO.description} <strong>{ALVA_COST_SCENARIO.caution}</strong></p>
+      </div>
+      <div class="alva-cost-layout">
+        <div class="alva-chart-wrap">
+          <canvas id="alvaCostChart" aria-label="5년 누적 교육비 비교 차트"></canvas>
+        </div>
+        <div class="alva-table-wrap">
+          <table class="alva-cost-table">
+            <thead>
+              <tr>
+                <th>연차</th>
+                <th>AI 중심</th>
+                <th>하이브리드</th>
+                <th>학원 유지</th>
+                <th>하이브리드 절감액</th>
+              </tr>
+            </thead>
+            <tbody data-alva-cost-table>
+              <tr><td colspan="5">비용표를 계산하는 중입니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <aside class="alva-cta-band">
+      <div>
+        <span class="alva-badge alva-badge--simulation">계산기</span>
+        <h2>우리 집 과목 수와 학원비로 직접 계산해보기</h2>
+        <p>자녀 학년, 과목 수, 현재 학원비, AI 구독료를 넣으면 월 절감액과 연간 절약액을 바로 볼 수 있습니다.</p>
+      </div>
+      <a href={withBase("/tools/ai-tutoring-vs-academy-cost/?grade=middle&subjects=math,english&scenario=hybrid")}>AI 전환 절감액 계산하기</a>
+    </aside>
+
+    <section class="content-section alva-section" id="reviews">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">05 후기 데이터</p>
+        <h2>실사용 후기는 통계가 아니라 신호로 읽어야 합니다</h2>
+      </div>
+      <div class="alva-review-grid">
+        {ALVA_REVIEW_SIGNALS.map((item) => (
+          <article class={`alva-review-card alva-review-card--${item.sentiment}`}>
+            <span class={`alva-badge alva-badge--${badgeClass(item.badge)}`}>{item.badge}</span>
+            <h3>{item.label}</h3>
+            <p>{item.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section alva-section" id="hybrid">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">06 비용 절감 시나리오</p>
+        <h2>완전 대체·하이브리드·학원 유지 3가지 선택지</h2>
+      </div>
+      <div class="alva-scenario-grid">
+        {ALVA_SCENARIO_CARDS.map((scenario) => (
+          <article class={`alva-scenario-card alva-scenario-card--${scenario.type}`}>
+            <span class={`alva-badge alva-badge--${badgeClass(scenario.badge)}`}>{scenario.badge}</span>
+            <h3>{scenario.label}</h3>
+            <strong>{formatManWon(scenario.monthlyCost)} / 월</strong>
+            <p>5년 누적 {formatManWon(scenario.fiveYearCost)}</p>
+            <dl>
+              <div><dt>적합</dt><dd>{scenario.bestFor}</dd></div>
+              <div><dt>리스크</dt><dd>{scenario.risk}</dd></div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section alva-section" id="roadmap">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">07 학년별 로드맵</p>
+        <h2>초등·중등·고등은 AI 사용 기준이 달라야 합니다</h2>
+      </div>
+      <div class="alva-roadmap-layout">
+        <div class="alva-roadmap-tabs">
+          {ALVA_GRADE_ROADMAP.map((item) => (
+            <button type="button" data-alva-grade={item.gradeBand}>{item.label}</button>
+          ))}
+        </div>
+        <article class="alva-roadmap-detail" data-alva-grade-detail></article>
+      </div>
+    </section>
+
+    <section class="content-section alva-section" id="policy-research">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">08 정책·연구 요약</p>
+        <h2>AI 교육 정책과 효과 연구는 “조건부 긍정”으로 읽기</h2>
+      </div>
+      <div class="alva-research-list">
+        {ALVA_RESEARCH_INSIGHTS.map((item) => (
+          <article>
+            <span class={`alva-badge alva-badge--${badgeClass(item.badge)}`}>{item.badge}</span>
+            <h3>{item.title}</h3>
+            <p><strong>핵심:</strong> {item.finding}</p>
+            <p><strong>한계:</strong> {item.limitation}</p>
+            <p><strong>해석:</strong> {item.implication}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section alva-section" id="checklist">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">09 학부모 체크리스트</p>
+        <h2>AI 전환 전 확인할 8가지</h2>
+      </div>
+      <div class="alva-checklist">
+        {ALVA_PARENT_CHECKLIST.map((item) => (
+          <label class="alva-check-item">
+            <input type="checkbox" data-alva-check={item.id} />
+            <span>
+              <strong>{item.label}</strong>
+              <small>{item.description}</small>
+              <em>{item.riskIfMissing}</em>
+            </span>
+          </label>
+        ))}
+      </div>
+      <div class="alva-check-result">
+        <div class="alva-check-meter"><span data-alva-check-meter></span></div>
+        <div data-alva-check-result></div>
+      </div>
+    </section>
+
+    <section class="content-section alva-section" id="sources">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">10 출처와 업데이트</p>
+        <h2>공식 통계와 가격 확인 기준</h2>
+      </div>
+      <div class="alva-source-list">
+        {ALVA_SOURCES.map((source) => (
+          <article>
+            <span class={`alva-badge alva-badge--${badgeClass(source.badge)}`}>{source.badge}</span>
+            <h3>{source.label}</h3>
+            <p>{source.organization} · {source.asOf}</p>
+            {source.note && <small>{source.note}</small>}
+            {source.url && <a href={source.url} target="_blank" rel="noreferrer">공식 자료 확인</a>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <aside class="alva-cta-band alva-cta-band--bottom">
+      <div>
+        <span class="alva-badge alva-badge--simulation">다음 행동</span>
+        <h2>지금 줄일 과목과 남길 과목을 숫자로 나눠보기</h2>
+        <p>AI는 추천 목록보다 우리 집 현재 학원비와 과목 구조에 맞춰 계산할 때 판단이 쉬워집니다.</p>
+      </div>
+      <a href={withBase("/tools/ai-tutoring-vs-academy-cost/")}>계산기로 이동</a>
+    </aside>
+
+    <SeoContent
+      introTitle="AI 학습 도구와 학원비 비교를 읽는 기준"
+      intro={[
+        "AI 학습 도구는 질문을 반복하고, 개념을 다시 설명하고, 영어 문장과 코딩 오류를 바로 점검하는 데 강점이 있습니다. 하지만 모든 학생과 모든 과목에서 학원을 그대로 대체한다고 보기는 어렵습니다.",
+        "이 리포트는 2026년 기준 사교육비 데이터, AI 도구 가격 확인 포인트, 연구와 후기 신호를 분리해 완전 대체·하이브리드·학원 유지 시나리오를 비교합니다.",
+      ]}
+      inputPoints={[
+        "영어·코딩은 AI 활용도가 높은 과목으로 먼저 테스트하기 좋습니다.",
+        "수학·국어·입시는 오답 관리와 평가 기준 점검을 남겨두는 편이 안전합니다.",
+        "가격표보다 주간 학습 루틴과 사람 피드백이 유지되는지 먼저 확인해야 합니다.",
+      ]}
+      criteria={[
+        "가격은 공식 요금과 사용자가 실제 부담하는 환율·프로모션·가족 플랜을 분리합니다.",
+        "학습 효과는 연구 결과, 후기, 시뮬레이션을 구분해서 해석합니다.",
+        "고등·입시 구간은 AI 완전 대체보다 보조 도구 사용을 기본값으로 둡니다.",
+      ]}
+      faq={faqItems}
+      related={relatedItems}
+    />
+
+    <script id="alvaData" type="application/json" set:html={JSON.stringify(chartSeed)} />
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src={withBase("/scripts/ai-learning-vs-academy-2026.js")} defer></script>
+</BaseLayout>

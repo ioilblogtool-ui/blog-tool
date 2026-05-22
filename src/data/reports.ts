@@ -148,6 +148,13 @@ export const reports: ReportMeta[] = [
     badges: ["영화", "손익비교"],
   },
   {
+    slug: "monthly-dividend-etf-2026",
+    title: "월배당 ETF 실수익 완전 비교 2026 — 분배율·세후 수령액·보수 총정리",
+    description: "국내 상장 월배당 ETF 10종의 분배율, 세후 월 수령액, 운용보수, 기초지수, 수익률을 비교합니다. 배당성장형·커버드콜형·채권형·리츠형을 유형별로 분류하고 포트폴리오 예시와 분배금 감소 시나리오를 제공합니다.",
+    order: 17.5,
+    badges: ["ETF", "월배당", "투자", "2026"],
+  },
+  {
     slug: "semiconductor-etf-2026",
     title: "미국·한국 반도체 ETF 비교 2026 — SOXX, SMH, TIGER, RISE, ACE 구성 종목 총정리",
     description: "SOXX, SMH, TIGER 반도체, RISE AI반도체TOP10, ACE AI반도체TOP3+ 등 10종 ETF의 구성 종목, 운용사, 장단점을 한눈에 비교합니다.",
@@ -365,6 +372,13 @@ export const reports: ReportMeta[] = [
     badges: ["서울", "부동산", "2026"],
   },
   {
+    slug: "multi-house-tax-2026",
+    title: "2026 다주택자 세금 완전 분석",
+    description: "다주택자 세금을 취득세, 종합부동산세, 양도소득세, 임대소득세로 나눠 2주택·3주택 이상 케이스별로 정리합니다.",
+    order: 37.2,
+    badges: ["다주택자", "부동산세금", "양도세", "2026"],
+  },
+  {
     slug: "pregnancy-checkup-cost-2026",
     title: "2026 임신 주수별 검사 비용 완전 정리",
     description: "임신 4주부터 40주까지 주요 산전검사 종류, 예상 비용, 바우처 차감 구조를 정리한 리포트입니다.",
@@ -400,6 +414,13 @@ export const reports: ReportMeta[] = [
     badges: ["AI", "부업", "2026"],
   },
   {
+    slug: "ai-learning-vs-academy-2026",
+    title: "AI 학습 도구 vs 학원 2026 비용·효과 완전 비교",
+    description: "ChatGPT, 뤼튼, Khanmigo 등 AI 학습 도구와 전통 학원의 월 비용, 과목별 대체 가능성, 5년 누적 비용, 하이브리드 전략을 비교합니다.",
+    order: 42.2,
+    badges: ["AI", "교육비", "학원비", "2026"],
+  },
+  {
     slug: "pension-age-comparison-2026",
     title: "연금 수령 나이별 실수령액 완전 비교 2026",
     description: "국민연금 조기수령, 정상수령, 연기수령 시 월수령액과 생애 누적 수령액을 비교합니다. 손익분기점, 건강수명별 전략, 2026 제도 변경까지 정리했습니다.",
@@ -419,6 +440,13 @@ export const reports: ReportMeta[] = [
     description: "신혼집 보증금·혼수·정착 비용·정부 지원금을 14개 섹션으로 분석. 맞벌이·외벌이 가계부 시뮬레이션, 특례대출 총정리, 2016 vs 2026 비용 변화 포함.",
     order: 46,
     badges: ["신규", "신혼", "결혼", "2026"],
+  },
+  {
+    slug: "single-household-living-cost-2026",
+    title: "2026 1인 가구 생활비 완전 해부",
+    description: "2026년 1인 가구 월 생활비를 주거비·식비·통신비·구독료·보험료까지 항목별로 분석합니다.",
+    order: 46.2,
+    badges: ["1인 가구", "생활비", "2026", "절약"],
   },
   {
     slug: "baby-formula-brand-cost-comparison-2026",

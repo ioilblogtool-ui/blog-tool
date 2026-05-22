@@ -1,0 +1,348 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import {
+  DVCC_CHECKLIST,
+  DVCC_DEFAULT_INPUT,
+  DVCC_FAQ,
+  DVCC_META,
+  DVCC_PRESETS,
+  DVCC_RELATED_LINKS,
+  DVCC_SCENARIOS,
+} from "../../data/deliveryVsCookingCost";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const faqSchema = DVCC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+const config = { defaultInput: DVCC_DEFAULT_INPUT, presets: DVCC_PRESETS };
+---
+
+<BaseLayout
+  title="배달 vs 직접 요리 비용 계산기 | 월 식비·연간 절약액 비교"
+  description="주당 배달 횟수, 1회 주문금액, 배달비, 식재료비, 조리 시간과 시급을 입력하면 배달음식과 직접 요리 비용 차이, 월간·연간 절약액, 손익분기 주문금액을 계산합니다."
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: DVCC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: DVCC_META.subtitle,
+    url: `${siteBase}/tools/delivery-vs-cooking-cost/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="delivery-vs-cooking-cost" pageClass="dvcc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="생활비 절약"
+        title={DVCC_META.title}
+        description="배달 음식값, 배달비, 쿠폰, 식재료비, 남는 재료, 조리 시간까지 넣어 내 생활 패턴에서 어떤 선택이 더 합리적인지 계산해 보세요."
+      />
+      <InfoNotice
+        lines={[
+          "이 계산기는 입력한 배달비, 식재료비, 조리 시간 가정을 바탕으로 한 생활비 시뮬레이션입니다.",
+          "실제 식비는 지역, 할인 쿠폰, 식재료 가격, 식사량, 조리 방식에 따라 달라질 수 있습니다.",
+          "직접 요리가 무조건 저렴하다고 단정하지 않고, 시간 비용과 식재료 폐기율까지 함께 비교합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="dvcc-reset" copyId="dvcc-copy-link" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="dvcc-panel dvcc-presets" aria-label="프리셋 시나리오">
+        <div class="dvcc-section-head">
+          <h2>빠른 시나리오</h2>
+          <p>내 상황과 가까운 버튼을 눌러 시작값을 바꿔보세요.</p>
+        </div>
+        <div class="dvcc-preset-grid">
+          {DVCC_PRESETS.map((preset) => (
+            <button class="dvcc-preset" type="button" data-preset={preset.id} aria-pressed="false">
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section class="dvcc-panel dvcc-input-section">
+        <div class="dvcc-step">
+          <div class="dvcc-step__title">
+            <span>1</span>
+            <h2>가구·식사 조건</h2>
+          </div>
+          <div class="dvcc-field-grid">
+            <label class="dvcc-field" for="dvcc-household-size">
+              <span>가구 인원</span>
+              <select id="dvcc-household-size">
+                <option value="1">1인</option>
+                <option value="2">2인</option>
+                <option value="3">3인</option>
+                <option value="4">4인 이상</option>
+              </select>
+            </label>
+            <label class="dvcc-field" for="dvcc-weekly-orders">
+              <span>주당 배달 횟수</span>
+              <input id="dvcc-weekly-orders" type="number" min="0" max="14" step="0.5" inputmode="decimal" />
+            </label>
+            <label class="dvcc-field" for="dvcc-meals-per-order">
+              <span>1회 주문 식사 수</span>
+              <input id="dvcc-meals-per-order" type="number" min="1" max="8" step="0.5" inputmode="decimal" />
+            </label>
+            <label class="dvcc-field" for="dvcc-weeks-per-month">
+              <span>월 계산 주수</span>
+              <input id="dvcc-weeks-per-month" type="number" min="4" max="5" step="0.001" inputmode="decimal" />
+            </label>
+            <label class="dvcc-field dvcc-field--wide" for="dvcc-monthly-budget">
+              <span>월 외식·배달 예산</span>
+              <input id="dvcc-monthly-budget" type="number" min="0" step="10000" inputmode="numeric" />
+            </label>
+          </div>
+        </div>
+
+        <div class="dvcc-step">
+          <div class="dvcc-step__title">
+            <span>2</span>
+            <h2>배달 비용</h2>
+          </div>
+          <div class="dvcc-field-grid">
+            <label class="dvcc-field" for="dvcc-delivery-food-cost">
+              <span>1회 음식값</span>
+              <input id="dvcc-delivery-food-cost" type="number" min="0" step="1000" inputmode="numeric" />
+            </label>
+            <label class="dvcc-field" for="dvcc-delivery-fee">
+              <span>배달비</span>
+              <input id="dvcc-delivery-fee" type="number" min="0" step="500" inputmode="numeric" />
+            </label>
+            <label class="dvcc-field" for="dvcc-rider-tip">
+              <span>팁·포장비</span>
+              <input id="dvcc-rider-tip" type="number" min="0" step="500" inputmode="numeric" />
+            </label>
+            <label class="dvcc-field" for="dvcc-service-fee">
+              <span>서비스 수수료</span>
+              <input id="dvcc-service-fee" type="number" min="0" step="500" inputmode="numeric" />
+            </label>
+            <label class="dvcc-field dvcc-field--wide" for="dvcc-coupon-discount">
+              <span>평균 쿠폰 할인</span>
+              <input id="dvcc-coupon-discount" type="number" min="0" step="500" inputmode="numeric" />
+            </label>
+          </div>
+        </div>
+
+        <div class="dvcc-step">
+          <div class="dvcc-step__title">
+            <span>3</span>
+            <h2>직접 요리 비용</h2>
+          </div>
+          <div class="dvcc-field-grid">
+            <label class="dvcc-field" for="dvcc-cooking-ingredient-cost">
+              <span>1회 식재료비</span>
+              <input id="dvcc-cooking-ingredient-cost" type="number" min="0" step="1000" inputmode="numeric" />
+            </label>
+            <label class="dvcc-field" for="dvcc-energy-cost">
+              <span>조리 에너지 비용</span>
+              <input id="dvcc-energy-cost" type="number" min="0" step="100" inputmode="numeric" />
+            </label>
+            <label class="dvcc-field" for="dvcc-consumable-cost">
+              <span>소모품 비용</span>
+              <input id="dvcc-consumable-cost" type="number" min="0" step="100" inputmode="numeric" />
+            </label>
+            <label class="dvcc-field" for="dvcc-waste-rate">
+              <span>식재료 폐기율 <b id="dvcc-waste-rate-label">10%</b></span>
+              <input id="dvcc-waste-rate" type="range" min="0" max="40" step="1" />
+            </label>
+            <label class="dvcc-field dvcc-field--wide" for="dvcc-grocery-delivery-fee">
+              <span>장보기 배송비 환산</span>
+              <input id="dvcc-grocery-delivery-fee" type="number" min="0" step="500" inputmode="numeric" />
+            </label>
+          </div>
+        </div>
+
+        <div class="dvcc-step">
+          <div class="dvcc-step__title">
+            <span>4</span>
+            <h2>시간 비용 옵션</h2>
+          </div>
+          <label class="dvcc-toggle">
+            <input id="dvcc-include-time-cost" type="checkbox" />
+            <span>조리·장보기 시간을 비용으로 반영</span>
+          </label>
+          <div class="dvcc-time-fields" id="dvcc-time-fields" hidden>
+            <div class="dvcc-field-grid">
+              <label class="dvcc-field" for="dvcc-hourly-wage">
+                <span>본인 시급</span>
+                <input id="dvcc-hourly-wage" type="number" min="0" step="1000" inputmode="numeric" />
+              </label>
+              <label class="dvcc-field" for="dvcc-grocery-minutes">
+                <span>장보기 시간</span>
+                <input id="dvcc-grocery-minutes" type="number" min="0" step="5" inputmode="numeric" />
+              </label>
+              <label class="dvcc-field" for="dvcc-cooking-minutes">
+                <span>조리 시간</span>
+                <input id="dvcc-cooking-minutes" type="number" min="0" step="5" inputmode="numeric" />
+              </label>
+              <label class="dvcc-field" for="dvcc-cleanup-minutes">
+                <span>정리 시간</span>
+                <input id="dvcc-cleanup-minutes" type="number" min="0" step="5" inputmode="numeric" />
+              </label>
+            </div>
+            <p class="dvcc-help">시간 비용은 실제 지출이 아니라 내 시간을 금액으로 환산한 기회비용입니다.</p>
+          </div>
+          <label class="dvcc-toggle">
+            <input id="dvcc-include-wait-time" type="checkbox" />
+            <span>배달 대기 시간도 비용으로 반영</span>
+          </label>
+          <label class="dvcc-field dvcc-wait-field" for="dvcc-delivery-wait-minutes" hidden>
+            <span>배달 대기 시간</span>
+            <input id="dvcc-delivery-wait-minutes" type="number" min="0" step="5" inputmode="numeric" />
+          </label>
+        </div>
+      </section>
+    </Fragment>
+
+    <section class="dvcc-result-panel" aria-live="polite">
+      <div class="dvcc-result-grid">
+        <article class="dvcc-kpi dvcc-kpi--main">
+          <span>연간 절약 예상액</span>
+          <strong id="dvcc-r-annual-saving">-</strong>
+          <em id="dvcc-r-annual-context">시뮬레이션</em>
+        </article>
+        <article class="dvcc-kpi">
+          <span>월 절약 가능 금액</span>
+          <strong id="dvcc-r-monthly-saving">-</strong>
+          <em id="dvcc-r-order-count">월 주문 기준</em>
+        </article>
+        <article class="dvcc-kpi">
+          <span>월 배달 총지출</span>
+          <strong id="dvcc-r-delivery-monthly">-</strong>
+          <em>입력값 기준</em>
+        </article>
+        <article class="dvcc-kpi">
+          <span>월 직접요리 총비용</span>
+          <strong id="dvcc-r-cooking-monthly">-</strong>
+          <em>같은 식사 수 기준</em>
+        </article>
+        <article class="dvcc-kpi dvcc-kpi--accent">
+          <span>손익분기 주문금액</span>
+          <strong id="dvcc-r-break-even">-</strong>
+          <em>1회 음식값 기준</em>
+        </article>
+      </div>
+
+      <article class="dvcc-panel dvcc-decision-card">
+        <div>
+          <span class="dvcc-decision-badge" id="dvcc-r-decision">-</span>
+          <h2>결과 해석</h2>
+        </div>
+        <p id="dvcc-r-comment">입력값을 바꾸면 절약 가능 금액과 판단 라벨이 자동으로 갱신됩니다.</p>
+        <ul class="dvcc-warning-list" id="dvcc-warning-list"></ul>
+      </article>
+
+      <section class="dvcc-panel">
+        <div class="dvcc-section-head">
+          <h2>배달 vs 직접요리 비용 분해</h2>
+          <p>1회 비용과 월 누적 비용을 나누어 봅니다.</p>
+        </div>
+        <div class="dvcc-table-wrap">
+          <table class="dvcc-breakdown-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>배달</th>
+                <th>직접요리</th>
+                <th>차이</th>
+              </tr>
+            </thead>
+            <tbody id="dvcc-breakdown-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="dvcc-panel">
+        <div class="dvcc-section-head">
+          <h2>비용 구성 차트</h2>
+          <p>현금 비용과 시간 비용이 결과에 얼마나 영향을 주는지 확인합니다.</p>
+        </div>
+        <div class="dvcc-chart-wrap" id="dvcc-cost-chart"></div>
+      </section>
+
+      <section class="dvcc-panel dvcc-break-even-note">
+        <div class="dvcc-section-head">
+          <h2>손익분기 해석</h2>
+          <p id="dvcc-break-even-copy">계산 결과가 표시되면 이 구간의 의미를 설명합니다.</p>
+        </div>
+      </section>
+
+      <section class="dvcc-panel">
+        <div class="dvcc-section-head">
+          <h2>생활주기별 체크 포인트</h2>
+          <p>같은 계산식이라도 가구 상황에 따라 봐야 할 포인트가 달라집니다.</p>
+        </div>
+        <div class="dvcc-scenario-grid">
+          {DVCC_SCENARIOS.map((scenario) => (
+            <article class="dvcc-scenario">
+              <span>{scenario.title}</span>
+              <h3>{scenario.target}</h3>
+              <p>{scenario.summary}</p>
+              <strong>{scenario.monthlySavingHint}</strong>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="dvcc-panel">
+        <div class="dvcc-section-head">
+          <h2>절약 전 체크리스트</h2>
+          <p>배달을 줄이기 전에 입력값을 현실적으로 맞췄는지 확인하세요.</p>
+        </div>
+        <ul class="dvcc-checklist">
+          {DVCC_CHECKLIST.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="배달 vs 직접 요리 비용 계산기 사용법"
+        intro={[
+          "배달음식과 직접요리의 비용 차이는 음식값만으로 결정되지 않습니다. 배달비, 팁, 서비스 수수료, 쿠폰, 식재료 폐기율, 조리 시간까지 함께 봐야 실제 생활비 차이를 판단할 수 있습니다.",
+          "이 계산기는 주당 배달 횟수와 1회 비용을 입력해 월간·연간 절약 가능 금액, 손익분기 주문금액, 배달 부대비용 비중을 계산합니다.",
+        ]}
+        inputPoints={[
+          "주당 배달 횟수와 1회 평균 주문금액을 먼저 입력합니다.",
+          "배달비, 서비스 수수료, 쿠폰 할인액을 음식값과 분리해서 입력합니다.",
+          "직접요리 식재료비와 식재료 폐기율, 시간 비용 반영 여부를 선택합니다.",
+        ]}
+        criteria={[
+          "결과는 입력값을 바탕으로 한 생활비 시뮬레이션입니다.",
+          "식재료 가격, 배달 할인, 조리 시간, 실제 식사량에 따라 결과는 달라질 수 있습니다.",
+          "시간 비용은 선택값이며 현금 지출 절약액과 구분해서 해석해야 합니다.",
+        ]}
+        faq={DVCC_FAQ}
+        related={DVCC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="dvcc-config" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/delivery-vs-cooking-cost.js")}></script>
+</BaseLayout>

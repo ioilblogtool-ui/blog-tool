@@ -323,6 +323,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "apartment-holding-tax",
+    title: "아파트 보유세 계산기",
+    description: "공시가격과 주택 수, 1세대 1주택 여부를 입력해 재산세·지방교육세·종합부동산세·농어촌특별세를 합산 추정합니다.",
+    order: 14.62,
+    eyebrow: "부동산 보유세 계산",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규", "보유세", "2026"],
+    previewStats: [
+      { label: "계산 세목", value: "4종", context: "재산세·종부세" },
+      { label: "추가 기능", value: "종부세 진입가" },
+    ],
+  },
+  {
     slug: "formula-cost",
     title: "아기 분유 값 계산기",
     description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 매일 앱솔루트·남양 임페리얼·일동후디스 등 브랜드별 총비용을 비교하는 페이지",
@@ -377,6 +391,20 @@ export const tools: ToolMeta[] = [
       { label: "기본 카테고리", value: "6개" },
       { label: "분담 방식", value: "3가지" }
     ]
+  },
+  {
+    slug: "dividend-monthly-income",
+    title: "배당주 월급 계산기",
+    description: "투자 원금과 배당수익률을 입력해 세후 월 배당금을 계산하거나, 목표 월 배당에 필요한 원금을 역산하는 계산기. 배당 재투자 10년·20년 시뮬레이션 포함.",
+    order: 17.5,
+    eyebrow: "배당 계산기",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규"],
+    previewStats: [
+      { label: "기본 세율", value: "15.4%" },
+      { label: "시뮬레이션", value: "20년" },
+    ],
   },
   {
     slug: "dca-investment-calculator",
@@ -645,6 +673,21 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "ai-tutoring-vs-academy-cost",
+    title: "AI 과외 vs 학원 비용 계산기",
+    description:
+      "자녀 학년, 과목 수, 학원비와 AI 학습 도구 구독료를 입력하면 월 절감액, 연간 절약액, 과목별 AI 대체 가능성을 계산합니다.",
+    order: 26.27,
+    eyebrow: "AI 교육비 비교",
+    category: "ai",
+    iframeReady: true,
+    badges: ["신규", "시뮬레이션"],
+    previewStats: [
+      { label: "비교 기준", value: "학원 vs AI" },
+      { label: "출력", value: "월·연 절감액" },
+    ],
+  },
+  {
     slug: "child-tutoring-cost-calculator",
     title: "아이 사교육비 계산기",
     description: "자녀 수, 학교급, 과목, 지역을 입력하면 월·연간·누적 교육비와 또래 평균 대비 수준을 한 번에 계산. 기회비용 시뮬레이션 포함.",
@@ -670,6 +713,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "비교 대상", value: "어린이집 vs 유치원" },
       { label: "지원금 반영", value: "2026년 기준" },
+    ],
+  },
+  {
+    slug: "delivery-vs-cooking-cost",
+    title: "배달 vs 직접 요리 비용 계산기",
+    description: "주당 배달 횟수, 배달비, 쿠폰, 식재료비, 조리 시간까지 입력해 월간·연간 절약액과 손익분기 주문금액을 계산합니다.",
+    order: 26.08,
+    eyebrow: "생활비 절약",
+    category: "lifestyle",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교", value: "배달 vs 집밥" },
+      { label: "출력", value: "연간 절약액" },
     ],
   },
   {

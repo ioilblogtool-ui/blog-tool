@@ -1,0 +1,436 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  MHT_ACQUISITION_ROWS,
+  MHT_CASES,
+  MHT_CORPORATE_COMPARISON,
+  MHT_FAQ,
+  MHT_GIFT_SALE_COMPARISON,
+  MHT_META,
+  MHT_POLICY_WATCH,
+  MHT_REGULATED_AREAS,
+  MHT_RELATED_LINKS,
+  MHT_RENTAL_COMPARISON,
+  MHT_SOURCE_LINKS,
+  MHT_STAGES,
+  MHT_STRATEGIES,
+  MHT_SUMMARY_CARDS,
+  POLICY_STATUS_LABELS,
+  REGION_STATUS_LABELS,
+  formatEok,
+  formatKrw,
+} from "../../data/multiHouseTax2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/multi-house-tax-2026/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const dataSeed = { cases: MHT_CASES };
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: MHT_META.title,
+    description: MHT_META.description,
+    dateModified: MHT_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: MHT_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: MHT_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="다주택자 세금 2026 - 취득세·종부세·양도세·임대소득세 완전 정리"
+  description="2026년 다주택자 세금을 취득세, 종합부동산세, 양도소득세, 임대소득세로 나눠 분석합니다. 2주택·3주택 이상 보유자의 조정대상지역, 합산배제, 양도세 중과 한시 배제, 분리과세와 종합과세 차이를 케이스별로 확인하세요."
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page mht-page" data-report="multi-house-tax-2026">
+    <CalculatorHero
+      eyebrow="부동산 세금 리포트"
+      title={MHT_META.title}
+      description="취득세, 종부세, 양도세, 임대소득세를 주택 수와 지역, 보유기간별로 나눠 확인하세요."
+      badges={["2026 기준", "취득·보유·임대·양도", "다주택자", "확인 필요"]}
+    />
+
+    <InfoNotice
+      title="세무 판단 유의 안내"
+      lines={[
+        "이 리포트는 2026년 5월 22일 확인 가능한 공식 안내를 바탕으로 다주택자 세금 구조를 설명합니다.",
+        "실제 세액은 양도일, 취득일, 주택 수 산정, 조정대상지역 지정 여부, 임대등록 요건, 개인 소득에 따라 달라질 수 있습니다.",
+        "세율·특례·합산배제는 개정 가능성이 있으므로 신고 전 국세청, 지자체 고시, 세무 전문가 확인이 필요합니다.",
+      ]}
+    />
+
+    <section class="content-section mht-summary" aria-labelledby="mht-summary-title">
+      <div class="mht-section-heading">
+        <p>핵심 체크</p>
+        <h2 id="mht-summary-title">다주택자 세금은 이 네 가지부터 확인합니다</h2>
+        <span>주택 수 자체보다 지역, 기준일, 임대등록 요건이 실제 부담을 흔듭니다.</span>
+      </div>
+      <div class="mht-summary-grid">
+        {MHT_SUMMARY_CARDS.map((card) => (
+          <article class="mht-summary-card">
+            <span class:list={["mht-badge", `mht-badge--${card.status}`]}>{POLICY_STATUS_LABELS[card.status]}</span>
+            <strong>{card.value}</strong>
+            <p>{card.label}</p>
+            <small>{card.description}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section mht-stage-map" aria-labelledby="mht-stage-title">
+      <div class="mht-section-heading">
+        <p>전체 지형도</p>
+        <h2 id="mht-stage-title">취득부터 증여까지 단계별 세금 지도</h2>
+        <span>한 번에 계산하려 하지 말고 단계별로 쟁점을 분리해야 합니다.</span>
+      </div>
+      <div class="mht-stage-grid">
+        {MHT_STAGES.map((stage) => (
+          <article class="mht-stage-card" data-mht-stage={stage.stage}>
+            <span>{stage.label}</span>
+            <h3>{stage.headline}</h3>
+            <p>{stage.multiHouseIssue}</p>
+            <ul>
+              {stage.mainTaxes.map((tax) => <li>{tax}</li>)}
+            </ul>
+            <small>{stage.checkPoint}</small>
+            {stage.relatedCta && <a href={withBase(stage.relatedCta.href)}>{stage.relatedCta.label}</a>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section mht-policy" aria-labelledby="mht-policy-title">
+      <div class="mht-section-heading">
+        <p>정책 상태</p>
+        <h2 id="mht-policy-title">2026년에 특히 다시 확인할 항목</h2>
+        <span>확정·한시·개정 가능·확인 필요를 배지로 구분했습니다.</span>
+      </div>
+      <div class="mht-policy-grid">
+        {MHT_POLICY_WATCH.map((item) => (
+          <article>
+            <span class:list={["mht-badge", `mht-badge--${item.status}`]}>{POLICY_STATUS_LABELS[item.status]}</span>
+            <h3>{item.title}</h3>
+            <strong>{item.effectiveDateLabel}</strong>
+            <p>{item.summary}</p>
+            <small>{item.impact}</small>
+            {item.sourceUrl && <a href={item.sourceUrl} target="_blank" rel="noreferrer">{item.sourceLabel}</a>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section mht-tax-table-section">
+      <div class="mht-section-heading">
+        <p>취득세</p>
+        <h2>취득세 중과는 취득 당시 조건으로 봅니다</h2>
+        <span>세율 숫자만 외우기보다 주택 수 산정과 조정대상지역 여부를 먼저 확인하세요.</span>
+      </div>
+      <div class="table-wrap mht-table-wrap" aria-label="다주택자 취득세 중과 확인표">
+        <table class="mht-tax-table">
+          <caption>다주택자 취득세 중과 확인표</caption>
+          <thead>
+            <tr>
+              <th>주택 수</th>
+              <th>지역</th>
+              <th>취득 형태</th>
+              <th>세율 기준</th>
+              <th>상태</th>
+              <th>주의점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MHT_ACQUISITION_ROWS.map((row) => (
+              <tr>
+                <th>{row.homeCount}</th>
+                <td>{row.region}</td>
+                <td>{row.acquisitionType}</td>
+                <td>{row.rateGuide}</td>
+                <td><span class:list={["mht-badge", `mht-badge--${row.status}`]}>{POLICY_STATUS_LABELS[row.status]}</span></td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="mht-cta-band">
+        <div>
+          <strong>매수·증여 전 취득세를 먼저 가늠하세요</strong>
+          <p>취득 원인과 주택 수를 넣어 부가 세목까지 함께 확인할 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/real-estate-acquisition-tax/")}>취득세 계산하기</a>
+      </div>
+    </section>
+
+    <section class="content-section mht-checklist">
+      <div class="mht-section-heading">
+        <p>종부세</p>
+        <h2>합산배제는 신고와 사후요건이 핵심입니다</h2>
+        <span>요건 하나가 빠지면 종부세와 추징 리스크가 같이 생길 수 있습니다.</span>
+      </div>
+      <div class="mht-check-grid">
+        {["임대사업자 등록", "임대개시일", "공시가격 기준", "임대기간", "임대료 증가율 5%", "소재지 요건", "9월 16~30일 신고", "사후요건 유지"].map((item) => (
+          <label>
+            <input type="checkbox" />
+            <span>{item}</span>
+          </label>
+        ))}
+      </div>
+      <div class="mht-cta-band">
+        <div>
+          <strong>공시가격 합계가 종부세 공제금액을 넘는지 확인하세요</strong>
+          <p>보유세 계산기에서 재산세와 종부세 영역을 분리해 볼 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/apartment-holding-tax/")}>내 공시가격으로 보유세 계산하기</a>
+      </div>
+    </section>
+
+    <section class="content-section mht-transfer">
+      <div class="mht-section-heading">
+        <p>양도세</p>
+        <h2>양도세 중과 한시 배제 이후에는 양도일 기준 확인이 더 중요합니다</h2>
+        <span>조정대상지역 내 다주택자 양도는 보유기간, 양도일, 주택 수 산정이 동시에 작동합니다.</span>
+      </div>
+      <div class="mht-risk-panel">
+        <span class="mht-badge mht-badge--temporary">한시</span>
+        <strong>2026년 5월 9일 종료 안내</strong>
+        <p>국세청은 다주택자 양도소득세 중과 유예가 2026년 5월 9일 종료된다고 안내했습니다. 종료 이후에는 조정대상지역 주택 양도 시 중과세율과 장기보유특별공제 제한 여부를 신고 전 확인해야 합니다.</p>
+      </div>
+    </section>
+
+    <section class="content-section mht-rental">
+      <div class="mht-section-heading">
+        <p>임대소득</p>
+        <h2>분리과세와 종합과세는 소득 구조별로 비교합니다</h2>
+        <span>연 임대수입 2천만원 이하라는 조건은 시작점일 뿐 결론은 아닙니다.</span>
+      </div>
+      <div class="table-wrap mht-table-wrap" aria-label="주택임대소득 과세 방식 비교표">
+        <table class="mht-tax-table">
+          <caption>주택임대소득 분리과세와 종합과세 비교</caption>
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>분리과세</th>
+              <th>종합과세</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MHT_RENTAL_COMPARISON.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                <td>{row.separateTax}</td>
+                <td>{row.globalTax}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section mht-region">
+      <div class="mht-section-heading">
+        <p>지역</p>
+        <h2>조정대상지역은 세금과 대출 판단에 동시에 영향을 줍니다</h2>
+        <span>지역 지정·해제는 바뀔 수 있으므로 취득일과 양도일 기준 최신 고시 확인이 필요합니다.</span>
+      </div>
+      <div class="table-wrap mht-table-wrap" aria-label="조정대상지역 확인표">
+        <table class="mht-tax-table">
+          <caption>조정대상지역 확인표</caption>
+          <thead>
+            <tr>
+              <th>지역</th>
+              <th>상태</th>
+              <th>기준</th>
+              <th>취득세 영향</th>
+              <th>양도세 영향</th>
+              <th>메모</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MHT_REGULATED_AREAS.map((row) => (
+              <tr>
+                <th>{row.region}</th>
+                <td><span class:list={["mht-region-badge", `mht-region-badge--${row.status}`]}>{REGION_STATUS_LABELS[row.status]}</span></td>
+                <td>{row.effectiveDateLabel}</td>
+                <td>{row.acquisitionTaxImpact}</td>
+                <td>{row.transferTaxImpact}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section mht-cases" aria-labelledby="mht-cases-title">
+      <div class="mht-section-heading">
+        <p>케이스 스터디</p>
+        <h2 id="mht-cases-title">2주택·3주택 예시로 보는 확인 순서</h2>
+        <span>아래 수치는 세액 계산이 아니라 쟁점 확인용 예시입니다.</span>
+      </div>
+      <div class="mht-case-tabs" role="tablist" aria-label="다주택자 케이스 선택">
+        {MHT_CASES.map((item, index) => (
+          <button type="button" role="tab" aria-selected={index === 0 ? "true" : "false"} data-mht-case={item.id}>{item.label}</button>
+        ))}
+      </div>
+      <div class="mht-case-panels">
+        {MHT_CASES.map((item, index) => (
+          <article class:list={["mht-case-card", index === 0 && "is-active"]} data-mht-case-panel={item.id}>
+            <div class="mht-case-header">
+              <span class="mht-badge mht-badge--example">예시</span>
+              <h3>{item.label}</h3>
+              <p>{item.description}</p>
+            </div>
+            <div class="mht-house-grid">
+              {item.houses.map((house) => (
+                <div>
+                  <strong>{house.locationLabel}</strong>
+                  <p>{house.note}</p>
+                  <dl>
+                    <div><dt>공시가격</dt><dd>{formatEok(house.officialPrice)}</dd></div>
+                    <div><dt>시세</dt><dd>{formatEok(house.marketPrice)}</dd></div>
+                    <div><dt>보유기간</dt><dd>{house.holdingYears}년</dd></div>
+                    <div><dt>연 임대수입</dt><dd>{formatKrw(house.rentalIncomeAnnual)}</dd></div>
+                  </dl>
+                </div>
+              ))}
+            </div>
+            <div class="mht-case-bottom">
+              <div>
+                <h4>핵심 쟁점</h4>
+                <ul>{item.highlights.map((text) => <li>{text}</li>)}</ul>
+              </div>
+              <div>
+                <h4>확인 메모</h4>
+                <ul>{item.scenarioNotes.map((text) => <li>{text}</li>)}</ul>
+              </div>
+              <div>
+                <h4>주의</h4>
+                <ul>{item.warnings.map((text) => <li>{text}</li>)}</ul>
+              </div>
+            </div>
+            <a class="button button--primary" href={withBase(item.holdingTaxHref)}>이 케이스 공시가격으로 보유세 보기</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section mht-comparison">
+      <div class="mht-section-heading">
+        <p>매도·증여·법인</p>
+        <h2>출구 전략은 비교 프레임으로 봅니다</h2>
+        <span>특정 선택지를 추천하지 않고, 빠지기 쉬운 세목을 나란히 확인합니다.</span>
+      </div>
+      <div class="mht-comparison-grid">
+        <article>
+          <h3>증여 vs 매도</h3>
+          {MHT_GIFT_SALE_COMPARISON.map((row) => (
+            <div class="mht-comparison-row">
+              <strong>{row.label}</strong>
+              <p><b>{row.leftTitle}</b> {row.leftValue}</p>
+              <p><b>{row.rightTitle}</b> {row.rightValue}</p>
+              <small>{row.note}</small>
+            </div>
+          ))}
+        </article>
+        <article>
+          <h3>개인 보유 vs 법인 전환</h3>
+          {MHT_CORPORATE_COMPARISON.map((row) => (
+            <div class="mht-comparison-row">
+              <strong>{row.label}</strong>
+              <p><b>{row.leftTitle}</b> {row.leftValue}</p>
+              <p><b>{row.rightTitle}</b> {row.rightValue}</p>
+              <small>{row.note}</small>
+            </div>
+          ))}
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section mht-strategy">
+      <div class="mht-section-heading">
+        <p>점검 포인트</p>
+        <h2>세무상담 전에 정리할 TOP 5</h2>
+        <span>절세 확정 조언이 아니라 상담 전 준비 체크리스트입니다.</span>
+      </div>
+      <div class="mht-strategy-grid">
+        {MHT_STRATEGIES.map((item, index) => (
+          <article class:list={["mht-strategy-card", `mht-strategy-card--${item.tone}`]}>
+            <span>{index + 1}</span>
+            <strong>{item.title}</strong>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section mht-sources">
+      <div class="mht-section-heading">
+        <p>출처</p>
+        <h2>공식 안내를 기준으로 업데이트했습니다</h2>
+      </div>
+      <div class="mht-source-list">
+        {MHT_SOURCE_LINKS.map((source) => (
+          <a href={source.url} target="_blank" rel="noreferrer">
+            <span class:list={["mht-badge", `mht-badge--${source.status}`]}>{POLICY_STATUS_LABELS[source.status]}</span>
+            <strong>{source.organization}</strong>
+            <em>{source.label}</em>
+            <small>{source.note}</small>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 다주택자 세금 리포트 활용법"
+      intro={[
+        "다주택자 세금은 취득세, 보유세, 임대소득세, 양도소득세, 증여세가 한꺼번에 얽힙니다. 그래서 한 개의 세율표보다 단계별 확인 순서가 더 중요합니다.",
+        "이 리포트는 2주택자와 3주택 이상 보유자가 먼저 점검해야 할 정책 상태, 기준일, 조정대상지역, 임대등록 요건을 케이스 중심으로 정리했습니다.",
+      ]}
+      inputPoints={[
+        "양도세 중과 유예 종료일과 양도일 기준 판단을 확인합니다.",
+        "종부세는 인별 공시가격 합계와 합산배제 여부로 봅니다.",
+        "임대소득 2천만원 이하도 다른 소득과 같이 비교합니다.",
+      ]}
+      criteria={[
+        "정책 상태는 2026년 5월 22일 확인 가능한 공식 안내 기준입니다.",
+        "세액은 개인별 취득가액, 필요경비, 보유기간, 거주요건에 따라 달라지므로 확정 계산으로 제시하지 않습니다.",
+        "조정대상지역과 특례는 고시와 법령 개정에 따라 바뀔 수 있습니다.",
+      ]}
+      faq={MHT_FAQ}
+      related={MHT_RELATED_LINKS}
+    />
+  </main>
+
+  <script id="mhtData" type="application/json" set:html={JSON.stringify(dataSeed)}></script>
+  <script src={withBase("/scripts/multi-house-tax-2026.js")} defer></script>
+</BaseLayout>

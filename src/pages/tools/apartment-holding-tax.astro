@@ -1,0 +1,390 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  AHT_DEFAULT_INPUT,
+  AHT_FAQ,
+  AHT_META,
+  AHT_PRESETS,
+  AHT_RELATED_LINKS,
+  AHT_SOURCE_LINKS,
+  AHT_YEAR_CONFIGS,
+} from "../../data/apartmentHoldingTax";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaultInput: AHT_DEFAULT_INPUT,
+  yearConfigs: AHT_YEAR_CONFIGS,
+  presets: AHT_PRESETS,
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: AHT_META.title,
+      url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${AHT_META.slug}/`,
+      description: AHT_META.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: AHT_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={AHT_META.seoTitle} description={AHT_META.description} jsonLd={jsonLd} ogImage="/og/og-home.png">
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="apartment-holding-tax" pageClass="aht-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="부동산 보유세"
+        title={AHT_META.title}
+        description="공시가격을 입력하면 재산세, 지방교육세, 종합부동산세, 농어촌특별세를 합산해 연간 보유세를 추정합니다."
+        badges={["2026 기준", "재산세", "종부세", "추정"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          AHT_META.caution,
+          "보유세는 매년 6월 1일 보유 현황과 공시가격, 납세자별 주택 합산 방식에 따라 달라집니다.",
+          "공동명의·합산배제·일시적 2주택·감면 요건은 실제 신고 또는 고지 단계에서 별도 확인이 필요합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetAhtBtn" copyId="copyAhtLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="aht-input-stack" data-aht-root>
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 선택</p>
+              <h2 class="panel__title">대표 케이스</h2>
+            </div>
+          </div>
+          <div class="aht-preset-grid">
+            {AHT_PRESETS.map((preset, index) => (
+              <button type="button" class={`aht-preset-btn${index === 0 ? " is-active" : ""}`} data-preset={preset.id}>
+                <strong>{preset.label}</strong>
+                <span>{preset.description}</span>
+              </button>
+            ))}
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">기본 조건</p>
+              <h2 class="panel__title">공시가격·주택 조건</h2>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>과세연도</span>
+              <select data-aht="taxYear">
+                {AHT_YEAR_CONFIGS.map((item) => <option value={item.year}>{item.year}</option>)}
+              </select>
+            </label>
+
+            <label class="field">
+              <span>공시가격</span>
+              <input data-aht="officialPrice" data-format="money" type="text" inputmode="numeric" />
+              <small>시세가 아니라 공동주택 공시가격 기준입니다.</small>
+            </label>
+
+            <label class="field">
+              <span>주택 수</span>
+              <select data-aht="homeCountType">
+                <option value="one">1주택</option>
+                <option value="two">2주택</option>
+                <option value="threePlus">3주택 이상</option>
+              </select>
+            </label>
+
+            <label class="check-field">
+              <input data-aht="isOneHouseholdOneHome" type="checkbox" />
+              <span>1세대 1주택으로 보기</span>
+            </label>
+
+            <label class="field">
+              <span>명의 형태</span>
+              <select data-aht="ownershipType">
+                <option value="single">단독명의</option>
+                <option value="spouseJoint">부부 공동명의</option>
+                <option value="jointOther">기타 공동명의</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>본인 지분율</span>
+              <input data-aht="ownershipShareRate" data-type="number" type="number" min="1" max="100" step="1" />
+              <small>공동명의 단순 지분 계산용입니다.</small>
+            </label>
+
+            <label class="field">
+              <span>지역</span>
+              <select data-aht="regionType">
+                <option value="general">일반지역</option>
+                <option value="regulated">조정대상지역</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>보유기간</span>
+              <input data-aht="holdingYears" data-type="number" type="number" min="0" max="80" step="1" />
+            </label>
+
+            <label class="field">
+              <span>만 나이</span>
+              <input data-aht="age" data-type="number" type="number" min="0" max="110" step="1" />
+            </label>
+          </div>
+        </article>
+
+        <details class="detail-box detail-box--soft">
+          <summary>고급 기준 직접 입력</summary>
+          <div class="detail-box__content detail-box__content--tight">
+            <div class="form-grid">
+              <label class="field">
+                <span>재산세 공정시장가액비율</span>
+                <input data-aht="propertyTaxFairMarketRatio" data-type="number" type="number" min="1" max="100" step="0.1" placeholder="자동" />
+              </label>
+              <label class="field">
+                <span>종부세 공정시장가액비율</span>
+                <input data-aht="comprehensiveTaxFairMarketRatio" data-type="number" type="number" min="1" max="100" step="0.1" placeholder="자동" />
+              </label>
+              <label class="field">
+                <span>종부세 공제금액 직접 입력</span>
+                <input data-aht="comprehensiveTaxDeductionOverride" data-format="money" type="text" inputmode="numeric" placeholder="자동" />
+              </label>
+              <label class="field">
+                <span>전년도 보유세</span>
+                <input data-aht="previousYearHoldingTax" data-format="money" type="text" inputmode="numeric" placeholder="선택" />
+              </label>
+              <label class="check-field">
+                <input data-aht="applyTaxBurdenCap" type="checkbox" />
+                <span>세부담상한 단순 적용</span>
+              </label>
+              <label class="field">
+                <span>목표 보유세</span>
+                <input data-aht="targetHoldingTax" data-format="money" type="text" inputmode="numeric" />
+              </label>
+            </div>
+          </div>
+        </details>
+      </div>
+    </Fragment>
+
+    <section class="panel aht-summary-panel" aria-live="polite">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">연간 보유세 추정</h2>
+        </div>
+        <p class="panel-heading__summary" data-aht-output="summaryText">입력값을 기준으로 보유세를 계산합니다.</p>
+      </div>
+
+      <div class="aht-result-grid">
+        <article class="aht-result-card aht-result-card--main">
+          <span>연간 보유세 총액</span>
+          <strong data-aht-output="totalHoldingTax">-</strong>
+          <small data-aht-output="effectiveRate">-</small>
+        </article>
+        <article class="aht-result-card">
+          <span>재산세 영역</span>
+          <strong data-aht-output="propertyAreaTax">-</strong>
+        </article>
+        <article class="aht-result-card">
+          <span>종부세 영역</span>
+          <strong data-aht-output="comprehensiveAreaTax">-</strong>
+        </article>
+        <article class="aht-result-card">
+          <span>공제 절감액</span>
+          <strong data-aht-output="creditSaving">-</strong>
+        </article>
+        <article class="aht-result-card">
+          <span>종부세 진입 공시가격</span>
+          <strong data-aht-output="entryPrice">-</strong>
+        </article>
+        <article class="aht-result-card">
+          <span>목표 보유세 공시가격</span>
+          <strong data-aht-output="targetPrice">-</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">분해</p>
+          <h2 class="panel__title">세목별 계산 내역</h2>
+        </div>
+        <p class="panel-heading__summary">
+          지분 기준 공시가격 <strong data-aht-output="shareOfficialPrice">-</strong>,
+          종부세 공제 <strong data-aht-output="deductionAmount">-</strong>,
+          <strong data-aht-output="comprehensiveStatus">-</strong>
+        </p>
+      </div>
+      <div class="aht-table-wrap">
+        <table class="aht-table">
+          <thead>
+            <tr>
+              <th>세목</th>
+              <th>금액</th>
+              <th>계산 기준</th>
+            </tr>
+          </thead>
+          <tbody data-aht-output="breakdownRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="aht-credit-grid">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">1주택 공제</p>
+            <h2 class="panel__title">고령자·장기보유 공제 비교</h2>
+          </div>
+        </div>
+        <div class="aht-mini-grid">
+          <div><span>고령자 공제율</span><strong data-aht-output="seniorCreditRate">-</strong></div>
+          <div><span>장기보유 공제율</span><strong data-aht-output="holdingCreditRate">-</strong></div>
+          <div><span>합산 공제율</span><strong data-aht-output="totalCreditRate">-</strong></div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">절감 효과</p>
+            <h2 class="panel__title">공제 전후 보유세</h2>
+          </div>
+        </div>
+        <div class="aht-compare-list">
+          <p><span>공제 전</span><strong data-aht-output="beforeCreditTax">-</strong></p>
+          <p><span>공제 후</span><strong data-aht-output="afterCreditTax">-</strong></p>
+          <p><span>차이</span><strong data-aht-output="creditSavingAmount">-</strong></p>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">시나리오</p>
+          <h2 class="panel__title">공시가격 변동별 보유세</h2>
+        </div>
+      </div>
+      <div class="aht-table-wrap">
+        <table class="aht-table aht-table--scenario">
+          <thead>
+            <tr>
+              <th>공시가격 변동</th>
+              <th>공시가격</th>
+              <th>보유세 합계</th>
+              <th>종부세</th>
+              <th>현재 대비</th>
+            </tr>
+          </thead>
+          <tbody data-aht-output="scenarioRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel aht-warning-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">주의</p>
+          <h2 class="panel__title">결과 해석 체크</h2>
+        </div>
+      </div>
+      <ul data-aht-output="warnings" class="aht-warning-list"></ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">공식 기준</p>
+          <h2 class="panel__title">참고한 법령·서식</h2>
+        </div>
+      </div>
+      <div class="aht-source-list">
+        {AHT_SOURCE_LINKS.map((link) => (
+          <a href={link.href} target="_blank" rel="noreferrer">{link.title}</a>
+        ))}
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">다음 계산</p>
+          <h2 class="panel__title">부동산 비용 같이 보기</h2>
+        </div>
+      </div>
+      <div class="aht-related-grid">
+        {AHT_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="아파트 보유세 계산기는 무엇을 보여주나요?"
+        intro={[
+          "아파트 보유세 계산기는 공시가격과 주택 보유 조건을 기준으로 재산세, 지방교육세, 종합부동산세, 농어촌특별세를 나누어 추정하는 도구입니다.",
+          "최종 합계만 보여주면 어떤 항목 때문에 세금이 늘었는지 알기 어렵습니다. 그래서 이 페이지는 재산세 영역과 종부세 영역을 분리하고, 1세대 1주택 공제 전후 차이와 공시가격 변동 시나리오를 함께 보여줍니다.",
+          "실제 고지세액은 지자체와 국세청 산정 결과가 우선하므로, 이 계산기는 내년 공시가격 변화와 종부세 진입 가능성을 미리 가늠하는 참고용으로 보는 것이 좋습니다.",
+        ]}
+        inputPoints={[
+          "공시가격, 주택 수, 1세대 1주택 여부를 입력하면 보유세 총액을 바로 추정합니다.",
+          "나이와 보유기간을 입력하면 1세대 1주택 고령자·장기보유 세액공제 효과를 비교합니다.",
+          "목표 보유세를 입력하면 해당 보유세 수준에 가까운 공시가격을 역산합니다.",
+        ]}
+        criteria={[
+          "재산세는 주택 과세표준 구간별 세율과 지방교육세 20%를 기준으로 계산합니다.",
+          "종합부동산세는 1세대 1주택 12억 원, 일반 9억 원 공제와 공정시장가액비율 60%를 기준으로 계산합니다.",
+          "고령자·장기보유 공제는 1세대 1주택자에게만 적용하며, 합산 한도 80%를 적용합니다.",
+          "세부담상한은 단순 참고로만 적용하며 실제 고지 구조와 다를 수 있습니다.",
+        ]}
+        faq={AHT_FAQ}
+        related={AHT_RELATED_LINKS.map((link) => ({ href: link.href, label: link.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="ahtConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/apartment-holding-tax.js")}></script>
+</BaseLayout>

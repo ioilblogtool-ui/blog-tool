@@ -46,12 +46,14 @@ const topicBySlug: Record<string, string> = {
   "loan-refinancing-calculator": "대출·금융",
   "silson-insurance-refund-calculator": "보험·의료비",
   "real-estate-acquisition-tax": "부동산·내집마련",
+  "apartment-holding-tax": "부동산·내집마련",
   "jeonwolse-conversion": "부동산·내집마련",
   "jeonse-vs-wolse-calculator": "부동산·내집마련",
   "apt-cheonyak-gajum-calculator": "부동산·내집마련",
   "salary-tier": "연봉·이직",
   "wedding-budget-calculator": "결혼·웨딩",
   "wedding-gift-break-even-calculator": "결혼·웨딩",
+  "dividend-monthly-income": "투자·재테크",
   "dca-investment-calculator": "투자·재테크",
   "fire-calculator": "투자·재테크",
   "national-pension-calculator": "투자·재테크",
@@ -70,11 +72,13 @@ const topicBySlug: Record<string, string> = {
   "ai-subscription-cost": "AI·생산성",
   "ai-work-roi-calculator": "AI·생산성",
   "ai-side-income-calculator": "AI·생산성",
+  "ai-tutoring-vs-academy-cost": "AI·생산성",
   "overseas-travel-cost": "여행·생활",
   "travel-expense-split": "여행·생활",
   "flight-cheapest-timing-calculator": "여행·생활",
   "travel-exchange-calculator": "여행·생활",
   "travel-savings-goal-calculator": "여행·생활",
+  "delivery-vs-cooking-cost": "여행·생활",
   "postnatal-care-cost": "육아휴직·출산",
   "pregnancy-birth-cost": "육아휴직·출산",
   "year-end-tax-refund-calculator": "세금·연말정산",
@@ -83,7 +87,7 @@ const topicBySlug: Record<string, string> = {
 };
 
 const categories = [...new Set(orderedTools.map((t) => topicBySlug[t.slug]).filter(Boolean))];
-type HomeReportCategory = "salary" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax";
+type HomeReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax";
 
 type HomeReportMeta = {
   category: HomeReportCategory;
@@ -94,6 +98,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "new-employee-salary-2026": { category: "salary", isNew: false },
   "it-salary-top10": { category: "salary", isNew: false },
   "it-si-sm-salary-comparison-2026": { category: "salary", isNew: true },
+  "corporate-bonus-comparison-2026": { category: "bonus", isNew: true },
   "insurance-salary-bonus-comparison-2026": { category: "salary", isNew: true },
   "silson-insurance-generation-comparison-2026": { category: "insurance", isNew: true },
   "construction-salary-bonus-comparison-2026": { category: "salary", isNew: true },
@@ -141,14 +146,17 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "birth-support-by-region-2026": { category: "life", isNew: true },
   "pregnancy-checkup-cost-2026": { category: "life", isNew: true },
   "seoul-apartment-price-2026": { category: "estate", isNew: true },
+  "multi-house-tax-2026": { category: "estate", isNew: true },
   "travel-peak-offpeak-cost-comparison-2026": { category: "life", isNew: true },
   "travel-card-vs-exchange-2026": { category: "life", isNew: true },
   "us-stock-korean-real-return-2026": { category: "asset", isNew: true },
   "worker-retirement-reality-2026": { category: "asset", isNew: true },
   "ai-coding-tools-comparison-2026": { category: "salary", isNew: true },
   "ai-side-income-comparison-2026": { category: "salary", isNew: true },
+  "ai-learning-vs-academy-2026": { category: "life", isNew: true },
   "pension-age-comparison-2026": { category: "asset", isNew: true },
   "newlywed-cost-2026": { category: "life", isNew: true },
+  "single-household-living-cost-2026": { category: "life", isNew: true },
   "baby-formula-brand-cost-comparison-2026": { category: "life", isNew: true },
   "2026-year-end-tax-saving-guide": { category: "tax", isNew: true },
   "2026-salaried-loan-comparison": { category: "asset", isNew: true },
@@ -156,6 +164,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
 
 const reportCategoryLabels: Record<HomeReportCategory, string> = {
   salary: "연봉",
+  bonus: "성과급",
   estate: "부동산",
   asset: "자산",
   life: "생활",
@@ -165,7 +174,7 @@ const reportCategoryLabels: Record<HomeReportCategory, string> = {
   tax: "세금",
 };
 
-const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "estate", "asset", "life", "support", "insurance", "tax", "culture", "new"];
+const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "bonus", "estate", "asset", "life", "support", "insurance", "tax", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
 const homeIntroPoints = [

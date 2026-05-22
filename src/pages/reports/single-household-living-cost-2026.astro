@@ -1,0 +1,378 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SHLC_AGE_MATRIX,
+  SHLC_BUDGET_SCENARIOS,
+  SHLC_COST_ITEMS,
+  SHLC_FAQ,
+  SHLC_META,
+  SHLC_REGION_HOUSING,
+  SHLC_RELATED_LINKS,
+  SHLC_SAVING_ACTIONS,
+  SHLC_SOURCE_LINKS,
+  SHLC_SUMMARY_CARDS,
+  SOURCE_TYPE_LABELS,
+  formatManwon,
+  formatWon,
+} from "../../data/singleHouseholdLivingCost2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/single-household-living-cost-2026/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const dataSeed = {
+  costItems: SHLC_COST_ITEMS,
+  budgetScenarios: SHLC_BUDGET_SCENARIOS,
+  regionHousing: SHLC_REGION_HOUSING,
+  savingActions: SHLC_SAVING_ACTIONS,
+};
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SHLC_META.title,
+    description: SHLC_META.description,
+    dateModified: SHLC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SHLC_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title="2026 1인 가구 생활비 평균 | 월세·식비·통신비·구독료 완전 분석"
+  description="2026년 1인 가구 월평균 생활비를 주거비, 식비, 통신비, 교통비, 구독료, 보험료까지 항목별로 분석합니다. 절약형·평균형·여유형 월 예산과 생활비 줄이는 실천법도 함께 확인하세요."
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page shlc-page">
+    <CalculatorHero
+      eyebrow="생활비 절약 리포트"
+      title={SHLC_META.title}
+      description="혼자 사는 데 필요한 월 생활비를 주거비·식비·통신비·구독료·보험료까지 항목별로 쪼개 봅니다."
+      badges={["1인 가구", "생활비", "2026", "추정"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "2026년 생활비 총액은 최신 공개 통계와 민간 리포트를 참고한 예산 점검용 추정·시뮬레이션입니다.",
+        "공식 통계, 민간 리포트, 추정값, 시뮬레이션값을 배지로 구분했습니다.",
+        "월세와 관리비는 지역, 보증금, 건물 상태, 계약 시점에 따라 크게 달라질 수 있습니다.",
+      ]}
+    />
+
+    <section class="content-section shlc-summary" aria-labelledby="shlc-summary-title">
+      <div class="shlc-section-heading">
+        <p>핵심 요약</p>
+        <h2 id="shlc-summary-title">2026년 1인 가구 생활비를 먼저 숫자로 보면</h2>
+        <span>평균 하나로 단정하지 않고 절약형·평균형·여유형 범위로 나눴습니다.</span>
+      </div>
+      <div class="shlc-summary-grid">
+        {SHLC_SUMMARY_CARDS.map((card) => (
+          <article class="shlc-summary-card">
+            <span class:list={["shlc-badge", `shlc-badge--${card.sourceType}`]}>{SOURCE_TYPE_LABELS[card.sourceType]}</span>
+            <strong>{card.value}</strong>
+            <p>{card.label}</p>
+            <small>{card.description}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section shlc-trend">
+      <div class="shlc-section-heading">
+        <p>1인 가구 트렌드</p>
+        <h2>혼자 사는 가구가 늘수록 생활비 구조는 더 개인화됩니다</h2>
+        <span>1인 가구는 모든 고정비를 혼자 부담하기 때문에 월세, 통신비, 구독료 같은 반복 지출 관리가 중요합니다.</span>
+      </div>
+      <div class="shlc-trend-grid">
+        <article>
+          <strong>주거비</strong>
+          <p>보증금이 낮거나 역세권을 선택하면 월세와 관리비가 생활비의 절반 가까이 올라갈 수 있습니다.</p>
+        </article>
+        <article>
+          <strong>식비</strong>
+          <p>장보기는 남는 재료가 변수이고, 배달은 배달비·팁·최소주문금액이 월 누적으로 커집니다.</p>
+        </article>
+        <article>
+          <strong>자동 지출</strong>
+          <p>통신비, OTT, 클라우드, 멤버십은 한 번 묶이면 매달 빠져나가므로 정기 점검이 필요합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section shlc-breakdown" aria-labelledby="shlc-breakdown-title">
+      <div class="shlc-section-heading">
+        <p>항목별 분해</p>
+        <h2 id="shlc-breakdown-title">항목별 월 생활비 비중</h2>
+        <span>주거비와 식비가 대부분의 1인 가구 예산을 좌우합니다.</span>
+      </div>
+      <div class="shlc-chart-table">
+        <div class="shlc-chart-wrap" id="shlcCostDonut" aria-label="항목별 지출 비중 차트"></div>
+        <div class="table-wrap">
+          <table class="shlc-cost-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>월 지출</th>
+                <th>비중</th>
+                <th>구분</th>
+                <th>메모</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SHLC_COST_ITEMS.map((item) => (
+                <tr>
+                  <th>{item.label}</th>
+                  <td>{formatWon(item.monthlyAmount)}</td>
+                  <td>{item.share}%</td>
+                  <td><span class:list={["shlc-badge", `shlc-badge--${item.sourceType}`]}>{SOURCE_TYPE_LABELS[item.sourceType]}</span></td>
+                  <td>{item.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section shlc-region">
+      <div class="shlc-section-heading">
+        <p>주거비</p>
+        <h2>서울과 지방의 차이는 대부분 월세·관리비에서 시작됩니다</h2>
+        <span>보증금 조건이 다르면 같은 지역도 월 지출이 달라지므로 범위형으로 해석하세요.</span>
+      </div>
+      <div class="shlc-region-grid" id="shlcRegionChart">
+        {SHLC_REGION_HOUSING.map((region) => (
+          <article class="shlc-region-card" data-shlc-region={region.region}>
+            <strong>{region.label}</strong>
+            <span>{region.totalHousingRange}</span>
+            <p>월세 {region.rentRange} · 관리비 {region.managementFeeRange}</p>
+            <small>{region.note}</small>
+          </article>
+        ))}
+      </div>
+      <p class="shlc-footnote"><span class="shlc-badge shlc-badge--estimate">추정</span> 지역별 주거비는 보증금, 건물 연식, 관리비 포함 항목에 따라 실제 차이가 큽니다.</p>
+    </section>
+
+    <section class="content-section shlc-food">
+      <div class="shlc-section-heading">
+        <p>식비</p>
+        <h2>배달을 줄일 수 있는지가 1인 가구 식비의 분기점입니다</h2>
+        <span>장보기만 늘리면 남는 재료가 생길 수 있어 배달비와 식재료 폐기율을 같이 봐야 합니다.</span>
+      </div>
+      <div class="shlc-two-col">
+        <article>
+          <h3>배달 중심</h3>
+          <p>음식값 외에 배달비, 팁, 서비스 수수료가 붙고 최소주문금액 때문에 실제 1회 비용이 커질 수 있습니다.</p>
+        </article>
+        <article>
+          <h3>장보기 중심</h3>
+          <p>1인분 단위 구매가 어렵다면 식재료 폐기율이 높아집니다. 3일 단위 구매와 냉동 보관이 핵심입니다.</p>
+        </article>
+      </div>
+      <div class="shlc-cta-band">
+        <div>
+          <strong>배달을 주 1회 줄이면 얼마를 아낄까요?</strong>
+          <p>내 주문금액과 식재료비를 넣어 월간·연간 절약액을 바로 계산하세요.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/delivery-vs-cooking-cost/")}>배달 vs 직접 요리 계산하기</a>
+      </div>
+    </section>
+
+    <section class="content-section shlc-compact-topics">
+      <div class="shlc-topic">
+        <h2>통신비·구독료</h2>
+        <p>통신요금, OTT, 음악, 클라우드, 멤버십은 각각은 작아도 합치면 월 10만원을 넘기 쉽습니다. 사용 빈도가 낮은 구독부터 정리하세요.</p>
+      </div>
+      <div class="shlc-topic">
+        <h2>교통비</h2>
+        <p>대중교통 중심이면 예측이 쉽지만, 택시와 공유 이동이 잦으면 예산이 빠르게 흔들립니다. 자가용은 보험료와 정비비를 월 환산해야 합니다.</p>
+      </div>
+      <div class="shlc-topic">
+        <h2>의료·보험</h2>
+        <p>실손보험, 약값, 건강검진 비용은 평균보다 변동성이 큽니다. 보험료는 과한 특약보다 유지 가능성을 먼저 확인하는 편이 안전합니다.</p>
+      </div>
+      <div class="shlc-topic">
+        <h2>여가·자기계발</h2>
+        <p>절약형 예산에서도 완전히 없애면 오래 지속하기 어렵습니다. 월 생활비의 5~10%를 유연 지출로 관리하는 방식이 현실적입니다.</p>
+      </div>
+    </section>
+
+    <section class="content-section shlc-matrix">
+      <div class="shlc-section-heading">
+        <p>연령대별 차이</p>
+        <h2>20대·30대·40대 1인 가구는 압박 지점이 다릅니다</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="shlc-cost-table">
+          <thead>
+            <tr>
+              <th>연령대</th>
+              <th>주요 부담</th>
+              <th>월 생활비 범위</th>
+              <th>줄일 항목</th>
+              <th>주의점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SHLC_AGE_MATRIX.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                <td>{row.mainPressure}</td>
+                <td>{row.typicalMonthlyRange}</td>
+                <td>{row.savingFocus}</td>
+                <td>{row.riskNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section shlc-scenarios" aria-labelledby="shlc-scenarios-title">
+      <div class="shlc-section-heading">
+        <p>예산 시나리오</p>
+        <h2 id="shlc-scenarios-title">절약형·평균형·여유형 월 예산</h2>
+        <span>버튼을 눌러 예산 구성과 총액을 비교하세요.</span>
+      </div>
+      <div class="shlc-segmented" role="tablist" aria-label="예산 시나리오">
+        {SHLC_BUDGET_SCENARIOS.map((scenario, index) => (
+          <button type="button" role="tab" aria-selected={index === 1 ? "true" : "false"} data-shlc-budget={scenario.type}>
+            {scenario.label}
+          </button>
+        ))}
+      </div>
+      <div id="shlcBudgetPanel" class="shlc-budget-panel" aria-live="polite"></div>
+      <div id="shlcBudgetChart" class="shlc-budget-chart" aria-label="예산 시나리오별 지출 구성 차트"></div>
+      <div class="shlc-scenario-grid">
+        {SHLC_BUDGET_SCENARIOS.map((scenario) => (
+          <article>
+            <span class="shlc-badge shlc-badge--simulation">시뮬레이션</span>
+            <strong>{scenario.label}</strong>
+            <em>{formatManwon(scenario.monthlyTotal)}</em>
+            <p>{scenario.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section shlc-saving" aria-labelledby="shlc-saving-title">
+      <div class="shlc-section-heading">
+        <p>실천 체크리스트</p>
+        <h2 id="shlc-saving-title">생활비 줄이는 TOP 10</h2>
+        <span>실행할 항목을 체크하면 월 절약 예상액을 합산합니다.</span>
+      </div>
+      <div class="shlc-saving-layout">
+        <ul class="shlc-saving-list">
+          {SHLC_SAVING_ACTIONS.map((action) => (
+            <li>
+              <label>
+                <input type="checkbox" data-shlc-saving={action.id} />
+                <span>
+                  <strong>{action.label}</strong>
+                  <small>{action.description} · 난이도 {action.difficulty === "easy" ? "쉬움" : action.difficulty === "normal" ? "보통" : "높음"}</small>
+                </span>
+                <em>월 {formatWon(action.monthlySaving)}</em>
+              </label>
+            </li>
+          ))}
+        </ul>
+        <aside class="shlc-saving-result" aria-live="polite">
+          <span>선택한 절약 예상액</span>
+          <strong id="shlcSavingTotal">0원</strong>
+          <p id="shlcSavingAnnual">연간 0원</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="content-section shlc-outlook">
+      <div class="shlc-section-heading">
+        <p>2026 전망</p>
+        <h2>평균값보다 고정비 상한을 먼저 잡는 것이 실용적입니다</h2>
+      </div>
+      <div class="shlc-two-col">
+        <article>
+          <h3>먼저 고정비를 잠그기</h3>
+          <p>월세, 관리비, 통신비, 보험료처럼 매달 자동으로 나가는 비용의 상한을 정하면 식비와 여가비 조정이 쉬워집니다.</p>
+        </article>
+        <article>
+          <h3>연 1회 리밸런싱</h3>
+          <p>통신요금, 보험, 대출, 구독료는 한 번 정하면 오래 방치되기 쉽습니다. 연 1회만 점검해도 누수 지출을 줄일 수 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section shlc-related">
+      <div class="shlc-section-heading">
+        <p>다음 행동</p>
+        <h2>생활비를 내 조건으로 다시 계산해 보세요</h2>
+      </div>
+      <div class="shlc-related-grid">
+        {SHLC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section shlc-sources">
+      <div class="shlc-section-heading">
+        <p>참고 출처</p>
+        <h2>공식 통계와 민간 리포트를 구분해서 참고했습니다</h2>
+      </div>
+      <div class="shlc-source-list">
+        {SHLC_SOURCE_LINKS.map((source) => (
+          <a href={source.url} target="_blank" rel="noreferrer">
+            <span class:list={["shlc-badge", `shlc-badge--${source.sourceType}`]}>{SOURCE_TYPE_LABELS[source.sourceType]}</span>
+            <strong>{source.organization}</strong>
+            <em>{source.label}</em>
+            <small>{source.asOf} · {source.note}</small>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 1인 가구 생활비 리포트 활용법"
+      intro={[
+        "1인 가구 생활비는 월세와 식비만으로 설명하기 어렵습니다. 통신비, 구독료, 보험료, 교통비처럼 매달 자동으로 빠져나가는 고정비가 누적되면 실제 체감 지출은 예상보다 커질 수 있습니다.",
+        "이 리포트는 2026년 기준 1인 가구의 월 생활비를 항목별로 나누고, 절약형·평균형·여유형 예산을 비교해 자신의 지출 구조를 점검할 수 있도록 구성했습니다.",
+      ]}
+      inputPoints={[
+        "주거비는 월세, 관리비, 공과금 성격의 비용을 함께 봅니다.",
+        "식비는 장보기, 배달, 외식을 분리해 비교합니다.",
+        "구독료와 통신비는 소액 반복 지출로 별도 관리합니다.",
+      ]}
+      criteria={[
+        "추정값은 공식 통계가 아니라 예산 점검용 참고값으로 표시합니다.",
+        "지역별 주거비는 보증금·월세·관리비 조건 차이가 커 범위형으로 해석해야 합니다.",
+        "절약 체크리스트의 금액은 실행 효과를 이해하기 위한 시뮬레이션입니다.",
+      ]}
+      faq={SHLC_FAQ}
+      related={SHLC_RELATED_LINKS}
+    />
+  </main>
+
+  <script id="shlcData" type="application/json" set:html={JSON.stringify(dataSeed)}></script>
+  <script src={withBase("/scripts/single-household-living-cost-2026.js")} defer></script>
+</BaseLayout>

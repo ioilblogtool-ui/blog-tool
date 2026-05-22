@@ -9,7 +9,7 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
-type ReportCategory = "salary" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax";
+type ReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax";
 type ReportTagMod = "salary" | "asset";
 
 type ReportIndexMeta = {
@@ -36,6 +36,12 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     eyebrow: "IT 서비스",
     tags: [{ label: "IT서비스", mod: "salary" }, { label: "평균 연봉", mod: "salary" }, { label: "2026", mod: "salary" }],
     category: "salary",
+    isNew: true,
+  },
+  "corporate-bonus-comparison-2026": {
+    eyebrow: "성과급 비교",
+    tags: [{ label: "성과급", mod: "salary" }, { label: "대기업", mod: "salary" }, { label: "2026", mod: "salary" }],
+    category: "bonus",
     isNew: true,
   },
   "insurance-salary-bonus-comparison-2026": {
@@ -272,6 +278,16 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     category: "asset",
     isNew: true,
   },
+  "monthly-dividend-etf-2026": {
+    eyebrow: "월배당 ETF",
+    tags: [
+      { label: "월배당", mod: "asset" },
+      { label: "ETF", mod: "asset" },
+      { label: "2026", mod: "asset" },
+    ],
+    category: "asset",
+    isNew: true,
+  },
   "stock-brokerage-fee-comparison-2026": {
     eyebrow: "증권사 수수료",
     tags: [
@@ -422,6 +438,16 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     category: "estate",
     isNew: true,
   },
+  "multi-house-tax-2026": {
+    eyebrow: "부동산 세금",
+    tags: [
+      { label: "다주택자", mod: "asset" },
+      { label: "양도세", mod: "asset" },
+      { label: "2026", mod: "asset" },
+    ],
+    category: "estate",
+    isNew: true,
+  },
   "pregnancy-checkup-cost-2026": {
     eyebrow: "임신 검사비",
     tags: [
@@ -462,12 +488,32 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     category: "salary",
     isNew: true,
   },
+  "ai-learning-vs-academy-2026": {
+    eyebrow: "교육비 비교",
+    tags: [
+      { label: "AI 학습", mod: "salary" },
+      { label: "학원비", mod: "salary" },
+      { label: "2026", mod: "salary" },
+    ],
+    category: "life",
+    isNew: true,
+  },
   "newlywed-cost-2026": {
     eyebrow: "신혼부부 비용",
     tags: [
       { label: "신혼", mod: "salary" },
       { label: "결혼", mod: "salary" },
       { label: "2026", mod: "salary" },
+    ],
+    category: "life",
+    isNew: true,
+  },
+  "single-household-living-cost-2026": {
+    eyebrow: "생활비 분석",
+    tags: [
+      { label: "1인 가구", mod: "asset" },
+      { label: "생활비", mod: "asset" },
+      { label: "2026", mod: "asset" },
     ],
     category: "life",
     isNew: true,
@@ -523,6 +569,7 @@ const reportEntries = reports
   .sort((a, b) => a.order - b.order);
 
 const salarySeries = reportEntries.filter((report) => report.category === "salary");
+const bonusSeries = reportEntries.filter((report) => report.category === "bonus");
 const estateSeries = reportEntries.filter((report) => report.category === "estate");
 const lifeSeries = reportEntries.filter((report) => report.category === "life");
 const assetSeries = reportEntries.filter((report) => report.category === "asset");
@@ -562,6 +609,7 @@ const recommendedReports = [
 
 const seriesIntroductions: Record<ReportCategory, string> = {
   salary: "입사, 이직, 직무 선택처럼 보상 판단이 필요한 순간에 먼저 보는 시리즈입니다.",
+  bonus: "성과급 산식, 지급률, 세후 체감액처럼 총보상 판단에 필요한 리포트를 모았습니다.",
   estate: "집값, 전세, 체감 주거비처럼 실수요 판단에 직접 연결되는 시리즈입니다.",
   asset: "자산 격차, 연금, ETF, 투자 수익처럼 장기 판단 기준을 잡을 때 읽기 좋습니다.",
   life: "결혼, 출산, 육아, 여행처럼 생활비와 선택 기준이 함께 필요한 주제를 모았습니다.",
@@ -673,7 +721,7 @@ const reportFaqJsonLd = {
         <span class="reports-hero-stat__label">리포트</span>
       </div>
       <div class="reports-hero-stat">
-        <span class="reports-hero-stat__num">8</span>
+        <span class="reports-hero-stat__num">9</span>
         <span class="reports-hero-stat__label">시리즈</span>
       </div>
       <div class="reports-hero-stat">
@@ -748,6 +796,7 @@ const reportFaqJsonLd = {
     <div class="reports-filter-bar">
       <button class="reports-filter-chip is-active" data-filter="all">전체</button>
       <button class="reports-filter-chip" data-filter="salary">연봉</button>
+      <button class="reports-filter-chip" data-filter="bonus">성과급</button>
       <button class="reports-filter-chip" data-filter="estate">부동산</button>
       <button class="reports-filter-chip" data-filter="asset">자산</button>
       <button class="reports-filter-chip" data-filter="life">생활</button>
@@ -826,6 +875,32 @@ const reportFaqJsonLd = {
         ))}
       </div>
     </section>
+
+    {bonusSeries.length > 0 && (
+      <section class="reports-series" data-series="bonus">
+        <div class="reports-series__head">
+          <h3 class="reports-series__label">성과급 시리즈</h3>
+          <p class="reports-series__desc">{seriesIntroductions.bonus}</p>
+        </div>
+        <div class="reports-card-grid">
+          {bonusSeries.map((r) => (
+            <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
+              <p class="rc-eyebrow">{r.eyebrow}</p>
+              <p class="rc-title">{r.title}</p>
+              <p class="rc-desc">{r.desc}</p>
+              <div class="rc-footer">
+                <div class="rc-tags">
+                  {r.tags.map((t) => (
+                    <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                  ))}
+                </div>
+                <span class="rc-arrow">→</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
 
     <section class="reports-series" data-series="life">
       <div class="reports-series__head">

@@ -1,0 +1,430 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  DEFAULT_DIVIDEND_INPUT,
+  DMI_PRESETS,
+  DMI_FAQ,
+  DMI_RELATED_LINKS,
+} from "../../data/dividendMonthlyIncome";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = { DEFAULT_DIVIDEND_INPUT, DMI_PRESETS };
+
+const faqSchema = DMI_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title="배당주 월급 계산기 | 세후 월 배당금과 필요 원금 계산"
+  description="투자 원금, 배당수익률, 세율을 입력해 세후 월 배당금을 계산하세요. 목표 월 배당에 필요한 원금 역산, 배당 재투자 10년·20년 복리 시뮬레이션도 확인할 수 있습니다."
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "배당주 월급 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: "배당수익률과 원금을 입력해 세후 월 배당금과 목표 달성 필요 원금을 계산하는 도구",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/dividend-monthly-income/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="dividend-monthly-income" pageClass="dmi-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="배당 계산기"
+        title="배당주 월급 계산기"
+        description="투자 원금과 배당수익률을 입력하면 세후 월 배당금과 목표 월 배당에 필요한 원금을 계산합니다."
+      />
+      <InfoNotice
+        lines={[
+          "배당수익률과 세율은 종목·계좌 유형에 따라 달라집니다. 이 계산기는 참고용 추정치를 제공합니다.",
+          "배당 재투자 시뮬레이션은 입력한 수익률이 매년 동일하게 유지된다는 가정 하의 추정입니다.",
+          "금융소득 종합과세 대상(연 2,000만 원 초과)이거나 ISA·연금계좌 사용 시 세율을 직접 조정하세요.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="dmiResetBtn" copyId="dmiCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <!-- 계산 방식 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">계산 방식</p>
+            <h2 class="panel__title">어떻게 계산할까요?</h2>
+          </div>
+        </div>
+        <div class="dmi-mode-tabs" id="dmiModeTabs">
+          <button type="button" class="dmi-mode-tab is-active" data-mode="principal">
+            보유 원금으로 계산
+          </button>
+          <button type="button" class="dmi-mode-tab" data-mode="targetIncome">
+            목표 월 배당으로 역산
+          </button>
+        </div>
+      </article>
+
+      <!-- 기본 입력 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 정보</p>
+            <h2 class="panel__title">투자 조건 입력</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="field" id="dmiPrincipalField">
+            <span>투자 원금 (원)</span>
+            <input
+              id="dmiPrincipal"
+              type="text"
+              inputmode="numeric"
+              class="input-number"
+              value={DEFAULT_DIVIDEND_INPUT.principal.toLocaleString("ko-KR")}
+            />
+            <small id="dmiPrincipalHint" class="dmi-hint">약 5,000만 원</small>
+          </label>
+
+          <label class="field" id="dmiTargetField" style="display:none;">
+            <span>목표 세후 월 배당금 (원)</span>
+            <input
+              id="dmiTargetMonthly"
+              type="text"
+              inputmode="numeric"
+              class="input-number"
+              value={DEFAULT_DIVIDEND_INPUT.targetMonthlyIncome.toLocaleString("ko-KR")}
+            />
+          </label>
+
+          <label class="field">
+            <span>예상 연 배당수익률 (%)</span>
+            <input
+              id="dmiYield"
+              type="number"
+              min="0.1"
+              max="30"
+              step="0.1"
+              class="input-number"
+              value={DEFAULT_DIVIDEND_INPUT.annualDividendYield}
+            />
+          </label>
+
+          <label class="field">
+            <span>배당소득세율 (%)</span>
+            <input
+              id="dmiTaxRate"
+              type="number"
+              min="0"
+              max="49.5"
+              step="0.1"
+              class="input-number"
+              value={DEFAULT_DIVIDEND_INPUT.taxRate}
+            />
+            <small class="dmi-hint">기본 15.4% (국내 주식·ETF)</small>
+          </label>
+
+          <label class="field">
+            <span>배당 주기</span>
+            <select id="dmiFrequency" class="input-select">
+              <option value="monthly" selected>월배당</option>
+              <option value="quarterly">분기배당 (3개월)</option>
+              <option value="semiannual">반기배당 (6개월)</option>
+              <option value="annual">연배당</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <!-- 재투자 설정 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">시뮬레이션 설정</p>
+            <h2 class="panel__title">재투자 및 장기 설정</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field dmi-toggle-field">
+            <span>배당 재투자</span>
+            <label class="dmi-toggle">
+              <input type="checkbox" id="dmiReinvest" checked={DEFAULT_DIVIDEND_INPUT.reinvestEnabled} />
+              <span class="dmi-toggle__track"></span>
+              <span class="dmi-toggle__label" id="dmiReinvestLabel">켜짐</span>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>월 추가 투자금 (원)</span>
+            <input
+              id="dmiMonthlyContrib"
+              type="text"
+              inputmode="numeric"
+              class="input-number"
+              value="0"
+            />
+          </label>
+
+          <label class="field">
+            <span>배당 성장률 (%/년)</span>
+            <input
+              id="dmiDividendGrowth"
+              type="number"
+              min="-20"
+              max="20"
+              step="0.5"
+              class="input-number"
+              value={DEFAULT_DIVIDEND_INPUT.dividendGrowthRate}
+            />
+            <small class="dmi-hint">0%이면 배당 유지 가정</small>
+          </label>
+
+          <label class="field">
+            <span>주가 성장률 (%/년)</span>
+            <input
+              id="dmiPriceGrowth"
+              type="number"
+              min="-30"
+              max="30"
+              step="0.5"
+              class="input-number"
+              value={DEFAULT_DIVIDEND_INPUT.priceGrowthRate}
+            />
+          </label>
+
+          <label class="field">
+            <span>시뮬레이션 기간</span>
+            <select id="dmiSimYears" class="input-select">
+              <option value="5">5년</option>
+              <option value="10">10년</option>
+              <option value="20" selected>20년</option>
+              <option value="30">30년</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <!-- 프리셋 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 예시</p>
+            <h2 class="panel__title">버튼으로 바로 넣어보기</h2>
+          </div>
+        </div>
+        <div class="dmi-preset-grid" id="dmiPresets">
+          {DMI_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`dmi-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset-id={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- 결과 섹션 -->
+    <section class="dmi-section">
+      <div class="dmi-section__head">
+        <p class="dmi-section__eyebrow">핵심 결과</p>
+        <h2 id="dmiResultTitle">세후 월 배당금 추정</h2>
+        <p class="dmi-section__sub">입력값을 바꾸면 결과가 바로 바뀝니다.</p>
+      </div>
+
+      <div class="dmi-kpi-grid" id="dmiKpiGrid">
+        <article class="dmi-kpi-card dmi-kpi-card--main" id="dmiMainCard">
+          <p class="dmi-kpi-card__label" id="dmiMainLabel">세후 월 배당금</p>
+          <strong class="dmi-kpi-card__value" id="dmiMainValue">-</strong>
+          <span class="dmi-kpi-card__note" id="dmiMainNote">추정값</span>
+        </article>
+
+        <article class="dmi-kpi-card">
+          <p class="dmi-kpi-card__label">세후 연 배당금</p>
+          <strong class="dmi-kpi-card__value" id="dmiAnnualNet">-</strong>
+          <span class="dmi-kpi-card__note">연간 세후 수령 추정</span>
+        </article>
+
+        <article class="dmi-kpi-card">
+          <p class="dmi-kpi-card__label">연간 배당소득세</p>
+          <strong class="dmi-kpi-card__value" id="dmiTaxAmount">-</strong>
+          <span class="dmi-kpi-card__note" id="dmiTaxNote">세율 <span id="dmiTaxRateLabel">15.4</span>% 기준</span>
+        </article>
+
+        <article class="dmi-kpi-card">
+          <p class="dmi-kpi-card__label">1회 실제 수령액</p>
+          <strong class="dmi-kpi-card__value" id="dmiPerPayment">-</strong>
+          <span class="dmi-kpi-card__note" id="dmiFreqLabel">월배당 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- 배당 주기별 비교 -->
+    <section class="dmi-section">
+      <div class="dmi-section__head">
+        <p class="dmi-section__eyebrow">지급 주기 비교</p>
+        <h2>같은 배당수익률, 주기에 따른 1회 수령액</h2>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table class="dmi-freq-table">
+            <caption class="sr-only">배당 주기별 세전·세후 1회 수령액 비교</caption>
+            <thead>
+              <tr>
+                <th>주기</th>
+                <th>연 지급 횟수</th>
+                <th>세전 1회</th>
+                <th>세후 1회</th>
+              </tr>
+            </thead>
+            <tbody id="dmiFreqTableBody">
+              <tr data-freq="monthly">
+                <td>월배당</td>
+                <td>12회</td>
+                <td class="dmi-freq-gross">-</td>
+                <td class="dmi-freq-net">-</td>
+              </tr>
+              <tr data-freq="quarterly">
+                <td>분기배당</td>
+                <td>4회</td>
+                <td class="dmi-freq-gross">-</td>
+                <td class="dmi-freq-net">-</td>
+              </tr>
+              <tr data-freq="semiannual">
+                <td>반기배당</td>
+                <td>2회</td>
+                <td class="dmi-freq-gross">-</td>
+                <td class="dmi-freq-net">-</td>
+              </tr>
+              <tr data-freq="annual">
+                <td>연배당</td>
+                <td>1회</td>
+                <td class="dmi-freq-gross">-</td>
+                <td class="dmi-freq-net">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 재투자 시뮬레이션 -->
+    <section class="dmi-section">
+      <div class="dmi-section__head">
+        <p class="dmi-section__eyebrow">장기 시뮬레이션</p>
+        <h2>배당 재투자를 하면 얼마나 달라질까요?</h2>
+        <p class="dmi-section__sub">입력한 수익률과 성장률이 유지된다는 가정의 추정입니다.</p>
+      </div>
+
+      <div class="dmi-sim-grid" id="dmiSimGrid">
+        <article class="dmi-sim-card">
+          <p class="dmi-sim-card__year" id="dmiSim10Label">10년 후</p>
+          <p class="dmi-sim-card__label">예상 평가액</p>
+          <strong class="dmi-sim-card__value" id="dmiSim10Principal">-</strong>
+          <p class="dmi-sim-card__label" style="margin-top:12px;">세후 월 배당금</p>
+          <strong class="dmi-sim-card__value dmi-sim-card__value--hl" id="dmiSim10Monthly">-</strong>
+          <p class="dmi-sim-card__note">누적 세후 배당 <span id="dmiSim10Cumulative">-</span></p>
+        </article>
+
+        <article class="dmi-sim-card">
+          <p class="dmi-sim-card__year" id="dmiSim20Label">20년 후</p>
+          <p class="dmi-sim-card__label">예상 평가액</p>
+          <strong class="dmi-sim-card__value" id="dmiSim20Principal">-</strong>
+          <p class="dmi-sim-card__label" style="margin-top:12px;">세후 월 배당금</p>
+          <strong class="dmi-sim-card__value dmi-sim-card__value--hl" id="dmiSim20Monthly">-</strong>
+          <p class="dmi-sim-card__note">누적 세후 배당 <span id="dmiSim20Cumulative">-</span></p>
+        </article>
+      </div>
+
+      <div class="dmi-chart-wrap">
+        <canvas id="dmiSimChart" aria-label="배당 재투자 시뮬레이션 차트"></canvas>
+      </div>
+    </section>
+
+    <!-- 경고 박스 (고배당) -->
+    <section class="dmi-section" id="dmiWarningSection" style="display:none;">
+      <div class="dmi-warning-box" id="dmiWarningBox">
+        <strong>고배당 주의</strong>
+        <ul id="dmiWarningList"></ul>
+      </div>
+    </section>
+
+    <!-- 추정 안내 -->
+    <section class="dmi-section">
+      <div class="dmi-callout">
+        <strong>참고용 추정값입니다</strong>
+        <p>배당수익률은 고정 값이 아니며 시장 상황, 기업 실적, ETF 운용 방침에 따라 달라질 수 있습니다. 특정 종목이나 ETF의 수익을 보장하지 않습니다.</p>
+      </div>
+    </section>
+
+    <!-- 관련 링크 -->
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">이어보기</p>
+            <h2 class="panel__title">함께 쓰면 좋은 계산기</h2>
+          </div>
+        </div>
+        <div class="related-links">
+          {DMI_RELATED_LINKS.map((link) => (
+            <a href={link.href} class="related-link">{link.label}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="배당주 월급 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 투자 원금과 배당수익률을 입력해 세후 월 배당금을 바로 확인하거나, 원하는 월 배당 목표를 달성하기 위한 필요 원금을 역산하는 도구입니다.",
+          "배당 재투자와 월 추가 투자금, 배당 성장률을 설정하면 10년·20년 후 예상 월 배당금과 누적 배당금까지 시뮬레이션할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "대표 예시 버튼으로 처음 시작하는 투자자, 월 50만 원 목표, 은퇴 현금흐름 시나리오를 바로 불러올 수 있습니다.",
+          "배당수익률 7% 이상 입력 시 고배당 주의 안내가 표시됩니다. 분배금 삭감 또는 원금 손실 위험을 함께 확인하세요.",
+          "배당 주기별 비교 표에서 월배당·분기배당·반기배당·연배당 1회 수령액을 한눈에 비교할 수 있습니다.",
+        ]}
+        criteria={[
+          "세후 월 배당금 = 투자 원금 × 연 배당수익률 × (1 − 세율) ÷ 12 공식으로 계산합니다.",
+          "필요 원금 역산 = 목표 세후 월 배당금 ÷ (1 − 세율) × 12 ÷ 연 배당수익률 공식을 사용합니다.",
+          "배당 재투자 시뮬레이션은 월 단위 복리 계산이며, 입력한 배당·주가 성장률이 매년 동일하게 유지된다고 가정합니다.",
+          "국내 배당소득세 기본세율 15.4%를 기본값으로 제공하며, 세율은 계좌 유형과 소득에 따라 다를 수 있습니다.",
+        ]}
+        faq={DMI_FAQ}
+        related={DMI_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="dmiConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/dividend-monthly-income.js")}></script>
+</BaseLayout>
