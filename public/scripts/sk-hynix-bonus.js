@@ -422,6 +422,23 @@ function renderSummary(result) {
   setText("totalSummaryNote", `기준급 ${formatKoreanAmount(totals.baseSalary)}`);
   setText("monthlySummary", formatKoreanAmount(totals.monthlyTotal));
   setText("monthlySummaryNote", isCouple ? `1인당 평균 ${formatKoreanAmount(totals.monthlyTotal / 2)}` : `월 기본 ${formatKoreanAmount(totals.monthlyBase)}`);
+  updateNextStepLinks(result);
+}
+
+function updateNextStepLinks(result) {
+  const bonusAmount = Math.max(0, Math.round(result.totals.psAmount + result.totals.piAmount));
+  const annualSalary = Math.max(0, Math.round(result.totals.annualSalary));
+  const monthlyInvest = Math.min(3_000_000, Math.max(100_000, Math.round((bonusAmount / 12) / 50_000) * 50_000));
+  const afterTaxCta = $("skAfterTaxCta");
+  const dcaCta = $("skDcaCta");
+
+  if (afterTaxCta) {
+    afterTaxCta.href = `/tools/bonus-after-tax-calculator/?bonus=${bonusAmount}&salary=${annualSalary}&company=sk-hynix`;
+  }
+  if (dcaCta) {
+    dcaCta.href = `/tools/dca-investment-calculator/?m=${monthlyInvest}&p=10&a=SP500,NASDAQ100,QQQ&fx=1&div=1`;
+  }
+  setText("skNextStepNote", `PS·PI ${formatKoreanAmount(bonusAmount)} 기준 · 투자 계산기는 월 ${formatKoreanAmount(monthlyInvest)} 적립으로 연결합니다.`);
 }
 
 function renderSummaryReport(result) {

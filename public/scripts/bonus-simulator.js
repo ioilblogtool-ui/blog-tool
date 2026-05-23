@@ -449,8 +449,31 @@ function render() {
   setText("insightHeading", insight.share);
   $("companyNotes").innerHTML = company.notes.map((line) => `<p class="note-chip">${line}</p>`).join("");
 
+  updateNextStepLinks(company, annualSalary, result);
   renderScenarioCards(company, annualSalary, monthlyBase, presetKey, includeStock);
   renderCompare(rankSelect.value, scenarioCode, growthCode, includeStock);
+}
+
+function updateNextStepLinks(company, annualSalary, result) {
+  const bonusAmount = Math.max(0, Math.round(result.bonusAmount + result.extras));
+  const salary = Math.max(0, Math.round(annualSalary));
+  const monthlyInvest = Math.min(3_000_000, Math.max(100_000, Math.round((bonusAmount / 12) / 50_000) * 50_000));
+  const companyParamMap = {
+    SAMSUNG: "samsung",
+    SKHYNIX: "sk-hynix",
+    HYUNDAI: "hyundai",
+  };
+  const companyParam = companyParamMap[company.companyCode] || "simulator";
+  const afterTaxCta = $("bonusSimulatorAfterTaxCta");
+  const dcaCta = $("bonusSimulatorDcaCta");
+
+  if (afterTaxCta) {
+    afterTaxCta.href = `/tools/bonus-after-tax-calculator/?bonus=${bonusAmount}&salary=${salary}&company=${companyParam}`;
+  }
+  if (dcaCta) {
+    dcaCta.href = `/tools/dca-investment-calculator/?m=${monthlyInvest}&p=10&a=SP500,NASDAQ100,QQQ&fx=1&div=1`;
+  }
+  setText("bonusSimulatorNextStepNote", `${company.companyName} 성과급 ${formatKoreanAmount(bonusAmount)} 기준 · 투자 계산기는 월 ${formatKoreanAmount(monthlyInvest)} 적립으로 연결합니다.`);
 }
 
 function flashButton(button, label) {

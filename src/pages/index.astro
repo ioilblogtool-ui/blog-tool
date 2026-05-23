@@ -228,6 +228,42 @@ const homeExamples = [
   },
 ];
 
+const homeJourneys = [
+  {
+    label: "성과급 받았다면",
+    title: "보너스가 통장에 남는 금액과 다음 사용처를 이어서 봅니다",
+    accent: "bonus",
+    steps: [
+      { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
+      { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+      { href: "/tools/dca-investment-calculator/", label: "적립식 투자 수익 비교 계산기" },
+      { href: "/reports/corporate-bonus-comparison-2026/", label: "대기업 성과급 비교 리포트" },
+    ],
+  },
+  {
+    label: "이직 고민 중이라면",
+    title: "제안 연봉의 월 실수령 차이와 시장 위치를 같이 확인합니다",
+    accent: "salary",
+    steps: [
+      { href: "/tools/negotiation/", label: "이직 계산기" },
+      { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+      { href: "/tools/retirement/", label: "퇴직금 계산기" },
+      { href: "/reports/new-employee-salary-2026/", label: "신입 초봉 비교 리포트" },
+    ],
+  },
+  {
+    label: "출산 준비 중이라면",
+    title: "휴직 급여와 지원금, 첫해 반복 지출을 한 번에 이어봅니다",
+    accent: "parenting",
+    steps: [
+      { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
+      { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" },
+      { href: "/tools/formula-cost/", label: "분유값 계산기" },
+      { href: "/tools/diaper-cost/", label: "기저귀값 계산기" },
+    ],
+  },
+];
+
 const homeFaq = [
   {
     question: "비교계산소는 어떤 사이트인가요?",
@@ -390,6 +426,36 @@ const homeFaqJsonLd = {
           </div>
           <span class="home-feat-card__link">→</span>
         </a>
+      </div>
+    </section>
+
+    <section class="home-section home-journey">
+      <div class="home-section__head home-section__head--stack">
+        <div>
+          <p class="home-section__eyebrow">상황별 계산 흐름</p>
+          <h2>하나만 보고 나가지 않도록 다음 계산까지 이어집니다</h2>
+        </div>
+        <p class="home-section__summary">검색으로 들어온 목적에 맞춰 계산기와 리포트를 순서대로 묶었습니다.</p>
+      </div>
+      <div class="home-journey-grid">
+        {homeJourneys.map((journey) => (
+          <article class={`home-journey-card home-journey-card--${journey.accent}`}>
+            <div class="home-journey-card__head">
+              <span>{journey.label}</span>
+              <strong>{journey.title}</strong>
+            </div>
+            <ol class="home-journey-card__steps">
+              {journey.steps.map((step, index) => (
+                <li>
+                  <a href={withBase(step.href)}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    {step.label}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </article>
+        ))}
       </div>
     </section>
 

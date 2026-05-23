@@ -265,6 +265,25 @@ function renderSummary(result) {
   setText("totalSummaryNote", `복지 ${formatKoreanAmount(result.totals.benefitsAmount)}`);
   setText("monthlySummary", formatKoreanAmount(result.totals.monthlyCompView));
   setText("monthlySummaryNote", isCouple ? `1인당 평균 ${formatKoreanAmount(result.totals.monthlyCompView / 2)}` : `월 기본 ${formatKoreanAmount(result.totals.monthlyBase)}`);
+  updateNextStepLinks(result);
+}
+
+function updateNextStepLinks(result) {
+  const bonusPackage = Math.max(0, Math.round(
+    result.totals.bonus + result.totals.cash + result.totals.giftValue + result.totals.stockValue
+  ));
+  const annualSalary = Math.max(0, Math.round(result.totals.annualSalary));
+  const monthlyInvest = Math.min(3_000_000, Math.max(100_000, Math.round((bonusPackage / 12) / 50_000) * 50_000));
+  const afterTaxCta = $("hyundaiAfterTaxCta");
+  const dcaCta = $("hyundaiDcaCta");
+
+  if (afterTaxCta) {
+    afterTaxCta.href = `/tools/bonus-after-tax-calculator/?bonus=${bonusPackage}&salary=${annualSalary}&company=hyundai`;
+  }
+  if (dcaCta) {
+    dcaCta.href = `/tools/dca-investment-calculator/?m=${monthlyInvest}&p=10&a=SP500,NASDAQ100,QQQ&fx=1&div=1`;
+  }
+  setText("hyundaiNextStepNote", `성과급 패키지 ${formatKoreanAmount(bonusPackage)} 기준 · 투자 계산기는 월 ${formatKoreanAmount(monthlyInvest)} 적립으로 연결합니다.`);
 }
 
 function renderSummaryReport(result) {
