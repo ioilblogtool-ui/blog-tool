@@ -29,6 +29,9 @@ const avgTotalComp = Math.round(entries.reduce((sum, entry) => sum + entry.estTo
 const salaryRange = `${formatManwon(entries[entries.length - 1].avgSalaryManwon)} ~ ${formatManwon(entries[0].avgSalaryManwon)}`;
 const contractorTop = [...entries].sort((a, b) => a.contractorRank - b.contractorRank)[0];
 const topGap = avgTop.avgSalaryManwon - secondAvg.avgSalaryManwon;
+const hyundaiConstruction = entries.find((entry) => entry.slug === "hyundai-enc")!;
+const samsungEA = entries.find((entry) => entry.slug === "samsung-ea")!;
+const salaryTopRows = entries.slice(0, 5);
 const typeAverages = {
   construction: Math.round(
     entries.filter((entry) => entry.companyType === "construction").reduce((sum, entry) => sum + entry.avgSalaryManwon, 0) /
@@ -207,7 +210,7 @@ const faqItems = seed.faq.map((item) => ({ question: item.q, answer: item.a }));
     <section class="content-section con-table-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">건설사 비교 테이블</p>
-        <h2>핵심 보상 항목과 규모 지표를 한 표에서 비교하기</h2>
+        <h2>건설사 연봉 순위와 핵심 보상 항목을 한 표에서 비교하기</h2>
         <p>정렬과 회사 유형 필터를 바꿔가며 표 전체를 다시 읽을 수 있게 구성했습니다.</p>
       </div>
 
@@ -270,6 +273,66 @@ const faqItems = seed.faq.map((item) => ({ question: item.q, answer: item.a }));
             }
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <section class="content-section con-search-intent-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">검색어별 빠른 해석</p>
+        <h2>현대건설 성과급, 삼성E&amp;A, 건설사 연봉 순위를 따로 읽기</h2>
+        <p>검색에서 많이 찾는 회사명과 비교 기준을 별도 카드로 분리했습니다. 표 전체를 보기 전에 각 키워드의 핵심만 빠르게 확인할 수 있습니다.</p>
+      </div>
+
+      <div class="con-pattern-grid">
+        <article class="con-pattern-card">
+          <div class="con-pattern-card__head">
+            <span class="con-pattern-card__index">01</span>
+            <strong>현대건설 성과급은 어느 정도일까</strong>
+          </div>
+          <p>
+            현대건설은 이 리포트 기준 평균 연봉 {formatManwon(hyundaiConstruction.avgSalaryManwon)},
+            기준 성과급 {formatBonusRate(hyundaiConstruction.bonusRateBase)}, 기준 총보상 {formatManwon(hyundaiConstruction.estTotalCompBaseManwon)}으로 둔 비교용 시나리오입니다.
+            브랜드 주택, 대형 프로젝트, 시공능력 상위권이라는 안정성이 함께 작동하지만 실제 성과급은 현장과 평가에 따라 달라질 수 있습니다.
+          </p>
+          <span class="con-pattern-card__foot">현대건설 성과급</span>
+        </article>
+
+        <article class="con-pattern-card">
+          <div class="con-pattern-card__head">
+            <span class="con-pattern-card__index">02</span>
+            <strong>삼성E&amp;A 연봉·성과급 위치</strong>
+          </div>
+          <p>
+            삼성E&amp;A는 평균 연봉 {formatManwon(samsungEA.avgSalaryManwon)}, 기준 성과급 {formatBonusRate(samsungEA.bonusRateBase)},
+            기준 총보상 {formatManwon(samsungEA.estTotalCompBaseManwon)}으로 상단권에 놓았습니다.
+            다만 종합건설보다 플랜트·해외수주 성격이 강해, 현대건설·GS건설과 단순 순위로만 비교하기보다 별도 축으로 해석하는 편이 좋습니다.
+          </p>
+          <span class="con-pattern-card__foot">Samsung E&amp;A</span>
+        </article>
+
+        <article class="con-pattern-card">
+          <div class="con-pattern-card__head">
+            <span class="con-pattern-card__index">03</span>
+            <strong>건설사 연봉 순위 TOP 비교</strong>
+          </div>
+          <p>
+            평균 연봉 기준 상위권은 {salaryTopRows.map((entry) => `${entry.companyName} ${formatManwon(entry.avgSalaryManwon)}`).join(" · ")} 순서로 읽을 수 있습니다.
+            단, 성과급과 추가 상여를 반영한 총보상 순위는 달라질 수 있어 평균 연봉, 신입 초봉, 총보상을 함께 보는 것이 더 현실적입니다.
+          </p>
+          <span class="con-pattern-card__foot">건설사 연봉 순위</span>
+        </article>
+
+        <article class="con-pattern-card">
+          <div class="con-pattern-card__head">
+            <span class="con-pattern-card__index">04</span>
+            <strong>건설사 성과급은 제조·반도체와 어떻게 다를까</strong>
+          </div>
+          <p>
+            제조·반도체 성과급은 사업부 실적이나 영업이익 연동성이 강하게 보이는 반면, 건설사는 현장·수주·프로젝트 손익과 회사별 지급 정책의 영향이 큽니다.
+            그래서 건설사 성과급은 단일 배수보다 회사 유형, 프로젝트 포트폴리오, 총보상 시나리오를 함께 놓고 비교하는 편이 안전합니다.
+          </p>
+          <span class="con-pattern-card__foot">성과급 구조 비교</span>
+        </article>
       </div>
     </section>
 

@@ -24,8 +24,8 @@ const initialCompany = companyConfigs[0];
 ---
 
 <BaseLayout
-  title="대기업 성과급 시뮬레이터 | 삼성전자·SK하이닉스·현대차 비교"
-  description="삼성전자, SK하이닉스, 현대자동차의 최신 성과급 기준과 2026~2028 총보상 시나리오를 빠르게 비교하는 정적 계산기"
+  title="대기업 성과급 계산기 2026 | 삼성전자·하이닉스·현대차 비교"
+  description="삼성전자, SK하이닉스, 현대자동차 성과급 계산기를 한 화면에서 비교합니다. 직급별 실수령·부부 합산·2026~2028 총보상 시나리오까지 확인."
   ogImage="/og/tools/bonus-simulator.png"
 >
   <SiteHeader />
@@ -281,6 +281,41 @@ const initialCompany = companyConfigs[0];
 
     </div><!-- /.bs-layout -->
 
+    <!-- ── 개별 성과급 계산기 바로가기 ─────────────────────────────────── -->
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">개별 계산기</p>
+            <h2 class="panel__title">회사별 성과급 계산기 바로가기</h2>
+          </div>
+          <p class="panel-heading__summary">노조 요구안·부부 합산·세후 실수령 등 상세 옵션은 개별 계산기에서 확인하세요.</p>
+        </div>
+        <div class="bs-report-sub-grid">
+          <a href="/tools/samsung-bonus/" class="bs-report-sub-card">
+            <strong class="bs-report-sub-card__title">삼성전자 성과급 계산</strong>
+            <p class="bs-report-sub-card__desc">OPI·TAI·잠정합의안 2026</p>
+            <span class="bs-report-sub-card__cta">계산하기 →</span>
+          </a>
+          <a href="/tools/sk-hynix-bonus/" class="bs-report-sub-card">
+            <strong class="bs-report-sub-card__title">하이닉스 성과급 계산</strong>
+            <p class="bs-report-sub-card__desc">PS·PI 직급별 실수령</p>
+            <span class="bs-report-sub-card__cta">계산하기 →</span>
+          </a>
+          <a href="/tools/hyundai-bonus/" class="bs-report-sub-card">
+            <strong class="bs-report-sub-card__title">현대차 성과급 계산</strong>
+            <p class="bs-report-sub-card__desc">임단협 패키지·자사주 포함</p>
+            <span class="bs-report-sub-card__cta">계산하기 →</span>
+          </a>
+          <a href="/tools/bonus-after-tax-calculator/" class="bs-report-sub-card">
+            <strong class="bs-report-sub-card__title">성과급 세후 실수령액 계산</strong>
+            <p class="bs-report-sub-card__desc">소득세·4대보험 차감 후 실수령</p>
+            <span class="bs-report-sub-card__cta">계산하기 →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- ── 다음 리포트 열기 ──────────────────────────────────────────── -->
     <section class="bs-report-next-section">
       <div class="bs-report-main panel">
@@ -382,13 +417,17 @@ const initialCompany = companyConfigs[0];
         { question: "회사별 상세 계산기와 값이 완전히 같나요?", answer: "핵심 기준은 맞췄지만, 이 페이지는 3사 비교를 위해 일부 항목을 압축합니다. 노조 요구안, 영업이익 컨센서스, 부부 계산처럼 상세한 옵션은 회사별 계산기에서 보는 것이 정확합니다." },
         { question: "왜 3개년 예상 기능이 있나요?", answer: "사용자가 궁금한 것은 단순히 올해 한 번의 성과급이 아니라 업황이 좋거나 나쁠 때 총보상이 얼마나 달라지는지이기 때문입니다." },
         { question: "어느 회사가 가장 유리한지 판단할 수 있나요?", answer: "가능하지만 정답처럼 보기보다는 보상 구조의 성격 차이를 보는 용도로 활용하는 것이 좋습니다. 안정성, 업황 민감도, 패키지 보상 구조가 서로 다릅니다." },
+        { question: "성과급은 세후로 얼마나 줄어드나요?", answer: "성과급도 근로소득세와 4대보험이 적용됩니다. 통상 세전의 70~80% 수준이 실수령되지만 연봉 구간과 공제 조건에 따라 달라집니다. 정확한 계산은 성과급 세후 실수령액 계산기에서 확인하세요." },
+        { question: "삼성전자와 하이닉스 성과급은 왜 차이가 나나요?", answer: "삼성전자는 OPI·TAI 비율 기반이라 연봉 대비 고정 비율로 결정됩니다. SK하이닉스는 기준급에 PS 배율을 곱하는 구조로, 반도체 업황 호황기에 절대 금액이 크게 나오는 경향이 있습니다." },
+        { question: "현대차 성과급은 자사주까지 포함하나요?", answer: "현대자동차 임단협 패키지는 성과급(연봉 450%) + 정액 현금 + 자사주 30주로 구성됩니다. 자사주는 지급 시점 주가에 따라 가치가 달라지므로 고급 설정에서 주가를 직접 입력해 확인할 수 있습니다." },
       ]}
       related={[
         { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
         { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
+        { href: "/tools/hyundai-bonus/", label: "현대자동차 성과급 계산기" },
+        { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+        { href: "/reports/corporate-bonus-comparison-2026/", label: "2026 대기업 성과급 완전 비교" },
         { href: "/tools/salary/", label: "연봉 인상 계산기" },
-        { href: "/tools/negotiation/", label: "이직 계산기" },
-        { href: "/tools/retirement/", label: "퇴직금 계산기" },
       ]}
     />
   </main>

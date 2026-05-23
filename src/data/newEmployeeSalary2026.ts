@@ -50,8 +50,8 @@ export type NewEmployeeSalary2026Seed = {
 
 export const newEmployeeSalary2026: NewEmployeeSalary2026Seed = {
   meta: {
-    title: "2026 신입사원 초봉 비교 리포트",
-    subtitle: "IT·반도체·자동차·배터리·공기업 등 국내 주요 기업의 2026년 신입사원 초봉을 티어별로 비교합니다.",
+    title: "2026 신입 초봉 순위 | 대기업·IT·공기업 연봉 비교",
+    subtitle: "삼성전자·SK하이닉스·네이버·현대차 등 국내 주요 기업의 2026년 신입사원 초봉, 월 실수령액, 성과급 포함 보상 구간을 티어별로 비교합니다.",
     methodology: "잡플래닛·블라인드 집계, 공개 채용 공고, 언론 보도를 바탕으로 정리한 추정치입니다.",
     caution: "실제 지급액은 직군·부서·입사 시기·성과급에 따라 다를 수 있습니다. 모든 수치는 참고용 추정치입니다.",
     updatedAt: "2026년 3월 기준",

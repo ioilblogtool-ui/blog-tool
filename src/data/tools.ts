@@ -157,8 +157,8 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "sk-hynix-bonus",
-    title: "SK하이닉스 성과급 계산기",
-    description: "개인·부부 모드로 SK하이닉스의 PS, PI, 복지 포함 총보상과 월 체감액을 계산하는 페이지",
+    title: "하이닉스 성과급 계산기 2026",
+    description: "SK하이닉스 PS·PI 성과급을 직급·연봉 기준으로 계산하고 세후 실수령, 부부 합산 총보상, 월 체감액을 확인하는 페이지",
     order: 9,
     eyebrow: "SK Hynix Tool",
     category: "simulator",
@@ -171,8 +171,8 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "hyundai-bonus",
-    title: "현대자동차 성과급 계산기",
-    description: "개인·부부 모드로 현대자동차 성과급 패키지와 자사주 포함 총보상, 월 체감액을 계산하는 페이지",
+    title: "현대차 성과급 계산기 2026",
+    description: "현대자동차 임단협 성과급 패키지를 직급·연봉·월 기본급 기준으로 계산하고 자사주 포함 세후 실수령과 부부 합산을 확인하는 페이지",
     order: 10,
     eyebrow: "Hyundai Tool",
     category: "simulator",

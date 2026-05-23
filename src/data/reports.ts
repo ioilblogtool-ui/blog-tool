@@ -16,8 +16,8 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "new-employee-salary-2026",
-    title: "2026 신입사원 초봉 비교 리포트",
-    description: "IT, 반도체, 자동차, 금융, 공공 등 주요 기업의 2026년 신입 초봉을 비교하는 인터랙티브 리포트입니다.",
+    title: "2026 신입 초봉 순위 | 대기업·IT·공기업 연봉 비교",
+    description: "삼성전자, SK하이닉스, 네이버, 현대차 등 주요 기업의 2026년 신입 초봉과 월 실수령액, 성과급 포함 보상 구간을 비교합니다.",
     order: 2,
     badges: ["2026"],
   },
@@ -51,10 +51,10 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "construction-salary-bonus-comparison-2026",
-    title: "국내 TOP 대형 건설사 평균 연봉·성과급 비교 리포트 2026",
-    description: "현대건설, GS건설, 대우건설, 롯데건설, 현대엔지니어링, 삼성E&A, SK에코플랜트 등 주요 대형 건설사의 평균 연봉, 신입 초봉, 성과급, 총보상을 함께 비교하는 인터랙티브 리포트입니다.",
+    title: "건설사 연봉 순위·성과급 비교 2026 | 현대건설·삼성E&A",
+    description: "현대건설, GS건설, 대우건설, 삼성E&A 등 주요 건설사의 연봉 순위, 신입 초봉, 성과급, 총보상을 함께 비교하는 리포트입니다.",
     order: 5,
-    badges: ["건설", "2026"],
+    badges: ["건설", "성과급", "2026"],
   },
   {
     slug: "large-company-salary-growth-by-years-2026",
@@ -170,8 +170,8 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "police-salary-2026",
-    title: "경찰관 계급별 연봉·호봉 완전 정리 2026",
-    description: "순경~치안정감 계급별 기본급, 호봉표, 수당 구조를 2026년 공식 봉급표 기준으로 비교합니다. 입직 방법과 승진 경로까지 한 화면에서 확인하세요.",
+    title: "2026 경찰 월급표·연봉 실수령액 | 계급별 호봉표·수당",
+    description: "순경·경장·경사 등 경찰공무원 계급별 월급, 호봉별 연봉, 주요 수당과 예상 실수령액을 2026년 봉급표 기준으로 비교합니다.",
     order: 20,
     badges: ["경찰", "공무원", "연봉", "2026"],
   },
@@ -191,8 +191,8 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "teacher-salary-2026",
-    title: "학교 선생님 연봉·호봉 완전 정리 2026",
-    description: "초등·중학교·고등학교 교사 호봉표, 수당 구조, 기간제 차이를 2026년 교원 봉급표 기준으로 비교합니다.",
+    title: "2026 교사 월급표·연봉 실수령액 | 호봉표·수당 정리",
+    description: "초등·중학교·고등학교 교사 월급, 호봉별 연봉, 예상 실수령액, 담임·보직 수당과 기간제교사 차이를 2026년 교원 봉급표 기준으로 비교합니다.",
     order: 23,
     badges: ["교사", "공무원", "연봉", "호봉표", "2026"],
   },

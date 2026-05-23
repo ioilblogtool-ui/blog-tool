@@ -13,7 +13,7 @@ export type TierCompany = {
 };
 
 export const SALARY_TIER_META = {
-  title: '연봉 티어 계산기 — 내 연봉 상위 몇 %? S·A·B·C 티어 확인 [2026]',
+  title: '연봉 티어 계산기 | 내 연봉 상위 몇 %·대기업 영끌 비교 2026',
   subtitle:
     '반도체·완성차·IT·화학·금융·외국계 70개+ 기업 영끌 연봉을 S/A/B/C 티어로 분류. 내 연봉을 입력하면 전체 상위 %와 비슷한 기업을 바로 확인합니다.',
   methodology:
