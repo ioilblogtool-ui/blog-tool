@@ -1,0 +1,519 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PSS_META,
+  PSS_HERO_STATS,
+  PSS_GRADES,
+  PSS_SUMMARY_HOBONG,
+  PSS_ALLOWANCES,
+  PSS_DEDUCTION_RATES,
+  MEAL_ALLOWANCE,
+  PSS_RAISE_HISTORY,
+  PSS_CAREER_MILESTONES,
+  PSS_COMPARE,
+  PSS_FAQ,
+} from "../../data/publicServantSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmt = (n: number) => Math.round(n / 10_000).toLocaleString("ko-KR");
+const fmtWon = (n: number) => n.toLocaleString("ko-KR");
+
+const allowanceFixed    = PSS_ALLOWANCES.filter((a) => a.type === "fixed");
+const allowanceVariable = PSS_ALLOWANCES.filter((a) => a.type === "variable");
+const allowanceAnnual   = PSS_ALLOWANCES.filter((a) => a.type === "annual");
+
+const faqItems = PSS_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+// 데이터 직렬화 (클라이언트 JS 전달용)
+const gradesJson = JSON.stringify(
+  PSS_GRADES.map((g) => ({
+    id: g.id,
+    jobGradeSupport: g.jobGradeSupport,
+    hobong: g.hobong.map((h) => ({ no: h.no, monthlyBase: h.monthlyBase })),
+  }))
+);
+const deductionJson = JSON.stringify(PSS_DEDUCTION_RATES);
+const raiseJson = JSON.stringify(PSS_RAISE_HISTORY);
+---
+
+<BaseLayout title={PSS_META.title} description={PSS_META.description}>
+  <SiteHeader />
+
+  <main
+    class="container page-shell report-page pss-page"
+    data-pss-root
+    data-pss-grades={gradesJson}
+    data-pss-deduction={deductionJson}
+    data-pss-raise={raiseJson}
+    data-meal={String(MEAL_ALLOWANCE)}
+  >
+
+    <!-- A. Hero -->
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="2026 공무원 9급 연봉·실수령액 완전 가이드"
+      description="2026년 인사혁신처 봉급표 기준 · 1호봉 초봉부터 30호봉까지 호봉별 기본급과 실수령액 계산기"
+    />
+
+    <!-- B. 데이터 기준 안내 -->
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "기본급은 인사혁신처 공무원보수규정 별표 3 (2026.1.2 개정) 기준입니다. 1·2·3·10·15·20·30호봉은 공식 수치, 나머지는 앵커값 사이 보간 추정치입니다.",
+        "세후 실수령액 추정은 미혼·부양가족 없음 기준입니다. 가족수당·초과근무수당 등 변동 수당은 포함하지 않습니다.",
+        "8급·7급 봉급표는 공무원보수규정 참고 추정치입니다. 직급별 정확한 수치는 소속 기관 급여담당자에게 문의하세요.",
+        "계산기 결과는 참고용이며, 실제 수령액은 소속 기관·개인 상황에 따라 다를 수 있습니다.",
+      ]}
+    />
+
+    <!-- C. KPI 카드 -->
+    <section class="content-section pss-kpi-section" aria-label="2026 공무원 9급 핵심 수치">
+      <div class="pss-kpi-grid">
+        <div class="pss-kpi-card">
+          <p class="pss-kpi-card__label">7~9급 인상률</p>
+          <p class="pss-kpi-card__value">{PSS_HERO_STATS.raiseRateLow}</p>
+          <span class="pss-badge pss-badge--official">공식</span>
+          <p class="pss-kpi-card__sub">9년 만의 최대폭</p>
+        </div>
+        <div class="pss-kpi-card">
+          <p class="pss-kpi-card__label">9급 1호봉 기본급</p>
+          <p class="pss-kpi-card__value">{fmt(PSS_HERO_STATS.entry1HobongBase)}만 원</p>
+          <span class="pss-badge pss-badge--official">공식</span>
+          <p class="pss-kpi-card__sub">월 기준</p>
+        </div>
+        <div class="pss-kpi-card">
+          <p class="pss-kpi-card__label">세후 실수령 (1호봉)</p>
+          <p class="pss-kpi-card__value">약 206만 원</p>
+          <span class="pss-badge pss-badge--estimate">추정</span>
+          <p class="pss-kpi-card__sub">미혼·부양가족 없음 기준</p>
+        </div>
+        <div class="pss-kpi-card">
+          <p class="pss-kpi-card__label">9급 30호봉 기본급</p>
+          <p class="pss-kpi-card__value">{fmt(PSS_HERO_STATS.hobong30Base)}만 원</p>
+          <span class="pss-badge pss-badge--official">공식</span>
+          <p class="pss-kpi-card__sub">월 기준</p>
+        </div>
+      </div>
+      <p class="pss-source-note">출처: 인사혁신처 공무원보수규정 (2026.1.2 개정)</p>
+    </section>
+
+    <!-- D. 봉급 인상 추이 -->
+    <section class="content-section" aria-labelledby="pss-raise-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">봉급 인상 현황</p>
+        <h2 id="pss-raise-title">
+          2017~2026 공무원 봉급 인상률 추이
+          <span class="pss-badge pss-badge--official">공식</span>
+        </h2>
+        <p>2026년 전체 3.5% 인상, 7~9급 저연차는 6.6% 인상. 2021년 코로나 영향으로 0.9%를 기록한 이후 회복세입니다.</p>
+      </div>
+      <div class="pss-chart-wrap">
+        <canvas id="pss-raise-chart" aria-label="연도별 봉급 인상률 차트"></canvas>
+      </div>
+      <p class="pss-source-note">출처: 인사혁신처. 2026년은 7~9급 기준 6.6%, 전체 평균 3.5%</p>
+    </section>
+
+    <!-- E. 호봉별 기본급 테이블 -->
+    <section class="content-section" aria-labelledby="pss-hobong-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">2026 공무원 9급 봉급표</p>
+        <h2 id="pss-hobong-title">
+          9급 호봉별 기본급 <span class="pss-badge pss-badge--official">공식 일부</span>
+        </h2>
+        <p>1·2·3·10·15·20·30호봉은 인사혁신처 공식 수치, 나머지는 추정치입니다. 세후는 미혼·부양가족 없음 기준입니다.</p>
+      </div>
+
+      <div style="overflow-x:auto">
+        <table class="pss-hobong-summary-table">
+          <thead>
+            <tr>
+              <th>호봉</th>
+              <th>월 기본급</th>
+              <th>수당 포함 총지급</th>
+              <th>세후 실수령 (추정)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PSS_SUMMARY_HOBONG.map((h) => (
+              <tr class={h.no === 1 ? "pss-hobong-row--highlight" : ""}>
+                <td><strong>{h.no}호봉</strong>{h.isOfficial ? <span class="pss-badge pss-badge--official" style="margin-left:4px">공식</span> : null}</td>
+                <td>{fmtWon(h.monthlyBase)}원</td>
+                <td>{fmtWon(h.monthlyBase + 295_000)}원 <span style="font-size:0.7rem;color:#888">(+직급보조비+급식비)</span></td>
+                <td>
+                  약 {fmt(h.monthlyNetEstimate)}만 원
+                  <span class="pss-badge pss-badge--estimate">추정</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <button class="pss-hobong-toggle-btn" id="pss-hobong-toggle" aria-expanded="false">
+        전체 호봉표 펼쳐보기 (1~30호봉) ▼
+      </button>
+
+      <div id="pss-hobong-full" hidden>
+        <div class="pss-hobong-full-wrap">
+          <table class="pss-hobong-full-table">
+            <thead>
+              <tr>
+                <th>호봉</th>
+                <th>월 기본급</th>
+                <th>직급보조비+급식비 포함</th>
+                <th>세후 실수령 (추정)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PSS_GRADES[0].hobong.map((h) => (
+                <tr class={h.isOfficial ? "" : ""} data-pss-hobong-row={h.no}>
+                  <td>
+                    <strong>{h.no}</strong>
+                    {h.isOfficial
+                      ? <span class="pss-badge pss-badge--official" style="margin-left:3px;font-size:0.6rem">공식</span>
+                      : <span class="pss-not-official">추정</span>}
+                  </td>
+                  <td>{fmtWon(h.monthlyBase)}원</td>
+                  <td>{fmtWon(h.monthlyBase + 295_000)}원</td>
+                  <td>약 {fmt(h.monthlyNetEstimate)}만 원</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="pss-hobong-footnote">
+          ※ 비공식 호봉 수치는 공식 앵커(1·2·3·10·15·20·30호봉) 사이 선형 보간 추정치입니다.
+          정확한 수치는 인사혁신처 공무원보수규정을 직접 확인하세요.
+          <span class="pss-badge pss-badge--ref">참고</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- F. 실수령액 계산기 -->
+    <section class="content-section" aria-labelledby="pss-calc-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">실수령액 계산기</p>
+        <h2 id="pss-calc-title">
+          호봉 선택 → 예상 실수령액 즉시 계산
+          <span class="pss-badge pss-badge--estimate">추정</span>
+        </h2>
+        <p>직급·호봉·가족 조건을 입력하면 기본급 기준 예상 실수령액을 계산합니다. 초과근무수당·성과상여금은 포함하지 않습니다.</p>
+      </div>
+
+      <div class="pss-calc-grid">
+        <!-- 입력 영역 -->
+        <div class="pss-calc-inputs">
+          <div class="pss-input-group">
+            <label for="pss-select-grade">직급 선택</label>
+            <select id="pss-select-grade" data-pss-grade>
+              <option value="9">9급 (일반직 9급)</option>
+              <option value="8">8급 (일반직 8급) — 추정</option>
+              <option value="7">7급 (일반직 7급) — 추정</option>
+            </select>
+          </div>
+
+          <div class="pss-input-group">
+            <label for="pss-range-hobong">호봉 선택</label>
+            <div class="pss-slider-row">
+              <input
+                type="range"
+                id="pss-range-hobong"
+                data-pss-hobong
+                min="1"
+                max="30"
+                value="1"
+                aria-label="호봉 슬라이더"
+              />
+              <span class="pss-hobong-val" data-pss-hobong-display>1호봉</span>
+            </div>
+          </div>
+
+          <div class="pss-input-group">
+            <label for="pss-select-spouse">배우자 유무</label>
+            <select id="pss-select-spouse" data-pss-spouse>
+              <option value="0">없음</option>
+              <option value="1">있음 (+4만 원/월)</option>
+            </select>
+          </div>
+
+          <div class="pss-input-group">
+            <label for="pss-select-children">자녀 수</label>
+            <select id="pss-select-children" data-pss-children>
+              <option value="0">없음</option>
+              <option value="1">1명 (+2만 원/월)</option>
+              <option value="2">2명 (+4만 원/월)</option>
+              <option value="3">3명 (+6만 원/월)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 결과 영역 -->
+        <div class="pss-calc-result" aria-live="polite">
+          <div class="pss-result-row">
+            <span class="pss-result-label">기본급 (본봉)</span>
+            <span class="pss-result-value" data-pss-r-base>—</span>
+          </div>
+          <div class="pss-result-row">
+            <span class="pss-result-label">고정 수당 합계</span>
+            <span class="pss-result-value" data-pss-r-allowance>—</span>
+          </div>
+          <div class="pss-result-row">
+            <span class="pss-result-label">총 지급액</span>
+            <span class="pss-result-value" data-pss-r-total>—</span>
+          </div>
+          <div class="pss-result-row">
+            <span class="pss-result-label">공제 합계</span>
+            <span class="pss-result-value pss-result-value--deduction" data-pss-r-deduction>—</span>
+          </div>
+          <div class="pss-result-row">
+            <span class="pss-result-label">예상 실수령액 <span class="pss-badge pss-badge--estimate">추정</span></span>
+            <span class="pss-result-value pss-result-value--net" data-pss-r-net>—</span>
+          </div>
+          <div class="pss-result-row">
+            <span class="pss-result-label">연봉 환산 (×12)</span>
+            <span class="pss-result-value" data-pss-r-annual>—</span>
+          </div>
+        </div>
+      </div>
+      <p class="pss-calc-disclaimer">
+        ※ 공제 항목: 공무원연금(기본급×9%), 건강보험(3.545%), 장기요양(건보×12.95%), 소득세(근로소득공제 후 간이세율), 지방소득세(소득세×10%)<br>
+        ※ 본 계산기는 참고용이며, 초과근무·성과상여금·특수업무수당은 포함하지 않습니다.
+      </p>
+    </section>
+
+    <!-- G. 수당 구조 -->
+    <section class="content-section" aria-labelledby="pss-allowance-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">수당 구조</p>
+        <h2 id="pss-allowance-title">2026 공무원 수당 구조 완전 해설</h2>
+        <p>공식 규정 기반 항목만 포함합니다. 기관·직렬별로 추가 수당이 있을 수 있습니다.</p>
+      </div>
+
+      <div class="pss-allowance-tabs" role="tablist" aria-label="수당 유형">
+        <button class="pss-allowance-tab is-active" data-pss-tab="fixed"    role="tab" aria-selected="true">고정 수당</button>
+        <button class="pss-allowance-tab"           data-pss-tab="variable" role="tab" aria-selected="false">변동 수당</button>
+        <button class="pss-allowance-tab"           data-pss-tab="annual"   role="tab" aria-selected="false">연간 지급</button>
+      </div>
+
+      <div data-pss-tabpanel="fixed">
+        <div class="pss-allowance-grid">
+          {allowanceFixed.map((a) => (
+            <div class="pss-allowance-card">
+              <div class="pss-allowance-card__top">
+                <strong>{a.name}</strong>
+                <span>{a.amountLabel}</span>
+              </div>
+              <p class="pss-allowance-card__note">{a.note}</p>
+              <p class="pss-allowance-card__basis">{a.basis}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div data-pss-tabpanel="variable" hidden>
+        <div class="pss-allowance-grid">
+          {allowanceVariable.map((a) => (
+            <div class="pss-allowance-card">
+              <div class="pss-allowance-card__top">
+                <strong>{a.name}</strong>
+                <span>{a.amountLabel}</span>
+              </div>
+              <p class="pss-allowance-card__note">{a.note}</p>
+              <p class="pss-allowance-card__basis">{a.basis}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div data-pss-tabpanel="annual" hidden>
+        <div class="pss-allowance-grid">
+          {allowanceAnnual.map((a) => (
+            <div class="pss-allowance-card">
+              <div class="pss-allowance-card__top">
+                <strong>{a.name}</strong>
+                <span>{a.amountLabel}</span>
+              </div>
+              <p class="pss-allowance-card__note">{a.note}</p>
+              <p class="pss-allowance-card__basis">{a.basis}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- H. 20년 커리어 시뮬레이션 -->
+    <section class="content-section" aria-labelledby="pss-career-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">커리어 시뮬레이션</p>
+        <h2 id="pss-career-title">
+          20년 공무원 커리어 — 보수 성장 흐름
+          <span class="pss-badge pss-badge--estimate">추정</span>
+        </h2>
+        <p>매년 1호봉 승급 가정. 5년차 8급·12년차 7급 진입 기준 추정치입니다. 개인 승진 속도·경력에 따라 실제 경로는 달라집니다.</p>
+      </div>
+      <div class="pss-career-table-wrap">
+        <table class="pss-career-table">
+          <thead>
+            <tr>
+              <th>시점</th>
+              <th>직급</th>
+              <th>호봉</th>
+              <th>기본급 (월)</th>
+              <th>세후 실수령 추정</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PSS_CAREER_MILESTONES.map((m) => (
+              <tr>
+                <td>{m.label}</td>
+                <td>{m.grade}</td>
+                <td>{m.hobong}호봉</td>
+                <td>{fmtWon(m.monthlyBase)}원</td>
+                <td>
+                  약 {fmt(m.estimatedNetMonth)}만 원
+                  <span class="pss-badge pss-badge--estimate">추정</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="pss-source-note">
+        ※ 미혼·부양가족 없음 기준 추정. 승진 시기·수당·정근수당 등에 따라 실제 소득은 다릅니다.
+      </p>
+    </section>
+
+    <!-- I. 민간 vs 공무원 비교 -->
+    <section class="content-section" aria-labelledby="pss-compare-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">처우 비교</p>
+        <h2 id="pss-compare-title">
+          공무원 vs 대기업 vs 중소기업 처우 비교
+          <span class="pss-badge pss-badge--editorial">편집부 기준</span>
+        </h2>
+        <p>공식 수치가 아닌 비교계산소 편집부 기준입니다. 기업·기관별 편차가 크며, 공시 준비를 검토 중인 분들을 위한 참고 자료입니다.</p>
+      </div>
+      <div class="pss-compare-table-wrap">
+        <table class="pss-compare-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>공무원</th>
+              <th>대기업</th>
+              <th>중소기업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PSS_COMPARE.map((row) => (
+              <tr>
+                <td>{row.category}</td>
+                <td class="pss-col-public">{row.publicServant}</td>
+                <td>{row.bigCorp}</td>
+                <td>{row.smeCorp}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- J. FAQ -->
+    <section class="content-section" aria-labelledby="pss-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="pss-faq-title">공무원 9급 연봉 FAQ</h2>
+      </div>
+      <div class="pss-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+        {PSS_FAQ.map((item) => (
+          <div class="pss-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="pss-faq-q" itemprop="name" aria-expanded="false">
+              {item.q}
+              <span class="pss-faq-icon">▼</span>
+            </button>
+            <div class="pss-faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.a}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- K. 관련 링크 -->
+    <section class="content-section" aria-labelledby="pss-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">내부 연결</p>
+        <h2 id="pss-related-title">같이 보면 좋은 리포트</h2>
+        <p>공무원 연봉 시리즈와 민간 직업 연봉 리포트를 이어서 볼 수 있습니다.</p>
+      </div>
+      <div class="pss-link-grid">
+        <a class="pss-link-card" href={withBase("/reports/teacher-salary-2026/")}>
+          <span class="pss-link-card__eyebrow">관련 리포트</span>
+          <strong>교사 호봉별 연봉 2026</strong>
+          <p>초·중·고 교원 봉급표 기준 호봉별 기본급과 수당 비교.</p>
+        </a>
+        <a class="pss-link-card" href={withBase("/reports/police-salary-2026/")}>
+          <span class="pss-link-card__eyebrow">관련 리포트</span>
+          <strong>경찰관 계급별 연봉 2026</strong>
+          <p>순경~치안정감 계급별 기본급·수당·실수령액 비교.</p>
+        </a>
+        <a class="pss-link-card" href={withBase("/reports/firefighter-salary-2026/")}>
+          <span class="pss-link-card__eyebrow">관련 리포트</span>
+          <strong>소방관 계급별 연봉 2026</strong>
+          <p>교대근무 수당 포함 소방공무원 총보상 비교.</p>
+        </a>
+        <a class="pss-link-card" href={withBase("/reports/nurse-salary-2026/")}>
+          <span class="pss-link-card__eyebrow">관련 리포트</span>
+          <strong>간호사 연차별 연봉 2026</strong>
+          <p>병원 규모별 간호사 연봉 비교.</p>
+        </a>
+        <a class="pss-link-card" href={withBase("/tools/salary/")}>
+          <span class="pss-link-card__eyebrow">계산기</span>
+          <strong>연봉 실수령 계산기</strong>
+          <p>공무원 연봉을 입력해 세후 체감 실수령을 확인하세요.</p>
+        </a>
+        <a class="pss-link-card" href={withBase("/reports/")}>
+          <span class="pss-link-card__eyebrow">리포트 모음</span>
+          <strong>전체 비교 리포트 보기</strong>
+          <p>다른 직업·자산·생활 리포트까지 탐색.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 공무원 9급 연봉·실수령액 완전 가이드 — 비교계산소 해설"
+      intro={[
+        "2026년 공무원 9급 기본급은 인사혁신처 공무원보수규정 개정으로 1호봉 기준 2,133,000원입니다. 7~9급 저연차 인상률 6.6%는 9년 만의 최대폭으로, 2025년 6.0%에 이어 2년 연속 높은 수준을 유지하고 있습니다.",
+        "실수령액은 기본급 외에 직급보조비(9급 13.5만 원), 정액급식비(16만 원), 가족수당 등 수당을 더하고 공무원연금(9%), 건강보험(3.545%), 소득세 등을 공제해 산출합니다. 미혼·부양가족 없음 기준 1호봉 실수령액은 약 206만 원이며, 가족수당·초과근무수당이 추가되면 더 높아집니다.",
+        "공무원의 강점은 단순 월급 수준이 아닌 총보상 패키지에 있습니다. 60세 법정 정년, 공무원연금(국민연금 대비 유리한 구조), 육아휴직 보장, 정근수당가산금(근속 5년~) 등을 감안하면 장기 기대 소득은 단순 초봉 비교보다 높습니다.",
+      ]}
+      criteria={[
+        "기본급은 인사혁신처 공무원보수규정 별표 3 (2026.1.2 개정) 기준",
+        "세후 실수령은 미혼·부양가족 없음 기준 추정치이며 개인 상황에 따라 다름",
+        "비공식 호봉(4~9, 11~14, 16~19, 21~29) 기본급은 공식 앵커 사이 선형 보간 추정",
+        "8급·7급 봉급표는 공무원보수규정 참고 추정치",
+        "민간 vs 공무원 처우 비교는 비교계산소 편집부 기준 상대 평가",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/reports/teacher-salary-2026/", label: "2026 교사 월급표·연봉 실수령액" },
+        { href: "/reports/police-salary-2026/", label: "2026 경찰관 계급별 연봉·실수령액" },
+        { href: "/reports/firefighter-salary-2026/", label: "소방관 계급별 연봉·수당 비교 2026" },
+        { href: "/reports/nurse-salary-2026/", label: "간호사 연차별 연봉 + 병원 규모별 비교 2026" },
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/reports/", label: "전체 비교 리포트 보기" },
+      ]}
+    />
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/public-servant-salary-2026.js" defer></script>
+</BaseLayout>

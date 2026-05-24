@@ -1,0 +1,550 @@
+// ============================================================
+// _public-servant-salary-2026.scss  —  prefix: pss-
+// ============================================================
+
+.pss-page {
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #d0d9ea;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #f7f9ff 0%, #eef2fb 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.05);
+    padding: 24px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 18px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #1b3a6b;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.12rem;
+      line-height: 1.38;
+      color: #172033;
+    }
+
+    p {
+      margin: 0;
+      max-width: 820px;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #5f6674;
+    }
+  }
+}
+
+// ── 배지 ────────────────────────────────────────────────────
+.pss-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  vertical-align: middle;
+  white-space: nowrap;
+
+  &--official {
+    border: 1px solid #1b5e20;
+    background: #e8f5e9;
+    color: #1b5e20;
+  }
+
+  &--estimate {
+    border: 1px solid #e65100;
+    background: #fff3e0;
+    color: #e65100;
+  }
+
+  &--ref {
+    border: 1px solid #01579b;
+    background: #e3f2fd;
+    color: #01579b;
+  }
+
+  &--editorial {
+    border: 1px solid #6a1b9a;
+    background: #f3e5f5;
+    color: #6a1b9a;
+  }
+}
+
+// ── KPI 카드 ────────────────────────────────────────────────
+.pss-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.pss-kpi-card {
+  padding: 16px;
+  border: 1px solid #c5d0e6;
+  border-radius: 12px;
+  background: #fff;
+
+  &__label {
+    margin: 0 0 4px;
+    font-size: 0.78rem;
+    color: #5f6674;
+  }
+
+  &__value {
+    margin: 0 0 6px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1b3a6b;
+    word-break: break-all;
+  }
+
+  &__sub {
+    margin: 4px 0 0;
+    font-size: 0.73rem;
+    color: #888;
+  }
+}
+
+.pss-source-note {
+  margin: 10px 0 0;
+  font-size: 0.72rem;
+  color: #888;
+}
+
+// ── 인상률 차트 ─────────────────────────────────────────────
+.pss-chart-wrap {
+  max-height: 240px;
+  position: relative;
+}
+
+// ── 호봉표 ──────────────────────────────────────────────────
+.pss-hobong-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+
+  th {
+    padding: 8px 10px;
+    text-align: right;
+    font-size: 0.75rem;
+    color: #5f6674;
+    background: #eef2fb;
+    border-bottom: 2px solid #c5d0e6;
+
+    &:first-child { text-align: center; }
+  }
+
+  td {
+    padding: 8px 10px;
+    text-align: right;
+    border-bottom: 1px solid #e0e7f0;
+
+    &:first-child { text-align: center; font-weight: 700; }
+  }
+
+  tr.pss-hobong-row--highlight td {
+    background: #e8f0fe;
+    font-weight: 700;
+  }
+}
+
+.pss-hobong-toggle-btn {
+  display: block;
+  margin: 14px auto 0;
+  padding: 8px 20px;
+  border: 1px solid #1a56db;
+  border-radius: 8px;
+  background: transparent;
+  color: #1a56db;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background: #e8f0fe; }
+}
+
+.pss-hobong-full-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 16px;
+}
+
+.pss-hobong-full-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  th {
+    padding: 7px 10px;
+    text-align: right;
+    font-size: 0.73rem;
+    color: #5f6674;
+    background: #eef2fb;
+    border-bottom: 2px solid #c5d0e6;
+
+    &:first-child { text-align: center; width: 60px; }
+  }
+
+  td {
+    padding: 6px 10px;
+    text-align: right;
+    border-bottom: 1px solid #e8edf5;
+
+    &:first-child { text-align: center; font-weight: 700; }
+  }
+
+  tr.pss-hobong-row--highlight td { background: #e8f0fe; font-weight: 700; }
+  tr.pss-hobong-row--is-active td { background: #dbeafe; }
+
+  .pss-not-official {
+    font-size: 0.67rem;
+    color: #e65100;
+    margin-left: 3px;
+  }
+}
+
+.pss-hobong-footnote {
+  margin: 10px 0 0;
+  font-size: 0.73rem;
+  color: #888;
+}
+
+// ── 실수령액 계산기 ─────────────────────────────────────────
+.pss-calc-grid {
+  display: grid;
+  gap: 20px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.pss-calc-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pss-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  select {
+    padding: 8px 12px;
+    border: 1px solid #c5d0e6;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: #fff;
+    cursor: pointer;
+
+    &:focus { outline: 2px solid #1a56db; outline-offset: 2px; }
+  }
+
+  .pss-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    accent-color: #1a56db;
+    cursor: pointer;
+  }
+
+  .pss-hobong-val {
+    min-width: 52px;
+    padding: 4px 8px;
+    border: 1px solid #c5d0e6;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 700;
+    background: #eef2fb;
+    color: #1b3a6b;
+  }
+}
+
+.pss-calc-result {
+  background: #eef4ff;
+  border: 1px solid #bfcfe8;
+  border-radius: 12px;
+  padding: 20px;
+
+  .pss-result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px solid #c5d0e6;
+    font-size: 0.88rem;
+
+    &:last-child {
+      border-bottom: none;
+      margin-top: 6px;
+      padding-top: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1b3a6b;
+    }
+  }
+
+  .pss-result-label { color: #5f6674; }
+  .pss-result-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pss-result-value--deduction { color: #c0392b; }
+  .pss-result-value--net { color: #1a56db; font-size: 1.2rem; }
+}
+
+.pss-calc-disclaimer {
+  margin: 12px 0 0;
+  font-size: 0.72rem;
+  color: #888;
+  line-height: 1.6;
+}
+
+// ── 수당 탭 ─────────────────────────────────────────────────
+.pss-allowance-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.pss-allowance-tab {
+  padding: 6px 16px;
+  border: 1px solid #c5d0e6;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #5f6674;
+
+  &.is-active {
+    background: #1b3a6b;
+    border-color: #1b3a6b;
+    color: #fff;
+  }
+
+  &:hover:not(.is-active) { background: #eef2fb; }
+}
+
+.pss-allowance-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.pss-allowance-card {
+  padding: 14px;
+  border: 1px solid #d0d9ea;
+  border-radius: 10px;
+  background: #fff;
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    strong { font-size: 0.9rem; color: #1b3a6b; }
+    span { font-size: 0.82rem; font-weight: 600; color: #374151; text-align: right; }
+  }
+
+  &__note {
+    margin: 4px 0;
+    font-size: 0.77rem;
+    color: #5f6674;
+  }
+
+  &__basis {
+    margin: 4px 0 0;
+    font-size: 0.7rem;
+    color: #9ca3af;
+  }
+}
+
+// ── 커리어 테이블 ────────────────────────────────────────────
+.pss-career-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pss-career-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+
+  th {
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #5f6674;
+    background: #eef2fb;
+    border-bottom: 2px solid #c5d0e6;
+  }
+
+  td {
+    padding: 9px 12px;
+    text-align: center;
+    border-bottom: 1px solid #e0e7f0;
+
+    &:first-child { font-weight: 700; }
+  }
+
+  tr:first-child td { background: #e8f0fe; }
+}
+
+// ── 민간 vs 공무원 비교 ──────────────────────────────────────
+.pss-compare-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pss-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th {
+    padding: 8px 12px;
+    font-size: 0.77rem;
+    color: #5f6674;
+    background: #eef2fb;
+    border-bottom: 2px solid #c5d0e6;
+    white-space: nowrap;
+
+    &:first-child { text-align: left; }
+    &:not(:first-child) { text-align: center; }
+  }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #e0e7f0;
+    vertical-align: top;
+    line-height: 1.5;
+
+    &:first-child { font-weight: 600; color: #1b3a6b; white-space: nowrap; }
+    &:not(:first-child) { text-align: center; }
+  }
+
+  .pss-col-public { color: #1b5e20; font-weight: 600; }
+}
+
+// ── FAQ ─────────────────────────────────────────────────────
+.pss-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pss-faq-item {
+  border: 1px solid #d0d9ea;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.pss-faq-q {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  color: #172033;
+
+  &[aria-expanded="true"] .pss-faq-icon { transform: rotate(180deg); }
+
+  .pss-faq-icon {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: #1a56db;
+    transition: transform 0.2s;
+  }
+}
+
+.pss-faq-a {
+  padding: 0 16px 14px;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+// ── 관련 링크 ────────────────────────────────────────────────
+.pss-link-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.pss-link-card {
+  display: block;
+  padding: 16px;
+  border: 1px solid #d0d9ea;
+  border-radius: 12px;
+  background: #fff;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: #1a56db;
+    box-shadow: 0 4px 12px rgba(26, 86, 219, 0.1);
+  }
+
+  &__eyebrow {
+    display: block;
+    font-size: 0.67rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #1a56db;
+    margin-bottom: 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.88rem;
+    color: #1b3a6b;
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.77rem;
+    color: #5f6674;
+    line-height: 1.5;
+  }
+}
+
+// ── 모바일 보정 ─────────────────────────────────────────────
+@media (max-width: 359px) {
+  .pss-kpi-grid { grid-template-columns: 1fr; }
+  .pss-kpi-card__value { font-size: 1.1rem; }
+}

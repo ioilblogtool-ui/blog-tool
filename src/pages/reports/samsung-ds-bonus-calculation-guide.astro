@@ -1,0 +1,254 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  AGREEMENT_FAQ,
+  DIVISION_ROWS,
+  HERO_KPIS,
+  RELATED_LINKS,
+  SALARY_PERCENTAGE_ROWS,
+  SAMSUNG_DS_BONUS_GUIDE_META,
+  SEO_CRITERIA,
+  SEO_INTRO,
+  TAI_OPI_ROWS,
+  formatWon,
+} from "../../data/samsungDsBonusGuide";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteUrl = "https://bigyocalc.com";
+const relatedForSeo = RELATED_LINKS.map(({ href, label }) => ({ href, label }));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: SAMSUNG_DS_BONUS_GUIDE_META.h1,
+      description: SAMSUNG_DS_BONUS_GUIDE_META.description,
+      inLanguage: "ko-KR",
+      dateModified: SAMSUNG_DS_BONUS_GUIDE_META.dateModified,
+      mainEntityOfPage: `${siteUrl}/reports/${SAMSUNG_DS_BONUS_GUIDE_META.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: AGREEMENT_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={SAMSUNG_DS_BONUS_GUIDE_META.title}
+  description={SAMSUNG_DS_BONUS_GUIDE_META.description}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sdbg-page" data-report="samsung-ds-bonus-calculation-guide">
+    <CalculatorHero
+      eyebrow={SAMSUNG_DS_BONUS_GUIDE_META.eyebrow}
+      title={SAMSUNG_DS_BONUS_GUIDE_META.h1}
+      description="TAI·OPI 차이, DS·DX·MX 사업부별 지급 구조, 연봉 대비 성과급 비율, 협의안·복지 변화까지 한 번에 정리합니다."
+    />
+
+    <InfoNotice
+      title="성과급 기준 해석 안내"
+      lines={[
+        "이 페이지는 삼성전자 성과급의 구조와 계산 기준을 설명하는 해설 리포트입니다.",
+        "실제 지급액은 회사 공지, 사업부, 직급, 기준급, 협의안 확정 여부에 따라 달라질 수 있습니다.",
+        "확정되지 않은 금액은 추정·시뮬레이션·보도 기준으로만 표시해야 합니다.",
+      ]}
+    />
+
+    <section class="sdbg-hero-board" aria-label="삼성전자 DS 성과급 계산 기준 핵심 요약">
+      <div class="sdbg-hero-copy">
+        <span class="sdbg-pill">기준 해설</span>
+        <h2>DS 성과급 계산기는 먼저 TAI와 OPI를 나눠 보는 것이 출발점입니다</h2>
+        <p>
+          삼성전자 성과급 검색어는 계산 의도와 기준 설명 의도가 함께 섞여 있습니다. 이 페이지에서는 용어와
+          사업부 차이를 먼저 정리하고, 내 연봉 기준 계산은 삼성 성과급 계산기로 이어갑니다.
+        </p>
+        <div class="sdbg-hero-actions">
+          <a class="button button--primary" href={withBase("/tools/samsung-bonus/")}>내 연봉으로 삼성 성과급 계산하기</a>
+          <a class="button button--secondary" href={withBase("/tools/bonus-after-tax-calculator/?company=samsung")}>
+            세후 실수령액 계산하기
+          </a>
+        </div>
+      </div>
+      <div class="sdbg-kpi-grid">
+        {HERO_KPIS.map((item) => (
+          <article class="sdbg-kpi-card">
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sdbg-section" id="tai-opi">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">TAI / OPI</p>
+        <h2>삼성전자 성과급은 TAI와 OPI를 분리해서 봐야 합니다</h2>
+        <p>검색에서는 성과급으로 한 번에 말하지만, 실제 해석에서는 지급 주기와 기준이 다릅니다.</p>
+      </div>
+      <div class="sdbg-table-wrap">
+        <table class="sdbg-comparison-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>TAI</th>
+              <th>OPI</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TAI_OPI_ROWS.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                <td>{row.tai}</td>
+                <td>{row.opi}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="sdbg-inline-cta">
+        <div>
+          <strong>TAI·OPI를 나눠서 계산해보세요</strong>
+          <p>삼성 성과급 계산기에서 사업부, 연봉, OPI, TAI를 각각 조정할 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/samsung-bonus/")}>계산기 열기</a>
+      </div>
+    </section>
+
+    <section class="content-section sdbg-section" id="division-difference">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">사업부 차이</p>
+        <h2>DS·DX·MX 성과급은 같은 삼성전자라도 다르게 봐야 합니다</h2>
+        <p>같은 연봉이어도 사업부별 실적, 지급률, 특별성과급 포함 여부에 따라 총보상 체감액이 달라질 수 있습니다.</p>
+      </div>
+      <div class="sdbg-division-grid">
+        {DIVISION_ROWS.map((row) => (
+          <article class={`sdbg-division-card${row.featured ? " sdbg-division-card--featured" : ""}`}>
+            <span>{row.division}</span>
+            <strong>{row.area}</strong>
+            <p>{row.interpretation}</p>
+            <small>{row.calculatorPreset}</small>
+          </article>
+        ))}
+      </div>
+      <div class="sdbg-inline-cta sdbg-inline-cta--soft">
+        <div>
+          <strong>DS·DX·MX 사업부를 선택해서 다시 계산</strong>
+          <p>사업부 프리셋과 직접 입력을 비교하면 검색에서 본 지급률을 내 조건에 맞춰 볼 수 있습니다.</p>
+        </div>
+        <a class="button button--secondary" href={withBase("/tools/samsung-bonus/")}>사업부별 계산하기</a>
+      </div>
+    </section>
+
+    <section class="content-section sdbg-section" id="salary-ratio">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연봉 대비 감각</p>
+        <h2>OPI 10%·30%·50%는 세전 금액으로 먼저 감을 잡습니다</h2>
+        <p>아래 표는 이해를 돕기 위한 단순 예시입니다. 실제 지급 기준은 기준급과 회사 내부 산식에 따라 달라질 수 있습니다.</p>
+      </div>
+      <div class="sdbg-table-wrap">
+        <table class="sdbg-salary-table">
+          <thead>
+            <tr>
+              <th>연봉</th>
+              <th>OPI 10%</th>
+              <th>OPI 30%</th>
+              <th>OPI 50%</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SALARY_PERCENTAGE_ROWS.map((row) => (
+              <tr>
+                <th>{formatWon(row.salary)}</th>
+                <td>{formatWon(row.opi10)}</td>
+                <td>{formatWon(row.opi30)}</td>
+                <td><strong>{formatWon(row.opi50)}</strong></td>
+                <td>{row.interpretation}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="sdbg-caution">
+        위 표는 연봉 대비 감각을 잡기 위한 단순 예시입니다. 실제 지급 기준은 기준급, 사업부별 지급률, TAI,
+        특별성과급, 복지성 항목에 따라 달라질 수 있습니다.
+      </p>
+      <div class="sdbg-inline-cta">
+        <div>
+          <strong>세후 기준으로 다시 보면 계획이 달라집니다</strong>
+          <p>성과급은 근로소득으로 과세되므로 세전 금액과 통장 입금액이 다를 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/bonus-after-tax-calculator/?company=samsung")}>
+          세후 실수령액 보기
+        </a>
+      </div>
+    </section>
+
+    <section class="content-section sdbg-section" id="agreement-faq">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">협의안·복지 FAQ</p>
+        <h2>협의안과 복지 변화는 총보상 항목을 나눠서 확인해야 합니다</h2>
+        <p>잠정합의안, 특별성과급, 자사주, 복지성 혜택은 모두 체감 방식이 다르므로 현금 성과급과 분리해서 봅니다.</p>
+      </div>
+      <div class="sdbg-faq-list">
+        {AGREEMENT_FAQ.map((item, index) => (
+          <details class="sdbg-faq-item" open={index === 0}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sdbg-section" id="next-action">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다음 행동</p>
+        <h2>기준을 확인했다면 내 조건으로 바로 계산하세요</h2>
+      </div>
+      <div class="sdbg-next-grid">
+        <a href={withBase("/tools/samsung-bonus/")}>
+          <span>1</span>
+          <strong>삼성전자 성과급 계산</strong>
+          <p>사업부, 연봉, OPI, TAI를 넣어 예상 총보상을 확인합니다.</p>
+        </a>
+        <a href={withBase("/tools/bonus-after-tax-calculator/?company=samsung")}>
+          <span>2</span>
+          <strong>세후 실수령액 확인</strong>
+          <p>세전 성과급이 실제 통장에 얼마나 남는지 계산합니다.</p>
+        </a>
+        <a href={withBase("/reports/corporate-bonus-comparison-2026/")}>
+          <span>3</span>
+          <strong>대기업 성과급 비교</strong>
+          <p>삼성전자, SK하이닉스, 현대차 성과급 구조를 함께 봅니다.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="삼성전자 DS 성과급 계산 기준을 볼 때 중요한 점"
+      intro={SEO_INTRO}
+      criteria={SEO_CRITERIA}
+      faq={AGREEMENT_FAQ}
+      related={relatedForSeo}
+    />
+  </main>
+</BaseLayout>

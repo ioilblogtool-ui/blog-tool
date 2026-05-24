@@ -170,6 +170,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "lg-bonus",
+    title: "LG전자 성과급 계산기",
+    description: "H&A·HE·VS·BS 사업부별 PI 지급률과 기본급을 입력해 세전·세후 성과급을 계산하고 삼성전자·SK하이닉스와 비교하는 페이지",
+    order: 9.5,
+    eyebrow: "LG Electronics Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "H&A 기준", value: "800만", context: "대리 기준" },
+      { label: "사업부별", value: "H&A·HE·VS·BS" }
+    ]
+  },
+  {
     slug: "hyundai-bonus",
     title: "현대차 성과급 계산기 2026",
     description: "현대자동차 임단협 성과급 패키지를 직급·연봉·월 기본급 기준으로 계산하고 자사주 포함 세후 실수령과 부부 합산을 확인하는 페이지",

@@ -36,6 +36,20 @@ export const reports: ReportMeta[] = [
     badges: ["성과급", "삼성전자", "SK하이닉스", "현대차"],
   },
   {
+    slug: "sk-hynix-bonus-2027",
+    title: "하이닉스 2027 성과급 전망 | SK하이닉스 PS·PI 시나리오",
+    description: "SK하이닉스 PS·PI 구조를 기준으로 2027 성과급 전망을 영업이익별 시나리오와 직급별 예상 금액으로 정리합니다.",
+    order: 3.6,
+    badges: ["SK하이닉스", "성과급", "2027"],
+  },
+  {
+    slug: "samsung-ds-bonus-calculation-guide",
+    title: "삼성전자 DS 성과급 계산 기준 | TAI·OPI 차이와 지급 방식",
+    description: "삼성전자 DS 성과급 계산 기준을 TAI·OPI 차이, DS·DX·MX 사업부별 지급 구조, 연봉 대비 성과급 비율, 협의안·복지 변화 FAQ로 정리합니다.",
+    order: 3.55,
+    badges: ["삼성전자", "DS", "성과급"],
+  },
+  {
     slug: "insurance-salary-bonus-comparison-2026",
     title: "국내 TOP 보험사 평균 연봉·성과급 비교 리포트 2026",
     description: "삼성화재, 삼성생명, 메리츠화재, 현대해상, DB손해보험, KB손해보험 등 주요 보험사의 평균 연봉, 신입 초봉, 성과급, 총보상을 함께 비교하는 인터랙티브 리포트입니다.",
@@ -195,6 +209,13 @@ export const reports: ReportMeta[] = [
     description: "초등·중학교·고등학교 교사 월급, 호봉별 연봉, 예상 실수령액, 담임·보직 수당과 기간제교사 차이를 2026년 교원 봉급표 기준으로 비교합니다.",
     order: 23,
     badges: ["교사", "공무원", "연봉", "호봉표", "2026"],
+  },
+  {
+    slug: "public-servant-salary-2026",
+    title: "2026 공무원 9급 연봉·실수령액 완전 가이드 — 호봉별 월급 계산기",
+    description: "2026년 공무원 9급 1호봉 초봉부터 30호봉까지 호봉별 기본급, 수당, 실수령액을 한눈에 확인하세요. 직급보조비·급식비·연금 공제까지 반영한 실수령액 계산기 제공.",
+    order: 23.5,
+    badges: ["공무원", "9급", "연봉", "호봉표", "2026"],
   },
   {
     slug: "postpartum-center-cost-2026",

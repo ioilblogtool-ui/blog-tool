@@ -1,0 +1,477 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  lgDivisions,
+  lgRankPresets,
+  lgScenarioOptions,
+  lgComparisonItems,
+  LG_NEXT_CALCULATOR,
+  LG_RELATED_CALCULATORS,
+  LG_EXTERNAL_REFERENCE_LINKS,
+  LG_AFFILIATE_PRODUCTS,
+} from "../../data/lgCompensation";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  lgDivisions,
+  lgRankPresets,
+  lgScenarioOptions,
+  lgComparisonItems,
+};
+---
+
+<BaseLayout
+  title="LG전자 성과급 계산기｜H&A·HE·VS·BS 사업부별 PI 세전·세후 계산"
+  description="LG전자 성과급 PI를 사업부와 기본급 기준으로 계산해보세요. H&A·HE·VS·BS 사업부별 지급률 추정값과 세전·세후 체감액, 삼성전자·SK하이닉스 비교까지 확인할 수 있습니다."
+  ogImage="/og/tools/lg-bonus.png"
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="lg-bonus" pageClass="lg-bonus-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="LG Electronics Compensation"
+        title="LG전자 성과급 계산기"
+        description="H&A·HE·VS·BS 사업부별 PI 지급률과 기본급을 입력하면 세전·세후 성과급을 바로 확인할 수 있습니다. 삼성전자·SK하이닉스·현대차와도 비교해보세요."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetLgBonusBtn" copyId="copyLgBonusLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="lg-bonus-inputs">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">사업부·직급·기본급 입력</h2>
+            </div>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field">
+              <span>사업부</span>
+              <select id="lgDivisionSelect">
+                {lgDivisions.map((d) => (
+                  <option value={d.code}>{d.label} — {d.description}</option>
+                ))}
+              </select>
+            </label>
+
+            <label class="field">
+              <span>직급</span>
+              <select id="lgRankSelect">
+                {lgRankPresets.map((r) => (
+                  <option value={r.code}>{r.label}</option>
+                ))}
+              </select>
+            </label>
+
+            <label class="field field-span-full">
+              <span>월 기본급</span>
+              <input id="lgMonthlyBaseInput" type="number" value="4000000" />
+              <small id="lgMonthlyBaseHint">직급 선택 시 예시값이 자동 입력됩니다. 직접 수정 가능합니다.</small>
+              <div class="calc-slider-row">
+                <input type="range" id="lgMonthlyBaseSlider" class="calc-slider"
+                  min="2000000" max="12000000" step="100000" value="4000000" />
+                <span id="lgMonthlyBaseSliderVal" class="calc-slider-val">400만원</span>
+              </div>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">PI 지급률 설정</p>
+              <h2 class="panel__title">추정값 또는 직접 입력</h2>
+            </div>
+          </div>
+
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input id="piModeEstimate" name="piMode" type="radio" value="ESTIMATE" checked />
+              <span>추정값 사용</span>
+            </label>
+            <label class="mode-chip">
+              <input id="piModeCustom" name="piMode" type="radio" value="CUSTOM" />
+              <span>직접 입력</span>
+            </label>
+          </div>
+          <small id="piModeHint" style="display:block;margin-top:6px;color:#888780;font-size:11px;">추정값은 보도 기반 시뮬레이션이며 실제 지급률과 다를 수 있습니다.</small>
+
+          <div id="lgScenarioBlock" style="margin-top:12px;">
+            <div class="toggle-grid">
+              {lgScenarioOptions.map((s) => (
+                <label class={`mode-chip${s.code === "AGGRESSIVE" ? " mode-chip--highlight" : ""}`}>
+                  <input name="lgScenario" type="radio" value={s.code} checked={s.code === "BASE"} />
+                  <span>{s.label}</span>
+                </label>
+              ))}
+            </div>
+            <small id="lgScenarioHint" style="display:block;margin-top:6px;color:#888780;font-size:11px;"></small>
+          </div>
+
+          <div id="lgCustomPiBlock" hidden style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field">
+                <span>상반기 PI 지급률 (%)</span>
+                <input id="lgPiH1Input" type="number" value="100" min="0" max="200" step="5" />
+                <div class="calc-slider-row">
+                  <input type="range" id="lgPiH1Slider" class="calc-slider" min="0" max="200" step="5" value="100" />
+                  <span id="lgPiH1SliderVal" class="calc-slider-val">100%</span>
+                </div>
+              </label>
+              <label class="field">
+                <span>하반기 PI 지급률 (%)</span>
+                <input id="lgPiH2Input" type="number" value="100" min="0" max="200" step="5" />
+                <div class="calc-slider-row">
+                  <input type="range" id="lgPiH2Slider" class="calc-slider" min="0" max="200" step="5" value="100" />
+                  <span id="lgPiH2SliderVal" class="calc-slider-val">100%</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <details class="detail-box detail-box--soft">
+          <summary>임협 타결금 추가 입력</summary>
+          <div class="detail-box__content detail-box__content--tight">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>임금협상 타결금 (만 원)</span>
+                <input id="lgUnionBonusInput" type="number" value="0" min="0" step="10" />
+                <small>미입력 시 0으로 계산합니다.</small>
+              </label>
+            </div>
+          </div>
+        </details>
+
+        <button id="calcLgBonusBtn" class="button button--primary" type="button">성과급 계산하기</button>
+      </div>
+    </Fragment>
+
+    <!-- 결과 우선 패널 -->
+    <article class="panel result-priority-panel" id="lg-bonus-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+          <h2 class="panel__title">내 예상 성과급</h2>
+        </div>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#lg-bonus-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#lg-bonus-details">세부 내역 보기</a>
+      </div>
+    </article>
+
+    <!-- KPI 핵심 카드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="lgb-section__eyebrow section-header__eyebrow">내 계산 결과</p>
+        <h2 id="lgResultHeadline">LG전자 성과급 계산 결과</h2>
+        <p id="lgResultSubcopy">사업부·직급 기준 시뮬레이션</p>
+      </div>
+      <div class="kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p>연간 PI 합계 (세전)</p>
+          <strong id="lgTotalPiGross">-</strong>
+          <span id="lgTotalPiGrossNote">시뮬레이션</span>
+        </article>
+        <article class="kpi-card">
+          <p>연간 PI 합계 (세후 추정)</p>
+          <strong id="lgTotalPiNet">-</strong>
+          <span id="lgTotalPiNetNote">참고값</span>
+        </article>
+        <article class="kpi-card">
+          <p>월 기본급 대비</p>
+          <strong id="lgMonthlyRatio">-</strong>
+          <span id="lgMonthlyRatioNote">개월치</span>
+        </article>
+        <article class="kpi-card">
+          <p>연봉 대비 비율</p>
+          <strong id="lgAnnualRatio">-</strong>
+          <span id="lgAnnualRatioNote">참고값</span>
+        </article>
+      </div>
+
+      <div class="lgb-next-step" aria-label="계산 결과 다음 단계">
+        <p class="lgb-next-step__eyebrow">지금 바로 이어서</p>
+        <div class="lgb-next-step__actions">
+          <a id="lgAfterTaxCta" class="button button--primary"
+            href={withBase("/tools/bonus-after-tax-calculator/?company=lg")}>
+            세후 실수령 계산하기 →
+          </a>
+          <a id="lgDcaCta" class="button button--secondary"
+            href={withBase("/tools/dca-investment-calculator/?m=300000&p=10&a=SP500,NASDAQ100,QQQ&fx=1&div=1")}>
+            이 금액 투자하면? →
+          </a>
+        </div>
+        <p class="lgb-next-step__note" id="lgNextStepNote">성과급 세전 금액을 기준으로 다음 계산기에 자동 반영합니다.</p>
+      </div>
+    </section>
+
+    <!-- PI 구조 설명 -->
+    <section class="content-section" id="lg-bonus-details">
+      <div class="section-header section-header--compact">
+        <p class="lgb-section__eyebrow section-header__eyebrow">PI 구조</p>
+        <h2>LG전자 성과급 PI란?</h2>
+      </div>
+      <div class="lgb-logic-grid">
+        <article class="lgb-logic-card">
+          <strong>PI (Performance Incentive)</strong>
+          <p>사업부 목표 달성률 기반 인센티브로 상반기(7월경)·하반기(1월경) 연 2회 지급합니다.</p>
+        </article>
+        <article class="lgb-logic-card">
+          <strong>OB (Outperformance Bonus)</strong>
+          <p>목표 초과 달성 시 추가 지급되는 구조이나 지급 기준이 비공개이므로 이 계산기에는 포함하지 않습니다.</p>
+        </article>
+        <article class="lgb-logic-card">
+          <strong>기본급 기준인 이유</strong>
+          <p>PI는 연봉 총액이 아니라 월 기본급 기준으로 지급률을 곱해 산정합니다. 각종 수당은 제외됩니다.</p>
+        </article>
+        <article class="lgb-logic-card">
+          <strong>사업부마다 PI가 다른 이유</strong>
+          <p>각 사업부가 독립 P&L 단위로 운영되어 실적과 목표달성률에 따라 지급률이 달라집니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 사업부별 PI 비교 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="lgb-section__eyebrow section-header__eyebrow">사업부별 PI 비교</p>
+        <h2>H&A·HE·VS·BS 사업부 PI 범위</h2>
+        <p>보수·기준·낙관 시나리오 기준 추정값입니다.</p>
+      </div>
+      <div class="lgb-division-chart-wrap">
+        <canvas id="lg-division-chart"></canvas>
+      </div>
+      <div class="lgb-division-grid">
+        {lgDivisions.map((d) => (
+          <article class="lgb-division-card" data-code={d.code}>
+            <p class="lgb-division-card__label">{d.label}</p>
+            <strong class="lgb-division-card__full">{d.fullName}</strong>
+            <span class="lgb-division-card__desc">{d.description}</span>
+            <p class="lgb-division-card__trend">{d.trend}</p>
+            <span class="estimate-badge">{d.badge}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 직급별 예상 성과급 표 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="lgb-section__eyebrow section-header__eyebrow">직급별 예시</p>
+        <h2>직급별 예상 성과급 (현재 사업부·시나리오 기준)</h2>
+      </div>
+      <div class="table-wrap" style="overflow-x:auto;">
+        <table class="result-table lgb-rank-table">
+          <thead>
+            <tr>
+              <th>직급</th>
+              <th>월 기본급</th>
+              <th>연간 PI (세전)</th>
+              <th>세후 추정</th>
+              <th>월급 대비</th>
+            </tr>
+          </thead>
+          <tbody id="lgRankTableBody">
+          </tbody>
+        </table>
+      </div>
+      <div class="lgb-inline-cta">
+        <a class="button button--primary" href="#lg-bonus-inputs">내 직급·기본급으로 다시 계산하기</a>
+      </div>
+    </section>
+
+    <!-- 타 대기업 비교 바 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="lgb-section__eyebrow section-header__eyebrow">대기업 비교</p>
+        <h2>삼성전자·SK하이닉스·현대차와 성과급 비교</h2>
+        <p>동일 월 기본급 기준 추정 시뮬레이션입니다. 각 회사의 계산 방식이 달라 직접 비교는 참고 용도로만 활용하세요.</p>
+      </div>
+      <div class="lgb-compare-chart-wrap">
+        <canvas id="lg-compare-chart"></canvas>
+      </div>
+      <div class="lgb-compare-cta">
+        <a class="button button--secondary" href={withBase("/tools/bonus-simulator/")}>
+          4개사 성과급 한 번에 비교하기 →
+        </a>
+      </div>
+    </section>
+
+    <!-- 계산 기준 요약 -->
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">계산 기준 요약</h2>
+        </div>
+      </div>
+      <div class="lgb-logic-grid">
+        <article class="lgb-logic-card">
+          <strong>PI = 월 기본급 × 지급률(%)</strong>
+          <p>상·하반기 각각 월 기본급에 지급률을 곱해 산정합니다.</p>
+        </article>
+        <article class="lgb-logic-card">
+          <strong>연간 PI = 상반기 + 하반기 + 임협 타결금</strong>
+          <p>임협 타결금은 0 기본값이며 직접 입력 가능합니다.</p>
+        </article>
+        <article class="lgb-logic-card">
+          <strong>세후는 참고값</strong>
+          <p>개인 과세표준과 공제 조건에 따라 실제 세후 금액은 달라집니다.</p>
+        </article>
+        <article class="lgb-logic-card">
+          <strong>사업부 지급률은 추정값</strong>
+          <p>보도 기반 시뮬레이션이며 실제 목표달성률에 따라 달라질 수 있습니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "사업부별 PI 지급률 기본값은 보도 기반 추정값이며, 실제 지급률은 LG전자 내부 목표달성률에 따라 달라집니다.",
+        "직급별 월 기본급은 참고 예시값이며 본인 기본급을 직접 입력해 사용하세요.",
+        "세후 추정값은 개인 과세표준·공제 조건에 따라 실제 수령액과 다를 수 있습니다.",
+        "이 계산기는 투자 권유 또는 특정 사업부 입사를 권장하지 않습니다.",
+      ]}
+    />
+
+    <!-- 다음 계산기 CTA 카드 -->
+    <section class="content-section">
+      <div class="panel lgb-next-card">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{LG_NEXT_CALCULATOR.label}</p>
+            <h2 class="panel__title">성과급 세후 실수령액 계산기</h2>
+          </div>
+          <p class="panel-heading__summary">{LG_NEXT_CALCULATOR.desc}</p>
+        </div>
+        <a href={withBase(LG_NEXT_CALCULATOR.href)} class="button button--secondary">세후 실수령 계산하기 →</a>
+      </div>
+    </section>
+
+    <!-- 관련 계산기 그리드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="lgb-section__eyebrow section-header__eyebrow">관련 계산기</p>
+        <h2>다른 대기업 성과급 계산기</h2>
+        <p>LG전자 결과를 다른 대기업과 나란히 비교해보세요.</p>
+      </div>
+      <div class="lgb-related-grid">
+        {LG_RELATED_CALCULATORS.map((item) => (
+          <a href={withBase(item.href)} class="lgb-related-link">
+            <strong>{item.label}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 외부 참고 링크 -->
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">외부 참고 링크</p>
+            <h2 class="panel__title">LG전자 성과급 참고 자료</h2>
+          </div>
+          <p class="panel-heading__summary">계산 결과를 공식 수치와 비교하거나 세금 구조를 확인할 때 함께 보면 좋은 링크입니다.</p>
+        </div>
+        <div class="lgb-link-grid">
+          {LG_EXTERNAL_REFERENCE_LINKS.map((item) => (
+            <a href={item.url} target="_blank" rel="noreferrer" class="lgb-reference-link">
+              <strong>{item.title}</strong>
+              <span>{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 추천 상품 (제휴) -->
+    <section class="content-section affiliate-section">
+      <div class="affiliate-box affiliate-box--alt">
+        <div class="affiliate-box__header">
+          <span class="affiliate-box__icon">💼</span>
+          <div>
+            <h3 class="affiliate-box__title">성과급·커리어 관련 추천 상품</h3>
+            <p class="affiliate-box__context">연봉과 성과급을 자산으로 연결하는 데 도움 되는 도서와 아이템을 모았습니다.</p>
+          </div>
+        </div>
+        <div class="affiliate-product-grid">
+          {LG_AFFILIATE_PRODUCTS.map((prod) => (
+            <a href={prod.url} class="affiliate-product-card" target="_blank" rel="noopener noreferrer nofollow">
+              <span class="affiliate-product-tag">{prod.tag}</span>
+              <p class="affiliate-product-title">{prod.title}</p>
+              <p class="affiliate-product-desc">{prod.desc}</p>
+              <span class="affiliate-product-cta">쿠팡에서 보기 →</span>
+            </a>
+          ))}
+        </div>
+        <p class="affiliate-disclosure">이 링크는 쿠팡파트너스 활동의 일환으로, 구매 시 소정의 수수료를 받을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="LG전자 성과급 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 LG전자 H&A·HE·VS·BS 사업부별 PI 지급률 추정값을 기반으로 기본급 대비 세전·세후 성과급을 시뮬레이션합니다.",
+          "사업부를 선택하면 해당 사업부의 보수·기준·낙관 시나리오가 자동 반영됩니다. 직접 입력 모드로 전환하면 지급률을 자유롭게 조정할 수 있습니다."
+        ]}
+        inputPoints={[
+          "사업부 선택 후 직급을 고르면 월 기본급 예시값이 자동 입력됩니다.",
+          "추정값 모드에서는 보수·기준·낙관 시나리오 중 하나를 선택해 PI 범위를 확인할 수 있습니다.",
+          "직접 입력 모드에서는 상·하반기 지급률을 슬라이더로 직접 조정합니다.",
+          "임협 타결금은 선택 입력이며 0 기본값으로 계산됩니다.",
+          "삼성전자·SK하이닉스·현대차와 동일 월 기본급 기준 비교 차트를 함께 확인할 수 있습니다."
+        ]}
+        criteria={[
+          "PI는 월 기본급에 지급률(%)을 곱해 산정하며 각종 수당은 포함하지 않습니다.",
+          "사업부별 PI 기본 시나리오는 보도 및 업계 추정 기반이며 실제 목표달성률과 다를 수 있습니다.",
+          "세후 추정은 근로소득 합산 과세 기준 단순화 누진세율을 적용한 참고값입니다.",
+          "타사 비교 시뮬레이션은 각 사의 공개 기준율을 동일 월 기본급에 적용한 추정값입니다."
+        ]}
+        faq={[
+          { question: "LG전자 성과급 PI가 뭔가요?", answer: "PI(Performance Incentive)는 상·하반기 목표 달성률 기반 인센티브로, 월 기본급의 일정 %를 연 2회 지급합니다." },
+          { question: "사업부마다 PI가 다른 이유는?", answer: "각 사업부가 독립 P&L 단위로 운영되어 실적 기반 지급률이 달라집니다. H&A, HE, VS, BS 모두 지급 기준이 다릅니다." },
+          { question: "신입은 PI를 첫해부터 받나요?", answer: "입사 시점에 따라 재직 기간 안분 지급이 일반적입니다. 정확한 기준은 사업부마다 다를 수 있습니다." },
+          { question: "LG전자 성과급 계산기의 수치는 정확한가요?", answer: "보도 및 추정 기반 시뮬레이션 값으로 실제 지급률은 내부 목표달성률에 따라 달라집니다. 직접 입력 모드를 이용해 본인 조건을 반영하세요." },
+          { question: "삼성전자와 LG전자 성과급 어디가 더 많나요?", answer: "사업부·직급·연도별로 다르며, 총보상(고정+변동+복지)을 함께 비교해야 합니다. 비교 차트를 참고하거나 대기업 성과급 시뮬레이터를 이용하세요." },
+          { question: "세후로 얼마나 받나요?", answer: "PI는 근로소득으로 합산 과세됩니다. 개인 과세표준에 따라 세율이 다르며, 계산기 세후 값은 참고용입니다. 정확한 세후 금액은 성과급 세후 계산기를 이용하세요." },
+          { question: "LG전자 OB(초과 달성 보너스)는 얼마나 되나요?", answer: "OB는 초과 달성 시 추가 지급되는 구조이나 지급 기준이 비공개이므로 이 계산기에는 포함하지 않습니다." },
+          { question: "임협 타결금은 언제 지급되나요?", answer: "임금협상 타결 시 일시금으로 지급되며 연 1회가 일반적입니다. 지급 시기와 금액은 협상 결과에 따라 달라집니다." }
+        ]}
+        related={[
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+          { href: "/reports/corporate-bonus-comparison-2026/", label: "2026 대기업 성과급 완전 비교" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+          { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
+          { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
+          { href: "/tools/hyundai-bonus/", label: "현대자동차 성과급 계산기" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="lgCompensationConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/lg-bonus.js")}></script>
+</BaseLayout>
