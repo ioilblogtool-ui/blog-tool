@@ -304,13 +304,33 @@ google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
 - [x] AdSense 사이트 등록
 - [x] ads.txt 반영
 - [x] 자동 광고 적용
-- [ ] 정책 페이지 완료
-- [ ] 콘텐츠 볼륨 확보
+- [x] 정책 페이지 완료 (About, Privacy, Terms, Contact, Disclaimer)
+- [x] 콘텐츠 볼륨 확보 (tools 70+, reports 75+)
+- [x] SeoContent 전 페이지 탑재
+- [x] Low value content 대응 — intro 4단락 보강 (2026-05-24)
 
 ### 진행 기록
-- 상태:
-- 작업일:
-- 메모:
+- 상태: **심사 진행 중** (2026-05-19 신청)
+- 메모: 이전 반려 사유 "Low value content" → intro 텍스트 13개 페이지 보강 완료
+
+---
+
+## 반려 이력과 학습
+
+### 반려 사유: Low value content
+
+**원인 분석**  
+계산기 페이지의 SeoContent intro가 2단락, 각 80~150자 수준으로 얇았음.  
+Google은 계산기 UI만 있고 설명 텍스트가 부족하면 "low value tool page"로 분류.
+
+**대응 (2026-05-24)**  
+- intro 4단락 구조로 표준화 (맥락 → 메커니즘 → 해석법 → 한계)
+- 단락당 150자 이상, 총 600자 이상 기준 적용
+- 보완한 페이지 13개: wedding-budget, diaper-cost, formula-cost, parental-leave, six-plus-six, dividend-monthly-income, travel-expense-split, ai-subscription-cost, household-income, single-parental-leave-total, birth-support-total, birth-support-money, home-purchase-fund
+
+**향후 적용 기준**  
+→ `CONTENT_GUIDE.md` Section 3 "SeoContent 콘텐츠 품질 기준" 참고  
+→ 새 페이지 작성 시 intro 4단락 + FAQ 5개가 완료되지 않으면 배포하지 않음
 
 ---
 

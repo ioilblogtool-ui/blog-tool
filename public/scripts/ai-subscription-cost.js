@@ -43,7 +43,6 @@ const els = {
 
 const toolChecks = Array.from(document.querySelectorAll("[data-ais-tool]"));
 const priceInputs = Array.from(document.querySelectorAll("[data-ais-price]"));
-const customRows = Array.from(document.querySelectorAll("[data-ais-custom-row]"));
 const presetButtons = Array.from(document.querySelectorAll("[data-ais-preset]"));
 const resetBtn = document.getElementById("aisResetBtn");
 const copyBtn = document.getElementById("aisCopyLinkBtn");
@@ -149,10 +148,6 @@ function syncInputs() {
     const value = state.toolPrices[input.dataset.aisPrice];
     if (value !== undefined) input.value = String(value);
   });
-  customRows.forEach((row) => {
-    const enabled = row.querySelector("[data-ais-custom-enabled]")?.checked;
-    row.classList.toggle("is-active", Boolean(enabled));
-  });
   presetButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.aisPreset === state.activePresetId);
   });
@@ -201,32 +196,6 @@ function detectDuplicates(selectedTools) {
   });
 }
 
-function getCustomTools() {
-  return customRows
-    .map((row, index) => {
-      const enabled = row.querySelector("[data-ais-custom-enabled]")?.checked;
-      const nameInput = row.querySelector("[data-ais-custom-name]");
-      const priceInput = row.querySelector("[data-ais-custom-price]");
-      const currencyInput = row.querySelector("[data-ais-custom-currency]");
-      const unitInput = row.querySelector("[data-ais-custom-unit]");
-      const currency = currencyInput?.value === "USD" ? "USD" : "KRW";
-      const priceMax = currency === "USD" ? 1000 : 1000000;
-      const price = clamp(priceInput?.value, 0, priceMax);
-      const name = String(nameInput?.value || `직접 추가 도구 ${index + 1}`).trim().slice(0, 24);
-
-      return {
-        id: `custom-${index + 1}`,
-        name: name || `직접 추가 도구 ${index + 1}`,
-        category: "custom",
-        currency,
-        pricingUnit: unitInput?.value === "seat" ? "seat" : "account",
-        price,
-        enabled: Boolean(enabled && price > 0),
-      };
-    })
-    .filter((tool) => tool.enabled);
-}
-
 function roiTone(score) {
   if (score >= 300) {
     return ["high", "매우 효율적", "구독료 대비 추정 시간 절감 효과가 큰 편입니다."];
@@ -242,12 +211,11 @@ function roiTone(score) {
 
 function calculate() {
   readStateFromInputs();
-  const customTools = getCustomTools();
 
   const validationMessages = [];
   if (state.monthlySavedHours > state.monthlyWorkHours) validationMessages.push("월 절감 시간은 월 업무 시간보다 클 수 없습니다.");
   if (state.exchangeRate < 500 || state.exchangeRate > 3000) validationMessages.push("환율은 500원 이상 3,000원 이하로 입력하세요.");
-  if (!state.selectedToolIds.length && !customTools.length) validationMessages.push("도구를 하나 이상 선택하면 구독비를 계산할 수 있습니다.");
+  if (!state.selectedToolIds.length) validationMessages.push("도구를 하나 이상 선택하면 구독비를 계산할 수 있습니다.");
 
   if (els.validation) {
     els.validation.hidden = validationMessages.length === 0;
@@ -270,17 +238,6 @@ function calculate() {
       monthlyKrw,
       monthlyUsd: tool.currency === "USD" ? inputPrice * quantity : 0,
     };
-  });
-  customTools.forEach((tool) => {
-    const baseKrw = tool.currency === "KRW" ? tool.price : tool.price * state.exchangeRate;
-    const quantity = state.mode === "team" && tool.pricingUnit === "seat" ? state.headcount : 1;
-    toolCosts.push({
-      id: tool.id,
-      name: tool.name,
-      category: tool.category,
-      monthlyKrw: Math.round(baseKrw * quantity * vatMul * feeMul),
-      monthlyUsd: tool.currency === "USD" ? tool.price * quantity : 0,
-    });
   });
 
   const monthlyCostKrw = toolCosts.reduce((sum, item) => sum + item.monthlyKrw, 0);
@@ -442,20 +399,6 @@ function bindEvents() {
       state.activePresetId = "";
       calculate();
       syncInputs();
-    });
-  });
-  customRows.forEach((row) => {
-    Array.from(row.querySelectorAll("input, select")).forEach((input) => {
-      input.addEventListener("input", () => {
-        state.activePresetId = "";
-        calculate();
-        syncInputs();
-      });
-      input.addEventListener("change", () => {
-        state.activePresetId = "";
-        calculate();
-        syncInputs();
-      });
     });
   });
   presetButtons.forEach((button) => button.addEventListener("click", () => applyPreset(button.dataset.aisPreset)));
