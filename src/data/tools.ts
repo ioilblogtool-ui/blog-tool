@@ -60,6 +60,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "semiconductor-bonus-comparison",
+    title: "반도체 성과급 비교 계산기",
+    description: "삼성전자, SK하이닉스, DB하이텍 등 반도체 기업 성과급을 연봉·월급·성과급률 기준으로 세전·세후 비교하는 시뮬레이션 계산기",
+    order: 1.7,
+    eyebrow: "반도체 성과급 비교",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "성과급", "시뮬레이션"],
+    previewStats: [
+      { label: "비교 회사", value: "8개" },
+      { label: "핵심 결과", value: "세후 추정" }
+    ]
+  },
+  {
     slug: "household-income",
     title: "가구 소득 계산기",
     description: "가구 연 총소득, 월 체감, 실수령 추정, 평균·기준 중위소득 대비 위치를 계산하는 페이지",
@@ -195,6 +209,76 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "성과급 총액", value: "2,800만", context: "책임 기준" },
       { label: "월 체감", value: "+233만" }
+    ]
+  },
+  {
+    slug: "it-platform-bonus-comparison",
+    title: "IT 플랫폼 성과급 비교 2026",
+    description: "카카오, 네이버, 쿠팡, 크래프톤, 라인플러스, 토스 6개사 성과급 구조와 RSU·스톡옵션 포함 총보상을 비교합니다. 내 연봉 기준 예상 현금 PI를 즉시 계산해보세요.",
+    order: 10.4,
+    eyebrow: "IT 플랫폼 성과급",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교 대상", value: "6개사" },
+      { label: "보상 유형", value: "현금·RSU·스옵" },
+    ],
+  },
+  {
+    slug: "finance-bonus-comparison",
+    title: "금융권 성과급 비교 2026",
+    description: "KB국민은행·신한은행·하나은행·우리은행·미래에셋증권 등 금융권 성과급 구조를 업권별로 비교합니다. 내 연봉 기준 예상 성과급을 즉시 계산하세요.",
+    order: 10.5,
+    eyebrow: "금융권 성과급",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교 대상", value: "8개사" },
+      { label: "업권", value: "은행·증권·보험" },
+    ],
+  },
+  {
+    slug: "shipbuilding-bonus-comparison",
+    title: "조선업 성과급 비교 계산기",
+    description: "HD현대중공업, 한화오션, 삼성중공업 성과급을 월급 n개월, 고정 격려금, 성과급률 기준으로 비교하는 계산기",
+    order: 10.6,
+    eyebrow: "Shipbuilding Bonus Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정", "성과급"],
+    previewStats: [
+      { label: "비교 대상", value: "조선 3사" },
+      { label: "입력 방식", value: "혼합" }
+    ]
+  },
+  {
+    slug: "auto-bonus-comparison",
+    title: "자동차 성과급 비교 계산기 2026",
+    description: "현대차, 기아, 현대모비스, 한국GM, 르노코리아 성과급을 같은 연봉·월급 기준으로 비교하는 계산기. 자사주 참고 포함.",
+    order: 10.7,
+    eyebrow: "자동차 성과급 비교",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정", "성과급"],
+    previewStats: [
+      { label: "비교 대상", value: "자동차 5사" },
+      { label: "자사주", value: "참고 포함" }
+    ]
+  },
+  {
+    slug: "oil-refinery-bonus-comparison",
+    title: "정유 성과급 비교 계산기 2026",
+    description: "SK이노베이션, GS칼텍스, S-OIL(에쓰오일), HD현대오일뱅크, 롯데케미칼 성과급을 같은 연봉 기준으로 비교하는 계산기.",
+    order: 10.8,
+    eyebrow: "정유 성과급 비교",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정", "성과급"],
+    previewStats: [
+      { label: "비교 대상", value: "정유 5사" },
+      { label: "입력 방식", value: "연봉%·월급·고정" }
     ]
   },
   {

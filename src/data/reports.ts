@@ -316,6 +316,13 @@ export const reports: ReportMeta[] = [
     badges: ["서울", "청약", "부동산", "2026"],
   },
   {
+    slug: "samsung-shuttle-real-estate-2026",
+    title: "삼성전자 셔틀버스 아파트 시세 정리 2026",
+    description: "수원·기흥·화성·평택 캠퍼스별 삼성전자 셔틀권 아파트 전세·매매 시세와 출퇴근 후보 지역을 비교합니다.",
+    order: 31.1,
+    badges: ["삼성전자", "셔틀권", "부동산", "2026"],
+  },
+  {
     slug: "seoul-mortgage-refinancing-2026",
     title: "서울 주요 구별 대환대출 갈아타기 손익 비교 2026",
     description: "서울 주요 10개 구의 추정 평균 주담대 잔액과 금리 차이를 기준으로 대환대출 갈아타기 시 이자 절감액, 중도상환수수료, 부대비용, DSR 리스크를 비교합니다.",
@@ -398,6 +405,13 @@ export const reports: ReportMeta[] = [
     description: "다주택자 세금을 취득세, 종합부동산세, 양도소득세, 임대소득세로 나눠 2주택·3주택 이상 케이스별로 정리합니다.",
     order: 37.2,
     badges: ["다주택자", "부동산세금", "양도세", "2026"],
+  },
+  {
+    slug: "sk-hynix-shuttle-real-estate-2026",
+    title: "SK하이닉스 셔틀버스 노선별 아파트 시세 정리 2026",
+    description: "이천 발령 때 어디에 살지, 캠퍼스별 셔틀 권역 아파트 전세·매매 시세를 비교합니다.",
+    order: 37.3,
+    badges: ["SK하이닉스", "셔틀버스", "부동산", "이천"],
   },
   {
     slug: "pregnancy-checkup-cost-2026",

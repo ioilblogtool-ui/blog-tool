@@ -1,0 +1,459 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  FINANCE_BONUS_COMPANIES,
+  FINANCE_SECTOR_INFO,
+  FBC_TAX_BRACKETS,
+  FBC_FAQ,
+  FBC_RELATED_LINKS,
+  FBC_SEO_INTRO,
+  FBC_INPUT_POINTS,
+  FBC_CRITERIA,
+  FBC_META,
+} from "../../data/financeBonusComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  companies: FINANCE_BONUS_COMPANIES,
+  taxBrackets: FBC_TAX_BRACKETS,
+};
+
+const faqSchema = FBC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const bankCompanies = FINANCE_BONUS_COMPANIES.filter((c) => c.sector === "bank");
+const secCompanies = FINANCE_BONUS_COMPANIES.filter((c) => c.sector === "securities");
+---
+
+<BaseLayout
+  title={FBC_META.seoTitle}
+  description={FBC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: FBC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: FBC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/finance-bonus-comparison/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="finance-bonus-comparison"
+    pageClass="fbc-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="금융권 성과급"
+        title="금융권 성과급 비교 2026"
+        description={FBC_META.heroDescription}
+        badges={["추정", "시뮬레이션", "임협 기반"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          FBC_META.dataNote,
+          "증권사 성과급은 부문(IB·리테일·WM·트레이딩)별 편차가 극단적입니다. 이 계산기는 일반 직원 기준 추정값입니다.",
+          "보험사 설계사는 수수료 구조로 이 계산기 적용 범위에서 제외합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="fbcResetBtn" copyId="fbcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <!-- 연봉 입력 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기준 연봉 입력</p>
+            <h2 class="panel__title">내 연봉으로 비교하기</h2>
+          </div>
+          <p class="panel-heading__summary">연봉을 입력하면 시중은행 5개사 예상 성과급을 즉시 비교합니다.</p>
+        </div>
+
+        <div class="fbc-salary-field">
+          <label class="field">
+            <span>현재 연봉</span>
+            <input
+              id="fbcSalaryInput"
+              type="text"
+              inputmode="numeric"
+              class="input-number"
+              value="6,000만원"
+              data-fbc-salary
+            />
+            <small id="fbcSalaryHint">연봉 대비 예상 성과급을 계산합니다</small>
+          </label>
+          <div class="calc-slider-row">
+            <input
+              type="range"
+              id="fbcSalarySlider"
+              class="calc-slider"
+              min="30000000"
+              max="300000000"
+              step="1000000"
+              value="60000000"
+              aria-label="연봉 슬라이더"
+              aria-valuemin="30000000"
+              aria-valuemax="300000000"
+              aria-valuenow="60000000"
+            />
+            <span id="fbcSliderVal" class="calc-slider-val">6,000만원</span>
+          </div>
+        </div>
+
+        <p class="fbc-sim-badge">시뮬레이션 · 추정 기준</p>
+      </article>
+
+      <!-- 세금 구간 안내 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">세후 추정</p>
+            <h2 class="panel__title">간이 공제율 구간</h2>
+          </div>
+          <p class="panel-heading__summary">실제 통장 입금액과 다를 수 있습니다.</p>
+        </div>
+        <div class="fbc-bracket-table-wrap">
+          <table class="fbc-bracket-table">
+            <thead>
+              <tr><th>연봉 구간</th><th>추정 공제율</th></tr>
+            </thead>
+            <tbody>
+              {FBC_TAX_BRACKETS.map((b) => (
+                <tr id={`fbcBracket-${b.label}`}>
+                  <td>{b.label}</td>
+                  <td>{Math.round(b.estimatedDeductionRate * 100)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- ── 결과: 은행 바 차트 ─────────────────── -->
+    <section class="fbc-bank-chart panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">시중은행 비교</p>
+          <h2 class="panel__title">시중은행 5개사 예상 성과급</h2>
+        </div>
+        <p class="panel-heading__summary">
+          연봉 <strong id="fbcSalaryLabel">6,000만원</strong> 기준 예상 성과급 (추정·시뮬레이션)<br />
+          <small>※ 증권사는 부문별 편차가 극단적이어서 별도 섹션으로 안내합니다</small>
+        </p>
+      </div>
+
+      <!-- KPI -->
+      <div class="fbc-kpi-grid">
+        <article class="fbc-kpi-card fbc-kpi-card--main">
+          <span>은행 최고 예상 성과급</span>
+          <strong id="fbcBestGross">-</strong>
+          <small id="fbcBestCompany">-</small>
+        </article>
+        <article class="fbc-kpi-card">
+          <span>세후 추정 최고</span>
+          <strong id="fbcBestNet">-</strong>
+        </article>
+        <article class="fbc-kpi-card">
+          <span>적용 공제율</span>
+          <strong id="fbcTaxRate">-</strong>
+        </article>
+      </div>
+
+      <!-- 바 차트 (은행 5개사) -->
+      <div
+        class="fbc-bar-chart"
+        id="fbcBankBarChart"
+        aria-label="시중은행 5개사 예상 성과급 비교 바 차트"
+      >
+        {bankCompanies.map((c) => (
+          <div class="fbc-bar-row" data-company={c.id}>
+            <span class="fbc-bar-label">{c.shortName}</span>
+            <div class="fbc-bar-track">
+              <div class="fbc-bar-fill" style="width:0%" data-bar={c.id}></div>
+            </div>
+            <span class="fbc-bar-value" data-gross={c.id}>-</span>
+          </div>
+        ))}
+      </div>
+      <p class="fbc-chart-note">
+        ※ 연봉 대비 성과급 % 추정값 기준. 실제 지급액과 다를 수 있습니다.
+      </p>
+    </section>
+
+    <!-- ── 결과: 8개사 결과 카드 ─────────────── -->
+    <section class="fbc-cards-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">전체 결과</p>
+          <h2 class="panel__title">은행·증권사 예상 성과급</h2>
+        </div>
+        <p class="panel-heading__summary">
+          증권사 카드는 일반 직원 기준 추정값입니다. 실제 지급액과 크게 다를 수 있습니다.
+        </p>
+      </div>
+      <div class="fbc-result-cards" id="fbcResultCards">
+        {FINANCE_BONUS_COMPANIES.map((c) => (
+          <article
+            class={`fbc-result-card${c.sector === "securities" ? " fbc-result-card--sec" : ""}`}
+            data-card={c.id}
+            data-sector={c.sector}
+          >
+            <div class="fbc-result-card__header">
+              <strong>{c.name}</strong>
+              <span class={`fbc-sector-badge fbc-sector-badge--${c.sector}`}>
+                {c.sectorLabel}
+              </span>
+            </div>
+            <div class="fbc-result-card__numbers">
+              <div>
+                <span>세전 예상</span>
+                <strong data-gross-card={c.id}>-</strong>
+              </div>
+              <div>
+                <span>세후 추정</span>
+                <strong data-net-card={c.id}>-</strong>
+              </div>
+              <div>
+                <span>연봉 대비</span>
+                <strong>{c.defaultPercent}%</strong>
+              </div>
+            </div>
+            {c.sector === "securities" && (
+              <p class="fbc-result-card__warn">⚠ 부문별 편차 극단적 — 참고용</p>
+            )}
+            <p class="fbc-result-card__badge">
+              <span class="fbc-sim-tag">시뮬레이션</span>
+              {c.badge}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 업권별 구조 비교표 ──────────────── -->
+    <section class="fbc-sector-table panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">업권별 구조</p>
+          <h2 class="panel__title">업권별 성과급 구조 비교</h2>
+        </div>
+        <p class="panel-heading__summary">은행·증권·보험사 성과급이 왜 다른지 구조를 이해하세요.</p>
+      </div>
+      <div class="fbc-table-wrap">
+        <table class="fbc-structure-table">
+          <thead>
+            <tr>
+              <th>업권</th>
+              <th>산식 기반</th>
+              <th>변동성</th>
+              <th>핵심 특징</th>
+            </tr>
+          </thead>
+          <tbody>
+            {FINANCE_SECTOR_INFO.map((s) => (
+              <tr>
+                <td>
+                  <span class={`fbc-sector-badge fbc-sector-badge--${s.sector}`}>
+                    {s.label}
+                  </span>
+                </td>
+                <td>{s.basisDescription}</td>
+                <td>{s.variabilityNote}</td>
+                <td>{s.keyDifference}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 은행별 해설 카드 ────────────────── -->
+    <section class="fbc-bank-guide panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">은행별 해설</p>
+          <h2 class="panel__title">은행별 성과급 구조 해설</h2>
+        </div>
+      </div>
+      <div class="fbc-guide-cards">
+        {bankCompanies.map((c) => (
+          <article class="fbc-guide-card">
+            <div class="fbc-guide-card__header">
+              <h3>{c.name}</h3>
+              <span class="fbc-sector-badge fbc-sector-badge--bank">{c.sectorLabel}</span>
+            </div>
+            <p class="fbc-guide-card__summary">{c.structureSummary}</p>
+            <ul class="fbc-guide-card__risks">
+              {c.keyRisks.map((r) => <li>{r}</li>)}
+            </ul>
+            <p class="fbc-guide-card__special">{c.specialNote}</p>
+            <p class="fbc-guide-card__caution">⚠ {c.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 증권사 부문 편차 안내 ──────────── -->
+    <section class="fbc-sec-guide panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">증권사 성과급</p>
+          <h2 class="panel__title">증권사 성과급 — 부문별 편차 안내</h2>
+        </div>
+        <p class="panel-heading__summary">
+          증권사 성과급은 부문(IB·리테일·WM·트레이딩)과 개인 실적에 따라 0원에서 수억 원까지 차이가 납니다.
+          이 계산기의 추정값은 일반 직원 기준 참고용이며 고성과 부문과 직접 비교할 수 없습니다.
+        </p>
+      </div>
+
+      <div class="fbc-sec-dept-table-wrap">
+        <table class="fbc-sec-dept-table">
+          <thead>
+            <tr>
+              <th>부문</th>
+              <th>성과급 수준</th>
+              <th>변동성</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>IB (투자은행)</strong></td>
+              <td>매우 높음 (억대 가능)</td>
+              <td>딜 수수료 직접 연동</td>
+            </tr>
+            <tr>
+              <td>트레이딩/딜링</td>
+              <td>높음</td>
+              <td>시장 수익률 연동</td>
+            </tr>
+            <tr>
+              <td>WM (자산관리)</td>
+              <td>중~높음</td>
+              <td>AUM·고객 수익 연동</td>
+            </tr>
+            <tr>
+              <td>리테일 영업</td>
+              <td>중</td>
+              <td>지점 실적 연동</td>
+            </tr>
+            <tr>
+              <td>지원 부서</td>
+              <td>낮음~중</td>
+              <td>회사 전체 성과 기반</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="fbc-guide-cards fbc-guide-cards--sec">
+        {secCompanies.map((c) => (
+          <article class="fbc-guide-card fbc-guide-card--sec">
+            <div class="fbc-guide-card__header">
+              <h3>{c.name}</h3>
+              <span class="fbc-sector-badge fbc-sector-badge--securities">{c.sectorLabel}</span>
+            </div>
+            <p class="fbc-guide-card__summary">{c.structureSummary}</p>
+            <ul class="fbc-guide-card__risks">
+              {c.keyRisks.map((r) => <li>{r}</li>)}
+            </ul>
+            <p class="fbc-guide-card__special">{c.specialNote}</p>
+            <p class="fbc-guide-card__caution">⚠ {c.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 보험사 내근직 안내 ──────────────── -->
+    <section class="fbc-ins-guide panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">보험사 성과급</p>
+          <h2 class="panel__title">보험사 성과급 — 내근직 기준 안내</h2>
+        </div>
+        <p class="panel-heading__summary">
+          보험사 설계사는 수수료 구조로 이 계산기 적용 범위에서 제외합니다.
+          내근직(본사·지점 사무직) 기준으로만 설명합니다.
+        </p>
+      </div>
+      <div class="fbc-ins-cards">
+        <article class="fbc-ins-card">
+          <div class="fbc-ins-card__header">
+            <h3>삼성생명·삼성화재</h3>
+            <span class="fbc-sector-badge fbc-sector-badge--insurance">보험사</span>
+          </div>
+          <p>
+            삼성그룹 계열. 내근직 기준 그룹사 유사 성과급 구조. 삼성전자 등 그룹사 임협 방향과
+            연동되는 경우 있음. 설계사 성과는 별도 수수료 구조.
+          </p>
+        </article>
+        <article class="fbc-ins-card">
+          <div class="fbc-ins-card__header">
+            <h3>한화생명·현대해상 등</h3>
+            <span class="fbc-sector-badge fbc-sector-badge--insurance">보험사</span>
+          </div>
+          <p>
+            각 그룹사 기준 적용. 내근직은 은행과 유사한 임협 상여 구조.
+            설계사 성과는 별도 수수료 구조로 이 도구 적용 불가.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── 관련 계산기 CTA ─────────────────── -->
+    <section class="fbc-related-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">관련 계산기</p>
+          <h2 class="panel__title">함께 확인하면 좋은 계산기</h2>
+        </div>
+      </div>
+      <div class="fbc-related-grid">
+        {FBC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="fbc-related-card">
+            <strong>{link.label}</strong>
+            {link.description && <span>{link.description}</span>}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── SeoContent ─────────────────────── -->
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="금융권 성과급, 은행·증권·보험이 왜 다른가"
+        intro={FBC_SEO_INTRO}
+        inputPoints={FBC_INPUT_POINTS}
+        criteria={FBC_CRITERIA}
+        faq={FBC_FAQ}
+        related={FBC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="fbcConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/finance-bonus-comparison.js")}></script>
+</BaseLayout>

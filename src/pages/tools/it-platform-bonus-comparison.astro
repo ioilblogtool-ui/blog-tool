@@ -1,0 +1,409 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  IT_PLATFORM_COMPANIES,
+  COMPENSATION_TYPE_INFO,
+  ITPBC_TAX_BRACKETS,
+  ITPBC_FAQ,
+  ITPBC_RELATED_LINKS,
+  ITPBC_SEO_INTRO,
+  ITPBC_INPUT_POINTS,
+  ITPBC_CRITERIA,
+  ITPBC_CHECKLIST,
+  ITPBC_META,
+} from "../../data/itPlatformBonus2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  companies: IT_PLATFORM_COMPANIES,
+  taxBrackets: ITPBC_TAX_BRACKETS,
+};
+
+const faqSchema = ITPBC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const compensationTypeLabels: Record<string, string> = {
+  cash_pi: "현금 PI",
+  rsu: "RSU",
+  stock_option: "스톡옵션",
+  esop: "ESOP",
+  signing_bonus: "사이닝",
+};
+
+const listingColor: Record<string, string> = {
+  kospi: "itpbc-badge--kospi",
+  nyse: "itpbc-badge--nyse",
+  unlisted: "itpbc-badge--unlisted",
+};
+---
+
+<BaseLayout
+  title={ITPBC_META.seoTitle}
+  description={ITPBC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: ITPBC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: ITPBC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/it-platform-bonus-comparison/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="it-platform-bonus-comparison"
+    pageClass="itpbc-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="IT 플랫폼 성과급"
+        title="IT 플랫폼 성과급 비교 2026"
+        description="카카오·네이버·쿠팡·크래프톤·라인플러스·토스 6개사의 현금 성과급·RSU·스톡옵션 구조를 비교합니다. 내 연봉 기준 예상 현금 PI를 즉시 계산해보세요."
+        badges={["추정", "시뮬레이션", "RSU", "스톡옵션"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          ITPBC_META.dataNote,
+          "RSU·스톡옵션의 실제 가치는 주가, 환율, 베스팅 시점에 따라 달라집니다.",
+          "카카오 계열사 재직 시 본사 기준값과 실제 지급액이 크게 다를 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="itpbcResetBtn" copyId="itpbcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <!-- 연봉 입력 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기준 연봉 입력</p>
+            <h2 class="panel__title">내 연봉으로 비교하기</h2>
+          </div>
+          <p class="panel-heading__summary">연봉을 입력하면 6개사 예상 현금 PI를 즉시 비교합니다.</p>
+        </div>
+
+        <div class="itpbc-salary-field">
+          <label class="field">
+            <span>현재 연봉</span>
+            <input
+              id="itpbcSalaryInput"
+              type="text"
+              inputmode="numeric"
+              class="input-number"
+              value="8,000만원"
+              data-itpbc-salary
+            />
+            <small id="itpbcSalaryHint">연봉 대비 예상 현금 PI를 계산합니다</small>
+          </label>
+          <div class="calc-slider-row">
+            <input
+              type="range"
+              id="itpbcSalarySlider"
+              class="calc-slider"
+              min="30000000"
+              max="300000000"
+              step="1000000"
+              value="80000000"
+            />
+            <span id="itpbcSliderVal" class="calc-slider-val">8,000만원</span>
+          </div>
+        </div>
+
+        <p class="itpbc-sim-badge">시뮬레이션 · 추정 기준</p>
+      </article>
+
+      <!-- 세금 구간 안내 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">세후 추정</p>
+            <h2 class="panel__title">간이 공제율 구간</h2>
+          </div>
+          <p class="panel-heading__summary">실제 통장 입금액과 다를 수 있습니다.</p>
+        </div>
+        <div class="itpbc-bracket-table-wrap">
+          <table class="itpbc-bracket-table">
+            <thead>
+              <tr><th>연봉 구간</th><th>추정 공제율</th></tr>
+            </thead>
+            <tbody>
+              {ITPBC_TAX_BRACKETS.map((b) => (
+                <tr id={`itpbcBracket-${b.label}`}>
+                  <td>{b.label}</td>
+                  <td>{Math.round(b.estimatedDeductionRate * 100)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- ── 결과: 바 차트 ─────────────────────── -->
+    <section class="itpbc-chart-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">예상 현금 PI 비교</p>
+          <h2 class="panel__title">6개사 현금 성과급 시뮬레이션</h2>
+        </div>
+        <p class="panel-heading__summary">
+          연봉 <strong id="itpbcSalaryLabel">8,000만원</strong> 기준 예상 현금 PI (추정·시뮬레이션)
+        </p>
+      </div>
+
+      <!-- KPI -->
+      <div class="itpbc-kpi-grid">
+        <article class="itpbc-kpi-card itpbc-kpi-card--main">
+          <span>현금 PI 최고 예상</span>
+          <strong id="itpbcBestGross">-</strong>
+          <small id="itpbcBestCompany">-</small>
+        </article>
+        <article class="itpbc-kpi-card">
+          <span>세후 추정 최고</span>
+          <strong id="itpbcBestNet">-</strong>
+        </article>
+        <article class="itpbc-kpi-card">
+          <span>적용 공제율</span>
+          <strong id="itpbcTaxRate">-</strong>
+        </article>
+      </div>
+
+      <!-- 바 차트 -->
+      <div class="itpbc-bar-chart" id="itpbcBarChart" aria-label="6개사 예상 현금 PI 비교 바 차트">
+        {IT_PLATFORM_COMPANIES.map((c) => (
+          <div class="itpbc-bar-row" data-company={c.id}>
+            <span class="itpbc-bar-label">{c.shortName}</span>
+            <div class="itpbc-bar-track">
+              <div class="itpbc-bar-fill" style="width:0%" data-bar={c.id}></div>
+            </div>
+            <span class="itpbc-bar-value" data-gross={c.id}>-</span>
+          </div>
+        ))}
+      </div>
+      <p class="itpbc-chart-note">
+        ※ 연봉 대비 현금 PI % 추정값 기준. 실제 지급액과 다를 수 있습니다.
+      </p>
+    </section>
+
+    <!-- ── 결과: 상세 카드 ───────────────────── -->
+    <section class="itpbc-cards-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">회사별 결과</p>
+          <h2 class="panel__title">예상 세전·세후 비교</h2>
+        </div>
+      </div>
+      <div class="itpbc-result-cards" id="itpbcResultCards">
+        {IT_PLATFORM_COMPANIES.map((c) => (
+          <article class="itpbc-result-card" data-card={c.id}>
+            <div class="itpbc-result-card__header">
+              <strong class="itpbc-result-card__name">{c.name}</strong>
+              <span class={`itpbc-badge ${listingColor[c.listing]}`}>{c.listingLabel}</span>
+            </div>
+            <div class="itpbc-result-card__numbers">
+              <div>
+                <span>세전 예상 PI</span>
+                <strong data-gross-card={c.id}>-</strong>
+              </div>
+              <div>
+                <span>세후 추정</span>
+                <strong data-net-card={c.id}>-</strong>
+              </div>
+              <div>
+                <span>연봉 대비</span>
+                <strong data-rate-card={c.id}>-</strong>
+              </div>
+            </div>
+            <p class="itpbc-result-card__equity">
+              <span class="itpbc-eq-label">주식 보상</span>
+              {c.compensationTypes.filter(t => t !== "cash_pi" && t !== "signing_bonus").map(t => (
+                <span class="itpbc-eq-tag">{compensationTypeLabels[t] ?? t}</span>
+              ))}
+            </p>
+            <p class="itpbc-result-card__badge-note">
+              <span class="itpbc-sim-tag">시뮬레이션</span>
+              {c.cashPiBadge}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 6개사 총보상 구조 비교표 ──────────── -->
+    <section class="itpbc-structure-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">총보상 구조</p>
+          <h2 class="panel__title">6개사 보상 유형 비교</h2>
+        </div>
+        <p class="panel-heading__summary">현금 PI 외에 어떤 보상 유형이 있는지 확인하세요.</p>
+      </div>
+      <div class="itpbc-table-wrap">
+        <table class="itpbc-structure-table">
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>상장</th>
+              <th>현금 PI</th>
+              <th>RSU</th>
+              <th>스톡옵션<br />/ESOP</th>
+              <th>특이사항</th>
+            </tr>
+          </thead>
+          <tbody>
+            {IT_PLATFORM_COMPANIES.map((c) => (
+              <tr>
+                <td><strong>{c.name}</strong></td>
+                <td>
+                  <span class={`itpbc-badge ${listingColor[c.listing]}`}>
+                    {c.listingLabel}
+                  </span>
+                </td>
+                <td class="itpbc-cell--center">✓</td>
+                <td class="itpbc-cell--center">
+                  {c.compensationTypes.includes("rsu") ? "✓" : "–"}
+                </td>
+                <td class="itpbc-cell--center">
+                  {(c.compensationTypes.includes("stock_option") || c.compensationTypes.includes("esop")) ? "✓" : "–"}
+                </td>
+                <td class="itpbc-cell--note">{c.specialNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="itpbc-chart-note">※ 모든 항목 추정·참고 기준. 실제 부여 여부는 회사·직급·연도에 따라 다름</p>
+    </section>
+
+    <!-- ── 회사별 해설 카드 ───────────────────── -->
+    <section class="itpbc-guide-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">회사별 보상 구조 해설</p>
+          <h2 class="panel__title">구조와 리스크 안내</h2>
+        </div>
+      </div>
+      <div class="itpbc-guide-cards">
+        {IT_PLATFORM_COMPANIES.map((c) => (
+          <article class="itpbc-guide-card">
+            <div class="itpbc-guide-card__header">
+              <h3>{c.name}</h3>
+              <span class={`itpbc-badge ${listingColor[c.listing]}`}>{c.listingLabel}</span>
+            </div>
+            <p class="itpbc-guide-card__summary">{c.structureSummary}</p>
+            <div class="itpbc-guide-card__equity">
+              <p><strong>주식 보상</strong></p>
+              <p class="itpbc-guide-card__rsu">{c.rsuNote}</p>
+              <p class="itpbc-guide-card__esop">{c.stockOptionNote}</p>
+            </div>
+            <ul class="itpbc-guide-card__risks">
+              {c.keyRisks.map((r) => <li>{r}</li>)}
+            </ul>
+            <p class="itpbc-guide-card__caution">⚠ {c.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── RSU·스톡옵션·현금 세금 비교 ──────── -->
+    <section class="itpbc-tax-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">보상 유형별 세금</p>
+          <h2 class="panel__title">현금·RSU·스톡옵션 세금 구조</h2>
+        </div>
+        <p class="panel-heading__summary">보상 유형마다 과세 시점과 세금 구조가 다릅니다.</p>
+      </div>
+      <div class="itpbc-tax-grid">
+        {COMPENSATION_TYPE_INFO.map((info) => (
+          <article class="itpbc-tax-card">
+            <strong class="itpbc-tax-card__label">{info.label}</strong>
+            <div class="itpbc-tax-card__row">
+              <span class="itpbc-tax-card__key">세금</span>
+              <p class="itpbc-tax-card__val">{info.taxNote}</p>
+            </div>
+            <div class="itpbc-tax-card__row">
+              <span class="itpbc-tax-card__key">리스크</span>
+              <p class="itpbc-tax-card__val">{info.riskNote}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 이직자 체크리스트 ─────────────────── -->
+    <section class="itpbc-checklist-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">이직 전 확인</p>
+          <h2 class="panel__title">IT 플랫폼 이직 보상 체크리스트</h2>
+        </div>
+      </div>
+      <ul class="itpbc-checklist">
+        {ITPBC_CHECKLIST.map((item) => (
+          <li>
+            <label class="itpbc-check-item">
+              <input type="checkbox" />
+              <span>{item}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- ── 관련 계산기 CTA ───────────────────── -->
+    <section class="itpbc-related-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">관련 계산기</p>
+          <h2 class="panel__title">함께 확인하면 좋은 계산기</h2>
+        </div>
+      </div>
+      <div class="itpbc-related-grid">
+        {ITPBC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="itpbc-related-card">
+            <strong>{link.label}</strong>
+            {link.description && <span>{link.description}</span>}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── SeoContent ──────────────────────── -->
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="IT 플랫폼 성과급, 현금만 보면 안 되는 이유"
+        intro={ITPBC_SEO_INTRO}
+        inputPoints={ITPBC_INPUT_POINTS}
+        criteria={ITPBC_CRITERIA}
+        faq={ITPBC_FAQ}
+        related={ITPBC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="itpbcConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/it-platform-bonus-comparison.js")}></script>
+</BaseLayout>

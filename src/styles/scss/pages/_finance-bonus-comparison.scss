@@ -1,0 +1,522 @@
+.fbc-page {
+
+  // ── 배지 ────────────────────────────────────
+  .fbc-sector-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+
+    &--bank {
+      background: #e8f4fd;
+      color: #1557b0;
+    }
+
+    &--securities {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    &--insurance {
+      background: #f0fdf4;
+      color: #166534;
+    }
+  }
+
+  .fbc-sim-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin: 8px 0 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .fbc-sim-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 10px;
+    font-weight: 800;
+    margin-right: 4px;
+  }
+
+  // ── 연봉 입력 ────────────────────────────────
+  .fbc-salary-field {
+    display: grid;
+    gap: 8px;
+  }
+
+  // ── 세금 구간 표 ─────────────────────────────
+  .fbc-bracket-table-wrap {
+    overflow-x: auto;
+  }
+
+  .fbc-bracket-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #ece9df;
+      text-align: left;
+    }
+
+    th {
+      background: #f7f7f2;
+      font-size: 12px;
+      font-weight: 800;
+      color: #374151;
+    }
+
+    tr.is-selected {
+      background: #eff6ff;
+
+      td { font-weight: 700; color: #1d4ed8; }
+    }
+  }
+
+  // ── KPI 그리드 ───────────────────────────────
+  .fbc-kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0 0 20px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  .fbc-kpi-card {
+    background: #f7f7f2;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    strong {
+      font-size: 20px;
+      font-weight: 900;
+      color: #111827;
+      line-height: 1.2;
+    }
+
+    small {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    &--main {
+      background: #eff6ff;
+      grid-column: 1 / -1;
+
+      @media (min-width: 640px) {
+        grid-column: auto;
+      }
+
+      strong { color: #1d4ed8; }
+    }
+  }
+
+  // ── 바 차트 (은행 전용) ──────────────────────
+  .fbc-bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 4px 0 12px;
+  }
+
+  .fbc-bar-row {
+    display: grid;
+    grid-template-columns: 64px 1fr 88px;
+    align-items: center;
+    gap: 8px;
+
+    @media (min-width: 480px) {
+      grid-template-columns: 76px 1fr 100px;
+    }
+
+    &--best .fbc-bar-label {
+      font-weight: 800;
+      color: #1d4ed8;
+    }
+  }
+
+  .fbc-bar-label {
+    font-size: 12px;
+    color: #374151;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fbc-bar-track {
+    height: 28px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .fbc-bar-fill {
+    height: 100%;
+    background: #93c5fd;
+    border-radius: 6px;
+    transition: width 0.35s ease;
+
+    &--best {
+      background: #1d4ed8;
+    }
+  }
+
+  .fbc-bar-value {
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .fbc-chart-note {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 0;
+  }
+
+  // ── 결과 카드 ────────────────────────────────
+  .fbc-result-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 480px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  .fbc-result-card {
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.2s;
+
+    &--best {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    &--sec {
+      border-style: dashed;
+      border-color: #d97706;
+    }
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      strong {
+        font-size: 14px;
+        font-weight: 800;
+        color: #111827;
+      }
+    }
+
+    &__numbers {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+
+      > div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        span {
+          font-size: 10px;
+          color: #6b7280;
+        }
+
+        strong {
+          font-size: 14px;
+          font-weight: 800;
+          color: #111827;
+        }
+      }
+    }
+
+    &__warn {
+      font-size: 11px;
+      color: #b45309;
+      background: #fffbeb;
+      border-radius: 4px;
+      padding: 4px 8px;
+      margin: 0;
+    }
+
+    &__badge {
+      font-size: 11px;
+      color: #6b7280;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+
+  // ── 업권별 구조 비교표 ───────────────────────
+  .fbc-table-wrap {
+    overflow-x: auto;
+  }
+
+  .fbc-structure-table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #ece9df;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f7f7f2;
+      font-size: 12px;
+      font-weight: 800;
+      color: #374151;
+      white-space: nowrap;
+    }
+
+    tr:hover td { background: #fafaf7; }
+  }
+
+  // ── 해설 카드 ────────────────────────────────
+  .fbc-guide-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    &--sec {
+      margin-top: 20px;
+    }
+  }
+
+  .fbc-guide-card {
+    background: #f7f7f2;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &--sec {
+      background: #fffbeb;
+      border: 1px dashed #d97706;
+    }
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      h3 {
+        font-size: 14px;
+        font-weight: 800;
+        color: #111827;
+        margin: 0;
+      }
+    }
+
+    &__summary {
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    &__risks {
+      margin: 0;
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      li {
+        font-size: 12px;
+        color: #6b7280;
+        line-height: 1.5;
+      }
+    }
+
+    &__special {
+      font-size: 12px;
+      color: #374151;
+      background: #fff;
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    &__caution {
+      font-size: 11px;
+      color: #92400e;
+      background: #fef3c7;
+      border-radius: 4px;
+      padding: 4px 8px;
+      margin: 0;
+    }
+  }
+
+  // ── 증권사 부문 편차 표 ──────────────────────
+  .fbc-sec-dept-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 16px;
+  }
+
+  .fbc-sec-dept-table {
+    width: 100%;
+    min-width: 480px;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th, td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #ece9df;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #fef3c7;
+      font-size: 12px;
+      font-weight: 800;
+      color: #92400e;
+    }
+
+    tr:first-child td {
+      font-weight: 800;
+      color: #1d4ed8;
+    }
+  }
+
+  // ── 보험사 안내 카드 ─────────────────────────
+  .fbc-ins-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .fbc-ins-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      h3 {
+        font-size: 14px;
+        font-weight: 800;
+        color: #111827;
+        margin: 0;
+      }
+    }
+
+    p {
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+
+  // ── 관련 계산기 CTA ──────────────────────────
+  .fbc-related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    @media (min-width: 480px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .fbc-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: #f7f7f2;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+
+    &:hover {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    strong {
+      font-size: 13px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    span {
+      font-size: 12px;
+      color: #6b7280;
+    }
+  }
+}

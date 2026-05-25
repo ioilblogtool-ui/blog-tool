@@ -1,0 +1,235 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SAMSUNG_SHUTTLE_CAMPUSES,
+  SAMSUNG_SHUTTLE_FAQ,
+  SAMSUNG_SHUTTLE_META,
+  SAMSUNG_SHUTTLE_PREMIUMS,
+  SAMSUNG_SHUTTLE_RELATED,
+  SAMSUNG_SHUTTLE_ZONES,
+} from "../../data/samsungShuttleRealEstate2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const formatEok = (value: number) => `${value.toLocaleString("ko-KR")}억`;
+const formatManwon = (value: number) => `${value.toLocaleString("ko-KR")}만 원`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: SAMSUNG_SHUTTLE_META.title,
+      description: SAMSUNG_SHUTTLE_META.description,
+      inLanguage: "ko-KR",
+      dateModified: "2026-05-25",
+      mainEntityOfPage: `https://bigyocalc.com/reports/${SAMSUNG_SHUTTLE_META.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: SAMSUNG_SHUTTLE_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title="삼성전자 셔틀버스 아파트 시세 정리 2026 | 캠퍼스별 직주근접 비용 비교"
+  description={SAMSUNG_SHUTTLE_META.description}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sre-page">
+    <CalculatorHero
+      eyebrow="삼성전자 직주근접 리포트"
+      title={SAMSUNG_SHUTTLE_META.title}
+      description="수원·기흥·화성·평택 캠퍼스별 주요 셔틀권 후보 지역과 30평대 아파트 전세·매매 참고 시세를 함께 정리했습니다. 출퇴근 시간과 주거비 부담을 같은 화면에서 비교해보세요."
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "셔틀 정류장과 노선은 회사 내부 운영 정보이므로, 이 페이지의 권역 정보는 공개 채용 정보와 직장인 커뮤니티에서 반복 언급되는 지역을 바탕으로 한 추정값입니다.",
+        "아파트 시세는 2026년 1분기 30평대 전용 84㎡ 안팎의 실거래·호가 흐름을 단순화한 참고값입니다.",
+        "통근 시간은 평시 도로 상황 기준 추정이며, 출근 시간대 교통과 정류장 위치에 따라 20~30분 이상 달라질 수 있습니다.",
+      ]}
+    />
+
+    <section class="content-section sre-snapshot">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>삼성전자 셔틀권은 근무 캠퍼스와 매수 예산을 같이 봐야 합니다</h2>
+        <p>같은 삼성전자라도 수원 DX, 기흥 DS, 화성, 평택은 생활권이 다릅니다. 서울 남부권을 유지할지, 수원·광교로 줄일지, 동탄·고덕으로 직주근접을 잡을지가 핵심 선택지입니다.</p>
+      </div>
+      <div class="sre-kpi-grid">
+        <article>
+          <span>가장 넓은 커버</span>
+          <strong>강남·서초권</strong>
+          <p>복수 캠퍼스 셔틀 후보가 되지만 주거비 부담이 가장 큽니다.</p>
+        </article>
+        <article>
+          <span>균형형 선택지</span>
+          <strong>광교·수지권</strong>
+          <p>수원·기흥 접근성과 매매 부담의 균형이 좋습니다.</p>
+        </article>
+        <article>
+          <span>평택 직주근접</span>
+          <strong>고덕신도시</strong>
+          <p>평택캠퍼스 기준 통근 시간은 짧지만 서울 접근성은 별도 검토가 필요합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sre-campus-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">캠퍼스 구조</p>
+        <h2>캠퍼스가 바뀌면 좋은 거주지도 같이 바뀝니다</h2>
+      </div>
+      <div class="sre-campus-grid">
+        {SAMSUNG_SHUTTLE_CAMPUSES.map((campus) => (
+          <article class="sre-campus-card">
+            <span>{campus.location}</span>
+            <h3>{campus.name}</h3>
+            <strong>{campus.business}</strong>
+            <p>{campus.shuttleHint}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sre-table-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">권역별 비교</p>
+        <h2>셔틀 후보 권역별 전세·매매 부담을 같은 기준으로 비교</h2>
+        <p>시세는 30평대 기준 참고값입니다. 실제 매물은 단지 연식, 역세권, 학군, 층·향에 따라 크게 달라집니다.</p>
+      </div>
+      <div class="sre-table-wrap">
+        <table class="sre-zone-table">
+          <thead>
+            <tr>
+              <th>권역</th>
+              <th>주요 지역</th>
+              <th>대상 캠퍼스</th>
+              <th>통근</th>
+              <th>전세 30평대</th>
+              <th>매매 30평대</th>
+              <th>평당가</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SAMSUNG_SHUTTLE_ZONES.map((zone) => (
+              <tr>
+                <th>
+                  {zone.name}
+                  <span>{zone.badge}</span>
+                </th>
+                <td>{zone.areas.join(" · ")}</td>
+                <td>{zone.targetCampus.join(" · ")}</td>
+                <td>{zone.commuteLabel}</td>
+                <td>약 {formatEok(zone.jeonseEok)}</td>
+                <td>약 {formatEok(zone.saleEok)}</td>
+                <td>{formatManwon(zone.pricePerPyeongManwon)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section sre-zone-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역별 해석</p>
+        <h2>권역별 장단점을 출퇴근과 주거비 관점으로 정리</h2>
+      </div>
+      <div class="sre-zone-cards">
+        {SAMSUNG_SHUTTLE_ZONES.map((zone) => (
+          <article class="sre-zone-card">
+            <div class="sre-zone-card__top">
+              <span>{zone.badge}</span>
+              <h3>{zone.name}</h3>
+            </div>
+            <p>{zone.note}</p>
+            <dl>
+              <div>
+                <dt>주요 지역</dt>
+                <dd>{zone.areas.join(" · ")}</dd>
+              </div>
+              <div>
+                <dt>후보 캠퍼스</dt>
+                <dd>{zone.targetCampus.join(" · ")}</dd>
+              </div>
+              <div>
+                <dt>전세·매매</dt>
+                <dd>약 {formatEok(zone.jeonseEok)} / 약 {formatEok(zone.saleEok)}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sre-premium-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">가격 해석</p>
+        <h2>셔틀권 프리미엄보다 중요한 것은 대체 교통과 생활권입니다</h2>
+      </div>
+      <div class="sre-premium-grid">
+        {SAMSUNG_SHUTTLE_PREMIUMS.map((item) => (
+          <article>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sre-cta-box">
+      <div>
+        <p class="section-header__eyebrow">다음 단계</p>
+        <h2>성과급과 대출 가능액을 같이 넣어 매수 가능 권역을 좁혀보세요</h2>
+        <p>전세는 통근 부담을 줄이는 선택이고, 매매는 장기 자산 선택입니다. 세후 성과급과 보유 현금, 대출 가능액을 먼저 계산하면 후보 지역이 훨씬 빨리 정리됩니다.</p>
+      </div>
+      <div class="sre-cta-actions">
+        <a href={withBase("/tools/samsung-bonus/")}>삼성전자 성과급 계산기</a>
+        <a href={withBase("/tools/home-purchase-fund/")}>내집마련 자금 계산기</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="삼성전자 셔틀권 부동산 리포트를 보는 방법"
+      intro={[
+        "삼성전자 임직원이 이사를 고민할 때 가장 먼저 확인하는 것은 근무 캠퍼스와 셔틀버스 접근성입니다. 수원 삼성디지털시티, 기흥, 화성, 평택은 서로 가까워 보이지만 실제 통근권은 다르게 형성됩니다.",
+        "강남·서초권은 서울 생활권을 유지할 수 있지만 매매와 전세 부담이 큽니다. 판교·분당은 IT 생활권과 기흥·수원 접근성을 같이 볼 수 있고, 광교·수지는 직주근접과 생활 인프라의 균형이 좋습니다.",
+        "화성·평택 근무 가능성이 크다면 동탄과 고덕을 따로 비교해야 합니다. 동탄은 서울 접근성과 신도시 인프라가 장점이고, 고덕은 평택캠퍼스 통근 시간이 짧다는 장점이 있습니다.",
+        "이 리포트의 셔틀권 정보는 확정 노선표가 아니라 거주 후보 권역을 빠르게 좁히기 위한 참고 자료입니다. 실제 정류장, 탑승 가능 여부, 운행 시간은 사내 안내를 기준으로 최종 확인해야 합니다.",
+      ]}
+      inputPoints={[
+        "권역별 통근 시간과 30평대 전세·매매 참고 시세를 한 화면에서 비교합니다.",
+        "삼성전자 성과급 계산기와 연결해 세후 보너스가 주거 예산에 얼마나 보탬이 되는지 확인할 수 있습니다.",
+        "평택 발령, 기흥 근무, 수원 DX 근무처럼 캠퍼스별 후보 지역을 나눠 볼 수 있습니다.",
+      ]}
+      criteria={[
+        "셔틀 후보 권역은 공개 정보와 직장인 커뮤니티에서 반복 언급되는 지역을 기준으로 정리한 추정값입니다.",
+        "아파트 시세는 2026년 1분기 30평대 전용 84㎡ 안팎의 단순 참고값입니다.",
+        "출퇴근 시간은 평시 기준 추정이며 실제 정류장 위치와 도로 상황에 따라 달라질 수 있습니다.",
+      ]}
+      faq={SAMSUNG_SHUTTLE_FAQ}
+      related={SAMSUNG_SHUTTLE_RELATED}
+    />
+  </main>
+</BaseLayout>
+

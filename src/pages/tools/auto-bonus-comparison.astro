@@ -1,0 +1,337 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  ABC_FAQS,
+  ABC_META,
+  ABC_RELATED_CALCULATORS,
+  ABC_TAX_RATE_BRACKETS,
+  ABC_TERMS,
+  AUTO_BONUS_COMPANIES,
+} from "../../data/autoBonusComparison";
+
+const config = {
+  companies: AUTO_BONUS_COMPANIES,
+  taxBrackets: ABC_TAX_RATE_BRACKETS,
+};
+
+const faqSchema = ABC_FAQS.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={ABC_META.seoTitle}
+  description={ABC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: ABC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: ABC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/auto-bonus-comparison/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="auto-bonus-comparison"
+    pageClass="abc-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="자동차 성과급 비교"
+        title={ABC_META.title}
+        description="현대차, 기아, 현대모비스, 한국GM, 르노코리아 등 자동차 기업의 성과급을 같은 연봉과 월급 기준으로 비교해보세요."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          ABC_META.dataNote,
+          "임단협 요구안, 회사 제시안, 잠정합의안, 최종 합의안은 서로 다릅니다.",
+          "자사주는 현금 성과급과 분리해서 참고용으로만 표시합니다.",
+          "예상 세후 금액은 간편 공제율을 적용한 추정값이며 실제 통장 입금액과 다를 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="abcResetBtn" copyId="abcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="abc-aside-stack" data-abc-calculator>
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">기준 조건</p>
+              <h2 class="panel__title">연봉과 세후 추정</h2>
+            </div>
+            <p class="panel-heading__summary">같은 연봉·월급 기준으로 자동차 5사를 비교합니다.</p>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field">
+              <span>기준 연봉</span>
+              <input data-abc-annual-salary type="number" min="0" step="1000000" value="80000000" class="input-number" />
+              <small>성과급 포함 전 연봉 또는 기준 연봉</small>
+            </label>
+
+            <label class="field">
+              <span>월 기본급</span>
+              <input data-abc-monthly-salary type="number" min="0" step="100000" value="6666667" class="input-number" />
+              <small>연봉 입력 시 자동 계산되며 직접 수정할 수 있습니다.</small>
+            </label>
+
+            <label class="field">
+              <span>세후 계산 방식</span>
+              <select data-abc-tax-mode>
+                <option value="simple">간편 추정</option>
+                <option value="manual">직접 세율 입력</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>직접 공제율 (%)</span>
+              <input data-abc-manual-tax-rate type="number" min="0" max="60" step="0.1" value="22" class="input-number" />
+              <small>직접 세율 입력 모드에서 사용합니다.</small>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">비교 대상</p>
+              <h2 class="panel__title">회사 선택</h2>
+            </div>
+          </div>
+          <div class="abc-company-picker">
+            {AUTO_BONUS_COMPANIES.map((company) => (
+              <label class="abc-company-toggle">
+                <input
+                  type="checkbox"
+                  data-abc-company-toggle={company.id}
+                  checked={company.defaultSelected}
+                />
+                <span>{company.shortName}</span>
+                {company.supportsStock && <em class="abc-stock-badge">자사주</em>}
+              </label>
+            ))}
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">회사별 조건</p>
+              <h2 class="panel__title">성과급 입력</h2>
+            </div>
+            <p class="panel-heading__summary">기본값은 예시값입니다. 실제 비교에는 직접 수정하세요.</p>
+          </div>
+
+          <div class="abc-company-inputs">
+            {AUTO_BONUS_COMPANIES.map((company) => (
+              <section class="abc-company-panel" data-abc-company-panel={company.id}>
+                <div class="abc-company-panel__head">
+                  <strong>{company.shortName}</strong>
+                  <span>{company.defaultPaymentLabel}</span>
+                </div>
+                <div class="form-grid form-grid--compact">
+                  <label class="field">
+                    <span>입력 방식</span>
+                    <select data-abc-mode={company.id}>
+                      <option value="mixed" selected={company.defaultMode === "mixed"}>혼합 (월급+정액)</option>
+                      <option value="monthlyMultiple" selected={company.defaultMode === "monthlyMultiple"}>월급 n개월</option>
+                      <option value="salaryPercent" selected={company.defaultMode === "salaryPercent"}>연봉 대비 %</option>
+                      <option value="fixedAmount" selected={company.defaultMode === "fixedAmount"}>고정 금액</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>월급 개월 수</span>
+                    <input data-abc-monthly-multiple={company.id} type="number" min="0" max="24" step="0.1" value={company.defaultMonthlyMultiple} class="input-number" />
+                  </label>
+                  <label class="field">
+                    <span>연봉 대비 (%)</span>
+                    <input data-abc-salary-percent={company.id} type="number" min="0" max="200" step="0.1" value={company.defaultSalaryPercent} class="input-number" />
+                  </label>
+                  <label class="field">
+                    <span>고정 지급액 (격려금 등)</span>
+                    <input data-abc-fixed-amount={company.id} type="number" min="0" step="100000" value={company.defaultFixedAmount} class="input-number" />
+                  </label>
+                </div>
+                {company.supportsStock && (
+                  <div class="abc-stock-panel">
+                    <p class="abc-stock-panel__label">자사주 (참고용 — 현금 비교와 분리)</p>
+                    <div class="form-grid form-grid--compact">
+                      <label class="field">
+                        <span>자사주 주수</span>
+                        <input data-abc-stock-shares={company.id} type="number" min="0" step="1" value={company.defaultStockShares} class="input-number" />
+                      </label>
+                      <label class="field">
+                        <span>주가 (원)</span>
+                        <input data-abc-stock-price={company.id} type="number" min="0" step="1000" value={company.defaultStockPrice} class="input-number" />
+                      </label>
+                    </div>
+                  </div>
+                )}
+                <p class="abc-company-panel__note">{company.structureSummary}</p>
+              </section>
+            ))}
+          </div>
+        </article>
+      </div>
+    </Fragment>
+
+    <section class="panel abc-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 결과</p>
+          <h2 class="panel__title">자동차 성과급 비교 결과</h2>
+        </div>
+        <p class="panel-heading__summary" data-abc-tax-note>세후 금액은 간편 공제율 기준 추정입니다.</p>
+      </div>
+
+      <div class="abc-kpi-grid" aria-live="polite">
+        <article class="abc-kpi-card abc-kpi-card--main">
+          <span>최고 예상 세후</span>
+          <strong data-abc-best-net>-</strong>
+          <small>현금 성과급 기준 추정</small>
+        </article>
+        <article class="abc-kpi-card">
+          <span>회사 간 최대 차이</span>
+          <strong data-abc-max-gap>-</strong>
+          <small>세후 기준</small>
+        </article>
+        <article class="abc-kpi-card">
+          <span>월평균 차이</span>
+          <strong data-abc-monthly-gap>-</strong>
+          <small>12개월 환산</small>
+        </article>
+        <article class="abc-kpi-card">
+          <span>최고 총보상</span>
+          <strong data-abc-best-total>-</strong>
+          <small>연봉 + 세전 현금 성과급</small>
+        </article>
+      </div>
+
+      <div class="abc-table-wrap">
+        <table class="abc-result-table">
+          <caption>회사별 성과급 비교 결과</caption>
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>입력 방식</th>
+              <th>세전 성과급</th>
+              <th>예상 세후</th>
+              <th>월평균 환산</th>
+              <th>총보상</th>
+              <th>자사주 참고</th>
+              <th>기준</th>
+            </tr>
+          </thead>
+          <tbody data-abc-result-table></tbody>
+        </table>
+      </div>
+
+      <div class="abc-result-cards" data-abc-result-cards></div>
+      <p class="abc-disclaimer">예상 세후 금액은 간편 공제율을 적용한 추정값입니다. 실제 통장 입금액은 지급월 급여, 부양가족, 비과세 항목, 4대보험, 연말정산 결과에 따라 달라질 수 있습니다. 자사주는 현재 주가 기준 참고값이며 현금 비교에 포함되지 않습니다.</p>
+    </section>
+
+    <section class="content-section abc-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자동차 성과급 구조</p>
+        <h2>격려금, 자사주, 임단협 지급액을 나눠서 봐야 합니다</h2>
+        <p>자동차 업계 성과급은 월급 n개월과 정액 격려금, 자사주가 혼합되는 경우가 많아 각 항목을 구분해서 확인해야 합니다.</p>
+      </div>
+      <div class="abc-guide-grid">
+        {AUTO_BONUS_COMPANIES.map((company) => (
+          <article class="abc-guide-card">
+            <div class="abc-guide-card__top">
+              <h3>{company.shortName}</h3>
+              <span>{company.badges.join(" · ")}</span>
+            </div>
+            <p>{company.structureSummary}</p>
+            <small>{company.caution}</small>
+            {company.detailHref && (
+              <a class="abc-detail-link" href={company.detailHref}>{company.detailCtaLabel} →</a>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section abc-terms">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">용어 정리</p>
+        <h2>계산 전에 구분해야 할 자동차 성과급 표현</h2>
+      </div>
+      <div class="abc-term-grid">
+        {ABC_TERMS.map((term) => (
+          <article class="abc-term-card">
+            <h3>{term.term}</h3>
+            <p class="abc-term-card__companies">{term.companies}</p>
+            <p>{term.meaning}</p>
+            <small>{term.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="panel abc-related-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">다음 계산</p>
+          <h2 class="panel__title">같이 보면 좋은 계산기</h2>
+        </div>
+      </div>
+      <div class="abc-related-grid">
+        {ABC_RELATED_CALCULATORS.map((item) => (
+          <a class="abc-related-card" href={item.href}>
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="자동차 성과급 비교 계산기는 무엇인가요?"
+        intro={[
+          "자동차 성과급 비교 계산기는 현대차, 기아, 현대모비스, 한국GM, 르노코리아 등 자동차 기업의 성과급을 같은 연봉·월급 기준으로 비교하는 도구입니다.",
+          "사용자가 월급 n개월, 고정 격려금, 연봉 대비 %, 혼합 지급액을 직접 입력하므로 특정 회사의 확정 지급액을 단정하지 않습니다.",
+          "임단협 요구안과 최종 합의안, 세전 금액과 세후 실수령액, 현금 성과급과 자사주를 구분해서 볼 수 있도록 결과마다 추정과 시뮬레이션 기준을 함께 표시합니다.",
+        ]}
+        inputPoints={[
+          "현대차·기아·현대모비스·한국GM·르노코리아 성과급을 같은 월급 기준으로 비교할 수 있습니다.",
+          "월급 n개월과 정액 격려금이 함께 있는 혼합 지급 구조를 계산할 수 있습니다.",
+          "자사주는 현금 성과급과 분리해서 주가 기준 참고값으로 표시합니다.",
+          "세전 성과급, 예상 세후, 월평균 환산액, 성과급 포함 총보상을 한 번에 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "기본 입력값은 실제 지급률이 아니라 계산 흐름을 보여주기 위한 예시값입니다.",
+          "임단협 요구안, 회사 제시안, 잠정합의안, 최종 합의안을 구분해서 입력해야 합니다.",
+          "자사주는 처분 조건·취득 세금이 현금과 다르므로 현금 비교에 포함되지 않습니다.",
+          "세후 결과는 간편 공제율 기준 추정값이며 실제 원천징수와 연말정산 결과는 달라질 수 있습니다.",
+        ]}
+        faq={ABC_FAQS}
+        related={ABC_RELATED_CALCULATORS.map((item) => ({ href: item.href, label: item.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="abcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="/scripts/auto-bonus-comparison.js" defer></script>
+</BaseLayout>

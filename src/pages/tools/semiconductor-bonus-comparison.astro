@@ -1,0 +1,365 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import {
+  SEMICONDUCTOR_BONUS_COMPANIES,
+  SBC_TAX_RATE_BRACKETS,
+  SBC_TERMS,
+  SBC_RELATED_CALCULATORS,
+  SBC_FAQS,
+} from "../../data/semiconductorBonusComparison";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  companies: SEMICONDUCTOR_BONUS_COMPANIES,
+  taxBrackets: SBC_TAX_RATE_BRACKETS,
+};
+
+const faqSchema = SBC_FAQS.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title="삼성전자·SK하이닉스·DB하이텍 성과급 비교 계산기 2026"
+  description="삼성전자, SK하이닉스, DB하이텍 등 주요 반도체 기업의 성과급을 연봉·월급·성과급률 기준으로 비교해보세요. 세전 성과급, 예상 세후 실수령액, 월평균 환산액, 성과급 포함 총보상을 한 번에 시뮬레이션합니다."
+  ogImage="/og/tools/semiconductor-bonus-comparison.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "반도체 성과급 비교 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: "반도체 기업 성과급을 사용자 입력 기준으로 비교하는 시뮬레이션 계산기",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/semiconductor-bonus-comparison/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="semiconductor-bonus-comparison" pageClass="sbc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="성과급 비교"
+        title="반도체 성과급 비교 계산기 2026"
+        description="삼성전자, SK하이닉스, DB하이텍 등 주요 반도체 기업의 성과급을 같은 연봉과 성과급률 기준으로 비교해보세요. 세전 성과급, 예상 세후 실수령액, 월평균 환산액, 성과급 포함 총보상을 한 화면에서 확인할 수 있습니다."
+      />
+      <div class="sbc-badges" aria-label="계산 기준 배지">
+        <span>추정</span>
+        <span>시뮬레이션</span>
+        <span>사용자 입력 기준</span>
+      </div>
+      <InfoNotice
+        title="계산 전 안내"
+        lines={[
+          "이 계산기는 사용자가 입력한 연봉과 성과급률을 기준으로 한 비교용 시뮬레이션입니다.",
+          "실제 지급액은 회사, 사업부, 직급, 평가, 협의 결과, 세금 및 공제 방식에 따라 달라질 수 있습니다.",
+          "회사별 기본 성과급률은 입력 편의를 위한 예시값이며 공식 지급률이 아닙니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="sbcResetBtn" copyId="sbcCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="sbc-calculator" data-sbc-calculator>
+        <article class="panel sbc-input-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">기준 입력</p>
+              <h2 class="panel__title">같은 조건으로 맞추기</h2>
+            </div>
+            <p class="panel-heading__summary">연봉과 월 기본급을 먼저 맞춘 뒤 회사별 성과급 방식을 조정하세요.</p>
+          </div>
+
+          <div class="form-grid">
+            <label class="field" for="sbcAnnualSalary">
+              <span>기준 연봉</span>
+              <input id="sbcAnnualSalary" data-sbc-annual-salary type="text" inputmode="numeric" value="80,000,000" />
+              <small>성과급 포함 전 연봉 또는 비교 기준 연봉</small>
+            </label>
+            <label class="field" for="sbcMonthlySalary">
+              <span>월 기본급</span>
+              <input id="sbcMonthlySalary" data-sbc-monthly-salary type="text" inputmode="numeric" value="6,666,667" />
+              <small data-sbc-monthly-hint>연봉을 바꾸면 자동 갱신됩니다.</small>
+            </label>
+            <button class="button button--secondary sbc-reset-monthly" type="button" data-sbc-reset-monthly>
+              연봉 기준으로 다시 계산
+            </button>
+            <label class="field" for="sbcTaxMode">
+              <span>세후 계산 방식</span>
+              <select id="sbcTaxMode" data-sbc-tax-mode>
+                <option value="simple" selected>간편 추정</option>
+                <option value="manual">직접 세율 입력</option>
+              </select>
+            </label>
+            <label class="field" for="sbcManualTaxRate">
+              <span>직접 공제율</span>
+              <input id="sbcManualTaxRate" data-sbc-manual-tax-rate type="number" min="0" max="60" step="0.1" value="22" />
+              <small>직접 세율 입력 모드에서 사용합니다.</small>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel sbc-company-picker">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">회사 선택</p>
+              <h2 class="panel__title">비교할 회사</h2>
+            </div>
+          </div>
+          <div class="sbc-company-toggle-grid">
+            {SEMICONDUCTOR_BONUS_COMPANIES.map((company) => (
+              <label class="sbc-company-toggle">
+                <input
+                  type="checkbox"
+                  data-sbc-company-toggle={company.id}
+                  checked={company.defaultSelected}
+                />
+                <span>
+                  <strong>{company.shortName}</strong>
+                  <small>{company.defaultBonusTerm}</small>
+                </span>
+              </label>
+            ))}
+          </div>
+        </article>
+
+        <article class="panel sbc-company-inputs">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">회사별 가정</p>
+              <h2 class="panel__title">성과급 방식 입력</h2>
+            </div>
+            <p class="panel-heading__summary">기본값은 예시입니다. 실제 비교가 필요하면 회사별 지급 기준에 맞게 수정하세요.</p>
+          </div>
+          <div class="sbc-company-panel-list">
+            {SEMICONDUCTOR_BONUS_COMPANIES.map((company) => (
+              <section class="sbc-company-panel" data-sbc-company-panel={company.id}>
+                <div class="sbc-company-panel__head">
+                  <div>
+                    <strong>{company.name}</strong>
+                    <span>{company.structureSummary}</span>
+                  </div>
+                  <div class="sbc-company-panel__badges">
+                    {company.badges.map((badge) => <span>{badge}</span>)}
+                  </div>
+                </div>
+                <div class="sbc-company-panel__inputs">
+                  <label class="field" for={`sbcMode-${company.id}`}>
+                    <span>성과급 방식</span>
+                    <select id={`sbcMode-${company.id}`} data-sbc-mode={company.id}>
+                      <option value="salaryPercent" selected={company.defaultMode === "salaryPercent"}>연봉 대비 %</option>
+                      <option value="monthlyMultiple" selected={company.defaultMode === "monthlyMultiple"}>월급 n개월</option>
+                      <option value="fixedAmount" selected={company.defaultMode === "fixedAmount"}>고정 금액</option>
+                    </select>
+                  </label>
+                  <label class="field" for={`sbcPercent-${company.id}`}>
+                    <span>성과급률 (%)</span>
+                    <input id={`sbcPercent-${company.id}`} data-sbc-salary-percent={company.id} type="number" min="0" max="300" step="0.1" value={company.defaultSalaryPercent} />
+                  </label>
+                  <label class="field" for={`sbcMultiple-${company.id}`}>
+                    <span>월급 개월 수</span>
+                    <input id={`sbcMultiple-${company.id}`} data-sbc-monthly-multiple={company.id} type="number" min="0" max="60" step="0.1" value={company.defaultMonthlyMultiple} />
+                  </label>
+                  <label class="field" for={`sbcFixed-${company.id}`}>
+                    <span>고정 성과급</span>
+                    <input id={`sbcFixed-${company.id}`} data-sbc-fixed-amount={company.id} type="text" inputmode="numeric" value={company.defaultFixedAmount.toLocaleString("ko-KR")} />
+                  </label>
+                </div>
+                <p class="sbc-company-panel__caution">{company.caution}</p>
+              </section>
+            ))}
+          </div>
+        </article>
+      </section>
+    </Fragment>
+
+    <section class="sbc-results">
+      <div class="sbc-section-head">
+        <p class="sbc-section-head__eyebrow">핵심 결과</p>
+        <h2>예상 세후 성과급 비교</h2>
+        <p>입력값을 바꾸면 결과가 바로 갱신됩니다. 모든 금액은 사용자 입력 기준 추정값입니다.</p>
+      </div>
+      <div class="sbc-kpi-grid">
+        <article class="sbc-kpi-card">
+          <span>최고 예상 세후 성과급</span>
+          <strong data-sbc-best-net>-</strong>
+          <small>추정</small>
+        </article>
+        <article class="sbc-kpi-card">
+          <span>회사 간 최대 차이</span>
+          <strong data-sbc-max-gap>-</strong>
+          <small>선택 회사 기준</small>
+        </article>
+        <article class="sbc-kpi-card">
+          <span>월평균 차이</span>
+          <strong data-sbc-monthly-gap>-</strong>
+          <small>12개월 환산</small>
+        </article>
+        <article class="sbc-kpi-card">
+          <span>성과급 포함 최고 총보상</span>
+          <strong data-sbc-best-total>-</strong>
+          <small>세전 기준</small>
+        </article>
+      </div>
+      <p class="sbc-compare-note" data-sbc-compare-note></p>
+    </section>
+
+    <section class="sbc-result-section">
+      <div class="sbc-section-head">
+        <p class="sbc-section-head__eyebrow">회사별 표</p>
+        <h2>세전·세후·월평균 환산</h2>
+      </div>
+      <div class="sbc-table-wrap">
+        <table class="sbc-result-table">
+          <caption>반도체 기업 성과급 비교 결과 표</caption>
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>구조</th>
+              <th>입력 기준</th>
+              <th>세전 성과급</th>
+              <th>예상 세후</th>
+              <th>월평균 환산</th>
+              <th>총보상</th>
+              <th>상세</th>
+            </tr>
+          </thead>
+          <tbody data-sbc-result-table></tbody>
+        </table>
+      </div>
+      <div class="sbc-result-cards" data-sbc-result-cards></div>
+      <p class="sbc-footnote">예상 세후 금액은 간편 공제율을 적용한 추정값입니다. 실제 통장 입금액은 지급월 급여, 부양가족, 비과세 항목, 4대보험, 연말정산 결과에 따라 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="sbc-company-guide">
+      <div class="sbc-section-head">
+        <p class="sbc-section-head__eyebrow">회사별 해설</p>
+        <h2>성과급 구조를 읽는 법</h2>
+      </div>
+      <div class="sbc-guide-grid">
+        {SEMICONDUCTOR_BONUS_COMPANIES.map((company) => (
+          <article class="sbc-guide-card">
+            <div class="sbc-guide-card__head">
+              <strong>{company.name}</strong>
+              <span>{company.defaultBonusTerm}</span>
+            </div>
+            <p>{company.structureSummary}</p>
+            <p>{company.caution}</p>
+            {company.detailHref && company.detailCtaLabel && (
+              <a href={withBase(company.detailHref)}>{company.detailCtaLabel} →</a>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sbc-terms">
+      <div class="sbc-section-head">
+        <p class="sbc-section-head__eyebrow">용어 정리</p>
+        <h2>OPI·TAI·PS·PI 차이</h2>
+      </div>
+      <div class="sbc-term-table">
+        {SBC_TERMS.map((term) => (
+          <article class="sbc-term-row">
+            <strong>{term.term}</strong>
+            <span>{term.companies}</span>
+            <p>{term.meaning}</p>
+            <small>{term.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sbc-caution">
+      <div class="sbc-section-head">
+        <p class="sbc-section-head__eyebrow">주의사항</p>
+        <h2>확정 지급액처럼 해석하지 마세요</h2>
+      </div>
+      <ul>
+        <li>성과급률이 높아도 기준이 연봉인지 기본급인지에 따라 체감 금액이 달라집니다.</li>
+        <li>세전 성과급과 통장 입금액은 다릅니다.</li>
+        <li>같은 회사라도 사업부, 직군, 직급, 평가, 입사 시점에 따라 결과가 달라질 수 있습니다.</li>
+        <li>노사 협의안, 요구안, 보도된 추정치를 확정 지급액처럼 보면 안 됩니다.</li>
+      </ul>
+    </section>
+
+    <section class="sbc-related">
+      <div class="sbc-section-head">
+        <p class="sbc-section-head__eyebrow">다음 단계</p>
+        <h2>상세 계산기와 리포트로 이어보기</h2>
+      </div>
+      <div class="sbc-related-grid">
+        {SBC_RELATED_CALCULATORS.map((item) => (
+          <a href={withBase(item.href)} class="sbc-related-card">
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="sbc-faq">
+      <div class="sbc-section-head">
+        <p class="sbc-section-head__eyebrow">FAQ</p>
+        <h2>반도체 성과급 비교 자주 묻는 질문</h2>
+      </div>
+      <div class="sbc-faq-list">
+        {SBC_FAQS.map((item, index) => (
+          <details class="sbc-faq-item" open={index === 0}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="반도체 성과급 비교 계산기를 이렇게 사용하세요"
+        intro={[
+          "반도체 성과급 비교 계산기는 삼성전자, SK하이닉스, DB하이텍, 디스플레이·장비·팹리스 회사를 같은 입력 조건에서 비교하는 도구입니다.",
+          "핵심은 회사별 성과급 명칭을 외우는 것이 아니라 기준 연봉, 월 기본급, 성과급률, 세후 추정액을 같은 조건으로 맞춘 뒤 총보상 차이를 보는 것입니다."
+        ]}
+        inputPoints={[
+          "기준 연봉을 입력하면 월 기본급이 자동으로 계산됩니다.",
+          "월 기본급을 직접 수정하면 이후 연봉 변경 시에도 사용자 수정값을 유지합니다.",
+          "회사별 성과급은 연봉 대비 %, 월급 n개월, 고정 금액 중 하나로 입력할 수 있습니다.",
+          "간편 추정 세율 또는 직접 공제율을 선택해 예상 세후 성과급을 비교합니다."
+        ]}
+        criteria={[
+          "회사별 기본 성과급률은 실제 지급률이 아니라 입력 편의를 위한 예시값입니다.",
+          "간편 세후 추정은 연봉 구간별 공제율을 적용한 참고값입니다.",
+          "삼성전자와 SK하이닉스는 상세 계산기로 이동해 더 세부적인 시나리오를 볼 수 있습니다."
+        ]}
+        faq={SBC_FAQS}
+        related={[
+          { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
+          { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+          { href: "/reports/corporate-bonus-comparison-2026/", label: "대기업 성과급 비교 리포트" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="sbcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/semiconductor-bonus-comparison.js")}></script>
+</BaseLayout>

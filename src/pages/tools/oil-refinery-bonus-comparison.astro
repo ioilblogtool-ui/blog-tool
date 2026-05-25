@@ -1,0 +1,316 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  ORBC_FAQS,
+  ORBC_META,
+  ORBC_RELATED_CALCULATORS,
+  ORBC_TAX_RATE_BRACKETS,
+  ORBC_TERMS,
+  OIL_REFINERY_BONUS_COMPANIES,
+} from "../../data/oilRefineryBonusComparison";
+
+const config = {
+  companies: OIL_REFINERY_BONUS_COMPANIES,
+  taxBrackets: ORBC_TAX_RATE_BRACKETS,
+};
+
+const faqSchema = ORBC_FAQS.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={ORBC_META.seoTitle}
+  description={ORBC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: ORBC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: ORBC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/oil-refinery-bonus-comparison/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="oil-refinery-bonus-comparison"
+    pageClass="orbc-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="정유 성과급 비교"
+        title={ORBC_META.title}
+        description="SK이노베이션, GS칼텍스, S-OIL(에쓰오일), HD현대오일뱅크 등 정유·석유화학 기업의 성과급을 같은 연봉과 성과급률 기준으로 비교해보세요."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          ORBC_META.dataNote,
+          "기본 성과급률은 입력 편의를 위한 예시값이며 공식 지급률이 아닙니다.",
+          "실제 비교가 필요하면 회사별 지급 기준에 맞게 직접 수정해 주세요.",
+          "예상 세후 금액은 간편 공제율을 적용한 추정값이며 실제 통장 입금액과 다를 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="orbcResetBtn" copyId="orbcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="orbc-aside-stack" data-orbc-calculator>
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">기준 조건</p>
+              <h2 class="panel__title">연봉과 세후 추정</h2>
+            </div>
+            <p class="panel-heading__summary">같은 연봉·월급 기준으로 정유 5사를 비교합니다.</p>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field">
+              <span>기준 연봉</span>
+              <input data-orbc-annual-salary type="number" min="0" step="1000000" value="80000000" class="input-number" />
+              <small>성과급 포함 전 연봉 또는 기준 연봉</small>
+            </label>
+
+            <label class="field">
+              <span>월 기본급</span>
+              <input data-orbc-monthly-salary type="number" min="0" step="100000" value="6666667" class="input-number" />
+              <small>연봉 입력 시 자동 계산되며 직접 수정할 수 있습니다.</small>
+            </label>
+
+            <label class="field">
+              <span>세후 계산 방식</span>
+              <select data-orbc-tax-mode>
+                <option value="simple">간편 추정</option>
+                <option value="manual">직접 세율 입력</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>직접 공제율 (%)</span>
+              <input data-orbc-manual-tax-rate type="number" min="0" max="60" step="0.1" value="22" class="input-number" />
+              <small>직접 세율 입력 모드에서 사용합니다.</small>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">비교 대상</p>
+              <h2 class="panel__title">회사 선택</h2>
+            </div>
+          </div>
+          <div class="orbc-company-picker">
+            {OIL_REFINERY_BONUS_COMPANIES.map((company) => (
+              <label class="orbc-company-toggle">
+                <input
+                  type="checkbox"
+                  data-orbc-company-toggle={company.id}
+                  checked={company.defaultSelected}
+                />
+                <span>{company.shortName}</span>
+                <em class="orbc-term-badge">{company.defaultBonusTerm}</em>
+              </label>
+            ))}
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">회사별 조건</p>
+              <h2 class="panel__title">성과급 입력</h2>
+            </div>
+            <p class="panel-heading__summary">기본값은 예시값입니다. 실제 비교에는 직접 수정하세요.</p>
+          </div>
+
+          <div class="orbc-company-inputs">
+            {OIL_REFINERY_BONUS_COMPANIES.map((company) => (
+              <section class="orbc-company-panel" data-orbc-company-panel={company.id}>
+                <div class="orbc-company-panel__head">
+                  <strong>{company.shortName}</strong>
+                  <span>{company.defaultBonusTerm}</span>
+                </div>
+                <div class="form-grid form-grid--compact">
+                  <label class="field">
+                    <span>입력 방식</span>
+                    <select data-orbc-mode={company.id}>
+                      <option value="salaryPercent" selected={company.defaultMode === "salaryPercent"}>연봉 대비 %</option>
+                      <option value="monthlyMultiple" selected={company.defaultMode === "monthlyMultiple"}>월급 n개월</option>
+                      <option value="fixedAmount" selected={company.defaultMode === "fixedAmount"}>고정 금액</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>연봉 대비 (%)</span>
+                    <input data-orbc-salary-percent={company.id} type="number" min="0" max="200" step="0.1" value={company.defaultSalaryPercent} class="input-number" />
+                  </label>
+                  <label class="field">
+                    <span>월급 개월 수</span>
+                    <input data-orbc-monthly-multiple={company.id} type="number" min="0" max="24" step="0.1" value={company.defaultMonthlyMultiple} class="input-number" />
+                  </label>
+                  <label class="field">
+                    <span>고정 지급액</span>
+                    <input data-orbc-fixed-amount={company.id} type="number" min="0" step="100000" value={company.defaultFixedAmount} class="input-number" />
+                  </label>
+                </div>
+                <p class="orbc-company-panel__note">{company.structureSummary}</p>
+              </section>
+            ))}
+          </div>
+        </article>
+      </div>
+    </Fragment>
+
+    <section class="panel orbc-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 결과</p>
+          <h2 class="panel__title">정유 성과급 비교 결과</h2>
+        </div>
+        <p class="panel-heading__summary" data-orbc-tax-note>세후 금액은 간편 공제율 기준 추정입니다.</p>
+      </div>
+
+      <div class="orbc-kpi-grid" aria-live="polite">
+        <article class="orbc-kpi-card orbc-kpi-card--main">
+          <span>최고 예상 세후</span>
+          <strong data-orbc-best-net>-</strong>
+          <small>현금 성과급 기준 추정</small>
+        </article>
+        <article class="orbc-kpi-card">
+          <span>회사 간 최대 차이</span>
+          <strong data-orbc-max-gap>-</strong>
+          <small>세후 기준</small>
+        </article>
+        <article class="orbc-kpi-card">
+          <span>월평균 차이</span>
+          <strong data-orbc-monthly-gap>-</strong>
+          <small>12개월 환산</small>
+        </article>
+        <article class="orbc-kpi-card">
+          <span>최고 총보상</span>
+          <strong data-orbc-best-total>-</strong>
+          <small>연봉 + 세전 성과급</small>
+        </article>
+      </div>
+
+      <div class="orbc-table-wrap">
+        <table class="orbc-result-table">
+          <caption>회사별 성과급 비교 결과</caption>
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>입력 방식</th>
+              <th>세전 성과급</th>
+              <th>예상 세후</th>
+              <th>월평균 환산</th>
+              <th>총보상</th>
+              <th>기준</th>
+            </tr>
+          </thead>
+          <tbody data-orbc-result-table></tbody>
+        </table>
+      </div>
+
+      <div class="orbc-result-cards" data-orbc-result-cards></div>
+      <p class="orbc-disclaimer">예상 세후 금액은 간편 공제율을 적용한 추정값입니다. 실제 통장 입금액은 지급월 급여, 부양가족, 비과세 항목, 4대보험, 연말정산 결과에 따라 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="content-section orbc-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">정유 성과급 구조</p>
+        <h2>PS·PI, 성과급률, 정제마진을 나눠서 봐야 합니다</h2>
+        <p>정유 업계 성과급은 연봉 대비 %로 연동되는 경우가 많으며 회사별 명칭과 지급 기준이 다릅니다.</p>
+      </div>
+      <div class="orbc-guide-grid">
+        {OIL_REFINERY_BONUS_COMPANIES.map((company) => (
+          <article class="orbc-guide-card">
+            <div class="orbc-guide-card__top">
+              <h3>{company.shortName}</h3>
+              <span>{company.badges.join(" · ")}</span>
+            </div>
+            <p>{company.structureSummary}</p>
+            <small>{company.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section orbc-terms">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">용어 정리</p>
+        <h2>계산 전에 구분해야 할 정유 성과급 표현</h2>
+      </div>
+      <div class="orbc-term-grid">
+        {ORBC_TERMS.map((term) => (
+          <article class="orbc-term-card">
+            <h3>{term.term}</h3>
+            <p>{term.meaning}</p>
+            <small>{term.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="panel orbc-related-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">다음 계산</p>
+          <h2 class="panel__title">같이 보면 좋은 계산기</h2>
+        </div>
+      </div>
+      <div class="orbc-related-grid">
+        {ORBC_RELATED_CALCULATORS.map((item) => (
+          <a class="orbc-related-card" href={item.href}>
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="정유 성과급 비교 계산기는 무엇인가요?"
+        intro={[
+          "정유 성과급 비교 계산기는 SK이노베이션, GS칼텍스, S-OIL(에쓰오일), HD현대오일뱅크, 롯데케미칼 등 정유·석유화학 기업의 성과급을 같은 연봉 기준으로 비교하는 도구입니다.",
+          "사용자가 연봉 대비 %, 월급 n개월, 고정 금액을 직접 입력하므로 특정 회사의 확정 지급액을 단정하지 않습니다.",
+          "세전 성과급, 예상 세후 실수령액, 월평균 환산액, 성과급 포함 총보상을 한 번에 비교할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "SK이노베이션·GS칼텍스·S-OIL·HD현대오일뱅크·롯데케미칼 성과급을 같은 연봉 기준으로 비교할 수 있습니다.",
+          "연봉 대비 %, 월급 n개월, 고정 금액 방식을 모두 지원합니다.",
+          "세전 성과급, 예상 세후, 월평균 환산액, 성과급 포함 총보상을 한 번에 확인할 수 있습니다.",
+          "간편 추정 세율과 직접 세율 입력 방식을 선택할 수 있습니다.",
+        ]}
+        criteria={[
+          "기본 입력값은 실제 지급률이 아니라 계산 흐름을 보여주기 위한 예시값입니다.",
+          "정유사별 성과급 명칭(PS·PI·특별성과급 등)은 회사마다 다릅니다.",
+          "세후 결과는 간편 공제율 기준 추정값이며 실제 원천징수와 연말정산 결과는 달라질 수 있습니다.",
+          "롯데케미칼은 석유화학 업종으로 정유사와 실적 구조가 다릅니다.",
+        ]}
+        faq={ORBC_FAQS}
+        related={ORBC_RELATED_CALCULATORS.map((item) => ({ href: item.href, label: item.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="orbcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="/scripts/oil-refinery-bonus-comparison.js" defer></script>
+</BaseLayout>

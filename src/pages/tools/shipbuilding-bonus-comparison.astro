@@ -1,0 +1,313 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SHBC_FAQS,
+  SHBC_META,
+  SHBC_RELATED_CALCULATORS,
+  SHBC_TAX_RATE_BRACKETS,
+  SHBC_TERMS,
+  SHIPBUILDING_BONUS_COMPANIES,
+} from "../../data/shipbuildingBonusComparison";
+
+const config = {
+  companies: SHIPBUILDING_BONUS_COMPANIES,
+  taxBrackets: SHBC_TAX_RATE_BRACKETS,
+};
+
+const faqSchema = SHBC_FAQS.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={SHBC_META.seoTitle}
+  description={SHBC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: SHBC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: SHBC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/shipbuilding-bonus-comparison/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="shipbuilding-bonus-comparison"
+    pageClass="shbc-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="조선업 성과급 비교"
+        title={SHBC_META.title}
+        description="HD현대중공업, 한화오션, 삼성중공업 등 주요 조선사의 성과급을 같은 연봉과 월급 기준으로 비교해보세요."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          SHBC_META.dataNote,
+          "노조 요구안, 회사 제시안, 잠정 합의안, 최종 합의안은 서로 다릅니다.",
+          "예상 세후 금액은 간편 공제율을 적용한 추정값이며 실제 통장 입금액과 다를 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="shbcResetBtn" copyId="shbcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="shbc-aside-stack" data-shbc-calculator>
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">기준 조건</p>
+              <h2 class="panel__title">연봉과 세후 추정</h2>
+            </div>
+            <p class="panel-heading__summary">같은 연봉·월급 기준으로 조선 3사를 비교합니다.</p>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field">
+              <span>기준 연봉</span>
+              <input data-shbc-annual-salary type="number" min="0" step="1000000" value="70000000" class="input-number" />
+              <small>성과급 포함 전 연봉 또는 기준 연봉</small>
+            </label>
+
+            <label class="field">
+              <span>월 기본급</span>
+              <input data-shbc-monthly-salary type="number" min="0" step="100000" value="5833333" class="input-number" />
+              <small>연봉 입력 시 자동 계산되며 직접 수정할 수 있습니다.</small>
+            </label>
+
+            <label class="field">
+              <span>세후 계산 방식</span>
+              <select data-shbc-tax-mode>
+                <option value="simple">간편 추정</option>
+                <option value="manual">직접 세율 입력</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>직접 공제율 (%)</span>
+              <input data-shbc-manual-tax-rate type="number" min="0" max="60" step="0.1" value="22" class="input-number" />
+              <small>직접 세율 입력 모드에서 사용합니다.</small>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">비교 대상</p>
+              <h2 class="panel__title">조선 3사 선택</h2>
+            </div>
+          </div>
+          <div class="shbc-company-picker">
+            {SHIPBUILDING_BONUS_COMPANIES.map((company) => (
+              <label class="shbc-company-toggle">
+                <input
+                  type="checkbox"
+                  data-shbc-company-toggle={company.id}
+                  checked={company.defaultSelected}
+                />
+                <span>{company.shortName}</span>
+              </label>
+            ))}
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">회사별 조건</p>
+              <h2 class="panel__title">성과급 입력</h2>
+            </div>
+            <p class="panel-heading__summary">기본값은 예시값입니다. 실제 비교에는 직접 수정하세요.</p>
+          </div>
+
+          <div class="shbc-company-inputs">
+            {SHIPBUILDING_BONUS_COMPANIES.map((company) => (
+              <section class="shbc-company-panel" data-shbc-company-panel={company.id}>
+                <div class="shbc-company-panel__head">
+                  <strong>{company.shortName}</strong>
+                  <span>{company.defaultPaymentLabel}</span>
+                </div>
+                <div class="form-grid form-grid--compact">
+                  <label class="field">
+                    <span>입력 방식</span>
+                    <select data-shbc-mode={company.id}>
+                      <option value="mixed" selected={company.defaultMode === "mixed"}>혼합</option>
+                      <option value="monthlyMultiple" selected={company.defaultMode === "monthlyMultiple"}>월급 n개월</option>
+                      <option value="salaryPercent" selected={company.defaultMode === "salaryPercent"}>연봉 대비 %</option>
+                      <option value="fixedAmount" selected={company.defaultMode === "fixedAmount"}>고정 금액</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>월급 개월 수</span>
+                    <input data-shbc-monthly-multiple={company.id} type="number" min="0" max="24" step="0.1" value={company.defaultMonthlyMultiple} class="input-number" />
+                  </label>
+                  <label class="field">
+                    <span>연봉 대비 (%)</span>
+                    <input data-shbc-salary-percent={company.id} type="number" min="0" max="200" step="0.1" value={company.defaultSalaryPercent} class="input-number" />
+                  </label>
+                  <label class="field">
+                    <span>고정 지급액</span>
+                    <input data-shbc-fixed-amount={company.id} type="number" min="0" step="100000" value={company.defaultFixedAmount} class="input-number" />
+                  </label>
+                </div>
+                <p class="shbc-company-panel__note">{company.structureSummary}</p>
+              </section>
+            ))}
+          </div>
+        </article>
+      </div>
+    </Fragment>
+
+    <section class="panel shbc-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 결과</p>
+          <h2 class="panel__title">조선업 성과급 비교 결과</h2>
+        </div>
+        <p class="panel-heading__summary" data-shbc-tax-note>세후 금액은 간편 공제율 기준 추정입니다.</p>
+      </div>
+
+      <div class="shbc-kpi-grid" aria-live="polite">
+        <article class="shbc-kpi-card shbc-kpi-card--main">
+          <span>최고 예상 세후</span>
+          <strong data-shbc-best-net>-</strong>
+          <small>추정</small>
+        </article>
+        <article class="shbc-kpi-card">
+          <span>회사 간 최대 차이</span>
+          <strong data-shbc-max-gap>-</strong>
+          <small>세후 기준</small>
+        </article>
+        <article class="shbc-kpi-card">
+          <span>월평균 차이</span>
+          <strong data-shbc-monthly-gap>-</strong>
+          <small>12개월 환산</small>
+        </article>
+        <article class="shbc-kpi-card">
+          <span>최고 총보상</span>
+          <strong data-shbc-best-total>-</strong>
+          <small>연봉 + 세전 성과급</small>
+        </article>
+      </div>
+
+      <div class="shbc-table-wrap">
+        <table class="shbc-result-table">
+          <caption>회사별 성과급 비교 결과</caption>
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>입력 방식</th>
+              <th>세전 성과급</th>
+              <th>예상 세후</th>
+              <th>월평균 환산</th>
+              <th>총보상</th>
+              <th>기준</th>
+            </tr>
+          </thead>
+          <tbody data-shbc-result-table></tbody>
+        </table>
+      </div>
+
+      <div class="shbc-result-cards" data-shbc-result-cards></div>
+      <p class="shbc-disclaimer">예상 세후 금액은 간편 공제율을 적용한 추정값입니다. 실제 통장 입금액은 지급월 급여, 부양가족, 비과세 항목, 4대보험, 연말정산 결과에 따라 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="content-section shbc-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">조선업 성과급 구조</p>
+        <h2>월급 n개월, 격려금, 임단협 지급액을 나눠서 봐야 합니다</h2>
+        <p>조선업 성과급은 연봉 대비 비율 하나로 보기보다 지급 기준과 확정 상태를 함께 확인하는 편이 안전합니다.</p>
+      </div>
+      <div class="shbc-guide-grid">
+        {SHIPBUILDING_BONUS_COMPANIES.map((company) => (
+          <article class="shbc-guide-card">
+            <div class="shbc-guide-card__top">
+              <h3>{company.shortName}</h3>
+              <span>{company.badges.join(" · ")}</span>
+            </div>
+            <p>{company.structureSummary}</p>
+            <small>{company.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section shbc-terms">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">용어 정리</p>
+        <h2>계산 전에 구분해야 할 성과급 표현</h2>
+      </div>
+      <div class="shbc-term-grid">
+        {SHBC_TERMS.map((term) => (
+          <article class="shbc-term-card">
+            <h3>{term.term}</h3>
+            <p>{term.meaning}</p>
+            <small>{term.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="panel shbc-related-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">다음 계산</p>
+          <h2 class="panel__title">같이 보면 좋은 계산기</h2>
+        </div>
+      </div>
+      <div class="shbc-related-grid">
+        {SHBC_RELATED_CALCULATORS.map((item) => (
+          <a class="shbc-related-card" href={item.href}>
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="조선업 성과급 비교 계산기는 무엇인가요?"
+        intro={[
+          "조선업 성과급 비교 계산기는 HD현대중공업, 한화오션, 삼성중공업 등 주요 조선사의 성과급을 같은 연봉·월급 기준으로 비교하는 도구입니다.",
+          "사용자가 월급 n개월, 연봉 대비 %, 고정 격려금, 혼합 지급액을 직접 입력하므로 특정 회사의 확정 지급액을 단정하지 않습니다.",
+          "임단협 요구안과 최종 합의안, 세전 금액과 세후 실수령액을 구분해서 볼 수 있도록 결과마다 추정과 시뮬레이션 기준을 함께 표시합니다.",
+        ]}
+        inputPoints={[
+          "조선 3사의 성과급을 같은 월급 기준으로 비교할 수 있습니다.",
+          "월급 n개월과 고정 격려금이 함께 있는 혼합 지급 구조를 계산할 수 있습니다.",
+          "세전 성과급, 예상 세후, 월평균 환산액, 성과급 포함 총보상을 한 번에 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "기본 입력값은 실제 지급률이 아니라 계산 흐름을 보여주기 위한 예시값입니다.",
+          "노조 요구안, 회사 제시안, 잠정 합의안, 최종 합의안을 구분해서 입력해야 합니다.",
+          "세후 결과는 간편 공제율 기준 추정값이며 실제 원천징수와 연말정산 결과는 달라질 수 있습니다.",
+        ]}
+        faq={SHBC_FAQS}
+        related={SHBC_RELATED_CALCULATORS.map((item) => ({ href: item.href, label: item.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="shbcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="/scripts/shipbuilding-bonus-comparison.js" defer></script>
+</BaseLayout>
