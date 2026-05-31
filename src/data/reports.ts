@@ -92,6 +92,20 @@ export const reports: ReportMeta[] = [
     badges: ["공직자", "재산공개", "2026"],
   },
   {
+    slug: "local-election-candidate-assets-ranking-2026",
+    title: "2026 지방선거 후보 재산 순위 TOP 50",
+    description: "2026 지방선거 시·도지사 후보 재산 신고액 상위 50명을 총재산, 지역, 정당, 공개자료 확인 경로 기준으로 정리한 리포트입니다.",
+    order: 7.2,
+    badges: ["지방선거", "후보재산", "2026"],
+  },
+  {
+    slug: "seoul-mayor-candidate-assets-2026",
+    title: "서울시장 후보 재산·부동산 비교 2026",
+    description: "2026 서울시장 후보 오세훈·정원오의 재산 신고액을 총재산, 부동산, 예금, 증권, 채무 기준으로 비교합니다.",
+    order: 7.4,
+    badges: ["서울시장", "후보재산", "지방선거", "2026"],
+  },
+  {
     slug: "seoul-84-apartment-prices",
     title: "서울 국평 아파트 가격 비교 리포트",
     description: "강남, 서초, 송파, 마포, 성동, 강동의 대단지 84㎡ 아파트 가격을 최고가와 평균가 기준으로 비교하고 연봉 대비 체감까지 보여주는 리포트입니다.",
@@ -496,6 +510,27 @@ export const reports: ReportMeta[] = [
     description: "공제 항목별 절세 전략, 연봉 구간별 환급 시뮬레이션, 절세 실수 TOP10 체크리스트를 총정리합니다.",
     order: 46,
     badges: ["연말정산", "절세", "세금", "2026"],
+  },
+  {
+    slug: "local-election-candidate-real-estate-2026",
+    title: "2026 지방선거 후보 부동산 보유 현황 비교",
+    description: "2026년 지방선거 시·도지사 후보자의 부동산 신고액을 아파트·토지·건물로 분리해 비교합니다. 부동산 보유액 TOP 랭킹과 출마 지역 vs 소재 지역 교차 분석을 제공합니다.",
+    order: 7.51,
+    badges: ["지방선거", "후보부동산", "부동산", "2026"],
+  },
+  {
+    slug: "governor-mayor-candidate-assets-comparison-2026",
+    title: "광역단체장 후보 재산 비교 2026 — 시도지사 후보 재산 순위",
+    description: "2026 지방선거 광역단체장(시도지사) 후보 재산을 정당별·지역별로 비교합니다. 중앙선거관리위원회 공개 자료 기준으로 전체 후보 순위와 평균을 정리했습니다.",
+    order: 7.5,
+    badges: ["지방선거", "후보재산", "공직자", "2026"],
+  },
+  {
+    slug: "gyeonggi-governor-candidate-assets-2026",
+    title: "경기도지사 후보 재산·부동산 비교 2026",
+    description: "2026 경기도지사 후보 추미애·양향자의 재산 신고액을 총재산, 부동산, 예금, 증권, 채무 기준으로 비교합니다.",
+    order: 7.52,
+    badges: ["경기도지사", "후보재산", "지방선거", "2026"],
   },
   {
     slug: "2026-salaried-loan-comparison",

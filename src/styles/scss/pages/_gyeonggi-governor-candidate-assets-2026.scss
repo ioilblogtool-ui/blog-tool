@@ -1,0 +1,524 @@
+// 경기도지사 후보 재산·부동산 비교 2026
+// prefix: ggca-
+
+.ggca-page {
+  display: grid;
+  gap: 24px;
+
+  .content-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    background: #fffdf9;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.05);
+    padding: 18px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 16px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #0f766e;
+    }
+
+    h2 {
+      margin: 0;
+      color: #111827;
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+
+    p {
+      max-width: 780px;
+      margin: 7px 0 0;
+      color: #64748b;
+      font-size: 0.86rem;
+      line-height: 1.7;
+    }
+  }
+}
+
+.ggca-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  background: #f8fafc;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 0.76rem;
+    font-weight: 700;
+  }
+}
+
+.ggca-candidate-grid,
+.ggca-metric-grid,
+.ggca-composition-grid,
+.ggca-breakdown-grid,
+.ggca-policy-grid,
+.ggca-related-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.ggca-candidate-card,
+.ggca-metric-card,
+.ggca-composition-card,
+.ggca-breakdown-card,
+.ggca-policy-card,
+.ggca-related-card,
+.ggca-extra-card,
+.ggca-guide-steps article {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 16px;
+}
+
+.ggca-candidate-card {
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:hover,
+  &.is-focused {
+    border-color: #14b8a6;
+    box-shadow: 0 14px 28px rgba(20, 184, 166, 0.12);
+    transform: translateY(-1px);
+  }
+}
+
+.ggca-candidate-card__topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.ggca-party-badge,
+.ggca-source-badge,
+.ggca-inline-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.ggca-party-badge {
+  background: #ecfeff;
+  color: #155e75;
+}
+
+.ggca-source-badge,
+.ggca-inline-badge {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.ggca-candidate-card__name {
+  margin: 14px 0 2px;
+  color: #0f172a;
+  font-size: 1.32rem;
+  line-height: 1.25;
+}
+
+.ggca-candidate-card__role,
+.ggca-candidate-card__label,
+.ggca-candidate-card__summary,
+.ggca-metric-card p,
+.ggca-breakdown-card p,
+.ggca-policy-card dd,
+.ggca-guide-steps p,
+.ggca-related-card span {
+  color: #64748b;
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.ggca-candidate-card__role,
+.ggca-candidate-card__label {
+  margin: 0;
+}
+
+.ggca-candidate-card__label {
+  margin-top: 14px;
+  font-weight: 800;
+  color: #475569;
+}
+
+.ggca-candidate-card__value {
+  display: block;
+  margin-top: 4px;
+  color: #0f766e;
+  font-size: 1.72rem;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.ggca-candidate-card__bar {
+  height: 9px;
+  overflow: hidden;
+  margin: 12px 0;
+  border-radius: 999px;
+  background: #e2e8f0;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #14b8a6, #0f766e);
+  }
+}
+
+.ggca-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+
+  span {
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 8px;
+  }
+}
+
+.ggca-source-link,
+.ggca-policy-card a,
+.ggca-guide-steps a,
+.ggca-extra-card a {
+  display: inline-flex;
+  margin-top: 12px;
+  color: #0f766e;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.ggca-metric-grid {
+  grid-template-columns: 1fr;
+}
+
+.ggca-metric-card {
+  display: grid;
+  gap: 6px;
+
+  &--primary {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+  }
+
+  &--asset {
+    background: #f0fdfa;
+    border-color: #99f6e4;
+  }
+
+  &--caution {
+    background: #fffbeb;
+    border-color: #fde68a;
+  }
+}
+
+.ggca-metric-card__label {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.ggca-metric-card__value {
+  color: #0f172a;
+  font-size: 1.08rem;
+  line-height: 1.25;
+}
+
+.ggca-unit-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+
+  button {
+    min-height: 34px;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 6px 13px;
+
+    &.is-active {
+      border-color: #0f766e;
+      background: #0f766e;
+      color: #ffffff;
+    }
+  }
+}
+
+.ggca-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ggca-comparison-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+
+  caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  th,
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  thead th {
+    background: #f8fafc;
+    color: #334155;
+    font-size: 0.76rem;
+    font-weight: 900;
+  }
+
+  tbody th {
+    color: #334155;
+    font-weight: 800;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+.ggca-composition-card h3,
+.ggca-breakdown-card h3,
+.ggca-policy-card h3,
+.ggca-guide-steps h3 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 0.98rem;
+}
+
+.ggca-stacked-bar {
+  display: flex;
+  height: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.ggca-stacked-bar__segment {
+  display: block;
+  min-width: 0;
+  height: 100%;
+}
+
+.ggca-stacked-bar__segment--real-estate {
+  background: #14b8a6;
+}
+
+.ggca-stacked-bar__segment--deposit {
+  background: #38bdf8;
+}
+
+.ggca-stacked-bar__segment--securities {
+  background: #a78bfa;
+}
+
+.ggca-stacked-bar__segment--other {
+  background: #cbd5e1;
+}
+
+.ggca-legend-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+}
+
+.ggca-breakdown-grid,
+.ggca-policy-grid,
+.ggca-related-grid,
+.ggca-guide-steps {
+  grid-template-columns: 1fr;
+}
+
+.ggca-formula-card {
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #0f172a !important;
+  font-weight: 900;
+  padding: 10px;
+}
+
+.ggca-policy-card dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.ggca-policy-card dt {
+  margin-bottom: 2px;
+  color: #0f766e;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.ggca-policy-card dd {
+  margin: 0;
+}
+
+.ggca-extra-toggle {
+  min-height: 38px;
+  border: 1px solid #0f766e;
+  border-radius: 999px;
+  background: #0f766e;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 900;
+  padding: 8px 16px;
+}
+
+.ggca-extra-candidates {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ggca-extra-card {
+  display: grid;
+  gap: 4px;
+  color: #475569;
+  font-size: 0.84rem;
+
+  strong {
+    color: #111827;
+  }
+}
+
+.ggca-guide-steps {
+  display: grid;
+  gap: 12px;
+
+  article {
+    position: relative;
+    padding-left: 54px;
+  }
+
+  span {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #ccfbf1;
+    color: #0f766e;
+    font-size: 0.78rem;
+    font-weight: 900;
+  }
+}
+
+.ggca-related-card {
+  display: grid;
+  gap: 6px;
+  color: inherit;
+  text-decoration: none;
+
+  strong {
+    color: #111827;
+    font-size: 0.92rem;
+  }
+
+  &:hover {
+    border-color: #14b8a6;
+  }
+}
+
+@media (min-width: 768px) {
+  .ggca-page {
+    .content-section {
+      padding: 22px;
+    }
+  }
+
+  .ggca-candidate-grid,
+  .ggca-metric-grid,
+  .ggca-composition-grid,
+  .ggca-policy-grid,
+  .ggca-related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ggca-breakdown-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ggca-metric-grid,
+  .ggca-related-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

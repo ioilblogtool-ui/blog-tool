@@ -1,0 +1,374 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  calcNetAssets,
+  formatManwon,
+  localElectionCandidateAssetsRanking2026,
+} from "../../data/localElectionCandidateAssetsRanking2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const data = localElectionCandidateAssetsRanking2026;
+const candidates = data.candidates;
+const topCandidates = candidates.slice(0, 5);
+const sidoOptions = data.sidoDistribution.map((item) => item.label);
+const electionTypeOptions = data.electionTypeDistribution.map((item) => item.label);
+const partyOptions = data.partyDistribution.map((item) => item.label);
+const maxSidoCount = Math.max(...data.sidoDistribution.map((item) => item.count));
+const maxPartyCount = Math.max(...data.partyDistribution.map((item) => item.count));
+const faqItems = data.faq.map((item) => ({ question: item.q, answer: item.a }));
+const relatedForSeo = data.relatedLinks.map((item) => ({ label: item.label, href: item.href }));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: data.meta.title,
+  description: data.meta.description,
+  dateModified: data.meta.updatedAt,
+  inLanguage: "ko-KR",
+  mainEntityOfPage: `https://bigyocalc.com/reports/${data.meta.slug}/`,
+};
+---
+
+<BaseLayout title={data.meta.title} description={data.meta.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page lecar-page">
+    <CalculatorHero eyebrow={data.meta.eyebrow} title={data.meta.h1} description={data.meta.description} />
+
+    <InfoNotice
+      title="자료 해석 전 확인"
+      lines={[
+        data.meta.caution,
+        "이 페이지의 TOP 50은 시·도지사 후보 공개자료 정리 범위이며, 지방선거 전체 모든 후보 순위가 아닙니다.",
+        "후보자 사퇴, 등록무효, 자료 정정이 있으면 순위와 금액이 바뀔 수 있습니다.",
+        "특정 후보나 정당의 우열 평가가 아니라 공개자료를 읽기 쉽게 배열한 참고 리포트입니다.",
+      ]}
+    />
+
+    <section class="content-section lecar-brief">
+      <div class="lecar-brief__copy">
+        <p class="lecar-kicker">Public Election Data</p>
+        <h2>후보 재산 순위는 총액보다 기준과 범위를 먼저 맞춰야 합니다</h2>
+        <p>
+          후보자 재산 신고액은 현재 시세표가 아니라 공직선거 후보자 정보 공개자료의 신고 금액입니다.
+          이 리포트는 시·도지사 후보 상위 50명을 빠르게 탐색할 수 있도록 정렬·검색·지역 필터를 제공합니다.
+        </p>
+      </div>
+      <div class="lecar-meta-grid" aria-label="리포트 기준">
+        <article>
+          <span>기준일</span>
+          <strong>{data.meta.updatedAt}</strong>
+        </article>
+        <article>
+          <span>선거일</span>
+          <strong>{data.meta.electionDate}</strong>
+        </article>
+        <article>
+          <span>자료 범위</span>
+          <strong>시·도지사 후보 TOP 50</strong>
+        </article>
+        <article>
+          <span>금액 단위</span>
+          <strong>만원 신고액</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>먼저 봐야 할 숫자 4개</h2>
+      </div>
+      <div class="lecar-summary-grid">
+        {data.summaryCards.map((card) => (
+          <article class={`lecar-summary-card lecar-summary-card--${card.tone}`}>
+            <div class="lecar-summary-card__top">
+              <span>{card.label}</span>
+              {card.badge && <em>{card.badge}</em>}
+            </div>
+            <strong>{card.value}</strong>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section lecar-podium-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상위권</p>
+        <h2>신고액 상위 5명 한눈에 보기</h2>
+        <p>정당·지역과 함께 표시하되, 숫자 자체가 후보 평가를 대신하지 않는다는 점을 전제로 봐야 합니다.</p>
+      </div>
+      <div class="lecar-podium-grid">
+        {topCandidates.map((candidate) => (
+          <article class="lecar-podium-card">
+            <span>TOP {candidate.rank}</span>
+            <h3>{candidate.candidateName}</h3>
+            <strong>{formatManwon(candidate.totalAssetsManwon)}</strong>
+            <p>{candidate.partyName} · {candidate.sidoName}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section lecar-ranking-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">인터랙티브 순위표</p>
+        <h2>후보자명, 지역, 정당으로 걸러보기</h2>
+        <p>검색과 필터는 브라우저 안에서만 동작하며, 원본 공개자료의 정정 여부는 중앙선관위에서 다시 확인해야 합니다.</p>
+      </div>
+
+      <div class="lecar-filter-panel" aria-label="후보 재산 순위 필터">
+        <label class="lecar-field lecar-field--search">
+          <span>후보자·정당·지역 검색</span>
+          <input id="lecar-search" type="search" placeholder="예: 서울, 국민의힘, 오세훈" autocomplete="off" />
+        </label>
+        <label class="lecar-field">
+          <span>지역</span>
+          <select id="lecar-sido-filter">
+            <option value="all">전체 지역</option>
+            {sidoOptions.map((item) => <option value={item}>{item}</option>)}
+          </select>
+        </label>
+        <label class="lecar-field">
+          <span>선거 구분</span>
+          <select id="lecar-election-type-filter">
+            <option value="all">전체 선거</option>
+            {electionTypeOptions.map((item) => <option value={item}>{item}</option>)}
+          </select>
+        </label>
+        <label class="lecar-field">
+          <span>정당</span>
+          <select id="lecar-party-filter">
+            <option value="all">전체 정당</option>
+            {partyOptions.map((item) => <option value={item}>{item}</option>)}
+          </select>
+        </label>
+      </div>
+
+      <div class="lecar-sort-row" aria-label="정렬 기준">
+        <button type="button" class="lecar-sort-button is-active" data-lecar-sort="totalAssetsManwon" aria-pressed="true">총재산순</button>
+        <button type="button" class="lecar-sort-button" data-lecar-sort="realEstateManwon" aria-pressed="false">부동산순</button>
+        <button type="button" class="lecar-sort-button" data-lecar-sort="depositsManwon" aria-pressed="false">예금순</button>
+        <button type="button" class="lecar-sort-button" data-lecar-sort="securitiesManwon" aria-pressed="false">증권순</button>
+        <button type="button" class="lecar-sort-button" data-lecar-sort="debtsManwon" aria-pressed="false">채무순</button>
+        <button type="button" class="lecar-sort-button" data-lecar-sort="netAssetsManwon" aria-pressed="false">순자산순</button>
+      </div>
+
+      <p class="lecar-result-count" id="lecar-result-count" aria-live="polite">총 {candidates.length}명 표시 중</p>
+
+      <div class="lecar-table-wrap">
+        <table class="lecar-ranking-table">
+          <caption>2026 지방선거 시·도지사 후보 재산 신고액 상위 50명</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>후보자</th>
+              <th>정당</th>
+              <th>지역</th>
+              <th>선거</th>
+              <th>총재산</th>
+              <th>부동산</th>
+              <th>예금</th>
+              <th>증권</th>
+              <th>채무</th>
+              <th>순자산</th>
+            </tr>
+          </thead>
+          <tbody id="lecar-ranking-table-body">
+            {candidates.map((candidate) => (
+              <tr>
+                <td>{candidate.rank}</td>
+                <td>
+                  <strong>{candidate.candidateName}</strong>
+                  <span>{candidate.sourceLabel}</span>
+                </td>
+                <td>{candidate.partyName}</td>
+                <td>{candidate.sidoName}</td>
+                <td>{candidate.electionType}</td>
+                <td>{formatManwon(candidate.totalAssetsManwon)}</td>
+                <td>{formatManwon(candidate.realEstateManwon)}</td>
+                <td>{formatManwon(candidate.depositsManwon)}</td>
+                <td>{formatManwon(candidate.securitiesManwon)}</td>
+                <td>{formatManwon(candidate.debtsManwon)}</td>
+                <td>{formatManwon(calcNetAssets(candidate))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lecar-candidate-list" id="lecar-candidate-list" aria-label="모바일 후보 카드">
+        {candidates.slice(0, 12).map((candidate) => (
+          <article class="lecar-candidate-card">
+            <div>
+              <span>TOP {candidate.rank}</span>
+              <h3>{candidate.candidateName}</h3>
+              <p>{candidate.partyName} · {candidate.sidoName}</p>
+            </div>
+            <strong>{formatManwon(candidate.totalAssetsManwon)}</strong>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">분포 읽기</p>
+        <h2>지역·선거·정당별로 다시 보기</h2>
+      </div>
+      <div class="lecar-distribution-grid">
+        <article class="lecar-distribution-card">
+          <h3>지역별 포함 후보 수</h3>
+          <div class="lecar-bars">
+            {data.sidoDistribution.slice(0, 10).map((item) => (
+              <div class="lecar-bar-row">
+                <span>{item.label}</span>
+                <div><i style={`width: ${(item.count / maxSidoCount) * 100}%`}></i></div>
+                <strong>{item.count}명</strong>
+              </div>
+            ))}
+          </div>
+        </article>
+        <article class="lecar-distribution-card">
+          <h3>정당별 포함 후보 수</h3>
+          <div class="lecar-bars">
+            {data.partyDistribution.map((item) => (
+              <div class="lecar-bar-row">
+                <span>{item.label}</span>
+                <div><i style={`width: ${(item.count / maxPartyCount) * 100}%`}></i></div>
+                <strong>{item.count}명</strong>
+              </div>
+            ))}
+          </div>
+        </article>
+        <article class="lecar-distribution-card lecar-distribution-card--notice">
+          <h3>선거 구분</h3>
+          <p>현재 정리 데이터는 시·도지사 후보 재산 신고액 중심입니다. 기초단체장·광역의원·기초의원 후보는 중앙선관위 지역별 원자료에서 별도로 확인해야 합니다.</p>
+          {data.electionTypeDistribution.map((item) => <strong>{item.label} {item.count}명</strong>)}
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section lecar-breakdown-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">세부 항목</p>
+        <h2>부동산·금융·채무 TOP 20은 원자료 확인이 필요합니다</h2>
+        <p>이 페이지의 정리 데이터는 총재산 신고액 중심입니다. 세부 재산 구성은 후보자별 공개자료 PDF 또는 선거통계시스템에서 확인해야 합니다.</p>
+      </div>
+      <div class="lecar-breakdown-grid">
+        {[
+          ["부동산 상위", "토지·건물·전세권 등 세부 항목은 신고자료 원문에서 확인해야 합니다."],
+          ["금융자산 상위", "예금·증권·채권 항목은 후보자별 세부 공개자료에서 항목별로 분리 확인해야 합니다."],
+          ["채무·순자산", "채무 규모가 큰 후보는 총재산만으로 해석하면 왜곡될 수 있어 채무 항목을 함께 봐야 합니다."],
+        ].map(([title, body]) => (
+          <article class="lecar-breakdown-card">
+            <span>업데이트필요</span>
+            <h3>{title}</h3>
+            <p>{body}</p>
+            <a href="https://info.nec.go.kr/" target="_blank" rel="noreferrer">중앙선관위 원자료 보기</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">확장 리포트</p>
+        <h2>관심 지역은 별도 리포트로 더 자세히 보기</h2>
+        <p>이미 게시된 확장 페이지는 바로 이동할 수 있고, 준비 중인 페이지는 추후 같은 위치에서 연결됩니다.</p>
+      </div>
+      <div class="lecar-battleground-grid">
+        {data.battlegroundLinks.map((link) => (
+          link.status === "게시됨" ? (
+            <a class="lecar-battleground-card lecar-battleground-card--live" href={withBase(link.href)}>
+              <span>{link.status}</span>
+              <h3>{link.label}</h3>
+              <p>{link.description}</p>
+              <strong>리포트 보기</strong>
+            </a>
+          ) : (
+            <article class="lecar-battleground-card lecar-battleground-card--pending" aria-disabled="true">
+              <span>{link.status}</span>
+              <h3>{link.label}</h3>
+              <p>{link.description}</p>
+              <em>준비 중</em>
+            </article>
+          )
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공식자료 확인법</p>
+        <h2>최종 확인은 중앙선관위 공개자료에서 하기</h2>
+      </div>
+      <div class="lecar-guide-grid">
+        {data.guideSteps.map((step, index) => (
+          <article class="lecar-guide-card">
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+            {step.href && <a href={step.href} target="_blank" rel="noreferrer">공식 경로 열기</a>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자료 출처</p>
+        <h2>공식 경로와 보조 정리 출처</h2>
+      </div>
+      <div class="lecar-source-grid">
+        {data.sources.map((source) => (
+          <article class="lecar-source-card">
+            <span>{source.badge}</span>
+            <h3>{source.label}</h3>
+            <p>{source.note}</p>
+            <a href={source.url} target="_blank" rel="noreferrer">{source.organization} 바로가기</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">함께 보기</p>
+        <h2>후보 재산 자료를 다른 공개 데이터와 비교하기</h2>
+      </div>
+      <div class="lecar-related-grid">
+        {data.relatedLinks.map((link) => (
+          <a class="lecar-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="지방선거 후보 재산 공개자료를 읽는 방법"
+      intro={data.seoIntro}
+      inputPoints={[
+        "총재산 신고액은 후보자 검증의 출발점으로만 보고 전과·납세·병역·공약과 함께 확인합니다.",
+        "지역·정당 필터로 관심 후보군을 좁힌 뒤 중앙선관위 원자료에서 세부 항목을 다시 확인합니다.",
+        "부동산 신고액은 현재 시세가 아니므로 실제 자산 가치로 단정하지 않습니다.",
+      ]}
+      criteria={data.seoCriteria}
+      faq={faqItems}
+      related={relatedForSeo}
+    />
+  </main>
+
+  <script id="lecar-data" type="application/json" set:html={JSON.stringify(candidates)} />
+  <script type="module" src={withBase("/scripts/local-election-candidate-assets-ranking-2026.js")}></script>
+</BaseLayout>

@@ -1,0 +1,421 @@
+// 광역단체장 후보 재산 비교 2026
+// prefix: gmca- (Governor Mayor Candidate Assets)
+
+.gmca-page {
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #e6e1d8;
+    border-radius: 20px;
+    background: #fffdf9;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+    padding: 20px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 16px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #475569;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.35;
+      color: #1f2937;
+    }
+
+    p {
+      margin: 6px 0 0;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #6b7280;
+      max-width: 760px;
+    }
+  }
+
+  // ── KPI 카드 ────────────────────────────────────────────────────────────────
+  .gmca-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .gmca-kpi-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.is-accent {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    &.is-warn {
+      background: #fefce8;
+      border-color: #fde68a;
+    }
+
+    &__label {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #64748b;
+      line-height: 1.3;
+    }
+
+    &__value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    &__sub {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+  }
+
+  // ── 정렬 탭 ─────────────────────────────────────────────────────────────────
+  .gmca-sort-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .gmca-tab-btn {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    &.is-active {
+      background: #1e40af;
+      border-color: #1e40af;
+      color: #fff;
+    }
+  }
+
+  // ── 테이블 ───────────────────────────────────────────────────────────────────
+  .gmca-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .gmca-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+
+    thead th {
+      background: #f8fafc;
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #475569;
+      white-space: nowrap;
+      border-bottom: 2px solid #e2e8f0;
+
+      &.col-total,
+      &.col-re,
+      &.col-fin,
+      &.col-debt {
+        text-align: right;
+      }
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.12s;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: #f8fafc;
+      }
+    }
+
+    tbody td {
+      padding: 9px 12px;
+      color: #374151;
+      vertical-align: middle;
+
+      &.col-rank {
+        font-size: 0.72rem;
+        color: #9ca3af;
+        font-weight: 700;
+        width: 32px;
+      }
+
+      &.col-total,
+      &.col-re,
+      &.col-fin,
+      &.col-debt {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      &.col-note {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        max-width: 140px;
+      }
+    }
+  }
+
+  .gmca-name {
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .gmca-total {
+    font-weight: 700;
+    color: #1e3a8a;
+  }
+
+  .gmca-debt-val {
+    color: #b91c1c;
+    font-size: 0.82rem;
+  }
+
+  .gmca-table-note {
+    margin: 10px 0 0;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  // ── 정당 배지 ────────────────────────────────────────────────────────────────
+  .gmca-party-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    // 중립 팔레트 — 특정 정당 공식색 지양
+    &--ppp  { background: #e0e7ff; color: #3730a3; }
+    &--dp   { background: #cffafe; color: #155e75; }
+    &--rebuilding { background: #d1fae5; color: #065f46; }
+    &--etc  { background: #f3f4f6; color: #374151; }
+
+    &--sm {
+      font-size: 0.62rem;
+      padding: 1px 6px;
+    }
+  }
+
+  // ── 정당별 차트 ───────────────────────────────────────────────────────────────
+  .gmca-chart-wrap {
+    height: 220px;
+    margin-bottom: 10px;
+
+    @media (min-width: 768px) {
+      height: 180px;
+    }
+  }
+
+  .gmca-chart-note {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  // ── 지역별 분포 bar row ───────────────────────────────────────────────────────
+  .gmca-region-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .gmca-region-row {
+    display: grid;
+    grid-template-columns: 40px 72px auto 1fr 72px;
+    align-items: center;
+    gap: 8px;
+
+    @media (max-width: 540px) {
+      grid-template-columns: 36px 60px auto 1fr 60px;
+      font-size: 0.82rem;
+    }
+
+    &__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    &__name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &__bar-wrap {
+      background: #f1f5f9;
+      border-radius: 4px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    &__bar {
+      height: 100%;
+      background: linear-gradient(90deg, #6366f1, #818cf8);
+      border-radius: 4px;
+      min-width: 4px;
+      transition: width 0.4s ease;
+    }
+
+    &__value {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
+
+  // ── 재산 구성 카드 ────────────────────────────────────────────────────────────
+  .gmca-composition-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .gmca-composition-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+
+    &__icon {
+      font-size: 1.4rem;
+      margin: 0 0 8px;
+    }
+
+    &__title {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    &__desc {
+      font-size: 0.82rem;
+      color: #6b7280;
+      line-height: 1.7;
+      margin: 0;
+    }
+  }
+
+  // ── FAQ ──────────────────────────────────────────────────────────────────────
+  .gmca-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .gmca-faq-item {
+    border-left: 3px solid #6366f1;
+    padding-left: 14px;
+
+    &__q {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1e40af;
+      margin: 0 0 5px;
+    }
+
+    &__a {
+      font-size: 0.84rem;
+      color: #374151;
+      line-height: 1.75;
+      margin: 0;
+    }
+  }
+
+  // ── CTA 카드 ─────────────────────────────────────────────────────────────────
+  .gmca-cta-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    @media (min-width: 600px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .gmca-cta-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      border-color: #6366f1;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);
+    }
+
+    strong {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+  }
+}

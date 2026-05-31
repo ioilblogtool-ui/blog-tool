@@ -1,0 +1,637 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  formatManwon,
+  formatPercent,
+  localElectionCandidateRealEstate2026,
+} from "../../data/localElectionCandidateRealEstate2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const data = localElectionCandidateRealEstate2026;
+const { meta, candidates, summaryCards, typeTopApartment, typeTopLand, typeTopBuilding,
+        regionCross, multiUnitCandidates, debtRatioItems, relatedLinks, faq,
+        seoIntro, seoCriteria } = data;
+
+// 빌드 타임 계산
+const top10ByRealEstate = candidates.slice(0, 10);
+const topByTotalAssets = [...candidates]
+  .sort((a, b) => (b.totalAssetsManwon ?? 0) - (a.totalAssetsManwon ?? 0))
+  .slice(0, 10);
+
+const maxRealEstate = candidates[0]?.realEstateManwon ?? 1;
+
+const faqItems = faq.map((item) => ({ question: item.q, answer: item.a }));
+const relatedForSeo = relatedLinks.map((l) => ({ label: l.label, href: l.href }));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: meta.title,
+      description: meta.description,
+      inLanguage: "ko-KR",
+      dateModified: meta.updatedAt,
+      mainEntityOfPage: `https://bigyocalc.com/reports/${meta.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faq.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    },
+  ],
+};
+
+// 클라이언트 JS에 주입할 데이터
+const lcrePageData = {
+  candidates,
+  regionCross,
+  multiUnitCandidates,
+  debtRatioItems,
+};
+---
+
+<BaseLayout title={meta.seoTitle} description={meta.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main
+    class="container page-shell report-page lcre-page"
+    data-report="local-election-candidate-real-estate-2026"
+  >
+    <!-- 1. Hero ───────────────────────────────────────────────────────────── -->
+    <CalculatorHero
+      eyebrow={meta.eyebrow}
+      title={meta.h1}
+      description="중앙선거관리위원회 후보자 재산 신고자료를 기준으로 주요 후보의 부동산 신고액을 아파트·토지·건물로 분리해 비교합니다."
+    />
+
+    <div class="lcre-meta-row" aria-label="리포트 기준 정보">
+      <span>최근 업데이트: {meta.updatedAt}</span>
+      <span>선거일: {meta.electionDate}</span>
+      <span>기준: 후보자 등록 재산 신고자료</span>
+      <span class="lcre-badge lcre-badge--assessed">공시가격 기준</span>
+      <span class="lcre-badge lcre-badge--caution">시세와 다름</span>
+    </div>
+
+    <!-- 2. InfoNotice ────────────────────────────────────────────────────── -->
+    <InfoNotice
+      title="자료 해석 전 확인"
+      lines={[
+        "이 페이지는 후보자 공개자료 중 부동산 항목을 정리한 참고 리포트입니다.",
+        "부동산 신고액은 공시가격 기준이며 실거래가(시세)와 다를 수 있습니다.",
+        "후보자 본인 외 배우자·직계존비속 명의 부동산이 포함될 수 있습니다.",
+        "아파트·토지·건물 세부 항목은 선관위 원문 확인 후 업데이트됩니다. 후보 사퇴·자료 정정 시 수치가 바뀔 수 있습니다.",
+      ]}
+    />
+
+    <!-- 3. Summary Cards ────────────────────────────────────────────────── -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>부동산 현황 주요 지표</h2>
+      </div>
+      <div class="lcre-summary-grid">
+        {summaryCards.map((card) => (
+          <article class={`lcre-summary-card lcre-summary-card--${card.tone}`}>
+            <div class="lcre-summary-card__top">
+              <span>{card.label}</span>
+              {card.badge && <em class="lcre-badge lcre-badge--update">{card.badge}</em>}
+            </div>
+            <strong>{card.value}</strong>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 4. 부동산 TOP 랭킹 ─────────────────────────────────────────────── -->
+    <section class="content-section lcre-ranking-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">부동산 신고액 TOP 랭킹</p>
+        <h2>시·도지사 후보 부동산 신고액 순위</h2>
+        <p>
+          총재산 신고액 기준 추정 부동산 금액입니다. 아파트·토지·건물 세부 항목은
+          <span class="lcre-badge lcre-badge--update">업데이트 진행 중</span>입니다.
+        </p>
+      </div>
+
+      <!-- 필터 툴바 -->
+      <div class="lcre-filter-toolbar">
+        <input
+          type="search"
+          id="lcreSearch"
+          class="lcre-search-input"
+          placeholder="후보자명·선거구 검색"
+          aria-label="후보자명 또는 선거구로 검색"
+        />
+        <select id="lcreFilterSido" aria-label="시도 필터">
+          <option value="">시도 전체</option>
+          {[...new Set(candidates.map((c) => c.sidoName))].map((sido) => (
+            <option value={sido}>{sido}</option>
+          ))}
+        </select>
+        <select id="lcreFilterParty" aria-label="정당 필터">
+          <option value="">정당 전체</option>
+          {[...new Set(candidates.map((c) => c.partyName))].map((party) => (
+            <option value={party}>{party}</option>
+          ))}
+        </select>
+      </div>
+
+      <p class="lcre-count-label" id="lcreCount" aria-live="polite">
+        {candidates.length}명 표시 중
+      </p>
+
+      <div class="section-sort-btns" role="group" aria-label="정렬 기준">
+        <button class="lcre-sort-btn is-active" data-sort="realEstateManwon" aria-pressed="true">부동산합계순</button>
+        <button class="lcre-sort-btn" data-sort="totalAssetsManwon" aria-pressed="false">총재산순</button>
+        <button class="lcre-sort-btn" data-sort="netRealEstateManwon" aria-pressed="false">순부동산순</button>
+      </div>
+
+      <!-- 데스크톱 테이블 -->
+      <div class="lcre-table-wrap">
+        <table class="lcre-table" id="lcreTable">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">후보</th>
+              <th scope="col">선거구</th>
+              <th scope="col">부동산 신고액</th>
+              <th scope="col">아파트</th>
+              <th scope="col">토지</th>
+              <th scope="col">건물·상가</th>
+              <th scope="col">총재산</th>
+              <th scope="col">상태</th>
+              <th scope="col">원문</th>
+            </tr>
+          </thead>
+          <tbody id="lcreTableBody">
+            {candidates.map((c) => (
+              <tr class={c.status !== "등록" ? "is-withdrawn" : ""}>
+                <td class="lcre-rank">#{c.realEstateRank}</td>
+                <td>
+                  <span class="lcre-cand-name">{c.candidateName}</span>
+                  <span class="lcre-party-badge">{c.partyName}</span>
+                </td>
+                <td class="lcre-district">{c.districtName}</td>
+                <td class="lcre-amount">
+                  {formatManwon(c.realEstateManwon)}
+                  <span class="lcre-badge lcre-badge--assessed">공시가</span>
+                </td>
+                <td class="lcre-amount lcre-amount--sub">
+                  {c.apartmentManwon !== undefined ? formatManwon(c.apartmentManwon) : <span class="lcre-badge lcre-badge--update">확인중</span>}
+                </td>
+                <td class="lcre-amount lcre-amount--sub">
+                  {c.landManwon !== undefined ? formatManwon(c.landManwon) : <span class="lcre-badge lcre-badge--update">확인중</span>}
+                </td>
+                <td class="lcre-amount lcre-amount--sub">
+                  {c.buildingManwon !== undefined ? formatManwon(c.buildingManwon) : <span class="lcre-badge lcre-badge--update">확인중</span>}
+                </td>
+                <td class="lcre-amount">{formatManwon(c.totalAssetsManwon)}</td>
+                <td>
+                  <span class={`lcre-status-badge lcre-status--${c.status === "등록" ? "registered" : c.status === "사퇴" ? "withdrawn" : "invalid"}`}>
+                    {c.status}
+                  </span>
+                </td>
+                <td>
+                  <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer" class="lcre-source-link">
+                    원문
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 모바일 카드 -->
+      <ul class="lcre-candidate-list" id="lcreCardList">
+        {candidates.map((c) => {
+          const barWidth = maxRealEstate > 0
+            ? Math.max(Math.round((c.realEstateManwon / maxRealEstate) * 100), 3)
+            : 3;
+          return (
+            <li class="lcre-candidate-card">
+              <div class="lcre-candidate-card__header">
+                <span class="lcre-rank">#{c.realEstateRank}</span>
+                <strong class="lcre-candidate-card__name">{c.candidateName}</strong>
+                <span class="lcre-party-badge">{c.partyName}</span>
+                <span class={`lcre-status-badge lcre-status--${c.status === "등록" ? "registered" : "withdrawn"}`}>
+                  {c.status}
+                </span>
+              </div>
+              <div class="lcre-candidate-card__main">
+                <span class="lcre-candidate-card__re-total">{formatManwon(c.realEstateManwon)}</span>
+                <span class="lcre-candidate-card__re-label">부동산 신고액</span>
+                <span class="lcre-badge lcre-badge--assessed">공시가기준</span>
+              </div>
+              <div class="lcre-bar-track">
+                <div class="lcre-bar-fill" style={`width: ${barWidth}%`}></div>
+              </div>
+              <div class="lcre-candidate-card__grid">
+                <div>
+                  <span>아파트</span>
+                  <strong>{c.apartmentManwon !== undefined ? formatManwon(c.apartmentManwon) : "확인중"}</strong>
+                </div>
+                <div>
+                  <span>토지</span>
+                  <strong>{c.landManwon !== undefined ? formatManwon(c.landManwon) : "확인중"}</strong>
+                </div>
+                <div>
+                  <span>건물</span>
+                  <strong>{c.buildingManwon !== undefined ? formatManwon(c.buildingManwon) : "확인중"}</strong>
+                </div>
+                <div>
+                  <span>총재산</span>
+                  <strong>{formatManwon(c.totalAssetsManwon)}</strong>
+                </div>
+              </div>
+              <div class="lcre-candidate-card__footer">
+                <span>{c.districtName}</span>
+                <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer">원문 확인</a>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+
+    <!-- 5. 총재산 vs 부동산 순위 비교 ───────────────────────────────────── -->
+    <section class="content-section lcre-rank-comparison">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">순위 비교</p>
+        <h2>총재산 순위 vs 부동산 신고액 순위</h2>
+        <p>
+          두 순위가 다를 경우 예금·증권 중심 자산 구조이거나, 채무가 큰 구조일 수 있습니다.
+          부동산 세부 항목이 확보되면 비중 분석이 가능합니다.
+        </p>
+      </div>
+      <div class="lcre-dual-rank">
+        <div class="lcre-dual-rank__col">
+          <h3>총재산 기준 TOP 10</h3>
+          <ol class="lcre-rank-list">
+            {topByTotalAssets.map((c, i) => (
+              <li>
+                <span class="lcre-rank-num">{i + 1}</span>
+                <span class="lcre-rank-name">{c.candidateName}</span>
+                <span class="lcre-party-badge">{c.partyName}</span>
+                <span class="lcre-rank-amount">{formatManwon(c.totalAssetsManwon)}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div class="lcre-dual-rank__col">
+          <h3>부동산 신고액 기준 TOP 10</h3>
+          <ol class="lcre-rank-list">
+            {top10ByRealEstate.map((c, i) => (
+              <li>
+                <span class="lcre-rank-num">{i + 1}</span>
+                <span class="lcre-rank-name">{c.candidateName}</span>
+                <span class="lcre-party-badge">{c.partyName}</span>
+                <span class="lcre-rank-amount">{formatManwon(c.realEstateManwon)}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+      <p class="lcre-caution-note">
+        ⚠ 부동산 신고액은 총재산 대비 추정값이며, 세부 항목이 확보되면 비중을 정확하게 계산할 수 있습니다.
+        현재 아파트·토지·건물 세부 항목은 선관위 원문 확인 진행 중입니다.
+      </p>
+    </section>
+
+    <!-- 6. 유형별 TOP ─────────────────────────────────────────────────────── -->
+    <section class="content-section lcre-type-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">유형별 분석</p>
+        <h2>부동산 유형별 상위 후보</h2>
+        <p>아파트·토지·건물 항목은 선관위 원문 확인 후 업데이트됩니다.</p>
+      </div>
+
+      <div class="lcre-type-tabs" role="tablist" aria-label="부동산 유형 선택">
+        <button class="lcre-type-tab is-active" role="tab" aria-selected="true" data-tab="apt">
+          아파트·공동주택
+        </button>
+        <button class="lcre-type-tab" role="tab" aria-selected="false" data-tab="land">
+          토지
+        </button>
+        <button class="lcre-type-tab" role="tab" aria-selected="false" data-tab="building">
+          건물·상가
+        </button>
+      </div>
+
+      <!-- 아파트 -->
+      <div class="lcre-type-panel" id="lcreTabApt" role="tabpanel">
+        <div class="lcre-type-notice lcre-badge lcre-badge--update">
+          아파트 세부 항목은 선관위 원문 확인 후 업데이트됩니다
+        </div>
+        {typeTopApartment.slice(0, 5).map((item) => (
+          <div class="lcre-type-row">
+            <span class="lcre-type-row__rank">#{item.rank}</span>
+            <span class="lcre-type-row__name">
+              {item.candidateName} <small>{item.partyName}</small>
+            </span>
+            <div class="lcre-bar-track">
+              <div class="lcre-bar-fill" style="width: 0%"></div>
+            </div>
+            <span class="lcre-type-row__amount">확인중</span>
+          </div>
+        ))}
+        <p class="lcre-chart-note">※ 공동주택은 공시가격 기준 신고액이며 실거래가와 다릅니다.</p>
+      </div>
+
+      <!-- 토지 -->
+      <div class="lcre-type-panel" id="lcreTabLand" role="tabpanel" hidden>
+        <div class="lcre-type-notice lcre-badge lcre-badge--update">
+          토지 세부 항목은 선관위 원문 확인 후 업데이트됩니다
+        </div>
+        {typeTopLand.slice(0, 5).map((item) => (
+          <div class="lcre-type-row">
+            <span class="lcre-type-row__rank">#{item.rank}</span>
+            <span class="lcre-type-row__name">
+              {item.candidateName} <small>{item.partyName}</small>
+            </span>
+            <div class="lcre-bar-track">
+              <div class="lcre-bar-fill" style="width: 0%"></div>
+            </div>
+            <span class="lcre-type-row__amount">확인중</span>
+          </div>
+        ))}
+        <p class="lcre-chart-note">※ 토지는 공시지가 기준 신고액이며 실거래가와 다릅니다.</p>
+      </div>
+
+      <!-- 건물·상가 -->
+      <div class="lcre-type-panel" id="lcreTabBuilding" role="tabpanel" hidden>
+        <div class="lcre-type-notice lcre-badge lcre-badge--update">
+          건물·상가 세부 항목은 선관위 원문 확인 후 업데이트됩니다
+        </div>
+        {typeTopBuilding.slice(0, 5).map((item) => (
+          <div class="lcre-type-row">
+            <span class="lcre-type-row__rank">#{item.rank}</span>
+            <span class="lcre-type-row__name">
+              {item.candidateName} <small>{item.partyName}</small>
+            </span>
+            <div class="lcre-bar-track">
+              <div class="lcre-bar-fill" style="width: 0%"></div>
+            </div>
+            <span class="lcre-type-row__amount">확인중</span>
+          </div>
+        ))}
+        <p class="lcre-chart-note">※ 상업용 건물·상가도 공시가격 기준 신고액이며 시세와 다릅니다.</p>
+      </div>
+    </section>
+
+    <!-- 7. 출마 지역 vs 소재지 ─────────────────────────────────────────── -->
+    <section class="content-section lcre-region-cross">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역 교차 분석</p>
+        <h2>출마 지역 vs 부동산 소재 지역</h2>
+        <p>광역단체장(시도지사) 후보 기준, 확인된 범위 내에서만 제공합니다.</p>
+      </div>
+
+      <div class="lcre-region-filter" role="group" aria-label="지역 일치 필터">
+        <button class="lcre-region-btn is-active" data-filter="all" aria-pressed="true">전체</button>
+        <button class="lcre-region-btn" data-filter="match" aria-pressed="false">소재지 일치</button>
+        <button class="lcre-region-btn" data-filter="mismatch" aria-pressed="false">소재지 불일치</button>
+        <button class="lcre-region-btn" data-filter="unknown" aria-pressed="false">확인불가</button>
+      </div>
+
+      <div class="lcre-table-wrap">
+        <table class="lcre-region-table" id="lcreRegionTable">
+          <thead>
+            <tr>
+              <th>후보</th>
+              <th>출마 지역</th>
+              <th>부동산 주요 소재</th>
+              <th>일치 여부</th>
+              <th>부동산 신고액</th>
+            </tr>
+          </thead>
+          <tbody>
+            {regionCross.map((r) => (
+              <tr data-match={r.matchRegion === null ? "unknown" : r.matchRegion ? "match" : "mismatch"}>
+                <td>
+                  <strong>{r.candidateName}</strong>
+                  <span class="lcre-party-badge">{r.partyName}</span>
+                </td>
+                <td>{r.runningInSido}</td>
+                <td>{r.realEstateRegion}</td>
+                <td>
+                  {r.matchRegion === true && <span class="lcre-match lcre-match--yes">✓ 일치</span>}
+                  {r.matchRegion === false && <span class="lcre-match lcre-match--no">≠ 불일치</span>}
+                  {r.matchRegion === null && <span class="lcre-match lcre-match--unknown">확인불가</span>}
+                </td>
+                <td class="lcre-amount">{formatManwon(r.realEstateManwon)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p class="lcre-caution-note">
+        ⚠ 부동산 소재 지역과 출마 지역의 일치 여부는 후보 평가의 유일한 기준이 아닙니다.
+        이 정보는 공개된 재산 신고자료를 그대로 정리한 참고 자료입니다.
+      </p>
+    </section>
+
+    <!-- 8. 다주택 보유 후보 ──────────────────────────────────────────────── -->
+    <section class="content-section lcre-multi-unit">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다주택 현황</p>
+        <h2>아파트·공동주택 2채 이상 신고 후보</h2>
+        <p>선관위 원문 확인 후 업데이트됩니다. 배우자·직계존비속 명의 포함 가능.</p>
+      </div>
+
+      <div class="lcre-type-notice lcre-badge lcre-badge--update" style="margin-bottom: 16px;">
+        아파트·공동주택 세부 항목 원문 확인 진행 중 — 확인 완료 순으로 업데이트됩니다
+      </div>
+
+      <div class="lcre-multi-grid" id="lcreMultiGrid">
+        {multiUnitCandidates.map((c) => (
+          <article class="lcre-multi-card">
+            <div class="lcre-multi-card__header">
+              <strong>{c.candidateName}</strong>
+              <span class="lcre-party-badge">{c.partyName}</span>
+              {c.unitCount > 0 && (
+                <span class="lcre-multi-count">{c.unitCount}채 확인</span>
+              )}
+            </div>
+            <p class="lcre-multi-card__note">
+              <span class="lcre-badge lcre-badge--partial">부분공개</span>
+              {c.note}
+            </p>
+          </article>
+        ))}
+      </div>
+
+      <p class="lcre-caution-note">
+        ⚠ 다주택 보유 자체는 법적 문제가 아닙니다. 이 페이지는 재산 신고액 기준 사실 정보를 제공합니다.
+        원문 자료는 중앙선거관리위원회 선거통계시스템에서 확인하세요.
+      </p>
+    </section>
+
+    <!-- 9. 부동산 vs 담보채무 ──────────────────────────────────────────── -->
+    <section class="content-section lcre-debt-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">부동산 + 채무</p>
+        <h2>부동산 신고액 vs 담보채무</h2>
+        <p>부동산 보유액이 크더라도 담보대출이 많으면 순 자산은 다르게 읽힙니다.</p>
+      </div>
+
+      <div class="lcre-formula-card">
+        <p class="lcre-formula">순 부동산 자산 추정 = 부동산 신고액 − 부동산 담보 채무</p>
+        <span class="lcre-badge lcre-badge--calc">계산</span>
+        <p class="lcre-formula-note">실제 법적 순자산과 다를 수 있습니다.</p>
+      </div>
+
+      <div class="lcre-type-notice lcre-badge lcre-badge--update" style="margin-bottom: 14px;">
+        담보채무 세부 항목 원문 확인 진행 중 — 확인 완료 순으로 업데이트됩니다
+      </div>
+
+      <div class="lcre-table-wrap">
+        <table class="lcre-debt-table" id="lcreDebtTable">
+          <thead>
+            <tr>
+              <th>후보</th>
+              <th>선거구</th>
+              <th>부동산 신고액</th>
+              <th>담보채무</th>
+              <th>순부동산 추정</th>
+              <th>레버리지</th>
+            </tr>
+          </thead>
+          <tbody>
+            {debtRatioItems.map((item) => (
+              <tr class={
+                item.debtRatio > 60 ? "lcre-debt--high" :
+                item.debtRatio > 30 ? "lcre-debt--mid" :
+                "lcre-debt--low"
+              }>
+                <td>
+                  <strong>{item.candidateName}</strong>
+                  <span class="lcre-party-badge">{item.partyName}</span>
+                </td>
+                <td>{item.districtName}</td>
+                <td class="lcre-amount">{formatManwon(item.realEstateManwon)}</td>
+                <td class="lcre-amount">
+                  <span class="lcre-badge lcre-badge--update">확인중</span>
+                </td>
+                <td class="lcre-amount">
+                  <span class="lcre-calc-badge">계산</span>
+                  <span class="lcre-badge lcre-badge--update">확인중</span>
+                </td>
+                <td class="lcre-amount">
+                  <span class="lcre-badge lcre-badge--update">확인중</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 10. 공시가격 vs 실거래가 안내 ──────────────────────────────────── -->
+    <section class="content-section lcre-assessment-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">데이터 이해</p>
+        <h2>공시가격 vs 실거래가 — 신고액을 이해하는 법</h2>
+      </div>
+      <div class="lcre-guide-cards">
+        <article class="lcre-guide-card">
+          <h3>재산 신고 기준</h3>
+          <p>
+            공동주택(아파트)은 공시가격, 토지는 공시지가 기준 신고가 원칙입니다.
+            실거래가로 신고하지 않으므로 시세와 다릅니다.
+          </p>
+        </article>
+        <article class="lcre-guide-card">
+          <h3>공시가격 vs 시세 차이</h3>
+          <p>
+            서울 아파트의 경우 공시가격은 시세의 약 70~90% 수준으로 형성되는 경우가 많습니다.
+            후보 부동산 신고액은 실거래 시세보다 낮게 표시될 수 있습니다.
+          </p>
+        </article>
+        <article class="lcre-guide-card">
+          <h3>이 페이지의 한계</h3>
+          <p>
+            이 리포트는 공시가격 기준 신고액만 비교합니다.
+            시세 환산값은 제공하지 않으며, 추정값을 공식 신고액으로 혼용하지 마세요.
+          </p>
+        </article>
+      </div>
+      <div class="lcre-related-tools">
+        <a href={withBase("/tools/apartment-holding-tax/")}>아파트 보유세 계산기 →</a>
+        <a href={withBase("/tools/real-estate-acquisition-tax/")}>취득세 계산기 →</a>
+      </div>
+    </section>
+
+    <!-- 11. 후보자 공개자료 조회 안내 ──────────────────────────────────── -->
+    <section class="content-section lcre-guide-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">원문 확인</p>
+        <h2>선관위에서 직접 후보자 부동산 항목 보는 법</h2>
+      </div>
+      <ol class="lcre-guide-steps">
+        <li>
+          <strong>선거통계시스템 접속</strong>
+          <p>
+            <a href="https://info.nec.go.kr/" target="_blank" rel="noopener noreferrer">info.nec.go.kr</a>
+            에서 선거명과 지역을 선택합니다.
+          </p>
+        </li>
+        <li>
+          <strong>후보자 명부 확인</strong>
+          <p>후보자 이름을 클릭해 후보자 정보 공개자료로 이동합니다.</p>
+        </li>
+        <li>
+          <strong>재산 신고 항목 확인</strong>
+          <p>부동산(토지·건물·전세권), 예금, 증권, 채무 항목을 직접 확인합니다.</p>
+        </li>
+        <li>
+          <strong>전과·납세·병역·공약과 함께 읽기</strong>
+          <p>재산은 후보 정보의 한 항목입니다. 전과, 납세, 병역, 공약을 함께 확인하세요.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 12. 관련 리포트 CTA ──────────────────────────────────────────────── -->
+    <section class="content-section lcre-related">
+      <div class="section-header section-header--compact">
+        <h2>함께 보면 좋은 리포트</h2>
+      </div>
+      <div class="lcre-related-grid">
+        {relatedLinks.map((link) => (
+          <a href={withBase(link.href)} class="lcre-related-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 13. SeoContent + FAQ ─────────────────────────────────────────────── -->
+    <SeoContent
+      introTitle="후보 부동산, 신고액만 보면 반쪽이다"
+      intro={seoIntro}
+      criteria={seoCriteria}
+      faq={faqItems}
+      related={relatedForSeo}
+    />
+  </main>
+
+  <script id="lcreData" type="application/json" set:html={JSON.stringify(lcrePageData)} />
+  <script type="module" src={withBase("/scripts/local-election-candidate-real-estate-2026.js")} />
+</BaseLayout>

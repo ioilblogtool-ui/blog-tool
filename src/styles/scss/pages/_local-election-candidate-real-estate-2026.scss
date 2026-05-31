@@ -1,0 +1,714 @@
+.lcre-page {
+
+  // ── 배지 ─────────────────────────────────────────────────────────────────
+  .lcre-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+    line-height: 1.4;
+
+    &--official  { background: #eff6ff; color: #1557b0; }
+    &--assessed  { background: #f0fdf4; color: #166534; }
+    &--partial   { background: #fef3c7; color: #92400e; }
+    &--calc      { background: #f3f4f6; color: #6b7280; }
+    &--caution   { background: #fff1f2; color: #9f1239; }
+    &--update    { background: #fffbeb; color: #78350f; }
+  }
+
+  .lcre-calc-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 5px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 10px;
+    font-weight: 700;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+
+  // ── 메타 행 ──────────────────────────────────────────────────────────────
+  .lcre-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    padding: 10px 0 14px;
+    font-size: 12px;
+    color: #6b7280;
+    border-bottom: 1px solid #f3f4f6;
+    margin-bottom: 12px;
+  }
+
+  // ── 요약 카드 ─────────────────────────────────────────────────────────────
+  .lcre-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .lcre-summary-card {
+    background: #f7f7f2;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &__top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      span { font-size: 11px; color: #6b7280; font-weight: 600; }
+    }
+
+    strong { font-size: 20px; font-weight: 900; color: #111827; line-height: 1.2; }
+    p { font-size: 11px; color: #9ca3af; margin: 0; }
+
+    &--primary { background: #eff6ff; strong { color: #1d4ed8; } }
+    &--asset   { background: #f0fdf4; strong { color: #166534; } }
+    &--caution { background: #fffbeb; strong { color: #b45309; } }
+    &--muted   { background: #f9fafb; strong { color: #374151; } }
+  }
+
+  // ── 필터 툴바 ─────────────────────────────────────────────────────────────
+  .lcre-filter-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+
+  .lcre-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 13px;
+    background: #fff;
+
+    &:focus { outline: none; border-color: #1d4ed8; }
+  }
+
+  .section-sort-btns {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 10px;
+    padding-bottom: 2px;
+  }
+
+  .lcre-sort-btn {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &.is-active,
+    &[aria-pressed="true"] {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #fff;
+    }
+  }
+
+  .lcre-count-label {
+    font-size: 12px;
+    color: #9ca3af;
+    margin: 0 0 8px;
+  }
+
+  // ── 테이블 ───────────────────────────────────────────────────────────────
+  .lcre-table-wrap {
+    overflow-x: auto;
+
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+
+  .lcre-table,
+  .lcre-region-table,
+  .lcre-debt-table {
+    width: 100%;
+    min-width: 960px;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th, td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #f3f4f6;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f7f7f2;
+      font-size: 12px;
+      font-weight: 800;
+      color: #374151;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr.is-withdrawn,
+    tr.is-invalid { opacity: 0.5; }
+
+    tr:hover td { background: #fafaf7; }
+  }
+
+  .lcre-region-table { min-width: 560px; }
+  .lcre-debt-table { min-width: 720px; }
+
+  .lcre-amount {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+
+    &--sub { color: #6b7280; }
+  }
+
+  .lcre-rank {
+    font-size: 12px;
+    font-weight: 900;
+    color: #9ca3af;
+    white-space: nowrap;
+  }
+
+  .lcre-cand-name {
+    font-weight: 800;
+    color: #111827;
+    margin-right: 4px;
+  }
+
+  .lcre-district {
+    font-size: 12px;
+    color: #6b7280;
+    white-space: nowrap;
+  }
+
+  .lcre-party-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .lcre-source-link {
+    font-size: 11px;
+    color: #1d4ed8;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  .lcre-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .lcre-status--registered { background: #f0fdf4; color: #166534; }
+  .lcre-status--withdrawn  { background: #fff1f2; color: #9f1239; }
+  .lcre-status--invalid    { background: #fef2f2; color: #dc2626; }
+  .lcre-status--correction { background: #fffbeb; color: #92400e; }
+
+  // ── 모바일 카드 ───────────────────────────────────────────────────────────
+  .lcre-candidate-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    @media (min-width: 768px) {
+      display: none;
+    }
+  }
+
+  .lcre-candidate-card {
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    &__name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    &__main {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    &__re-total {
+      font-size: 20px;
+      font-weight: 900;
+      color: #1d4ed8;
+    }
+
+    &__re-label {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    &__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+
+      > div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        span { font-size: 10px; color: #6b7280; }
+        strong { font-size: 13px; font-weight: 800; color: #111827; }
+      }
+    }
+
+    &__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #9ca3af;
+
+      a { color: #1d4ed8; text-decoration: none; }
+    }
+  }
+
+  // ── 바 차트 (모바일 카드·유형별) ─────────────────────────────────────────
+  .lcre-bar-track {
+    height: 6px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .lcre-bar-fill {
+    height: 100%;
+    background: #93c5fd;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  // ── 이중 순위 비교 ────────────────────────────────────────────────────────
+  .lcre-rank-comparison { }
+
+  .lcre-dual-rank {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 14px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    &__col h3 {
+      font-size: 13px;
+      font-weight: 800;
+      color: #374151;
+      margin: 0 0 8px;
+    }
+  }
+
+  .lcre-rank-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: #f7f7f2;
+      flex-wrap: wrap;
+    }
+  }
+
+  .lcre-rank-num {
+    font-size: 11px;
+    font-weight: 900;
+    color: #9ca3af;
+    min-width: 20px;
+  }
+
+  .lcre-rank-name {
+    font-weight: 700;
+    color: #111827;
+    flex: 1;
+  }
+
+  .lcre-rank-amount {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: #374151;
+    white-space: nowrap;
+  }
+
+  // ── 유형별 탭 ─────────────────────────────────────────────────────────────
+  .lcre-type-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .lcre-type-tab {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &.is-active,
+    &[aria-selected="true"] {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #fff;
+    }
+  }
+
+  .lcre-type-notice {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    width: fit-content;
+  }
+
+  .lcre-type-panel { }
+
+  .lcre-type-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    @media (min-width: 480px) {
+      grid-template-columns: 28px 1fr 1fr 90px;
+    }
+
+    &__rank {
+      font-size: 11px;
+      font-weight: 900;
+      color: #9ca3af;
+    }
+
+    &__name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111827;
+
+      small { color: #6b7280; font-weight: 400; margin-left: 4px; }
+    }
+
+    &__amount {
+      font-size: 13px;
+      font-weight: 800;
+      color: #111827;
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
+
+  .lcre-chart-note {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 8px 0 0;
+  }
+
+  // ── 지역 교차 ─────────────────────────────────────────────────────────────
+  .lcre-region-filter {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .lcre-region-btn {
+    padding: 5px 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &.is-active,
+    &[aria-pressed="true"] {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #fff;
+    }
+  }
+
+  .lcre-match {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+
+    &--yes     { background: #f0fdf4; color: #166534; }
+    &--no      { background: #fffbeb; color: #92400e; }
+    &--unknown { background: #f3f4f6; color: #9ca3af; }
+  }
+
+  // ── 다주택 카드 ───────────────────────────────────────────────────────────
+  .lcre-multi-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    @media (min-width: 480px) { grid-template-columns: 1fr 1fr; }
+    @media (min-width: 768px) { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  .lcre-multi-card {
+    background: #f7f7f2;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      strong { font-size: 14px; font-weight: 800; color: #111827; }
+    }
+
+    &__note {
+      font-size: 12px;
+      color: #6b7280;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+  }
+
+  .lcre-multi-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  // ── 담보채무 산식 카드 ────────────────────────────────────────────────────
+  .lcre-formula-card {
+    background: #f7f7f2;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .lcre-formula {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+
+  .lcre-formula-note {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 0;
+  }
+
+  .lcre-debt--low td:last-child { color: #166534; font-weight: 800; }
+  .lcre-debt--mid td:last-child { color: #b45309; font-weight: 800; }
+  .lcre-debt--high td:last-child { color: #9f1239; font-weight: 800; }
+
+  // ── 공시가격 가이드 ───────────────────────────────────────────────────────
+  .lcre-guide-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    @media (min-width: 640px) { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  .lcre-guide-card {
+    background: #f7f7f2;
+    border-radius: 10px;
+    padding: 14px 16px;
+
+    h3 { font-size: 13px; font-weight: 800; color: #111827; margin: 0 0 6px; }
+    p  { font-size: 12px; color: #374151; line-height: 1.6; margin: 0; }
+  }
+
+  .lcre-related-tools {
+    margin-top: 14px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    a {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1d4ed8;
+      text-decoration: none;
+
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  // ── 선관위 조회 가이드 ────────────────────────────────────────────────────
+  .lcre-guide-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    counter-reset: guide-step;
+
+    li {
+      counter-increment: guide-step;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      background: #f7f7f2;
+      border-radius: 10px;
+
+      &::before {
+        content: counter(guide-step);
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #1d4ed8;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+      }
+
+      strong { display: block; font-size: 13px; font-weight: 800; color: #111827; margin-bottom: 3px; }
+      p { font-size: 12px; color: #374151; margin: 0; line-height: 1.5; }
+      a { color: #1d4ed8; }
+    }
+  }
+
+  // ── 관련 리포트 CTA ───────────────────────────────────────────────────────
+  .lcre-related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    @media (min-width: 480px) { grid-template-columns: 1fr 1fr; }
+    @media (min-width: 768px) { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  .lcre-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: #f7f7f2;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+
+    &:hover {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    strong { font-size: 13px; font-weight: 800; color: #111827; }
+    span   { font-size: 12px; color: #6b7280; }
+  }
+
+  // ── 공통 경고 노트 ─────────────────────────────────────────────────────────
+  .lcre-caution-note {
+    font-size: 12px;
+    color: #92400e;
+    background: #fffbeb;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 12px 0 0;
+    line-height: 1.6;
+  }
+}

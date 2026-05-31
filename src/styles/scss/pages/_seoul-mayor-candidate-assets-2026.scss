@@ -1,0 +1,372 @@
+.smca-page {
+  --smca-ink: #1c2f2b;
+  --smca-muted: #61736f;
+  --smca-line: rgba(28, 47, 43, 0.14);
+  --smca-soft: #f4f8f5;
+  --smca-accent: #0f6e56;
+  --smca-asset: #2f7dbd;
+  --smca-warn: #b76b1f;
+
+  .content-section {
+    margin-top: 28px;
+  }
+}
+
+.smca-meta-strip,
+.smca-candidate-section,
+.smca-metric-section,
+.smca-table-section,
+.smca-composition-section,
+.smca-breakdown-section,
+.smca-policy-section,
+.smca-guide-section,
+.smca-related-section {
+  border: 1px solid var(--smca-line);
+  border-radius: 18px;
+  background: #fff;
+  padding: clamp(20px, 4vw, 34px);
+  box-shadow: 0 16px 42px rgba(15, 110, 86, 0.07);
+}
+
+.smca-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 14px;
+}
+
+.smca-meta-strip span,
+.smca-party-badge,
+.smca-source-badge,
+.smca-tag-row span,
+.smca-metric-card span {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(15, 110, 86, 0.1);
+  color: var(--smca-accent);
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 5px 9px;
+}
+
+.smca-source-badge {
+  background: rgba(183, 107, 31, 0.12);
+  color: var(--smca-warn);
+}
+
+.smca-candidate-grid,
+.smca-composition-grid,
+.smca-policy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.smca-candidate-card,
+.smca-composition-card,
+.smca-policy-grid article,
+.smca-breakdown-grid article,
+.smca-related-grid a {
+  border: 1px solid var(--smca-line);
+  border-radius: 14px;
+  background: var(--smca-soft);
+  padding: 18px;
+}
+
+.smca-candidate-card {
+  cursor: pointer;
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.smca-candidate-card.is-highlighted,
+.smca-composition-card.is-highlighted {
+  outline: 3px solid rgba(15, 110, 86, 0.24);
+  box-shadow: 0 18px 40px rgba(15, 110, 86, 0.14);
+}
+
+.smca-candidate-card__head,
+.smca-composition-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.smca-candidate-card__name {
+  margin: 16px 0 4px;
+  color: var(--smca-ink);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.smca-candidate-card__role {
+  color: var(--smca-muted);
+  font-weight: 700;
+}
+
+.smca-candidate-card__money {
+  display: block;
+  margin: 12px 0;
+  color: var(--smca-ink);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.smca-candidate-card a,
+.smca-policy-grid a,
+.smca-guide-steps a,
+.smca-related-grid a {
+  color: var(--smca-accent);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.smca-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.smca-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.smca-metric-card {
+  border: 1px solid var(--smca-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 18px;
+}
+
+.smca-metric-card p {
+  margin: 12px 0 6px;
+  color: var(--smca-muted);
+  font-weight: 800;
+}
+
+.smca-metric-card strong {
+  display: block;
+  color: var(--smca-ink);
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.smca-metric-card--primary {
+  background: #eef8f4;
+}
+
+.smca-metric-card--caution {
+  background: #fff8ee;
+}
+
+.smca-unit-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.smca-unit-toggle button {
+  min-height: 40px;
+  border: 1px solid var(--smca-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--smca-ink);
+  font-weight: 900;
+  padding: 0 14px;
+}
+
+.smca-unit-toggle button.is-active {
+  background: var(--smca-accent);
+  color: #fff;
+}
+
+.smca-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--smca-line);
+  border-radius: 14px;
+}
+
+.smca-comparison-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.smca-comparison-table caption {
+  padding: 12px;
+  color: var(--smca-muted);
+  text-align: left;
+  font-weight: 800;
+}
+
+.smca-comparison-table th,
+.smca-comparison-table td {
+  border-top: 1px solid var(--smca-line);
+  padding: 13px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.smca-comparison-table thead th {
+  background: #edf5f1;
+  color: var(--smca-ink);
+}
+
+.smca-money-cell {
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+}
+
+.smca-total-bar {
+  height: 18px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2ebe7;
+  margin: 16px 0;
+}
+
+.smca-total-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--smca-accent), var(--smca-asset));
+}
+
+.smca-composition-card dl,
+.smca-policy-grid dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.smca-composition-card dl div,
+.smca-policy-grid dl div {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
+  border-top: 1px solid var(--smca-line);
+  padding-top: 10px;
+}
+
+.smca-composition-card dt,
+.smca-policy-grid dt {
+  color: var(--smca-muted);
+  font-weight: 900;
+}
+
+.smca-composition-card dd,
+.smca-policy-grid dd {
+  margin: 0;
+  color: var(--smca-ink);
+  font-weight: 700;
+}
+
+.smca-section-note {
+  margin: 16px 0 0;
+  color: var(--smca-muted);
+  font-size: 0.92rem;
+}
+
+.smca-breakdown-grid,
+.smca-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.smca-related-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.smca-breakdown-grid h3,
+.smca-policy-grid h3,
+.smca-related-grid strong {
+  display: block;
+  margin: 0 0 10px;
+  color: var(--smca-ink);
+}
+
+.smca-guide-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.smca-guide-steps li {
+  border: 1px solid var(--smca-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 18px;
+}
+
+.smca-guide-steps strong {
+  color: var(--smca-ink);
+}
+
+.smca-related-grid span {
+  display: block;
+  margin-top: 6px;
+  color: var(--smca-muted);
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .smca-metric-grid,
+  .smca-guide-steps,
+  .smca-related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .smca-breakdown-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .smca-candidate-grid,
+  .smca-composition-grid,
+  .smca-policy-grid,
+  .smca-metric-grid,
+  .smca-guide-steps,
+  .smca-related-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .smca-meta-strip {
+    display: grid;
+  }
+
+  .smca-candidate-card__head,
+  .smca-composition-card__head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 520px) {
+  .smca-candidate-section,
+  .smca-metric-section,
+  .smca-table-section,
+  .smca-composition-section,
+  .smca-breakdown-section,
+  .smca-policy-section,
+  .smca-guide-section,
+  .smca-related-section {
+    border-radius: 14px;
+    padding: 18px;
+  }
+
+  .smca-composition-card dl div,
+  .smca-policy-grid dl div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

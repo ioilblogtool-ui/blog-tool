@@ -1,0 +1,326 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  calcFinancialAssetRatio,
+  calcNetAssets,
+  calcOtherAssets,
+  calcRealEstateRatio,
+  formatManwon,
+  formatPercent,
+  gyeonggiGovernorCandidateAssets2026,
+  type GyeonggiGovernorCandidateAsset,
+} from "../../data/gyeonggiGovernorCandidateAssets2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = gyeonggiGovernorCandidateAssets2026;
+const primaryCandidates = report.candidates.filter((candidate) => candidate.isPrimaryComparison);
+const extraCandidates = report.candidates.filter((candidate) => !candidate.isPrimaryComparison);
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+const relatedLinks = report.relatedLinks.map((item) => ({ href: item.href, label: item.label }));
+
+const comparisonRows = [
+  { label: "총재산", badge: "선관위", getValue: (candidate: GyeonggiGovernorCandidateAsset) => formatManwon(candidate.totalAssetsManwon) },
+  { label: "부동산", badge: "확인필요", getValue: (candidate: GyeonggiGovernorCandidateAsset) => formatManwon(candidate.realEstateManwon) },
+  { label: "예금", badge: "확인필요", getValue: (candidate: GyeonggiGovernorCandidateAsset) => formatManwon(candidate.depositsManwon) },
+  { label: "증권", badge: "확인필요", getValue: (candidate: GyeonggiGovernorCandidateAsset) => formatManwon(candidate.securitiesManwon) },
+  { label: "채무", badge: "확인필요", getValue: (candidate: GyeonggiGovernorCandidateAsset) => formatManwon(candidate.debtsManwon) },
+  { label: "순자산 추정", badge: "계산", getValue: (candidate: GyeonggiGovernorCandidateAsset) => candidate.debtsManwon === undefined ? "채무 확인 후 계산" : formatManwon(calcNetAssets(candidate)) },
+  { label: "부동산 비중", badge: "계산", getValue: (candidate: GyeonggiGovernorCandidateAsset) => formatPercent(calcRealEstateRatio(candidate)) },
+  { label: "금융자산 비중", badge: "계산", getValue: (candidate: GyeonggiGovernorCandidateAsset) => formatPercent(calcFinancialAssetRatio(candidate)) },
+];
+
+const maxTotal = Math.max(...primaryCandidates.map((candidate) => candidate.totalAssetsManwon));
+const compositionParts = [
+  { key: "realEstate", label: "부동산", className: "ggca-stacked-bar__segment--real-estate" },
+  { key: "deposits", label: "예금", className: "ggca-stacked-bar__segment--deposit" },
+  { key: "securities", label: "증권", className: "ggca-stacked-bar__segment--securities" },
+  { key: "other", label: "기타/미분류", className: "ggca-stacked-bar__segment--other" },
+];
+
+const getCompositionValue = (candidate: GyeonggiGovernorCandidateAsset, key: string) => {
+  if (key === "realEstate") return candidate.realEstateManwon ?? 0;
+  if (key === "deposits") return candidate.depositsManwon ?? 0;
+  if (key === "securities") return candidate.securitiesManwon ?? 0;
+  return calcOtherAssets(candidate);
+};
+---
+
+<BaseLayout
+  title="경기도지사 후보 재산·부동산 비교 2026｜추미애·양향자 재산 신고액"
+  description={report.meta.description}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ggca-page">
+    <CalculatorHero
+      eyebrow={report.meta.eyebrow}
+      title={report.meta.h1}
+      description={report.meta.description}
+    />
+
+    <div class="ggca-meta-strip" aria-label="페이지 기준 정보">
+      <span>최근 업데이트: {report.meta.updatedAt}</span>
+      <span>선거일: {report.meta.electionDate}</span>
+      <span>기준: {report.meta.dataBasis}</span>
+      <span>단위: 만원·억원 병행 표기</span>
+    </div>
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        report.meta.caution,
+        "후보 개인 재산과 경기도 주택·교통·산업 공약은 별도 정보입니다. 함께 참고할 수 있지만 단정적으로 연결하지 않습니다.",
+        "부동산·예금·증권·채무 세부 항목은 후보자별 선관위 원문 공개자료에서 다시 확인해야 합니다.",
+      ]}
+    />
+
+    <section class="content-section ggca-snapshot-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">기본 비교</p>
+        <h2>추미애·양향자 후보 재산 신고액</h2>
+        <p>검색 수요가 큰 두 후보를 같은 기준으로 먼저 비교합니다. 기타 등록 후보는 아래 접기 영역에서 함께 확인할 수 있습니다.</p>
+      </div>
+      <div class="ggca-candidate-grid">
+        {primaryCandidates.map((candidate) => {
+          const pct = Math.max(6, Math.round((candidate.totalAssetsManwon / maxTotal) * 100));
+          return (
+            <article class="ggca-candidate-card" data-ggca-candidate-card={candidate.id} id={`candidate-${candidate.id}`}>
+              <div class="ggca-candidate-card__topline">
+                <span class="ggca-party-badge">{candidate.partyName}</span>
+                <span class="ggca-source-badge">{candidate.sourceBadge}</span>
+              </div>
+              <h2 class="ggca-candidate-card__name">{candidate.candidateName}</h2>
+              <p class="ggca-candidate-card__role">{candidate.currentRole}</p>
+              <p class="ggca-candidate-card__label">총재산 신고액</p>
+              <strong class="ggca-candidate-card__value" data-ggca-money={candidate.totalAssetsManwon}>
+                {formatManwon(candidate.totalAssetsManwon)}
+              </strong>
+              <div class="ggca-candidate-card__bar" aria-hidden="true">
+                <span style={`width:${pct}%`}></span>
+              </div>
+              <p class="ggca-candidate-card__summary">{candidate.summary}</p>
+              <div class="ggca-tag-row">
+                {candidate.assetTags.map((tag) => <span>{tag}</span>)}
+              </div>
+              <a class="ggca-source-link" href={candidate.sourceUrl} target="_blank" rel="noopener noreferrer">
+                선관위 후보자 공개자료 보기
+              </a>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="content-section ggca-metric-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>먼저 봐야 할 숫자 4개</h2>
+      </div>
+      <div class="ggca-metric-grid">
+        {report.metricCards.map((card) => (
+          <article class={`ggca-metric-card ggca-metric-card--${card.tone}`}>
+            <p class="ggca-metric-card__label">{card.label}</p>
+            <strong class="ggca-metric-card__value">{card.value}</strong>
+            {card.badge && <span class="ggca-inline-badge">{card.badge}</span>}
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ggca-table-section" id="comparison">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상세 비교</p>
+        <h2>총재산·부동산·금융자산·채무 비교표</h2>
+        <p>세부 항목은 선관위 원문 공개자료 확인 전까지 `확인 필요`로 표시합니다. 계산값은 공식 신고 항목이 아니라 이해를 돕기 위한 참고값입니다.</p>
+      </div>
+      <div class="ggca-unit-toggle" aria-label="금액 단위 선택">
+        <button type="button" class="is-active" data-ggca-unit-toggle="eok" aria-pressed="true">억원</button>
+        <button type="button" data-ggca-unit-toggle="manwon" aria-pressed="false">만원</button>
+      </div>
+      <div class="ggca-table-wrap">
+        <table class="ggca-comparison-table">
+          <caption>경기도지사 후보 재산 신고 항목 비교</caption>
+          <thead>
+            <tr>
+              <th>항목</th>
+              {primaryCandidates.map((candidate) => <th>{candidate.candidateName}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {comparisonRows.map((row) => (
+              <tr>
+                <th scope="row">
+                  {row.label}
+                  <span class="ggca-inline-badge">{row.badge}</span>
+                </th>
+                {primaryCandidates.map((candidate) => <td>{row.getValue(candidate)}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section ggca-composition-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자산 구조</p>
+        <h2>자산 구성 막대</h2>
+        <p>세부 항목이 공개자료에서 확인되지 않은 경우 총재산 중 미분류 영역으로 표시합니다.</p>
+      </div>
+      <div class="ggca-composition-grid">
+        {primaryCandidates.map((candidate) => (
+          <article class="ggca-composition-card">
+            <h3>{candidate.candidateName}</h3>
+            <div class="ggca-stacked-bar" aria-label={`${candidate.candidateName} 자산 구성`}>
+              {compositionParts.map((part) => {
+                const value = getCompositionValue(candidate, part.key);
+                const ratio = candidate.totalAssetsManwon ? Math.max(value > 0 ? 4 : 0, Math.round((value / candidate.totalAssetsManwon) * 100)) : 0;
+                return value > 0 && <span class={`ggca-stacked-bar__segment ${part.className}`} style={`width:${ratio}%`}></span>;
+              })}
+            </div>
+            <div class="ggca-legend-list">
+              {compositionParts.map((part) => (
+                <span>
+                  <i class={part.className}></i>
+                  {part.label}: {formatManwon(getCompositionValue(candidate, part.key))}
+                </span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ggca-breakdown-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">항목별 해석</p>
+        <h2>부동산·금융자산·채무는 분리해서 읽기</h2>
+      </div>
+      <div class="ggca-breakdown-grid">
+        <article class="ggca-breakdown-card">
+          <h3>부동산 신고액</h3>
+          <p>부동산 신고액은 실제 현재 시세가 아니라 공개자료의 신고 기준 금액입니다. 1기 신도시, GTX, 주택 공급 공약과 함께 볼 수는 있지만, 개인 재산만으로 정책 방향을 단정하지 않습니다.</p>
+        </article>
+        <article class="ggca-breakdown-card">
+          <h3>예금·증권</h3>
+          <p>증권 보유 내역은 신고 시점의 평가액 기준이며 현재 평가액이나 실제 수익률을 의미하지 않습니다. 예금·증권 항목은 후보자별 원문 공개자료에서 확인해야 합니다.</p>
+        </article>
+        <article class="ggca-breakdown-card ggca-breakdown-card--formula">
+          <h3>순자산 추정</h3>
+          <p class="ggca-formula-card">순자산 추정 = 총재산 신고액 - 채무 신고액</p>
+          <p>채무 세부 항목은 주택담보대출, 임대보증금, 금융채무 등 성격이 다를 수 있어 단순 계산값은 참고용입니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section ggca-policy-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공약 분리 보기</p>
+        <h2>경기도 공약과 후보 개인 재산은 별도 정보입니다</h2>
+        <p>주택, 교통, 산업 공약은 후보 개인 재산 공개자료와 분리해 확인해야 합니다.</p>
+      </div>
+      <div class="ggca-policy-grid">
+        {report.policySummaries.map((policy) => (
+          <article class="ggca-policy-card">
+            <h3>{policy.candidateName}</h3>
+            <dl>
+              <div>
+                <dt>주택</dt>
+                <dd>{policy.housingSummary}</dd>
+              </div>
+              <div>
+                <dt>교통</dt>
+                <dd>{policy.transportSummary}</dd>
+              </div>
+              <div>
+                <dt>산업</dt>
+                <dd>{policy.industrySummary}</dd>
+              </div>
+            </dl>
+            <a href={policy.sourceUrl} target="_blank" rel="noopener noreferrer">{policy.sourceLabel}에서 공약 확인</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {extraCandidates.length > 0 && (
+      <section class="content-section ggca-extra-section">
+        <div class="section-header section-header--compact">
+          <p class="section-header__eyebrow">전체 후보 보기</p>
+          <h2>기타 등록 후보 재산 신고액</h2>
+          <p>기본 비교는 추미애·양향자 후보 중심이지만, 경기도지사 등록 후보는 함께 확인하는 것이 좋습니다.</p>
+        </div>
+        <button class="ggca-extra-toggle" id="ggca-extra-toggle" type="button" aria-expanded="false" aria-controls="ggca-extra-candidates">
+          전체 후보 보기
+        </button>
+        <div class="ggca-extra-candidates" id="ggca-extra-candidates" hidden>
+          {extraCandidates.map((candidate) => (
+            <article class="ggca-extra-card">
+              <strong>{candidate.candidateName}</strong>
+              <span>{candidate.partyName}</span>
+              <span data-ggca-money={candidate.totalAssetsManwon}>{formatManwon(candidate.totalAssetsManwon)}</span>
+              <a href={candidate.sourceUrl} target="_blank" rel="noopener noreferrer">공식자료 확인</a>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="content-section ggca-guide-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">조회 방법</p>
+        <h2>경기도지사 후보 공개자료 확인 순서</h2>
+      </div>
+      <div class="ggca-guide-steps">
+        {report.guideSteps.map((step, index) => (
+          <article>
+            <span>{index + 1}</span>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+            {step.href && <a href={step.href} target="_blank" rel="noopener noreferrer">공식 사이트 열기</a>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ggca-related-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 콘텐츠</p>
+        <h2>함께 보면 좋은 리포트</h2>
+      </div>
+      <div class="ggca-related-grid">
+        {report.relatedLinks.map((link) => (
+          <a class="ggca-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="경기도지사 후보 재산 비교 리포트 읽는 법"
+      intro={report.seoIntro}
+      inputPoints={[
+        "추미애·양향자 후보의 총재산 신고액을 비교할 수 있습니다.",
+        "부동산·예금·증권·채무 기준으로 후보별 자산 구조를 확인할 수 있습니다.",
+        "경기도지사 후보자 공개자료와 공약을 어디서 확인하는지 알 수 있습니다.",
+      ]}
+      criteria={report.seoCriteria}
+      faq={faqItems}
+      related={relatedLinks}
+    />
+  </main>
+
+  <script id="ggca-data" type="application/json" set:html={JSON.stringify(report.candidates)}></script>
+  <script type="module" src={withBase("/scripts/gyeonggi-governor-candidate-assets-2026.js")}></script>
+</BaseLayout>
