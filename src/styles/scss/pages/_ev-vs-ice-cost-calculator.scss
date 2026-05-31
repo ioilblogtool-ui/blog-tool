@@ -1,0 +1,394 @@
+.evc-page {
+
+  // ── 배지 ─────────────────────────────────────────────────────────────────
+  .evc-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-left: 3px;
+    font-style: normal;
+
+    &--official    { background: #eff6ff; color: #1557b0; }
+    &--reference   { background: #f0fdf4; color: #166534; }
+    &--estimate    { background: #fffbeb; color: #92400e; }
+    &--simulation  { background: #f3f4f6; color: #6b7280; }
+  }
+
+  .evc-sim-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin: 8px 0 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  // ── 공통 필드 ─────────────────────────────────────────────────────────────
+  .evc-field-group {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  // ── 프리셋 ────────────────────────────────────────────────────────────────
+  .evc-presets {
+    margin-bottom: 16px;
+
+    &__label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 700;
+      margin: 0 0 8px;
+    }
+
+    &__btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+  }
+
+  .evc-preset-btn {
+    padding: 6px 14px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+    &:hover {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    &.is-active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #fff;
+    }
+  }
+
+  // ── 차량 설정 카드 ────────────────────────────────────────────────────────
+  .evc-vehicle-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .evc-vehicle-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.2s;
+
+    &--ev  { border-color: #3b82f6; background: #f0f9ff; }
+    &--ice { border-color: #ef4444; background: #fff5f5; }
+
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    &__inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    &__note {
+      font-size: 11px;
+      color: #6b7280;
+      margin: 0;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 6px;
+    }
+  }
+
+  .evc-vehicle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 900;
+    padding: 4px 12px;
+    border-radius: 999px;
+
+    &--ev  { background: #1d4ed8; color: #fff; }
+    &--ice { background: #dc2626; color: #fff; }
+  }
+
+  // ── KPI 그리드 ────────────────────────────────────────────────────────────
+  .evc-kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .evc-kpi-card {
+    background: #f7f7f2;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span { font-size: 11px; color: #6b7280; font-weight: 600; }
+    strong { font-size: 20px; font-weight: 900; color: #111827; line-height: 1.2; }
+    small { font-size: 11px; color: #9ca3af; }
+
+    &--main {
+      grid-column: 1 / -1;
+      background: #f0f9ff;
+
+      @media (min-width: 640px) {
+        grid-column: auto;
+      }
+
+      strong { color: #1d4ed8; font-size: 22px; }
+    }
+
+    &--positive {
+      background: #f0fdf4;
+      strong { color: #166534; }
+    }
+
+    &--caution {
+      background: #fff1f2;
+      strong { color: #9f1239; }
+    }
+  }
+
+  // ── 항목별 분해표 ─────────────────────────────────────────────────────────
+  .evc-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .evc-breakdown-table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      text-align: right;
+
+      &:first-child { text-align: left; }
+    }
+
+    th {
+      background: #f7f7f2;
+      font-size: 12px;
+      font-weight: 800;
+      color: #374151;
+      white-space: nowrap;
+
+      &:nth-child(2) { color: #1d4ed8; }
+      &:nth-child(3) { color: #dc2626; }
+    }
+
+    tr:hover td { background: #fafaf7; }
+
+    &__total {
+      td {
+        font-weight: 900;
+        font-size: 14px;
+        background: #f0f9ff;
+        border-top: 2px solid #3b82f6;
+      }
+    }
+  }
+
+  .evc-diff-cell {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    white-space: nowrap;
+
+    &--positive { color: #166534; }
+    &--caution  { color: #9f1239; }
+
+    &--total {
+      font-size: 13px;
+      font-weight: 900;
+    }
+  }
+
+  .evc-breakdown-note {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 8px 0 0;
+  }
+
+  // ── 차트 ─────────────────────────────────────────────────────────────────
+  .evc-chart-wrap {
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    canvas {
+      min-width: 300px;
+      max-width: 100%;
+    }
+  }
+
+  .evc-chart-note {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 8px 0 0;
+  }
+
+  // ── 충전 안내 카드 ────────────────────────────────────────────────────────
+  .evc-charging-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .evc-charging-card {
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &--slow {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+    }
+
+    &--fast {
+      background: #fff7ed;
+      border: 1.5px solid #fed7aa;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: #111827;
+      margin: 0;
+    }
+
+    strong {
+      font-size: 20px;
+      font-weight: 900;
+      color: #1d4ed8;
+    }
+
+    &--fast strong { color: #c2410c; }
+
+    ul {
+      margin: 0;
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+
+      li { font-size: 12px; color: #374151; line-height: 1.5; }
+    }
+
+    &__badge {
+      font-size: 11px;
+      color: #6b7280;
+      margin: 0;
+    }
+  }
+
+  // ── 보조금 참고표 ─────────────────────────────────────────────────────────
+  .evc-subsidy-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .evc-subsidy-table {
+    width: 100%;
+    min-width: 480px;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th, td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #f3f4f6;
+      text-align: right;
+
+      &:first-child { text-align: left; font-weight: 700; }
+    }
+
+    th {
+      background: #f7f7f2;
+      font-size: 12px;
+      font-weight: 800;
+      color: #374151;
+    }
+
+    tr:hover td { background: #fafaf7; }
+  }
+
+  .evc-subsidy-note {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 8px 0 0;
+    line-height: 1.6;
+  }
+
+  // ── 관련 계산기 CTA ──────────────────────────────────────────────────────
+  .evc-related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    @media (min-width: 480px) { grid-template-columns: 1fr 1fr; }
+  }
+
+  .evc-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: #f7f7f2;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+
+    &:hover {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    strong { font-size: 13px; font-weight: 800; color: #111827; }
+    span   { font-size: 12px; color: #6b7280; }
+  }
+}

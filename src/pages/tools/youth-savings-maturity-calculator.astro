@@ -1,0 +1,245 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  DEFAULT_YOUTH_SAVINGS_INPUT,
+  PRODUCT_CONFIGS,
+  LEAP_INCOME_TIERS,
+  YOUTH_SAVINGS_PRESETS,
+  DECISION_CARDS,
+  RELATED_LINKS,
+  FAQ_ITEMS,
+  SEO_INTRO,
+  SEO_CRITERIA,
+} from "../../data/youthSavingsMaturityCalculator";
+import { withBase } from "../../utils/base";
+
+const pageTitle = "청년 적금 만기 수령액 계산기";
+const pageDescription =
+  "월 납입액과 금리를 입력해 청년미래적금, 청년도약계좌, 일반 적금의 만기 수령액을 비교합니다. 정부기여금, 비과세, 세후 이자, 우대금리까지 한 번에 계산하세요.";
+---
+
+<BaseLayout
+  title={`${pageTitle}｜청년미래적금·청년도약계좌·일반 적금 비교`}
+  description={pageDescription}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId="youth-savings-maturity-calculator" pageClass="op-page ysm-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="청년 정책적금 계산기"
+        title={pageTitle}
+        description="청년미래적금, 청년도약계좌, 일반 적금의 원금·이자·정부기여금·세후 만기 수령액을 한 번에 비교합니다."
+      />
+      <InfoNotice
+        title="계산 기준"
+        lines={[
+          "이 계산기는 금융상품 가입 권유가 아니라 예상 만기 수령액을 비교하기 위한 보조 도구입니다.",
+          "정책 적금의 가입 가능 여부, 금리, 정부기여금, 비과세 적용 여부는 신청 시점의 공식 공고와 은행 상품설명서가 우선합니다.",
+          "월 납입액이 매월 동일하게 들어간다고 가정한 단순 추정이며 실제 납입일과 중도해지 여부에 따라 결과가 달라질 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions"><ToolActionBar resetId="resetYsmBtn" copyId="copyYsmLinkBtn" /></Fragment>
+
+    <Fragment slot="aside">
+      <section class="op-panel ysm-input-panel" data-ysm-root>
+        <div class="op-panel__head">
+          <p>입력</p>
+          <h2>저축 조건</h2>
+        </div>
+
+        <div class="ysm-preset-grid">
+          {YOUTH_SAVINGS_PRESETS.map((preset) => (
+            <button
+              type="button"
+              class="ysm-preset"
+              data-ysm-preset={preset.amount}
+              aria-pressed={preset.amount === DEFAULT_YOUTH_SAVINGS_INPUT.monthlyContribution ? "true" : "false"}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+
+        <label class="op-field">
+          <span>월 납입액</span>
+          <input id="ysm-monthly" type="number" min="10000" max="1000000" step="10000" value={DEFAULT_YOUTH_SAVINGS_INPUT.monthlyContribution} />
+        </label>
+
+        <fieldset class="ysm-product-choice">
+          <legend>비교 상품</legend>
+          {PRODUCT_CONFIGS.map((product) => (
+            <label>
+              <input
+                type="checkbox"
+                data-ysm-product
+                value={product.id}
+                checked={DEFAULT_YOUTH_SAVINGS_INPUT.selectedProducts.includes(product.id)}
+              />
+              <span>{product.name}</span>
+            </label>
+          ))}
+        </fieldset>
+
+        <details class="ysm-advanced">
+          <summary>금리·소득구간 직접 조정</summary>
+          <div class="ysm-advanced-grid">
+            <label class="op-field">
+              <span>청년미래적금 유형</span>
+              <select id="ysm-future-type">
+                <option value="general" selected={DEFAULT_YOUTH_SAVINGS_INPUT.youthFutureType === "general"}>일반형</option>
+                <option value="preferred" selected={DEFAULT_YOUTH_SAVINGS_INPUT.youthFutureType === "preferred"}>우대형</option>
+              </select>
+            </label>
+            <label class="op-field">
+              <span>청년도약계좌 소득구간</span>
+              <select id="ysm-leap-tier">
+                {LEAP_INCOME_TIERS.map((tier) => (
+                  <option value={tier.id} selected={tier.id === DEFAULT_YOUTH_SAVINGS_INPUT.leapIncomeTierId}>{tier.label}</option>
+                ))}
+              </select>
+            </label>
+            <div class="op-grid-two">
+              <label class="op-field">
+                <span>미래적금 기본금리(%)</span>
+                <input id="ysm-future-base-rate" type="number" step="0.1" value={DEFAULT_YOUTH_SAVINGS_INPUT.futureBaseRate} />
+              </label>
+              <label class="op-field">
+                <span>미래적금 우대금리(%)</span>
+                <input id="ysm-future-bonus-rate" type="number" step="0.1" value={DEFAULT_YOUTH_SAVINGS_INPUT.futureBonusRate} />
+              </label>
+              <label class="op-field">
+                <span>도약계좌 금리(%)</span>
+                <input id="ysm-leap-rate" type="number" step="0.1" value={DEFAULT_YOUTH_SAVINGS_INPUT.leapAnnualRate} />
+              </label>
+              <label class="op-field">
+                <span>일반 적금 금리(%)</span>
+                <input id="ysm-regular-rate" type="number" step="0.1" value={DEFAULT_YOUTH_SAVINGS_INPUT.regularAnnualRate} />
+              </label>
+            </div>
+            <label class="op-field">
+              <span>일반 적금 만기</span>
+              <select id="ysm-regular-months">
+                {[12, 24, 36, 60].map((months) => <option value={months} selected={months === DEFAULT_YOUTH_SAVINGS_INPUT.regularMonths}>{months}개월</option>)}
+              </select>
+            </label>
+            <div class="ysm-toggle-list">
+              <label><input id="ysm-include-tax" type="checkbox" checked={DEFAULT_YOUTH_SAVINGS_INPUT.includeTax} /> 일반 적금 세금 15.4% 반영</label>
+              <label><input id="ysm-policy-tax-free" type="checkbox" checked={DEFAULT_YOUTH_SAVINGS_INPUT.policyTaxFree} /> 정책 적금 비과세 가정</label>
+            </div>
+          </div>
+        </details>
+        <script id="ysm-config" type="application/json" set:html={JSON.stringify({
+          defaultInput: DEFAULT_YOUTH_SAVINGS_INPUT,
+          products: PRODUCT_CONFIGS,
+          leapIncomeTiers: LEAP_INCOME_TIERS,
+        })} />
+      </section>
+    </Fragment>
+
+    <section class="op-section ysm-results" aria-live="polite">
+      <div class="ysm-kpi-grid">
+        <article class="ysm-kpi-card ysm-kpi-card--main">
+          <span>가장 높은 예상 만기 수령액</span>
+          <strong data-ysm-output="bestAmount">-</strong>
+          <p data-ysm-output="bestProduct">-</p>
+        </article>
+        <article class="ysm-kpi-card">
+          <span>일반 적금 대비 차액</span>
+          <strong data-ysm-output="additionalVsRegular">-</strong>
+        </article>
+        <article class="ysm-kpi-card">
+          <span>정부기여금 합계</span>
+          <strong data-ysm-output="governmentContribution">-</strong>
+        </article>
+        <article class="ysm-kpi-card">
+          <span>비과세 효과</span>
+          <strong data-ysm-output="taxSaving">-</strong>
+        </article>
+      </div>
+      <p class="ysm-result-note" data-ysm-output="interpretation">입력값을 조정하면 결과가 바로 표시됩니다.</p>
+      <ul class="ysm-warning-list" data-ysm-output="warnings"></ul>
+    </section>
+
+    <section class="op-section ysm-section">
+      <div class="ysm-section__head">
+        <p>상품별 비교</p>
+        <h2>원금·이자·정부기여금을 나눠 보기</h2>
+      </div>
+      <div class="ysm-table-wrap">
+        <table class="ysm-comparison-table">
+          <thead>
+            <tr>
+              <th scope="col">상품</th>
+              <th scope="col">만기</th>
+              <th scope="col">월 납입액</th>
+              <th scope="col">원금</th>
+              <th scope="col">예상 이자</th>
+              <th scope="col">정부기여금</th>
+              <th scope="col">예상 만기 수령액</th>
+            </tr>
+          </thead>
+          <tbody data-ysm-output="comparisonRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section ysm-section">
+      <div class="ysm-section__head">
+        <p>일반 적금 대비</p>
+        <h2>정책지원과 비과세 차이</h2>
+      </div>
+      <div class="ysm-delta-grid" data-ysm-output="deltaCards"></div>
+    </section>
+
+    <section class="op-section ysm-section">
+      <div class="ysm-section__head">
+        <p>판단 보조</p>
+        <h2>청년도약계좌 유지·전환 체크</h2>
+      </div>
+      <div class="ysm-decision-grid">
+        {DECISION_CARDS.map((card) => (
+          <article class="ysm-decision-card">
+            <span>{card.fit}</span>
+            <h3>{card.title}</h3>
+            <ul>{card.checks.map((check) => <li>{check}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section ysm-section">
+      <div class="ysm-section__head">
+        <p>다음 계산</p>
+        <h2>관련 리포트와 계산기</h2>
+      </div>
+      <div class="ysm-related-grid">
+        {RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="청년 적금 만기 수령액 계산 기준"
+        intro={SEO_INTRO}
+        criteria={SEO_CRITERIA}
+        faq={FAQ_ITEMS.map((item) => ({ question: item.q, answer: item.a }))}
+        related={RELATED_LINKS.map((link) => ({ href: link.href, label: link.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script type="module" src={withBase("/scripts/youth-savings-maturity-calculator.js")}></script>
+</BaseLayout>

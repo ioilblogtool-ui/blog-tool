@@ -1,0 +1,553 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import {
+  EVC_META,
+  EVC_DEFAULT_EV,
+  EVC_DEFAULT_ICE,
+  EVC_DEFAULT_COMMON,
+  EVC_FUEL_PRICES,
+  EVC_PRESETS,
+  EVC_SUBSIDY_REFERENCE,
+  EVC_FAQ,
+  EVC_RELATED_LINKS,
+  EVC_SEO_INTRO,
+  EVC_INPUT_POINTS,
+  EVC_CRITERIA,
+  EVC_ACQUISITION_TAX,
+  EVC_VEHICLE_TAX,
+} from "../../data/evVsIceCostCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+
+const config = {
+  defaultEv: EVC_DEFAULT_EV,
+  defaultIce: EVC_DEFAULT_ICE,
+  defaultCommon: EVC_DEFAULT_COMMON,
+  fuelPrices: EVC_FUEL_PRICES,
+  presets: EVC_PRESETS,
+  acquisitionTax: EVC_ACQUISITION_TAX,
+  vehicleTax: EVC_VEHICLE_TAX,
+};
+
+const faqSchema = EVC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const fuelLabelMap: Record<string, string> = {
+  gasoline: "휘발유",
+  diesel: "경유",
+  lpg: "LPG",
+};
+
+const nf = new Intl.NumberFormat("ko-KR");
+const formatWon = (v: number) => `${nf.format(Math.round(v / 10_000))}만원`;
+---
+
+<BaseLayout
+  title={EVC_META.seoTitle}
+  description={EVC_META.seoDescription}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: EVC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: EVC_META.seoDescription,
+    url: `${siteBase}/tools/ev-vs-ice-cost-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="ev-vs-ice-cost-calculator"
+    pageClass="evc-page"
+    resultFirst={false}
+  >
+    <!-- ── Hero ──────────────────────────────────────────────────────── -->
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="자동차 비용 비교"
+        title={EVC_META.title}
+        description={EVC_META.heroDescription}
+        badges={["시뮬레이션", "추정", "TCO 비교"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          EVC_META.caution,
+          "보조금은 지자체·차종·연도별 예산 소진 상황에 따라 달라집니다. 구매 전 반드시 해당 지자체에 확인하세요.",
+          "취득세 감면은 2026년 기준이며 세제 개편에 따라 변경될 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="evcResetBtn" copyId="evcCopyBtn" />
+    </Fragment>
+
+    <!-- ── Aside: 공통 설정 ──────────────────────────────────────────── -->
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">공통 설정</p>
+            <h2 class="panel__title">주행 조건</h2>
+          </div>
+          <p class="panel-heading__summary">두 차량에 공통으로 적용되는 기준입니다.</p>
+        </div>
+
+        <!-- 연간 주행거리 -->
+        <div class="evc-field-group">
+          <label class="field">
+            <span>연간 주행거리</span>
+            <input
+              id="evcMileageInput"
+              type="text"
+              inputmode="numeric"
+              class="input-number"
+              value="15,000km"
+            />
+          </label>
+          <div class="calc-slider-row">
+            <input
+              type="range"
+              id="evcMileageSlider"
+              class="calc-slider"
+              min="3000"
+              max="60000"
+              step="1000"
+              value="15000"
+              aria-label="연간 주행거리 슬라이더"
+            />
+            <span id="evcMileageVal" class="calc-slider-val">15,000km</span>
+          </div>
+        </div>
+
+        <!-- 비교 기간 -->
+        <div class="evc-field-group">
+          <label class="field">
+            <span>비교 기간</span>
+            <select id="evcYearsSelect" class="input-select">
+              <option value="1">1년</option>
+              <option value="3">3년</option>
+              <option value="5" selected>5년</option>
+              <option value="7">7년</option>
+              <option value="10">10년</option>
+              <option value="15">15년</option>
+            </select>
+          </label>
+        </div>
+
+        <p class="evc-sim-badge">시뮬레이션 · 참고용</p>
+      </article>
+
+      <!-- 충전 단가 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">충전·연료 단가</p>
+            <h2 class="panel__title">단가 조정</h2>
+          </div>
+          <p class="panel-heading__summary">실제 사용 단가로 조정하면 더 정확합니다.</p>
+        </div>
+
+        <div class="evc-field-group">
+          <label class="field">
+            <span>완속 충전 단가 <em class="evc-badge evc-badge--reference">참고</em></span>
+            <input id="evcSlowRateInput" type="number" class="input-number" value="324" min="80" max="600" />
+            <small>원/kWh</small>
+          </label>
+        </div>
+        <div class="evc-field-group">
+          <label class="field">
+            <span>급속 충전 단가 <em class="evc-badge evc-badge--reference">참고</em></span>
+            <input id="evcFastRateInput" type="number" class="input-number" value="430" min="100" max="800" />
+            <small>원/kWh</small>
+          </label>
+        </div>
+        <div class="evc-field-group">
+          <label class="field">
+            <span>휘발유 단가 <em class="evc-badge evc-badge--reference">참고</em></span>
+            <input id="evcFuelPriceInput" type="number" class="input-number" value="1750" min="800" max="4000" />
+            <small>원/L</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- ── 프리셋 버튼 ────────────────────────────────────────────────── -->
+    <div class="evc-presets">
+      <p class="evc-presets__label">프리셋 차종 선택</p>
+      <div class="evc-presets__btns">
+        {EVC_PRESETS.map((p) => (
+          <button class="evc-preset-btn" data-preset={p.id} title={p.description}>
+            {p.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- ── 차량 설정 카드 ─────────────────────────────────────────────── -->
+    <section class="evc-vehicle-cards panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">차량 설정</p>
+          <h2 class="panel__title">EV / 내연기관 조건 입력</h2>
+        </div>
+      </div>
+      <div class="evc-vehicle-grid">
+
+        <!-- EV 카드 -->
+        <div class="evc-vehicle-card evc-vehicle-card--ev">
+          <div class="evc-vehicle-card__header">
+            <span class="evc-vehicle-label evc-vehicle-label--ev">⚡ 전기차 (EV)</span>
+          </div>
+          <div class="evc-vehicle-card__inputs">
+            <label class="field">
+              <span>차량 가격</span>
+              <input id="evcEvPrice" type="text" inputmode="numeric" class="input-number" value="5,500만원" />
+            </label>
+            <label class="field">
+              <span>국고 보조금 <em class="evc-badge evc-badge--official">공식</em></span>
+              <input id="evcEvNational" type="text" inputmode="numeric" class="input-number" value="400만원" />
+            </label>
+            <label class="field">
+              <span>지자체 보조금 <em class="evc-badge evc-badge--reference">참고</em></span>
+              <input id="evcEvLocal" type="text" inputmode="numeric" class="input-number" value="100만원" />
+            </label>
+            <label class="field">
+              <span>전비 (km/kWh)</span>
+              <input id="evcEvEfficiency" type="number" class="input-number" value="6.0" min="2" max="12" step="0.1" />
+            </label>
+            <label class="field">
+              <span>완속 충전 비율</span>
+              <div class="calc-slider-row">
+                <input type="range" id="evcEvSlowRatio" class="calc-slider" min="0" max="100" step="10" value="70" />
+                <span id="evcEvSlowRatioVal" class="calc-slider-val">70%</span>
+              </div>
+              <small>나머지는 급속 충전 적용</small>
+            </label>
+            <label class="field">
+              <span>연간 보험료 <em class="evc-badge evc-badge--estimate">추정</em></span>
+              <input id="evcEvInsurance" type="text" inputmode="numeric" class="input-number" value="100만원" />
+            </label>
+            <label class="field">
+              <span>연간 정비비 <em class="evc-badge evc-badge--estimate">추정</em></span>
+              <input id="evcEvMaintenance" type="text" inputmode="numeric" class="input-number" value="55만원" />
+            </label>
+          </div>
+          <p class="evc-vehicle-card__note">
+            실구매가 = 차량가 − 보조금 합계
+          </p>
+        </div>
+
+        <!-- ICE 카드 -->
+        <div class="evc-vehicle-card evc-vehicle-card--ice">
+          <div class="evc-vehicle-card__header">
+            <span class="evc-vehicle-label evc-vehicle-label--ice">🔥 내연기관 (ICE)</span>
+          </div>
+          <div class="evc-vehicle-card__inputs">
+            <label class="field">
+              <span>차량 가격</span>
+              <input id="evcIcePrice" type="text" inputmode="numeric" class="input-number" value="4,500만원" />
+            </label>
+            <label class="field">
+              <span>연료 종류</span>
+              <select id="evcIceFuelType" class="input-select">
+                {EVC_FUEL_PRICES.map((f) => (
+                  <option value={f.type} selected={f.type === "gasoline"}>{f.label}</option>
+                ))}
+              </select>
+            </label>
+            <label class="field">
+              <span>연비 (km/L)</span>
+              <input id="evcIceEfficiency" type="number" class="input-number" value="13.0" min="4" max="30" step="0.1" />
+            </label>
+            <label class="field">
+              <span>배기량 (cc) <em class="evc-badge evc-badge--official">자동차세 기준</em></span>
+              <input id="evcIceCC" type="number" class="input-number" value="2500" min="500" max="6000" step="50" />
+            </label>
+            <label class="field">
+              <span>연간 보험료 <em class="evc-badge evc-badge--estimate">추정</em></span>
+              <input id="evcIceInsurance" type="text" inputmode="numeric" class="input-number" value="85만원" />
+            </label>
+            <label class="field">
+              <span>연간 정비비 <em class="evc-badge evc-badge--estimate">추정</em></span>
+              <input id="evcIceMaintenance" type="text" inputmode="numeric" class="input-number" value="100만원" />
+            </label>
+          </div>
+          <p class="evc-vehicle-card__note">
+            취득세 = 차량가 × 7% (EV는 최대 140만원 감면)
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── KPI 카드 ──────────────────────────────────────────────────── -->
+    <div class="evc-kpi-grid">
+      <article class="evc-kpi-card evc-kpi-card--main">
+        <span id="evcYearsLabel">5년</span>
+        <span> TCO 차이</span>
+        <strong id="evcTcoDiff">-</strong>
+        <small id="evcTcoDiffLabel">계산 중...</small>
+      </article>
+      <article class="evc-kpi-card">
+        <span>월 연료비 차이</span>
+        <strong id="evcMonthlyFuelDiff">-</strong>
+        <small>EV 충전비 vs ICE 주유비</small>
+      </article>
+      <article class="evc-kpi-card">
+        <span>손익분기점</span>
+        <strong id="evcBreakeven">-</strong>
+        <small id="evcBreakevenSub">-</small>
+      </article>
+      <article class="evc-kpi-card">
+        <span>EV 실구매가</span>
+        <strong id="evcEffectivePrice">-</strong>
+        <small>보조금 차감 후</small>
+      </article>
+    </div>
+
+    <!-- ── 항목별 비용 분해표 ─────────────────────────────────────────── -->
+    <section class="evc-breakdown-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">항목별 비교</p>
+          <h2 class="panel__title">비용 항목별 분해</h2>
+        </div>
+        <p class="panel-heading__summary">
+          비교 기간 <strong id="evcBreakdownYearsLabel">5년</strong> 기준 누적값
+        </p>
+      </div>
+      <div class="evc-table-wrap">
+        <table class="evc-breakdown-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>⚡ 전기차</th>
+              <th>🔥 내연기관</th>
+              <th>차이</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>실구매가</td>
+              <td id="bdEvPrice">-</td>
+              <td id="bdIcePrice">-</td>
+              <td id="bdPriceDiff" class="evc-diff-cell">-</td>
+            </tr>
+            <tr>
+              <td>
+                취득세
+                <em class="evc-badge evc-badge--official">공식</em>
+              </td>
+              <td id="bdEvAcq">-</td>
+              <td id="bdIceAcq">-</td>
+              <td id="bdAcqDiff" class="evc-diff-cell">-</td>
+            </tr>
+            <tr>
+              <td>
+                자동차세 (합계)
+                <em class="evc-badge evc-badge--official">공식</em>
+              </td>
+              <td id="bdEvVehTax">-</td>
+              <td id="bdIceVehTax">-</td>
+              <td id="bdVehTaxDiff" class="evc-diff-cell">-</td>
+            </tr>
+            <tr>
+              <td>
+                연료비 (합계)
+                <em class="evc-badge evc-badge--reference">참고</em>
+              </td>
+              <td id="bdEvFuel">-</td>
+              <td id="bdIceFuel">-</td>
+              <td id="bdFuelDiff" class="evc-diff-cell">-</td>
+            </tr>
+            <tr>
+              <td>
+                정비비 (합계)
+                <em class="evc-badge evc-badge--estimate">추정</em>
+              </td>
+              <td id="bdEvMaint">-</td>
+              <td id="bdIceMaint">-</td>
+              <td id="bdMaintDiff" class="evc-diff-cell">-</td>
+            </tr>
+            <tr>
+              <td>
+                보험료 (합계)
+                <em class="evc-badge evc-badge--estimate">추정</em>
+              </td>
+              <td id="bdEvInsur">-</td>
+              <td id="bdIceInsur">-</td>
+              <td id="bdInsurDiff" class="evc-diff-cell">-</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="evc-breakdown-table__total">
+              <td>
+                총보유비용 (TCO)
+                <em class="evc-badge evc-badge--simulation">시뮬레이션</em>
+              </td>
+              <td id="bdEvTco">-</td>
+              <td id="bdIceTco">-</td>
+              <td id="bdTcoDiff" class="evc-diff-cell evc-diff-cell--total">-</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="evc-breakdown-note">
+        ※ 정비비·보험료는 평균 추정값입니다. 실제 입력값으로 수정하세요.
+      </p>
+    </section>
+
+    <!-- ── 손익분기점 그래프 ──────────────────────────────────────────── -->
+    <section class="evc-chart-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">누적 비용 비교</p>
+          <h2 class="panel__title">손익분기점 그래프</h2>
+        </div>
+        <p class="panel-heading__summary">
+          두 선이 교차하는 시점이 전기차가 경제적으로 유리해지는 시점입니다.
+        </p>
+      </div>
+      <div class="evc-chart-wrap">
+        <canvas id="evcBreakevenChart" height="260" aria-label="전기차 vs 내연기관 누적비용 비교 그래프"></canvas>
+      </div>
+      <p class="evc-chart-note">
+        ※ 연도별 누적 비용 시뮬레이션. 실제 비용은 유가·전기요금 변동에 따라 달라집니다.
+      </p>
+    </section>
+
+    <!-- ── 충전 방식 안내 ─────────────────────────────────────────────── -->
+    <section class="evc-charging-guide panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">충전 비용 이해</p>
+          <h2 class="panel__title">완속 vs 급속 충전 비용 차이</h2>
+        </div>
+      </div>
+      <div class="evc-charging-grid">
+        <article class="evc-charging-card evc-charging-card--slow">
+          <h3>완속 충전 (공용)</h3>
+          <strong>약 324원/kWh</strong>
+          <ul>
+            <li>아파트·직장 등 완속 충전기 이용</li>
+            <li>충전 시간 6~8시간</li>
+            <li>요금이 저렴해 TCO에 유리</li>
+            <li>자가 설치 시 가정용 전기요금(약 130원/kWh) 적용 가능</li>
+          </ul>
+          <p class="evc-charging-card__badge">
+            <em class="evc-badge evc-badge--reference">참고</em> 2026년 공용 완속 기준
+          </p>
+        </article>
+        <article class="evc-charging-card evc-charging-card--fast">
+          <h3>급속 충전 (공용)</h3>
+          <strong>약 430원/kWh</strong>
+          <ul>
+            <li>고속도로 휴게소·공용 급속 충전기</li>
+            <li>충전 시간 20~40분</li>
+            <li>단가가 높아 급속만 이용 시 절감 효과 감소</li>
+            <li>사업자별로 가격 상이</li>
+          </ul>
+          <p class="evc-charging-card__badge">
+            <em class="evc-badge evc-badge--reference">참고</em> 2026년 공용 급속 기준
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── 보조금 참고표 ──────────────────────────────────────────────── -->
+    <section class="evc-subsidy-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">보조금 참고</p>
+          <h2 class="panel__title">2026 전기차 보조금 지역별 참고</h2>
+        </div>
+        <p class="panel-heading__summary">
+          실제 보조금은 지자체·차종·연도별 예산 소진 상황에 따라 달라집니다.
+          반드시 해당 지자체에서 확인하세요.
+        </p>
+      </div>
+      <div class="evc-subsidy-table-wrap">
+        <table class="evc-subsidy-table">
+          <thead>
+            <tr>
+              <th>지역</th>
+              <th>국고 최대</th>
+              <th>지자체 최소</th>
+              <th>지자체 최대</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {EVC_SUBSIDY_REFERENCE.map((s) => (
+              <tr>
+                <td>{s.region}</td>
+                <td>{Math.round(s.nationalMax / 10_000)}만원</td>
+                <td>{Math.round(s.localMin / 10_000)}만원</td>
+                <td>{Math.round(s.localMax / 10_000)}만원</td>
+                <td>
+                  {s.note || "-"}
+                  <em class="evc-badge evc-badge--reference">{s.badge}</em>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="evc-subsidy-note">
+        ※ 국고 보조금은 차량 성능·가격 조건에 따라 달라집니다. 출처: 환경부 전기차 보조금 업무처리지침 2026 기준 참고값
+      </p>
+    </section>
+
+    <!-- ── 관련 계산기 CTA ────────────────────────────────────────────── -->
+    <section class="evc-related-section panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">관련 계산기</p>
+          <h2 class="panel__title">함께 확인하면 좋은 계산기</h2>
+        </div>
+      </div>
+      <div class="evc-related-grid">
+        {EVC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="evc-related-card">
+            <strong>{link.label}</strong>
+            {link.description && <span>{link.description}</span>}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── SeoContent ────────────────────────────────────────────────── -->
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="전기차가 진짜로 저렴한지 알려면"
+        intro={EVC_SEO_INTRO}
+        inputPoints={EVC_INPUT_POINTS}
+        criteria={EVC_CRITERIA}
+        faq={EVC_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+        related={EVC_RELATED_LINKS.map((l) => ({ label: l.label, href: l.href }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="evcConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/ev-vs-ice-cost-calculator.js")}></script>
+</BaseLayout>

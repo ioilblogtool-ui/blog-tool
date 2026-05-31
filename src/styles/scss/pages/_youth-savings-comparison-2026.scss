@@ -1,0 +1,589 @@
+// 청년미래적금 vs 청년도약계좌 비교 리포트 2026
+// prefix: ysc- (Youth Savings Comparison)
+
+.ysc-page {
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #e6e1d8;
+    border-radius: 20px;
+    background: #fffdf9;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+    padding: 20px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 16px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #475569;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.35;
+      color: #1f2937;
+    }
+
+    p {
+      margin: 6px 0 0;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #6b7280;
+      max-width: 760px;
+    }
+  }
+
+  // ── KPI 카드 ──────────────────────────────────────────────────────────────
+  .ysc-kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 600px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .ysc-kpi-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.is-accent {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    &.is-warn {
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    &__label {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    &__value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    &__sub {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+  }
+
+  // ── 비교표 ──────────────────────────────────────────────────────────────────
+  .ysc-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .ysc-compare-table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+
+    thead th {
+      background: #f8fafc;
+      padding: 12px 14px;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-bottom: 2px solid #e2e8f0;
+
+      &.col-item {
+        text-align: left;
+        width: 120px;
+        color: #475569;
+      }
+
+      &.col-product {
+        min-width: 140px;
+      }
+
+      &.is-unavailable {
+        opacity: 0.5;
+      }
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+
+      &:last-child { border-bottom: none; }
+      &:hover { background: #f8fafc; }
+    }
+
+    tbody td {
+      padding: 10px 14px;
+      color: #374151;
+      text-align: center;
+      vertical-align: middle;
+
+      &.col-item {
+        text-align: left;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #64748b;
+        background: #fafafa;
+      }
+
+      &.is-unavailable {
+        color: #9ca3af;
+        opacity: 0.6;
+      }
+
+      strong { color: #111827; }
+    }
+  }
+
+  .ysc-product-name {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .ysc-table-note {
+    margin: 10px 0 0;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  // ── 배지 ────────────────────────────────────────────────────────────────────
+  .ysc-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 8px;
+    font-size: 0.65rem;
+    font-weight: 700;
+
+    &--open   { background: #dcfce7; color: #166534; }
+    &--closed { background: #fee2e2; color: #991b1b; }
+    &--est    { background: #fef9c3; color: #854d0e; }
+  }
+
+  // ── 소득 탭 ──────────────────────────────────────────────────────────────────
+  .ysc-income-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .ysc-tab-btn {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    &.is-active {
+      background: #1e40af;
+      border-color: #1e40af;
+      color: #fff;
+    }
+  }
+
+  // ── 소득별 추천 카드 ───────────────────────────────────────────────────────
+  .ysc-income-cards {
+    position: relative;
+  }
+
+  .ysc-income-card {
+    display: none;
+    border: 2px solid var(--product-color, #6366f1);
+    border-radius: 14px;
+    padding: 18px 20px;
+    background: #fafbff;
+    gap: 12px;
+    flex-direction: column;
+
+    &.is-visible {
+      display: flex;
+    }
+
+    &__head {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    &__range {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+      margin: 0;
+    }
+
+    &__recommend {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--product-color, #1e40af);
+    }
+
+    &__reason {
+      font-size: 0.86rem;
+      color: #374151;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    &__tip {
+      font-size: 0.82rem;
+      color: #6b7280;
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    &__contrib {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4px 16px;
+      align-items: center;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+
+      span { color: #64748b; }
+
+      strong {
+        text-align: right;
+        color: #0f172a;
+        font-weight: 700;
+      }
+    }
+  }
+
+  // ── 수령액 시뮬레이션 ──────────────────────────────────────────────────────
+  .ysc-sim-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .ysc-sim-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 3px solid var(--product-color, #6366f1);
+
+    &.is-unavailable {
+      opacity: 0.55;
+      border-top-color: #9ca3af;
+    }
+
+    &__head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    &__name {
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    &__term {
+      font-size: 0.72rem;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    &__rows {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    &__total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+
+      span {
+        font-size: 0.78rem;
+        color: #64748b;
+      }
+
+      strong {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--product-color, #1e40af);
+      }
+    }
+
+    &__bar-wrap {
+      background: #f1f5f9;
+      border-radius: 4px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    &__bar {
+      height: 100%;
+      background: var(--product-color, #6366f1);
+      border-radius: 4px;
+      min-width: 4px;
+      transition: width 0.4s ease;
+    }
+  }
+
+  .ysc-sim-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+
+    span { color: #6b7280; }
+    strong { font-weight: 700; color: #374151; }
+
+    .is-contrib { color: #0891b2; }
+    .is-interest { color: #059669; }
+  }
+
+  .ysc-sim-note {
+    margin: 12px 0 0;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.7;
+  }
+
+  // ── 기여금 구간 테이블 ─────────────────────────────────────────────────────
+  .ysc-contrib-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+
+    thead th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #475569;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      &:last-child { border-bottom: none; }
+      &:hover { background: #f8fafc; }
+    }
+
+    tbody td {
+      padding: 10px 14px;
+      color: #374151;
+      vertical-align: middle;
+    }
+  }
+
+  .ysc-contrib-val {
+    color: #0891b2;
+    font-weight: 700;
+  }
+
+  .ysc-contrib-none {
+    color: #9ca3af;
+    font-size: 0.8rem;
+  }
+
+  .ysc-contrib-future {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  // ── 중복 가입 ──────────────────────────────────────────────────────────────
+  .ysc-duplicate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ysc-duplicate-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 4px 12px;
+    align-items: start;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+
+    &__combo {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    &__result {
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+
+      &.is-yes { color: #166534; }
+      &.is-no  { color: #991b1b; }
+    }
+
+    &__note {
+      grid-column: 1 / -1;
+      font-size: 0.80rem;
+      color: #6b7280;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+
+  // ── 주의사항 카드 ──────────────────────────────────────────────────────────
+  .ysc-caution-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .ysc-caution-card {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 16px;
+
+    &__icon {
+      font-size: 1.4rem;
+      margin: 0 0 8px;
+    }
+
+    &__title {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #92400e;
+      margin-bottom: 6px;
+    }
+
+    &__desc {
+      font-size: 0.82rem;
+      color: #78350f;
+      line-height: 1.7;
+      margin: 0;
+    }
+  }
+
+  // ── FAQ ────────────────────────────────────────────────────────────────────
+  .ysc-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ysc-faq-item {
+    border-left: 3px solid #6366f1;
+    padding-left: 14px;
+
+    &__q {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1e40af;
+      margin: 0 0 5px;
+    }
+
+    &__a {
+      font-size: 0.84rem;
+      color: #374151;
+      line-height: 1.75;
+      margin: 0;
+    }
+  }
+
+  // ── CTA ────────────────────────────────────────────────────────────────────
+  .ysc-cta-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    @media (min-width: 600px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .ysc-cta-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      border-color: #6366f1;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);
+    }
+
+    strong {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+  }
+}

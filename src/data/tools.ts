@@ -116,6 +116,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "minimum-wage-2026",
+    title: "2026 최저임금 계산기",
+    description: "2026년 최저임금 기준으로 시급·주급·월급·연봉을 환산하고 주휴수당, 4대보험 공제 후 세후 실수령, 최저임금 미달 여부를 확인하는 계산기",
+    order: 4.2,
+    eyebrow: "최저임금",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "2026", "주휴수당"],
+    previewStats: [
+      { label: "2026 시급", value: "10,320원" },
+      { label: "월 환산", value: "215.7만", context: "209시간" }
+    ]
+  },
+  {
     slug: "retirement",
     title: "퇴직금 계산기",
     description: "평균임금 기준 퇴직금과 세후 추정액을 계산하는 페이지",
@@ -645,6 +659,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "youth-savings-maturity-calculator",
+    title: "청년 적금 만기 수령액 계산기",
+    description: "월 납입액과 금리를 입력해 청년미래적금, 청년도약계좌, 일반 적금의 원금·이자·정부기여금·세후 만기 수령액을 비교합니다.",
+    order: 24.67,
+    eyebrow: "청년 정책적금",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "청년", "정책적금"],
+    previewStats: [
+      { label: "비교 상품", value: "3종" },
+      { label: "핵심 결과", value: "만기 수령액" },
+    ],
+  },
+  {
     slug: "savings-vs-etf-retirement",
     title: "월 적금 vs ETF 노후 계산기",
     description: "현재 나이, 은퇴 목표 나이, 월 투자금, 적금 금리, ETF 기대수익률, 물가상승률을 입력하면 은퇴 시점 자산과 실질 구매력, 생활비 커버 기간을 비교합니다.",
@@ -670,6 +698,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "핵심 결과", value: "평균 매수가" },
       { label: "시나리오", value: "±30%" },
+    ],
+  },
+  {
+    slug: "ev-vs-ice-cost-calculator",
+    title: "전기차 vs 내연기관 총비용 비교 계산기",
+    description: "전기차와 휘발유·디젤·LPG차의 보조금·취득세·충전비·유지비·보험료를 전부 합산해 5년·10년 총보유비용을 비교합니다. 손익분기점 연도를 즉시 확인하세요.",
+    order: 25.55,
+    eyebrow: "자동차 비용 비교",
+    category: "compare",
+    iframeReady: true,
+    badges: ["신규", "시뮬레이션"],
+    previewStats: [
+      { label: "비교 항목", value: "TCO 6가지" },
+      { label: "손익분기", value: "연도 즉시 계산" },
     ],
   },
   {

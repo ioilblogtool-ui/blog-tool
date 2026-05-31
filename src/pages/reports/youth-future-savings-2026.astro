@@ -1,0 +1,373 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  ACCOUNT_TYPE_COMPARISONS,
+  APPLICATION_CHECKS,
+  BANK_RATE_INFOS,
+  DECISION_CARDS,
+  ELIGIBILITY_CHECKS,
+  LEAP_COMPARISON_ROWS,
+  MATURITY_SCENARIOS,
+  RELATED_LINKS,
+  SEO_CRITERIA,
+  SEO_INTRO,
+  SOURCE_LINKS,
+  SUMMARY_METRICS,
+  YOUTH_FUTURE_FAQS,
+  YOUTH_FUTURE_META,
+  formatManwon,
+  formatMaturityRange,
+} from "../../data/youthFutureSavings2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/${YOUTH_FUTURE_META.slug}/`;
+const maxMaturity = Math.max(...MATURITY_SCENARIOS.flatMap((item) => [item.generalMaturityMax, item.preferredMaturityMax]));
+const defaultScenario = MATURITY_SCENARIOS[2]?.monthlyContribution ?? 500000;
+const faqItems = YOUTH_FUTURE_FAQS.map((item) => ({ question: item.question, answer: item.answer }));
+const relatedForSeo = RELATED_LINKS.map((item) => ({ href: item.href, label: item.label }));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: YOUTH_FUTURE_META.title,
+      description: YOUTH_FUTURE_META.description,
+      dateModified: "2026-05-31",
+      mainEntityOfPage: pageUrl,
+      publisher: {
+        "@type": "Organization",
+        name: "비교계산소",
+        url: siteUrl,
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: YOUTH_FUTURE_FAQS.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={YOUTH_FUTURE_META.metaTitle}
+  description={YOUTH_FUTURE_META.description}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page yfs-page">
+    <CalculatorHero
+      eyebrow="정책금융 리포트"
+      title={YOUTH_FUTURE_META.title}
+      description="가입 대상, 정부기여금, 우대금리, 비과세, 청년도약계좌 갈아타기 조건을 한 번에 정리합니다. 월 납입액별 예상 만기 수령액도 함께 비교하세요."
+    />
+
+    <p class="yfs-source-note">
+      기준: {YOUTH_FUTURE_META.updatedAt} {YOUTH_FUTURE_META.sourceLabel}. 실제 가입 가능 여부와 적용 금리는 신청 시점의 상품설명서와 공식 공고가 우선합니다.
+    </p>
+
+    <InfoNotice
+      title="정책금융 안내"
+      lines={[
+        "이 콘텐츠는 금융상품 가입 권유가 아니라 정책금융 정보 정리와 계산 보조 콘텐츠입니다.",
+        "만기 수령액은 월 납입액, 적용금리, 우대조건, 정부기여금 지급 방식에 따라 달라지는 추정값입니다.",
+      ]}
+    />
+
+    <section class="content-section yfs-section yfs-summary-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한눈에 보기</p>
+        <h2>청년미래적금 핵심 숫자</h2>
+        <p>출시 시점, 납입 한도, 기여금, 금리를 먼저 분리해서 확인하세요.</p>
+      </div>
+
+      <div class="yfs-summary-grid">
+        {SUMMARY_METRICS.map((metric) => (
+          <article class="yfs-summary-card">
+            <span class={`yfs-badge yfs-badge--${metric.badge.replace(" ", "-")}`}>{metric.badge}</span>
+            <p>{metric.label}</p>
+            <strong>{metric.value}</strong>
+            <small>{metric.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section yfs-section yfs-eligibility-section" id="eligibility">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">가입 가능성</p>
+        <h2>신청 전 확인해야 할 조건</h2>
+        <p>조건이 하나라도 애매하면 가입 불가가 아니라 “확인 필요”로 두고 공식 심사에서 판단하는 것이 안전합니다.</p>
+      </div>
+
+      <div class="yfs-check-layout">
+        <div class="yfs-check-grid">
+          {ELIGIBILITY_CHECKS.map((check) => (
+            <article class="yfs-check-card">
+              <div>
+                <span class={`yfs-badge yfs-badge--${check.badge.replace(" ", "-")}`}>{check.badge}</span>
+                <h3>{check.label}</h3>
+              </div>
+              <strong>{check.value}</strong>
+              <p>{check.detail}</p>
+            </article>
+          ))}
+        </div>
+
+        <aside class="yfs-cta-panel">
+          <p class="yfs-cta-panel__eyebrow">자격 점검 흐름</p>
+          <h3>소득·가구 기준을 먼저 확인하세요</h3>
+          <p>정확한 가입 가능 여부는 신청기관 심사가 결정합니다. 이 페이지에서는 필요한 확인 항목을 빠뜨리지 않는 데 집중했습니다.</p>
+          <a href={withBase("/tools/welfare-benefit-eligibility/")} class="yfs-primary-cta">가구소득 기준 확인하기</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="content-section yfs-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">일반형 vs 우대형</p>
+        <h2>정부기여금 6%와 12% 차이</h2>
+        <p>우대형은 혜택이 크지만 조건이 더 좁습니다. “중소기업 재직자면 무조건 우대형”처럼 단정하면 안 됩니다.</p>
+      </div>
+
+      <div class="yfs-type-grid">
+        {ACCOUNT_TYPE_COMPARISONS.map((type) => (
+          <article class={`yfs-type-card yfs-type-card--${type.id}`}>
+            <div class="yfs-type-card__head">
+              <span>{type.name}</span>
+              <strong>{type.contributionRate}%</strong>
+            </div>
+            <p>{type.target}</p>
+            <ul class="yfs-pill-list">
+              {type.checks.map((item) => <li>{item}</li>)}
+            </ul>
+            <small>{type.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section yfs-section" id="maturity">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수령액 시나리오</p>
+        <h2>월 납입액별 예상 만기 수령액</h2>
+        <p>아래 금액은 매월 같은 금액을 36개월 납입하고 연 7~8% 범위 금리를 단순 적용한 추정 시나리오입니다.</p>
+      </div>
+
+      <div class="yfs-scenario-tabs" aria-label="월 납입액 선택">
+        {MATURITY_SCENARIOS.map((scenario) => (
+          <button
+            type="button"
+            class={`yfs-scenario-tab${scenario.monthlyContribution === defaultScenario ? " is-active" : ""}`}
+            data-yfs-scenario-button={String(scenario.monthlyContribution)}
+            aria-pressed={scenario.monthlyContribution === defaultScenario ? "true" : "false"}
+          >
+            월 {formatManwon(scenario.monthlyContribution)}
+          </button>
+        ))}
+      </div>
+
+      <div class="table-wrap yfs-scenario-table-wrap">
+        <table class="yfs-scenario-table">
+          <thead>
+            <tr>
+              <th scope="col">월 납입액</th>
+              <th scope="col">3년 원금</th>
+              <th scope="col">일반형 예상 수령액</th>
+              <th scope="col">우대형 예상 수령액</th>
+              <th scope="col">우대형 차이</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MATURITY_SCENARIOS.map((scenario) => {
+              const rowKey = String(scenario.monthlyContribution);
+              const generalPct = Math.round((scenario.generalMaturityMax / maxMaturity) * 100);
+              const preferredPct = Math.round((scenario.preferredMaturityMax / maxMaturity) * 100);
+              return (
+                <tr
+                  class={scenario.monthlyContribution === defaultScenario ? "is-active" : ""}
+                  data-yfs-scenario-row={rowKey}
+                >
+                  <th scope="row">
+                    <span class="yfs-table-amount">월 {formatManwon(scenario.monthlyContribution)}</span>
+                    <span class="yfs-badge yfs-badge--추정">{scenario.badge}</span>
+                  </th>
+                  <td>{formatManwon(scenario.principal)}</td>
+                  <td>
+                    <strong>{formatMaturityRange(scenario.generalMaturityMin, scenario.generalMaturityMax)}</strong>
+                    <span class="yfs-mini-bar"><i style={`width:${generalPct}%`}></i></span>
+                  </td>
+                  <td>
+                    <strong>{formatMaturityRange(scenario.preferredMaturityMin, scenario.preferredMaturityMax)}</strong>
+                    <span class="yfs-mini-bar yfs-mini-bar--preferred"><i style={`width:${preferredPct}%`}></i></span>
+                  </td>
+                  <td>{formatManwon(scenario.preferredContribution - scenario.generalContribution)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="yfs-table-note">정부기여금은 단순화를 위해 납입 원금 기준으로 계산했습니다. 실제 이자 계산, 우대금리 충족, 기여금 지급 방식은 상품설명서를 확인해야 합니다.</p>
+    </section>
+
+    <section class="content-section yfs-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">은행 금리</p>
+        <h2>기본금리와 우대금리 구조</h2>
+        <p>최고금리는 모든 우대조건을 충족했을 때의 상한에 가깝습니다. 실제 적용금리는 본인 거래 조건에 따라 달라집니다.</p>
+      </div>
+
+      <div class="yfs-bank-grid">
+        {BANK_RATE_INFOS.map((bank) => (
+          <article class="yfs-bank-card">
+            <div class="yfs-bank-card__top">
+              <span class={`yfs-badge yfs-badge--${bank.badge}`}>{bank.badge}</span>
+              <h3>{bank.name}</h3>
+            </div>
+            <div class="yfs-rate-row">
+              <span>기본</span>
+              <strong>{bank.baseRate}%</strong>
+              <span>우대</span>
+              <strong>+{bank.maxBonusRate}%</strong>
+              <span>최고</span>
+              <strong>{bank.maxRate}%</strong>
+            </div>
+            <ul class="yfs-pill-list">
+              {bank.tags.map((tag) => <li>{tag}</li>)}
+            </ul>
+            <p>{bank.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section yfs-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">청년도약계좌 비교</p>
+        <h2>갈아타기 전 봐야 할 차이</h2>
+        <p>기존 계좌 해지가 항상 유리하다고 볼 수 없습니다. 남은 기간과 받을 수 있는 혜택을 같이 비교하세요.</p>
+      </div>
+
+      <div class="table-wrap yfs-comparison-table-wrap">
+        <table class="yfs-comparison-table">
+          <thead>
+            <tr>
+              <th scope="col">항목</th>
+              <th scope="col">청년미래적금</th>
+              <th scope="col">청년도약계좌</th>
+              <th scope="col">해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {LEAP_COMPARISON_ROWS.map((row) => (
+              <tr>
+                <th scope="row">{row.label}</th>
+                <td>{row.youthFuture}</td>
+                <td>{row.youthLeap}</td>
+                <td>{row.interpretation}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="yfs-decision-grid">
+        {DECISION_CARDS.map((card) => (
+          <article class="yfs-decision-card">
+            <span>{card.fit}</span>
+            <h3>{card.title}</h3>
+            <ul>
+              {card.checks.map((check) => <li>{check}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section yfs-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">신청 전 체크리스트</p>
+        <h2>신청 버튼 누르기 전에 확인할 8가지</h2>
+        <p>체크박스처럼 보이지만 저장 기능은 없습니다. 실제 신청 전에 빠뜨리기 쉬운 항목을 점검하는 용도입니다.</p>
+      </div>
+
+      <div class="yfs-apply-grid">
+        {APPLICATION_CHECKS.map((item) => (
+          <article class="yfs-apply-card">
+            <span aria-hidden="true"></span>
+            <div>
+              <h3>{item.label}</h3>
+              <p>{item.detail}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section yfs-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공식 확인 경로</p>
+        <h2>신청 전 원문으로 다시 확인하기</h2>
+        <p>정책금융 조건은 공고와 은행별 상품설명서가 업데이트될 수 있습니다.</p>
+      </div>
+
+      <div class="yfs-source-grid">
+        {SOURCE_LINKS.map((source) => (
+          <a href={source.href} target="_blank" rel="noopener" class="yfs-source-card">
+            <span>공식 자료</span>
+            <strong>{source.label}</strong>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section yfs-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 콘텐츠</p>
+        <h2>다음에 같이 볼 계산기와 리포트</h2>
+      </div>
+
+      <div class="yfs-related-grid">
+        {RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="yfs-related-card">
+            <span>{link.label}</span>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="청년미래적금 조건과 만기 수령액을 해석하는 기준"
+      intro={SEO_INTRO}
+      inputPoints={[
+        "내가 일반형인지 우대형인지 먼저 가늠할 수 있습니다.",
+        "월 10만·30만·50만 원 납입 시 예상 수령액 범위를 비교할 수 있습니다.",
+        "청년도약계좌 유지와 전환 검토 포인트를 한 화면에서 확인할 수 있습니다.",
+      ]}
+      criteria={SEO_CRITERIA}
+      faq={faqItems}
+      related={relatedForSeo}
+    />
+  </main>
+
+  <script type="module" src={withBase("/scripts/youth-future-savings-2026.js")}></script>
+</BaseLayout>

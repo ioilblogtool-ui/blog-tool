@@ -1,0 +1,349 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  calcCagr,
+  convertToKrw,
+  formatKrwFromNative,
+  formatMargin,
+  formatMultiple,
+  formatNativeCurrency,
+  formatUsdFromNative,
+  getCompany,
+  getCompanyForecasts,
+  semiconductorStocksForecast2026_2028,
+} from "../../data/semiconductorStocksForecast2026_2028";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const data = semiconductorStocksForecast2026_2028;
+const years = [2026, 2027, 2028] as const;
+const relatedLinks = data.relatedLinks.map((item) => ({ label: item.label, href: item.href }));
+const faqItems = data.faq.map((item) => ({ question: item.q, answer: item.a }));
+const maxRevenueKrw = Math.max(...data.forecasts.map((item) => convertToKrw(item.revenue, getCompany(item.companySlug).currency, data.fx)));
+const maxOpKrw = Math.max(...data.forecasts.map((item) => convertToKrw(item.operatingProfit, getCompany(item.companySlug).currency, data.fx)));
+const maxMargin = Math.max(...data.forecasts.map((item) => item.operatingMargin));
+const companyRows = data.companies.map((company) => {
+  const forecasts = getCompanyForecasts(company.slug);
+  const revenueCagr = calcCagr(forecasts[0].revenue, forecasts[2].revenue, 2);
+  const opCagr = calcCagr(forecasts[0].operatingProfit, forecasts[2].operatingProfit, 2);
+  return { company, forecasts, revenueCagr, opCagr };
+});
+const scenarioLabels = { bear: "보수", base: "기준", bull: "낙관" };
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: data.meta.title,
+  description: data.meta.description,
+  dateModified: data.meta.updatedAt,
+  inLanguage: "ko-KR",
+  mainEntityOfPage: `https://bigyocalc.com/reports/${data.meta.slug}/`,
+};
+---
+
+<BaseLayout title={data.meta.title} description={data.meta.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ssf-page">
+    <CalculatorHero eyebrow={data.meta.eyebrow} title={data.meta.h1} description={data.meta.description} />
+
+    <InfoNotice
+      title="투자 고지 및 데이터 기준"
+      lines={[
+        data.meta.caution,
+        "밸류에이션 범위는 목표주가나 매수·매도 의견이 아닙니다.",
+        "Micron은 FY 기준, TSMC는 대만달러 실적과 ADR 주가를 구분해서 봐야 합니다.",
+      ]}
+    />
+
+    <section class="content-section ssf-basis-board">
+      <div class="ssf-basis-copy">
+        <p class="ssf-kicker">AI Semiconductor Cycle</p>
+        <h2>주가보다 먼저 실적과 이익률을 같은 기준으로 맞춰 봅니다</h2>
+        <p>메모리 3사와 파운드리 1위 기업은 모두 AI 수요의 수혜를 받지만 이익이 만들어지는 방식은 다릅니다. 이 페이지는 확정 실적이 아니라 추정과 시나리오를 비교하는 리포트입니다.</p>
+      </div>
+      <div class="ssf-basis-grid" aria-label="비교 기준">
+        <article><span>업데이트</span><strong>{data.meta.updatedAt}</strong></article>
+        <article><span>전망 기간</span><strong>{data.meta.forecastRange}</strong></article>
+        <article><span>비교 기업</span><strong>{data.companies.length}개</strong></article>
+        <article><span>환율 기준</span><strong>USD {data.fx.usdKrw.toLocaleString("ko-KR")}원</strong></article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>반도체 4대장을 먼저 읽는 숫자</h2>
+      </div>
+      <div class="ssf-kpi-grid">
+        {data.kpiCards.map((card) => (
+          <article class={`ssf-kpi-card ssf-kpi-card--${card.tone}`}>
+            <div class="ssf-kpi-card__top"><span>{card.label}</span><em>{card.badge}</em></div>
+            <strong>{card.value}</strong>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">사업 구조</p>
+        <h2>메모리와 파운드리는 같은 AI 수혜라도 이익 공식이 다릅니다</h2>
+      </div>
+      <div class="ssf-model-grid">
+        {data.companies.map((company) => (
+          <article class={`ssf-model-card ssf-model-card--${company.businessType}`}>
+            <span>{company.exchange} · {company.ticker}</span>
+            <h3>{company.companyName}</h3>
+            <p>{company.description}</p>
+            <div class="ssf-chip-row">
+              {company.coreDrivers.map((item) => <em>{item}</em>)}
+            </div>
+            <strong>{company.investorQuestion}</strong>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ssf-forecast-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">실적 전망</p>
+        <h2>2026~2028 매출·영업이익 전망표</h2>
+        <p>원통화 기준이 기본입니다. 토글을 누르면 같은 데이터를 원화 또는 달러로 환산해 규모를 비교할 수 있습니다.</p>
+      </div>
+
+      <div class="ssf-control-panel" aria-label="반도체 실적 전망 필터">
+        <div class="ssf-segment" id="ssf-currency-toggle">
+          <button type="button" class="is-active" data-currency="native" aria-pressed="true">원통화</button>
+          <button type="button" data-currency="krw" aria-pressed="false">원화 환산</button>
+          <button type="button" data-currency="usd" aria-pressed="false">달러 환산</button>
+        </div>
+        <label class="ssf-select-field">
+          <span>차트 지표</span>
+          <select id="ssf-metric-select">
+            <option value="operatingProfit">영업이익</option>
+            <option value="revenue">매출</option>
+            <option value="operatingMargin">영업이익률</option>
+          </select>
+        </label>
+        <div class="ssf-segment" id="ssf-company-filter">
+          <button type="button" class="is-active" data-company-type="all" aria-pressed="true">전체</button>
+          <button type="button" data-company-type="memory" aria-pressed="false">메모리</button>
+          <button type="button" data-company-type="foundry" aria-pressed="false">파운드리</button>
+          <button type="button" data-company-type="integrated" aria-pressed="false">종합</button>
+        </div>
+      </div>
+
+      <p class="ssf-live-note" id="ssf-live-note" aria-live="polite">원통화 기준 전망치를 표시 중입니다.</p>
+
+      <div class="ssf-forecast-table-wrap">
+        <table class="ssf-forecast-table">
+          <caption>삼성전자, SK하이닉스, 마이크론, TSMC 2026~2028 실적 전망 비교</caption>
+          <thead>
+            <tr>
+              <th>기업</th>
+              <th>유형</th>
+              {years.map((year) => <th>{year}E 매출</th>)}
+              {years.map((year) => <th>{year}E 영업이익</th>)}
+              <th>2028E 영업이익률</th>
+              <th>출처</th>
+            </tr>
+          </thead>
+          <tbody id="ssf-forecast-table-body">
+            {companyRows.map(({ company, forecasts }) => (
+              <tr data-company-type={company.businessType}>
+                <td><strong>{company.shortName}</strong><span>{company.ticker}</span></td>
+                <td>{company.businessType === "memory" ? "메모리" : company.businessType === "foundry" ? "파운드리" : "종합"}</td>
+                {forecasts.map((item) => <td data-native={formatNativeCurrency(item.revenue, company.currency)} data-krw={formatKrwFromNative(item.revenue, company.currency, data.fx)} data-usd={formatUsdFromNative(item.revenue, company.currency, data.fx)}>{formatNativeCurrency(item.revenue, company.currency)}</td>)}
+                {forecasts.map((item) => <td data-native={formatNativeCurrency(item.operatingProfit, company.currency)} data-krw={formatKrwFromNative(item.operatingProfit, company.currency, data.fx)} data-usd={formatUsdFromNative(item.operatingProfit, company.currency, data.fx)}>{formatNativeCurrency(item.operatingProfit, company.currency)}</td>)}
+                <td>{formatMargin(forecasts[2].operatingMargin)}</td>
+                <td><span class="ssf-badge">{forecasts[2].badge}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ssf-mobile-cards" id="ssf-mobile-cards">
+        {companyRows.map(({ company, forecasts, revenueCagr, opCagr }) => (
+          <article class="ssf-mobile-card" data-company-type={company.businessType}>
+            <div class="ssf-mobile-card__head">
+              <span>{company.ticker}</span>
+              <h3>{company.shortName}</h3>
+            </div>
+            <dl>
+              <div><dt>2028E 매출</dt><dd>{formatNativeCurrency(forecasts[2].revenue, company.currency)}</dd></div>
+              <div><dt>2028E 영업이익</dt><dd>{formatNativeCurrency(forecasts[2].operatingProfit, company.currency)}</dd></div>
+              <div><dt>영업이익률</dt><dd>{formatMargin(forecasts[2].operatingMargin)}</dd></div>
+              <div><dt>OP CAGR</dt><dd>{opCagr.toFixed(1)}%</dd></div>
+            </dl>
+            <p>매출 CAGR {revenueCagr.toFixed(1)}% · {forecasts[2].badge}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">차트</p>
+        <h2>원화 환산 기준으로 매출·영업이익 규모를 비교</h2>
+      </div>
+      <div class="ssf-chart-grid">
+        <article class="ssf-chart-card">
+          <h3>2028E 매출</h3>
+          <div class="ssf-bar-list">
+            {companyRows.map(({ company, forecasts }) => {
+              const value = convertToKrw(forecasts[2].revenue, company.currency, data.fx);
+              return (
+                <div class="ssf-bar-row" data-company-type={company.businessType}>
+                  <span>{company.shortName}</span>
+                  <div><i style={`width: ${(value / maxRevenueKrw) * 100}%`}></i></div>
+                  <strong>{value.toFixed(1)}조원</strong>
+                </div>
+              );
+            })}
+          </div>
+        </article>
+        <article class="ssf-chart-card">
+          <h3>2028E 영업이익</h3>
+          <div class="ssf-bar-list">
+            {companyRows.map(({ company, forecasts }) => {
+              const value = convertToKrw(forecasts[2].operatingProfit, company.currency, data.fx);
+              return (
+                <div class="ssf-bar-row" data-company-type={company.businessType}>
+                  <span>{company.shortName}</span>
+                  <div><i style={`width: ${(value / maxOpKrw) * 100}%`}></i></div>
+                  <strong>{value.toFixed(1)}조원</strong>
+                </div>
+              );
+            })}
+          </div>
+        </article>
+        <article class="ssf-chart-card">
+          <h3>2028E 영업이익률</h3>
+          <div class="ssf-bar-list">
+            {companyRows.map(({ company, forecasts }) => (
+              <div class="ssf-bar-row" data-company-type={company.businessType}>
+                <span>{company.shortName}</span>
+                <div><i style={`width: ${(forecasts[2].operatingMargin / maxMargin) * 100}%`}></i></div>
+                <strong>{formatMargin(forecasts[2].operatingMargin)}</strong>
+              </div>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section ssf-scenario-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">밸류에이션</p>
+        <h2>보수·기준·낙관 시나리오별 2028E 시가총액 범위</h2>
+        <p>영업이익과 적용 배수로 계산한 단순 범위입니다. 목표주가나 매수·매도 의견이 아닙니다.</p>
+      </div>
+      <div class="ssf-segment ssf-scenario-tabs" id="ssf-scenario-tabs">
+        {Object.entries(scenarioLabels).map(([key, label], index) => (
+          <button type="button" class={index === 1 ? "is-active" : ""} data-scenario={key} aria-pressed={index === 1 ? "true" : "false"}>{label}</button>
+        ))}
+      </div>
+      <div class="ssf-scenario-board" id="ssf-scenario-board">
+        {data.scenarios.filter((item) => item.scenario === "base").map((scenario) => {
+          const company = getCompany(scenario.companySlug);
+          return (
+            <article class="ssf-scenario-card" data-scenario-card data-scenario={scenario.scenario} data-company-type={company.businessType}>
+              <span>{scenario.label} 시나리오</span>
+              <h3>{company.shortName}</h3>
+              <strong>{formatNativeCurrency(scenario.impliedMarketCap, company.currency)}</strong>
+              <p>2028E 영업이익 {formatNativeCurrency(scenario.operatingProfit, company.currency)} × {formatMultiple(scenario.targetMultiple)}</p>
+              <ul>{scenario.assumptions.map((item) => <li>{item}</li>)}</ul>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">회사별 포인트</p>
+        <h2>각 종목에서 실제로 확인해야 할 질문</h2>
+      </div>
+      <div class="ssf-company-detail-grid">
+        {data.companies.map((company) => (
+          <article class="ssf-company-detail-card">
+            <span>{company.countryLabel} · {company.exchange}</span>
+            <h3>{company.companyName}</h3>
+            <p>{company.description}</p>
+            <div>
+              <strong>핵심 동력</strong>
+              <ul>{company.coreDrivers.map((item) => <li>{item}</li>)}</ul>
+            </div>
+            <div>
+              <strong>리스크</strong>
+              <ul>{company.keyRisks.map((item) => <li>{item}</li>)}</ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리스크</p>
+        <h2>반도체 주식 전망에서 반드시 같이 봐야 할 변수</h2>
+      </div>
+      <div class="ssf-risk-grid">
+        {data.risks.map((risk) => <article><strong>{risk}</strong><p>실적 추정과 밸류에이션 배수를 동시에 흔들 수 있는 변수입니다.</p></article>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처</p>
+        <h2>공식 IR과 보조 컨센서스 출처</h2>
+      </div>
+      <div class="ssf-source-grid">
+        {data.sources.map((source) => (
+          <article class="ssf-source-card">
+            <span>{source.badge}</span>
+            <h3>{source.label}</h3>
+            <p>{source.note}</p>
+            <a href={source.url} target="_blank" rel="noreferrer">{source.organization} 바로가기</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">함께 보기</p>
+        <h2>반도체 주식 전망을 더 넓게 읽기</h2>
+      </div>
+      <div class="ssf-related-grid">
+        {data.relatedLinks.map((link) => (
+          <a class="ssf-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="반도체 주식 전망을 실적 기준으로 읽는 방법"
+      intro={data.seoIntro}
+      inputPoints={data.seoInputPoints}
+      criteria={data.seoCriteria}
+      faq={faqItems}
+      related={relatedLinks}
+    />
+  </main>
+
+  <script id="ssf-data" type="application/json" set:html={JSON.stringify(data)} />
+  <script type="module" src={withBase("/scripts/semiconductor-stocks-forecast-2026-2028.js")}></script>
+</BaseLayout>

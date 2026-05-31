@@ -190,6 +190,13 @@ export const reports: ReportMeta[] = [
     badges: ["ETF", "반도체", "투자"],
   },
   {
+    slug: "semiconductor-stocks-forecast-2026-2028",
+    title: "삼성전자·SK하이닉스·마이크론·TSMC 2026~2028 실적 전망 비교",
+    description: "삼성전자, SK하이닉스, 마이크론, TSMC의 2026~2028년 매출·영업이익·밸류에이션 시나리오를 비교하는 반도체 주식 리포트입니다.",
+    order: 18.4,
+    badges: ["반도체", "주식", "AI", "2026~2028"],
+  },
+  {
     slug: "semiconductor-value-chain",
     title: "엔비디아는 왜 공장이 없을까? 반도체 산업 구조 한눈에 보기",
     description: "반도체 밸류체인 설계→장비→전공정→메모리→후공정→테스트 전 단계와 NVIDIA·TSMC·삼성전자·SK하이닉스·ASML 등 20개 기업의 역할을 인터랙티브로 이해합니다.",
@@ -517,6 +524,27 @@ export const reports: ReportMeta[] = [
     description: "2026년 지방선거 시·도지사 후보자의 부동산 신고액을 아파트·토지·건물로 분리해 비교합니다. 부동산 보유액 TOP 랭킹과 출마 지역 vs 소재 지역 교차 분석을 제공합니다.",
     order: 7.51,
     badges: ["지방선거", "후보부동산", "부동산", "2026"],
+  },
+  {
+    slug: "pension-by-job-comparison-2026",
+    title: "직종별 연금 비교 2026 — 공무원·군인·사학·국민연금 수령액 얼마나 다를까",
+    description: "공무원연금, 군인연금, 사학연금, 국민연금을 같은 월급·납입 기간 기준으로 비교합니다. 20년 납입 기준 예상 수령액 차이와 손익분기점을 확인하세요.",
+    order: 25.05,
+    badges: ["공무원연금", "국민연금", "직종비교", "2026"],
+  },
+  {
+    slug: "youth-savings-comparison-2026",
+    title: "청년미래적금 vs 청년도약계좌 완전 비교 2026 — 가입 조건·수령액·유불리 총정리",
+    description: "청년미래적금, 청년도약계좌, 청년희망적금 가입 조건·정부 지원금·만기 수령액을 한 번에 비교합니다. 소득별 유불리 분석과 수령액 시뮬레이션 포함.",
+    order: 25.1,
+    badges: ["청년적금", "청년도약계좌", "정부지원", "2026"],
+  },
+  {
+    slug: "youth-future-savings-2026",
+    title: "청년미래적금 조건·만기 수령액 정리 2026",
+    description: "2026년 청년미래적금 가입 조건, 신청기간, 정부기여금, 우대금리, 비과세 혜택, 청년도약계좌 갈아타기 여부를 정리합니다.",
+    order: 25.05,
+    badges: ["청년미래적금", "정부기여금", "정책금융", "2026"],
   },
   {
     slug: "governor-mayor-candidate-assets-comparison-2026",

@@ -1,0 +1,404 @@
+// 직종별 연금 비교 리포트 2026
+// prefix: pbjc- (Pension By Job Comparison)
+
+.pbjc-page {
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #e6e1d8;
+    border-radius: 20px;
+    background: #fffdf9;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+    padding: 20px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 16px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #475569;
+    }
+
+    h2 { margin: 0; font-size: 1.1rem; line-height: 1.35; color: #1f2937; }
+    p  { margin: 6px 0 0; font-size: 0.84rem; line-height: 1.7; color: #6b7280; max-width: 760px; }
+  }
+
+  // ── KPI 카드 ──────────────────────────────────────────────────────────────
+  .pbjc-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    @media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .pbjc-kpi-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.is-accent { background: #eff6ff; border-color: #bfdbfe; }
+    &.is-warn   { background: #fefce8; border-color: #fde68a; }
+
+    &__label { margin: 0; font-size: 0.72rem; font-weight: 600; color: #64748b; }
+    &__value  { font-size: 1.05rem; font-weight: 800; color: #0f172a; line-height: 1.3; }
+    &__sub    { font-size: 0.7rem; color: #94a3b8; line-height: 1.4; }
+  }
+
+  // ── 비교표 ──────────────────────────────────────────────────────────────────
+  .pbjc-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .pbjc-compare-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 0.83rem;
+
+    thead th {
+      background: #f8fafc;
+      padding: 12px 14px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      border-bottom: 2px solid #e2e8f0;
+
+      &.col-item { text-align: left; width: 110px; color: #475569; font-weight: 700; }
+      &.col-pension { min-width: 140px; }
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      &:last-child { border-bottom: none; }
+      &:hover { background: #fafafa; }
+    }
+
+    tbody td {
+      padding: 10px 14px;
+      color: #374151;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.82rem;
+
+      &.col-item {
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        background: #fafafa;
+      }
+
+      &.pbjc-military-note { font-size: 0.78rem; }
+      &.pbjc-status { font-size: 0.76rem; color: #6b7280; }
+
+      strong { color: #111827; }
+    }
+  }
+
+  .pbjc-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    margin-left: 4px;
+
+    &--special { background: #fef9c3; color: #854d0e; }
+  }
+
+  .pbjc-table-note {
+    margin: 10px 0 0;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.7;
+  }
+
+  // ── 납입 부담 카드 ─────────────────────────────────────────────────────────
+  .pbjc-contrib-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    @media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .pbjc-contrib-card {
+    border: 1px solid #e2e8f0;
+    border-top: 3px solid var(--pension-color, #6366f1);
+    border-radius: 12px;
+    padding: 14px;
+
+    &__name {
+      font-size: 0.88rem;
+      font-weight: 800;
+      margin: 0 0 10px;
+    }
+
+    &__rows { display: flex; flex-direction: column; gap: 6px; }
+  }
+
+  .pbjc-contrib-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+
+    span { color: #6b7280; }
+    strong { font-weight: 700; color: #374151; }
+
+    &--total {
+      padding-top: 6px;
+      border-top: 1px solid #f1f5f9;
+      strong { color: var(--pension-color, #1e40af); }
+    }
+  }
+
+  // ── 탭 ────────────────────────────────────────────────────────────────────
+  .pbjc-term-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .pbjc-tab-btn {
+    padding: 7px 18px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    &.is-active { background: #1e40af; border-color: #1e40af; color: #fff; }
+  }
+
+  // ── bar row ──────────────────────────────────────────────────────────────
+  .pbjc-bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .pbjc-bar-row {
+    display: grid;
+    grid-template-columns: 44px 1fr 100px;
+    align-items: center;
+    gap: 10px;
+
+    @media (max-width: 480px) { grid-template-columns: 36px 1fr 80px; }
+
+    &__name {
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    &__bar-wrap {
+      background: #f1f5f9;
+      border-radius: 6px;
+      height: 14px;
+      overflow: hidden;
+    }
+
+    &__bar {
+      height: 100%;
+      border-radius: 6px;
+      min-width: 4px;
+      transition: width 0.4s ease;
+    }
+
+    &__val {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
+
+  .pbjc-est {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #b45309;
+    background: #fef9c3;
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin-left: 4px;
+    font-style: normal;
+  }
+
+  .pbjc-sim-note {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin: 6px 0 0;
+    line-height: 1.6;
+  }
+
+  // ── Chart.js ──────────────────────────────────────────────────────────────
+  .pbjc-chart-wrap {
+    height: 240px;
+    margin-top: 8px;
+    @media (min-width: 768px) { height: 280px; }
+  }
+
+  // ── 손익분기 카드 ──────────────────────────────────────────────────────────
+  .pbjc-breakeven-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    @media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .pbjc-breakeven-card {
+    border: 1px solid #e2e8f0;
+    border-top: 3px solid var(--pension-color, #6366f1);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__name {
+      font-size: 0.88rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    &__rows { display: flex; flex-direction: column; gap: 5px; }
+
+    &__age {
+      font-size: 0.78rem;
+      color: #475569;
+      background: #f8fafc;
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    &__note {
+      font-size: 0.74rem;
+      color: #6b7280;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+
+  .pbjc-bk-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+
+    span { color: #6b7280; }
+    strong { font-weight: 700; color: #374151; }
+
+    &--highlight strong {
+      color: var(--pension-color, #1e40af);
+      font-size: 1rem;
+    }
+  }
+
+  // ── 연금개혁 카드 ──────────────────────────────────────────────────────────
+  .pbjc-reform-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .pbjc-reform-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    &__desc {
+      font-size: 0.82rem;
+      color: #374151;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    &__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+  }
+
+  .pbjc-reform-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+  }
+
+  // ── FAQ ────────────────────────────────────────────────────────────────────
+  .pbjc-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .pbjc-faq-item {
+    border-left: 3px solid #6366f1;
+    padding-left: 14px;
+
+    &__q { font-size: 0.88rem; font-weight: 700; color: #1e40af; margin: 0 0 5px; }
+    &__a { font-size: 0.84rem; color: #374151; line-height: 1.75; margin: 0; }
+  }
+
+  // ── CTA ────────────────────────────────────────────────────────────────────
+  .pbjc-cta-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    @media (min-width: 600px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .pbjc-cta-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      border-color: #6366f1;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.08);
+    }
+
+    strong { font-size: 0.88rem; font-weight: 700; color: #1e3a8a; }
+    span   { font-size: 0.78rem; color: #6b7280; line-height: 1.5; }
+  }
+}

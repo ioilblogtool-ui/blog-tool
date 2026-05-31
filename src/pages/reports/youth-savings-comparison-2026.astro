@@ -1,0 +1,398 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { youthSavingsReport } from "../../data/youthSavingsComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = youthSavingsReport;
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+
+// 만기 수령액 포맷 (만 원 → 억/만 원)
+function fmtMan(v: number): string {
+  if (v >= 10000) {
+    const eok = Math.floor(v / 10000);
+    const rem = v % 10000;
+    return rem > 0 ? `${eok}억 ${rem.toLocaleString("ko-KR")}만 원` : `${eok}억 원`;
+  }
+  return `${v.toLocaleString("ko-KR")}만 원`;
+}
+
+// 수령액 바 비율 계산
+const maxReceive = Math.max(...report.simulations.map((s) => s.totalReceiveMan));
+---
+
+<BaseLayout
+  title={report.meta.seoTitle}
+  description={report.meta.seoDescription}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ysc-page">
+    <CalculatorHero
+      eyebrow="청년 금융 상품 비교 리포트"
+      title="청년미래적금 vs 청년도약계좌 완전 비교 2026"
+      description="가입 조건·정부 지원금·만기 수령액을 한번에 비교합니다. 소득별로 어느 상품이 유리한지 바로 확인하세요."
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        `출처: ${report.meta.dataSourceLabel} (${report.meta.updatedAt} 기준)`,
+        report.meta.caution,
+      ]}
+    />
+
+    <!-- KPI 요약 카드 -->
+    <section class="content-section ysc-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2>먼저 봐야 할 숫자 3개</h2>
+      </div>
+      <div class="ysc-kpi-grid">
+        {report.kpis.map((kpi) => (
+          <article class={`ysc-kpi-card${kpi.tone ? ` is-${kpi.tone}` : ""}`}>
+            <p class="ysc-kpi-card__label">{kpi.label}</p>
+            <strong class="ysc-kpi-card__value">{kpi.value}</strong>
+            <span class="ysc-kpi-card__sub">{kpi.sub}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 3개 상품 핵심 비교표 -->
+    <section class="content-section ysc-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 조건 비교</p>
+        <h2>3개 상품 한눈에 비교</h2>
+        <p>동일 기준으로 정리했습니다. 청년희망적금은 2024년 2월 신규 가입이 종료됐습니다.</p>
+      </div>
+
+      <div class="table-wrap ysc-table-wrap">
+        <table class="ysc-compare-table">
+          <thead>
+            <tr>
+              <th class="col-item">항목</th>
+              {report.products.map((p) => (
+                <th class={`col-product${!p.available ? " is-unavailable" : ""}`}>
+                  <span class="ysc-product-name" style={`color:${p.color}`}>{p.name}</span>
+                  {!p.available && (
+                    <span class="ysc-badge ysc-badge--closed">신규 종료</span>
+                  )}
+                  {p.available && (
+                    <span class="ysc-badge ysc-badge--open">가입 가능</span>
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-item">출시</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>{p.launchYear}년</td>
+              ))}
+            </tr>
+            <tr>
+              <td class="col-item">가입 나이</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>만 {p.ageMin}~{p.ageMax}세</td>
+              ))}
+            </tr>
+            <tr>
+              <td class="col-item">개인소득 요건</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>{p.incomeLimitLabel}</td>
+              ))}
+            </tr>
+            <tr>
+              <td class="col-item">가구소득</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>{p.householdIncomeNote}</td>
+              ))}
+            </tr>
+            <tr>
+              <td class="col-item">월 납입 한도</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>
+                  <strong>최대 {p.monthlyLimitMan}만 원</strong>
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td class="col-item">기본 금리</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>{p.baseRateLabel}</td>
+              ))}
+            </tr>
+            <tr>
+              <td class="col-item">정부 기여금</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>{p.maxContributionLabel}</td>
+              ))}
+            </tr>
+            <tr>
+              <td class="col-item">비과세</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>
+                  {p.taxFree ? "✅ 비과세" : "❌"}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td class="col-item">만기</td>
+              {report.products.map((p) => (
+                <td class={!p.available ? "is-unavailable" : ""}>
+                  <strong>{p.termLabel}</strong>
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ysc-table-note">※ 금리·기여금은 출시 시점 기준이며 정책 변경에 따라 달라질 수 있습니다.</p>
+    </section>
+
+    <!-- 소득 구간별 유불리 탭 -->
+    <section class="content-section ysc-income-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">소득별 유불리</p>
+        <h2>내 소득 구간에서는 어느 상품이 유리할까요?</h2>
+        <p>소득 구간을 선택하면 해당 구간의 추천 상품과 이유를 확인할 수 있습니다.</p>
+      </div>
+
+      <div class="ysc-income-tabs" id="yscIncomeTabs">
+        {report.incomeRecommendCards.map((card, i) => (
+          <button
+            type="button"
+            class={`ysc-tab-btn${i === 0 ? " is-active" : ""}`}
+            data-income={card.incomeGroup}
+          >
+            {card.incomeLabel}
+          </button>
+        ))}
+      </div>
+
+      <div class="ysc-income-cards" id="yscIncomeCards">
+        {report.incomeRecommendCards.map((card, i) => {
+          const product = report.products.find((p) => p.id === card.recommendedProductId);
+          return (
+            <div
+              class={`ysc-income-card${i === 0 ? " is-visible" : ""}`}
+              data-income={card.incomeGroup}
+              style={`--product-color: ${product?.color ?? "#6366f1"}`}
+            >
+              <div class="ysc-income-card__head">
+                <p class="ysc-income-card__range">{card.incomeLabel}</p>
+                <strong class="ysc-income-card__recommend">{card.recommendedName}</strong>
+              </div>
+              <p class="ysc-income-card__reason">{card.reason}</p>
+              {card.tip && (
+                <p class="ysc-income-card__tip">💡 {card.tip}</p>
+              )}
+
+              <!-- 해당 구간 도약계좌 기여금 -->
+              {(() => {
+                const row = report.incomeContributions.find((r) => r.incomeLabel === card.incomeLabel);
+                return row ? (
+                  <div class="ysc-income-card__contrib">
+                    <span>청년도약계좌 기여금</span>
+                    <strong>{row.leapContributionMan > 0 ? `월 ${row.leapContributionMan}만 원` : "없음 (비과세만)"}</strong>
+                    <span>청년미래적금 기여금</span>
+                    <strong>{row.futureContributionLabel}</strong>
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 만기 수령액 시뮬레이션 -->
+    <section class="content-section ysc-sim-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수령액 시뮬레이션</p>
+        <h2>월 50만 원 납입 기준 만기 수령액 비교</h2>
+        <p>단순 원리금 계산 기준 추정값입니다. 은행 우대금리 적용 시 달라질 수 있습니다.</p>
+      </div>
+
+      <div class="ysc-sim-grid">
+        {report.simulations.map((sim) => {
+          const product = report.products.find((p) => p.id === sim.productId)!;
+          const barPct = Math.round((sim.totalReceiveMan / maxReceive) * 100);
+          return (
+            <article class={`ysc-sim-card${sim.unavailable ? " is-unavailable" : ""}`}
+              style={`--product-color: ${product.color}`}>
+              <div class="ysc-sim-card__head">
+                <span class="ysc-sim-card__name" style={`color:${product.color}`}>{product.name}</span>
+                <span class="ysc-sim-card__term">{product.termLabel}</span>
+                {sim.unavailable && <span class="ysc-badge ysc-badge--closed">신규 종료</span>}
+                {sim.isEstimate && <span class="ysc-badge ysc-badge--est">추정</span>}
+              </div>
+
+              <div class="ysc-sim-card__rows">
+                <div class="ysc-sim-row">
+                  <span>본인 납입 총액</span>
+                  <strong>{fmtMan(sim.totalInputMan)}</strong>
+                </div>
+                <div class="ysc-sim-row">
+                  <span>정부 기여금</span>
+                  <strong class="is-contrib">+ {fmtMan(sim.totalContributionMan)}</strong>
+                </div>
+                <div class="ysc-sim-row">
+                  <span>세후 이자</span>
+                  <strong class="is-interest">+ {fmtMan(sim.totalInterestMan)}</strong>
+                </div>
+              </div>
+
+              <div class="ysc-sim-card__total">
+                <span>예상 수령액</span>
+                <strong>{fmtMan(sim.totalReceiveMan)}</strong>
+              </div>
+
+              <div class="ysc-sim-card__bar-wrap">
+                <div class="ysc-sim-card__bar" style={`width:${barPct}%`}></div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <p class="ysc-sim-note">
+        ※ 월 50만 원 납입, 소득 2,400만 원 이하 구간(최대 기여금) 기준 단순 추정값입니다.
+        실제 수령액은 금리·기여금 정책·납입 이행 여부에 따라 달라집니다.
+      </p>
+    </section>
+
+    <!-- 소득별 기여금 구간 테이블 -->
+    <section class="content-section ysc-contrib-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">기여금 구간</p>
+        <h2>청년도약계좌 소득별 정부 기여금</h2>
+        <p>개인소득 구간에 따라 월 기여금이 달라집니다.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="ysc-contrib-table">
+          <thead>
+            <tr>
+              <th>개인소득 구간</th>
+              <th>청년도약계좌 월 기여금</th>
+              <th>청년미래적금 기여 구조</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.incomeContributions.map((row) => (
+              <tr>
+                <td>{row.incomeLabel}</td>
+                <td>
+                  {row.leapContributionMan > 0
+                    ? <strong class="ysc-contrib-val">{row.leapContributionMan}만 원</strong>
+                    : <span class="ysc-contrib-none">없음 (비과세만)</span>
+                  }
+                </td>
+                <td class="ysc-contrib-future">{row.futureContributionLabel}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="ysc-table-note">※ 청년미래적금 기여금 구조는 출시 공식 자료 기준으로 업데이트 예정입니다.</p>
+    </section>
+
+    <!-- 중복 가입 가능 여부 -->
+    <section class="content-section ysc-duplicate-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">중복 가입</p>
+        <h2>중복 가입이 가능한가요?</h2>
+        <p>청년미래적금·청년도약계좌와 다른 상품의 동시 가입 가능 여부를 정리했습니다.</p>
+      </div>
+      <div class="ysc-duplicate-list">
+        {report.duplicateRows.map((row) => (
+          <div class="ysc-duplicate-row">
+            <span class="ysc-duplicate-row__combo">{row.combination}</span>
+            <span class={`ysc-duplicate-row__result ${row.possible ? "is-yes" : "is-no"}`}>
+              {row.possible ? "✅ 가능" : "❌ 불가"}
+            </span>
+            <p class="ysc-duplicate-row__note">{row.note}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 주의사항 카드 -->
+    <section class="content-section ysc-caution-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">주의사항</p>
+        <h2>가입 전 꼭 확인하세요</h2>
+      </div>
+      <div class="ysc-caution-grid">
+        {report.cautionCards.map((card) => (
+          <article class="ysc-caution-card">
+            <p class="ysc-caution-card__icon">{card.icon}</p>
+            <strong class="ysc-caution-card__title">{card.title}</strong>
+            <p class="ysc-caution-card__desc">{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="content-section ysc-faq-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2>FAQ</h2>
+      </div>
+      <div class="ysc-faq-list">
+        {report.faq.map((item) => (
+          <article class="ysc-faq-item">
+            <p class="ysc-faq-item__q">{item.q}</p>
+            <p class="ysc-faq-item__a">{item.a}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 콘텐츠 CTA -->
+    <section class="content-section ysc-cta-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 콘텐츠</p>
+        <h2>함께 보면 좋은 리포트</h2>
+      </div>
+      <div class="ysc-cta-grid">
+        {report.relatedLinks.map((link) => (
+          <a class="ysc-cta-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="청년미래적금 vs 청년도약계좌 비교 리포트 읽는 법"
+      intro={[
+        "이 리포트는 2026년 기준 청년 대상 정부 지원 저축 상품 3종(청년미래적금·청년도약계좌·청년희망적금)의 가입 조건과 혜택을 동일 기준으로 비교한 참고용 콘텐츠입니다.",
+        "정부 기여금과 비과세 혜택을 최대로 활용하려면 소득 구간에 따라 유리한 상품이 다릅니다. 소득별 유불리 섹션에서 자신의 구간을 선택해 추천 상품을 확인하세요.",
+        "금리·기여금·가입 조건은 정책 변경에 따라 달라질 수 있으니 실제 가입 전 서민금융진흥원(nhuf.or.kr) 또는 가입 은행에서 최신 정보를 재확인하세요.",
+      ]}
+      criteria={[
+        "금리·기여금 수치는 금융위원회·서민금융진흥원 공개 자료 기준입니다.",
+        "만기 수령액 시뮬레이션은 단순 원리금 계산 기준 추정값이며, 은행 우대금리·납입 실적에 따라 달라질 수 있습니다.",
+        "청년미래적금 기여금 구조는 출시 공식 자료 확정 후 업데이트됩니다.",
+        "중복 가입 가능 여부는 정책 변경에 따라 달라질 수 있으므로 최신 정책을 확인하세요.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script id="yscReportData" type="application/json" set:html={JSON.stringify(report)}></script>
+  <script type="module" src={withBase("/scripts/youth-savings-comparison-2026.js")}></script>
+</BaseLayout>
