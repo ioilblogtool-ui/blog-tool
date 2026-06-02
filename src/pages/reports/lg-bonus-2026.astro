@@ -1,0 +1,201 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  LG_BONUS_REPORT_META,
+  LG_DIVISION_ROWS,
+  LG_RANK_ROWS,
+  LG_COMPANY_COMPARE,
+  LG_BONUS_STRUCTURE,
+  LG_BONUS_FAQ,
+  LG_BONUS_RELATED,
+  formatManwon,
+  formatOkman,
+} from "../../data/lgBonusReport2026";
+
+const siteUrl = "https://bigyocalc.com";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: LG_BONUS_REPORT_META.title,
+      description: LG_BONUS_REPORT_META.description,
+      inLanguage: "ko-KR",
+      dateModified: LG_BONUS_REPORT_META.dateModified,
+      mainEntityOfPage: `${siteUrl}/reports/${LG_BONUS_REPORT_META.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: LG_BONUS_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${LG_BONUS_REPORT_META.title} | 비교계산소`}
+  description={LG_BONUS_REPORT_META.description}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page lgb26-page" data-report="lg-bonus-2026">
+    <CalculatorHero
+      eyebrow="LG전자 성과급 리포트"
+      title={LG_BONUS_REPORT_META.title}
+      description="H&A·HE·VS·BS 사업부별 PI 지급률 추정, 직급별 예상 수령액, 삼성전자·SK하이닉스·현대차와 총보상 비교를 한 페이지에서 정리합니다."
+    />
+
+    <InfoNotice
+      title="성과급 추정 수치 안내"
+      lines={[
+        "이 페이지의 PI 지급률·금액은 공식 확정값이 아닌 추정 시나리오입니다.",
+        "실제 지급액은 회사 확정안, 개인 기준급, 직급, 재직 조건, 세금·공제 조건에 따라 달라집니다.",
+        `기준: ${LG_BONUS_REPORT_META.updatedAt} 추정`,
+      ]}
+    />
+
+    <!-- 사업부별 PI 비교 -->
+    <section class="lgb26-section" aria-label="사업부별 PI 비교">
+      <h2 class="lgb26-section-title">사업부별 PI 지급률 비교 <span class="lgb26-badge">추정</span></h2>
+      <p class="lgb26-section-desc">
+        LG전자 PI는 반기별 지급이며, 각 사업부 영업이익 달성률에 연동됩니다. 같은 직급이라도 소속 사업부에 따라 지급률 차이가 큽니다.
+      </p>
+
+      <div class="lgb26-division-grid">
+        {LG_DIVISION_ROWS.map((div) => {
+          const annualBase = div.piH1.base + div.piH2.base;
+          const annualConservative = div.piH1.conservative + div.piH2.conservative;
+          const annualAggressive = div.piH1.aggressive + div.piH2.aggressive;
+          return (
+            <article class="lgb26-division-card">
+              <div class="lgb26-division-header">
+                <span class="lgb26-division-code">{div.name}</span>
+                <span class="lgb26-division-product">{div.product}</span>
+              </div>
+              <div class="lgb26-pi-row">
+                <span class="lgb26-pi-label">보수</span>
+                <span class="lgb26-pi-value lgb26-pi-value--low">{annualConservative}%</span>
+              </div>
+              <div class="lgb26-pi-row lgb26-pi-row--base">
+                <span class="lgb26-pi-label">기준</span>
+                <span class="lgb26-pi-value lgb26-pi-value--base">{annualBase}%</span>
+              </div>
+              <div class="lgb26-pi-row">
+                <span class="lgb26-pi-label">낙관</span>
+                <span class="lgb26-pi-value lgb26-pi-value--high">{annualAggressive}%</span>
+              </div>
+              <p class="lgb26-division-trend">{div.trend}</p>
+              <p class="lgb26-division-highlight">{div.highlight}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 직급별 예상 수령액 (H&A 기준) -->
+    <section class="lgb26-section" aria-label="직급별 예상 PI 수령액">
+      <h2 class="lgb26-section-title">직급별 예상 PI 수령액 <span class="lgb26-badge">H&A 기준 추정</span></h2>
+      <p class="lgb26-section-desc">
+        H&A 사업부 기준 PI 100%+100% 시나리오(연 200%)를 적용한 세전 예상 금액입니다. 세후 실수령은 약 15~25% 낮아집니다.
+      </p>
+
+      <div class="lgb26-table-wrap">
+        <table class="lgb26-table">
+          <thead>
+            <tr>
+              <th>직급</th>
+              <th>월 기본급</th>
+              <th>연봉 (추정)</th>
+              <th>PI 상반기</th>
+              <th>PI 하반기</th>
+              <th>연간 PI 합계</th>
+              <th>총보상 (추정)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {LG_RANK_ROWS.map((row) => (
+              <tr>
+                <td class="lgb26-td-rank">{row.rank}</td>
+                <td>{formatManwon(row.monthlyBase)}</td>
+                <td>{formatManwon(row.annualSalary)}</td>
+                <td>{formatManwon(row.piH1Base)}</td>
+                <td>{formatManwon(row.piH2Base)}</td>
+                <td class="lgb26-td-emphasis">{formatManwon(row.piAnnualBase)}</td>
+                <td class="lgb26-td-total">{formatOkman(row.totalCompBase)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="lgb26-table-note">* 세전 기준. 실제 세후 금액은 <a href="/tools/bonus-after-tax-calculator/">성과급 세후 계산기</a>에서 확인하세요.</p>
+    </section>
+
+    <!-- 타사 비교 -->
+    <section class="lgb26-section" aria-label="주요 대기업 성과급 비교">
+      <h2 class="lgb26-section-title">주요 대기업 성과급 비교</h2>
+      <p class="lgb26-section-desc">
+        LG전자 PI는 금액 기준으로 반도체 기업보다 낮지만, 연봉 기본값이 높고 지급 안정성이 상대적으로 높습니다.
+      </p>
+      <div class="lgb26-compare-grid">
+        {LG_COMPANY_COMPARE.map((row) => (
+          <a href={row.href} class={`lgb26-compare-card${row.highlight ? " lgb26-compare-card--highlight" : ""}`}>
+            <div class="lgb26-compare-company">{row.company}</div>
+            <div class="lgb26-compare-bonus">{row.bonusLabel}</div>
+            <div class="lgb26-compare-amount">{row.annualBonus}</div>
+            <div class="lgb26-compare-multiple">{row.piMultiple}</div>
+            <div class="lgb26-compare-note">{row.note}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 성과급 구조 설명 -->
+    <section class="lgb26-section" aria-label="LG전자 성과급 구조 안내">
+      <h2 class="lgb26-section-title">LG전자 성과급 구조 이해하기</h2>
+      <div class="lgb26-structure-list">
+        {LG_BONUS_STRUCTURE.map((item) => (
+          <div class="lgb26-structure-item">
+            <h3 class="lgb26-structure-title">{item.title}</h3>
+            <p class="lgb26-structure-body">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 계산기 -->
+    <section class="lgb26-section lgb26-related" aria-label="관련 계산기">
+      <h2 class="lgb26-section-title">관련 계산기</h2>
+      <div class="lgb26-related-grid">
+        {LG_BONUS_RELATED.map((link) => (
+          <a href={link.href} class="lgb26-related-card">
+            <span class="lgb26-related-label">{link.label}</span>
+            <span class="lgb26-related-desc">{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="LG전자 성과급 PI 완전 정리"
+      intro={[
+        "LG전자 성과급은 반기별 PI(Performance Incentive)로 지급됩니다. 상반기(1~6월) 실적은 7~8월, 하반기(7~12월) 실적은 이듬해 1~2월에 지급되는 구조입니다. 기본급 대비 지급률로 결정되며, 사업부별 영업이익 달성률이 핵심 변수입니다.",
+        "H&A(가전) 사업부는 프리미엄 제품 판매 호조로 PI 안정성이 높고, VS(전기차 부품)는 흑자 전환 과도기로 변동성이 큽니다. HE(TV)는 글로벌 TV 수요에 따라 연도별 편차가 있으며, BS(B2B)는 안정적인 수주 기반으로 변동 폭이 작은 편입니다.",
+        "같은 직급이라도 사업부에 따라 수백만 원 이상 차이가 날 수 있어, 이직·전직 시 소속 사업부별 PI 이력을 함께 고려하는 것이 중요합니다. 세후 실수령 계산은 성과급 세후 계산기에서 본인 기준급과 PI 금액을 직접 입력해 확인하세요.",
+      ]}
+      faq={LG_BONUS_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={LG_BONUS_RELATED}
+    />
+  </main>
+</BaseLayout>

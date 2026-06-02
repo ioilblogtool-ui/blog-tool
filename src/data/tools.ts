@@ -18,6 +18,20 @@ export type ToolMeta = {
 
 export const tools: ToolMeta[] = [
   {
+    slug: "stock-brokerage-fee-calculator",
+    title: "증권사 수수료 계산기",
+    description: "1회 거래금액·월 거래 횟수 입력 → 키움·토스·삼성 등 주요 증권사 연간 수수료 자동 비교. 국내·미국주식 선택 가능.",
+    order: 0,
+    eyebrow: "증권사 수수료",
+    category: "compare",
+    iframeReady: false,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "비교 증권사", value: "7곳" },
+      { label: "국내·미국주식", value: "선택 가능" },
+    ],
+  },
+  {
     slug: "salary-tier",
     title: "연봉 티어 계산기",
     description: "내 연봉을 입력하면 S·A·B·C 티어와 전체 상위 %를 즉시 확인. 70개+ 기업 영끌 연봉 비교.",

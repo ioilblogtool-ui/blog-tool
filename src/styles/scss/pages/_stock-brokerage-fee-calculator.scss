@@ -1,0 +1,294 @@
+.sbfc-page {
+  .sbfc-calculator,
+  .sbfc-results {
+    display: grid;
+    gap: 24px;
+  }
+
+  .sbfc-section {
+    display: grid;
+    gap: 12px;
+  }
+
+  .sbfc-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #374151;
+    margin: 0;
+  }
+
+  // 토글 버튼 그룹
+  .sbfc-toggle-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sbfc-toggle {
+    padding: 9px 20px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #6b7280;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+    &.active {
+      border-color: #1a56db;
+      background: #eff6ff;
+      color: #1a56db;
+    }
+  }
+
+  // 입력 그리드
+  .sbfc-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sbfc-field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .sbfc-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .sbfc-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .sbfc-input {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #111827;
+    background: #fff;
+    transition: border-color 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: #1a56db;
+    }
+  }
+
+  .sbfc-unit {
+    position: absolute;
+    right: 12px;
+    font-size: 0.875rem;
+    color: #6b7280;
+    pointer-events: none;
+  }
+
+  .sbfc-hint {
+    font-size: 0.8rem;
+    color: #6b7280;
+    min-height: 1.2em;
+  }
+
+  .sbfc-overseas-note {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #eff6ff;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #1a56db;
+  }
+
+  // 증권사 선택
+  .sbfc-broker-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sbfc-broker-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    background: #fff;
+
+    &:has(input:checked) {
+      border-color: #1a56db;
+      background: #eff6ff;
+    }
+
+    input[type="checkbox"] {
+      accent-color: #1a56db;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .sbfc-broker-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .sbfc-broker-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #0f766e;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+
+  // 요약 카드
+  .sbfc-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sbfc-card {
+    padding: 18px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    display: grid;
+    gap: 4px;
+
+    &--best {
+      border-color: #1a56db;
+      background: #eff6ff;
+    }
+  }
+
+  .sbfc-card-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 600;
+  }
+
+  .sbfc-card-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111827;
+  }
+
+  .sbfc-card--best .sbfc-card-value {
+    color: #1a56db;
+  }
+
+  .sbfc-card-sub {
+    font-size: 0.8rem;
+    color: #9ca3af;
+  }
+
+  // 테이블
+  .sbfc-table-wrap {
+    display: grid;
+    gap: 12px;
+  }
+
+  .sbfc-table-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #374151;
+    margin: 0;
+  }
+
+  .sbfc-table-container {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1.5px solid #e5e7eb;
+  }
+
+  .sbfc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    th {
+      padding: 10px 14px;
+      background: #f9fafb;
+      color: #374151;
+      font-weight: 700;
+      text-align: left;
+      border-bottom: 1.5px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f3f4f6;
+      color: #374151;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  .sbfc-row--best td {
+    background: #eff6ff;
+    font-weight: 700;
+  }
+
+  .sbfc-rank-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #1a56db;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 999px;
+    margin-right: 6px;
+  }
+
+  .sbfc-rank {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    margin-right: 6px;
+  }
+
+  .sbfc-td-fee {
+    font-weight: 700;
+    white-space: nowrap;
+    color: #111827;
+  }
+
+  .sbfc-td-fx {
+    white-space: nowrap;
+    color: #6b7280;
+  }
+
+  .sbfc-td-note {
+    font-size: 0.82rem;
+    color: #6b7280;
+    min-width: 160px;
+  }
+}

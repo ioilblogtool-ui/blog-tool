@@ -1,0 +1,202 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import { SBFC_BROKERS, SBFC_META, SBFC_FAQS } from "../../data/stockBrokerageFeeCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const configData = { brokers: SBFC_BROKERS };
+
+const faqSchema = SBFC_FAQS.map((f) => ({
+  "@type": "Question",
+  name: f.question,
+  acceptedAnswer: { "@type": "Answer", text: f.answer },
+}));
+---
+
+<BaseLayout
+  title={SBFC_META.title}
+  description={SBFC_META.description}
+  ogImage="/og/tools/stock-brokerage-fee-calculator.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "증권사 수수료 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: SBFC_META.description,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/stock-brokerage-fee-calculator/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <script
+    id="sbfcConfig"
+    type="application/json"
+    set:html={JSON.stringify(configData)}
+  />
+
+  <SimpleToolShell calculatorId="stock-brokerage-fee-calculator" pageClass="sbfc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="증권사 수수료"
+        title="증권사 수수료 계산기 2026"
+        description="1회 거래금액과 월 거래 횟수를 입력하면 주요 증권사별 연간 수수료를 자동 계산합니다. 국내주식·미국주식 중 선택하고 나에게 가장 저렴한 증권사를 바로 확인하세요."
+        stats={[
+          { label: "비교 증권사", value: `${SBFC_BROKERS.length}곳` },
+          { label: "업데이트", value: "2026.04" },
+        ]}
+      />
+      <InfoNotice
+        title="이 계산기는 참고용입니다"
+        lines={[
+          "수수료율은 2026년 4월 기준 각 증권사 이벤트·비대면 기준값입니다.",
+          "이벤트 종료, 계좌 종류, 주문 채널에 따라 실제 수수료가 다를 수 있습니다.",
+          "계좌 개설 전 각 증권사 공식 안내를 확인하세요.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="sbfcResetBtn" copyId="sbfcCopyLinkBtn" />
+    </Fragment>
+
+    <!-- 입력 패널 (aside) -->
+    <Fragment slot="aside">
+      <article class="panel sbfc-input-panel" data-sbfc-calculator>
+        <!-- 투자 유형 -->
+        <div class="sbfc-section">
+          <h2 class="sbfc-section-title">투자 유형</h2>
+          <div class="sbfc-toggle-group">
+            <button class="sbfc-toggle active" data-sbfc-type="domestic">국내주식</button>
+            <button class="sbfc-toggle" data-sbfc-type="overseas">미국주식</button>
+          </div>
+        </div>
+
+        <!-- 거래 조건 -->
+        <div class="sbfc-section">
+          <h2 class="sbfc-section-title">거래 조건</h2>
+          <div class="sbfc-field">
+            <label class="sbfc-label" for="sbfcTradeAmount">1회 거래금액</label>
+            <div class="sbfc-input-wrap">
+              <input
+                id="sbfcTradeAmount"
+                type="text"
+                class="sbfc-input"
+                data-sbfc-trade-amount
+                value="1,000,000"
+                inputmode="numeric"
+              />
+              <span class="sbfc-unit">원</span>
+            </div>
+            <div class="sbfc-hint" data-sbfc-amount-hint></div>
+          </div>
+          <div class="sbfc-field">
+            <label class="sbfc-label" for="sbfcMonthlyCount">월 거래 횟수</label>
+            <div class="sbfc-input-wrap">
+              <input
+                id="sbfcMonthlyCount"
+                type="number"
+                class="sbfc-input"
+                data-sbfc-monthly-count
+                value="4"
+                min="1"
+                max="500"
+              />
+              <span class="sbfc-unit">회</span>
+            </div>
+          </div>
+          <div class="sbfc-overseas-note" data-sbfc-overseas-note>
+            <span>미국주식: 환전 스프레드 포함 총비용 기준</span>
+          </div>
+        </div>
+
+        <!-- 증권사 선택 -->
+        <div class="sbfc-section">
+          <h2 class="sbfc-section-title">비교할 증권사</h2>
+          <div class="sbfc-broker-list" data-sbfc-broker-list>
+            {SBFC_BROKERS.map((broker) => (
+              <label class="sbfc-broker-item" data-broker-id={broker.id}>
+                <input
+                  type="checkbox"
+                  data-sbfc-broker-check={broker.id}
+                  checked={broker.defaultSelected}
+                />
+                <span class="sbfc-broker-name">{broker.name}</span>
+                {broker.badge && <span class="sbfc-broker-badge">{broker.badge}</span>}
+              </label>
+            ))}
+          </div>
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- 결과 영역 (기본 슬롯) -->
+    <div class="sbfc-results">
+      <!-- 요약 카드 -->
+      <div class="sbfc-summary-cards">
+        <div class="sbfc-card sbfc-card--best">
+          <div class="sbfc-card-label">최저 수수료 증권사</div>
+          <div class="sbfc-card-value" data-sbfc-best-broker>—</div>
+          <div class="sbfc-card-sub" data-sbfc-best-fee>—</div>
+        </div>
+        <div class="sbfc-card">
+          <div class="sbfc-card-label">연간 수수료 차이</div>
+          <div class="sbfc-card-value" data-sbfc-max-gap>—</div>
+          <div class="sbfc-card-sub">최저 vs 최고 증권사</div>
+        </div>
+        <div class="sbfc-card">
+          <div class="sbfc-card-label">연간 총 거래금액</div>
+          <div class="sbfc-card-value" data-sbfc-annual-volume>—</div>
+          <div class="sbfc-card-sub" data-sbfc-volume-desc>—</div>
+        </div>
+      </div>
+
+      <!-- 상세 테이블 -->
+      <div class="sbfc-table-wrap">
+        <h3 class="sbfc-table-title">증권사별 연간 수수료 상세</h3>
+        <div class="sbfc-table-container">
+          <table class="sbfc-table" data-sbfc-result-table>
+            <thead>
+              <tr>
+                <th>증권사</th>
+                <th>수수료율</th>
+                <th>연간 수수료</th>
+                <th data-sbfc-overseas-col>환전 포함</th>
+                <th>비고</th>
+              </tr>
+            </thead>
+            <tbody data-sbfc-table-body>
+              <!-- JS로 채움 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </SimpleToolShell>
+
+  <!-- SEO + FAQ -->
+  <SeoContent
+    introTitle="증권사 수수료 계산기 사용법"
+    intro={[
+      "증권사 수수료는 거래금액과 거래 빈도에 따라 연간 차이가 수십만 원에 달할 수 있습니다. 특히 월 거래 횟수가 많거나 거래금액이 클수록 증권사 선택이 실질 수익에 미치는 영향이 커집니다.",
+      "이 계산기는 1회 거래금액과 월 거래 횟수를 입력하면 주요 증권사별 연간 예상 수수료를 자동으로 계산합니다. 국내주식과 미국주식을 별도로 선택해 비교할 수 있으며, 미국주식은 환전 스프레드를 포함한 실질 총비용 기준으로 산출합니다.",
+      "수수료 외에도 ISA·연금 계좌 지원, 소수점 투자, 자동 투자 기능 등을 함께 고려하면 투자 스타일에 맞는 증권사를 선택하는 데 도움이 됩니다.",
+    ]}
+    faq={SBFC_FAQS.map((f) => ({ question: f.question, answer: f.answer }))}
+  />
+</BaseLayout>
+
+<script src={withBase("scripts/stock-brokerage-fee-calculator.js")} defer></script>
