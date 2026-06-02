@@ -1,0 +1,50 @@
+---
+type LinkTone = "primary" | "secondary";
+
+interface CtaLink {
+  href: string;
+  label: string;
+  tone?: LinkTone;
+}
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description: string;
+  links: CtaLink[];
+  variant?: "bonus" | "welfare" | "hub";
+  className?: string;
+}
+
+const {
+  eyebrow = "비교표",
+  title,
+  description,
+  links,
+  variant = "hub",
+  className = ""
+} = Astro.props;
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<aside class={`compare-cta compare-cta--${variant} ${className}`.trim()} aria-label={`${eyebrow} 바로가기`}>
+  <div class="compare-cta__copy">
+    <p class="compare-cta__eyebrow">{eyebrow}</p>
+    <h2>{title}</h2>
+    <p>{description}</p>
+  </div>
+  <div class="compare-cta__actions">
+    {links.map((link, index) => (
+      <a
+        class={`compare-cta__link compare-cta__link--${link.tone ?? (index === 0 ? "primary" : "secondary")}`}
+        href={withBase(link.href)}
+      >
+        {link.label}
+      </a>
+    ))}
+  </div>
+</aside>

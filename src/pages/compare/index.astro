@@ -1,0 +1,337 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  COMPARE_CATEGORIES,
+  COMPARE_ITEMS,
+  FEATURED_COMPARE_ITEM_IDS,
+  COMPARE_PRINCIPLES,
+  PLANNED_COMPARE_ITEMS,
+  COMPARE_FAQ,
+  COMPARE_SEO_INTRO,
+  COMPARE_SEO_CRITERIA,
+  type CompareItem,
+} from "../../data/compareHub";
+import { withBase } from "../../utils/base";
+
+const featuredItems = FEATURED_COMPARE_ITEM_IDS
+  .map((id) => COMPARE_ITEMS.find((item) => item.id === id))
+  .filter((item): item is CompareItem => Boolean(item));
+
+const itemsByCategory = COMPARE_CATEGORIES.map((category) => ({
+  ...category,
+  items: COMPARE_ITEMS
+    .filter((item) => item.categoryId === category.id)
+    .sort((a, b) => a.priority - b.priority),
+}));
+
+const typeLabel: Record<CompareItem["type"], string> = {
+  calculator: "계산기",
+  report: "리포트",
+  compare: "비교표",
+  planned: "준비 중",
+};
+
+const related = [
+  { href: "/tools/", label: "전체 계산기" },
+  { href: "/reports/", label: "전체 리포트" },
+  { href: "/tools/semiconductor-bonus-comparison/", label: "반도체 성과급 비교" },
+  { href: "/tools/youth-savings-maturity-calculator/", label: "청년 적금 만기 계산기" },
+];
+
+const compareIntentCards = [
+  {
+    label: "성과급",
+    title: "회사·업종별 성과급을 먼저 비교",
+    description: "삼성전자, SK하이닉스, 현대차, LG전자 성과급과 반도체·자동차·금융권 업종 비교를 한 흐름에서 봅니다.",
+    primary: { href: "/compare/bonus/", label: "성과급 비교표" },
+    secondary: { href: "/tools/bonus-after-tax-calculator/", label: "세후 계산" },
+  },
+  {
+    label: "지원금",
+    title: "청년·출산·복지 지원금을 상황별로 선택",
+    description: "청년 적금, 복지급여, 출산지원금, 육아휴직 급여처럼 조건이 다른 제도를 계산기로 이어서 확인합니다.",
+    primary: { href: "/compare/welfare/", label: "지원금 비교표" },
+    secondary: { href: "/tools/welfare-benefit-eligibility/", label: "자격 확인" },
+  },
+  {
+    label: "집·대출",
+    title: "전세·월세·대출·청약 비용을 같은 기준으로 비교",
+    description: "주거 선택은 초기자금, 월 부담, 금리, 세금이 함께 움직이므로 관련 계산기를 묶어서 봅니다.",
+    primary: { href: "#realEstate", label: "주거 비교 보기" },
+    secondary: { href: "/tools/jeonse-vs-wolse-calculator/", label: "전월세 계산" },
+  },
+];
+
+const featuredActionLinks: Record<string, { href: string; label: string }[]> = {
+  "semiconductor-bonus": [
+    { href: "/compare/bonus/", label: "성과급 허브" },
+    { href: "/tools/bonus-after-tax-calculator/", label: "세후 계산" },
+  ],
+  "youth-savings-comparison": [
+    { href: "/compare/welfare/", label: "지원금 허브" },
+    { href: "/tools/youth-savings-maturity-calculator/", label: "만기 계산" },
+  ],
+  "youth-savings-maturity": [
+    { href: "/compare/welfare/", label: "지원금 허브" },
+    { href: "/reports/youth-savings-comparison-2026/", label: "제도 비교" },
+  ],
+  "jeonse-vs-wolse": [
+    { href: "#realEstate", label: "주거 비교" },
+    { href: "/tools/home-purchase-fund/", label: "집 마련 자금" },
+  ],
+  "savings-vs-etf": [
+    { href: "#investment", label: "투자 비교" },
+    { href: "/tools/dca-investment-calculator/", label: "적립식 투자" },
+  ],
+  "new-employee-salary": [
+    { href: "#salary", label: "연봉 비교" },
+    { href: "/tools/salary/", label: "연봉 계산" },
+  ],
+};
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const absoluteUrl = (path: string) => `${siteUrl}${path.startsWith("/") ? path : `/${path}`}`;
+const pageUrl = absoluteUrl("/compare/");
+const compareJsonItems = COMPARE_ITEMS.filter((item) => !item.href.startsWith("#"));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${pageUrl}#collection`,
+      url: pageUrl,
+      name: "비교표 | 비교계산소",
+      description:
+        "연봉, 성과급, 청년지원금, 출산지원금, 부동산, 대출, ETF, 적금을 같은 기준으로 비교하고 관련 계산기로 이어지는 비교 허브입니다.",
+      inLanguage: "ko-KR",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "비교계산소",
+        url: siteUrl,
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${pageUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "홈",
+          item: absoluteUrl("/"),
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "비교표",
+          item: pageUrl,
+        },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${pageUrl}#itemlist`,
+      name: "비교계산소 주요 비교 콘텐츠",
+      itemListElement: compareJsonItems.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.title,
+        description: item.description,
+        url: absoluteUrl(item.href),
+      })),
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${pageUrl}#faq`,
+      mainEntity: COMPARE_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title="비교표｜연봉·성과급·지원금·부동산·투자 한눈에 비교"
+  description="비교계산소의 비교표 모음입니다. 연봉, 성과급, 청년지원금, 출산지원금, 부동산, 대출, ETF, 적금까지 같은 기준으로 비교하고 관련 계산기로 바로 확인하세요."
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main class="container page-shell compare-page">
+    <CalculatorHero
+      eyebrow="비교표 허브"
+      title="비교표"
+      description="연봉, 성과급, 지원금, 부동산, 투자 상품을 같은 기준으로 비교합니다. 계산기와 리포트를 오가기 전에 먼저 큰 차이를 확인하세요."
+    />
+
+    <InfoNotice
+      title="비교표 이용 기준"
+      lines={[
+        "비교표는 공개자료와 계산 모델을 기준으로 정리한 참고용 콘텐츠입니다.",
+        "실제 조건은 회사 공지, 정부 공고, 금융회사 상품설명서, 계약 조건에 따라 달라질 수 있습니다.",
+        "금액과 수익률은 공식값, 공시값, 추정값을 구분해 확인해야 합니다.",
+      ]}
+    />
+
+    <section class="compare-section compare-intent" id="start">
+      <div class="compare-section__head">
+        <p>빠른 선택</p>
+        <h2>오늘 비교하려는 주제부터 고르세요</h2>
+        <span>검색에서 바로 들어온 사용자가 성과급, 지원금, 주거 비용 중 필요한 비교표와 계산기로 바로 이동할 수 있게 묶었습니다.</span>
+      </div>
+      <div class="compare-intent-grid">
+        {compareIntentCards.map((item) => (
+          <article class="compare-intent-card">
+            <span>{item.label}</span>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-intent-card__actions">
+              <a class="compare-intent-card__primary" href={item.primary.href.startsWith("#") ? item.primary.href : withBase(item.primary.href)}>
+                {item.primary.label}
+              </a>
+              <a href={item.secondary.href.startsWith("#") ? item.secondary.href : withBase(item.secondary.href)}>
+                {item.secondary.label}
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-section compare-next-cta" id="bonus-compare">
+      <div class="compare-section__head">
+        <p>성과급 비교</p>
+        <h2>삼성전자·SK하이닉스·현대차 성과급을 먼저 비교해보세요</h2>
+        <span>성과급 검색 유입이 가장 강한 영역이라 별도 허브로 분리했습니다. 회사별 계산기와 업종별 비교 계산기를 한 번에 확인할 수 있습니다.</span>
+      </div>
+      <a href={withBase("/compare/bonus/")}>성과급 비교표 전체 보기</a>
+    </section>
+
+    <section class="compare-section compare-next-cta compare-next-cta--welfare" id="welfare-compare">
+      <div class="compare-section__head">
+        <p>지원금 비교</p>
+        <h2>청년·출산·복지 지원금을 상황별로 비교해보세요</h2>
+        <span>청년미래적금, 복지급여, 출산지원금처럼 조건이 다른 지원금은 먼저 내 상황에 맞는 계산기와 리포트를 고르는 흐름이 중요합니다.</span>
+      </div>
+      <a href={withBase("/compare/welfare/")}>지원금 비교표 전체 보기</a>
+    </section>
+
+    <section class="compare-section" id="popular">
+      <div class="compare-section__head">
+        <p>인기 비교표</p>
+        <h2>많이 찾는 비교부터 빠르게 보기</h2>
+      </div>
+      <div class="compare-featured-grid">
+        {featuredItems.map((item) => (
+          <article class="compare-card compare-card--featured">
+            <div class="compare-card__top">
+              <span class={`compare-type compare-type--${item.type}`}>{typeLabel[item.type]}</span>
+              <div class="compare-card__badges">
+                {item.badges.map((badge) => <span class={`compare-badge compare-badge--${badge.tone}`}>{badge.label}</span>)}
+              </div>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+            <div class="compare-card__stats">
+              {item.stats.map((stat) => (
+                <span><strong>{stat.value}</strong>{stat.label}</span>
+              ))}
+            </div>
+            <div class="compare-card__actions">
+              <a class="compare-card__primary" href={withBase(item.href)}>{item.ctaLabel}</a>
+              {featuredActionLinks[item.id]?.map((link) => (
+                <a class="compare-card__secondary" href={link.href.startsWith("#") ? link.href : withBase(link.href)}>{link.label}</a>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <nav class="compare-category-nav" aria-label="비교표 카테고리">
+      {COMPARE_CATEGORIES.map((category) => <a href={`#${category.id}`}>{category.title}</a>)}
+    </nav>
+
+    {itemsByCategory.map((category) => (
+      <section class="compare-section" id={category.id}>
+        <div class="compare-section__head">
+          <p>{category.criteria.join(" · ")}</p>
+          <h2>{category.title}</h2>
+          <span>{category.description}</span>
+        </div>
+        <div class="compare-card-grid">
+          {category.items.map((item) => (
+            <article class="compare-card">
+              <div class="compare-card__top">
+                <span class={`compare-type compare-type--${item.type}`}>{typeLabel[item.type]}</span>
+                <div class="compare-card__badges">
+                  {item.badges.map((badge) => <span class={`compare-badge compare-badge--${badge.tone}`}>{badge.label}</span>)}
+                </div>
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+              <div class="compare-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+              <div class="compare-card__stats">
+                {item.stats.map((stat) => (
+                  <span><strong>{stat.value}</strong>{stat.label}</span>
+                ))}
+              </div>
+              <a href={withBase(item.href)}>{item.ctaLabel}</a>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <section class="compare-section compare-principles" id="criteria">
+      <div class="compare-section__head">
+        <p>비교 기준</p>
+        <h2>비교표는 같은 기준으로 봐야 의미가 있습니다</h2>
+      </div>
+      <div class="compare-principle-grid">
+        {COMPARE_PRINCIPLES.map((principle) => (
+          <article>
+            <h3>{principle.title}</h3>
+            <ul>{principle.criteria.map((item) => <li>{item}</li>)}</ul>
+            <p>{principle.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-section" id="planned">
+      <div class="compare-section__head">
+        <p>준비 중</p>
+        <h2>다음에 확장할 비교표</h2>
+      </div>
+      <div class="compare-planned-grid">
+        {PLANNED_COMPARE_ITEMS.map((item) => (
+          <article class="compare-planned-card" aria-disabled="true">
+            <span>준비 중</span>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <small>{item.reason}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="비교표를 활용하는 기준"
+      intro={COMPARE_SEO_INTRO}
+      criteria={COMPARE_SEO_CRITERIA}
+      faq={COMPARE_FAQ}
+      related={related}
+    />
+  </main>
+</BaseLayout>

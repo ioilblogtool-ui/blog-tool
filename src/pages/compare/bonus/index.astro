@@ -1,0 +1,351 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import CalculatorHero from "../../../components/CalculatorHero.astro";
+import InfoNotice from "../../../components/InfoNotice.astro";
+import SeoContent from "../../../components/SeoContent.astro";
+import {
+  BONUS_COMPARE_QUICK_LINKS,
+  BONUS_COMPARE_POPULAR_ITEMS,
+  BONUS_COMPARE_INDUSTRY_ITEMS,
+  BONUS_COMPARE_COMPANY_ITEMS,
+  BONUS_COMPARE_REPORT_ITEMS,
+  BONUS_COMPARE_GUIDES,
+  BONUS_COMPARE_FLOW,
+  BONUS_COMPARE_SEO_INTRO,
+  BONUS_COMPARE_SEO_CRITERIA,
+  BONUS_COMPARE_FAQ,
+  type BonusCompareItem,
+} from "../../../data/compareBonus";
+import { withBase } from "../../../utils/base";
+
+const typeLabel: Record<BonusCompareItem["type"], string> = {
+  calculator: "계산기",
+  comparison: "비교표",
+  report: "리포트",
+  anchor: "바로가기",
+};
+
+const related = [
+  { href: "/compare/", label: "비교표 전체 보기" },
+  { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+  { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+  { href: "/tools/semiconductor-bonus-comparison/", label: "반도체 성과급 비교" },
+];
+
+const getCompanyPreset = (id: string) => {
+  const presetMap: Record<string, string> = {
+    "samsung-bonus": "samsung",
+    "sk-hynix-bonus": "sk-hynix",
+    "hyundai-bonus": "hyundai",
+    "lg-bonus": "lg",
+  };
+
+  return presetMap[id] ?? "";
+};
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const absoluteUrl = (path: string) => `${siteUrl}${path.startsWith("/") ? path : `/${path}`}`;
+const pageUrl = absoluteUrl("/compare/bonus/");
+const bonusJsonItems = [
+  ...BONUS_COMPARE_QUICK_LINKS,
+  ...BONUS_COMPARE_POPULAR_ITEMS,
+  ...BONUS_COMPARE_INDUSTRY_ITEMS,
+  ...BONUS_COMPARE_COMPANY_ITEMS,
+  ...BONUS_COMPARE_REPORT_ITEMS,
+].filter((item) => !item.href.startsWith("#"));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${pageUrl}#collection`,
+      url: pageUrl,
+      name: "성과급 비교표 | 비교계산소",
+      description:
+        "삼성전자, SK하이닉스, 현대차, LG전자 등 회사별 성과급 계산기와 업종별 성과급 비교표를 모은 성과급 비교 허브입니다.",
+      inLanguage: "ko-KR",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "비교계산소",
+        url: siteUrl,
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${pageUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "홈",
+          item: absoluteUrl("/"),
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "비교표",
+          item: absoluteUrl("/compare/"),
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "성과급 비교표",
+          item: pageUrl,
+        },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${pageUrl}#itemlist`,
+      name: "성과급 비교 계산기와 리포트",
+      itemListElement: bonusJsonItems.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.title,
+        description: item.description,
+        url: absoluteUrl(item.href),
+      })),
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${pageUrl}#faq`,
+      mainEntity: BONUS_COMPARE_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title="성과급 비교표｜삼성전자·SK하이닉스·현대차·LG전자 성과급 계산기"
+  description="대기업 성과급 계산기와 업종별 성과급 비교표를 모았습니다. 삼성전자, SK하이닉스, 현대차, LG전자, 반도체, 자동차, 정유사, 금융권, 조선업 성과급을 세전·세후 기준으로 비교해보세요."
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main class="container page-shell compare-bonus-page">
+    <CalculatorHero
+      eyebrow="성과급 비교표"
+      title="성과급 비교표"
+      description="삼성전자, SK하이닉스, 현대차, LG전자처럼 많이 찾는 회사별 성과급 계산기와 반도체·자동차·정유사·금융권·조선업 업종별 성과급 비교를 한 화면에서 확인하세요."
+    />
+
+    <div class="compare-bonus-hero-actions" aria-label="성과급 비교 빠른 실행">
+      <a class="compare-bonus-primary" href={withBase("/tools/bonus-simulator/")}>대기업 성과급 계산하기</a>
+      <a href={withBase("/tools/bonus-after-tax-calculator/")}>세후 실수령액 계산하기</a>
+      <a href={withBase("/tools/semiconductor-bonus-comparison/")}>반도체 성과급 비교</a>
+    </div>
+
+    <InfoNotice
+      title="성과급 비교 기준"
+      lines={[
+        "성과급 비교표는 공개자료와 계산 모델을 바탕으로 정리한 참고용 콘텐츠입니다.",
+        "실제 지급액은 회사 공지, 사업부, 직급, 평가, 근속, 지급 시점, 개인 과세 조건에 따라 달라질 수 있습니다.",
+        "세전 성과급과 세후 실수령액을 구분하고, 협의금·격려금·상품권·주식 보상은 별도로 확인하는 것이 좋습니다.",
+      ]}
+    />
+
+    <section class="compare-bonus-section" id="quick">
+      <div class="compare-bonus-section__head">
+        <p>빠른 선택</p>
+        <h2>지금 필요한 성과급 계산으로 바로 이동</h2>
+        <span>회사명이 정해져 있으면 회사별 계산기를, 업종 차이를 보고 싶으면 업종별 비교 계산기를 먼저 선택하세요.</span>
+      </div>
+      <div class="compare-bonus-grid compare-bonus-grid--quick">
+        {BONUS_COMPARE_QUICK_LINKS.map((item) => (
+          <article class="compare-bonus-card compare-bonus-card--quick">
+            <div class="compare-bonus-card__top">
+              <span class={`compare-bonus-type compare-bonus-type--${item.type}`}>{typeLabel[item.type]}</span>
+              <div class="compare-bonus-card__badges">
+                {item.badges.map((badge) => <span class={`compare-bonus-badge compare-bonus-badge--${badge.tone}`}>{badge.label}</span>)}
+              </div>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-bonus-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+            <a href={item.href.startsWith("#") ? item.href : withBase(item.href)}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-bonus-section" id="popular">
+      <div class="compare-bonus-section__head">
+        <p>인기 계산기</p>
+        <h2>가장 많이 찾는 성과급 계산기</h2>
+        <span>삼성전자와 SK하이닉스 검색 유입을 중심으로, 세후 실수령액 계산까지 이어지도록 배치했습니다.</span>
+      </div>
+      <div class="compare-bonus-grid">
+        {BONUS_COMPARE_POPULAR_ITEMS.map((item) => (
+          <article class="compare-bonus-card compare-bonus-card--featured">
+            <div class="compare-bonus-card__top">
+              <span class={`compare-bonus-type compare-bonus-type--${item.type}`}>{typeLabel[item.type]}</span>
+              <div class="compare-bonus-card__badges">
+                {item.badges.map((badge) => <span class={`compare-bonus-badge compare-bonus-badge--${badge.tone}`}>{badge.label}</span>)}
+              </div>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-bonus-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+            <a href={withBase(item.href)}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-bonus-section" id="industry">
+      <div class="compare-bonus-section__head">
+        <p>업종별 비교</p>
+        <h2>반도체부터 조선업까지 성과급을 같은 기준으로 비교</h2>
+        <span>회사별 계산기가 없더라도 업종별 비교 계산기를 먼저 보면 성과급 구조를 빠르게 파악할 수 있습니다.</span>
+      </div>
+      <div class="compare-bonus-table-wrap">
+        <table class="compare-bonus-table">
+          <thead>
+            <tr>
+              <th>업종</th>
+              <th>비교 계산기</th>
+              <th>비교 대상</th>
+              <th>이동</th>
+            </tr>
+          </thead>
+          <tbody>
+            {BONUS_COMPARE_INDUSTRY_ITEMS.map((item) => (
+              <tr>
+                <td>{item.criteria[0]}</td>
+                <td>
+                  <strong>{item.title}</strong>
+                  <span>{item.description}</span>
+                </td>
+                <td>{item.criteria.join(", ")}</td>
+                <td><a href={withBase(item.href)}>{item.ctaLabel}</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="compare-bonus-section" id="company">
+      <div class="compare-bonus-section__head">
+        <p>회사별 계산기</p>
+        <h2>회사명을 알고 있다면 개별 계산기로 바로 확인</h2>
+        <span>회사별 성과급 명칭과 지급 구조가 다르므로, 먼저 개별 계산기로 세전 금액을 확인한 뒤 세후 계산으로 이어가는 흐름이 좋습니다.</span>
+      </div>
+      <div class="compare-bonus-company-guide">
+        <article>
+          <strong>1. 회사 계산기 선택</strong>
+          <span>삼성전자, SK하이닉스, 현대차, LG전자처럼 검색 수요가 큰 회사부터 바로 진입합니다.</span>
+        </article>
+        <article>
+          <strong>2. 세전 성과급 확인</strong>
+          <span>OPI, PS, 임단협 격려금처럼 회사별 산식에 맞춰 예상 지급액을 먼저 계산합니다.</span>
+        </article>
+        <article>
+          <strong>3. 세후 실수령액 재계산</strong>
+          <span>소득세와 4대보험 차이를 반영해 실제 통장 입금액 기준으로 다시 봅니다.</span>
+        </article>
+        <a href={withBase("/tools/bonus-after-tax-calculator/")}>세후 계산기 열기</a>
+      </div>
+      <div class="compare-bonus-company-list">
+        {BONUS_COMPARE_COMPANY_ITEMS.map((item) => {
+          const companyPreset = getCompanyPreset(item.id);
+          const afterTaxHref = companyPreset
+            ? `/tools/bonus-after-tax-calculator/?company=${companyPreset}`
+            : "/tools/bonus-after-tax-calculator/";
+
+          return (
+            <article class="compare-bonus-company-card">
+              <div class="compare-bonus-company-card__copy">
+                <div class="compare-bonus-company-card__top">
+                  <span>{item.badges[0]?.label ?? "회사별"}</span>
+                  <div class="compare-bonus-company-card__criteria">
+                    {item.criteria.map((criterion) => <em>{criterion}</em>)}
+                  </div>
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+              <div class="compare-bonus-company-card__actions">
+                <a class="compare-bonus-company-card__primary" href={withBase(item.href)}>{item.ctaLabel}</a>
+                <a class="compare-bonus-company-card__secondary" href={withBase(afterTaxHref)}>세후 계산</a>
+              </div>
+            </article>
+          );
+        })}
+            </div>
+    </section>
+
+    <section class="compare-bonus-section compare-bonus-flow" id="after-tax">
+      <div class="compare-bonus-section__head">
+        <p>세후 계산 흐름</p>
+        <h2>성과급은 세전보다 통장 입금액 기준으로 다시 봐야 합니다</h2>
+        <span>세전 성과급을 확인했다면 소득세, 지방소득세, 4대보험을 반영한 세후 실수령액까지 이어서 계산하세요.</span>
+      </div>
+      <ol>
+        {BONUS_COMPARE_FLOW.map((step, index) => (
+          <li>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <a class="compare-bonus-primary" href={withBase("/tools/bonus-after-tax-calculator/")}>세후 실수령액 계산기로 이동</a>
+    </section>
+
+    <section class="compare-bonus-section" id="criteria">
+      <div class="compare-bonus-section__head">
+        <p>비교 기준</p>
+        <h2>성과급 비교표를 볼 때 확인할 기준</h2>
+      </div>
+      <div class="compare-bonus-guide-grid">
+        {BONUS_COMPARE_GUIDES.map((guide) => (
+          <article>
+            <h3>{guide.title}</h3>
+            <p>{guide.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-bonus-section" id="reports">
+      <div class="compare-bonus-section__head">
+        <p>관련 리포트</p>
+        <h2>성과급 구조와 시장 흐름을 더 자세히 보기</h2>
+      </div>
+      <div class="compare-bonus-grid compare-bonus-grid--reports">
+        {BONUS_COMPARE_REPORT_ITEMS.map((item) => (
+          <article class="compare-bonus-card">
+            <div class="compare-bonus-card__top">
+              <span class={`compare-bonus-type compare-bonus-type--${item.type}`}>{typeLabel[item.type]}</span>
+              <div class="compare-bonus-card__badges">
+                {item.badges.map((badge) => <span class={`compare-bonus-badge compare-bonus-badge--${badge.tone}`}>{badge.label}</span>)}
+              </div>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-bonus-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+            <a href={withBase(item.href)}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="성과급 비교표를 사용하는 기준"
+      intro={BONUS_COMPARE_SEO_INTRO}
+      criteria={BONUS_COMPARE_SEO_CRITERIA}
+      faq={BONUS_COMPARE_FAQ}
+      related={related}
+    />
+  </main>
+</BaseLayout>

@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
 import { reports } from "../../data/reports";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
@@ -817,6 +818,17 @@ const reportFaqJsonLd = {
         <span class="reports-hero-stat__label">업데이트</span>
       </div>
     </div>
+
+    <CompareCta
+      variant="hub"
+      title="리포트에서 본 숫자를 비교표로 이어서 확인하세요"
+      description="리포트는 맥락을 읽는 페이지, 비교표는 선택지를 빠르게 좁히는 페이지입니다. 성과급과 지원금 주제는 비교표 허브에서 바로 이어볼 수 있습니다."
+      links={[
+        { href: "/compare/", label: "비교표 전체 보기" },
+        { href: "/compare/bonus/", label: "성과급 비교표" },
+        { href: "/compare/welfare/", label: "지원금 비교표" },
+      ]}
+    />
 
     <section class="reports-intro">
       <div class="reports-intro__lead">

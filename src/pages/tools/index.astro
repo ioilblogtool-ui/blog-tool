@@ -3,6 +3,7 @@ import { tools } from "../../data/tools";
 import { reports } from "../../data/reports";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
+import CompareCta from "../../components/CompareCta.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -423,6 +424,17 @@ const toolLibraryScript = `
         ))}
       </div>
     </section>
+
+    <CompareCta
+      variant="hub"
+      title="계산기를 고르기 전 비교표에서 먼저 좁혀보세요"
+      description="성과급, 청년·복지 지원금처럼 선택지가 많은 주제는 비교표 허브에서 전체 구조를 보고 필요한 계산기로 들어가면 더 빠릅니다."
+      links={[
+        { href: "/compare/", label: "비교표 전체 보기" },
+        { href: "/compare/bonus/", label: "성과급 비교표" },
+        { href: "/compare/welfare/", label: "지원금 비교표" },
+      ]}
+    />
 
     <section class="tl-toolbar">
       <div class="tl-toolbar__search">

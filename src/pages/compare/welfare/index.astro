@@ -1,0 +1,431 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import CalculatorHero from "../../../components/CalculatorHero.astro";
+import InfoNotice from "../../../components/InfoNotice.astro";
+import SeoContent from "../../../components/SeoContent.astro";
+import {
+  WELFARE_COMPARE_QUICK_LINKS,
+  WELFARE_COMPARE_YOUTH_ITEMS,
+  WELFARE_COMPARE_FAMILY_ITEMS,
+  WELFARE_COMPARE_BENEFIT_ITEMS,
+  WELFARE_COMPARE_HOUSING_ITEMS,
+  WELFARE_COMPARE_REPORT_ITEMS,
+  WELFARE_COMPARE_GUIDES,
+  WELFARE_COMPARE_FLOW,
+  WELFARE_COMPARE_SEO_INTRO,
+  WELFARE_COMPARE_SEO_CRITERIA,
+  WELFARE_COMPARE_FAQ,
+  type WelfareCompareItem,
+} from "../../../data/compareWelfare";
+import { withBase } from "../../../utils/base";
+
+const typeLabel: Record<WelfareCompareItem["type"], string> = {
+  calculator: "계산기",
+  report: "리포트",
+  comparison: "비교표",
+  anchor: "바로가기",
+};
+
+const related = [
+  { href: "/compare/", label: "비교표 전체 보기" },
+  { href: "/tools/youth-savings-maturity-calculator/", label: "청년 적금 만기 수령액 계산기" },
+  { href: "/tools/welfare-benefit-eligibility/", label: "복지급여 수급 자격 계산기" },
+  { href: "/tools/birth-support-total/", label: "출산~2세 지원금 계산기" },
+];
+
+const situationCards = [
+  {
+    label: "청년",
+    title: "청년 적금·자산형성 지원",
+    description: "청년미래적금, 청년도약계좌, 일반 적금의 만기 수령액과 정부기여금 차이를 먼저 확인합니다.",
+    primary: { href: "/tools/youth-savings-maturity-calculator/", label: "만기 수령액 계산" },
+    secondary: { href: "/reports/youth-savings-comparison-2026/", label: "제도 비교" },
+  },
+  {
+    label: "출산·육아",
+    title: "출산지원금과 육아휴직 급여",
+    description: "출산 직후부터 2세까지 지원금, 육아휴직 급여, 산후도우미 비용을 같은 흐름에서 봅니다.",
+    primary: { href: "/tools/birth-support-total/", label: "출산지원금 계산" },
+    secondary: { href: "/tools/parental-leave-pay/", label: "육아휴직 급여" },
+  },
+  {
+    label: "복지",
+    title: "복지급여 자격과 공식 공고",
+    description: "가구원 수, 소득, 자산 기준으로 복지급여 가능성을 먼저 점검하고 공식 지원금 리포트로 이어갑니다.",
+    primary: { href: "/tools/welfare-benefit-eligibility/", label: "자격 확인" },
+    secondary: { href: "/reports/2026-government-welfare-benefits/", label: "지원금 리포트" },
+  },
+  {
+    label: "주거",
+    title: "주거자금·청약·대출 비교",
+    description: "지원금 확인 이후 집 마련 자금, 직장인 대출, 신혼부부 주거 선택까지 이어서 비교합니다.",
+    primary: { href: "/tools/home-purchase-fund/", label: "집 마련 자금" },
+    secondary: { href: "/tools/apt-cheonyak-gajum-calculator/", label: "청약 가점" },
+  },
+];
+
+const youthActionLinks = [
+  { href: "/tools/youth-savings-maturity-calculator/", label: "만기 수령액 계산" },
+  { href: "/reports/youth-future-savings-2026/", label: "청년미래적금 조건" },
+  { href: "/reports/youth-savings-comparison-2026/", label: "청년 적금 비교" },
+];
+
+const familyActionLinks = [
+  { href: "/tools/birth-support-total/", label: "출산~2세 지원금" },
+  { href: "/tools/parental-leave-pay/", label: "육아휴직 급여" },
+  { href: "/tools/postnatal-care-cost/", label: "산후도우미 비용" },
+];
+
+const benefitActionLinks = [
+  { href: "/tools/welfare-benefit-eligibility/", label: "복지급여 자격" },
+  { href: "/reports/2026-government-welfare-benefits/", label: "정부 지원금 리포트" },
+];
+
+const housingActionLinks = [
+  { href: "/tools/home-purchase-fund/", label: "집 마련 자금" },
+  { href: "/tools/apt-cheonyak-gajum-calculator/", label: "청약 가점" },
+  { href: "/reports/2026-salaried-loan-comparison/", label: "직장인 대출 비교" },
+];
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const absoluteUrl = (path: string) => `${siteUrl}${path.startsWith("/") ? path : `/${path}`}`;
+const pageUrl = absoluteUrl("/compare/welfare/");
+const welfareJsonItems = [
+  ...WELFARE_COMPARE_QUICK_LINKS,
+  ...WELFARE_COMPARE_YOUTH_ITEMS,
+  ...WELFARE_COMPARE_FAMILY_ITEMS,
+  ...WELFARE_COMPARE_BENEFIT_ITEMS,
+  ...WELFARE_COMPARE_HOUSING_ITEMS,
+  ...WELFARE_COMPARE_REPORT_ITEMS,
+].filter((item) => !item.href.startsWith("#"));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${pageUrl}#collection`,
+      url: pageUrl,
+      name: "지원금 비교표 | 비교계산소",
+      description:
+        "청년미래적금, 청년도약계좌, 복지급여, 출산지원금, 육아휴직 급여, 주거지원 계산기와 리포트를 상황별로 묶은 지원금 비교 허브입니다.",
+      inLanguage: "ko-KR",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "비교계산소",
+        url: siteUrl,
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${pageUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "홈",
+          item: absoluteUrl("/"),
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "비교표",
+          item: absoluteUrl("/compare/"),
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "지원금 비교표",
+          item: pageUrl,
+        },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${pageUrl}#itemlist`,
+      name: "지원금 비교 계산기와 리포트",
+      itemListElement: welfareJsonItems.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.title,
+        description: item.description,
+        url: absoluteUrl(item.href),
+      })),
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${pageUrl}#faq`,
+      mainEntity: WELFARE_COMPARE_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title="지원금 비교표｜청년미래적금·청년도약계좌·복지급여·출산지원금 계산기"
+  description="청년미래적금, 청년도약계좌, 복지급여, 출산지원금, 육아휴직 급여, 산후도우미 비용까지 지원금 계산기와 리포트를 한눈에 비교하세요."
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main class="container page-shell compare-welfare-page">
+    <CalculatorHero
+      eyebrow="지원금 비교표"
+      title="지원금 비교표"
+      description="청년미래적금, 청년도약계좌, 복지급여, 출산지원금, 육아휴직 급여처럼 조건이 다른 지원금을 상황별로 비교하고 관련 계산기와 리포트로 바로 이동하세요."
+    />
+
+    <div class="compare-welfare-hero-actions" aria-label="지원금 비교 빠른 실행">
+      <a class="compare-welfare-primary" href={withBase("/tools/youth-savings-maturity-calculator/")}>청년 적금 만기 계산</a>
+      <a href={withBase("/tools/welfare-benefit-eligibility/")}>복지급여 자격 확인</a>
+      <a href={withBase("/tools/birth-support-total/")}>출산지원금 계산</a>
+    </div>
+
+    <InfoNotice
+      title="지원금 비교 기준"
+      lines={[
+        "지원금 비교표는 공개 공고와 계산 모델을 바탕으로 정리한 참고용 콘텐츠입니다.",
+        "실제 신청 가능 여부와 지급액은 정부 공고, 지자체 안내, 금융기관 상품설명서, 개인별 심사 결과를 기준으로 확인해야 합니다.",
+        "청년·출산·복지 지원금은 나이, 소득, 거주지, 신청 기간, 중복 수급 조건에 따라 결과가 달라질 수 있습니다.",
+      ]}
+    />
+
+    <section class="compare-welfare-section compare-welfare-situation" id="situation">
+      <div class="compare-welfare-section__head">
+        <p>상황별 선택</p>
+        <h2>내 상황에 맞는 지원금 계산기부터 여세요</h2>
+        <span>지원금은 나이, 소득, 가구원 수, 거주지, 신청 기간에 따라 달라집니다. 먼저 상황을 고른 뒤 계산기와 리포트로 이어서 확인하세요.</span>
+      </div>
+      <div class="compare-welfare-situation-grid">
+        {situationCards.map((item) => (
+          <article class="compare-welfare-situation-card">
+            <span>{item.label}</span>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-welfare-action-row">
+              <a class="compare-welfare-action-row__primary" href={withBase(item.primary.href)}>{item.primary.label}</a>
+              <a href={withBase(item.secondary.href)}>{item.secondary.label}</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-welfare-section" id="quick">
+      <div class="compare-welfare-section__head">
+        <p>빠른 선택</p>
+        <h2>내 상황에 맞는 지원금 계산기로 바로 이동</h2>
+        <span>청년 자산형성, 복지급여, 출산·육아, 산후 비용 중 지금 확인해야 하는 항목을 먼저 선택하세요.</span>
+      </div>
+      <div class="compare-welfare-grid compare-welfare-grid--quick">
+        {WELFARE_COMPARE_QUICK_LINKS.map((item) => (
+          <article class="compare-welfare-card compare-welfare-card--quick">
+            <div class="compare-welfare-card__top">
+              <span class={`compare-welfare-type compare-welfare-type--${item.type}`}>{typeLabel[item.type]}</span>
+              <div class="compare-welfare-card__badges">
+                {item.badges.map((badge) => <span class={`compare-welfare-badge compare-welfare-badge--${badge.tone}`}>{badge.label}</span>)}
+              </div>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-welfare-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+            <a href={item.href.startsWith("#") ? item.href : withBase(item.href)}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-welfare-section" id="youth">
+      <div class="compare-welfare-section__head">
+        <p>청년 지원금</p>
+        <h2>청년미래적금·청년도약계좌를 만기 수령액 기준으로 비교</h2>
+        <span>청년 지원금은 가입 조건, 월 납입액, 정부기여금, 비과세 여부를 함께 봐야 실제 차이가 보입니다.</span>
+      </div>
+      <div class="compare-welfare-section-actions" aria-label="청년 지원금 바로가기">
+        {youthActionLinks.map((link, index) => (
+          <a class={index === 0 ? "compare-welfare-primary" : ""} href={withBase(link.href)}>{link.label}</a>
+        ))}
+      </div>
+      <div class="compare-welfare-grid">
+        {WELFARE_COMPARE_YOUTH_ITEMS.map((item) => (
+          <article class="compare-welfare-card compare-welfare-card--featured">
+            <div class="compare-welfare-card__top">
+              <span class={`compare-welfare-type compare-welfare-type--${item.type}`}>{typeLabel[item.type]}</span>
+              <div class="compare-welfare-card__badges">
+                {item.badges.map((badge) => <span class={`compare-welfare-badge compare-welfare-badge--${badge.tone}`}>{badge.label}</span>)}
+              </div>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-welfare-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+            <a href={withBase(item.href)}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-welfare-section" id="family">
+      <div class="compare-welfare-section__head">
+        <p>출산·육아 지원금</p>
+        <h2>받는 지원금과 나가는 비용을 같은 흐름에서 확인</h2>
+        <span>출산·육아 지원금은 지원금, 휴직 급여, 산후도우미 비용, 임신·출산 비용을 함께 봐야 실제 가계 부담을 판단할 수 있습니다.</span>
+      </div>
+      <div class="compare-welfare-section-actions" aria-label="출산 육아 지원금 바로가기">
+        {familyActionLinks.map((link, index) => (
+          <a class={index === 0 ? "compare-welfare-primary" : ""} href={withBase(link.href)}>{link.label}</a>
+        ))}
+      </div>
+      <div class="compare-welfare-table-wrap">
+        <table class="compare-welfare-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>계산기</th>
+              <th>확인 기준</th>
+              <th>이동</th>
+            </tr>
+          </thead>
+          <tbody>
+            {WELFARE_COMPARE_FAMILY_ITEMS.map((item) => (
+              <tr>
+                <td>{item.badges[0]?.label ?? "출산·육아"}</td>
+                <td>
+                  <strong>{item.title}</strong>
+                  <span>{item.description}</span>
+                </td>
+                <td>{item.criteria.join(", ")}</td>
+                <td><a href={withBase(item.href)}>{item.ctaLabel}</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="compare-welfare-section" id="benefit">
+      <div class="compare-welfare-section__head">
+        <p>복지급여·정부지원금</p>
+        <h2>복지급여는 계산기와 공식 공고를 함께 확인</h2>
+        <span>복지급여는 개인 상황별 조건이 강하므로 계산기 결과를 참고하고, 최종 판단은 공식 심사 결과를 기준으로 해야 합니다.</span>
+      </div>
+      <div class="compare-welfare-section-actions" aria-label="복지급여 바로가기">
+        {benefitActionLinks.map((link, index) => (
+          <a class={index === 0 ? "compare-welfare-primary" : ""} href={withBase(link.href)}>{link.label}</a>
+        ))}
+      </div>
+      <div class="compare-welfare-grid compare-welfare-grid--benefit">
+        {WELFARE_COMPARE_BENEFIT_ITEMS.map((item) => (
+          <article class="compare-welfare-card">
+            <div class="compare-welfare-card__top">
+              <span class={`compare-welfare-type compare-welfare-type--${item.type}`}>{typeLabel[item.type]}</span>
+              <div class="compare-welfare-card__badges">
+                {item.badges.map((badge) => <span class={`compare-welfare-badge compare-welfare-badge--${badge.tone}`}>{badge.label}</span>)}
+              </div>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-welfare-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+            <a href={withBase(item.href)}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-welfare-section" id="housing">
+      <div class="compare-welfare-section__head">
+        <p>주거·정책금융</p>
+        <h2>지원금 이후 주거 자금 흐름까지 연결</h2>
+        <span>초기에는 주거 지원을 별도 하위 페이지로 분리하지 않고 정책금융과 주거 계산기로 이어줍니다.</span>
+      </div>
+      <div class="compare-welfare-section-actions" aria-label="주거 지원 바로가기">
+        {housingActionLinks.map((link, index) => (
+          <a class={index === 0 ? "compare-welfare-primary" : ""} href={withBase(link.href)}>{link.label}</a>
+        ))}
+      </div>
+      <div class="compare-welfare-mini-list">
+        {WELFARE_COMPARE_HOUSING_ITEMS.map((item) => (
+          <article>
+            <div>
+              <span>{item.badges[0]?.label ?? "주거"}</span>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </div>
+            <a href={withBase(item.href)}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-welfare-section compare-welfare-flow" id="flow">
+      <div class="compare-welfare-section__head">
+        <p>확인 순서</p>
+        <h2>지원금은 조건 확인 후 공식 공고까지 이어서 봐야 합니다</h2>
+        <span>계산기는 빠른 판단을 돕는 도구이고, 실제 신청 가능 여부는 공식 공고와 심사 결과가 기준입니다.</span>
+      </div>
+      <ol>
+        {WELFARE_COMPARE_FLOW.map((step, index) => (
+          <li>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <a class="compare-welfare-primary" href={withBase("/reports/2026-government-welfare-benefits/")}>정부 복지지원금 리포트 보기</a>
+    </section>
+
+    <section class="compare-welfare-section" id="criteria">
+      <div class="compare-welfare-section__head">
+        <p>비교 기준</p>
+        <h2>지원금 비교표를 볼 때 확인할 기준</h2>
+      </div>
+      <div class="compare-welfare-guide-grid">
+        {WELFARE_COMPARE_GUIDES.map((guide) => (
+          <article>
+            <h3>{guide.title}</h3>
+            <p>{guide.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="compare-welfare-section" id="reports">
+      <div class="compare-welfare-section__head">
+        <p>관련 리포트</p>
+        <h2>지역별·상황별 지원금 리포트 더 보기</h2>
+      </div>
+      <div class="compare-welfare-grid compare-welfare-grid--reports">
+        {WELFARE_COMPARE_REPORT_ITEMS.map((item) => (
+          <article class="compare-welfare-card">
+            <div class="compare-welfare-card__top">
+              <span class={`compare-welfare-type compare-welfare-type--${item.type}`}>{typeLabel[item.type]}</span>
+              <div class="compare-welfare-card__badges">
+                {item.badges.map((badge) => <span class={`compare-welfare-badge compare-welfare-badge--${badge.tone}`}>{badge.label}</span>)}
+              </div>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="compare-welfare-card__criteria">{item.criteria.map((criterion) => <span>{criterion}</span>)}</div>
+            <a href={withBase(item.href)}>{item.ctaLabel}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="지원금 비교표를 사용하는 기준"
+      intro={WELFARE_COMPARE_SEO_INTRO}
+      criteria={WELFARE_COMPARE_SEO_CRITERIA}
+      faq={WELFARE_COMPARE_FAQ}
+      related={related}
+    />
+  </main>
+</BaseLayout>

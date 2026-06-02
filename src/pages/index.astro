@@ -200,6 +200,41 @@ const reportCategoryLabels: Record<HomeReportCategory, string> = {
 const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "bonus", "estate", "asset", "life", "support", "insurance", "tax", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
+const homeCompareCards = [
+  {
+    href: "/compare/bonus/",
+    label: "성과급 비교",
+    title: "성과급 비교표",
+    desc: "삼성전자, SK하이닉스, 현대차, LG전자와 업종별 성과급 계산기를 한 화면에서 비교합니다.",
+    meta: ["회사별", "업종별", "세후 계산"],
+    featured: true,
+  },
+  {
+    href: "/compare/welfare/",
+    label: "지원제도 비교",
+    title: "지원제도 비교표",
+    desc: "청년, 출산, 육아, 복지 지원금 계산기와 리포트를 상황별로 묶어 확인합니다.",
+    meta: ["청년", "출산", "육아"],
+    featured: false,
+  },
+  {
+    href: "/tools/semiconductor-bonus-comparison/",
+    label: "업종별 비교",
+    title: "반도체 성과급 비교",
+    desc: "삼성전자, SK하이닉스, DB하이텍 등 반도체 기업 성과급 구조를 비교합니다.",
+    meta: ["삼성전자", "하이닉스", "DB하이텍"],
+    featured: false,
+  },
+  {
+    href: "/tools/auto-bonus-comparison/",
+    label: "업종별 비교",
+    title: "자동차 성과급 비교",
+    desc: "현대차, 기아, 현대모비스 성과급을 같은 기준으로 이어서 비교합니다.",
+    meta: ["현대차", "기아", "모비스"],
+    featured: false,
+  },
+];
+
 const homeIntroPoints = [
   {
     title: "빠른 계산",
@@ -449,6 +484,29 @@ const homeFaqJsonLd = {
           </div>
           <span class="home-feat-card__link">→</span>
         </a>
+      </div>
+    </section>
+
+    <section class="home-section home-compare">
+      <div class="home-section__head home-section__head--stack">
+        <div>
+          <p class="home-section__eyebrow">비교표</p>
+          <h2>계산기 결과를 비교표로 한 번 더 확인하세요</h2>
+        </div>
+        <p class="home-section__summary">개별 계산기에서 숫자를 확인한 뒤, 회사별·업종별·지원제도별 차이를 한 화면에서 비교할 수 있도록 묶었습니다.</p>
+      </div>
+      <div class="home-compare-grid">
+        {homeCompareCards.map((item) => (
+          <a class={`home-compare-card${item.featured ? " home-compare-card--featured" : ""}`} href={withBase(item.href)}>
+            <span class="home-compare-card__label">{item.label}</span>
+            <strong>{item.title}</strong>
+            <p>{item.desc}</p>
+            <div class="home-compare-card__meta">
+              {item.meta.map((meta) => <span>{meta}</span>)}
+            </div>
+            <em>바로 보기 →</em>
+          </a>
+        ))}
       </div>
     </section>
 
