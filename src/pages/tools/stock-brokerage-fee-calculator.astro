@@ -6,7 +6,7 @@ import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import SimpleToolShell from "../../components/SimpleToolShell.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
-import { SBFC_BROKERS, SBFC_META, SBFC_FAQS } from "../../data/stockBrokerageFeeCalculator";
+import { SBFC_BROKERS, SBFC_META, SBFC_FAQS, SBFC_TRANSACTION_TAX } from "../../data/stockBrokerageFeeCalculator";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -145,6 +145,33 @@ const faqSchema = SBFC_FAQS.map((f) => ({
 
     <!-- 결과 영역 (기본 슬롯) -->
     <div class="sbfc-results">
+
+      <!-- 1회 매도 수수료 빠른 계산 -->
+      <div class="sbfc-sell-section">
+        <h3 class="sbfc-sell-title">1회 매도 수수료 즉시 계산</h3>
+        <p class="sbfc-sell-desc">입력한 거래금액 기준, 선택된 첫 번째 증권사로 1회 매도 시 발생하는 비용을 상세 분류합니다.</p>
+        <div class="sbfc-sell-cards">
+          <div class="sbfc-sell-card">
+            <span class="sbfc-sell-label">매매수수료</span>
+            <span class="sbfc-sell-value" data-sbfc-sell-commission>—</span>
+          </div>
+          <div class="sbfc-sell-card">
+            <span class="sbfc-sell-label">유관기관 제비용</span>
+            <span class="sbfc-sell-value" data-sbfc-sell-agency>—</span>
+            <span class="sbfc-sell-note">약 0.004%</span>
+          </div>
+          <div class="sbfc-sell-card sbfc-sell-card--tax" data-sbfc-sell-tax-wrap>
+            <span class="sbfc-sell-label">증권거래세 (매도)</span>
+            <span class="sbfc-sell-value" data-sbfc-sell-tax>—</span>
+            <span class="sbfc-sell-note">{SBFC_TRANSACTION_TAX.label} · {SBFC_TRANSACTION_TAX.note}</span>
+          </div>
+          <div class="sbfc-sell-card sbfc-sell-card--total">
+            <span class="sbfc-sell-label">1회 매도 총비용</span>
+            <span class="sbfc-sell-value" data-sbfc-sell-total>—</span>
+            <span class="sbfc-sell-note" data-sbfc-sell-broker-name>—</span>
+          </div>
+        </div>
+      </div>
       <!-- 요약 카드 -->
       <div class="sbfc-summary-cards">
         <div class="sbfc-card sbfc-card--best">

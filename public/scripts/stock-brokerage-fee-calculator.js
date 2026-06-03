@@ -7,6 +7,7 @@
   if (!Array.isArray(brokers) || brokers.length === 0) return;
 
   const AGENCY_FEE_RATE = 0.000041; // 유관기관 제비용 (국내주식)
+  const TRANSACTION_TAX_RATE = 0.0018; // 증권거래세 (국내주식 매도)
 
   const state = {
     type: "domestic",
@@ -29,6 +30,13 @@
     annualVolume: document.querySelector("[data-sbfc-annual-volume]"),
     volumeDesc: document.querySelector("[data-sbfc-volume-desc]"),
     tableBody: document.querySelector("[data-sbfc-table-body]"),
+    // 1회 매도 수수료
+    sellCommission: document.querySelector("[data-sbfc-sell-commission]"),
+    sellAgency: document.querySelector("[data-sbfc-sell-agency]"),
+    sellTax: document.querySelector("[data-sbfc-sell-tax]"),
+    sellTaxWrap: document.querySelector("[data-sbfc-sell-tax-wrap]"),
+    sellTotal: document.querySelector("[data-sbfc-sell-total]"),
+    sellBrokerName: document.querySelector("[data-sbfc-sell-broker-name]"),
     resetBtn: document.getElementById("sbfcResetBtn"),
     copyBtn: document.getElementById("sbfcCopyLinkBtn"),
   };
@@ -112,6 +120,25 @@
           `;
         })
         .join("");
+    }
+
+    // 1회 매도 수수료 계산 (선택된 증권사 중 최저 기준)
+    if (active.length > 0) {
+      const top = results[0]; // 최저 수수료 증권사
+      const amt = state.tradeAmount;
+      const isDomestic = state.type === "domestic";
+      const commRate = isDomestic ? top.broker.domesticRate : top.broker.overseasRate;
+      const commission = amt * commRate;
+      const agency = isDomestic ? amt * AGENCY_FEE_RATE : 0;
+      const txTax = isDomestic ? amt * TRANSACTION_TAX_RATE : 0;
+      const total = commission + agency + txTax;
+
+      if (els.sellCommission) els.sellCommission.textContent = fmt(commission) + ` (${fmtRate(commRate)})`;
+      if (els.sellAgency) els.sellAgency.textContent = fmt(agency);
+      if (els.sellTaxWrap) els.sellTaxWrap.style.display = isDomestic ? "" : "none";
+      if (els.sellTax) els.sellTax.textContent = fmt(txTax);
+      if (els.sellTotal) els.sellTotal.textContent = fmt(total);
+      if (els.sellBrokerName) els.sellBrokerName.textContent = `${top.broker.name} 기준`;
     }
   }
 

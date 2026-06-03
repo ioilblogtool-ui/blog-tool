@@ -18,6 +18,20 @@ export type ToolMeta = {
 
 export const tools: ToolMeta[] = [
   {
+    slug: "isa-tax-calculator",
+    title: "ISA 계좌 절세 시뮬레이터",
+    description: "일반형·서민형·농어민형 선택 후 납입액·수익률·기간 입력 → 비과세 혜택·절세액·만기 수령액을 일반 계좌와 자동 비교.",
+    order: 0,
+    eyebrow: "ISA 절세",
+    category: "투자·재테크",
+    iframeReady: false,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "일반형 비과세", value: "200만원" },
+      { label: "서민형 비과세", value: "400만원" },
+    ],
+  },
+  {
     slug: "stock-brokerage-fee-calculator",
     title: "증권사 수수료 계산기",
     description: "1회 거래금액·월 거래 횟수 입력 → 키움·토스·삼성 등 주요 증권사 연간 수수료 자동 비교. 국내·미국주식 선택 가능.",
@@ -141,6 +155,47 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "2026 시급", value: "10,320원" },
       { label: "월 환산", value: "215.7만", context: "209시간" }
+    ]
+  },
+  {
+    slug: "health-insurance-premium-calculator",
+    title: "건강보험료 계산기 2026",
+    description: "2026년 건강보험료율과 장기요양보험료율을 기준으로 직장가입자·지역가입자 월 보험료와 퇴직 전환 부담을 계산합니다.",
+    order: 4.4,
+    eyebrow: "건강보험료 계산",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "2026", "4대보험"],
+    previewStats: [
+      { label: "건강보험료율", value: "7.19%", context: "2026년 공식" },
+      { label: "장기요양", value: "13.14%", context: "건보료 대비" }
+    ]
+  },
+  {
+    slug: "retirement",
+    title: "퇴직금 계산기",
+    description: "평균임금 기준 퇴직금과 세후 추정액을 계산하는 페이지",
+    order: 5,
+    eyebrow: "Retirement Tool",
+    category: "calculator",
+    iframeReady: true,
+    previewStats: [
+      { label: "퇴직금 세전", value: "4,166만", context: "5천만·10년" },
+      { label: "세후 추정", value: "약 3,950만" }
+    ]
+  },
+  {
+    slug: "unemployment-benefit-calculator",
+    title: "실업급여 계산기 2026",
+    description: "평균임금, 고용보험 가입기간, 나이, 퇴사 사유를 입력해 2026년 기준 예상 구직급여액과 수급기간을 계산합니다.",
+    order: 4.6,
+    eyebrow: "구직급여",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "2026", "퇴사"],
+    previewStats: [
+      { label: "1일 상한", value: "68,100원" },
+      { label: "수급기간", value: "120~270일" }
     ]
   },
   {
