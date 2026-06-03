@@ -1,0 +1,406 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PH_META,
+  PH_HERO_STATS,
+  PHARMACIST_TYPES,
+  CAREER_ROWS,
+  REGION_ROWS,
+  PHARMACIST_ALLOWANCES,
+  TOTAL_COMP,
+  PHARMACIST_FAQ,
+} from "../../data/pharmacistSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmt     = (n: number) => Math.round(n / 10_000).toLocaleString("ko-KR");
+const fmtWon  = (n: number) => n.toLocaleString("ko-KR");
+
+const allowanceFixed       = PHARMACIST_ALLOWANCES.filter((a) => a.type === "fixed");
+const allowancePerformance = PHARMACIST_ALLOWANCES.filter((a) => a.type === "performance");
+const allowanceBenefit     = PHARMACIST_ALLOWANCES.filter((a) => a.type === "benefit");
+
+const faqItems = PHARMACIST_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+const chartLabels  = CAREER_ROWS.map((r) => r.years);
+const chartHosp    = CAREER_ROWS.map((r) => Math.round((r.hospitalMin + r.hospitalMax) / 2 / 10_000));
+const chartCom     = CAREER_ROWS.map((r) => Math.round((r.communityMin + r.communityMax) / 2 / 10_000));
+---
+
+<BaseLayout title={PH_META.title} description={PH_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ph-page">
+
+    <!-- A. Hero -->
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="약사 연봉 실수령액 완전 정리 2026"
+      description="병원약사·약국약사·제약사·개국 약사 연봉 비교 · 경력별 연봉 흐름 · 지역별 수입 격차까지 한눈에"
+    />
+
+    <!-- B. InfoNotice -->
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "연봉 데이터는 대한약사회 실태조사, 병원약사회 공개 자료 기반 추정치입니다.",
+        "약국 봉직약사 연봉은 시급제·월급제 등 계약 형태에 따라 실제 수령액 편차가 큽니다.",
+        "개국 약사 수입은 경영 비용(임대·인건비·재고) 차감 후 실질 소득 추정치입니다.",
+        "세후 실수령은 미혼·부양가족 없음 기준이며, 공제 조건에 따라 달라집니다.",
+      ]}
+    />
+
+    <!-- C. Hero KPI -->
+    <section class="content-section ph-kpi-section" aria-label="핵심 지표">
+      <div class="ph-kpi-grid">
+        <div class="ph-kpi-card">
+          <p class="ph-kpi-card__label">병원 약사 신입 연봉</p>
+          <p class="ph-kpi-card__value">약 {fmt(PH_HERO_STATS.hospitalEntryAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="ph-kpi-card__sub">대학병원 기준</p>
+        </div>
+        <div class="ph-kpi-card">
+          <p class="ph-kpi-card__label">약국 봉직약사 평균</p>
+          <p class="ph-kpi-card__value">약 {fmt(PH_HERO_STATS.communityAvgAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="ph-kpi-card__sub">경력 무관 평균</p>
+        </div>
+        <div class="ph-kpi-card">
+          <p class="ph-kpi-card__label">개국 약사 평균 수입</p>
+          <p class="ph-kpi-card__value">약 {fmt(PH_HERO_STATS.ownerAvgAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="ph-kpi-card__sub">입지·처방전 편차 극대</p>
+        </div>
+        <div class="ph-kpi-card">
+          <p class="ph-kpi-card__label">제약사 약사 평균</p>
+          <p class="ph-kpi-card__value">약 {fmt(PH_HERO_STATS.pharmaAvgAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="ph-kpi-card__sub">직무·회사별 편차</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- D. 근무형태 카드 -->
+    <section class="content-section" aria-labelledby="ph-type-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">근무 형태별 비교</p>
+        <h2 id="ph-type-title">병원 · 약국 · 제약사 · 개국 — 어느 쪽이 유리할까?</h2>
+        <p>카드를 클릭하면 장단점 상세를 볼 수 있습니다.</p>
+      </div>
+
+      <div class="ph-type-grid" id="ph-type-grid">
+        {PHARMACIST_TYPES.map((pt) => (
+          <div
+            class="ph-type-card"
+            data-type-id={pt.id}
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+          >
+            <div class="ph-type-bar" style={`background: var(${pt.colorVar})`}></div>
+            <div class="ph-type-card__body">
+              <div class="ph-type-card__header">
+                <strong>{pt.name}</strong>
+                <span class="ts-badge ts-badge--ref">{pt.badge}</span>
+              </div>
+              <p class="ph-type-card__desc">{pt.description}</p>
+              <p class="ph-type-card__range">
+                연봉 <strong>{fmt(pt.annualMin)}~{fmt(pt.annualMax)}만 원</strong>
+                <span class="ts-badge ts-badge--estimate" style="margin-left:4px">추정</span>
+              </p>
+              <p class="ph-type-card__net">
+                월 실수령 약 <strong>{fmt(pt.monthlyNetMin * 12 / 12)}~{fmt(pt.monthlyNetMax * 12 / 12)}만 원</strong>
+              </p>
+              <button class="ph-type-card__toggle" aria-label={`${pt.name} 상세 보기`}>
+                장단점 보기 <span class="ph-toggle-icon">▼</span>
+              </button>
+            </div>
+
+            <div class="ph-type-panel" hidden>
+              <div class="ph-type-panel__cols">
+                <div class="ph-type-panel__col ph-type-panel__col--pros">
+                  <p class="ph-type-panel__col-title">장점</p>
+                  <ul>{pt.pros.map((p) => <li>{p}</li>)}</ul>
+                </div>
+                <div class="ph-type-panel__col ph-type-panel__col--cons">
+                  <p class="ph-type-panel__col-title">단점</p>
+                  <ul>{pt.cons.map((c) => <li>{c}</li>)}</ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- E. 경력별 연봉 흐름 -->
+    <section class="content-section" aria-labelledby="ph-career-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">경력별 연봉 흐름</p>
+        <h2 id="ph-career-title">병원 약사 vs 약국 봉직약사 — 경력별 연봉 비교 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>신입부터 15년차까지 두 커리어 경로의 연봉 흐름을 비교합니다.</p>
+      </div>
+
+      <div class="ph-career-table-wrap">
+        <table class="ph-career-table">
+          <thead>
+            <tr>
+              <th>경력</th>
+              <th>병원 약사</th>
+              <th>약국 봉직약사</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CAREER_ROWS.map((r) => (
+              <tr class={r.years === "신입" ? "ph-row--highlight" : ""}>
+                <td>
+                  <strong>{r.years}</strong>
+                  <p class="ph-career-sublabel">{r.label}</p>
+                </td>
+                <td>
+                  {fmt(r.hospitalMin)}~{fmt(r.hospitalMax)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td>
+                  {fmt(r.communityMin)}~{fmt(r.communityMax)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td class="ph-career-note">{r.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ph-chart-wrap">
+        <canvas id="ph-career-chart"
+          data-labels={JSON.stringify(chartLabels)}
+          data-hosp={JSON.stringify(chartHosp)}
+          data-com={JSON.stringify(chartCom)}
+        ></canvas>
+      </div>
+    </section>
+
+    <!-- F. 지역별 약국 수입 -->
+    <section class="content-section" aria-labelledby="ph-region-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">지역별 비교</p>
+        <h2 id="ph-region-title">개국 약사 지역별 수입 · 개국 비용 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>입지와 처방전 수가 개국 약사 수입의 핵심 변수입니다.</p>
+      </div>
+      <div class="ph-region-table-wrap">
+        <table class="ph-region-table">
+          <thead>
+            <tr>
+              <th>지역</th>
+              <th>평균 연 수입</th>
+              <th>개국 비용</th>
+              <th>수요</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REGION_ROWS.map((r) => (
+              <tr>
+                <td><strong>{r.region}</strong></td>
+                <td>
+                  약 {fmt(r.avgAnnual)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td>{r.openingCost}</td>
+                <td>
+                  <span class={`ph-demand ph-demand--${r.demandLevel === "매우 높음" ? "very-high" : r.demandLevel === "높음" ? "high" : r.demandLevel === "중간" ? "mid" : "low"}`}>
+                    {r.demandLevel}
+                  </span>
+                </td>
+                <td class="ph-region-note">{r.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- G. 수당·복리후생 -->
+    <section class="content-section" aria-labelledby="ph-allowance-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">수당·복리후생</p>
+        <h2 id="ph-allowance-title">약사 수당 및 인센티브 구조</h2>
+        <p>기본 연봉 외 수당이 실수령에 영향을 미칩니다.</p>
+      </div>
+
+      <div class="ts-allowance-tabs" role="tablist" aria-label="수당 유형">
+        <button class="ts-allowance-tab is-active" data-tab="fixed"       aria-selected="true">고정 수당</button>
+        <button class="ts-allowance-tab"             data-tab="performance" aria-selected="false">성과 인센티브</button>
+        <button class="ts-allowance-tab"             data-tab="benefit"    aria-selected="false">복리후생</button>
+      </div>
+
+      <div class="ts-allowance-list" data-tab="fixed">
+        {allowanceFixed.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ts-allowance-list" data-tab="performance" hidden>
+        {allowancePerformance.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ts-allowance-list" data-tab="benefit" hidden>
+        {allowanceBenefit.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- H. 커리어 총보상 -->
+    <section class="content-section" aria-labelledby="ph-comp-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">커리어 단계별 수입</p>
+        <h2 id="ph-comp-title">약사 커리어 단계별 예상 수입 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>면허 취득 후 현실적인 수입 흐름입니다.</p>
+      </div>
+      <div class="ph-comp-table-wrap">
+        <table class="ph-comp-table">
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>시기</th>
+              <th>연 수입 범위</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TOTAL_COMP.map((row) => (
+              <tr>
+                <td><strong>{row.label}</strong></td>
+                <td>{row.stage}</td>
+                <td>
+                  약 {fmt(row.annualMin)}~{fmt(row.annualMax)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td class="ph-comp-note">{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="ph-comp-footnote">
+        ※ 약학대학 6년 과정 이수 후 국가면허시험 합격 시 약사 면허 취득.
+        <span class="ts-badge ts-badge--ref">참고</span>
+      </p>
+    </section>
+
+    <!-- I. FAQ -->
+    <section class="content-section" aria-labelledby="ph-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="ph-faq-title">약사 연봉 FAQ</h2>
+      </div>
+      <div class="ph-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+        {PHARMACIST_FAQ.map((item) => (
+          <div class="ph-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="ph-faq-q" itemprop="name" aria-expanded="false">
+              {item.q}
+              <span class="ph-faq-icon">▼</span>
+            </button>
+            <div class="ph-faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.a}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- J. 관련 콘텐츠 -->
+    <section class="content-section" aria-labelledby="ph-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">내부 연결</p>
+        <h2 id="ph-related-title">같이 보면 좋은 계산기·리포트</h2>
+      </div>
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/tools/salary/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 실수령 계산기</strong>
+          <p>약사 연봉을 입력하면 세후 실수령액을 바로 확인합니다.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/tools/salary-tier/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 티어 계산기</strong>
+          <p>약사 연봉이 전체 직장인 분포 어느 구간인지 확인.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/doctor-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>의사 연봉 완전 비교 2026</strong>
+          <p>의료직 연봉 시리즈 — 의사 편.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/nurse-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>간호사 연차별 연봉 2026</strong>
+          <p>의료직 연봉 시리즈 — 간호사 편.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/it-salary-top10/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>IT 업계 신입 초봉 TOP 10</strong>
+          <p>전문직 연봉 비교 참고.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/")}>
+          <span class="ts-link-card__eyebrow">리포트 모음</span>
+          <strong>전체 비교 리포트 보기</strong>
+          <p>다른 직업·자산·생활 리포트까지 탐색.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="약사 연봉 실수령액 완전 정리 2026 — 비교계산소 해설"
+      intro={[
+        "약사 연봉은 근무 형태에 따라 큰 차이가 납니다. 병원 약사는 안정적이지만 연 4천~8천만 원으로 상대적으로 낮고, 약국 봉직약사는 5천만~1억 원 수준입니다. 개국 약사는 입지에 따라 수억까지 가능하지만 개국 비용과 리스크가 큽니다.",
+        "개국 성공의 핵심은 처방전 확보입니다. 대형 병원·의원 인근 약국은 처방전 유입이 안정적이지만 권리금이 비쌉니다. 지방 중소도시는 개국 비용이 낮지만 처방전 수가 제한적입니다.",
+        "약학대학 6년 과정 후 면허 취득까지 의대보다 짧은 시간이 소요됩니다. 제약·바이오 산업 성장과 함께 제약사 약사 수요도 늘고 있어 병원·약국 외 다양한 커리어 경로가 열려 있습니다.",
+      ]}
+      criteria={[
+        "연봉 데이터는 대한약사회 실태조사 및 업계 공개 자료 기반 추정치",
+        "개국 약사 수입은 경영 비용 차감 후 실질 소득 추정치",
+        "세후 실수령은 미혼·부양가족 없음 기준 추정치",
+        "지역별 수입과 개국 비용은 일반적 경향이며 입지별 편차 매우 큼",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/reports/doctor-salary-2026/", label: "의사 연봉 실수령액 완전 비교 2026" },
+        { href: "/reports/nurse-salary-2026/", label: "간호사 연차별 연봉 2026" },
+        { href: "/reports/teacher-salary-2026/", label: "교사 연봉·호봉 완전 정리 2026" },
+        { href: "/reports/", label: "전체 비교 리포트 보기" },
+      ]}
+    />
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/pharmacist-salary-2026.js" defer></script>
+</BaseLayout>

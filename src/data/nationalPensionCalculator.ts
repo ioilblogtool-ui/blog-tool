@@ -101,6 +101,7 @@ export const NPC_GUIDE_POINTS = [
 export const NPC_RELATED_LINKS = [
   { href: "/reports/national-pension-generational-comparison-2026/", label: "국민연금 세대별 수익 비교 2026" },
   { href: "/tools/retirement/", label: "은퇴금 계산기" },
+  { href: "/tools/health-insurance-premium-calculator/", label: "건강보험료 계산기" },
   { href: "/tools/fire-calculator/", label: "FIRE 계산기" },
   { href: "/tools/dca-investment-calculator/", label: "적립식 투자 수익 비교 계산기" },
 ];
@@ -124,6 +125,12 @@ export const NPC_NEXT_CONTENT = {
       title: "은퇴금 계산기",
       desc: "퇴직 시점 자금과 월 생활비 기준을 연결해서 볼 수 있습니다.",
       badges: ["은퇴 자금"],
+    },
+    {
+      href: "/tools/health-insurance-premium-calculator/",
+      title: "건강보험료 계산기",
+      desc: "은퇴 전후 고정비로 남는 건강보험료와 장기요양보험료를 함께 확인합니다.",
+      badges: ["고정비"],
     },
     {
       href: "/tools/dca-investment-calculator/",

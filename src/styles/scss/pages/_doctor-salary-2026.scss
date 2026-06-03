@@ -1,0 +1,424 @@
+.dr-page {
+  --dr-color-trainee:   #64b5f6;
+  --dr-color-fellow:    #4a90d9;
+  --dr-color-employee:  #4caf8d;
+  --dr-color-professor: #9c7cc7;
+  --dr-color-self:      #ef8c44;
+
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #d0e8e4;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #f7fcfb 0%, #edf6f4 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.05);
+    padding: 24px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 18px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #2e7d72;
+    }
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.12rem;
+      line-height: 1.38;
+      color: #172033;
+    }
+    p {
+      margin: 0;
+      max-width: 820px;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: #5f6674;
+    }
+  }
+}
+
+// ── KPI ───────────────────────────────────────────────────────
+.dr-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.dr-kpi-card {
+  background: #fff;
+  border: 1px solid #c8e3de;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+
+  &__label {
+    margin: 0 0 4px;
+    font-size: 0.78rem;
+    color: #5f6674;
+  }
+  &__value {
+    margin: 0 0 5px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #0f5f63;
+    line-height: 1.2;
+  }
+  &__sub {
+    margin: 4px 0 0;
+    font-size: 0.7rem;
+    color: #8892a0;
+  }
+}
+
+// ── 근무형태 카드 ──────────────────────────────────────────────
+.dr-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.dr-type-card {
+  background: #fff;
+  border: 1px solid #ccdfe0;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.18s, border-color 0.18s;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    outline: 2px solid var(--dr-color-employee);
+  }
+  &.is-active {
+    border-color: #4caf8d;
+    box-shadow: 0 4px 16px rgba(76, 175, 141, 0.18);
+  }
+  &__body {
+    padding: 14px 14px 10px;
+  }
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    strong { font-size: 1rem; color: #172033; }
+  }
+  &__desc {
+    margin: 0 0 6px;
+    font-size: 0.76rem;
+    color: #5f6674;
+    line-height: 1.55;
+  }
+  &__range {
+    margin: 0 0 4px;
+    font-size: 0.84rem;
+  }
+  &__net {
+    margin: 0 0 10px;
+    font-size: 0.8rem;
+    color: #5f6674;
+  }
+  &__toggle {
+    width: 100%;
+    padding: 6px 0;
+    background: none;
+    border: none;
+    border-top: 1px solid #e8eeee;
+    font-size: 0.8rem;
+    color: #2e7d72;
+    cursor: pointer;
+    font-weight: 600;
+    text-align: center;
+    &:hover { background: #f0faf8; }
+  }
+}
+
+.dr-type-bar {
+  height: 5px;
+}
+
+.dr-type-panel {
+  padding: 12px 14px 14px;
+  background: #f7fcfb;
+  border-top: 1px solid #daeee9;
+  font-size: 0.83rem;
+
+  &__cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  &__col {
+    &-title {
+      margin: 0 0 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    &--pros .dr-type-panel__col-title { color: #2a7a2a; }
+    &--cons .dr-type-panel__col-title { color: #b81c1c; }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 16px;
+    color: #444c56;
+    line-height: 1.8;
+  }
+}
+
+.dr-toggle-icon {
+  display: inline-block;
+  transition: transform 0.18s;
+}
+.dr-type-card.is-active .dr-toggle-icon {
+  transform: rotate(180deg);
+}
+
+// ── 수련 단계 테이블 ──────────────────────────────────────────
+.dr-resident-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dr-resident-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th {
+    background: #e8f4f2;
+    color: #1a4a46;
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #edf2f1;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+}
+
+.dr-resident-note {
+  margin: 3px 0 0;
+  font-size: 0.7rem;
+  color: #8892a0;
+}
+
+.dr-row--highlight {
+  background: #e6f8f4 !important;
+  td { color: #0f5f63; font-weight: 600; }
+}
+
+.dr-chart-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+  canvas {
+    width: 100% !important;
+    min-height: 280px;
+  }
+}
+
+// ── 전공별 탭 ─────────────────────────────────────────────────
+.dr-specialty-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.dr-specialty-tab {
+  padding: 6px 14px;
+  border: 1px solid #b8d8d4;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: #4a5568;
+  transition: background 0.15s, color 0.15s;
+  &:hover { background: #e8f4f2; }
+  &.is-active {
+    background: #2e7d72;
+    color: #fff;
+    border-color: #2e7d72;
+  }
+}
+
+.dr-specialty-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dr-specialty-table {
+  width: 100%;
+  min-width: 580px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th {
+    background: #e8f4f2;
+    color: #1a4a46;
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #edf2f1;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+}
+
+.dr-specialty-note {
+  font-size: 0.74rem;
+  color: #7b8794;
+}
+
+.dr-demand {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  &--very-high { color: #b81c1c; background: #fff0f0; }
+  &--high      { color: #c05c00; background: #fff5ec; }
+  &--mid       { color: #8b6d00; background: #fffaed; }
+  &--low       { color: #5f6674; background: #f5f5f5; }
+}
+
+// ── 병원 유형 테이블 ──────────────────────────────────────────
+.dr-hospital-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dr-hospital-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th {
+    background: #e8f4f2;
+    color: #1a4a46;
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #edf2f1;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+}
+
+// ── 총보상 테이블 ──────────────────────────────────────────────
+.dr-comp-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dr-comp-table {
+  width: 100%;
+  min-width: 500px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th {
+    background: #e8f4f2;
+    color: #1a4a46;
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #edf2f1;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+}
+
+.dr-comp-note {
+  font-size: 0.74rem;
+  color: #8892a0;
+}
+
+.dr-comp-footnote {
+  margin: 10px 0 0;
+  font-size: 0.74rem;
+  color: #7b8794;
+}
+
+// ── FAQ ───────────────────────────────────────────────────────
+.dr-faq-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.dr-faq-item {
+  border-bottom: 1px solid #e0eeed;
+  &:last-child { border-bottom: none; }
+}
+
+.dr-faq-q {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #172033;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.45;
+  &:hover { color: #2e7d72; }
+}
+
+.dr-faq-icon {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  transition: transform 0.18s;
+  color: #7b8794;
+}
+
+.dr-faq-item.is-open .dr-faq-icon {
+  transform: rotate(180deg);
+}
+
+.dr-faq-a {
+  padding: 0 0 14px;
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: #4a5568;
+  }
+}
+
+// ── 반응형 ────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .dr-type-grid { grid-template-columns: 1fr; }
+  .dr-kpi-grid  { grid-template-columns: 1fr 1fr; }
+  .dr-type-panel__cols { grid-template-columns: 1fr; }
+}

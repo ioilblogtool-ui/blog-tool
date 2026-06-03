@@ -1,0 +1,186 @@
+.fa-page {
+  --fa-color-kal: #00256c;
+  --fa-color-aak: #e31937;
+  --fa-color-7c:  #ff6600;
+  --fa-color-tw:  #0066cc;
+  --fa-color-rs:  #7b1fa2;
+
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #d0e8e4;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #f7fcfb 0%, #edf6f4 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.05);
+    padding: 24px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 18px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px; font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em; color: #2e7d72;
+    }
+    h2 { margin: 0 0 6px; font-size: 1.12rem; line-height: 1.38; color: #172033; }
+    p  { margin: 0; max-width: 820px; font-size: 0.84rem; line-height: 1.7; color: #5f6674; }
+  }
+}
+
+// ── KPI ───────────────────────────────────────────────────────
+.fa-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 14px;
+}
+
+.fa-kpi-card {
+  background: #fff;
+  border: 1px solid #c8e3de;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+
+  &__label { margin: 0 0 4px; font-size: 0.78rem; color: #5f6674; }
+  &__value { margin: 0 0 5px; font-size: 1.2rem; font-weight: 800; color: #0f5f63; line-height: 1.2; }
+  &__sub   { margin: 4px 0 0; font-size: 0.7rem; color: #8892a0; }
+}
+
+// ── 항공사 유형 탭 ────────────────────────────────────────────
+.fa-airline-tabs {
+  display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+}
+
+.fa-airline-tab {
+  padding: 6px 14px; border: 1px solid #b8d8d4; border-radius: 999px;
+  background: #fff; font-size: 0.82rem; cursor: pointer; color: #4a5568;
+  transition: background 0.15s, color 0.15s;
+  &:hover { background: #e8f4f2; }
+  &.is-active { background: #2e7d72; color: #fff; border-color: #2e7d72; }
+}
+
+// ── 항공사 카드 ───────────────────────────────────────────────
+.fa-airline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.fa-airline-card {
+  background: #fff;
+  border: 1px solid #ccdfe0;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.18s, border-color 0.18s;
+
+  &:hover, &:focus-visible {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    outline: 2px solid #2e7d72;
+  }
+  &.is-active { border-color: #4caf8d; box-shadow: 0 4px 16px rgba(76, 175, 141, 0.18); }
+  &__body     { padding: 14px 14px 10px; }
+  &__header   {
+    display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+    strong { font-size: 1rem; color: #172033; }
+  }
+  &__range    { margin: 0 0 4px; font-size: 0.84rem; }
+  &__senior   { margin: 0 0 4px; font-size: 0.8rem; color: #5f6674; }
+  &__layover  { margin: 0 0 10px; font-size: 0.74rem; color: #8892a0; }
+  &__toggle   {
+    width: 100%; padding: 6px 0; background: none; border: none;
+    border-top: 1px solid #e8eeee; font-size: 0.8rem; color: #2e7d72;
+    cursor: pointer; font-weight: 600; text-align: center;
+    &:hover { background: #f0faf8; }
+  }
+}
+
+.fa-airline-bar { height: 5px; }
+
+.fa-airline-panel {
+  padding: 12px 14px 14px;
+  background: #f7fcfb;
+  border-top: 1px solid #daeee9;
+  font-size: 0.83rem;
+
+  &__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  &__col {
+    &-title { margin: 0 0 6px; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    &--pros .fa-airline-panel__col-title { color: #2a7a2a; }
+    &--cons .fa-airline-panel__col-title { color: #b81c1c; }
+  }
+  ul { margin: 0; padding-left: 16px; color: #444c56; line-height: 1.8; }
+  &__flight { margin: 0; font-size: 0.76rem; color: #2e7d72; font-weight: 600; border-top: 1px solid #daeee9; padding-top: 8px; }
+}
+
+.fa-toggle-icon { display: inline-block; transition: transform 0.18s; }
+.fa-airline-card.is-active .fa-toggle-icon { transform: rotate(180deg); }
+
+// ── 직급 테이블 ──────────────────────────────────────────────
+.fa-rank-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fa-rank-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  th { background: #e8f4f2; color: #1a4a46; padding: 9px 10px; text-align: left; white-space: nowrap; }
+  td { padding: 8px 10px; border-bottom: 1px solid #edf2f1; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+}
+
+.fa-row--highlight { background: #e6f8f4 !important; td { color: #0f5f63; font-weight: 600; } }
+.fa-rank-note { margin: 6px 0 16px; font-size: 0.74rem; color: #7b8794; }
+
+.fa-chart-wrap {
+  position: relative; width: 100%; min-height: 260px;
+  canvas { width: 100% !important; min-height: 260px; }
+}
+
+// ── 커리어 테이블 ──────────────────────────────────────────────
+.fa-career-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.fa-career-table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th { background: #e8f4f2; color: #1a4a46; padding: 9px 12px; text-align: left; white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid #edf2f1; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+}
+
+.fa-career-note { font-size: 0.74rem; color: #7b8794; }
+
+// ── FAQ ───────────────────────────────────────────────────────
+.fa-faq-list { display: flex; flex-direction: column; }
+.fa-faq-item {
+  border-bottom: 1px solid #e0eeed;
+  &:last-child { border-bottom: none; }
+}
+.fa-faq-q {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  gap: 10px; padding: 14px 0; background: none; border: none;
+  font-size: 0.9rem; font-weight: 600; color: #172033; text-align: left; cursor: pointer; line-height: 1.45;
+  &:hover { color: #2e7d72; }
+}
+.fa-faq-icon { flex-shrink: 0; font-size: 0.8rem; transition: transform 0.18s; color: #7b8794; }
+.fa-faq-item.is-open .fa-faq-icon { transform: rotate(180deg); }
+.fa-faq-a {
+  padding: 0 0 14px;
+  p { margin: 0; font-size: 0.85rem; line-height: 1.75; color: #4a5568; }
+}
+
+// ── 반응형 ────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .fa-airline-grid        { grid-template-columns: 1fr; }
+  .fa-kpi-grid            { grid-template-columns: 1fr 1fr; }
+  .fa-airline-panel__cols { grid-template-columns: 1fr; }
+}

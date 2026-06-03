@@ -1,0 +1,162 @@
+.ml-page {
+  display: grid;
+  gap: 26px;
+
+  .content-section {
+    border: 1px solid #d0e8e4;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #f7fcfb 0%, #edf6f4 100%);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.05);
+    padding: 24px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 18px;
+
+    .section-header__eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #2e7d72;
+    }
+    h2 { margin: 0 0 6px; font-size: 1.12rem; line-height: 1.38; color: #172033; }
+    p  { margin: 0; max-width: 820px; font-size: 0.84rem; line-height: 1.7; color: #5f6674; }
+  }
+}
+
+// ── KPI ───────────────────────────────────────────────────────
+.ml-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.ml-kpi-card {
+  background: #fff;
+  border: 1px solid #c8e3de;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+
+  &__label { margin: 0 0 4px; font-size: 0.78rem; color: #5f6674; }
+  &__value { margin: 0 0 5px; font-size: 1.2rem; font-weight: 800; color: #0f5f63; line-height: 1.2; }
+  &__sub   { margin: 4px 0 0; font-size: 0.7rem; color: #8892a0; }
+}
+
+.ml-source-note { margin: 10px 0 0; font-size: 0.72rem; color: #8892a0; }
+
+// ── 병사 카드 그리드 ──────────────────────────────────────────
+.ml-soldier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.ml-soldier-card {
+  background: #fff;
+  border: 1px solid #c8e3de;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+
+  &__rank    { font-size: 1.3rem; font-weight: 800; color: #0f5f63; margin-bottom: 2px; }
+  &__en      { font-size: 0.7rem; color: #8892a0; margin-bottom: 6px; }
+  &__service { display: inline-block; background: #e8f4f2; color: #2e7d72; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 10px; }
+  &__base    { margin-bottom: 4px; font-size: 0.84rem; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  &__base-label { font-size: 0.7rem; color: #8892a0; }
+  &__net     { font-size: 0.78rem; color: #5f6674; margin-bottom: 6px; }
+  &__note    { margin: 0; font-size: 0.7rem; color: #8892a0; line-height: 1.5; }
+}
+
+.ml-chart-wrap {
+  position: relative; width: 100%; min-height: 220px;
+  canvas { width: 100% !important; min-height: 220px; }
+}
+
+// ── 부사관·장교 탭 ────────────────────────────────────────────
+.ml-nco-tabs,
+.ml-officer-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.ml-nco-tab,
+.ml-officer-tab {
+  padding: 6px 14px;
+  border: 1px solid #b8d8d4;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: #4a5568;
+  transition: background 0.15s, color 0.15s;
+  &:hover { background: #e8f4f2; }
+  &.is-active { background: #2e7d72; color: #fff; border-color: #2e7d72; }
+}
+
+.ml-nco-table-wrap,
+.ml-officer-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ml-nco-table,
+.ml-officer-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th { background: #e8f4f2; color: #1a4a46; padding: 9px 12px; text-align: left; white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid #edf2f1; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+}
+
+.ml-note-badge { font-size: 0.72rem; color: #2e7d72; font-weight: 600; }
+
+// ── 민간 비교 테이블 ──────────────────────────────────────────
+.ml-civilian-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.ml-civilian-table {
+  width: 100%;
+  min-width: 540px;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+
+  th { background: #e8f4f2; color: #1a4a46; padding: 9px 12px; text-align: left; white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid #edf2f1; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+}
+
+.ml-civilian-note { font-size: 0.74rem; color: #7b8794; }
+
+// ── FAQ ───────────────────────────────────────────────────────
+.ml-faq-list { display: flex; flex-direction: column; }
+.ml-faq-item {
+  border-bottom: 1px solid #e0eeed;
+  &:last-child { border-bottom: none; }
+}
+.ml-faq-q {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  gap: 10px; padding: 14px 0; background: none; border: none;
+  font-size: 0.9rem; font-weight: 600; color: #172033; text-align: left; cursor: pointer; line-height: 1.45;
+  &:hover { color: #2e7d72; }
+}
+.ml-faq-icon { flex-shrink: 0; font-size: 0.8rem; transition: transform 0.18s; color: #7b8794; }
+.ml-faq-item.is-open .ml-faq-icon { transform: rotate(180deg); }
+.ml-faq-a {
+  padding: 0 0 14px;
+  p { margin: 0; font-size: 0.85rem; line-height: 1.75; color: #4a5568; }
+}
+
+// ── 반응형 ────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .ml-soldier-grid { grid-template-columns: 1fr 1fr; }
+  .ml-kpi-grid     { grid-template-columns: 1fr 1fr; }
+}

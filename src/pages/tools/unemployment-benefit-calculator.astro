@@ -1,0 +1,353 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  BENEFIT_DAYS_TABLE,
+  EMPLOYMENT_INSURANCE_PERIODS,
+  LEAVE_REASONS,
+  UNEMPLOYMENT_BENEFIT_2026,
+  UNEMPLOYMENT_BENEFIT_PRESETS,
+  UNEMPLOYMENT_FAQ,
+  UNEMPLOYMENT_RELATED_LINKS,
+  UNEMPLOYMENT_SEO_CONTENT,
+} from "../../data/unemploymentBenefitCalculator";
+import { withBase } from "../../utils/base";
+
+const pageTitle = "실업급여 계산기 2026";
+const metaTitle = "실업급여 계산기 2026 - 구직급여 금액·수급기간 자동 계산";
+const metaDescription =
+  "2026년 기준 실업급여 계산기로 평균임금, 고용보험 가입기간, 나이를 입력해 1일 구직급여액, 예상 총액, 수급기간을 확인하세요.";
+
+const today = new Date().toISOString().slice(0, 10);
+
+const config = {
+  constants: UNEMPLOYMENT_BENEFIT_2026,
+  periods: EMPLOYMENT_INSURANCE_PERIODS,
+  benefitDaysTable: BENEFIT_DAYS_TABLE,
+  leaveReasons: LEAVE_REASONS,
+  presets: UNEMPLOYMENT_BENEFIT_PRESETS,
+};
+
+const faqSchema = UNEMPLOYMENT_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={metaTitle}
+  description={metaDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: pageTitle,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: metaDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/unemployment-benefit-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="unemployment-benefit-calculator"
+    pageClass="ubc-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="퇴사 후 생활비"
+        title={pageTitle}
+        description="평균임금, 고용보험 가입기간, 나이를 입력하면 2026년 기준 예상 구직급여액과 수급기간을 계산합니다."
+        badges={["2026", "구직급여", "수급기간", "모의계산"]}
+      />
+      <InfoNotice
+        title="모의계산 안내"
+        lines={[
+          "이 계산기는 고용보험 구직급여 기준을 바탕으로 한 예상액 계산기입니다.",
+          "실제 수급 여부와 지급액은 피보험단위기간, 퇴사 사유, 평균임금 산정, 실업인정 결과에 따라 달라질 수 있습니다.",
+          "최종 판단은 고용센터 또는 고용보험 공식 안내를 기준으로 확인하세요.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="ubcResetBtn" copyId="ubcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">프리셋으로 바로 계산</h2>
+          </div>
+          <p class="panel-heading__summary">상황에 가까운 예시를 고른 뒤 임금과 생활비를 조정하세요.</p>
+        </div>
+        <div class="ubc-preset-grid">
+          {UNEMPLOYMENT_BENEFIT_PRESETS.map((preset) => (
+            <button type="button" class="ubc-preset-btn" data-ubc-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel ubc-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">퇴사 정보와 평균임금</h2>
+          </div>
+        </div>
+
+        <section class="ubc-input-section" aria-labelledby="ubc-basic-title">
+          <h3 id="ubc-basic-title" class="ubc-input-section__title">기본 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>퇴사일</span>
+              <input data-ubc="leaveDate" type="date" value={today} />
+              <small>퇴사일 다음 날부터 12개월 내 수급해야 합니다.</small>
+            </label>
+            <label class="field">
+              <span>만 나이</span>
+              <input data-ubc="age" type="number" min="15" max="80" class="input-number" value="38" />
+              <small>50세 이상은 소정급여일수가 달라질 수 있습니다.</small>
+            </label>
+            <label class="field">
+              <span>고용보험 가입기간</span>
+              <select data-ubc="insurancePeriodId">
+                {EMPLOYMENT_INSURANCE_PERIODS.map((period) => (
+                  <option value={period.id} selected={period.id === "3y-5y"}>{period.label}</option>
+                ))}
+              </select>
+            </label>
+            <label class="field">
+              <span>퇴사 사유</span>
+              <select data-ubc="leaveReasonId">
+                {LEAVE_REASONS.map((reason) => (
+                  <option value={reason.id} selected={reason.id === "recommended-resignation"}>{reason.label}</option>
+                ))}
+              </select>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-ubc="isDisabled" />
+              <span>장애인 기준에 해당합니다</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-ubc="hasInsuredDays180" checked />
+              <span>피보험단위기간 180일 이상입니다</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="ubc-input-section" aria-labelledby="ubc-wage-title">
+          <h3 id="ubc-wage-title" class="ubc-input-section__title">임금 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>최근 3개월 임금 총액</span>
+              <input data-ubc="threeMonthWageTotal" type="text" inputmode="numeric" class="input-number" value="10,500,000" />
+              <small>상여 제외 여부 등 실제 평균임금 산정은 회사 자료와 다를 수 있습니다.</small>
+            </label>
+            <label class="field">
+              <span>최근 3개월 총 일수</span>
+              <input data-ubc="threeMonthTotalDays" type="number" min="1" max="120" class="input-number" value="92" />
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-ubc="useDirectAverageWage" />
+              <span>1일 평균임금을 직접 입력합니다</span>
+            </label>
+            <label class="field">
+              <span>1일 평균임금</span>
+              <input data-ubc="dailyAverageWage" type="text" inputmode="numeric" class="input-number" value="114,130" />
+              <small>직접 입력을 켠 경우 이 값을 우선 사용합니다.</small>
+            </label>
+            <label class="field">
+              <span>1일 소정근로시간</span>
+              <select data-ubc="dailyWorkHours">
+                <option value="8" selected>8시간</option>
+                <option value="7">7시간</option>
+                <option value="6">6시간</option>
+                <option value="5">5시간</option>
+                <option value="4">4시간 이하</option>
+              </select>
+              <small>하한액 안내를 위한 참고값입니다.</small>
+            </label>
+          </div>
+        </section>
+
+        <section class="ubc-input-section" aria-labelledby="ubc-living-title">
+          <h3 id="ubc-living-title" class="ubc-input-section__title">생활비 옵션</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>월 생활비</span>
+              <input data-ubc="monthlyLivingCost" type="text" inputmode="numeric" class="input-number" value="2,300,000" />
+            </label>
+            <label class="field">
+              <span>퇴직금 예상액</span>
+              <input data-ubc="retirementPay" type="text" inputmode="numeric" class="input-number" value="0" />
+              <small>퇴직금 계산 결과를 알고 있다면 함께 입력하세요.</small>
+            </label>
+            <label class="field">
+              <span>비상금</span>
+              <input data-ubc="emergencyFund" type="text" inputmode="numeric" class="input-number" value="5,000,000" />
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="ubc-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">계산 결과</p>
+        <h2>예상 구직급여액과 수급기간</h2>
+        <p class="cdca-section__sub">입력값을 바꾸면 2026년 기준 예상액과 확인 필요 항목이 즉시 다시 계산됩니다.</p>
+      </div>
+
+      <div class="ubc-kpi-grid" aria-live="polite">
+        <article class="ubc-kpi-card ubc-kpi-card--main">
+          <p>예상 총 실업급여</p>
+          <strong id="ubcTotalBenefit">-</strong>
+          <span>1일 구직급여액 × 소정급여일수</span>
+        </article>
+        <article class="ubc-kpi-card">
+          <p>1일 구직급여액</p>
+          <strong id="ubcDailyBenefit">-</strong>
+          <span id="ubcLimitType">상한·하한 적용 확인</span>
+        </article>
+        <article class="ubc-kpi-card ubc-kpi-card--accent">
+          <p>예상 수급기간</p>
+          <strong id="ubcBenefitDays">-</strong>
+          <span id="ubcBenefitDaysContext">나이·가입기간 기준</span>
+        </article>
+        <article class="ubc-kpi-card">
+          <p>월 환산액</p>
+          <strong id="ubcMonthlyEquivalent">-</strong>
+          <span>30일 기준 생활비 비교용</span>
+        </article>
+      </div>
+
+      <div class="ubc-limit-card" id="ubcLimitCard">
+        <span id="ubcLimitBadge">모의계산</span>
+        <p id="ubcInterpretation">입력값을 기준으로 예상 실업급여를 계산합니다.</p>
+      </div>
+    </section>
+
+    <section class="ubc-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">자격 점검</p>
+        <h2>수급 전 확인해야 할 조건</h2>
+      </div>
+      <div class="ubc-checklist" id="ubcChecklist"></div>
+    </section>
+
+    <section class="ubc-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">수급기간 기준</p>
+        <h2>소정급여일수 표</h2>
+        <p class="cdca-section__sub">현재 입력 조건에 해당하는 칸을 강조합니다.</p>
+      </div>
+      <div class="ubc-days-table-wrap" role="region" aria-label="소정급여일수 기준표">
+        <table class="ubc-days-table">
+          <thead>
+            <tr>
+              <th>연령 / 가입기간</th>
+              {EMPLOYMENT_INSURANCE_PERIODS.map((period) => <th>{period.label}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-ubc-age-row="under50">
+              <th>50세 미만</th>
+              {BENEFIT_DAYS_TABLE.under50.map((days, index) => <td data-ubc-day-cell={`under50-${index}`}>{days}일</td>)}
+            </tr>
+            <tr data-ubc-age-row="over50OrDisabled">
+              <th>50세 이상 및 장애인</th>
+              {BENEFIT_DAYS_TABLE.over50OrDisabled.map((days, index) => <td data-ubc-day-cell={`over50OrDisabled-${index}`}>{days}일</td>)}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ubc-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">생활비 플랜</p>
+        <h2>퇴사 후 버틸 수 있는 기간</h2>
+      </div>
+      <div class="ubc-living-plan">
+        <div>
+          <p>실업급여 + 퇴직금 + 비상금</p>
+          <strong id="ubcLivingSource">-</strong>
+        </div>
+        <div>
+          <p>월 생활비 기준</p>
+          <strong id="ubcLivingMonths">-</strong>
+        </div>
+        <p id="ubcLivingMessage">월 생활비를 입력하면 예상 생활비 커버 기간을 계산합니다.</p>
+      </div>
+    </section>
+
+    <section class="ubc-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">신청 순서</p>
+        <h2>실업급여 신청 전 흐름</h2>
+      </div>
+      <ol class="ubc-steps">
+        <li><span>01</span><p>이직확인서와 고용보험 상실 신고가 처리됐는지 확인합니다.</p></li>
+        <li><span>02</span><p>워크넷 구직등록과 수급자격 신청자 온라인 교육을 진행합니다.</p></li>
+        <li><span>03</span><p>거주지 관할 고용센터에서 수급자격 인정 신청을 진행합니다.</p></li>
+        <li><span>04</span><p>실업인정일마다 재취업 활동을 신고하고 지급 여부를 확인합니다.</p></li>
+      </ol>
+    </section>
+
+    <section class="ubc-section">
+      <div class="cdca-section__head">
+        <p class="cdca-section__eyebrow">다음 계산</p>
+        <h2>퇴사 전후 같이 보면 좋은 계산기</h2>
+      </div>
+      <div class="ubc-related-grid">
+        {UNEMPLOYMENT_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <CompareCta
+      variant="default"
+      title="퇴직금과 실업급여를 함께 계산하세요"
+      description="실업급여는 생활비 공백을 줄여주는 금액이고, 퇴직금은 퇴사 후 현금흐름의 핵심 재원입니다. 두 금액을 함께 보면 이직 공백기를 더 현실적으로 계획할 수 있습니다."
+      links={[
+        { href: "/tools/retirement/", label: "퇴직금 계산기" },
+        { href: "/tools/negotiation/", label: "이직 계산기" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={UNEMPLOYMENT_SEO_CONTENT.introTitle}
+        intro={UNEMPLOYMENT_SEO_CONTENT.intro}
+        inputPoints={UNEMPLOYMENT_SEO_CONTENT.inputPoints}
+        criteria={UNEMPLOYMENT_SEO_CONTENT.criteria}
+        faq={UNEMPLOYMENT_FAQ}
+        related={UNEMPLOYMENT_RELATED_LINKS.map((link) => ({ href: link.href, label: link.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="ubc-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/unemployment-benefit-calculator.js")}></script>
+</BaseLayout>
+

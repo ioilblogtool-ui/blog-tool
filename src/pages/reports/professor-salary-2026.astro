@@ -1,0 +1,337 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PF_META,
+  PF_HERO_STATS,
+  PROFESSOR_TYPES,
+  RANK_ROWS,
+  RESEARCH_INCOME,
+  UNIVERSITY_GROUPS,
+  PROFESSOR_FAQ,
+} from "../../data/professorSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmt    = (n: number) => Math.round(n / 10_000).toLocaleString("ko-KR");
+const fmtWon = (n: number) => n.toLocaleString("ko-KR");
+
+const faqItems = PROFESSOR_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+const rankChartLabels = RANK_ROWS.map((r) => r.rank);
+const rankChartNational = RANK_ROWS.map((r) => Math.round((r.nationalMin + r.nationalMax) / 2 / 10_000));
+const rankChartPrivate  = RANK_ROWS.map((r) => Math.round((r.privateTopMin + r.privateTopMax) / 2 / 10_000));
+
+const uniChartLabels = UNIVERSITY_GROUPS.map((u) => u.group.split("(")[0].trim());
+const uniChartData   = UNIVERSITY_GROUPS.map((u) => Math.round(u.avgAnnual / 10_000));
+---
+
+<BaseLayout title={PF_META.title} description={PF_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page pf-page">
+
+    <!-- A. Hero -->
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="대학교수 연봉 완전 정리 2026"
+      description="조교수·부교수·정교수 직급별 연봉 · 국립대 vs 사립대 차이 · 연구비·외부 수입까지 한눈에"
+    />
+
+    <!-- B. InfoNotice -->
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "연봉 데이터는 교육부 사립대학 재정정보공시, 대학알리미 공개 자료 기반 추정치입니다.",
+        "국립대 봉급표는 공무원보수규정 기준이며, 사립대는 학교법인별 급여 규정에 따라 편차가 큽니다.",
+        "연구비·외부 강연료는 기본 연봉과 별도이며 개인별 수주 실적에 따라 큰 차이가 납니다.",
+        "세후 실수령은 미혼·부양가족 없음 기준 추정치입니다.",
+      ]}
+    />
+
+    <!-- C. Hero KPI -->
+    <section class="content-section pf-kpi-section" aria-label="핵심 지표">
+      <div class="pf-kpi-grid">
+        <div class="pf-kpi-card">
+          <p class="pf-kpi-card__label">조교수 평균 연봉</p>
+          <p class="pf-kpi-card__value">약 {fmt(PF_HERO_STATS.assistantProfAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="pf-kpi-card__sub">국립·주요사립 평균</p>
+        </div>
+        <div class="pf-kpi-card">
+          <p class="pf-kpi-card__label">부교수 평균 연봉</p>
+          <p class="pf-kpi-card__value">약 {fmt(PF_HERO_STATS.associateProfAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="pf-kpi-card__sub">테뉴어 취득 후</p>
+        </div>
+        <div class="pf-kpi-card">
+          <p class="pf-kpi-card__label">정교수 평균 연봉</p>
+          <p class="pf-kpi-card__value">약 {fmt(PF_HERO_STATS.fullProfAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="pf-kpi-card__sub">연구비 미포함</p>
+        </div>
+        <div class="pf-kpi-card">
+          <p class="pf-kpi-card__label">시간강사 학점당</p>
+          <p class="pf-kpi-card__value">약 {fmtWon(PF_HERO_STATS.adjunctPerCredit)}원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="pf-kpi-card__sub">대학별 편차 큼</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- D. 대학 유형별 카드 -->
+    <section class="content-section" aria-labelledby="pf-type-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">대학 유형별 비교</p>
+        <h2 id="pf-type-title">국립 · SKY · 수도권사립 · 지방 — 처우 차이는 얼마나 날까?</h2>
+        <p>카드를 클릭하면 장단점 상세를 볼 수 있습니다.</p>
+      </div>
+
+      <div class="pf-type-grid" id="pf-type-grid">
+        {PROFESSOR_TYPES.map((pt) => (
+          <div
+            class="pf-type-card"
+            data-type-id={pt.id}
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+          >
+            <div class="pf-type-bar" style={`background: var(${pt.colorVar})`}></div>
+            <div class="pf-type-card__body">
+              <div class="pf-type-card__header">
+                <strong>{pt.name}</strong>
+                <span class="ts-badge ts-badge--ref">{pt.badge}</span>
+              </div>
+              <p class="pf-type-card__desc">{pt.description}</p>
+              <p class="pf-type-card__range">
+                연봉 <strong>{fmt(pt.annualMin)}~{fmt(pt.annualMax)}만 원</strong>
+                <span class="ts-badge ts-badge--estimate" style="margin-left:4px">추정</span>
+              </p>
+              <button class="pf-type-card__toggle" aria-label={`${pt.name} 상세 보기`}>
+                장단점 보기 <span class="pf-toggle-icon">▼</span>
+              </button>
+            </div>
+            <div class="pf-type-panel" hidden>
+              <div class="pf-type-panel__cols">
+                <div class="pf-type-panel__col pf-type-panel__col--pros">
+                  <p class="pf-type-panel__col-title">장점</p>
+                  <ul>{pt.pros.map((p) => <li>{p}</li>)}</ul>
+                </div>
+                <div class="pf-type-panel__col pf-type-panel__col--cons">
+                  <p class="pf-type-panel__col-title">단점</p>
+                  <ul>{pt.cons.map((c) => <li>{c}</li>)}</ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- E. 직급별 연봉 비교 -->
+    <section class="content-section" aria-labelledby="pf-rank-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">직급별 연봉</p>
+        <h2 id="pf-rank-title">조교수 → 부교수 → 교수 — 직급·대학 유형별 연봉 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>국립대(서울대·지방국립 평균) vs 사립 상위권(SKY·주요사립) 비교입니다.</p>
+      </div>
+
+      <div class="pf-rank-table-wrap">
+        <table class="pf-rank-table">
+          <thead>
+            <tr>
+              <th>직급</th>
+              <th>경력</th>
+              <th>국립대 연봉</th>
+              <th>사립 상위권 연봉</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RANK_ROWS.map((r) => (
+              <tr class={r.rank === "조교수" ? "pf-row--highlight" : ""}>
+                <td>
+                  <strong>{r.rank}</strong>
+                  <p class="pf-rank-en">{r.rankEn}</p>
+                </td>
+                <td>{r.yearsRange}</td>
+                <td>
+                  {fmt(r.nationalMin)}~{fmt(r.nationalMax)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td>
+                  {fmt(r.privateTopMin)}~{fmt(r.privateTopMax)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td class="pf-rank-note">{r.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pf-chart-wrap">
+        <canvas id="pf-rank-chart"
+          data-labels={JSON.stringify(rankChartLabels)}
+          data-national={JSON.stringify(rankChartNational)}
+          data-private={JSON.stringify(rankChartPrivate)}
+        ></canvas>
+      </div>
+    </section>
+
+    <!-- F. 대학별 연봉 그룹 -->
+    <section class="content-section" aria-labelledby="pf-uni-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">대학별 평균 연봉</p>
+        <h2 id="pf-uni-title">대학 그룹별 교수 평균 연봉 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>전임교원(조교수~정교수) 평균 기준 추정치입니다.</p>
+      </div>
+
+      <div class="pf-uni-table-wrap">
+        <table class="pf-uni-table">
+          <thead>
+            <tr>
+              <th>대학 그룹</th>
+              <th>해당 대학</th>
+              <th>평균 연봉</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {UNIVERSITY_GROUPS.map((u) => (
+              <tr>
+                <td><strong>{u.group}</strong></td>
+                <td class="pf-uni-list">{u.universities}</td>
+                <td>
+                  약 {fmt(u.avgAnnual)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td class="pf-uni-note">{u.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pf-uni-chart-wrap">
+        <canvas id="pf-uni-chart"
+          data-labels={JSON.stringify(uniChartLabels)}
+          data-values={JSON.stringify(uniChartData)}
+        ></canvas>
+      </div>
+    </section>
+
+    <!-- G. 연구비·외부 수입 -->
+    <section class="content-section" aria-labelledby="pf-research-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">연구비·외부 수입</p>
+        <h2 id="pf-research-title">기본급 외 교수의 추가 수입 구조</h2>
+        <p>연구 실적과 인지도에 따라 기본급과 비슷하거나 초과하는 수입도 가능합니다.</p>
+      </div>
+
+      <div class="pf-research-grid">
+        {RESEARCH_INCOME.map((r) => (
+          <div class="pf-research-card">
+            <p class="pf-research-card__source">{r.source}</p>
+            <p class="pf-research-card__amount">{r.amount}</p>
+            <p class="pf-research-card__cond">{r.condition}</p>
+            <span class="pf-research-card__freq">{r.frequency}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- H. FAQ -->
+    <section class="content-section" aria-labelledby="pf-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="pf-faq-title">대학교수 연봉 FAQ</h2>
+      </div>
+      <div class="pf-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+        {PROFESSOR_FAQ.map((item) => (
+          <div class="pf-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="pf-faq-q" itemprop="name" aria-expanded="false">
+              {item.q}
+              <span class="pf-faq-icon">▼</span>
+            </button>
+            <div class="pf-faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.a}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- I. 관련 콘텐츠 -->
+    <section class="content-section" aria-labelledby="pf-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">내부 연결</p>
+        <h2 id="pf-related-title">같이 보면 좋은 계산기·리포트</h2>
+      </div>
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/tools/salary/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 실수령 계산기</strong>
+          <p>교수 연봉을 넣고 세후 실수령을 확인합니다.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/teacher-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>교사 연봉·호봉 완전 정리 2026</strong>
+          <p>교육직 연봉 시리즈 — 초중고 교사 편.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/doctor-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>의사 연봉 완전 비교 2026</strong>
+          <p>전문직 연봉 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/public-servant-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>공무원 9급 연봉 2026</strong>
+          <p>국립대 교수와 공무원 연봉 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/it-salary-top10/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>IT 업계 신입 초봉 TOP 10</strong>
+          <p>교수 vs IT 직군 연봉 비교 참고.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/")}>
+          <span class="ts-link-card__eyebrow">리포트 모음</span>
+          <strong>전체 비교 리포트 보기</strong>
+          <p>다른 직업·자산·생활 리포트까지 탐색.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="대학교수 연봉 완전 정리 2026 — 비교계산소 해설"
+      intro={[
+        "대학교수 연봉은 직급·대학 유형에 따라 큰 차이가 납니다. 주요 사립대 정교수는 연 1억~1.5억 원, 지방 사립 조교수는 5,000만 원 초반인 경우도 있습니다. 겉으로 보이는 '교수 연봉'이라는 단일 수치는 현실과 크게 다를 수 있습니다.",
+        "기본급 외 연구비 수입이 중요합니다. 대형 정부 연구과제를 꾸준히 수주하는 교수는 기본급과 비슷하거나 초과하는 연구 인건비를 별도로 받을 수 있습니다. 이 때문에 '스타 연구자'와 일반 교수의 실질 수입 차이는 수천만 원 이상 벌어집니다.",
+        "교수 진입 장벽은 매우 높습니다. 학사~박사~포닥까지 최소 12~15년이 소요되고, 임용 경쟁률도 수십 대 1에 달합니다. 정년(테뉴어) 보장까지 받으면 65세까지 안정적인 커리어가 보장되지만, 그 전까지는 연구 실적 압박이 상당합니다.",
+      ]}
+      criteria={[
+        "연봉 데이터는 교육부 재정정보공시, 대학알리미 기반 추정치",
+        "연구비·외부 강연료는 기본 연봉과 별도이며 개인별 편차 매우 큼",
+        "세후 실수령은 미혼·부양가족 없음 기준 추정치",
+        "대학별 평균 연봉은 전임교원 기준이며 시간강사·겸임교수 미포함",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/reports/teacher-salary-2026/", label: "교사 연봉·호봉 완전 정리 2026" },
+        { href: "/reports/doctor-salary-2026/", label: "의사 연봉 실수령액 완전 비교 2026" },
+        { href: "/reports/public-servant-salary-2026/", label: "공무원 9급 연봉·실수령액 2026" },
+        { href: "/reports/", label: "전체 비교 리포트 보기" },
+      ]}
+    />
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/professor-salary-2026.js" defer></script>
+</BaseLayout>

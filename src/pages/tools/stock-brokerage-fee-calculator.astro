@@ -6,6 +6,7 @@ import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import SimpleToolShell from "../../components/SimpleToolShell.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
+import CompareCta from "../../components/CompareCta.astro";
 import { SBFC_BROKERS, SBFC_META, SBFC_FAQS, SBFC_TRANSACTION_TAX } from "../../data/stockBrokerageFeeCalculator";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
@@ -211,19 +212,44 @@ const faqSchema = SBFC_FAQS.map((f) => ({
           </table>
         </div>
       </div>
-    </div>
-  </SimpleToolShell>
 
-  <!-- SEO + FAQ -->
-  <SeoContent
-    introTitle="증권사 수수료 계산기 사용법"
-    intro={[
-      "증권사 수수료는 거래금액과 거래 빈도에 따라 연간 차이가 수십만 원에 달할 수 있습니다. 특히 월 거래 횟수가 많거나 거래금액이 클수록 증권사 선택이 실질 수익에 미치는 영향이 커집니다.",
-      "이 계산기는 1회 거래금액과 월 거래 횟수를 입력하면 주요 증권사별 연간 예상 수수료를 자동으로 계산합니다. 국내주식과 미국주식을 별도로 선택해 비교할 수 있으며, 미국주식은 환전 스프레드를 포함한 실질 총비용 기준으로 산출합니다.",
-      "수수료 외에도 ISA·연금 계좌 지원, 소수점 투자, 자동 투자 기능 등을 함께 고려하면 투자 스타일에 맞는 증권사를 선택하는 데 도움이 됩니다.",
-    ]}
-    faq={SBFC_FAQS.map((f) => ({ question: f.question, answer: f.answer }))}
-  />
+    </div>
+
+    <!-- CTA 1: 연간 절세 → ISA -->
+    <CompareCta
+      eyebrow="절세 다음 단계"
+      title="수수료보다 세금을 더 아끼려면?"
+      description="ISA 계좌를 활용하면 ETF·예금 수익에서 연 200~400만원 비과세 혜택을 받을 수 있습니다. 내 투자 패턴으로 절세 효과를 계산해보세요."
+      variant="hub"
+      links={[
+        { href: "/tools/isa-tax-calculator/", label: "ISA 절세 시뮬레이터", tone: "primary" },
+        { href: "/tools/year-end-tax-refund-calculator/", label: "연말정산 환급 계산기", tone: "secondary" },
+      ]}
+    />
+
+    <!-- CTA 2: 투자 수익 계산기 -->
+    <CompareCta
+      eyebrow="함께 쓰는 계산기"
+      title="수수료 아낀 돈, 얼마나 불어날까?"
+      description="적립식 투자나 배당주 계산기로 장기 수익도 함께 확인해보세요."
+      variant="bonus"
+      links={[
+        { href: "/tools/dca-investment-calculator/", label: "적립식 투자 수익 계산기", tone: "primary" },
+        { href: "/tools/dividend-monthly-income/", label: "배당주 월급 계산기", tone: "secondary" },
+      ]}
+    />
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="증권사 수수료 계산기 사용법"
+        intro={[
+          "증권사 수수료는 거래금액과 거래 빈도에 따라 연간 차이가 수십만 원에 달할 수 있습니다. 특히 월 거래 횟수가 많거나 거래금액이 클수록 증권사 선택이 실질 수익에 미치는 영향이 커집니다.",
+          "이 계산기는 1회 거래금액과 월 거래 횟수를 입력하면 주요 증권사별 연간 예상 수수료를 자동으로 계산합니다. 국내주식과 미국주식을 별도로 선택해 비교할 수 있으며, 미국주식은 환전 스프레드를 포함한 실질 총비용 기준으로 산출합니다.",
+          "수수료 외에도 ISA·연금 계좌 지원, 소수점 투자, 자동 투자 기능 등을 함께 고려하면 투자 스타일에 맞는 증권사를 선택하는 데 도움이 됩니다.",
+        ]}
+        faq={SBFC_FAQS.map((f) => ({ question: f.question, answer: f.answer }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
 </BaseLayout>
 
 <script src={withBase("scripts/stock-brokerage-fee-calculator.js")} defer></script>

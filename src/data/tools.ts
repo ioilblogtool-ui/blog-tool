@@ -144,6 +144,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "four-insurance-calculator",
+    title: "4대보험 계산기 2026",
+    description: "월급과 비과세 금액을 입력해 국민연금, 건강보험, 장기요양보험, 고용보험 공제액과 간이 세금, 예상 실수령액을 계산합니다.",
+    order: 4.1,
+    eyebrow: "4대보험",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "2026", "급여명세서"],
+    previewStats: [
+      { label: "국민연금", value: "4.75%", context: "근로자" },
+      { label: "건강보험", value: "3.595%", context: "근로자" }
+    ]
+  },
+  {
     slug: "minimum-wage-2026",
     title: "2026 최저임금 계산기",
     description: "2026년 최저임금 기준으로 시급·주급·월급·연봉을 환산하고 주휴수당, 4대보험 공제 후 세후 실수령, 최저임금 미달 여부를 확인하는 계산기",
@@ -169,19 +183,6 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "건강보험료율", value: "7.19%", context: "2026년 공식" },
       { label: "장기요양", value: "13.14%", context: "건보료 대비" }
-    ]
-  },
-  {
-    slug: "retirement",
-    title: "퇴직금 계산기",
-    description: "평균임금 기준 퇴직금과 세후 추정액을 계산하는 페이지",
-    order: 5,
-    eyebrow: "Retirement Tool",
-    category: "calculator",
-    iframeReady: true,
-    previewStats: [
-      { label: "퇴직금 세전", value: "4,166만", context: "5천만·10년" },
-      { label: "세후 추정", value: "약 3,950만" }
     ]
   },
   {

@@ -1,0 +1,357 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  HEALTH_INSURANCE_RULES_2026,
+  HEALTH_INSURANCE_PRESETS,
+  HEALTH_INSURANCE_FAQ,
+  HEALTH_INSURANCE_SEO,
+  HEALTH_INSURANCE_DEFAULT_INPUT,
+} from "../../data/healthInsurancePremiumCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+
+const faqSchema = HEALTH_INSURANCE_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const pageData = {
+  rules: HEALTH_INSURANCE_RULES_2026,
+  presets: HEALTH_INSURANCE_PRESETS,
+  defaultInput: HEALTH_INSURANCE_DEFAULT_INPUT,
+};
+---
+
+<BaseLayout
+  title={HEALTH_INSURANCE_SEO.title}
+  description={HEALTH_INSURANCE_SEO.description}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "건강보험료 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    inLanguage: "ko-KR",
+    isAccessibleForFree: true,
+    url: `${siteUrl}/tools/health-insurance-premium-calculator/`,
+    description: HEALTH_INSURANCE_SEO.description,
+    provider: { "@type": "Organization", name: "비교계산소" },
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="health-insurance-premium-calculator" pageClass="hip-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="4대보험 계산"
+        title="건강보험료 계산기 2026"
+        description="월급·연봉·프리랜서 소득을 입력하면 2026년 건강보험료와 장기요양보험료를 계산합니다."
+      />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          "직장가입자 보수월액 보험료는 2026년 건강보험료율 7.19%와 근로자 부담 3.595%를 기준으로 계산합니다.",
+          "장기요양보험료는 건강보험료의 13.14%를 곱해 계산합니다.",
+          "지역가입자와 퇴직 전환 비교는 입력값 기반 간이 추정이며 실제 고지액과 다를 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="hipResetBtn" copyId="hipCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">가입자 유형</p>
+            <h2 class="panel__title">계산 모드 선택</h2>
+          </div>
+          <p class="panel-heading__summary">직장가입자는 공식 요율, 지역가입자는 간이 추정으로 구분해서 보여줍니다.</p>
+        </div>
+        <div class="hip-mode-tabs" role="tablist" aria-label="건강보험 가입자 유형">
+          <button type="button" class="hip-mode-tab is-active" data-hip-mode="employee">직장가입자</button>
+          <button type="button" class="hip-mode-tab" data-hip-mode="regional">지역가입자</button>
+          <button type="button" class="hip-mode-tab" data-hip-mode="transition">퇴직 전환 비교</button>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대표 예시</p>
+            <h2 class="panel__title">빠른 입력</h2>
+          </div>
+        </div>
+        <div class="hip-preset-grid">
+          {HEALTH_INSURANCE_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`hip-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-hip-preset={preset.id}
+              title={preset.description}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel hip-input-panel is-active" data-hip-panel="employee">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">직장가입자</p>
+            <h2 class="panel__title">월급·연봉 기준 입력</h2>
+          </div>
+        </div>
+
+        <div class="hip-subtabs" aria-label="직장가입자 입력 방식">
+          <button type="button" class="hip-subtab is-active" data-hip-employee-income-mode="monthlyWage">월 보수월액</button>
+          <button type="button" class="hip-subtab" data-hip-employee-income-mode="annualSalary">연봉</button>
+        </div>
+
+        <div class="form-grid">
+          <label class="field hip-employee-monthly-field">
+            <span>월 보수월액</span>
+            <input type="text" inputmode="numeric" data-hip-input="employee.monthlyWage" value="3,000,000" />
+            <small>비과세 수당을 제외한 건강보험 보수월액 기준입니다.</small>
+          </label>
+          <label class="field hip-employee-annual-field" hidden>
+            <span>세전 연봉</span>
+            <input type="text" inputmode="numeric" data-hip-input="employee.annualSalary" value="36,000,000" />
+            <small>연봉을 12개월로 나눈 추정 보수월액을 사용합니다.</small>
+          </label>
+          <label class="field">
+            <span>보수 외 소득</span>
+            <input type="text" inputmode="numeric" data-hip-input="employee.otherAnnualIncome" value="0" />
+            <small>연 2,000만 원 초과 시 소득월액보험료 확인이 필요할 수 있습니다.</small>
+          </label>
+          <label class="check-field field-span-full">
+            <input type="checkbox" data-hip-input="employee.showEmployerShare" checked />
+            <span>회사 부담분도 함께 보기</span>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel hip-input-panel" data-hip-panel="regional">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">지역가입자</p>
+            <h2 class="panel__title">소득·재산 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">지역가입자는 실제 산식이 복잡하므로 간이 추정으로 표시합니다.</p>
+        </div>
+
+        <div class="hip-subtabs" aria-label="지역가입자 계산 방식">
+          <button type="button" class="hip-subtab is-active" data-hip-regional-input-mode="simple">간이 추정</button>
+          <button type="button" class="hip-subtab" data-hip-regional-input-mode="points">부과점수 직접</button>
+        </div>
+
+        <div class="form-grid hip-regional-simple-fields">
+          <label class="field">
+            <span>연간 소득</span>
+            <input type="text" inputmode="numeric" data-hip-input="regional.annualIncome" value="30,000,000" />
+          </label>
+          <label class="field">
+            <span>재산 과세표준</span>
+            <input type="text" inputmode="numeric" data-hip-input="regional.propertyTaxBase" value="0" />
+          </label>
+          <label class="field">
+            <span>전월세 보증금</span>
+            <input type="text" inputmode="numeric" data-hip-input="regional.rentDeposit" value="0" />
+          </label>
+          <label class="field">
+            <span>자동차 가액</span>
+            <input type="text" inputmode="numeric" data-hip-input="regional.carValue" value="0" />
+          </label>
+        </div>
+
+        <div class="form-grid hip-regional-point-fields" hidden>
+          <label class="field">
+            <span>공단 고지서 부과점수</span>
+            <input type="number" inputmode="decimal" min="0" step="0.1" data-hip-input="regional.directPoints" value="0" />
+            <small>점수당 금액은 구현 기준 211.5원으로 간이 적용합니다. 공식 고시 확인 후 업데이트하세요.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel hip-input-panel" data-hip-panel="transition">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">퇴직 전환</p>
+            <h2 class="panel__title">퇴직 전후 부담 비교</h2>
+          </div>
+          <p class="panel-heading__summary">퇴직 후 피부양자·임의계속가입 가능성을 함께 확인하는 용도입니다.</p>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>퇴직 전 월 보수월액</span>
+            <input type="text" inputmode="numeric" data-hip-input="transition.beforeMonthlyWage" value="4,000,000" />
+          </label>
+          <label class="field">
+            <span>퇴직 후 예상 연소득</span>
+            <input type="text" inputmode="numeric" data-hip-input="transition.afterAnnualIncome" value="12,000,000" />
+          </label>
+          <label class="field">
+            <span>퇴직 후 재산 과세표준</span>
+            <input type="text" inputmode="numeric" data-hip-input="transition.afterPropertyTaxBase" value="200,000,000" />
+          </label>
+          <label class="field">
+            <span>퇴직 후 전월세 보증금</span>
+            <input type="text" inputmode="numeric" data-hip-input="transition.afterRentDeposit" value="0" />
+          </label>
+          <label class="field field-span-full">
+            <span>지역 부과점수 직접 입력</span>
+            <input type="number" inputmode="decimal" min="0" step="0.1" data-hip-input="transition.directRegionalPoints" value="0" />
+            <small>고지서 점수를 모르면 0으로 두고 간이 추정값을 확인하세요.</small>
+          </label>
+          <label class="check-field field-span-full">
+            <input type="checkbox" data-hip-input="transition.useContinuationScenario" checked />
+            <span>임의계속가입 시나리오 표시</span>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <article class="panel result-priority-panel" aria-live="polite">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">월 건강보험료와 장기요양보험료</h2>
+        </div>
+        <p class="panel-heading__summary" id="hipBasisText">월 보수월액 입력 기준으로 계산합니다.</p>
+      </div>
+      <div class="hip-kpi-grid">
+        <article class="hip-kpi-card hip-kpi-card--main">
+          <p class="hip-kpi-label">월 총 납부액</p>
+          <strong class="hip-kpi-value" id="hipTotalPremium">-</strong>
+          <span class="hip-badge hip-badge--official" id="hipMainBadge">공식</span>
+        </article>
+        <article class="hip-kpi-card">
+          <p class="hip-kpi-label">건강보험료</p>
+          <strong class="hip-kpi-value" id="hipHealthPremium">-</strong>
+          <span id="hipHealthSub">본인 부담</span>
+        </article>
+        <article class="hip-kpi-card">
+          <p class="hip-kpi-label">장기요양보험료</p>
+          <strong class="hip-kpi-value" id="hipCarePremium">-</strong>
+          <span>건강보험료의 13.14%</span>
+        </article>
+        <article class="hip-kpi-card">
+          <p class="hip-kpi-label">연간 총 납부액</p>
+          <strong class="hip-kpi-value" id="hipAnnualPremium">-</strong>
+          <span>월 합계 × 12</span>
+        </article>
+        <article class="hip-kpi-card">
+          <p class="hip-kpi-label">2025년 대비</p>
+          <strong class="hip-kpi-value" id="hipIncrease">-</strong>
+          <span>직장가입자 기준</span>
+        </article>
+      </div>
+    </article>
+
+    <article class="panel" data-hip-result-panel="employee">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">분담 구조</p>
+          <h2 class="panel__title">근로자와 회사 부담 비교</h2>
+        </div>
+      </div>
+      <div class="hip-table-wrap">
+        <table class="hip-breakdown-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>건강보험료</th>
+              <th>장기요양보험료</th>
+              <th>월 합계</th>
+            </tr>
+          </thead>
+          <tbody id="hipEmployeeTable"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="panel" data-hip-result-panel="regional" hidden>
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">지역가입자</p>
+          <h2 class="panel__title">간이 추정 결과 해석</h2>
+        </div>
+      </div>
+      <div class="hip-notice-card">
+        <strong>지역가입자 결과는 간이 추정입니다.</strong>
+        <p id="hipRegionalNotice">소득·재산·자동차·세대 구성과 감면 여부에 따라 실제 고지액이 달라질 수 있습니다.</p>
+      </div>
+    </article>
+
+    <article class="panel" data-hip-result-panel="transition" hidden>
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">퇴직 전환</p>
+          <h2 class="panel__title">퇴직 전후 월 부담 비교</h2>
+        </div>
+      </div>
+      <div class="hip-table-wrap">
+        <table class="hip-transition-table">
+          <thead>
+            <tr>
+              <th>시나리오</th>
+              <th>건강보험료</th>
+              <th>장기요양보험료</th>
+              <th>월 합계</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody id="hipTransitionTable"></tbody>
+        </table>
+      </div>
+      <div class="hip-notice-card" id="hipTransitionMessage">퇴직 후 자격 조건에 따라 실제 부담액은 달라질 수 있습니다.</div>
+    </article>
+
+    <section class="hip-warning-list" id="hipWarningList" aria-live="polite"></section>
+
+    <section class="hip-notice-card hip-official-link">
+      <strong>공식 조회 안내</strong>
+      <p>지역가입자 보험료와 퇴직 후 자격 전환은 실제 세대 조건에 따라 달라집니다. 정확한 금액은 국민건강보험공단에서 확인하세요.</p>
+      <a class="button button--secondary" href="https://www.nhis.or.kr/" target="_blank" rel="noopener noreferrer">국민건강보험공단에서 확인하기</a>
+    </section>
+
+    <section class="hip-source-list" aria-label="공식 출처">
+      <h2>공식 기준 출처</h2>
+      <ul>
+        {HEALTH_INSURANCE_RULES_2026.sources.map((source) => (
+          <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a></li>
+        ))}
+      </ul>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="건강보험료 계산기 2026 — 직장가입자와 지역가입자 보험료를 함께 보는 법"
+        intro={HEALTH_INSURANCE_SEO.intro}
+        inputPoints={HEALTH_INSURANCE_SEO.inputPoints}
+        criteria={HEALTH_INSURANCE_SEO.criteria}
+        faq={HEALTH_INSURANCE_FAQ}
+        related={HEALTH_INSURANCE_SEO.related}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="hip-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script type="module" src={withBase("/scripts/health-insurance-premium-calculator.js")}></script>
+</BaseLayout>

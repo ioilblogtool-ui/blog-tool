@@ -1,0 +1,375 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  FA_META,
+  FA_HERO_STATS,
+  AIRLINE_ROWS,
+  RANK_ROWS,
+  FA_ALLOWANCES,
+  FA_CAREER,
+  FA_FAQ,
+} from "../../data/flightAttendantSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmt    = (n: number) => Math.round(n / 10_000).toLocaleString("ko-KR");
+const fmtWon = (n: number) => n.toLocaleString("ko-KR");
+
+const fscAirlines = AIRLINE_ROWS.filter((a) => a.type === "FSC");
+const lccAirlines = AIRLINE_ROWS.filter((a) => a.type === "LCC");
+
+const allowanceFlight  = FA_ALLOWANCES.filter((a) => a.type === "flight");
+const allowanceFixed   = FA_ALLOWANCES.filter((a) => a.type === "fixed");
+const allowanceBenefit = FA_ALLOWANCES.filter((a) => a.type === "benefit");
+
+const faqItems = FA_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+const chartLabels = RANK_ROWS.map((r) => r.rank);
+const chartData   = RANK_ROWS.map((r) => Math.round(r.annualEstimate / 10_000));
+
+let activeAirlineId: string | null = null;
+---
+
+<BaseLayout title={FA_META.title} description={FA_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page fa-page">
+
+    <!-- A. Hero -->
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="항공사 승무원 연봉 완전 정리 2026"
+      description="대한항공·아시아나·LCC 항공사별 초봉 비교 · 직급별 연봉 흐름 · 비행수당·체재비 구조까지 한눈에"
+    />
+
+    <!-- B. InfoNotice -->
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "연봉 데이터는 각 항공사 채용 공고 및 업계 공개 자료 기반 추정치입니다.",
+        "비행수당·체재비는 비행 편수와 노선에 따라 실제 수령액 편차가 매우 큽니다.",
+        "세후 실수령은 미혼·부양가족 없음 기준 추정치이며 공제 조건에 따라 달라집니다.",
+        "LCC 항공사별 연봉은 회사 재무 상황에 따라 변동이 있을 수 있습니다.",
+      ]}
+    />
+
+    <!-- C. Hero KPI -->
+    <section class="content-section fa-kpi-section" aria-label="핵심 지표">
+      <div class="fa-kpi-grid">
+        <div class="fa-kpi-card">
+          <p class="fa-kpi-card__label">대한항공 신입 연봉</p>
+          <p class="fa-kpi-card__value">약 {fmt(FA_HERO_STATS.kal_entry_annual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="fa-kpi-card__sub">비행수당 포함</p>
+        </div>
+        <div class="fa-kpi-card">
+          <p class="fa-kpi-card__label">대한항공 사무장</p>
+          <p class="fa-kpi-card__value">약 {fmt(FA_HERO_STATS.kal_senior_annual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="fa-kpi-card__sub">14년차+ 기준</p>
+        </div>
+        <div class="fa-kpi-card">
+          <p class="fa-kpi-card__label">LCC 신입 연봉</p>
+          <p class="fa-kpi-card__value">약 {fmt(FA_HERO_STATS.lcc_entry_annual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="fa-kpi-card__sub">항공사별 편차</p>
+        </div>
+        <div class="fa-kpi-card">
+          <p class="fa-kpi-card__label">월 비행수당 평균</p>
+          <p class="fa-kpi-card__value">약 {fmt(FA_HERO_STATS.flight_allowance_avg)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="fa-kpi-card__sub">편수·노선에 따라 큰 차이</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- D. 항공사별 비교 -->
+    <section class="content-section" aria-labelledby="fa-airline-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">항공사별 비교</p>
+        <h2 id="fa-airline-title">대한항공 · 아시아나 · LCC — 어느 항공사가 유리할까?</h2>
+        <p>카드를 클릭하면 장단점 상세를 볼 수 있습니다.</p>
+      </div>
+
+      <div class="fa-airline-tabs" role="tablist" aria-label="항공사 유형">
+        <button class="fa-airline-tab is-active" data-tab="FSC" aria-selected="true">FSC (대형항공사)</button>
+        <button class="fa-airline-tab" data-tab="LCC" aria-selected="false">LCC (저비용항공사)</button>
+      </div>
+
+      {[
+        { key: "FSC", rows: fscAirlines, hidden: false },
+        { key: "LCC", rows: lccAirlines, hidden: true  },
+      ].map(({ key, rows, hidden }) => (
+        <div class="fa-airline-grid" data-tab={key} id={`fa-grid-${key}`} {...(hidden ? { hidden: true } : {})}>
+          {rows.map((a) => (
+            <div
+              class="fa-airline-card"
+              data-airline-id={a.id}
+              role="button"
+              tabindex="0"
+              aria-expanded="false"
+            >
+              <div class="fa-airline-bar" style={`background: var(${a.colorVar})`}></div>
+              <div class="fa-airline-card__body">
+                <div class="fa-airline-card__header">
+                  <strong>{a.name}</strong>
+                  <span class="ts-badge ts-badge--ref">{a.badge}</span>
+                </div>
+                <p class="fa-airline-card__range">
+                  신입 <strong>{fmt(a.entryAnnualMin)}~{fmt(a.entryAnnualMax)}만 원</strong>
+                  <span class="ts-badge ts-badge--estimate" style="margin-left:4px">추정</span>
+                </p>
+                <p class="fa-airline-card__senior">
+                  고경력 <strong>{fmt(a.seniorAnnualMin)}~{fmt(a.seniorAnnualMax)}만 원</strong>
+                </p>
+                <p class="fa-airline-card__layover">{a.layoverNote}</p>
+                <button class="fa-airline-card__toggle" aria-label={`${a.name} 상세 보기`}>
+                  장단점 보기 <span class="fa-toggle-icon">▼</span>
+                </button>
+              </div>
+              <div class="fa-airline-panel" hidden>
+                <div class="fa-airline-panel__cols">
+                  <div class="fa-airline-panel__col fa-airline-panel__col--pros">
+                    <p class="fa-airline-panel__col-title">장점</p>
+                    <ul>{a.pros.map((p) => <li>{p}</li>)}</ul>
+                  </div>
+                  <div class="fa-airline-panel__col fa-airline-panel__col--cons">
+                    <p class="fa-airline-panel__col-title">단점</p>
+                    <ul>{a.cons.map((c) => <li>{c}</li>)}</ul>
+                  </div>
+                </div>
+                <p class="fa-airline-panel__flight">{a.flightAllowanceNote}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </section>
+
+    <!-- E. 직급별 연봉 (대한항공 기준) -->
+    <section class="content-section" aria-labelledby="fa-rank-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">직급별 연봉</p>
+        <h2 id="fa-rank-title">신입 → 선임 → 사무장 — 직급별 월 수령 추정 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>대한항공 기준 추정치. 비행 편수·노선에 따라 실제 수령액은 크게 달라집니다.</p>
+      </div>
+
+      <div class="fa-rank-table-wrap">
+        <table class="fa-rank-table">
+          <thead>
+            <tr>
+              <th>직급</th>
+              <th>경력</th>
+              <th>월 기본급</th>
+              <th>월 비행수당</th>
+              <th>월 체재비</th>
+              <th>월 합계</th>
+              <th>연 추정</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RANK_ROWS.map((r) => (
+              <tr class={r.rank === "신입 사원" ? "fa-row--highlight" : ""}>
+                <td><strong>{r.rank}</strong></td>
+                <td>{r.years}</td>
+                <td>{fmtWon(r.monthlyBase)}원</td>
+                <td>{fmtWon(r.monthlyFlightMin)}~{fmtWon(r.monthlyFlightMax)}원</td>
+                <td>약 {fmtWon(r.monthlyLayover)}원</td>
+                <td><strong>약 {fmtWon(r.monthlyTotal)}원</strong></td>
+                <td>
+                  약 {fmt(r.annualEstimate)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="fa-rank-note">※ 비행수당과 체재비는 월 비행 편수·노선·시간에 따라 실제 편차가 매우 큽니다.</p>
+
+      <div class="fa-chart-wrap">
+        <canvas id="fa-rank-chart"
+          data-labels={JSON.stringify(chartLabels)}
+          data-values={JSON.stringify(chartData)}
+        ></canvas>
+      </div>
+    </section>
+
+    <!-- F. 수당 구조 -->
+    <section class="content-section" aria-labelledby="fa-allowance-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">수당·복리후생</p>
+        <h2 id="fa-allowance-title">승무원 수당 및 복리후생 구조</h2>
+        <p>기본급 외 비행수당·체재비가 실수령의 핵심입니다.</p>
+      </div>
+
+      <div class="ts-allowance-tabs" role="tablist" aria-label="수당 유형">
+        <button class="ts-allowance-tab is-active" data-tab="flight"  aria-selected="true">비행 관련</button>
+        <button class="ts-allowance-tab"             data-tab="fixed"   aria-selected="false">고정 수당</button>
+        <button class="ts-allowance-tab"             data-tab="benefit" aria-selected="false">복리후생</button>
+      </div>
+
+      <div class="ts-allowance-list" data-tab="flight">
+        {allowanceFlight.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ts-allowance-list" data-tab="fixed" hidden>
+        {allowanceFixed.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ts-allowance-list" data-tab="benefit" hidden>
+        {allowanceBenefit.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- G. 커리어 단계별 수입 -->
+    <section class="content-section" aria-labelledby="fa-career-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">커리어 흐름</p>
+        <h2 id="fa-career-title">승무원 커리어 단계별 예상 수입 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>항공사 유형(FSC/LCC)에 따라 차이가 납니다. 아래는 FSC·LCC 전체 평균 범위입니다.</p>
+      </div>
+      <div class="fa-career-table-wrap">
+        <table class="fa-career-table">
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>시기</th>
+              <th>연 수입 범위</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {FA_CAREER.map((row) => (
+              <tr>
+                <td><strong>{row.stage}</strong></td>
+                <td>{row.label}</td>
+                <td>
+                  약 {fmt(row.annualMin)}~{fmt(row.annualMax)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td class="fa-career-note">{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- H. FAQ -->
+    <section class="content-section" aria-labelledby="fa-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="fa-faq-title">승무원 연봉 FAQ</h2>
+      </div>
+      <div class="fa-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+        {FA_FAQ.map((item) => (
+          <div class="fa-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="fa-faq-q" itemprop="name" aria-expanded="false">
+              {item.q}
+              <span class="fa-faq-icon">▼</span>
+            </button>
+            <div class="fa-faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.a}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- I. 관련 콘텐츠 -->
+    <section class="content-section" aria-labelledby="fa-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">내부 연결</p>
+        <h2 id="fa-related-title">같이 보면 좋은 계산기·리포트</h2>
+      </div>
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/tools/salary/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 실수령 계산기</strong>
+          <p>승무원 연봉을 넣고 세후 실수령을 확인합니다.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/tools/salary-tier/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 티어 계산기</strong>
+          <p>내 연봉이 전체 직장인 어느 구간인지 확인.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/korea-flight-price-comparison-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>한국인 해외여행 항공권 가격 2026</strong>
+          <p>승무원이 일하는 노선 항공권 가격 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/nurse-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>간호사 연차별 연봉 2026</strong>
+          <p>서비스·의료직 연봉 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/new-employee-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>2026 신입 초봉 순위</strong>
+          <p>대기업·공기업 초봉과 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/")}>
+          <span class="ts-link-card__eyebrow">리포트 모음</span>
+          <strong>전체 비교 리포트 보기</strong>
+          <p>다른 직업·자산·생활 리포트까지 탐색.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="항공사 승무원 연봉 완전 정리 2026 — 비교계산소 해설"
+      intro={[
+        "승무원 연봉은 기본급만 보면 낮아 보이지만, 비행수당과 체재비를 더하면 실수령이 크게 달라집니다. 대한항공 신입 기준 기본급은 월 180만 원 수준이지만, 국제선 비행수당과 체재비를 합하면 월 350~400만 원 이상 수령하는 달도 있습니다.",
+        "FSC(대한항공·아시아나)와 LCC(제주항공 등)의 연봉 격차는 신입 기준 연 500만~1,000만 원 이상입니다. FSC는 장거리 국제선 체재비 혜택이 크고, LCC는 상대적으로 입사가 쉽고 직급 상승이 빠른 편입니다.",
+        "항공권 할인 혜택은 비금전적 보상 중 가장 눈에 띄는 항목입니다. 가족 포함 할인 항공권은 연간 수백만 원의 금전적 가치를 가집니다. 이 때문에 실질 총보상은 기본급+수당 합계보다 체감적으로 더 높습니다.",
+      ]}
+      criteria={[
+        "연봉 데이터는 각 항공사 채용 공고 및 업계 공개 자료 기반 추정치",
+        "비행수당·체재비는 월 비행 편수·노선에 따라 실제 편차 매우 큼",
+        "세후 실수령은 미혼·부양가족 없음 기준 추정치",
+        "직급별 연봉은 대한항공 기준 추정치이며 타 항공사는 상이",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/reports/nurse-salary-2026/", label: "간호사 연차별 연봉 2026" },
+        { href: "/reports/new-employee-salary-2026/", label: "2026 신입 초봉 순위" },
+        { href: "/reports/korea-flight-price-comparison-2026/", label: "한국인 해외여행 항공권 가격 2026" },
+        { href: "/reports/", label: "전체 비교 리포트 보기" },
+      ]}
+    />
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/flight-attendant-salary-2026.js" defer></script>
+</BaseLayout>

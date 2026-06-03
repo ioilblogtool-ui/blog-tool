@@ -263,42 +263,44 @@ const faqSchema = ISA_FAQS.map((f) => ({
           </table>
         </div>
       </div>
-      <!-- CTA 1: ISA 만기 후 연금 이전 -->
-      <CompareCta
-        eyebrow="다음 단계"
-        title="ISA 만기 후 연금 계좌로 이전하면?"
-        description="ISA 만기 수령액을 IRP·연금저축으로 이전하면 전환금액의 10%(최대 300만원) 추가 세액공제를 받을 수 있습니다. 지금 바로 계산해보세요."
-        variant="hub"
-        links={[
-          { href: "/tools/irp-pension-calculator/", label: "IRP 연금 계산기", tone: "primary" },
-          { href: "/tools/year-end-tax-refund-calculator/", label: "연말정산 환급 계산기", tone: "secondary" },
-        ]}
-      />
-
-      <!-- CTA 2: 세금·투자 관련 도구 -->
-      <CompareCta
-        eyebrow="함께 쓰는 계산기"
-        title="ISA 계좌 개설 전 확인하세요"
-        description="ISA를 개설할 증권사 수수료를 비교하거나, 국내주식 양도세 계산이 필요하다면 아래 계산기를 활용해보세요."
-        variant="bonus"
-        links={[
-          { href: "/tools/stock-brokerage-fee-calculator/", label: "증권사 수수료 비교", tone: "primary" },
-          { href: "/tools/domestic-stock-capital-gains-tax/", label: "국내주식 양도세 계산기", tone: "secondary" },
-        ]}
-      />
     </div>
-  </SimpleToolShell>
 
-  <SeoContent
-    introTitle="ISA 계좌 절세 시뮬레이터 사용법"
-    intro={[
-      "ISA(개인종합자산관리계좌)는 하나의 계좌에서 예금, ETF, 펀드, 국내주식을 통합 운용하면서 비과세·분리과세 혜택을 받는 계좌입니다. 2026년 기준 일반형은 비과세 한도 200만원, 서민형·농어민형은 400만원이 적용됩니다.",
-      "ISA의 핵심 장점은 손익통산입니다. 계좌 내 여러 상품의 수익과 손실을 합산한 순이익 기준으로 세금을 계산하기 때문에, 일부 상품에서 손실이 나더라도 수익 상품의 세금이 줄어드는 효과가 있습니다.",
-      "비과세 한도를 초과한 수익도 9.9% 분리과세로 처리돼 일반 이자·배당 세율 15.4%보다 낮습니다. 연간 2,000만원 한도 내에서 납입할 수 있으며, 미납입분은 다음 해로 이월됩니다.",
-    ]}
-    faq={ISA_FAQS.map((f) => ({ question: f.question, answer: f.answer }))}
-    related={ISA_RELATED}
-  />
+    <!-- CTA 1: ISA 만기 후 연금 이전 -->
+    <CompareCta
+      eyebrow="다음 단계"
+      title="ISA 만기 후 연금 계좌로 이전하면?"
+      description="ISA 만기 수령액을 IRP·연금저축으로 이전하면 전환금액의 10%(최대 300만원) 추가 세액공제를 받을 수 있습니다. 지금 바로 계산해보세요."
+      variant="hub"
+      links={[
+        { href: "/tools/irp-pension-calculator/", label: "IRP 연금 계산기", tone: "primary" },
+        { href: "/tools/year-end-tax-refund-calculator/", label: "연말정산 환급 계산기", tone: "secondary" },
+      ]}
+    />
+
+    <!-- CTA 2: 세금·투자 관련 도구 -->
+    <CompareCta
+      eyebrow="함께 쓰는 계산기"
+      title="ISA 계좌 개설 전 확인하세요"
+      description="ISA를 개설할 증권사 수수료를 비교하거나, 국내주식 양도세 계산이 필요하다면 아래 계산기를 활용해보세요."
+      variant="bonus"
+      links={[
+        { href: "/tools/stock-brokerage-fee-calculator/", label: "증권사 수수료 비교", tone: "primary" },
+        { href: "/tools/domestic-stock-capital-gains-tax/", label: "국내주식 양도세 계산기", tone: "secondary" },
+      ]}
+    />
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="ISA 계좌 절세 시뮬레이터 사용법"
+        intro={[
+          "ISA(개인종합자산관리계좌)는 하나의 계좌에서 예금, ETF, 펀드, 국내주식을 통합 운용하면서 비과세·분리과세 혜택을 받는 계좌입니다. 2026년 기준 일반형은 비과세 한도 200만원, 서민형·농어민형은 400만원이 적용됩니다.",
+          "ISA의 핵심 장점은 손익통산입니다. 계좌 내 여러 상품의 수익과 손실을 합산한 순이익 기준으로 세금을 계산하기 때문에, 일부 상품에서 손실이 나더라도 수익 상품의 세금이 줄어드는 효과가 있습니다.",
+          "비과세 한도를 초과한 수익도 9.9% 분리과세로 처리돼 일반 이자·배당 세율 15.4%보다 낮습니다. 연간 2,000만원 한도 내에서 납입할 수 있으며, 미납입분은 다음 해로 이월됩니다.",
+        ]}
+        faq={ISA_FAQS.map((f) => ({ question: f.question, answer: f.answer }))}
+        related={ISA_RELATED}
+      />
+    </Fragment>
+  </SimpleToolShell>
 </BaseLayout>
 
 <script src={withBase("scripts/isa-tax-calculator.js")} defer></script>

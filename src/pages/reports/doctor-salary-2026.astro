@@ -1,0 +1,465 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  DR_META,
+  DR_HERO_STATS,
+  DOCTOR_TYPES,
+  RESIDENT_STEPS,
+  SPECIALTY_ROWS,
+  HOSPITAL_TYPES,
+  DOCTOR_ALLOWANCES,
+  TOTAL_COMP,
+  DOCTOR_FAQ,
+} from "../../data/doctorSalary2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmt = (n: number) => Math.round(n / 10_000).toLocaleString("ko-KR");
+const fmtWon = (n: number) => n.toLocaleString("ko-KR");
+
+const surgicalSpecialties = SPECIALTY_ROWS.filter((s) => s.category === "surgical");
+const internalSpecialties = SPECIALTY_ROWS.filter((s) => s.category === "internal");
+const otherSpecialties = SPECIALTY_ROWS.filter((s) => s.category === "support" || s.category === "other");
+
+const faqItems = DOCTOR_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+const chartLabels = RESIDENT_STEPS.map((s) => s.label);
+const chartData   = RESIDENT_STEPS.map((s) => Math.round(s.annualEstimate / 10_000));
+
+const allowanceFixed       = DOCTOR_ALLOWANCES.filter((a) => a.type === "fixed");
+const allowancePerformance = DOCTOR_ALLOWANCES.filter((a) => a.type === "performance");
+const allowanceSpecial     = DOCTOR_ALLOWANCES.filter((a) => a.type === "special");
+---
+
+<BaseLayout title={DR_META.title} description={DR_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page dr-page">
+
+    <!-- A. Hero -->
+    <CalculatorHero
+      eyebrow="직업·연봉 리포트"
+      title="의사 연봉 실수령액 완전 정리 2026"
+      description="전공의·봉직의·개원의·교수별 연봉 비교 · 전공과별 수입 격차 · 수련 단계별 급여까지 한눈에"
+    />
+
+    <!-- B. InfoNotice -->
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        "수련 단계별 급여는 전공의 수련규정 및 병원 공시 급여 기준 추정치입니다.",
+        "봉직의·개원의 연봉은 보건복지부 의료인력 실태조사 및 업계 공개 자료 기반 추정치로 병원·전공·지역별 편차가 매우 큽니다.",
+        "세후 실수령은 미혼·부양가족 없음 기준이며, 개인 공제 조건에 따라 달라집니다.",
+        "개원의 수입은 비용(임대·인건비·재료비) 차감 전 매출 기준이 아닌, 실질 소득 추정치입니다.",
+      ]}
+    />
+
+    <!-- C. Hero KPI -->
+    <section class="content-section dr-kpi-section" aria-label="핵심 지표">
+      <div class="dr-kpi-grid">
+        <div class="dr-kpi-card">
+          <p class="dr-kpi-card__label">전공의 1년차 월 수령</p>
+          <p class="dr-kpi-card__value">약 {fmt(DR_HERO_STATS.residentY1Monthly * 12 / 12)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="dr-kpi-card__sub">수당 포함 기준</p>
+        </div>
+        <div class="dr-kpi-card">
+          <p class="dr-kpi-card__label">봉직의 평균 연봉</p>
+          <p class="dr-kpi-card__value">약 {fmt(DR_HERO_STATS.employeeAvgAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="dr-kpi-card__sub">전공·병원 평균</p>
+        </div>
+        <div class="dr-kpi-card">
+          <p class="dr-kpi-card__label">개원의 평균 수입</p>
+          <p class="dr-kpi-card__value">약 {fmt(DR_HERO_STATS.selfEmployedAvgAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="dr-kpi-card__sub">전공·입지 편차 극대</p>
+        </div>
+        <div class="dr-kpi-card">
+          <p class="dr-kpi-card__label">대학병원 교수 평균</p>
+          <p class="dr-kpi-card__value">약 {fmt(DR_HERO_STATS.professorAvgAnnual)}만 원</p>
+          <span class="ts-badge ts-badge--estimate">추정</span>
+          <p class="dr-kpi-card__sub">연구비 미포함</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- D. 근무 형태별 비교 -->
+    <section class="content-section" aria-labelledby="dr-type-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">근무 형태별 비교</p>
+        <h2 id="dr-type-title">전공의 · 봉직의 · 개원의 · 교수 — 어느 쪽이 유리할까?</h2>
+        <p>카드를 클릭하면 장단점 상세를 볼 수 있습니다.</p>
+      </div>
+
+      <div class="dr-type-grid" id="dr-type-grid">
+        {DOCTOR_TYPES.map((dt) => (
+          <div
+            class="dr-type-card"
+            data-type-id={dt.id}
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+          >
+            <div class="dr-type-bar" style={`background: var(${dt.colorVar})`}></div>
+            <div class="dr-type-card__body">
+              <div class="dr-type-card__header">
+                <strong>{dt.name}</strong>
+                <span class="ts-badge ts-badge--ref">{dt.badge}</span>
+              </div>
+              <p class="dr-type-card__desc">{dt.description}</p>
+              <p class="dr-type-card__range">
+                연봉 <strong>{fmt(dt.annualMin)}~{fmt(dt.annualMax)}만 원</strong>
+                <span class="ts-badge ts-badge--estimate" style="margin-left:4px">추정</span>
+              </p>
+              <p class="dr-type-card__net">
+                월 실수령 약 <strong>{fmt(dt.monthlyNetMin * 12 / 12)}~{fmt(dt.monthlyNetMax * 12 / 12)}만 원</strong>
+              </p>
+              <button class="dr-type-card__toggle" aria-label={`${dt.name} 상세 보기`}>
+                장단점 보기 <span class="dr-toggle-icon">▼</span>
+              </button>
+            </div>
+
+            <div class="dr-type-panel" hidden>
+              <div class="dr-type-panel__cols">
+                <div class="dr-type-panel__col dr-type-panel__col--pros">
+                  <p class="dr-type-panel__col-title">장점</p>
+                  <ul>{dt.pros.map((p) => <li>{p}</li>)}</ul>
+                </div>
+                <div class="dr-type-panel__col dr-type-panel__col--cons">
+                  <p class="dr-type-panel__col-title">단점</p>
+                  <ul>{dt.cons.map((c) => <li>{c}</li>)}</ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- E. 수련 단계별 급여 -->
+    <section class="content-section" aria-labelledby="dr-resident-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">수련 단계별 급여</p>
+        <h2 id="dr-resident-title">인턴 → 레지던트 → 전임의 단계별 급여 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>당직수당·휴일수당 포함 추정치입니다. 병원·전공별로 실제 수령액은 달라집니다.</p>
+      </div>
+
+      <div class="dr-resident-table-wrap">
+        <table class="dr-resident-table">
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>월 기본급</th>
+              <th>월 수당 (추정)</th>
+              <th>월 합계</th>
+              <th>연 추정 수령</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RESIDENT_STEPS.map((s) => (
+              <tr class={s.stage === "R1" ? "dr-row--highlight" : ""}>
+                <td>
+                  <strong>{s.label}</strong>
+                  <p class="dr-resident-note">{s.note}</p>
+                </td>
+                <td>{fmtWon(s.monthlyBase)}원</td>
+                <td>{fmtWon(s.monthlyAllowance)}원</td>
+                <td><strong>{fmtWon(s.monthlyTotal)}원</strong></td>
+                <td>
+                  약 {fmt(s.annualEstimate)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dr-chart-wrap">
+        <canvas id="dr-resident-chart"
+          data-labels={JSON.stringify(chartLabels)}
+          data-values={JSON.stringify(chartData)}
+        ></canvas>
+      </div>
+    </section>
+
+    <!-- F. 전공별 연봉 비교 -->
+    <section class="content-section" aria-labelledby="dr-specialty-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">전공별 연봉 비교</p>
+        <h2 id="dr-specialty-title">전공과별 봉직의 · 개원의 연봉 비교 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>봉직의는 병원 고용 기준, 개원의는 경영 비용 차감 후 실질 소득 추정치입니다.</p>
+      </div>
+
+      <div class="dr-specialty-tabs" role="tablist" aria-label="전공 계열">
+        <button class="dr-specialty-tab is-active" data-tab="surgical" aria-selected="true">외과계</button>
+        <button class="dr-specialty-tab" data-tab="internal" aria-selected="false">내과계</button>
+        <button class="dr-specialty-tab" data-tab="other" aria-selected="false">지원·기타</button>
+      </div>
+
+      {[
+        { key: "surgical", rows: surgicalSpecialties, hidden: false },
+        { key: "internal", rows: internalSpecialties, hidden: true },
+        { key: "other",    rows: otherSpecialties,    hidden: true },
+      ].map(({ key, rows, hidden }) => (
+        <div class="dr-specialty-table-wrap" data-tab={key} {...(hidden ? { hidden: true } : {})}>
+          <table class="dr-specialty-table">
+            <thead>
+              <tr>
+                <th>전공</th>
+                <th>봉직의 연봉</th>
+                <th>개원의 수입</th>
+                <th>수요</th>
+                <th>비고</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr>
+                  <td><strong>{row.specialty}</strong></td>
+                  <td>
+                    {fmt(row.employeeAnnualMin)}~{fmt(row.employeeAnnualMax)}만
+                    <span class="ts-badge ts-badge--estimate">추정</span>
+                  </td>
+                  <td>
+                    {row.selfEmployedMin === 0
+                      ? "—"
+                      : `${fmt(row.selfEmployedMin)}~${fmt(row.selfEmployedMax)}만`
+                    }
+                    {row.selfEmployedMin > 0 && <span class="ts-badge ts-badge--estimate">추정</span>}
+                  </td>
+                  <td>
+                    <span class={`dr-demand dr-demand--${row.demandLevel === "매우 높음" ? "very-high" : row.demandLevel === "높음" ? "high" : row.demandLevel === "중간" ? "mid" : "low"}`}>
+                      {row.demandLevel}
+                    </span>
+                  </td>
+                  <td class="dr-specialty-note">{row.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </section>
+
+    <!-- G. 병원 유형별 비교 -->
+    <section class="content-section" aria-labelledby="dr-hospital-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">병원 유형별 비교</p>
+        <h2 id="dr-hospital-title">상급종합 vs 종합 vs 중소병원 — 급여·워라밸 차이</h2>
+        <p>연봉이 높다고 무조건 유리하지 않습니다. 업무 강도·안정성·성장성을 함께 비교하세요.</p>
+      </div>
+      <div class="dr-hospital-table-wrap">
+        <table class="dr-hospital-table">
+          <thead>
+            <tr>
+              <th>병원 유형</th>
+              <th>연봉 범위</th>
+              <th>특징</th>
+              <th>업무 강도</th>
+              <th>안정성</th>
+            </tr>
+          </thead>
+          <tbody>
+            {HOSPITAL_TYPES.map((h) => (
+              <tr>
+                <td><strong>{h.type}</strong></td>
+                <td>
+                  {h.employeeRange}억
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td>{h.characteristics}</td>
+                <td>{h.workload}</td>
+                <td>{h.stability}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- H. 수당 구조 -->
+    <section class="content-section" aria-labelledby="dr-allowance-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">수당 구조</p>
+        <h2 id="dr-allowance-title">의사 수당·인센티브 구조</h2>
+        <p>기본 연봉 외 수당이 실수령에 큰 영향을 미칩니다.</p>
+      </div>
+
+      <div class="ts-allowance-tabs" role="tablist" aria-label="수당 유형">
+        <button class="ts-allowance-tab is-active" data-tab="fixed"       aria-selected="true">고정 수당</button>
+        <button class="ts-allowance-tab"             data-tab="performance" aria-selected="false">성과 인센티브</button>
+        <button class="ts-allowance-tab"             data-tab="special"    aria-selected="false">특수 수당</button>
+      </div>
+
+      <div class="ts-allowance-list" data-tab="fixed">
+        {allowanceFixed.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ts-allowance-list" data-tab="performance" hidden>
+        {allowancePerformance.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ts-allowance-list" data-tab="special" hidden>
+        {allowanceSpecial.map((a) => (
+          <div class="ts-allowance-card">
+            <div class="ts-allowance-card__top">
+              <strong>{a.name}</strong>
+              <span class="ts-allowance-card__amount">{a.amount}</span>
+            </div>
+            <p class="ts-allowance-card__cond">{a.condition}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- I. 총보상 패키지 -->
+    <section class="content-section" aria-labelledby="dr-comp-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">커리어 단계별 수입</p>
+        <h2 id="dr-comp-title">의사 커리어 단계별 예상 수입 <span class="ts-badge ts-badge--estimate">추정</span></h2>
+        <p>의대 졸업 후 실제로 '버는 의사'가 되기까지의 현실적 흐름입니다.</p>
+      </div>
+      <div class="dr-comp-table-wrap">
+        <table class="dr-comp-table">
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>시기</th>
+              <th>연 수입 범위</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TOTAL_COMP.map((row) => (
+              <tr>
+                <td><strong>{row.label}</strong></td>
+                <td>{row.stage}</td>
+                <td>
+                  약 {fmt(row.annualMin)}~{fmt(row.annualMax)}만 원
+                  <span class="ts-badge ts-badge--estimate">추정</span>
+                </td>
+                <td class="dr-comp-note">{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="dr-comp-footnote">
+        ※ 의대 6년 + 인턴 1년 + 레지던트 3~4년 = 졸업 후 최소 10~11년 후 전문의 취득.
+        <span class="ts-badge ts-badge--ref">참고</span>
+      </p>
+    </section>
+
+    <!-- J. FAQ -->
+    <section class="content-section" aria-labelledby="dr-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="dr-faq-title">의사 연봉 FAQ</h2>
+      </div>
+      <div class="dr-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+        {DOCTOR_FAQ.map((item) => (
+          <div class="dr-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="dr-faq-q" itemprop="name" aria-expanded="false">
+              {item.q}
+              <span class="dr-faq-icon">▼</span>
+            </button>
+            <div class="dr-faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.a}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- K. 관련 콘텐츠 -->
+    <section class="content-section" aria-labelledby="dr-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">내부 연결</p>
+        <h2 id="dr-related-title">같이 보면 좋은 계산기·리포트</h2>
+      </div>
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/tools/salary/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 실수령 계산기</strong>
+          <p>연봉을 입력하면 세후 실수령액을 바로 확인합니다.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/tools/salary-tier/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>연봉 티어 계산기</strong>
+          <p>의사 연봉이 전체 직장인 분포 어느 구간인지 확인.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/nurse-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>간호사 연차별 연봉 2026</strong>
+          <p>의료직 연봉 시리즈 — 간호사 편.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/teacher-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>교사 연봉·호봉 완전 정리 2026</strong>
+          <p>공직·교육직 연봉 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/it-salary-top10/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>IT 업계 신입 초봉 TOP 10</strong>
+          <p>의료직 vs IT 직군 연봉 비교 참고.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/")}>
+          <span class="ts-link-card__eyebrow">리포트 모음</span>
+          <strong>전체 비교 리포트 보기</strong>
+          <p>다른 직업·자산·생활 리포트까지 탐색.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="의사 연봉 실수령액 완전 정리 2026 — 비교계산소 해설"
+      intro={[
+        "의사 연봉은 '평균'으로 이야기하기 어려운 직업입니다. 전공의(레지던트) 시절에는 월 400~500만 원 수준이지만, 전문의 취득 후 봉직의로 전환하면 연봉 1.5억~2.5억, 개원에 성공하면 3억~10억 이상까지도 가능합니다.",
+        "핵심 변수는 전공과와 근무 형태입니다. 성형외과·피부과·안과 등 미용 비급여 비중이 높은 전공은 개원 시 수입이 크게 올라가는 반면, 소아청소년과·산부인과는 저출생 영향으로 개원 수익성이 하락하고 있습니다.",
+        "의대 졸업 후 전문의가 되기까지 최소 10~11년이 소요됩니다. 이 기간 동안 높은 교육비와 낮은 전공의 급여를 감안하면, 의사의 '고연봉'은 진입 장벽과 긴 수련 기간에 대한 보상이기도 합니다.",
+      ]}
+      criteria={[
+        "수련 단계별 급여는 전공의 수련규정 및 병원 공시 급여 기준 추정치",
+        "봉직의·개원의 연봉은 보건복지부 의료인력 실태조사 기반 추정치",
+        "세후 실수령은 미혼·부양가족 없음 기준 추정치",
+        "개원의 수입은 경영 비용 차감 후 실질 소득 추정치",
+        "전공별 연봉은 평균적 경향이며 병원·지역·경력에 따라 편차 매우 큼",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/salary/", label: "연봉 실수령 계산기" },
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/nurse-salary-2026/", label: "간호사 연차별 연봉 2026" },
+        { href: "/reports/teacher-salary-2026/", label: "교사 연봉·호봉 완전 정리 2026" },
+        { href: "/reports/police-salary-2026/", label: "경찰관 계급별 연봉 2026" },
+        { href: "/reports/", label: "전체 비교 리포트 보기" },
+      ]}
+    />
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/doctor-salary-2026.js" defer></script>
+</BaseLayout>
