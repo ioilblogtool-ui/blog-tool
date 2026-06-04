@@ -1,7 +1,7 @@
 // ============================================================
 // localElectionGovernor2026.ts
 // 2026 지방선거 시도지사 당선자 데이터
-// 기준: 2026.06.04 개표율 99.79%
+// 기준: 2026.06.04 14:00 개표율 99.92%
 // TODO 주석 = 선관위 최종 확정 후 업데이트 필요 항목
 // ============================================================
 
@@ -60,7 +60,7 @@ export interface GovernorPageMeta {
 export const GOVERNOR_META: GovernorPageMeta = {
   electionName: "제9회 전국동시지방선거",
   electionDate: "2026-06-03",
-  dataAsOf: "2026-06-04 개표율 99.79% 기준",   // TODO: 최종 확정 시 "선관위 최종 확정" 으로 변경
+  dataAsOf: "2026-06-04 14:00 개표율 99.92% 기준",   // TODO: 최종 확정 시 "선관위 최종 확정" 으로 변경
   totalRegions: 16,
   demCount: 12,
   pppCount: 4,
@@ -112,24 +112,24 @@ export const GOVERNORS: GovernorElected[] = [
     regionName: "Busan",
     regionNameKo: "부산",
     elected: {
-      name: "박형준",
-      party: "국민의힘",
-      voteShare: 0,       // TODO: 선관위 확정 후 업데이트
-      badge: "확정대기",
-    },
-    runner: {
       name: "전재수",
       party: "더불어민주당",
-      voteShare: 0,       // TODO: 선관위 확정 후 업데이트
-      badge: "확정대기",
+      voteShare: 50.52,
+      badge: "확정",
+    },
+    runner: {
+      name: "박형준",
+      party: "국민의힘",
+      voteShare: 47.90,
+      badge: "확정",
     },
     previousParty: "국민의힘",
-    isPartyFlip: false,
+    isPartyFlip: true,
     career: [
-      "부산시장 재선 (2021~2026)",
-      "국회의원 부산 동래구 (2016~2020)",
-      "부산시장 권한대행 (2020)",
-      "동아대학교 교수",
+      "국회의원 부산 북구·강서구갑 및 북구갑",
+      "국회 문화체육관광위원회 위원장",
+      "청와대 제2부속실장",
+      "부산 지역 정무·의정 활동",
     ],
     pledges: [
       // TODO: 선관위 공약마당 확인 후 상세 업데이트
@@ -327,14 +327,14 @@ export const GOVERNORS: GovernorElected[] = [
     elected: {
       name: "추미애",
       party: "더불어민주당",
-      voteShare: 0,       // TODO: 선관위 확정 후 업데이트
-      badge: "확정대기",
+      voteShare: 55.04,
+      badge: "확정",
     },
     runner: {
-      name: "김은혜",
+      name: "양향자",
       party: "국민의힘",
-      voteShare: 0,       // TODO: 선관위 확정 후 업데이트
-      badge: "확정대기",
+      voteShare: 39.37,
+      badge: "확정",
     },
     previousParty: "국민의힘",
     isPartyFlip: true,
@@ -391,10 +391,15 @@ export const GOVERNORS: GovernorElected[] = [
     elected: {
       name: "신용한",
       party: "더불어민주당",
-      voteShare: 0,       // TODO: 선관위 확정 후 업데이트
-      badge: "확정대기",
+      voteShare: 54.57,
+      badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: {
+      name: "김영환",
+      party: "국민의힘",
+      voteShare: 45.42,
+      badge: "확정",
+    },
     previousParty: "국민의힘",
     isPartyFlip: true,
     career: [
@@ -503,24 +508,24 @@ export const GOVERNORS: GovernorElected[] = [
     regionName: "Gyeongnam",
     regionNameKo: "경남",
     elected: {
-      name: "김경수",
-      party: "더불어민주당",
-      voteShare: 0,       // TODO: 선관위 확정 후 업데이트
-      badge: "확정대기",
-    },
-    runner: {
       name: "박완수",
       party: "국민의힘",
-      voteShare: 0,       // TODO: 선관위 확정 후 업데이트
-      badge: "확정대기",
+      voteShare: 50.80,
+      badge: "확정",
+    },
+    runner: {
+      name: "김경수",
+      party: "더불어민주당",
+      voteShare: 49.19,
+      badge: "확정",
     },
     previousParty: "국민의힘",
-    isPartyFlip: true,
+    isPartyFlip: false,
     career: [
-      "경남도지사 (2018~2021, 드루킹 사건으로 중도 사퇴)",
-      "국회의원 경남 김해시을 (2016~2018)",
-      "더불어민주당 대선 캠프 핵심 참모 (2017)",
-      "사면 복권 후 정계 복귀 (2024)",
+      "경남도지사 (2022~2026)",
+      "국회의원 경남 창원시 의창구",
+      "창원시장",
+      "민선 8기 경남도정 운영",
     ],
     pledges: [
       // TODO: 선관위 공약마당 확인 후 상세 업데이트

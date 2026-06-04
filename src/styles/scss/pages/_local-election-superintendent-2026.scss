@@ -1,0 +1,290 @@
+// ============================================================
+// _local-election-superintendent-2026.scss
+// 교육감 당선자 SVG 지도
+// prefix: edu-
+// ============================================================
+
+.edu-page {
+  --edu-progressive:       #2196F3;
+  --edu-progressive-light: #e3f2fd;
+  --edu-conservative:      #FF5722;
+  --edu-conservative-light:#fbe9e7;
+  --edu-moderate:          #9C27B0;
+  --edu-moderate-light:    #f3e5f5;
+  --edu-pending:           #9E9E9E;
+  --edu-pending-light:     #f5f5f5;
+  --edu-stroke:            #ffffff;
+  --edu-panel-shadow:      0 6px 32px rgba(0,0,0,0.13);
+
+  display: grid;
+  gap: 22px;
+
+  .content-section {
+    border: 1px solid #d8eaf4;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #f7fbff 0%, #eef5fc 100%);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.05);
+    padding: 24px;
+  }
+
+  .section-header--compact {
+    margin-bottom: 18px;
+    .section-header__eyebrow {
+      margin: 0 0 5px; font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em; color: #1565c0;
+    }
+    h2 { margin: 0 0 6px; font-size: 1.1rem; line-height: 1.38; color: #172033; }
+    p  { margin: 0; font-size: 0.84rem; color: #5f6674; line-height: 1.7; }
+  }
+}
+
+// ── Hero ─────────────────────────────────────────────────────
+.edu-hero {
+  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+  color: #fff;
+  padding: 2.5rem 1.5rem 2rem;
+  text-align: center;
+  border-radius: 22px;
+
+  &__eyebrow {
+    display: inline-block; background: rgba(255,255,255,0.18);
+    border-radius: 999px; padding: 0.2rem 0.8rem;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 0.75rem;
+  }
+  &__title {
+    font-size: clamp(1.15rem, 2.8vw, 1.9rem); font-weight: 800;
+    margin: 0 0 0.75rem; line-height: 1.3;
+  }
+  &__sub {
+    font-size: 0.9rem; opacity: 0.85; line-height: 1.65; margin: 0 0 0.75rem;
+  }
+  &__note  { font-size: 0.75rem; opacity: 0.7; }
+  &__date-badge {
+    display: inline-block; background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 999px;
+    padding: 0.2rem 0.75rem; font-size: 0.75rem; opacity: 0.9;
+  }
+}
+
+// ── 안내 배너 ─────────────────────────────────────────────────
+.edu-notice {
+  background: #fff8e1; border-left: 4px solid #FF9800;
+  border-radius: 10px; padding: 0.8rem 1.2rem;
+  font-size: 0.83rem; color: #5D4037;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+
+  &__link { color: #E65100; text-decoration: none; font-weight: 600; margin-left: auto; &:hover { text-decoration: underline; } }
+}
+
+// ── KPI ──────────────────────────────────────────────────────
+.edu-kpi__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.edu-kpi__card {
+  background: #fff; border-radius: 14px; padding: 1rem;
+  text-align: center; border: 1px solid #dde9f5;
+  display: flex; flex-direction: column; gap: 4px;
+
+  &__label { font-size: 0.78rem; color: #5f6674; font-weight: 600; }
+  &__value { font-size: 1.9rem; font-weight: 900; line-height: 1.1; }
+  &__sub   { font-size: 0.7rem; color: #888; }
+
+  &--progressive { border-top: 4px solid var(--edu-progressive);  .edu-kpi__value { color: var(--edu-progressive); } }
+  &--conservative { border-top: 4px solid var(--edu-conservative); .edu-kpi__value { color: var(--edu-conservative); } }
+  &--pending      { border-top: 4px solid var(--edu-pending);      .edu-kpi__value { color: var(--edu-pending); } }
+}
+
+// ── 지도 레이아웃 ─────────────────────────────────────────────
+.edu-map-section { overflow: visible; }
+
+.edu-tabs {
+  display: none; gap: 8px; margin-bottom: 14px;
+  @media (max-width: 860px) { display: flex; }
+}
+
+.edu-tab {
+  padding: 0.45rem 1.1rem; border-radius: 999px; border: 2px solid #c8d8ea;
+  background: #fff; font-size: 0.85rem; cursor: pointer; color: #4a5568;
+  font-weight: 500; transition: 0.15s;
+  &--active { border-color: var(--edu-progressive); color: var(--edu-progressive); font-weight: 700; background: var(--edu-progressive-light); }
+  &:hover:not(.edu-tab--active) { background: #f0f6ff; }
+}
+
+.edu-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+  @media (max-width: 860px) { grid-template-columns: 1fr; }
+}
+
+// ── SVG 지도 ──────────────────────────────────────────────────
+.edu-map-wrap { position: relative; }
+.edu-map-container { position: relative; }
+
+.edu-map__svg {
+  width: 100%; max-width: 480px; height: auto; display: block; margin: 0 auto;
+}
+
+.edu-map__region {
+  fill: var(--edu-pending-light);
+  stroke: var(--edu-stroke);
+  stroke-width: 1.5px;
+  cursor: pointer;
+  transition: opacity 0.12s, filter 0.12s;
+
+  &--progressive { fill: var(--edu-progressive); }
+  &--conservative { fill: var(--edu-conservative); }
+  &--moderate    { fill: var(--edu-moderate); }
+  &--pending     { fill: var(--edu-pending); }
+
+  &:hover { opacity: 0.75; }
+  &.is-active {
+    stroke: #FFD700; stroke-width: 3px;
+    filter: drop-shadow(0 0 8px rgba(255,215,0,0.6));
+  }
+  &:focus-visible { outline: none; stroke: #FFD700; stroke-width: 3px; }
+}
+
+.edu-map__labels { pointer-events: none; }
+.edu-map__label {
+  font-size: 9.5px; fill: #fff; text-anchor: middle; font-weight: 700; pointer-events: none;
+}
+
+.edu-legend {
+  display: flex; gap: 0.75rem; justify-content: center; margin-top: 10px; flex-wrap: wrap;
+
+  &__item {
+    display: flex; align-items: center; gap: 5px; font-size: 0.76rem; color: #555;
+    &::before { content: ""; display: block; width: 12px; height: 12px; border-radius: 3px; }
+    &--progressive::before { background: var(--edu-progressive); }
+    &--conservative::before { background: var(--edu-conservative); }
+    &--pending::before { background: var(--edu-pending); }
+  }
+}
+
+// ── 툴팁 ──────────────────────────────────────────────────────
+.edu-tooltip {
+  position: absolute; top: 0; left: 0;
+  background: rgba(15,20,40,0.92); color: #fff;
+  border-radius: 10px; padding: 7px 12px;
+  font-size: 0.8rem; pointer-events: none;
+  opacity: 0; transition: opacity 0.12s;
+  white-space: nowrap; display: flex; align-items: center; gap: 7px; z-index: 20;
+
+  &.is-visible { opacity: 1; }
+  &__name   { font-weight: 800; font-size: 0.88rem; }
+  &__region { opacity: 0.7; font-size: 0.74rem; }
+  &__orient { font-size: 0.7rem; padding: 1px 6px; border-radius: 999px; font-weight: 700; }
+  &__orient--progressive { background: var(--edu-progressive); }
+  &__orient--conservative { background: var(--edu-conservative); }
+  &__orient--pending { background: var(--edu-pending); }
+}
+
+// ── 목록 뷰 ───────────────────────────────────────────────────
+.edu-list {
+  &.is-hidden { display: none; }
+  &__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  &__btn {
+    display: flex; flex-direction: column; gap: 3px; padding: 10px 12px;
+    border-radius: 10px; border: 2px solid transparent; background: #f5f8fc;
+    cursor: pointer; text-align: left; transition: 0.15s;
+    &--progressive { border-left: 4px solid var(--edu-progressive); &:hover { background: var(--edu-progressive-light); } }
+    &--conservative { border-left: 4px solid var(--edu-conservative); &:hover { background: var(--edu-conservative-light); } }
+    &--pending     { border-left: 4px solid var(--edu-pending); opacity: 0.65; }
+  }
+  &__region      { font-size: 0.7rem; color: #888; }
+  &__name        { font-size: 0.9rem; font-weight: 700; color: #1a1a2e; }
+  &__orientation { font-size: 0.7rem; color: #0056a3; }
+}
+
+// ── 패널 ──────────────────────────────────────────────────────
+.edu-panel {
+  background: #fff; border-radius: 18px;
+  box-shadow: var(--edu-panel-shadow); border: 1px solid #e8f0f8;
+  padding: 1.4rem; position: sticky; top: 80px;
+  max-height: calc(100vh - 100px); overflow-y: auto; min-height: 180px;
+
+  &__hint { text-align: center; color: #aaa; font-size: 0.88rem; padding: 2rem 0; line-height: 1.8; }
+  &__close { position: absolute; top: 10px; right: 12px; background: none; border: none; cursor: pointer; font-size: 1rem; color: #aaa; &:hover { color: #333; } }
+  &__hd    { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+  &__region { font-size: 0.82rem; color: #666; }
+
+  &__orient-badge {
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; font-weight: 700; color: #fff;
+    &--progressive { background: var(--edu-progressive); }
+    &--conservative { background: var(--edu-conservative); }
+    &--moderate    { background: var(--edu-moderate); }
+    &--pending     { background: var(--edu-pending); }
+  }
+  &__reelect { font-size: 0.7rem; background: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 1px 6px; font-weight: 700; }
+  &__name   { font-size: 1.5rem; font-weight: 800; margin: 0 0 8px; color: #0d1b3e; }
+  &__vote   { font-size: 0.88rem; color: #555; margin-bottom: 8px; }
+  &__basis  { font-size: 0.74rem; color: #888; background: #f8f9fa; border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; line-height: 1.5; }
+
+  &__sec    { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #1565c0; margin: 1rem 0 0.4rem; }
+  &__career { margin: 0; padding-left: 18px; li { font-size: 0.82rem; color: #444; margin-bottom: 3px; line-height: 1.5; } }
+
+  &__pledge {
+    border: 1px solid #e8f0f8; border-radius: 8px; margin-bottom: 6px; overflow: hidden;
+    summary {
+      padding: 8px 10px; cursor: pointer; font-size: 0.86rem; font-weight: 600; color: #1a1a2e;
+      list-style: none; display: flex; align-items: center; gap: 6px;
+      &::-webkit-details-marker { display: none; }
+      &::after { content: "▼"; margin-left: auto; font-size: 0.7rem; color: #aaa; transition: transform 0.2s; }
+      details[open] &::after { transform: rotate(180deg); }
+    }
+  }
+  &__pledge-cat  { font-size: 0.66rem; background: #e3f2fd; color: #1565c0; border-radius: 4px; padding: 1px 5px; font-weight: 600; flex-shrink: 0; }
+  &__pledge-desc { font-size: 0.82rem; color: #555; padding: 5px 10px 8px; margin: 0; line-height: 1.6; }
+  &__pledge-src  { display: block; font-size: 0.66rem; color: #aaa; padding: 0 10px 6px; }
+
+  &__link { display: block; margin-top: 14px; font-size: 0.82rem; color: var(--edu-progressive); text-decoration: none; font-weight: 600; &:hover { text-decoration: underline; } }
+
+  @media (max-width: 860px) {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    border-radius: 20px 20px 0 0; transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    z-index: 200; max-height: 78vh; top: auto;
+    &.is-open { transform: translateY(0); }
+  }
+}
+
+// ── 빠른 탐색 ─────────────────────────────────────────────────
+.edu-quick__grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.edu-quick__btn {
+  padding: 5px 12px; border-radius: 999px; border: 1.5px solid;
+  background: #fff; font-size: 0.8rem; cursor: pointer; font-weight: 600; transition: 0.15s;
+
+  &--progressive { border-color: var(--edu-progressive); color: var(--edu-progressive); &:hover { background: var(--edu-progressive-light); } }
+  &--conservative { border-color: var(--edu-conservative); color: var(--edu-conservative); &:hover { background: var(--edu-conservative-light); } }
+  &--pending     { border-color: var(--edu-pending); color: var(--edu-pending); opacity: 0.65; }
+}
+
+// ── 차트 ──────────────────────────────────────────────────────
+.edu-chart-wrap { position: relative; height: 200px; max-width: 400px; margin: 0 auto; canvas { width: 100% !important; } }
+
+// ── FAQ ───────────────────────────────────────────────────────
+.edu-faq__list { display: flex; flex-direction: column; }
+.edu-faq__item { border-bottom: 1px solid #e0eef8; &:last-child { border-bottom: none; } }
+.edu-faq__q {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  gap: 10px; padding: 13px 0; background: none; border: none;
+  font-size: 0.9rem; font-weight: 600; color: #172033; text-align: left; cursor: pointer; line-height: 1.45;
+  &:hover { color: #1565c0; }
+}
+.edu-faq__icon { flex-shrink: 0; font-size: 0.78rem; color: #99aabb; transition: transform 0.18s; }
+.edu-faq__item.is-open .edu-faq__icon { transform: rotate(180deg); }
+.edu-faq__a { padding: 0 0 13px; p { margin: 0; font-size: 0.85rem; line-height: 1.75; color: #4a5568; } }
+
+// ── 반응형 ────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .edu-kpi__grid { grid-template-columns: 1fr 1fr; }
+  .edu-list__grid { grid-template-columns: repeat(3, 1fr); }
+  .edu-quick__grid { gap: 6px; }
+  .edu-quick__btn { font-size: 0.74rem; padding: 4px 9px; }
+}

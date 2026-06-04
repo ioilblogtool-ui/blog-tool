@@ -274,6 +274,13 @@ export const reports: ReportMeta[] = [
     badges: ["승무원", "대한항공", "LCC", "연봉", "비행수당", "2026"],
   },
   {
+    slug: "local-election-superintendent-2026",
+    title: "2026 교육감 당선자 지도 — 17개 시도 진보·보수 성향 완전 정리",
+    description: "서울 정근식 재선 등 2026 교육감 당선자를 지도로 클릭하면 진보·보수 성향·공약·이력이 한 번에 나옵니다.",
+    order: 23.07,
+    badges: ["교육감", "정근식", "진보보수", "2026지방선거", "교육정책"],
+  },
+  {
     slug: "local-election-byeollection-2026",
     title: "2026 재보궐선거 당선자 총정리 — 한동훈 부산 북구갑 당선·14개 지역구",
     description: "한동훈 무소속 당선, 조국 낙선 등 2026 재보궐선거 14개 지역구 당선자 공약·이력을 카드로 정리. 선관위 기반.",
