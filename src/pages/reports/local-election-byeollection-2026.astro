@@ -1,0 +1,324 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  BYE_META,
+  ISSUE_HIGHLIGHTS,
+  BYE_DISTRICTS,
+} from "../../data/localElectionByeollection2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const TITLE       = "2026 재보궐선거 당선자 총정리 — 14개 지역구 완전 정리";
+const DESCRIPTION = "한동훈 부산 북구갑 무소속 당선·조국 낙선 등 2026 재보궐선거 14개 지역구 당선자 공약·이력을 한눈에 정리했습니다.";
+
+function getPartyClass(party: string) {
+  if (party === "더불어민주당") return "dem";
+  if (party === "국민의힘")     return "ppp";
+  if (party === "무소속")       return "ind";
+  if (party === "조국혁신당")   return "jkp";
+  return "etc";
+}
+
+function getHighlightClass(type: string) {
+  if (type === "winner") return "winner";
+  if (type === "loser")  return "loser";
+  return "notable";
+}
+
+const faqItems = [
+  { question: "재보궐선거가 열린 이유는 무엇인가요?",
+    answer: "현직 국회의원이 시도지사·구청장 등 다른 선출직에 출마하면서 의원직을 사직하거나, 사망·당선 무효 등으로 공석이 된 14개 지역구에서 후임자를 선출하기 위해 치러졌습니다." },
+  { question: "한동훈은 왜 무소속으로 출마했나요?",
+    answer: "한동훈은 2024년 12월 국민의힘을 탈당한 후 무소속 신분을 유지했습니다. 부산 북구갑에서 무소속으로 출마해 당선됐으며, 향후 복당 여부가 주목됩니다." },
+  { question: "조국은 어디서 출마했나요?",
+    answer: "출마 지역구는 선관위 최종 확인 중입니다. 조국혁신당 대표 자격으로 지역구에 직접 출마했으나 낙선했습니다. 확인 후 업데이트됩니다." },
+  { question: "재보궐 당선자 임기는 얼마인가요?",
+    answer: "전임 의원의 잔여 임기를 승계합니다. 2026년 당선자는 2028년 총선까지 약 2년의 임기를 가집니다." },
+  { question: "이 데이터는 얼마나 신뢰할 수 있나요?",
+    answer: `${BYE_META.dataAsOf} 기준 집계입니다. 한동훈(부산 북구갑)·이진숙(대구 달성군)은 확정, 나머지 12개 지역구는 선관위 최종 확정 후 전면 업데이트됩니다.` },
+];
+---
+
+<BaseLayout title={TITLE} description={DESCRIPTION}>
+  <SiteHeader />
+  <main class="container page-shell report-page bye-page">
+
+    <!-- A. Hero -->
+    <section class="bye-hero">
+      <p class="bye-hero__eyebrow">2026 재보궐선거</p>
+      <h1 class="bye-hero__title">{TITLE}</h1>
+      <p class="bye-hero__sub">
+        한동훈 무소속 당선 · 조국 낙선 등 주요 이슈와<br/>
+        14개 지역구 당선자 공약을 한 곳에서 확인하세요.
+      </p>
+      <span class="bye-hero__date-badge">{BYE_META.dataAsOf}</span>
+    </section>
+
+    <!-- B. 데이터 안내 -->
+    <div class="bye-notice">
+      <span>⚠️</span>
+      <span>한동훈(부산 북구갑)·이진숙(대구 달성군)은 당선 확정. 나머지 12개 지역구는 선관위 최종 발표 후 업데이트됩니다.</span>
+      <a href="https://info.nec.go.kr" target="_blank" rel="noopener noreferrer" class="bye-notice__link">선관위 바로가기 →</a>
+    </div>
+
+    <!-- C. KPI -->
+    <section class="bye-kpi content-section" aria-label="핵심 지표">
+      <div class="bye-kpi__grid">
+        <div class="bye-kpi__card bye-kpi__card--dem">
+          <p class="bye-kpi__label">더불어민주당</p>
+          <p class="bye-kpi__value">{BYE_META.demCount}석</p>
+        </div>
+        <div class="bye-kpi__card bye-kpi__card--ppp">
+          <p class="bye-kpi__label">국민의힘</p>
+          <p class="bye-kpi__value">{BYE_META.pppCount}석</p>
+        </div>
+        <div class="bye-kpi__card bye-kpi__card--ind">
+          <p class="bye-kpi__label">무소속</p>
+          <p class="bye-kpi__value">{BYE_META.indCount}석</p>
+          <p class="bye-kpi__sub">한동훈</p>
+        </div>
+        <div class="bye-kpi__card">
+          <p class="bye-kpi__label">전체 지역구</p>
+          <p class="bye-kpi__value">{BYE_META.totalDistricts}곳</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- D. 이슈 하이라이트 -->
+    <section class="bye-issue content-section" aria-labelledby="bye-issue-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">주목 인물</p>
+        <h2 id="bye-issue-title">이번 재보궐 핵심 이슈</h2>
+      </div>
+      <div class="bye-issue__grid">
+        {ISSUE_HIGHLIGHTS.map((h) => (
+          <div class={`bye-issue__card bye-issue__card--${getHighlightClass(h.type)}`}>
+            <div class="bye-issue__card-hd">
+              <span class={`bye-party-badge bye-party-badge--${getPartyClass(h.party)}`}>{h.party}</span>
+              {h.type === "winner" && <span class="bye-result-badge bye-result-badge--win">당선</span>}
+              {h.type === "loser"  && <span class="bye-result-badge bye-result-badge--lose">낙선</span>}
+              {h.type === "notable" && <span class="bye-result-badge bye-result-badge--win">당선</span>}
+            </div>
+            <h3 class="bye-issue__card-name">{h.personName}</h3>
+            <p class="bye-issue__card-headline">{h.headline}</p>
+            <p class="bye-issue__card-sub">{h.subHeadline}</p>
+            <details class="bye-issue__detail">
+              <summary>이력 상세 보기</summary>
+              <ul class="bye-issue__career">
+                {h.career.map((c) => <li>{c}</li>)}
+              </ul>
+            </details>
+            <p class="bye-issue__note">{h.noteText}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- E. 필터 + 전체 카드 -->
+    <section class="bye-cards-section content-section" aria-labelledby="bye-cards-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">14개 지역구 전체</p>
+        <h2 id="bye-cards-title">재보궐 당선자 전체 목록</h2>
+        <p>정당 또는 지역으로 필터링할 수 있습니다.</p>
+      </div>
+
+      <!-- 정당 필터 -->
+      <div class="bye-filter-row" role="group" aria-label="정당 필터">
+        <span class="bye-filter-label">정당</span>
+        <div class="bye-filter-tabs">
+          <button class="bye-filter-tab bye-filter-tab--active" data-party-filter="all">전체</button>
+          <button class="bye-filter-tab" data-party-filter="더불어민주당">민주당</button>
+          <button class="bye-filter-tab" data-party-filter="국민의힘">국민의힘</button>
+          <button class="bye-filter-tab" data-party-filter="무소속">무소속</button>
+        </div>
+      </div>
+
+      <!-- 지역 필터 -->
+      <div class="bye-filter-row" role="group" aria-label="지역 필터">
+        <span class="bye-filter-label">지역</span>
+        <div class="bye-filter-tabs">
+          <button class="bye-filter-tab bye-filter-tab--active" data-region-filter="all">전체</button>
+          <button class="bye-filter-tab" data-region-filter="수도권">수도권</button>
+          <button class="bye-filter-tab" data-region-filter="경상권">경상권</button>
+          <button class="bye-filter-tab" data-region-filter="충청권">충청권</button>
+          <button class="bye-filter-tab" data-region-filter="전라권">전라권</button>
+        </div>
+      </div>
+
+      <!-- 카드 그리드 -->
+      <div class="bye-cards-grid" id="bye-cards-grid">
+        {BYE_DISTRICTS.map((d) => {
+          const pClass = getPartyClass(d.elected?.party ?? "기타");
+          const isPending = d.elected?.badge === "확정대기";
+          return (
+            <div
+              class={`bye-card bye-card--${pClass}${isPending ? " bye-card--pending" : ""}${d.isIssue ? " bye-card--issue" : ""}`}
+              data-party={d.elected?.party ?? ""}
+              data-region={d.region}
+              data-district-id={d.districtId}
+            >
+              <div class="bye-card__hd">
+                <span class="bye-card__district">{d.districtName}</span>
+                {d.isIssue && <span class="bye-card__issue-mark">🔥</span>}
+                {isPending && <span class="bye-badge bye-badge--pending">확정대기</span>}
+              </div>
+
+              <div class="bye-card__elected">
+                <span class={`bye-party-badge bye-party-badge--${pClass}`}>
+                  {d.elected?.party ?? "미확정"}
+                </span>
+                <span class="bye-card__name">
+                  {isPending ? "확인 중" : (d.elected?.name ?? "미확정")}
+                </span>
+              </div>
+
+              {d.elected?.voteShare && d.elected.voteShare > 0 && (
+                <p class="bye-card__vote">{d.elected.voteShare}%</p>
+              )}
+
+              <p class="bye-card__reason">{d.byeReason}</p>
+
+              {!isPending && d.career.length > 0 && (
+                <details class="bye-card__detail">
+                  <summary>이력·공약 보기</summary>
+                  <div class="bye-card__detail-body">
+                    {d.career.length > 0 && (
+                      <>
+                        <p class="bye-card__sec-title">주요 이력</p>
+                        <ul class="bye-card__career">
+                          {d.career.map((c) => <li>{c}</li>)}
+                        </ul>
+                      </>
+                    )}
+                    {d.pledges.length > 0 && d.pledges[0].title !== "공약 수집 중" && (
+                      <>
+                        <p class="bye-card__sec-title">핵심 공약</p>
+                        <ul class="bye-card__pledges">
+                          {d.pledges.map((p) => (
+                            <li>
+                              <span class="bye-card__pledge-cat">{p.category}</span>
+                              <span class="bye-card__pledge-title">{p.title}</span>
+                              <span class="bye-card__pledge-desc">{p.description}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                    <a href={d.sources[0]?.url} target="_blank" rel="noopener noreferrer" class="bye-card__src-link">
+                      선관위 공약마당 →
+                    </a>
+                  </div>
+                </details>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- 결과 없음 -->
+      <div id="bye-empty-state" class="bye-empty" aria-live="polite">
+        해당 조건의 지역구가 없습니다.
+      </div>
+    </section>
+
+    <!-- F. 의석 분포 차트 -->
+    <section class="bye-chart-section content-section" aria-labelledby="bye-chart-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">의석 분포</p>
+        <h2 id="bye-chart-title">재보궐 정당별 당선 현황</h2>
+      </div>
+      <div class="bye-chart-wrap">
+        <canvas id="bye-seat-chart"
+          data-dem={BYE_META.demCount}
+          data-ppp={BYE_META.pppCount}
+          data-ind={BYE_META.indCount}
+        ></canvas>
+      </div>
+    </section>
+
+    <!-- G. FAQ -->
+    <section class="bye-faq content-section" aria-labelledby="bye-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="bye-faq-title">재보궐선거 FAQ</h2>
+      </div>
+      <div class="bye-faq__list" itemscope itemtype="https://schema.org/FAQPage">
+        {faqItems.map((item) => (
+          <div class="bye-faq__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="bye-faq__q" itemprop="name" aria-expanded="false">
+              {item.question}
+              <span class="bye-faq__icon">▼</span>
+            </button>
+            <div class="bye-faq__a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.answer}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- H. 관련 콘텐츠 -->
+    <section class="bye-related content-section" aria-labelledby="bye-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">이번 선거 시리즈</p>
+        <h2 id="bye-related-title">같이 보면 좋은 콘텐츠</h2>
+      </div>
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/reports/local-election-governor-2026/")}>
+          <span class="ts-link-card__eyebrow">지방선거 시리즈</span>
+          <strong>시도지사 당선자 지도</strong>
+          <p>전국 16개 시도지사 공약·이력을 지도로 확인.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/local-election-seoul-2026/")}>
+          <span class="ts-link-card__eyebrow">지방선거 시리즈</span>
+          <strong>서울 25개 구청장 지도</strong>
+          <p>우리 동네 구청장 공약 확인.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/local-election-superintendent-2026/")}>
+          <span class="ts-link-card__eyebrow">지방선거 시리즈</span>
+          <strong>교육감 당선자 지도</strong>
+          <p>17개 시도 교육 공약 확인.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/local-election-candidate-assets-ranking-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>후보 재산 순위 TOP 50</strong>
+          <p>이번 선거 후보들의 재산 공개 내역.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 재보궐선거 당선자 완전 정리"
+      intro={[
+        "2026년 6·3 지방선거와 함께 치러진 국회의원 재보궐선거에서 더불어민주당 9석, 국민의힘 4석, 무소속 1석(한동훈)이 당선됐습니다.",
+        "최대 이슈는 한동훈(前 법무부 장관·국민의힘 대표)의 무소속 당선입니다. 2024년 12월 국민의힘을 탈당한 한동훈이 부산 북구갑에서 무소속으로 출마해 당선됐습니다.",
+        "조국혁신당 대표 조국이 지역구에 직접 출마했으나 낙선했습니다. 이진숙 前 방통위원장은 대구 달성군에서 당선됐습니다.",
+      ]}
+      criteria={[
+        "당선자 정보는 선관위 개표 결과 기준 (2026-06-04 99.79% 집계)",
+        "한동훈·이진숙은 당선 확정, 나머지 12개 지역구는 선관위 최종 확정 후 업데이트",
+        "공약은 선관위 정책·공약마당 기반 요약 예정",
+        "이력은 선관위 후보자 정보 공개 및 공식 자료 기반",
+      ]}
+      faq={faqItems.map(f => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/reports/local-election-governor-2026/",        label: "2026 시도지사 당선자 공약 지도" },
+        { href: "/reports/local-election-seoul-2026/",           label: "서울 25개 구청장 당선자 지도 2026" },
+        { href: "/reports/local-election-superintendent-2026/",  label: "교육감 당선자 지도 2026" },
+      ]}
+    />
+
+  </main>
+
+  <script define:vars={{ byeDistricts: BYE_DISTRICTS, byeMeta: BYE_META }}>
+    window.BYE_DISTRICTS = byeDistricts;
+    window.BYE_META = byeMeta;
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/local-election-byeollection-2026.js" defer></script>
+</BaseLayout>

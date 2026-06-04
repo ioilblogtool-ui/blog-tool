@@ -274,6 +274,13 @@ export const reports: ReportMeta[] = [
     badges: ["승무원", "대한항공", "LCC", "연봉", "비행수당", "2026"],
   },
   {
+    slug: "local-election-byeollection-2026",
+    title: "2026 재보궐선거 당선자 총정리 — 한동훈 부산 북구갑 당선·14개 지역구",
+    description: "한동훈 무소속 당선, 조국 낙선 등 2026 재보궐선거 14개 지역구 당선자 공약·이력을 카드로 정리. 선관위 기반.",
+    order: 23.06,
+    badges: ["재보궐", "한동훈", "조국", "2026지방선거", "당선자"],
+  },
+  {
     slug: "local-election-governor-2026",
     title: "2026 지방선거 시도지사 당선자 — 지도로 보는 공약 완전 정리",
     description: "전국 16개 시도지사 당선자를 SVG 클릭 지도로 확인. 민주당 12 vs 국힘 4. 공약·이력·득표율 완전 정리. 선관위 공약마당 기반.",
