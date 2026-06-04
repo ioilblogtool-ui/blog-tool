@@ -1,0 +1,629 @@
+.seoul-election-page {
+  --seoul-election-dem: #1676d2;
+  --seoul-election-dem-soft: #e8f3ff;
+  --seoul-election-ppp: #d92935;
+  --seoul-election-ppp-soft: #ffecee;
+  --seoul-election-ink: #172033;
+  --seoul-election-muted: #5e6878;
+  --seoul-election-line: #d9e4ef;
+  --seoul-election-panel: #ffffff;
+  --seoul-election-bg: #f5f8fb;
+
+  display: grid;
+  gap: 24px;
+}
+
+.seoul-election-kpi {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.seoul-election-kpi__card,
+.seoul-election-workspace,
+.seoul-election-quick,
+.seoul-election-chart,
+.seoul-election-sources {
+  border: 1px solid var(--seoul-election-line);
+  border-radius: 18px;
+  background: var(--seoul-election-panel);
+  box-shadow: 0 16px 44px rgba(24, 45, 74, 0.06);
+}
+
+.seoul-election-kpi__card {
+  padding: 18px;
+  min-height: 132px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+
+  span {
+    color: var(--seoul-election-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  strong {
+    color: var(--seoul-election-ink);
+    font-size: 1.75rem;
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 0;
+    color: var(--seoul-election-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+}
+
+.seoul-election-kpi__card--dem {
+  border-top: 4px solid var(--seoul-election-dem);
+
+  strong {
+    color: var(--seoul-election-dem);
+  }
+}
+
+.seoul-election-kpi__card--ppp {
+  border-top: 4px solid var(--seoul-election-ppp);
+
+  strong {
+    color: var(--seoul-election-ppp);
+  }
+}
+
+.seoul-election-workspace,
+.seoul-election-quick,
+.seoul-election-chart,
+.seoul-election-sources {
+  padding: 24px;
+}
+
+.seoul-election-section-head {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+
+  p {
+    margin: 0;
+    color: #0f6fb8;
+    font-size: 0.74rem;
+    font-weight: 800;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--seoul-election-ink);
+    font-size: 1.24rem;
+    line-height: 1.38;
+  }
+
+  span {
+    color: var(--seoul-election-muted);
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+}
+
+.seoul-election-search {
+  margin-bottom: 18px;
+
+  label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--seoul-election-ink);
+    font-size: 0.86rem;
+    font-weight: 800;
+  }
+}
+
+.seoul-election-search__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+
+  input,
+  button {
+    min-height: 44px;
+    border-radius: 10px;
+    font: inherit;
+  }
+
+  input {
+    border: 1px solid #cfdce8;
+    padding: 0 13px;
+    color: var(--seoul-election-ink);
+  }
+
+  input[aria-invalid="true"] {
+    border-color: var(--seoul-election-ppp);
+    box-shadow: 0 0 0 3px rgba(217, 41, 53, 0.12);
+  }
+
+  button {
+    border: 0;
+    background: var(--seoul-election-ink);
+    color: #fff;
+    padding: 0 18px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+}
+
+.seoul-election-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 22px;
+  align-items: start;
+}
+
+.seoul-election-map-wrap {
+  position: relative;
+  min-width: 0;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f8fbff 0%, #edf5fc 100%);
+  border: 1px solid #d7e4ef;
+  padding: 18px;
+}
+
+.seoul-election-map {
+  display: block;
+  width: 100%;
+  max-width: 820px;
+  aspect-ratio: 940 / 780;
+  margin: 0 auto;
+}
+
+.seoul-election-map__district {
+  cursor: pointer;
+  stroke: #ffffff;
+  stroke-width: 5;
+  stroke-linejoin: round;
+  transition: filter 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 0.86;
+    filter: drop-shadow(0 8px 14px rgba(21, 36, 60, 0.18));
+    outline: none;
+  }
+
+  &.is-active {
+    stroke: #ffd54d;
+    stroke-width: 8;
+    filter: drop-shadow(0 0 14px rgba(255, 205, 55, 0.72));
+  }
+}
+
+.seoul-election-map__district--dem {
+  fill: var(--seoul-election-dem);
+}
+
+.seoul-election-map__district--ppp {
+  fill: var(--seoul-election-ppp);
+}
+
+.seoul-election-map__labels {
+  pointer-events: none;
+
+  text {
+    fill: #ffffff;
+    font-size: 22px;
+    font-weight: 900;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    paint-order: stroke;
+    stroke: rgba(0, 0, 0, 0.34);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+  }
+}
+
+.seoul-election-tooltip {
+  position: absolute;
+  z-index: 4;
+  min-width: 126px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: rgba(21, 31, 48, 0.92);
+  color: #fff;
+  pointer-events: none;
+  transform: translate(0, 0);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+
+  &[aria-hidden="false"] {
+    opacity: 1;
+  }
+
+  strong,
+  span {
+    display: block;
+  }
+
+  strong {
+    font-size: 0.86rem;
+  }
+
+  span {
+    margin-top: 2px;
+    font-size: 0.76rem;
+    opacity: 0.82;
+  }
+}
+
+.seoul-election-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.seoul-election-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--seoul-election-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+
+  &::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+  }
+}
+
+.seoul-election-legend__item--dem::before {
+  background: var(--seoul-election-dem);
+}
+
+.seoul-election-legend__item--ppp::before {
+  background: var(--seoul-election-ppp);
+}
+
+.seoul-election-panel {
+  position: sticky;
+  top: 92px;
+  border: 1px solid #d9e4ef;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 18px 40px rgba(28, 43, 66, 0.08);
+
+  h3 {
+    margin: 0 0 10px;
+    color: var(--seoul-election-ink);
+    font-size: 1.55rem;
+    line-height: 1.2;
+  }
+}
+
+.seoul-election-panel__eyebrow {
+  margin: 0 0 6px;
+  color: var(--seoul-election-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.seoul-election-party-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  padding: 0 12px;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.seoul-election-party-pill--dem {
+  background: var(--seoul-election-dem-soft);
+  color: #0d63ab;
+}
+
+.seoul-election-party-pill--ppp {
+  background: var(--seoul-election-ppp-soft);
+  color: #b51d29;
+}
+
+.seoul-election-panel__facts {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 8px;
+  }
+
+  dt {
+    color: var(--seoul-election-muted);
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--seoul-election-ink);
+    font-size: 0.86rem;
+    font-weight: 800;
+    text-align: right;
+  }
+}
+
+.seoul-election-panel__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+
+  span {
+    border-radius: 999px;
+    background: #f2f6fa;
+    color: #3d4a5c;
+    padding: 5px 9px;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+}
+
+.seoul-election-panel__issue,
+.seoul-election-panel__career,
+.seoul-election-panel__pledge {
+  border-radius: 12px;
+  background: #f7fafc;
+  padding: 12px;
+}
+
+.seoul-election-panel__issue,
+.seoul-election-panel__career {
+  margin-bottom: 12px;
+}
+
+.seoul-election-panel__issue strong,
+.seoul-election-panel__career strong,
+.seoul-election-panel__pledge strong {
+  display: block;
+  color: var(--seoul-election-ink);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.seoul-election-panel__issue p,
+.seoul-election-panel__pledge p {
+  margin: 6px 0 0;
+  color: var(--seoul-election-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.seoul-election-panel__career ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--seoul-election-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.seoul-election-panel__pledges {
+  display: grid;
+  gap: 8px;
+}
+
+.seoul-election-panel__pledge span {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: #0f6fb8;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.seoul-election-panel__note {
+  margin: 12px 0 0;
+  color: #7a8491;
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.seoul-election-quick__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.seoul-election-quick__button {
+  min-height: 66px;
+  border: 1px solid #dbe5ef;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--seoul-election-ink);
+  cursor: pointer;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  padding: 8px;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible,
+  &.is-active {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(22, 36, 55, 0.08);
+    outline: none;
+  }
+
+  span {
+    font-weight: 900;
+    font-size: 0.9rem;
+  }
+
+  small {
+    color: var(--seoul-election-muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+}
+
+.seoul-election-quick__button--dem.is-active,
+.seoul-election-quick__button--dem:hover,
+.seoul-election-quick__button--dem:focus-visible {
+  border-color: var(--seoul-election-dem);
+  background: var(--seoul-election-dem-soft);
+}
+
+.seoul-election-quick__button--ppp.is-active,
+.seoul-election-quick__button--ppp:hover,
+.seoul-election-quick__button--ppp:focus-visible {
+  border-color: var(--seoul-election-ppp);
+  background: var(--seoul-election-ppp-soft);
+}
+
+.seoul-election-chart__bars {
+  display: grid;
+  gap: 14px;
+}
+
+.seoul-election-chart__row {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 70px;
+  gap: 14px;
+  align-items: center;
+}
+
+.seoul-election-chart__label {
+  display: grid;
+  gap: 2px;
+
+  strong {
+    color: var(--seoul-election-ink);
+  }
+
+  span {
+    color: var(--seoul-election-muted);
+    font-size: 0.78rem;
+  }
+}
+
+.seoul-election-chart__track {
+  height: 18px;
+  border-radius: 999px;
+  background: #edf2f7;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+  }
+}
+
+.seoul-election-chart__row--dem .seoul-election-chart__track span {
+  background: var(--seoul-election-dem);
+}
+
+.seoul-election-chart__row--ppp .seoul-election-chart__track span {
+  background: var(--seoul-election-ppp);
+}
+
+.seoul-election-chart__row p {
+  margin: 0;
+  color: var(--seoul-election-ink);
+  font-weight: 900;
+  text-align: right;
+}
+
+.seoul-election-chart__notes {
+  margin: 18px 0 0;
+  padding-left: 20px;
+  color: var(--seoul-election-muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.seoul-election-sources__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+
+  a {
+    display: flex;
+    align-items: center;
+    min-height: 54px;
+    border-radius: 12px;
+    background: #f5f8fb;
+    color: #0f5e9c;
+    padding: 0 14px;
+    font-weight: 900;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 920px) {
+  .seoul-election-kpi {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .seoul-election-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .seoul-election-panel {
+    position: static;
+  }
+
+  .seoul-election-quick__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .seoul-election-kpi,
+  .seoul-election-sources__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seoul-election-workspace,
+  .seoul-election-quick,
+  .seoul-election-chart,
+  .seoul-election-sources {
+    padding: 18px;
+  }
+
+  .seoul-election-search__row {
+    grid-template-columns: 1fr;
+  }
+
+  .seoul-election-map-wrap {
+    padding: 10px;
+  }
+
+  .seoul-election-map__labels text {
+    font-size: 20px;
+    stroke-width: 4px;
+  }
+
+  .seoul-election-quick__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .seoul-election-chart__row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .seoul-election-chart__row p {
+    text-align: left;
+  }
+}

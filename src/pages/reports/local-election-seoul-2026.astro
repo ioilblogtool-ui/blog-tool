@@ -1,0 +1,291 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  formatVoteShare,
+  getPartyClass,
+  seoulElectionPageData,
+} from "../../data/localElectionSeoul2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const TITLE = "2026 서울 구청장 선거 결과 | 25개 구 당선자 지도";
+const DESCRIPTION = "서울 25개 구청장 선거 결과를 정당별 SVG 지도, 구별 당선자 확인 상태, 2022년 대비 정당 변화, 지역별 핵심 쟁점으로 비교합니다.";
+
+const districtById = new Map(seoulElectionPageData.districts.map((district) => [district.districtId, district]));
+const mapShapes = [
+  { id: "dobong", d: "M355 34 L455 38 L448 112 L365 116 L330 78 Z", x: 395, y: 77 },
+  { id: "nowon", d: "M468 44 L580 62 L562 150 L458 128 L455 70 Z", x: 515, y: 102 },
+  { id: "gangbuk", d: "M278 94 L358 86 L365 157 L288 174 L238 132 Z", x: 306, y: 134 },
+  { id: "seongbuk", d: "M365 132 L466 136 L455 212 L352 210 L324 166 Z", x: 397, y: 174 },
+  { id: "jungnang", d: "M468 146 L570 158 L610 220 L508 246 L452 214 Z", x: 531, y: 202 },
+  { id: "eunpyeong", d: "M106 136 L232 108 L286 174 L246 248 L118 248 L64 198 Z", x: 170, y: 190 },
+  { id: "seodaemun", d: "M132 260 L250 258 L300 318 L218 366 L112 326 Z", x: 210, y: 312 },
+  { id: "jongno", d: "M262 236 L354 220 L422 272 L370 326 L292 318 L242 270 Z", x: 334, y: 273 },
+  { id: "dongdaemun", d: "M426 236 L508 252 L522 336 L434 344 L372 326 Z", x: 458, y: 296 },
+  { id: "gwangjin", d: "M524 292 L634 272 L686 350 L626 420 L530 384 Z", x: 604, y: 350 },
+  { id: "mapo", d: "M48 330 L190 354 L224 438 L96 472 L34 420 Z", x: 126, y: 408 },
+  { id: "jung", d: "M308 328 L380 334 L410 398 L326 420 L266 378 Z", x: 340, y: 376 },
+  { id: "seongdong", d: "M416 350 L520 352 L536 430 L442 454 L396 400 Z", x: 469, y: 405 },
+  { id: "yongsan", d: "M258 396 L370 430 L398 504 L282 526 L218 462 Z", x: 310, y: 466 },
+  { id: "gangseo", d: "M20 448 L130 482 L130 590 L34 592 L4 520 Z", x: 70, y: 528 },
+  { id: "yangcheon", d: "M146 456 L238 456 L258 548 L164 588 L118 520 Z", x: 186, y: 520 },
+  { id: "guro", d: "M176 602 L278 558 L336 626 L298 704 L180 694 Z", x: 254, y: 640 },
+  { id: "geumcheon", d: "M306 640 L396 622 L430 704 L370 764 L292 718 Z", x: 358, y: 690 },
+  { id: "yeongdeungpo", d: "M236 438 L330 432 L338 534 L258 556 L212 506 Z", x: 276, y: 494 },
+  { id: "dongjak", d: "M350 470 L446 466 L484 550 L410 620 L338 558 Z", x: 410, y: 542 },
+  { id: "gwanak", d: "M408 628 L516 566 L596 646 L546 734 L434 724 Z", x: 504, y: 660 },
+  { id: "seocho", d: "M496 462 L618 430 L672 522 L606 632 L500 560 Z", x: 584, y: 532 },
+  { id: "gangnam", d: "M632 430 L742 388 L798 492 L710 596 L616 526 Z", x: 710, y: 492 },
+  { id: "songpa", d: "M742 350 L852 326 L900 438 L810 520 L748 456 Z", x: 816, y: 428 },
+  { id: "gangdong", d: "M812 240 L910 246 L936 338 L858 396 L792 330 Z", x: 860, y: 314 },
+];
+
+const topIssues = [
+  "강남·서초·송파·용산·마포 5개 구는 국민의힘, 나머지 20개 구는 더불어민주당으로 분류했습니다.",
+  "지도는 빠른 탐색용 단순화 SVG입니다. 실제 행정 경계와 면적 비율은 다를 수 있습니다.",
+  "후보명·득표율 미확정 항목은 임의 수치를 넣지 않고 확정대기로 남겨 두었습니다.",
+];
+
+const partyRows = [
+  { label: "더불어민주당", count: seoulElectionPageData.demCount, previous: seoulElectionPageData.previousDemCount, className: "dem" },
+  { label: "국민의힘", count: seoulElectionPageData.pppCount, previous: seoulElectionPageData.previousPppCount, className: "ppp" },
+];
+
+const initialDistrict = seoulElectionPageData.districts.find((district) => district.districtId === "gangnam") ?? seoulElectionPageData.districts[0];
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: "2026-06-04",
+  dateModified: "2026-06-04",
+  author: { "@type": "Organization", name: "비교계산소" },
+  mainEntityOfPage: `https://bigyocalc.com/reports/local-election-seoul-2026/`,
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: seoulElectionPageData.faq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
+};
+---
+
+<BaseLayout title={TITLE} description={DESCRIPTION}>
+  <SiteHeader />
+  <main class="container page-shell report-page seoul-election-page">
+    <CalculatorHero
+      eyebrow="2026 지방선거 서울 구청장"
+      title={TITLE}
+      description={DESCRIPTION}
+    />
+
+    <InfoNotice
+      title="데이터 확인 기준"
+      lines={[
+        seoulElectionPageData.dataAsOf,
+        "정당별 구도와 지역 쟁점을 먼저 정리했으며, 선관위 최종 확정 전 항목은 확정대기로 표시합니다.",
+        "공식 확인은 중앙선거관리위원회 선거통계시스템과 정책공약마당을 기준으로 합니다.",
+      ]}
+    />
+
+    <section class="seoul-election-kpi" aria-label="서울 구청장 선거 핵심 지표">
+      <article class="seoul-election-kpi__card seoul-election-kpi__card--dem">
+        <span>더불어민주당</span>
+        <strong>{seoulElectionPageData.demCount}개 구</strong>
+        <p>2022년 {seoulElectionPageData.previousDemCount}개 구에서 확대</p>
+      </article>
+      <article class="seoul-election-kpi__card seoul-election-kpi__card--ppp">
+        <span>국민의힘</span>
+        <strong>{seoulElectionPageData.pppCount}개 구</strong>
+        <p>강남·서초·송파·용산·마포</p>
+      </article>
+      <article class="seoul-election-kpi__card">
+        <span>대상 지역</span>
+        <strong>{seoulElectionPageData.totalDistricts}개 구</strong>
+        <p>서울 전체 자치구 기준</p>
+      </article>
+      <article class="seoul-election-kpi__card">
+        <span>업데이트 기준</span>
+        <strong>99.79%</strong>
+        <p>2026년 6월 4일 개표율 기준</p>
+      </article>
+    </section>
+
+    <section class="seoul-election-workspace" aria-labelledby="seoul-election-map-title">
+      <div class="seoul-election-section-head">
+        <p>인터랙티브 지도</p>
+        <h2 id="seoul-election-map-title">서울 25개 구를 클릭해서 당선 구도를 확인하세요</h2>
+        <span>검색창에 구 이름을 입력하거나 지도와 빠른 선택 버튼을 눌러 이동할 수 있습니다.</span>
+      </div>
+
+      <div class="seoul-election-search" role="search">
+        <label for="seoulDistrictSearch">구 이름 검색</label>
+        <div class="seoul-election-search__row">
+          <input id="seoulDistrictSearch" type="search" list="seoulDistrictOptions" placeholder="예: 강남구, 마포구, 종로구" autocomplete="off" />
+          <button type="button" id="seoulDistrictSearchButton">검색</button>
+        </div>
+        <datalist id="seoulDistrictOptions">
+          {seoulElectionPageData.districts.map((district) => (
+            <option value={district.districtName}>{district.districtShort}</option>
+          ))}
+        </datalist>
+      </div>
+
+      <div class="seoul-election-layout">
+        <div class="seoul-election-map-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 780" class="seoul-election-map" id="seoulElectionMap" role="img" aria-labelledby="seoul-map-svg-title">
+            <title id="seoul-map-svg-title">2026 서울 25개 구청장 선거 정당별 SVG 지도</title>
+            <g class="seoul-election-map__regions">
+              {mapShapes.map((shape) => {
+                const district = districtById.get(shape.id);
+                if (!district) return null;
+                const partyClass = getPartyClass(district.elected.party);
+                return (
+                  <path
+                    id={`seoul-district-${shape.id}`}
+                    class={`seoul-election-map__district seoul-election-map__district--${partyClass}`}
+                    data-district-id={shape.id}
+                    d={shape.d}
+                    tabindex="0"
+                    role="button"
+                    aria-label={`${district.districtName} ${district.elected.party} ${district.elected.name}`}
+                  />
+                );
+              })}
+            </g>
+            <g class="seoul-election-map__labels" aria-hidden="true">
+              {mapShapes.map((shape) => {
+                const district = districtById.get(shape.id);
+                if (!district) return null;
+                return <text x={shape.x} y={shape.y}>{district.districtShort}</text>;
+              })}
+            </g>
+          </svg>
+          <div id="seoulElectionTooltip" class="seoul-election-tooltip" aria-hidden="true"></div>
+          <div class="seoul-election-legend" aria-label="지도 범례">
+            <span class="seoul-election-legend__item seoul-election-legend__item--dem">더불어민주당 {seoulElectionPageData.demCount}</span>
+            <span class="seoul-election-legend__item seoul-election-legend__item--ppp">국민의힘 {seoulElectionPageData.pppCount}</span>
+          </div>
+        </div>
+
+        <aside class="seoul-election-panel" id="seoulElectionPanel" aria-live="polite">
+          <p class="seoul-election-panel__eyebrow">선택된 구</p>
+          <h3>{initialDistrict.districtName}</h3>
+          <div class={`seoul-election-party-pill seoul-election-party-pill--${getPartyClass(initialDistrict.elected.party)}`}>
+            {initialDistrict.elected.party}
+          </div>
+          <dl class="seoul-election-panel__facts">
+            <div>
+              <dt>당선자</dt>
+              <dd>{initialDistrict.elected.name}</dd>
+            </div>
+            <div>
+              <dt>득표율</dt>
+              <dd>{formatVoteShare(initialDistrict.elected.voteShare)}</dd>
+            </div>
+            <div>
+              <dt>상태</dt>
+              <dd>{initialDistrict.elected.badge}</dd>
+            </div>
+            <div>
+              <dt>2022년 대비</dt>
+              <dd>{initialDistrict.isPartyFlip ? "정당 교체" : "정당 유지"}</dd>
+            </div>
+          </dl>
+          <div class="seoul-election-panel__tags">
+            {initialDistrict.tags.map((tag) => <span>{tag}</span>)}
+          </div>
+          <div class="seoul-election-panel__issue">
+            <strong>{initialDistrict.pledges[0]?.title}</strong>
+            <p>{initialDistrict.pledges[0]?.description}</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="seoul-election-quick" aria-labelledby="seoul-election-quick-title">
+      <div class="seoul-election-section-head">
+        <p>빠른 선택</p>
+        <h2 id="seoul-election-quick-title">구별 결과 바로 보기</h2>
+      </div>
+      <div class="seoul-election-quick__grid">
+        {seoulElectionPageData.districts.map((district) => (
+          <button
+            type="button"
+            class={`seoul-election-quick__button seoul-election-quick__button--${getPartyClass(district.elected.party)}`}
+            data-district-id={district.districtId}
+          >
+            <span>{district.districtName}</span>
+            <small>{district.elected.party}</small>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <section class="seoul-election-chart" aria-labelledby="seoul-election-chart-title">
+      <div class="seoul-election-section-head">
+        <p>정당별 구도</p>
+        <h2 id="seoul-election-chart-title">2022년 대비 서울 구청장 정당 변화</h2>
+      </div>
+      <div class="seoul-election-chart__bars">
+        {partyRows.map((row) => (
+          <article class={`seoul-election-chart__row seoul-election-chart__row--${row.className}`}>
+            <div class="seoul-election-chart__label">
+              <strong>{row.label}</strong>
+              <span>2022년 {row.previous}개 구</span>
+            </div>
+            <div class="seoul-election-chart__track" aria-hidden="true">
+              <span style={`width: ${(row.count / seoulElectionPageData.totalDistricts) * 100}%`}></span>
+            </div>
+            <p>{row.count}개 구</p>
+          </article>
+        ))}
+      </div>
+      <ul class="seoul-election-chart__notes">
+        {topIssues.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="seoul-election-sources" aria-labelledby="seoul-election-sources-title">
+      <div class="seoul-election-section-head">
+        <p>공식 확인 경로</p>
+        <h2 id="seoul-election-sources-title">최종 수치는 선관위 원문에서 다시 확인하세요</h2>
+      </div>
+      <div class="seoul-election-sources__grid">
+        {initialDistrict.sources.map((source) => (
+          <a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 서울 구청장 선거 결과를 읽는 기준"
+      intro={seoulElectionPageData.seoIntro}
+      inputPoints={[
+        "지도에서 관심 구를 선택해 정당, 당선자 확인 상태, 주요 지역 쟁점을 빠르게 확인할 수 있습니다.",
+        "정당별 막대에서 2022년과 2026년 서울 구청장 구도 변화를 비교할 수 있습니다.",
+        "확정대기 표시는 아직 후보명·득표율 원문 확인이 필요한 항목이라는 뜻입니다.",
+      ]}
+      criteria={seoulElectionPageData.seoCriteria}
+      faq={seoulElectionPageData.faq}
+      related={seoulElectionPageData.relatedLinks}
+    />
+  </main>
+</BaseLayout>
+
+<script id="seoulElectionData" type="application/json" set:html={JSON.stringify(seoulElectionPageData.districts)}></script>
+<script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)}></script>
+<script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)}></script>
+<script src={withBase("/scripts/local-election-seoul-2026.js")} defer></script>
