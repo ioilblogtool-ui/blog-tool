@@ -1,0 +1,296 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { GOVERNOR_META, GOVERNORS } from "../../data/localElectionGovernor2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const TITLE       = "2026 지방선거 시도지사 당선자 — 지도로 보는 공약 완전 정리";
+const DESCRIPTION = "전국 16개 시도지사 당선자를 클릭하면 공약·이력·득표율이 한 번에 보입니다. 민주당 12곳 vs 국민의힘 4곳. 선관위 공약마당 기반 정리.";
+
+// KPI
+const maxVote    = Math.max(...GOVERNORS.filter(g => g.elected.voteShare > 0).map(g => g.elected.voteShare));
+const maxVoteGov = GOVERNORS.find(g => g.elected.voteShare === maxVote);
+const seoulGov   = GOVERNORS.find(g => g.regionId === "seoul");
+const flipCount  = GOVERNORS.filter(g => g.isPartyFlip).length;
+
+// FAQ items
+const faqItems = [
+  { question: "광주·전남은 왜 하나로 묶였나요?", answer: "「전남광주통합특별시 설치를 위한 특별법」에 따라 2026년 7월 1일 전라남도와 광주광역시가 통합됩니다. 이번 선거에서 단일 광역단체장을 선출했으며 민형배 후보가 79.02%로 당선됐습니다." },
+  { question: "서울은 왜 초박빙이었나요?",         answer: `오세훈(국민의힘) 48.77% vs 정원오(더불어민주당) 48.51%로 불과 0.26%p 차이였습니다. 개표 내내 결과가 뒤집히며 이번 선거 최대 이변 중 하나입니다.` },
+  { question: "공약 이행은 어디서 확인하나요?",    answer: "선관위 정책·공약마당(policy.nec.go.kr)에서 공약 이행 결과를 공개합니다. 비교계산소는 임기 중 6개월·1년 단위로 공약 이행 현황을 업데이트 예정입니다." },
+  { question: "데이터는 얼마나 신뢰할 수 있나요?", answer: `${GOVERNOR_META.dataAsOf} 기준 집계입니다. 미확정 항목은 '확정대기' 표시이며 선관위 최종 확정 후 전면 업데이트됩니다.` },
+  { question: "시도지사 임기는 몇 년인가요?",      answer: "4년입니다. 2026년 당선자는 2026년 7월 1일부터 2030년 6월 30일까지 임기를 수행합니다." },
+];
+---
+
+<BaseLayout title={TITLE} description={DESCRIPTION}>
+  <SiteHeader />
+  <main class="container page-shell report-page gov-page">
+
+    <!-- A. Hero -->
+    <section class="gov-hero">
+      <p class="gov-hero__eyebrow">2026 지방선거 · 시도지사</p>
+      <h1 class="gov-hero__title">{TITLE}</h1>
+      <p class="gov-hero__sub">
+        전국 16개 시도를 클릭하면 당선자 공약·이력·득표율이 한 번에 보입니다.
+      </p>
+      <span class="gov-hero__date-badge">{GOVERNOR_META.dataAsOf}</span>
+    </section>
+
+    <!-- B. 데이터 안내 -->
+    <div class="gov-notice">
+      <span class="gov-notice__icon">⚠️</span>
+      <span>공약은 선관위 공약마당 기준 요약입니다. 미확정 득표율은 선관위 최종 확정 후 업데이트됩니다.</span>
+      <a href="https://info.nec.go.kr" target="_blank" rel="noopener noreferrer" class="gov-notice__link">선관위 바로가기 →</a>
+    </div>
+
+    <!-- C. KPI -->
+    <section class="gov-kpi content-section" aria-label="핵심 지표">
+      <div class="gov-kpi__grid">
+        <div class="gov-kpi__card gov-kpi__card--dem">
+          <p class="gov-kpi__label">더불어민주당</p>
+          <p class="gov-kpi__value">{GOVERNOR_META.demCount}곳</p>
+          <p class="gov-kpi__change">2022년 5곳 → 12곳 (+7)</p>
+        </div>
+        <div class="gov-kpi__card gov-kpi__card--ppp">
+          <p class="gov-kpi__label">국민의힘</p>
+          <p class="gov-kpi__value">{GOVERNOR_META.pppCount}곳</p>
+          <p class="gov-kpi__change">2022년 12곳 → 4곳 (-8)</p>
+        </div>
+        <div class="gov-kpi__card">
+          <p class="gov-kpi__label">정당 교체</p>
+          <p class="gov-kpi__value">{flipCount}곳</p>
+          <p class="gov-kpi__change">전 정권 대비 대거 교체</p>
+        </div>
+        <div class="gov-kpi__card gov-kpi__card--accent">
+          <p class="gov-kpi__label">최소 득표차</p>
+          <p class="gov-kpi__value">0.26%p</p>
+          <p class="gov-kpi__change">서울 오세훈 vs 정원오</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- D. 지도 + 패널 -->
+    <section class="gov-map-section content-section" aria-labelledby="gov-map-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">전국 지도</p>
+        <h2 id="gov-map-title">지역을 클릭하면 당선자 상세가 나옵니다</h2>
+        <p>지도 클릭 또는 아래 목록에서 지역을 선택하세요.</p>
+      </div>
+
+      <!-- 모바일 탭 -->
+      <div class="gov-tabs" role="tablist" aria-label="보기 방식">
+        <button id="gov-tab-map"  class="gov-tab gov-tab--active" role="tab" aria-selected="true">🗺 지도</button>
+        <button id="gov-tab-list" class="gov-tab"                 role="tab" aria-selected="false">📋 목록</button>
+      </div>
+
+      <div class="gov-layout">
+        <!-- 지도 뷰 -->
+        <div id="gov-map-view" class="gov-map-wrap">
+          <!-- 인라인 SVG (korea-regions.svg 내용) -->
+          <div class="gov-map-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 660"
+              id="gov-map-svg" class="gov-map__svg"
+              aria-label="전국 시도지사 당선자 지도">
+              <title>2026 지방선거 시도지사 당선자 지도</title>
+              <g class="gov-map__regions">
+                {GOVERNORS.map((gov) => {
+                  const cls = gov.elected.party === "더불어민주당" ? "dem" : "ppp";
+                  return (
+                    <path
+                      id={`gov-region-${gov.regionId}`}
+                      data-region-id={gov.regionId}
+                      class={`gov-map__region gov-map__region--${cls}`}
+                      tabindex="0"
+                      role="button"
+                      aria-label={`${gov.regionNameKo} — ${gov.elected.name} (${gov.elected.party})`}
+                      d="M0 0"
+                    />
+                  );
+                })}
+              </g>
+              <g class="gov-map__labels" aria-hidden="true">
+                <text class="gov-map__label" x="200" y="194">서울</text>
+                <text class="gov-map__label" x="160" y="195">인천</text>
+                <text class="gov-map__label" x="182" y="218">경기</text>
+                <text class="gov-map__label" x="345" y="192">강원</text>
+                <text class="gov-map__label" x="185" y="330">세종</text>
+                <text class="gov-map__label" x="242" y="305">충북</text>
+                <text class="gov-map__label" x="120" y="308">충남</text>
+                <text class="gov-map__label" x="164" y="335">대전</text>
+                <text class="gov-map__label" x="138" y="372">전북</text>
+                <text class="gov-map__label" x="148" y="415">광주·전남</text>
+                <text class="gov-map__label" x="328" y="325">경북</text>
+                <text class="gov-map__label" x="263" y="355">대구</text>
+                <text class="gov-map__label" x="365" y="368">울산</text>
+                <text class="gov-map__label" x="320" y="402">부산</text>
+                <text class="gov-map__label" x="246" y="428">경남</text>
+                <text class="gov-map__label" x="170" y="545">제주</text>
+              </g>
+            </svg>
+            <!-- 지도 위 툴팁 -->
+            <div id="gov-tooltip" class="gov-tooltip" aria-hidden="true"></div>
+          </div>
+          <!-- 범례 -->
+          <div class="gov-legend">
+            <span class="gov-legend__item gov-legend__item--dem">더불어민주당 (12)</span>
+            <span class="gov-legend__item gov-legend__item--ppp">국민의힘 (4)</span>
+          </div>
+        </div>
+
+        <!-- 목록 뷰 (모바일 탭) -->
+        <div id="gov-list-view" class="gov-list is-hidden">
+          <div class="gov-list__grid">
+            {GOVERNORS.map((gov) => (
+              <button
+                type="button"
+                class={`gov-list__btn gov-list__btn--${gov.elected.party === "더불어민주당" ? "dem" : "ppp"}`}
+                data-region-id={gov.regionId}
+              >
+                <span class="gov-list__region">{gov.regionNameKo}</span>
+                <span class="gov-list__name">{gov.elected.name}</span>
+                <span class="gov-list__vote">
+                  {gov.elected.voteShare > 0
+                    ? `${gov.elected.voteShare}%`
+                    : "확정대기"}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <!-- 당선자 상세 패널 -->
+        <div id="gov-panel" class="gov-panel" role="dialog" aria-label="당선자 상세 정보" aria-modal="true">
+          <p class="gov-panel__hint">
+            지도에서 지역을 클릭하면<br/>당선자 정보가 나옵니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- E. 지역별 빠른 탐색 버튼 -->
+    <section class="gov-quick content-section" aria-labelledby="gov-quick-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">빠른 탐색</p>
+        <h2 id="gov-quick-title">지역 바로가기</h2>
+      </div>
+      <div class="gov-quick__grid">
+        {GOVERNORS.map((gov) => (
+          <button
+            type="button"
+            class={`gov-quick__btn gov-quick__btn--${gov.elected.party === "더불어민주당" ? "dem" : "ppp"}`}
+            data-region-id={gov.regionId}
+          >
+            {gov.regionNameKo}
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- F. 2022 vs 2026 비교 차트 -->
+    <section class="gov-chart-section content-section" aria-labelledby="gov-chart-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">선거 결과 비교</p>
+        <h2 id="gov-chart-title">2022년 vs 2026년 정당별 시도지사 당선 현황</h2>
+      </div>
+      <div class="gov-chart-wrap">
+        <canvas id="gov-party-chart"
+          data-dem-2022="5" data-ppp-2022="12"
+          data-dem-2026={GOVERNOR_META.demCount}
+          data-ppp-2026={GOVERNOR_META.pppCount}
+        ></canvas>
+      </div>
+      <p class="gov-chart-note">
+        더불어민주당 5→12곳(+7), 국민의힘 12→4곳(-8).
+        역대 지방선거 중 가장 큰 폭의 정권 교체.
+      </p>
+    </section>
+
+    <!-- G. FAQ -->
+    <section class="gov-faq content-section" aria-labelledby="gov-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="gov-faq-title">2026 지방선거 FAQ</h2>
+      </div>
+      <div class="gov-faq__list" itemscope itemtype="https://schema.org/FAQPage">
+        {faqItems.map((item) => (
+          <div class="gov-faq__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="gov-faq__q" itemprop="name" aria-expanded="false">
+              {item.question}
+              <span class="gov-faq__icon">▼</span>
+            </button>
+            <div class="gov-faq__a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.answer}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- H. 관련 콘텐츠 -->
+    <section class="gov-related content-section" aria-labelledby="gov-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">이번 선거 시리즈</p>
+        <h2 id="gov-related-title">같이 보면 좋은 콘텐츠</h2>
+      </div>
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/reports/local-election-seoul-2026/")}>
+          <span class="ts-link-card__eyebrow">지방선거 시리즈</span>
+          <strong>서울 25개 구청장 당선자 지도</strong>
+          <p>우리 동네 구청장 공약을 구별로 확인하세요.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/local-election-byeollection-2026/")}>
+          <span class="ts-link-card__eyebrow">지방선거 시리즈</span>
+          <strong>재보궐 14개 지역구 당선자</strong>
+          <p>한동훈 부산 북구갑 당선 등 재보궐 결과 정리.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/local-election-superintendent-2026/")}>
+          <span class="ts-link-card__eyebrow">지방선거 시리즈</span>
+          <strong>17개 시도 교육감 당선자</strong>
+          <p>무상급식·AI교육 등 우리 지역 교육 공약 확인.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/governor-mayor-candidate-assets-comparison-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>광역단체장 후보 재산 비교</strong>
+          <p>이번 선거 후보들의 재산 공개 내역 비교.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- SeoContent -->
+    <SeoContent
+      introTitle="2026 지방선거 시도지사 당선자 공약 완전 정리"
+      intro={[
+        `${GOVERNOR_META.electionName}(2026.06.03)에서 더불어민주당이 16개 광역단체장 중 12곳을 차지하며 압승했습니다. 2022년 5곳에서 7곳 늘어나 역대 최대 지방 권력 교체를 이뤘습니다.`,
+        "서울은 오세훈(국민의힘) 48.77% vs 정원오(더불어민주당) 48.51%로 0.26%p 차이의 초박빙 승부였습니다. 경남에서는 김경수(민주당)가 현직 박완수(국힘)를 꺾는 이변이 발생했습니다.",
+        "비교계산소는 선관위 공약마당 기반으로 16개 시도지사 당선자의 핵심 공약을 경제·교통·주거·교육·복지 5개 카테고리로 정리합니다. 임기 중 공약 이행 여부를 정기적으로 업데이트할 예정입니다.",
+      ]}
+      criteria={[
+        "당선자 정보는 선관위 개표 결과 기준 (2026-06-04 99.79% 집계)",
+        "공약은 선관위 정책·공약마당 기반 편집부 요약 (출처 표기)",
+        "미확정 득표율은 '확정대기' 배지 표시 후 최종 확정 시 업데이트",
+        "이력은 선관위 후보자 정보 공개 및 공식 자료 기반",
+      ]}
+      faq={faqItems.map(f => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/reports/local-election-seoul-2026/",        label: "서울 25개 구청장 당선자 지도 2026" },
+        { href: "/reports/local-election-byeollection-2026/", label: "재보궐선거 14개 지역구 당선자 2026" },
+        { href: "/reports/local-election-superintendent-2026/", label: "교육감 당선자 지도 2026" },
+      ]}
+    />
+
+  </main>
+
+  <!-- 데이터 주입 -->
+  <script define:vars={{ govData: GOVERNORS, govMeta: GOVERNOR_META }}>
+    window.GOV_DATA = govData;
+    window.GOV_META = govMeta;
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/scripts/local-election-governor-2026.js" defer></script>
+</BaseLayout>
