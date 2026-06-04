@@ -258,9 +258,10 @@ export const seoulElectionPageData: SeoulElectionPageData = {
     "SVG 지도는 정보 탐색용 단순화 지도입니다. 행정구역 면적과 실제 경계 비율은 반영하지 않았습니다.",
   ],
   relatedLinks: [
-    { href: "/reports/local-election-governor-2026/", label: "2026 시도지사 당선자 지도" },
-    { href: "/reports/seoul-mayor-candidate-assets-2026/", label: "서울시장 후보 재산 비교" },
-    { href: "/reports/local-election-candidate-assets-ranking-2026/", label: "지방선거 후보 재산 순위" },
+    { href: "/reports/local-election-governor-2026/",       label: "2026 시도지사 당선자 지도" },
+    { href: "/reports/local-election-byeollection-2026/",   label: "재보궐 14개 지역구 당선자" },
+    { href: "/reports/local-election-superintendent-2026/", label: "17개 시도 교육감 당선자" },
+    { href: "/reports/seoul-mayor-candidate-assets-2026/",  label: "서울시장 후보 재산 비교" },
   ],
 };
 
