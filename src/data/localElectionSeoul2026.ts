@@ -162,6 +162,7 @@ const districtTopics: Record<string, { tags: string[]; pledges: SeoulElectionPle
   ] },
 };
 
+// TODO: 5개 국힘 구 선관위 최종 확인 필요 — 마포구 포함 여부 특히 재확인
 const pppDistricts = new Set(["gangnam", "seocho", "songpa", "yongsan", "mapo"]);
 
 const districtNames: { id: string; name: string; short: string; previousParty?: SeoulElectionParty; electedName?: string; voteShare?: number | null; badge?: SeoulElectionBadge }[] = [
@@ -220,7 +221,7 @@ export const seoulElectionDistricts: SeoulElectionDistrict[] = districtNames.map
 export const seoulElectionPageData: SeoulElectionPageData = {
   electionName: "2026 서울 구청장 선거",
   electionDate: "2026-06-03",
-  dataAsOf: "2026-06-04 개표율 99.79% 기준",
+  dataAsOf: "2026-06-04 14:00 개표율 99.92% 기준",
   totalDistricts: 25,
   demCount: 20,
   pppCount: 5,
