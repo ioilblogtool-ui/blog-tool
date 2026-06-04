@@ -162,35 +162,35 @@ const districtTopics: Record<string, { tags: string[]; pledges: SeoulElectionPle
   ] },
 };
 
-// TODO: 5개 국힘 구 선관위 최종 확인 필요 — 마포구 포함 여부 특히 재확인
-const pppDistricts = new Set(["gangnam", "seocho", "songpa", "yongsan", "mapo"]);
+// 국힘 8곳: 중구·용산·광진·양천·서초·강남·송파·강동
+const pppDistricts = new Set(["jung", "yongsan", "gwangjin", "yangcheon", "seocho", "gangnam", "songpa", "gangdong"]);
 
 const districtNames: { id: string; name: string; short: string; previousParty?: SeoulElectionParty; electedName?: string; voteShare?: number | null; badge?: SeoulElectionBadge }[] = [
-  { id: "jongno", name: "종로구", short: "종로", previousParty: dem },
-  { id: "jung", name: "중구", short: "중구", previousParty: dem },
-  { id: "yongsan", name: "용산구", short: "용산", previousParty: ppp },
-  { id: "seongdong", name: "성동구", short: "성동", previousParty: dem },
-  { id: "gwangjin", name: "광진구", short: "광진", previousParty: dem },
-  { id: "dongdaemun", name: "동대문구", short: "동대문", previousParty: dem },
-  { id: "jungnang", name: "중랑구", short: "중랑", previousParty: dem },
-  { id: "seongbuk", name: "성북구", short: "성북", previousParty: dem },
-  { id: "gangbuk", name: "강북구", short: "강북", previousParty: dem },
-  { id: "dobong", name: "도봉구", short: "도봉", previousParty: dem },
-  { id: "nowon", name: "노원구", short: "노원", previousParty: dem },
-  { id: "eunpyeong", name: "은평구", short: "은평", previousParty: dem },
-  { id: "seodaemun", name: "서대문구", short: "서대문", previousParty: dem },
-  { id: "mapo", name: "마포구", short: "마포", previousParty: ppp },
-  { id: "gangseo", name: "강서구", short: "강서", previousParty: dem },
-  { id: "yangcheon", name: "양천구", short: "양천", previousParty: dem },
-  { id: "guro", name: "구로구", short: "구로", previousParty: dem },
-  { id: "geumcheon", name: "금천구", short: "금천", previousParty: dem },
-  { id: "yeongdeungpo", name: "영등포구", short: "영등포", previousParty: dem },
-  { id: "dongjak", name: "동작구", short: "동작", previousParty: dem },
-  { id: "gwanak", name: "관악구", short: "관악", previousParty: dem },
-  { id: "seocho", name: "서초구", short: "서초", previousParty: ppp },
-  { id: "gangnam", name: "강남구", short: "강남", previousParty: ppp, electedName: "조성명", voteShare: null, badge: "확정" },
-  { id: "songpa", name: "송파구", short: "송파", previousParty: ppp },
-  { id: "gangdong", name: "강동구", short: "강동", previousParty: dem },
+  { id: "jongno",       name: "종로구",   short: "종로",   previousParty: dem, electedName: "유찬종", badge: "확정" },
+  { id: "jung",         name: "중구",     short: "중구",   previousParty: dem, electedName: "김길성", badge: "확정" },
+  { id: "yongsan",      name: "용산구",   short: "용산",   previousParty: ppp, electedName: "김경대", badge: "확정" },
+  { id: "seongdong",    name: "성동구",   short: "성동",   previousParty: dem, electedName: "유보화", badge: "확정" },
+  { id: "gwangjin",     name: "광진구",   short: "광진",   previousParty: dem, electedName: "김경호", badge: "확정" },
+  { id: "dongdaemun",   name: "동대문구", short: "동대문", previousParty: dem, electedName: "최동민", badge: "확정" },
+  { id: "jungnang",     name: "중랑구",   short: "중랑",   previousParty: dem, electedName: "류경기", badge: "확정" },
+  { id: "seongbuk",     name: "성북구",   short: "성북",   previousParty: dem, electedName: "이승로", badge: "확정" },
+  { id: "gangbuk",      name: "강북구",   short: "강북",   previousParty: dem, electedName: "정창수", badge: "확정" },
+  { id: "dobong",       name: "도봉구",   short: "도봉",   previousParty: dem, electedName: "김동욱", badge: "확정" },
+  { id: "nowon",        name: "노원구",   short: "노원",   previousParty: dem, electedName: "서준오", badge: "확정" },
+  { id: "eunpyeong",    name: "은평구",   short: "은평",   previousParty: dem, electedName: "김미경", badge: "확정" },
+  { id: "seodaemun",    name: "서대문구", short: "서대문", previousParty: dem, electedName: "박운기", badge: "확정" },
+  { id: "mapo",         name: "마포구",   short: "마포",   previousParty: ppp, electedName: "유동균", badge: "확정" },
+  { id: "gangseo",      name: "강서구",   short: "강서",   previousParty: dem, electedName: "진교훈", badge: "확정" },
+  { id: "yangcheon",    name: "양천구",   short: "양천",   previousParty: dem, electedName: "이기재", badge: "확정" },
+  { id: "guro",         name: "구로구",   short: "구로",   previousParty: dem, electedName: "장인홍", badge: "확정" },
+  { id: "geumcheon",    name: "금천구",   short: "금천",   previousParty: dem, electedName: "최기찬", badge: "확정" },
+  { id: "yeongdeungpo", name: "영등포구", short: "영등포", previousParty: dem, electedName: "조유진", badge: "확정" },
+  { id: "dongjak",      name: "동작구",   short: "동작",   previousParty: dem, electedName: "류삼영", badge: "확정" },
+  { id: "gwanak",       name: "관악구",   short: "관악",   previousParty: dem, electedName: "박준희", badge: "확정" },
+  { id: "seocho",       name: "서초구",   short: "서초",   previousParty: ppp, electedName: "전성수", badge: "확정" },
+  { id: "gangnam",      name: "강남구",   short: "강남",   previousParty: ppp, electedName: "조성명", badge: "확정" },
+  { id: "songpa",       name: "송파구",   short: "송파",   previousParty: ppp, electedName: "서강석", badge: "확정" },
+  { id: "gangdong",     name: "강동구",   short: "강동",   previousParty: dem, electedName: "이수희", badge: "확정" },
 ];
 
 export const seoulElectionDistricts: SeoulElectionDistrict[] = districtNames.map((district) => {
@@ -221,12 +221,12 @@ export const seoulElectionDistricts: SeoulElectionDistrict[] = districtNames.map
 export const seoulElectionPageData: SeoulElectionPageData = {
   electionName: "2026 서울 구청장 선거",
   electionDate: "2026-06-03",
-  dataAsOf: "2026-06-04 14:00 개표율 99.92% 기준",
+  dataAsOf: "2026-06-04 선관위 개표 결과 기준",
   totalDistricts: 25,
-  demCount: 20,
-  pppCount: 5,
-  previousDemCount: 14,
-  previousPppCount: 11,
+  demCount: 17,
+  pppCount: 8,
+  previousDemCount: 8,
+  previousPppCount: 17,
   districts: seoulElectionDistricts,
   faq: [
     {
