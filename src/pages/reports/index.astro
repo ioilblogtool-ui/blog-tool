@@ -10,7 +10,7 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
-type ReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax";
+type ReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics";
 type ReportTagMod = "salary" | "asset";
 
 type ReportIndexMeta = {
@@ -142,45 +142,45 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     isNew: true,
   },
   "lee-jaemyung-government-officials-assets-salary-2026": {
-    eyebrow: "공개재산 비교",
+    eyebrow: "공직자 재산",
     tags: [{ label: "공직자", mod: "asset" }, { label: "재산공개", mod: "asset" }, { label: "2026", mod: "asset" }],
-    category: "asset",
+    category: "politics",
     isNew: true,
   },
   "governor-mayor-candidate-assets-comparison-2026": {
     eyebrow: "광역단체장 후보 재산",
     tags: [{ label: "지방선거", mod: "asset" }, { label: "후보재산", mod: "asset" }, { label: "2026", mod: "asset" }],
-    category: "asset",
+    category: "politics",
     isNew: true,
   },
   "local-election-candidate-real-estate-2026": {
     eyebrow: "후보 부동산",
     tags: [{ label: "지방선거", mod: "asset" }, { label: "부동산", mod: "asset" }, { label: "2026", mod: "asset" }],
-    category: "asset",
+    category: "politics",
     isNew: true,
   },
   "gyeonggi-governor-candidate-assets-2026": {
     eyebrow: "경기도지사 후보 재산",
     tags: [{ label: "경기도지사", mod: "asset" }, { label: "후보재산", mod: "asset" }, { label: "2026", mod: "asset" }],
-    category: "asset",
+    category: "politics",
     isNew: true,
   },
   "local-election-candidate-assets-ranking-2026": {
     eyebrow: "선거 공개자료",
     tags: [{ label: "지방선거", mod: "asset" }, { label: "후보 재산", mod: "asset" }, { label: "TOP50", mod: "asset" }],
-    category: "asset",
+    category: "politics",
     isNew: true,
   },
   "seoul-mayor-candidate-assets-2026": {
     eyebrow: "서울시장 후보 재산",
     tags: [{ label: "서울시장", mod: "asset" }, { label: "후보재산", mod: "asset" }, { label: "2026", mod: "asset" }],
-    category: "asset",
+    category: "politics",
     isNew: true,
   },
   "local-election-seoul-2026": {
     eyebrow: "서울 구청장 선거",
     tags: [{ label: "서울", mod: "asset" }, { label: "구청장", mod: "asset" }, { label: "SVG 지도", mod: "asset" }],
-    category: "asset",
+    category: "politics",
     isNew: true,
   },
   "korea-rich-top10-assets": {
@@ -275,20 +275,20 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
   },
   "local-election-superintendent-2026": {
     eyebrow: "2026 교육감",
-    tags: [{ label: "교육감", mod: "salary" }, { label: "진보·보수", mod: "salary" }, { label: "공약", mod: "salary" }],
-    category: "salary",
+    tags: [{ label: "교육감", mod: "asset" }, { label: "진보·보수", mod: "asset" }, { label: "공약", mod: "asset" }],
+    category: "politics",
     isNew: true,
   },
   "local-election-byeollection-2026": {
     eyebrow: "재보궐선거",
-    tags: [{ label: "한동훈", mod: "salary" }, { label: "14개지역구", mod: "salary" }, { label: "공약", mod: "salary" }],
-    category: "salary",
+    tags: [{ label: "한동훈", mod: "asset" }, { label: "14개지역구", mod: "asset" }, { label: "공약", mod: "asset" }],
+    category: "politics",
     isNew: true,
   },
   "local-election-governor-2026": {
     eyebrow: "2026 지방선거",
-    tags: [{ label: "시도지사", mod: "salary" }, { label: "지도", mod: "salary" }, { label: "공약", mod: "salary" }],
-    category: "salary",
+    tags: [{ label: "시도지사", mod: "asset" }, { label: "지도", mod: "asset" }, { label: "공약", mod: "asset" }],
+    category: "politics",
     isNew: true,
   },
   "doctor-salary-2026": {
@@ -711,6 +711,7 @@ const reportEntries = reports
   .filter(Boolean)
   .sort((a, b) => a.order - b.order);
 
+const politicsSeries = reportEntries.filter((report) => report.category === "politics");
 const salarySeries = reportEntries.filter((report) => report.category === "salary");
 const bonusSeries = reportEntries.filter((report) => report.category === "bonus");
 const estateSeries = reportEntries.filter((report) => report.category === "estate");
@@ -751,6 +752,7 @@ const recommendedReports = [
 }).filter(Boolean);
 
 const seriesIntroductions: Record<ReportCategory, string> = {
+  politics: "지방선거 당선자, 공직자 재산, 후보 공약처럼 정치·선거 결과를 숫자로 읽는 시리즈입니다.",
   salary: "입사, 이직, 직무 선택처럼 보상 판단이 필요한 순간에 먼저 보는 시리즈입니다.",
   bonus: "성과급 산식, 지급률, 세후 체감액처럼 총보상 판단에 필요한 리포트를 모았습니다.",
   estate: "집값, 전세, 체감 주거비처럼 실수요 판단에 직접 연결되는 시리즈입니다.",
@@ -1005,6 +1007,32 @@ const reportFaqJsonLd = {
         ))}
       </div>
     </section>
+
+    {politicsSeries.length > 0 && (
+      <section class="reports-series" data-series="politics">
+        <div class="reports-series__head">
+          <h3 class="reports-series__label">정치·선거 시리즈</h3>
+          <p class="reports-series__desc">{seriesIntroductions.politics}</p>
+        </div>
+        <div class="reports-card-grid">
+          {politicsSeries.map((r) => (
+            <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
+              <p class="rc-eyebrow">{r.eyebrow}</p>
+              <p class="rc-title">{r.title}</p>
+              <p class="rc-desc">{r.desc}</p>
+              <div class="rc-footer">
+                <div class="rc-tags">
+                  {r.tags.map((t) => (
+                    <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                  ))}
+                </div>
+                <span class="rc-arrow">→</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
 
     <section class="reports-series" data-series="salary">
       <div class="reports-series__head">

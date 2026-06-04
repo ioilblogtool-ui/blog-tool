@@ -101,7 +101,7 @@ const topicBySlug: Record<string, string> = {
 };
 
 const categories = [...new Set(orderedTools.map((t) => topicBySlug[t.slug]).filter(Boolean))];
-type HomeReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax";
+type HomeReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics";
 
 type HomeReportMeta = {
   category: HomeReportCategory;
@@ -132,10 +132,10 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "baby-cost-2016-vs-2026": { category: "life", isNew: true },
   "elementary-school-ready-cost-2026": { category: "life", isNew: true },
   "daycare-kindergarten-cost-2026": { category: "life", isNew: true },
-  "lee-jaemyung-government-officials-assets-salary-2026": { category: "asset", isNew: true },
-  "local-election-candidate-assets-ranking-2026": { category: "asset", isNew: true },
-  "seoul-mayor-candidate-assets-2026": { category: "asset", isNew: true },
-  "local-election-seoul-2026": { category: "asset", isNew: true },
+  "lee-jaemyung-government-officials-assets-salary-2026": { category: "politics", isNew: true },
+  "local-election-candidate-assets-ranking-2026": { category: "politics", isNew: true },
+  "seoul-mayor-candidate-assets-2026": { category: "politics", isNew: true },
+  "local-election-seoul-2026": { category: "politics", isNew: true },
   "korea-rich-top10-assets": { category: "asset", isNew: false },
   "seoul-apartment-jeonse-report": { category: "estate", isNew: true },
   "seoul-jeonwolse-ratio-2026": { category: "estate", isNew: true },
@@ -147,9 +147,9 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "semiconductor-value-chain": { category: "asset", isNew: true },
   "bitcoin-gold-sp500-10year-comparison-2026": { category: "asset", isNew: true },
   "teacher-salary-2026": { category: "salary", isNew: true },
-  "local-election-superintendent-2026": { category: "salary", isNew: true },
-  "local-election-byeollection-2026": { category: "salary", isNew: true },
-  "local-election-governor-2026": { category: "salary", isNew: true },
+  "local-election-superintendent-2026": { category: "politics", isNew: true },
+  "local-election-byeollection-2026": { category: "politics", isNew: true },
+  "local-election-governor-2026": { category: "politics", isNew: true },
   "doctor-salary-2026": { category: "salary", isNew: true },
   "pharmacist-salary-2026": { category: "salary", isNew: true },
   "military-salary-2026": { category: "salary", isNew: true },
@@ -193,9 +193,9 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "baby-formula-brand-cost-comparison-2026": { category: "life", isNew: true },
   "2026-year-end-tax-saving-guide": { category: "tax", isNew: true },
   "2026-salaried-loan-comparison": { category: "asset", isNew: true },
-  "local-election-candidate-real-estate-2026": { category: "asset", isNew: true },
-  "governor-mayor-candidate-assets-comparison-2026": { category: "asset", isNew: true },
-  "gyeonggi-governor-candidate-assets-2026": { category: "asset", isNew: true },
+  "local-election-candidate-real-estate-2026": { category: "politics", isNew: true },
+  "governor-mayor-candidate-assets-comparison-2026": { category: "politics", isNew: true },
+  "gyeonggi-governor-candidate-assets-2026": { category: "politics", isNew: true },
 };
 
 const reportCategoryLabels: Record<HomeReportCategory, string> = {
@@ -208,9 +208,10 @@ const reportCategoryLabels: Record<HomeReportCategory, string> = {
   support: "복지·지원금",
   insurance: "보험",
   tax: "세금",
+  politics: "정치·선거",
 };
 
-const reportFilterOrder: Array<HomeReportCategory | "new"> = ["salary", "bonus", "estate", "asset", "life", "support", "insurance", "tax", "culture", "new"];
+const reportFilterOrder: Array<HomeReportCategory | "new"> = ["politics", "salary", "bonus", "estate", "asset", "life", "support", "insurance", "tax", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
 const homeCompareCards = [
