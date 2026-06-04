@@ -11,6 +11,7 @@
     activeRegionId: null,
     svgEl: null,
     panelEl: null,
+    pledgeEl: null,
     tooltipEl: null,
     isMobile: false,
   };
@@ -32,24 +33,33 @@
     return '<span class="gov-badge gov-badge--pending">확정대기</span>';
   }
 
+  function getPledgeCheckText(category) {
+    if (category.indexOf("교통") >= 0) return "노선 확정, 예비타당성·재정 협의, 착공 시점이 실제 체감도를 가릅니다.";
+    if (category.indexOf("주거") >= 0) return "공급 물량, 인허가 속도, 정비사업 규제 변화가 핵심 확인 지표입니다.";
+    if (category.indexOf("경제") >= 0 || category.indexOf("일자리") >= 0) return "투자 유치, 산업단지·특구 지정, 실제 고용 창출 규모를 함께 봐야 합니다.";
+    if (category.indexOf("교육") >= 0 || category.indexOf("청년") >= 0) return "대상자 범위, 지원 단가, 지자체 예산 반영 여부가 중요합니다.";
+    if (category.indexOf("복지") >= 0 || category.indexOf("의료") >= 0) return "서비스 대상, 전달 체계, 지속 예산 확보 여부를 확인해야 합니다.";
+    return "예산 반영, 세부 실행 일정, 관련 기관 협의 여부를 함께 봐야 합니다.";
+  }
+
   /* ─── SVG path d 데이터 (한국 행정구역 근사치) ───────────── */
   var REGION_PATHS = {
-    seoul:           "M187,185 L197,180 L210,182 L218,188 L215,198 L205,202 L193,200 L185,193 Z",
-    incheon:         "M150,185 L165,178 L178,181 L187,185 L185,193 L178,200 L168,205 L155,202 L145,196 Z",
-    gyeonggi:        "M155,150 L180,138 L205,135 L235,140 L258,155 L265,175 L260,200 L245,218 L225,228 L218,220 L215,198 L210,182 L197,180 L187,185 L178,181 L165,178 L150,185 L145,196 L135,210 L130,230 L138,248 L150,255 L155,245 L165,240 L180,238 L195,242 L205,250 L208,260 L200,270 L190,272 L178,265 L165,268 L155,278 L150,290 L158,298 L170,302 L165,315 L155,318 L148,312 L138,318 L130,310 L120,305 L112,295 L108,280 L112,265 L118,250 L120,230 L115,212 L118,195 L125,178 L135,165 Z",
-    gangwon:         "M258,155 L285,140 L320,130 L355,128 L385,132 L410,142 L425,158 L430,178 L420,198 L405,215 L390,228 L372,238 L355,242 L338,238 L320,242 L305,255 L292,268 L280,278 L268,272 L260,260 L258,242 L265,225 L265,200 L260,180 Z",
-    sejong:          "M178,318 L190,312 L200,315 L205,325 L198,335 L185,338 L175,332 Z",
-    chungbuk:        "M200,270 L208,260 L220,258 L238,262 L255,270 L268,280 L278,295 L280,312 L272,325 L258,332 L242,335 L225,330 L212,320 L205,308 L200,295 L200,280 Z",
-    chungnam:        "M108,280 L120,275 L135,278 L148,285 L155,295 L158,312 L150,325 L138,332 L125,335 L112,330 L100,320 L92,305 L90,290 L98,282 Z",
-    daejeon:         "M155,318 L165,315 L178,318 L185,328 L185,338 L175,345 L162,345 L152,338 L150,328 Z",
-    jeonbuk:         "M92,335 L108,330 L125,335 L138,340 L150,338 L162,345 L175,345 L185,352 L192,365 L185,380 L172,392 L158,398 L142,400 L128,395 L115,385 L105,372 L98,358 L90,345 Z",
-    gwangju_jeonnam: "M90,358 L105,355 L115,360 L128,368 L142,375 L158,372 L172,368 L185,365 L198,372 L210,382 L218,398 L215,415 L205,428 L192,438 L175,445 L158,448 L140,445 L125,435 L112,422 L100,408 L88,392 L82,375 Z",
-    gyeongbuk:       "M280,278 L292,268 L305,255 L320,248 L338,250 L355,258 L370,270 L382,285 L388,305 L385,325 L375,345 L360,360 L342,370 L325,375 L308,368 L295,355 L282,340 L278,322 Z",
-    daegu:           "M258,340 L272,335 L282,342 L285,355 L278,365 L265,368 L252,362 L248,350 Z",
-    ulsan:           "M355,345 L370,340 L382,348 L388,362 L385,378 L372,385 L358,382 L348,370 L348,358 Z",
-    busan:           "M308,382 L325,378 L340,382 L348,395 L345,410 L332,418 L318,415 L308,405 L305,392 Z",
-    gyeongnam:       "M218,398 L235,392 L252,390 L265,395 L278,408 L285,422 L282,438 L268,450 L252,455 L235,452 L220,445 L208,432 L205,418 Z",
-    jeju:            "M135,530 L162,522 L190,525 L210,535 L215,548 L205,560 L182,565 L158,562 L138,552 L128,540 Z",
+    seoul:           "M173,158 L192,148 L214,154 L224,174 L214,194 L190,200 L170,188 L164,170 Z",
+    incheon:         "M88,164 L120,150 L150,160 L162,188 L146,218 L108,224 L82,204 Z",
+    gyeonggi:        "M140,88 L190,68 L246,76 L286,112 L296,168 L274,218 L232,244 L206,220 L224,174 L214,154 L192,148 L173,158 L164,170 L150,160 L120,150 L106,122 Z",
+    gangwon:         "M286,82 L360,56 L430,72 L474,126 L466,188 L420,236 L354,248 L300,218 L296,168 L286,112 Z",
+    sejong:          "M206,266 L226,256 L246,266 L248,288 L230,300 L210,292 Z",
+    chungbuk:        "M264,230 L324,224 L366,256 L374,316 L338,362 L284,354 L248,318 L248,288 L246,266 Z",
+    chungnam:        "M116,244 L166,228 L206,244 L210,292 L192,336 L140,350 L94,322 L82,278 Z",
+    daejeon:         "M196,318 L224,310 L246,326 L240,354 L210,362 L188,344 Z",
+    jeonbuk:         "M126,366 L188,352 L242,368 L264,418 L238,472 L174,484 L118,450 L98,404 Z",
+    gwangju_jeonnam: "M106,474 L172,458 L236,478 L282,524 L264,586 L196,610 L128,586 L84,536 Z",
+    gyeongbuk:       "M374,262 L430,246 L482,284 L488,360 L448,424 L378,430 L338,362 L374,316 Z",
+    daegu:           "M342,372 L370,358 L396,372 L398,404 L370,418 L340,402 Z",
+    ulsan:           "M420,430 L458,418 L484,446 L474,488 L430,496 L406,464 Z",
+    busan:           "M392,500 L432,494 L462,516 L452,552 L408,564 L378,538 Z",
+    gyeongnam:       "M276,452 L340,432 L406,464 L408,520 L354,566 L292,548 L264,500 Z",
+    jeju:            "M168,624 L206,606 L252,610 L282,630 L264,652 L210,658 L166,646 Z",
   };
 
   /* ─── SVG path 주입 ─────────────────────────────────────── */
@@ -66,6 +76,7 @@
   function initGovMap() {
     state.svgEl    = document.getElementById("gov-map-svg");
     state.panelEl  = document.getElementById("gov-panel");
+    state.pledgeEl = document.getElementById("gov-pledge-detail");
     state.tooltipEl = document.getElementById("gov-tooltip");
     state.isMobile = window.innerWidth < 900;
 
@@ -101,7 +112,11 @@
 
     // URL 해시 → 초기 패널 오픈
     var hash = location.hash.replace("#", "");
-    if (hash && REGION_PATHS[hash]) openGovPanel(hash);
+    if (hash && REGION_PATHS[hash]) {
+      openGovPanel(hash);
+    } else {
+      renderPledgeDetail(getGovData("seoul") || (window.GOV_DATA && window.GOV_DATA[0]));
+    }
 
     // 차트
     initGovChart();
@@ -171,6 +186,7 @@
     });
 
     renderGovPanel(data);
+    renderPledgeDetail(data);
     state.panelEl.classList.add("is-open");
 
     history.replaceState(null, "", "#" + regionId);
@@ -262,6 +278,39 @@
 
     // 닫기 버튼 이벤트
     panel.querySelector(".gov-panel__close").addEventListener("click", closeGovPanel);
+  }
+
+  function renderPledgeDetail(data) {
+    if (!state.pledgeEl || !data) return;
+
+    var pledgeCards = data.pledges.map(function (p, i) {
+      return '<article class="gov-pledge-detail__card">' +
+        '<div class="gov-pledge-detail__card-head">' +
+          '<span class="gov-pledge-detail__index">' + String(i + 1).padStart(2, "0") + "</span>" +
+          '<span class="gov-pledge-detail__category">' + p.category + "</span>" +
+        "</div>" +
+        "<h3>" + p.title + "</h3>" +
+        "<p>" + p.description + "</p>" +
+        "<dl>" +
+          "<div>" +
+            "<dt>핵심 확인점</dt>" +
+            "<dd>" + getPledgeCheckText(p.category) + "</dd>" +
+          "</div>" +
+          "<div>" +
+            "<dt>출처 성격</dt>" +
+            "<dd>" + p.source + "</dd>" +
+          "</div>" +
+        "</dl>" +
+      "</article>";
+    }).join("");
+
+    state.pledgeEl.innerHTML =
+      '<div class="gov-pledge-detail__summary">' +
+        '<span class="gov-pledge-detail__region">' + data.regionNameKo + "</span>" +
+        "<strong>" + data.elected.name + " 당선자 공약 요약</strong>" +
+        "<p>아래 공약은 선관위 공약 자료와 공개 자료를 바탕으로 요약한 참고 정보입니다. 실제 이행 여부는 예산 편성, 조례·중앙정부 협의, 착공·집행 일정으로 함께 확인해야 합니다.</p>" +
+      "</div>" +
+      '<div class="gov-pledge-detail__grid">' + pledgeCards + "</div>";
   }
 
   /* ─── 모바일 탭 ─────────────────────────────────────────── */
@@ -367,15 +416,10 @@
 
   /* ─── Chart.js 로드 대기 ─────────────────────────────────── */
   document.addEventListener("DOMContentLoaded", function () {
-    if (typeof Chart !== "undefined") {
-      initGovMap();
-    } else {
-      var chartScript = document.querySelector('script[src*="chart.js"]');
-      if (chartScript) {
-        chartScript.addEventListener("load", initGovMap);
-      } else {
-        initGovMap();
-      }
+    initGovMap();
+    var chartScript = document.querySelector('script[src*="chart.js"]');
+    if (chartScript && typeof Chart === "undefined") {
+      chartScript.addEventListener("load", initGovChart, { once: true });
     }
   });
 
