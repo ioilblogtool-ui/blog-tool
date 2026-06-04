@@ -66,7 +66,7 @@ export interface BattlegroundLink {
   label: string;
   href: string;
   description: string;
-  status: "준비중" | "게시됨";
+  status: "확장예정" | "게시됨";
 }
 
 export interface RelatedReportLink {
@@ -281,7 +281,7 @@ export const localElectionCandidateAssetsRanking2026: LocalElectionCandidateAsse
   partyDistribution: countBy(localElectionCandidateAssets, "partyName"),
   battlegroundLinks: [
     { label: "서울시장 후보 재산 비교 2026", href: "/reports/seoul-mayor-candidate-assets-2026/", description: "오세훈·정원오 서울시장 후보 재산 신고액과 공개자료 확인 경로를 별도 페이지에서 비교합니다.", status: "게시됨" },
-    { label: "경기지사 후보 재산 비교 2026", href: "/reports/gyeonggi-governor-candidate-assets-2026/", description: "경기도지사 후보 공개자료를 별도로 비교하는 확장 페이지입니다.", status: "준비중" },
+    { label: "경기지사 후보 재산 비교 2026", href: "/reports/gyeonggi-governor-candidate-assets-2026/", description: "경기도지사 후보 공개자료를 별도로 비교하는 확장 페이지입니다.", status: "확장예정" },
     { label: "광역단체장 후보 재산 비교 2026", href: "/reports/governor-mayor-candidate-assets-comparison-2026/", description: "시도지사 후보 재산을 지역별·정당별로 다시 비교하는 확장 리포트입니다.", status: "게시됨" },
   ],
   guideSteps: [
