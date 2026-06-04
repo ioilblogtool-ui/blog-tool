@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > **콘텐츠·UX·수익화·SEO 기준**: [`CONTENT_GUIDE.md`](./CONTENT_GUIDE.md) 를 반드시 먼저 확인하세요. 새 페이지 작성 및 기존 페이지 수정 시 모두 적용됩니다.
 
+> **구글 SEO·AdSense 주의사항**: [`docs/GOOGLE_SEO_RULES.md`](./docs/GOOGLE_SEO_RULES.md) — 새 페이지 생성·수정 시 **반드시** 확인. sitemap 오류, 트레일링 슬래시, SeoContent 최소 기준, 슬롯 위치 등 실제 구글 색인 실패 사례 기반 규칙.
+
 ## Commands
 
 ```bash
