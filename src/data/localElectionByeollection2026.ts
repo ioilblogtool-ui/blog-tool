@@ -62,7 +62,7 @@ export interface ByePageMeta {
 export const BYE_META: ByePageMeta = {
   electionName: "제9회 전국동시지방선거 — 국회의원 재·보궐선거",
   electionDate: "2026-06-03",
-  dataAsOf: "2026-06-04 개표율 99.79% 기준",
+  dataAsOf: "2026-06-04 14:00 개표율 99.92% 기준",
   totalDistricts: 14,
   demCount: 9,
   pppCount: 4,

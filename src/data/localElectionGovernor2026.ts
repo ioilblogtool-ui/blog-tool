@@ -331,7 +331,7 @@ export const GOVERNORS: GovernorElected[] = [
       badge: "확정",
     },
     runner: {
-      name: "양향자",
+      name: "양향자", // TODO: 선관위 후보자 정보 재확인 필요
       party: "국민의힘",
       voteShare: 39.37,
       badge: "확정",

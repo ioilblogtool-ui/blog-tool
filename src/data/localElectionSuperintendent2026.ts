@@ -49,7 +49,7 @@ export interface EduPageMeta {
 export const EDU_META: EduPageMeta = {
   electionName:      "제9회 전국동시지방선거 — 시도교육감선거",
   electionDate:      "2026-06-03",
-  dataAsOf:          "2026-06-04 개표율 99.79% 기준",
+  dataAsOf:          "2026-06-04 14:00 개표율 99.92% 기준",
   totalRegions:      17,
   progressiveCount:  1,    // 현재 확정: 서울 정근식
   conservativeCount: 0,    // TODO: 선관위 확정 후 업데이트
