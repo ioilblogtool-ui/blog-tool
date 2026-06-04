@@ -408,6 +408,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "high-oil-support-payment-calculator",
+    title: "고유가 피해지원금 계산기",
+    description: "2026년 고유가 피해지원금 대상 유형과 거주 지역을 입력하면 1인당 지원액, 총 예상 수령액, 2차 신청 마감 체크리스트를 확인합니다.",
+    order: 11.75,
+    eyebrow: "고유가 피해지원금",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "2026", "지원금"],
+    previewStats: [
+      { label: "기초생활수급자", value: "55만 원" },
+      { label: "2차 신청 마감", value: "7월 3일" }
+    ]
+  },
+  {
     slug: "single-parental-leave-total",
     title: "한 명만 육아휴직 총수령액 계산기",
     description: "육아휴직 급여, 부모급여, 아동수당, 첫만남이용권을 합쳐 아이 두 돌까지 가구 총수령액을 계산하는 페이지",

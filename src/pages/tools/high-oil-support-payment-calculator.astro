@@ -1,0 +1,241 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  HIGH_OIL_CHECKLIST,
+  HIGH_OIL_FAQ,
+  HIGH_OIL_META,
+  HIGH_OIL_PRESETS,
+  HIGH_OIL_RELATED_LINKS,
+  HIGH_OIL_SEO_CONTENT,
+  HIGH_OIL_SUPPORT_2026,
+  HIGH_OIL_TARGET_OPTIONS,
+} from "../../data/highOilSupportPaymentCalculator";
+
+const pageUrl = "https://bigyocalc.com/tools/high-oil-support-payment-calculator/";
+const title = `${HIGH_OIL_META.title} | 비교계산소`;
+const description = HIGH_OIL_META.description;
+const scriptConfig = {
+  rules: HIGH_OIL_SUPPORT_2026,
+  presets: HIGH_OIL_PRESETS,
+  targets: HIGH_OIL_TARGET_OPTIONS,
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: HIGH_OIL_FAQ.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} canonical={pageUrl}>
+  <SiteHeader />
+  <SimpleToolShell calculatorId="high-oil-support-payment-calculator" pageClass="hosp-page">
+    <CalculatorHero
+      slot="hero"
+      eyebrow="2026년 6월 한정 지원금"
+      title="고유가 피해지원금 계산기"
+      description="대상 유형과 거주 지역을 입력하면 1인당 지원액, 총 예상 수령액, 2차 신청 마감 체크리스트를 한 번에 확인합니다."
+      updatedAt={HIGH_OIL_META.updatedAt}
+      badges={["모의계산", "7월 3일 마감", "지자체 확인"]}
+    />
+
+    <ToolActionBar slot="actions" resetId="hospResetBtn" copyId="hospCopyBtn" />
+
+    <aside slot="aside" class="hosp-aside">
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          "계산 결과는 공개된 지원 단가를 바탕으로 한 모의계산입니다.",
+          "실제 지급 여부와 지역 추가금은 주민등록지 지자체 심사 결과를 따릅니다.",
+          "2차 신청 마감 기준일은 2026년 7월 3일입니다.",
+        ]}
+      />
+
+      <section class="hosp-panel" aria-labelledby="hosp-preset-title">
+        <h2 id="hosp-preset-title">빠른 입력</h2>
+        <div class="hosp-presets">
+          {HIGH_OIL_PRESETS.map((preset) => (
+            <button type="button" data-hosp-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section class="hosp-panel" aria-labelledby="hosp-input-title">
+        <h2 id="hosp-input-title">신청 조건 입력</h2>
+        <label class="hosp-field">
+          <span>대상 유형</span>
+          <select data-hosp="targetType">
+            {HIGH_OIL_TARGET_OPTIONS.map((option) => (
+              <option value={option.value}>{option.label} · {option.amountLabel}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="hosp-field">
+          <span>대상 인원</span>
+          <input data-hosp="eligiblePeople" type="number" min="1" max="20" value="1" inputmode="numeric" />
+        </label>
+
+        <label class="hosp-field">
+          <span>거주 지역</span>
+          <select data-hosp="residenceArea">
+            <option value="capital-area">수도권</option>
+            <option value="non-capital-area">비수도권</option>
+          </select>
+        </label>
+
+        <label class="hosp-toggle">
+          <input data-hosp="isPopulationDeclineArea" type="checkbox" />
+          <span>인구감소지역 추가 지원 가능성이 있습니다.</span>
+        </label>
+      </section>
+
+      <section class="hosp-panel" aria-labelledby="hosp-schedule-title">
+        <h2 id="hosp-schedule-title">신청 일정</h2>
+        <label class="hosp-field">
+          <span>신청 구분</span>
+          <select data-hosp="applicationRound">
+            <option value="second">2차 신청</option>
+            <option value="first">1차 지급 확인</option>
+          </select>
+        </label>
+
+        <label class="hosp-field">
+          <span>신청 예정일</span>
+          <input data-hosp="applicationDate" type="date" value="2026-06-04" min="2026-04-27" max="2026-07-31" />
+        </label>
+
+        <label class="hosp-field">
+          <span>출생연도 끝자리</span>
+          <select data-hosp="birthYearLastDigit">
+            <option value="">선택 안 함</option>
+            {Array.from({ length: 10 }, (_, index) => (
+              <option value={String(index)}>{index}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="hosp-field">
+          <span>희망 지급 방식</span>
+          <select data-hosp="paymentMethod">
+            <option value="account">계좌 입금</option>
+            <option value="local-card">지역화폐·카드</option>
+            <option value="unknown">지자체 안내 확인</option>
+          </select>
+        </label>
+      </section>
+    </aside>
+
+    <main class="hosp-main">
+      <section class="hosp-result" aria-labelledby="hosp-result-title">
+        <div class="hosp-result__header">
+          <div>
+            <p class="hosp-kicker">예상 수령액</p>
+            <h2 id="hosp-result-title">지원금 계산 결과</h2>
+          </div>
+          <strong id="hosp-application-status" data-state="ok">신청 준비 가능</strong>
+        </div>
+
+        <div class="hosp-total">
+          <span>총 예상 수령액</span>
+          <strong id="hosp-total-amount">550,000원</strong>
+          <p id="hosp-summary">기초생활수급자 1명 · 550,000원 예상</p>
+        </div>
+
+        <div class="hosp-grid">
+          <article>
+            <span>1인당 지원액</span>
+            <strong id="hosp-per-person-amount">550,000원</strong>
+          </article>
+          <article>
+            <span>기본 지원액</span>
+            <strong id="hosp-base-amount">550,000원</strong>
+          </article>
+          <article>
+            <span>지역 추가금</span>
+            <strong id="hosp-regional-extra">해당 없음</strong>
+          </article>
+          <article>
+            <span>2차 신청 마감</span>
+            <strong id="hosp-application-deadline">2026년 7월 3일</strong>
+          </article>
+        </div>
+
+        <p id="hosp-result-interpretation" class="hosp-interpretation">
+          기초생활수급자 1명 기준 예상 수령액은 550,000원입니다. 실제 지급액은 지자체 심사와 지역 추가 지원 적용 여부에 따라 달라질 수 있습니다.
+        </p>
+
+        <p class="hosp-result-help">상단의 링크 복사 버튼은 현재 계산 요약을 클립보드에 복사합니다.</p>
+      </section>
+
+      <section class="hosp-section" aria-labelledby="hosp-checklist-title">
+        <h2 id="hosp-checklist-title">신청 전 체크리스트</h2>
+        <ul id="hosp-checklist">
+          {HIGH_OIL_CHECKLIST.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section class="hosp-section" aria-labelledby="hosp-target-title">
+        <h2 id="hosp-target-title">대상 유형별 기준</h2>
+        <div class="hosp-targets">
+          {HIGH_OIL_TARGET_OPTIONS.filter((option) => option.value !== "unknown").map((option) => (
+            <article>
+              <span>{option.amountLabel}</span>
+              <h3>{option.label}</h3>
+              <p>{option.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="hosp-section" aria-labelledby="hosp-source-title">
+        <h2 id="hosp-source-title">공식 확인 링크</h2>
+        <div class="hosp-links">
+          {HIGH_OIL_SUPPORT_2026.sources.map((source) => (
+            <a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a>
+          ))}
+        </div>
+      </section>
+
+      <CompareCta
+        title="지원금만 보지 말고 받을 수 있는 복지급여도 같이 확인하세요"
+        description="가구 조건을 한 번 더 입력하면 생계·주거·교육급여 가능성을 빠르게 점검할 수 있습니다."
+        links={[
+          { href: "/tools/welfare-benefit-eligibility/", label: "복지급여 계산기 보기" },
+          { href: "/compare/welfare/", label: "지원금 비교표 보기", tone: "secondary" },
+        ]}
+      />
+    </main>
+
+    <SeoContent
+      slot="seo"
+      introTitle={HIGH_OIL_SEO_CONTENT.introTitle}
+      intro={HIGH_OIL_SEO_CONTENT.intro}
+      inputPoints={HIGH_OIL_SEO_CONTENT.inputPoints}
+      criteria={HIGH_OIL_SEO_CONTENT.criteria.map((item) => `${item.title}: ${item.body}`)}
+      faq={HIGH_OIL_FAQ}
+      related={HIGH_OIL_RELATED_LINKS}
+    />
+  </SimpleToolShell>
+  <script id="hosp-data" type="application/json" set:html={JSON.stringify(scriptConfig)} />
+  <script type="module" src={withBase("/scripts/high-oil-support-payment-calculator.js")}></script>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</BaseLayout>

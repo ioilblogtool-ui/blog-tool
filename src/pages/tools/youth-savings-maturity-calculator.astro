@@ -23,12 +23,10 @@ import { withBase } from "../../utils/base";
 const pageTitle = "청년 적금 만기 수령액 계산기";
 const pageDescription =
   "월 납입액과 금리를 입력해 청년미래적금, 청년도약계좌, 일반 적금의 만기 수령액을 비교합니다. 정부기여금, 비과세, 세후 이자, 우대금리까지 한 번에 계산하세요.";
+const visibleProducts = PRODUCT_CONFIGS.filter((product) => ["future", "leap", "regular"].includes(product.id));
 ---
 
-<BaseLayout
-  title={`${pageTitle}｜청년미래적금·청년도약계좌·일반 적금 비교`}
-  description={pageDescription}
->
+<BaseLayout title={`${pageTitle} | 비교계산소`} description={pageDescription}>
   <SiteHeader />
   <SimpleToolShell calculatorId="youth-savings-maturity-calculator" pageClass="op-page ysm-page">
     <Fragment slot="hero">
@@ -77,7 +75,7 @@ const pageDescription =
 
         <fieldset class="ysm-product-choice">
           <legend>비교 상품</legend>
-          {PRODUCT_CONFIGS.map((product) => (
+          {visibleProducts.map((product) => (
             <label>
               <input
                 type="checkbox"
@@ -140,7 +138,7 @@ const pageDescription =
         </details>
         <script id="ysm-config" type="application/json" set:html={JSON.stringify({
           defaultInput: DEFAULT_YOUTH_SAVINGS_INPUT,
-          products: PRODUCT_CONFIGS,
+          products: visibleProducts,
           leapIncomeTiers: LEAP_INCOME_TIERS,
         })} />
       </section>
@@ -234,8 +232,8 @@ const pageDescription =
 
     <CompareCta
       variant="welfare"
-      title="청년 적금과 다른 지원금을 함께 비교하세요"
-      description="청년미래적금, 청년도약계좌, 일반 적금 계산 이후에는 복지급여와 출산·육아 지원금까지 비교표에서 한 번에 훑어볼 수 있습니다."
+      title="청년 적금과 다른 지원금도 함께 비교하세요"
+      description="청년미래적금, 청년도약계좌, 일반 적금 계산 이후에는 복지급여와 6월 한정 지원금까지 비교표에서 한 번에 훑어볼 수 있습니다."
       links={[
         { href: "/compare/welfare/", label: "지원금 비교표 보기" },
         { href: "/reports/youth-future-savings-2026/", label: "청년미래적금 가이드" },
@@ -247,7 +245,7 @@ const pageDescription =
         introTitle="청년 적금 만기 수령액 계산 기준"
         intro={SEO_INTRO}
         criteria={SEO_CRITERIA}
-        faq={FAQ_ITEMS.map((item) => ({ question: item.q, answer: item.a }))}
+        faq={FAQ_ITEMS.map((item) => ({ question: item.question, answer: item.answer }))}
         related={RELATED_LINKS.map((link) => ({ href: link.href, label: link.label }))}
       />
     </Fragment>

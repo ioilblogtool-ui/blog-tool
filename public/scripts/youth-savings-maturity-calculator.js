@@ -37,7 +37,7 @@
       monthlyContribution: num(byId("ysm-monthly")?.value),
       selectedProducts,
       youthFutureType: byId("ysm-future-type")?.value || defaultInput.youthFutureType || "general",
-      leapIncomeTierId: byId("ysm-leap-tier")?.value || defaultInput.leapIncomeTierId || "salary-3600",
+      leapIncomeTierId: byId("ysm-leap-tier")?.value || defaultInput.leapIncomeTierId || "tier-2",
       regularAnnualRate: num(byId("ysm-regular-rate")?.value),
       regularMonths: Math.max(1, num(byId("ysm-regular-months")?.value)),
       includeTax: byId("ysm-include-tax")?.checked ?? true,
@@ -74,7 +74,7 @@
       governmentContribution,
       taxSaving: input.policyTaxFree ? roundWon(grossInterest * TAX_RATE) : 0,
       maturityAmount,
-      badges: ["공식", "공시", "추정"],
+      badges: ["공식", "추정"],
       warnings: [
         "청년미래적금 가입 자격과 우대형 여부는 실제 신청 시점에 확인해야 합니다.",
         cappedAmount > 0 ? "청년미래적금은 월 50만 원 한도까지만 반영했습니다." : "",
@@ -157,7 +157,6 @@
     const best = sorted[0] || null;
     const regular = results.find((item) => item.productId === "regular");
     return {
-      input,
       results,
       bestProductName: best?.productName || "비교 상품 없음",
       bestMaturityAmount: best?.maturityAmount || 0,
@@ -208,7 +207,7 @@
           <article class="ysm-delta-card">
             <span>${item.productName}</span>
             <strong>${delta >= 0 ? "+" : ""}${formatManwon(delta)}</strong>
-            <p>일반 적금 대비 차액은 정부기여금, 비과세, 금리 차이를 합산한 추정값입니다.</p>
+            <p>일반 적금 대비 차액은 정부기여금, 비과세 효과, 금리 차이를 합산한 추정값입니다.</p>
           </article>
         `;
       })
@@ -216,8 +215,7 @@
   }
 
   function render() {
-    const input = readInput();
-    const result = calculateComparison(input);
+    const result = calculateComparison(readInput());
     out("bestAmount").textContent = formatManwon(result.bestMaturityAmount);
     out("bestProduct").textContent = result.bestProductName;
     out("additionalVsRegular").textContent = result.additionalVsRegular
@@ -245,10 +243,10 @@
   function reset() {
     byId("ysm-monthly").value = defaultInput.monthlyContribution || 500000;
     byId("ysm-future-type").value = defaultInput.youthFutureType || "general";
-    byId("ysm-leap-tier").value = defaultInput.leapIncomeTierId || "salary-3600";
+    byId("ysm-leap-tier").value = defaultInput.leapIncomeTierId || "tier-2";
     byId("ysm-future-base-rate").value = defaultInput.futureBaseRate || 5;
-    byId("ysm-future-bonus-rate").value = defaultInput.futureBonusRate || 2;
-    byId("ysm-leap-rate").value = defaultInput.leapAnnualRate || 6;
+    byId("ysm-future-bonus-rate").value = defaultInput.futureBonusRate || 0;
+    byId("ysm-leap-rate").value = defaultInput.leapAnnualRate || 5;
     byId("ysm-regular-rate").value = defaultInput.regularAnnualRate || 3.5;
     byId("ysm-regular-months").value = defaultInput.regularMonths || 36;
     byId("ysm-include-tax").checked = defaultInput.includeTax !== false;
