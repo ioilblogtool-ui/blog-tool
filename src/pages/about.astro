@@ -2,6 +2,12 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import CalculatorHero from "../components/CalculatorHero.astro";
+import { tools } from "../data/tools";
+import { reports } from "../data/reports";
+
+const toolCount = tools.length;
+const reportCount = reports.length;
+const totalCount = toolCount + reportCount;
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -81,7 +87,7 @@ const aboutFaq = [
   },
   {
     question: "어떤 주제의 계산기와 리포트를 제공하나요?",
-    answer: "연봉·성과급·퇴직금·연봉 협상, 육아휴직·출산지원금·양육비, 부동산·전월세·주택청약, 투자·연금·FIRE, 대기업 급여 비교 리포트 등 2030 직장인이 자주 마주치는 재무 판단 주제를 중심으로 90개 이상의 페이지를 운영합니다.",
+    answer: `연봉·성과급·퇴직금·연봉 협상, 육아휴직·출산지원금·양육비, 부동산·전월세·주택청약, 투자·연금·FIRE, 대기업 급여 비교 리포트 등 2030 직장인이 자주 마주치는 재무 판단 주제를 중심으로 계산기 ${toolCount}개, 리포트 ${reportCount}개를 운영합니다.`,
   },
   {
     question: "계산기와 리포트는 얼마나 자주 업데이트하나요?",
@@ -251,7 +257,7 @@ const aboutFaqJsonLd = {
           </div>
         </div>
         <div class="info-copy info-copy--spaced">
-          <p>2026년 기준 계산기 40개 이상, 비교 리포트 40개 이상을 운영하고 있으며 새로운 주제를 지속적으로 추가합니다. 운영 이메일: <a href="mailto:ioilblogtool@gmail.com">ioilblogtool@gmail.com</a></p>
+          <p>현재 계산기 {toolCount}개, 비교 리포트 {reportCount}개를 운영하고 있으며 새로운 주제를 지속적으로 추가합니다. 운영 이메일: <a href="mailto:ioilblogtool@gmail.com">ioilblogtool@gmail.com</a></p>
         </div>
       </article>
 
