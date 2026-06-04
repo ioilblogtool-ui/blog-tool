@@ -17,6 +17,7 @@ const maxVote    = Math.max(...GOVERNORS.filter(g => g.elected.voteShare > 0).ma
 const maxVoteGov = GOVERNORS.find(g => g.elected.voteShare === maxVote);
 const seoulGov   = GOVERNORS.find(g => g.regionId === "seoul");
 const flipCount  = GOVERNORS.filter(g => g.isPartyFlip).length;
+const initialPledgeGov = seoulGov ?? GOVERNORS[0];
 
 // FAQ items
 const faqItems = [
@@ -115,22 +116,22 @@ const faqItems = [
                 })}
               </g>
               <g class="gov-map__labels" aria-hidden="true">
-                <text class="gov-map__label" x="200" y="194">서울</text>
-                <text class="gov-map__label" x="160" y="195">인천</text>
-                <text class="gov-map__label" x="182" y="218">경기</text>
-                <text class="gov-map__label" x="345" y="192">강원</text>
-                <text class="gov-map__label" x="185" y="330">세종</text>
-                <text class="gov-map__label" x="242" y="305">충북</text>
-                <text class="gov-map__label" x="120" y="308">충남</text>
-                <text class="gov-map__label" x="164" y="335">대전</text>
-                <text class="gov-map__label" x="138" y="372">전북</text>
-                <text class="gov-map__label" x="148" y="415">광주·전남</text>
-                <text class="gov-map__label" x="328" y="325">경북</text>
-                <text class="gov-map__label" x="263" y="355">대구</text>
-                <text class="gov-map__label" x="365" y="368">울산</text>
-                <text class="gov-map__label" x="320" y="402">부산</text>
-                <text class="gov-map__label" x="246" y="428">경남</text>
-                <text class="gov-map__label" x="170" y="545">제주</text>
+                <text class="gov-map__label" x="192" y="180">서울</text>
+                <text class="gov-map__label" x="118" y="192">인천</text>
+                <text class="gov-map__label" x="225" y="126">경기</text>
+                <text class="gov-map__label" x="382" y="150">강원</text>
+                <text class="gov-map__label" x="226" y="282">세종</text>
+                <text class="gov-map__label" x="306" y="300">충북</text>
+                <text class="gov-map__label" x="165" y="304">충남</text>
+                <text class="gov-map__label" x="220" y="338">대전</text>
+                <text class="gov-map__label" x="186" y="420">전북</text>
+                <text class="gov-map__label" x="190" y="532">광주·전남</text>
+                <text class="gov-map__label" x="418" y="340">경북</text>
+                <text class="gov-map__label" x="370" y="394">대구</text>
+                <text class="gov-map__label" x="444" y="466">울산</text>
+                <text class="gov-map__label" x="420" y="532">부산</text>
+                <text class="gov-map__label" x="338" y="510">경남</text>
+                <text class="gov-map__label" x="224" y="634">제주</text>
               </g>
             </svg>
             <!-- 지도 위 툴팁 -->
@@ -169,6 +170,43 @@ const faqItems = [
           <p class="gov-panel__hint">
             지도에서 지역을 클릭하면<br/>당선자 정보가 나옵니다.
           </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="gov-pledge-detail content-section" aria-labelledby="gov-pledge-detail-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">공약 상세</p>
+        <h2 id="gov-pledge-detail-title">선택한 지역의 핵심 공약을 크게 보기</h2>
+        <p>지도에서 지역을 선택하면 이 영역이 해당 당선자의 주요 공약으로 바뀝니다.</p>
+      </div>
+      <div id="gov-pledge-detail" class="gov-pledge-detail__body">
+        <div class="gov-pledge-detail__summary">
+          <span class="gov-pledge-detail__region">{initialPledgeGov.regionNameKo}</span>
+          <strong>{initialPledgeGov.elected.name} 당선자 공약 요약</strong>
+          <p>아래 공약은 선관위 공약 자료와 공개 자료를 바탕으로 요약한 참고 정보입니다. 실제 이행 여부는 예산 편성, 조례·중앙정부 협의, 착공·집행 일정으로 함께 확인해야 합니다.</p>
+        </div>
+        <div class="gov-pledge-detail__grid">
+          {initialPledgeGov.pledges.map((pledge, index) => (
+            <article class="gov-pledge-detail__card">
+              <div class="gov-pledge-detail__card-head">
+                <span class="gov-pledge-detail__index">{String(index + 1).padStart(2, "0")}</span>
+                <span class="gov-pledge-detail__category">{pledge.category}</span>
+              </div>
+              <h3>{pledge.title}</h3>
+              <p>{pledge.description}</p>
+              <dl>
+                <div>
+                  <dt>핵심 확인점</dt>
+                  <dd>예산 반영, 세부 실행 일정, 관련 기관 협의 여부를 함께 봐야 합니다.</dd>
+                </div>
+                <div>
+                  <dt>출처 성격</dt>
+                  <dd>{pledge.source}</dd>
+                </div>
+              </dl>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -258,6 +296,11 @@ const faqItems = [
           <span class="ts-link-card__eyebrow">관련 리포트</span>
           <strong>광역단체장 후보 재산 비교</strong>
           <p>이번 선거 후보들의 재산 공개 내역 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/lee-jaemyung-government-officials-assets-salary-2026/")}>
+          <span class="ts-link-card__eyebrow">관련 리포트</span>
+          <strong>이재명 정부 공직자 재산·보수</strong>
+          <p>이재명 정부 핵심 공직자 재산 공개 내역 비교.</p>
         </a>
       </div>
     </section>

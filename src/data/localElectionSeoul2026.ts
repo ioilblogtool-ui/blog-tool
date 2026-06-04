@@ -261,7 +261,8 @@ export const seoulElectionPageData: SeoulElectionPageData = {
     { href: "/reports/local-election-governor-2026/",       label: "2026 시도지사 당선자 지도" },
     { href: "/reports/local-election-byeollection-2026/",   label: "재보궐 14개 지역구 당선자" },
     { href: "/reports/local-election-superintendent-2026/", label: "17개 시도 교육감 당선자" },
-    { href: "/reports/seoul-mayor-candidate-assets-2026/",  label: "서울시장 후보 재산 비교" },
+    { href: "/reports/seoul-mayor-candidate-assets-2026/",                   label: "서울시장 후보 재산 비교" },
+    { href: "/reports/lee-jaemyung-government-officials-assets-salary-2026/", label: "이재명 정부 공직자 재산·보수" },
   ],
 };
 
