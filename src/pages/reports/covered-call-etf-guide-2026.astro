@@ -1,0 +1,327 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  STRATEGY_STEPS, PROS, CONS, ETF_COMPARE,
+  INVESTOR_TYPES, FAQ,
+} from "../../data/coveredCallEtfGuide2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const TITLE = "커버드콜 ETF 장점·단점 완전 정리 — CONY·JEPI·나스닥100CC 총정리";
+const DESC  = "커버드콜 ETF 장점과 단점을 한번에 정리합니다. CONY·AMDY·JEPI·나스닥100커버드콜 ETF 비교, 세금, 투자자 유형별 적합성까지.";
+
+const faqItems = FAQ.map(f => ({ question: f.q, answer: f.a }));
+---
+
+<BaseLayout title={TITLE} description={DESC}>
+  <SiteHeader />
+  <main class="container page-shell report-page cceg-page">
+
+    <!-- Hero -->
+    <section class="cceg-hero">
+      <p class="cceg-hero__eyebrow">투자 리포트</p>
+      <h1 class="cceg-hero__title">커버드콜 ETF 장점·단점 완전 정리</h1>
+      <p class="cceg-hero__sub">
+        높은 분배율의 비밀과 위험 — CONY·JEPI·나스닥100커버드콜 ETF 완전 해부
+      </p>
+      <div class="cceg-hero__tags">
+        <span class="cceg-tag">월배당</span>
+        <span class="cceg-tag">커버드콜</span>
+        <span class="cceg-tag">CONY</span>
+        <span class="cceg-tag">JEPI</span>
+        <span class="cceg-tag">국내 ETF</span>
+      </div>
+    </section>
+
+    <!-- 요약 카드 -->
+    <div class="cceg-summary-grid">
+      <div class="cceg-summary-card cceg-summary-card--pro">
+        <p class="cceg-summary-card__title">✅ 핵심 장점</p>
+        <ul>
+          <li>연 8~60% 높은 분배율</li>
+          <li>매월 현금흐름 창출</li>
+          <li>횡보장·완만한 하락장 강함</li>
+        </ul>
+      </div>
+      <div class="cceg-summary-card cceg-summary-card--con">
+        <p class="cceg-summary-card__title">❌ 핵심 단점</p>
+        <ul>
+          <li>강세장 상승 수익 제한</li>
+          <li>원금 손실 위험 존재</li>
+          <li>분배율 변동·세금 부담</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 커버드콜 전략 설명 -->
+    <section class="cceg-strategy content-section" aria-labelledby="cceg-strategy-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">원리 이해</p>
+        <h2 id="cceg-strategy-title">커버드콜 전략이란?</h2>
+        <p>주식을 보유하면서 콜옵션을 매도해 프리미엄을 수취하는 전략입니다.</p>
+      </div>
+      <div class="cceg-strategy-steps">
+        {STRATEGY_STEPS.map(s => (
+          <div class="cceg-strategy-step">
+            <span class="cceg-strategy-step__num">{s.step}</span>
+            <div>
+              <p class="cceg-strategy-step__title">{s.title}</p>
+              <p class="cceg-strategy-step__desc">{s.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="cceg-strategy-note">
+        💡 <strong>핵심:</strong> 옵션 프리미엄으로 높은 분배금을 주지만, 주가가 크게 오를 때 그 수익의 일부를 포기하는 구조입니다.
+      </div>
+    </section>
+
+    <!-- 장점 -->
+    <section class="cceg-pros content-section" aria-labelledby="cceg-pros-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">장점</p>
+        <h2 id="cceg-pros-title">커버드콜 ETF 5가지 장점</h2>
+      </div>
+      <div class="cceg-cards-grid">
+        {PROS.map(p => (
+          <div class="cceg-card cceg-card--pro">
+            <div class="cceg-card__top">
+              <span class="cceg-card__emoji">{p.emoji}</span>
+              <h3 class="cceg-card__title">{p.title}</h3>
+              {p.badge && <span class="cceg-badge cceg-badge--pro">{p.badge}</span>}
+            </div>
+            <p class="cceg-card__detail">{p.detail}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 단점 -->
+    <section class="cceg-cons content-section" aria-labelledby="cceg-cons-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">단점</p>
+        <h2 id="cceg-cons-title">커버드콜 ETF 6가지 단점 — 반드시 알아야 할 것</h2>
+      </div>
+      <div class="cceg-cards-grid">
+        {CONS.map(c => (
+          <div class="cceg-card cceg-card--con">
+            <div class="cceg-card__top">
+              <span class="cceg-card__emoji">{c.emoji}</span>
+              <h3 class="cceg-card__title">{c.title}</h3>
+              {c.badge && <span class={`cceg-badge cceg-badge--${c.badge === '고위험' ? 'danger' : 'warn'}`}>{c.badge}</span>}
+            </div>
+            <p class="cceg-card__detail">{c.detail}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ETF 비교표 -->
+    <section class="cceg-compare content-section" aria-labelledby="cceg-compare-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">ETF 비교</p>
+        <h2 id="cceg-compare-title">주요 커버드콜 ETF 비교표 — 국내·미국 전체</h2>
+        <p>분배율·세율·위험도를 한눈에 비교합니다.</p>
+      </div>
+
+      <div class="cceg-filter-row">
+        <button class="cceg-filter-btn cceg-filter-btn--active" data-filter="all">전체</button>
+        <button class="cceg-filter-btn" data-filter="국내">국내 상장</button>
+        <button class="cceg-filter-btn" data-filter="미국">미국 상장</button>
+      </div>
+
+      <div class="cceg-table-wrap">
+        <table class="cceg-table">
+          <thead>
+            <tr>
+              <th>티커</th>
+              <th>시장</th>
+              <th>연 분배율</th>
+              <th>세율</th>
+              <th>위험도</th>
+              <th>전략</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ETF_COMPARE.sort((a, b) => b.annualDistRate - a.annualDistRate).map(etf => (
+              <tr data-market={etf.market}>
+                <td>
+                  <strong>{etf.ticker}</strong>
+                  <p class="cceg-cell-sub">{etf.name}</p>
+                </td>
+                <td>
+                  <span class={`cceg-market-badge cceg-market-badge--${etf.market === '국내' ? 'dom' : 'us'}`}>
+                    {etf.market}
+                  </span>
+                </td>
+                <td class="cceg-cell--rate"><strong>{etf.annualDistRate}%</strong></td>
+                <td class="cceg-cell--muted">{etf.taxRate}%</td>
+                <td>
+                  <span class={`cceg-risk-badge cceg-risk-badge--${etf.riskLevel === '낮음' ? 'low' : etf.riskLevel === '중간' ? 'mid' : etf.riskLevel === '높음' ? 'high' : 'very-high'}`}>
+                    {etf.riskLevel}
+                  </span>
+                </td>
+                <td class="cceg-cell--strategy">{etf.strategy}</td>
+                <td class="cceg-cell--note">{etf.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="cceg-table-note">※ 분배율은 최근 실적 기반 추정치. 미래 분배를 보장하지 않습니다.</p>
+    </section>
+
+    <!-- 강세장 vs 횡보장 비교 -->
+    <section class="cceg-market-compare content-section" aria-labelledby="cceg-market-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">시장 상황별 비교</p>
+        <h2 id="cceg-market-title">시장 상황별 — 커버드콜 vs 일반 지수 ETF</h2>
+      </div>
+      <div class="cceg-market-grid">
+        <div class="cceg-market-card cceg-market-card--bull">
+          <p class="cceg-market-card__type">📈 강세장 (주가 크게 상승)</p>
+          <div class="cceg-market-card__compare">
+            <div class="cceg-market-card__item cceg-market-card__item--lose">
+              <span>커버드콜 ETF</span>
+              <span class="cceg-market-card__result">△ 상승 수익 제한</span>
+            </div>
+            <div class="cceg-market-card__item cceg-market-card__item--win">
+              <span>일반 지수 ETF</span>
+              <span class="cceg-market-card__result">✅ 상승분 전부 수취</span>
+            </div>
+          </div>
+          <p class="cceg-market-card__verdict">→ <strong>일반 지수 ETF 유리</strong></p>
+        </div>
+        <div class="cceg-market-card cceg-market-card--sideways">
+          <p class="cceg-market-card__type">↔️ 횡보장 (주가 비슷)</p>
+          <div class="cceg-market-card__compare">
+            <div class="cceg-market-card__item cceg-market-card__item--win">
+              <span>커버드콜 ETF</span>
+              <span class="cceg-market-card__result">✅ 옵션 프리미엄 수취</span>
+            </div>
+            <div class="cceg-market-card__item cceg-market-card__item--lose">
+              <span>일반 지수 ETF</span>
+              <span class="cceg-market-card__result">△ 수익 거의 없음</span>
+            </div>
+          </div>
+          <p class="cceg-market-card__verdict">→ <strong>커버드콜 ETF 유리</strong></p>
+        </div>
+        <div class="cceg-market-card cceg-market-card--bear">
+          <p class="cceg-market-card__type">📉 하락장 (주가 하락)</p>
+          <div class="cceg-market-card__compare">
+            <div class="cceg-market-card__item cceg-market-card__item--mid">
+              <span>커버드콜 ETF</span>
+              <span class="cceg-market-card__result">△ 분배금이 일부 완충</span>
+            </div>
+            <div class="cceg-market-card__item cceg-market-card__item--lose">
+              <span>일반 지수 ETF</span>
+              <span class="cceg-market-card__result">✗ 하락 그대로 손실</span>
+            </div>
+          </div>
+          <p class="cceg-market-card__verdict">→ <strong>커버드콜이 소폭 유리</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 투자자 유형별 적합성 -->
+    <section class="cceg-investor content-section" aria-labelledby="cceg-investor-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">투자자 유형</p>
+        <h2 id="cceg-investor-title">나는 커버드콜 ETF가 맞는 투자자일까?</h2>
+      </div>
+      <div class="cceg-investor-grid">
+        {INVESTOR_TYPES.map(t => (
+          <div class={`cceg-investor-card cceg-investor-card--${t.suitable ? 'yes' : 'no'}`}>
+            <div class="cceg-investor-card__top">
+              <span class="cceg-investor-card__icon">{t.icon}</span>
+              <span class="cceg-investor-card__type">{t.type}</span>
+              <span class={`cceg-suitability cceg-suitability--${t.suitable ? 'yes' : 'no'}`}>
+                {t.suitable ? '✅ 적합' : '❌ 비추'}
+              </span>
+            </div>
+            <p class="cceg-investor-card__reason">{t.reason}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="cceg-faq content-section" aria-labelledby="cceg-faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="cceg-faq-title">커버드콜 ETF FAQ</h2>
+      </div>
+      <div class="cceg-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+        {FAQ.map(item => (
+          <div class="cceg-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="cceg-faq-q" itemprop="name" aria-expanded="false">
+              {item.q}<span class="cceg-faq-icon">▼</span>
+            </button>
+            <div class="cceg-faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.a}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 계산기 -->
+    <section class="cceg-related content-section" aria-labelledby="cceg-related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">관련 도구</p>
+        <h2 id="cceg-related-title">커버드콜 ETF 투자에 유용한 계산기</h2>
+      </div>
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/tools/monthly-dividend-etf-calculator/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>월배당 ETF 배당금 계산기</strong>
+          <p>JEPI·CONY 등 ETF별 월 배당금 즉시 계산.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/monthly-dividend-etf-2026/")}>
+          <span class="ts-link-card__eyebrow">리포트</span>
+          <strong>월배당 ETF 실수익 완전 비교 2026</strong>
+          <p>국내 상장 월배당 ETF 10종 세후 수령액 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/tools/retirement-dc-db-calculator/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>퇴직연금 DC형 전환 계산기</strong>
+          <p>DC형 전환 후 커버드콜 ETF 운용 시뮬레이션.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/tools/dca-investment-calculator/")}>
+          <span class="ts-link-card__eyebrow">계산기</span>
+          <strong>적립식 투자 수익 계산기</strong>
+          <p>매달 커버드콜 ETF 적립 시 장기 수익 비교.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="커버드콜 ETF 장점·단점 완전 정리 — 비교계산소"
+      intro={[
+        "커버드콜 ETF는 보유 주식에 콜옵션을 매도해 옵션 프리미엄을 분배금으로 지급하는 구조입니다. 연 8~60%의 높은 분배율로 매월 현금흐름을 만들 수 있지만, 강세장에서 주가 상승 수익이 제한된다는 핵심 단점이 있습니다.",
+        "CONY(코인베이스)·AMDY(AMD) 같은 단일 종목 커버드콜 ETF는 분배율이 40~60%로 매우 높지만, 원금 손실 위험이 극도로 큽니다. JEPI·JEPQ처럼 S&P500·나스닥100 기반 분산 커버드콜 ETF는 상대적으로 안정적입니다.",
+        "국내 상장 커버드콜 ETF(TIGER·KODEX 나스닥100커버드콜 등)는 15.4% 세율이 적용되고 DC형 퇴직연금에서도 편입 가능합니다. 노후 대비 또는 월 현금흐름 목적의 직장인에게 적합한 투자 도구입니다.",
+      ]}
+      criteria={[
+        "분배율은 최근 12개월 실적 기반 추정치 — 미래 분배 보장 없음",
+        "국내 ETF: 15.4% 배당소득세 / 미국 ETF: 약 22% 세율 적용",
+        "이 리포트는 투자 참고용이며 투자 권유가 아닙니다",
+        "투자 전 본인의 투자 성향과 재무 상황을 반드시 고려하세요",
+      ]}
+      faq={faqItems}
+      related={[
+        { href: "/tools/monthly-dividend-etf-calculator/", label: "월배당 ETF 배당금 계산기" },
+        { href: "/reports/monthly-dividend-etf-2026/",     label: "월배당 ETF 실수익 완전 비교 2026" },
+        { href: "/tools/retirement-dc-db-calculator/",     label: "퇴직연금 DC형 전환 계산기" },
+      ]}
+    />
+
+  </main>
+  <script src={withBase("scripts/covered-call-etf-guide-2026.js")} defer></script>
+</BaseLayout>

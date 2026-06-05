@@ -197,6 +197,13 @@ export const reports: ReportMeta[] = [
     badges: ["영화", "손익비교"],
   },
   {
+    slug: "covered-call-etf-guide-2026",
+    title: "커버드콜 ETF 장점·단점 완전 정리 — CONY·JEPI·나스닥100CC 총정리",
+    description: "커버드콜 ETF의 높은 분배율 비밀과 위험을 한번에 정리합니다. 장점 5가지·단점 6가지, ETF 비교표, 투자자 유형별 적합성까지.",
+    order: 17.45,
+    badges: ["커버드콜", "ETF", "월배당", "CONY", "JEPI"],
+  },
+  {
     slug: "monthly-dividend-etf-2026",
     title: "월배당 ETF 실수익 완전 비교 2026 — 분배율·세후 수령액·보수 총정리",
     description: "국내 상장 월배당 ETF 10종의 분배율, 세후 월 수령액, 운용보수, 기초지수, 수익률을 비교합니다. 배당성장형·커버드콜형·채권형·리츠형을 유형별로 분류하고 포트폴리오 예시와 분배금 감소 시나리오를 제공합니다.",
@@ -342,6 +349,13 @@ export const reports: ReportMeta[] = [
     description: "퇴직연금 DB형, DC형, IRP의 구조 차이와 2026년 세액공제 한도, 수익률 해석, 수수료, 퇴직 후 일시금·연금 수령 전략을 한 번에 정리합니다.",
     order: 25.7,
     badges: ["퇴직연금", "DB", "DC", "IRP", "2026"],
+  },
+  {
+    slug: "retirement-pension-db-to-dc-peak-wage-2026",
+    title: "임금피크제 전 퇴직연금 DB에서 DC로 바꿔야 할까",
+    description: "임금피크제를 앞둔 직장인이 퇴직연금 DB형 유지와 DC형 전환을 비교할 때 보는 전환 시점, 유리한 조건, 체크리스트, 주의사항 가이드입니다.",
+    order: 25.75,
+    badges: ["임금피크제", "DB", "DC", "퇴직연금"],
   },
   {
     slug: "personal-vs-national-pension-2026",
