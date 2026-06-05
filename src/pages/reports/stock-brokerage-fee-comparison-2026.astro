@@ -66,13 +66,17 @@ const pageSeed = {
   defaultInvestorType: defaultRecommendation.investorType,
 };
 
+const seoTitle = "2026 국내 증권사 수수료 비교표";
+const seoDescription =
+  "2026년 국내 증권사 수수료 비교표입니다. 국내주식, 미국주식, 환전 우대, 신용공여 이자, ISA 연결, 자동투자와 소수점 투자 조건까지 한눈에 비교합니다.";
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Article",
-      headline: SBF_META.title,
-      description: SBF_META.description,
+      headline: seoTitle,
+      description: seoDescription,
       inLanguage: "ko-KR",
       dateModified: "2026-04-27",
       mainEntityOfPage: `https://bigyocalc.com/reports/${SBF_META.slug}/`,
@@ -97,13 +101,13 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={`${SBF_META.title} | 수수료·환전·신용이자 비교`} description={SBF_META.description} jsonLd={jsonLd}>
+<BaseLayout title={`${seoTitle} | 수수료·환전·신용이자 비교`} description={seoDescription} jsonLd={jsonLd}>
   <SiteHeader />
 
   <main class="container page-shell report-page sbf-report-page">
     <CalculatorHero
       eyebrow="증권사 수수료 비교"
-      title={SBF_META.title}
+      title={seoTitle}
       description="국내주식, 미국주식, 환전 우대, 신용공여 이자율, ISA 연계, 자동투자·소수점 투자, 신규 계좌 혜택을 투자자 유형별로 비교합니다."
     />
 
@@ -114,6 +118,31 @@ const jsonLd = {
       <span>신용이자</span>
       <span>2026</span>
     </div>
+
+    <section class="sbf-search-intent" aria-label="증권사 수수료 비교 핵심 요약">
+      <div class="sbf-search-intent__head">
+        <p>검색 핵심 요약</p>
+        <h2>증권사 수수료는 무료 문구보다 적용 조건과 환전 비용을 먼저 봐야 합니다</h2>
+        <span>국내주식만 거래하는지, 미국주식을 함께 하는지, 이벤트 종료 후에도 낮은 수수료가 유지되는지가 선택 기준을 가릅니다.</span>
+      </div>
+      <div class="sbf-search-intent__grid">
+        <article>
+          <p>국내주식</p>
+          <strong>기본 수수료와 이벤트 분리</strong>
+          <span>0원·무료 문구는 기간, 비대면 여부, 유관기관 수수료 포함 여부를 함께 확인해야 합니다.</span>
+        </article>
+        <article>
+          <p>미국주식</p>
+          <strong>수수료 + 환전 우대</strong>
+          <span>해외주식은 매매 수수료보다 환전 스프레드와 달러 입출금 조건이 체감 비용을 바꿀 수 있습니다.</span>
+        </article>
+        <article>
+          <p>신용거래</p>
+          <strong>이자율 우선 확인</strong>
+          <span>신용을 쓰면 거래 수수료보다 신용공여 이자가 총비용에 더 크게 작용할 수 있습니다.</span>
+        </article>
+      </div>
+    </section>
 
     <InfoNotice
       title="수수료 비교 전 확인하세요"

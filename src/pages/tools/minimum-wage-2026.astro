@@ -47,6 +47,10 @@ const faqSchema = MWC_FAQS.map((item) => ({
   name: item.question,
   acceptedAnswer: { "@type": "Answer", text: item.answer },
 }));
+
+const seoTitle = "2026 최저시급 세후 계산기";
+const seoDescription =
+  "2026 최저시급 기준 시급, 주급, 월급, 연봉과 주휴수당 포함 월급, 4대보험 공제 후 세후 실수령액을 계산합니다.";
 ---
 
 <BaseLayout
@@ -72,6 +76,30 @@ const faqSchema = MWC_FAQS.map((item) => ({
         title="2026 최저임금 완전 계산기"
         description="2026 최저임금 기준으로 시급·주급·월급·연봉을 즉시 계산합니다. 주휴수당 포함 여부와 4대보험 공제 후 실수령액까지 한 번에 확인하세요."
       />
+      <section class="mwc-search-intent" aria-label="2026 최저시급 세후 빠른 요약">
+        <div class="mwc-search-intent__head">
+          <p>검색 핵심 요약</p>
+          <h2>2026 최저시급 세후 월급은 주휴수당과 4대보험 공제 여부를 함께 봐야 합니다</h2>
+          <span>2026년 최저시급은 {formatWon(MINIMUM_WAGE_2026)}입니다. 주 40시간 근무자는 주휴수당 포함 월 209시간 기준으로 세전 {formatWon(minimumWageMonthly)}을 먼저 확인한 뒤, 공제 후 실수령액을 비교하세요.</span>
+        </div>
+        <div class="mwc-search-intent__grid">
+          <article>
+            <p>2026 최저시급</p>
+            <strong>{formatWon(MINIMUM_WAGE_2026)}</strong>
+            <span>전년 대비 +{formatWon(minimumWageIncreaseAmount)} 상승</span>
+          </article>
+          <article>
+            <p>세전 월급</p>
+            <strong>{formatWon(minimumWageMonthly)}</strong>
+            <span>주 40시간·주휴수당 포함 209시간 기준</span>
+          </article>
+          <article>
+            <p>세후 실수령</p>
+            <strong>조건별 추정</strong>
+            <span>4대보험, 소득세, 비과세 식대 적용 여부에 따라 달라집니다.</span>
+          </article>
+        </div>
+      </section>
       <div class="mwc-official-strip">
         <article>
           <span>2026 시급</span>
