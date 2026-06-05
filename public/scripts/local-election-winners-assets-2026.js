@@ -107,6 +107,7 @@
   }
 
   // ── 정당별 차트 ─────────────────────────────────────────────
+  function initChart() {
   const chartCanvas = document.getElementById('lewaPartyChart');
   if (chartCanvas && window.Chart) {
     const dpWinners = winners.filter(w => w.party === '더불어민주당' && w.totalAsset > 0);
@@ -168,6 +169,19 @@
     if (pppAvgEl) pppAvgEl.textContent = pppAvg > 0 ? fmtEok(pppAvg) : '집계중';
     if (dpCountEl) dpCountEl.textContent = `${dpWinners.length}명 공개 기준`;
     if (pppCountEl) pppCountEl.textContent = `${pppWinners.length}명 공개 기준`;
+  }
+  }
+
+  // Chart.js 로드 완료 후 실행
+  if (window.Chart) {
+    initChart();
+  } else {
+    const chartScript = document.querySelector('script[src*="chart.js"]');
+    if (chartScript) {
+      chartScript.addEventListener('load', initChart);
+    } else {
+      window.addEventListener('load', initChart);
+    }
   }
 
 })();
