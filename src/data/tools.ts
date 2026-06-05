@@ -253,6 +253,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "peak-wage-retirement-calculator",
+    title: "임금피크제 퇴직금 계산기",
+    description: "임금피크제 전후 연봉, 근속연수, DC 운용수익률을 입력해 퇴직연금 DB형 유지와 DC형 전환 예상 금액을 비교하는 간이 계산기입니다.",
+    order: 4.85,
+    eyebrow: "임금피크제 퇴직금",
+    category: "투자·재테크",
+    iframeReady: false,
+    badges: ["신규", "임금피크제", "DB·DC"],
+    previewStats: [
+      { label: "비교", value: "DB 유지 vs DC 전환" },
+      { label: "판단", value: "손익분기 수익률" },
+    ],
+  },
+  {
     slug: "retirement",
     title: "퇴직금 계산기",
     description: "평균임금 기준 퇴직금과 세후 추정액을 계산하는 페이지",

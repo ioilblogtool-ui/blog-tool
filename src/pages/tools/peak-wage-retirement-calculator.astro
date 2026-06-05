@@ -1,0 +1,287 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  DEFAULT_PEAK_WAGE_INPUT,
+  PEAK_WAGE_FAQ,
+  PEAK_WAGE_PRESETS,
+  PEAK_WAGE_RELATED_LINKS,
+  calculatePeakWageRetirement,
+  formatManwon,
+} from "../../data/peakWageRetirementCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const title = "임금피크제 퇴직금 계산기";
+const description =
+  "임금피크제 전후 연봉, 근속연수, DC 운용수익률을 입력해 퇴직연금 DB형 유지와 DC형 전환 예상 금액을 비교하는 간이 계산기입니다.";
+const defaultResult = calculatePeakWageRetirement(DEFAULT_PEAK_WAGE_INPUT);
+---
+
+<BaseLayout
+  title={`${title} | DB형 유지 vs DC형 전환 비교`}
+  description={description}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: title,
+    description,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web",
+    inLanguage: "ko-KR",
+    dateModified: "2026-06-05",
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: PEAK_WAGE_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  }}
+>
+  <SiteHeader />
+
+  <main class="container page-shell calc-page pwrc-page">
+    <CalculatorHero
+      eyebrow="임금피크제 퇴직연금 계산"
+      title={title}
+      description="급여가 낮아지기 전 DB형을 유지할지, DC형으로 전환할지 숫자로 먼저 비교해보세요. 결과는 회사 규약 확인 전 참고용 간이 시뮬레이션입니다."
+      badges={["임금피크제", "퇴직금", "DB형", "DC형", "추정 계산"]}
+    />
+
+    <InfoNotice
+      title="계산 결과는 전환 검토용 추정값입니다"
+      lines={[
+        "실제 퇴직급여는 평균임금 산정, 수당 포함 여부, 회사 퇴직연금 규약, 전환 시점, 퇴직연금 사업자 기준에 따라 달라질 수 있습니다.",
+        "DC형 전환 후 운용수익과 손실은 본인에게 귀속됩니다. 전환 신청 전에는 회사 인사팀과 퇴직연금 사업자의 안내를 확인하세요.",
+        "이 계산기는 임금피크 후 퇴직 직전 연봉이 낮아지는 상황을 단순화해 DB 유지와 DC 전환의 방향성을 비교합니다.",
+      ]}
+    />
+
+    <section class="content-section pwrc-tool" aria-labelledby="pwrc-input-title">
+      <div class="pwrc-panel pwrc-panel--input">
+        <div class="section-header section-header--compact">
+          <p class="section-header__eyebrow">입력</p>
+          <h2 id="pwrc-input-title">임금피크제 조건 입력</h2>
+        </div>
+
+        <div class="pwrc-presets" aria-label="빠른 입력 예시">
+          {PEAK_WAGE_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`pwrc-preset${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+              data-years-until-peak={preset.values.yearsUntilPeak}
+              data-years-after-peak={preset.values.yearsAfterPeak}
+              data-salary-cut-rate={preset.values.salaryCutRate}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
+        <div class="pwrc-form-grid">
+          <label class="pwrc-field" for="pwrc-current-salary">
+            <span>현재 연봉</span>
+            <div class="pwrc-input-wrap">
+              <input id="pwrc-current-salary" type="number" min="1000" max="30000" step="100" value={DEFAULT_PEAK_WAGE_INPUT.currentSalaryManwon} />
+              <em>만원</em>
+            </div>
+          </label>
+
+          <label class="pwrc-field" for="pwrc-current-years">
+            <span>현재 근속연수</span>
+            <div class="pwrc-input-wrap">
+              <input id="pwrc-current-years" type="number" min="1" max="40" step="1" value={DEFAULT_PEAK_WAGE_INPUT.currentServiceYears} />
+              <em>년</em>
+            </div>
+          </label>
+
+          <label class="pwrc-field" for="pwrc-years-until-peak">
+            <span>임금피크까지 남은 기간</span>
+            <div class="pwrc-input-wrap">
+              <input id="pwrc-years-until-peak" type="number" min="0" max="10" step="1" value={DEFAULT_PEAK_WAGE_INPUT.yearsUntilPeak} />
+              <em>년</em>
+            </div>
+          </label>
+
+          <label class="pwrc-field" for="pwrc-years-after-peak">
+            <span>피크 후 퇴직까지 기간</span>
+            <div class="pwrc-input-wrap">
+              <input id="pwrc-years-after-peak" type="number" min="1" max="15" step="1" value={DEFAULT_PEAK_WAGE_INPUT.yearsAfterPeak} />
+              <em>년</em>
+            </div>
+          </label>
+
+          <label class="pwrc-field" for="pwrc-cut-rate">
+            <span>임금 삭감률</span>
+            <div class="pwrc-input-wrap">
+              <input id="pwrc-cut-rate" type="number" min="0" max="80" step="1" value={DEFAULT_PEAK_WAGE_INPUT.salaryCutRate} />
+              <em>%</em>
+            </div>
+          </label>
+
+          <label class="pwrc-field" for="pwrc-dc-return">
+            <span>DC 예상 운용수익률</span>
+            <div class="pwrc-input-wrap">
+              <input id="pwrc-dc-return" type="number" min="-10" max="15" step="0.5" value={DEFAULT_PEAK_WAGE_INPUT.dcReturnRate} />
+              <em>%</em>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="pwrc-panel pwrc-panel--result" aria-live="polite">
+        <p class="pwrc-result-eyebrow">추정 판단</p>
+        <h2 id="pwrc-verdict">DC 전환 검토</h2>
+        <p id="pwrc-verdict-copy">
+          현재 기본값에서는 DC 전환 예상액이 DB 유지 예상액보다 큽니다.
+        </p>
+
+        <div class="pwrc-kpi-grid">
+          <article class="pwrc-kpi pwrc-kpi--db">
+            <span>DB 유지 추정</span>
+            <strong id="pwrc-db-keep">{formatManwon(defaultResult.dbKeepManwon)}</strong>
+          </article>
+          <article class="pwrc-kpi pwrc-kpi--dc">
+            <span>피크 전 DC 전환 추정</span>
+            <strong id="pwrc-dc-switch">{formatManwon(defaultResult.switchToDcManwon)}</strong>
+          </article>
+          <article class="pwrc-kpi pwrc-kpi--diff">
+            <span>예상 차이</span>
+            <strong id="pwrc-diff">{formatManwon(defaultResult.diffManwon)}</strong>
+          </article>
+        </div>
+
+        <div class="pwrc-meter" aria-hidden="true">
+          <div class="pwrc-meter__row">
+            <span>DB</span>
+            <div><i id="pwrc-db-bar" style="width: 74%;"></i></div>
+          </div>
+          <div class="pwrc-meter__row">
+            <span>DC</span>
+            <div><i id="pwrc-dc-bar" style="width: 100%;"></i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pwrc-summary-grid">
+      <article class="content-section">
+        <p class="pwrc-card-eyebrow">임금피크 후 연봉</p>
+        <strong id="pwrc-post-salary">{formatManwon(defaultResult.postPeakSalaryManwon)}</strong>
+        <span>삭감률 반영 후 연봉 추정</span>
+      </article>
+      <article class="content-section">
+        <p class="pwrc-card-eyebrow">DB 기준 감소 영향</p>
+        <strong id="pwrc-db-impact">{formatManwon(defaultResult.dbImpactManwon)}</strong>
+        <span>임금 삭감이 없었다고 가정한 기준과의 차이</span>
+      </article>
+      <article class="content-section">
+        <p class="pwrc-card-eyebrow">손익분기 수익률</p>
+        <strong id="pwrc-break-even">
+          {defaultResult.breakEvenReturnRate === null ? "15% 초과" : `${defaultResult.breakEvenReturnRate.toFixed(1)}%`}
+        </strong>
+        <span>DB 유지와 DC 전환 추정액이 비슷해지는 수익률</span>
+      </article>
+    </section>
+
+    <section class="content-section pwrc-detail">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">계산 구조</p>
+        <h2>DB 유지와 DC 전환을 이렇게 비교합니다</h2>
+      </div>
+      <div class="pwrc-steps">
+        <article>
+          <span>1</span>
+          <h3>DB 유지</h3>
+          <p>임금피크 후 낮아진 연봉을 퇴직 직전 기준으로 보고, 총 근속연수를 곱해 간이 퇴직급여를 추정합니다.</p>
+        </article>
+        <article>
+          <span>2</span>
+          <h3>피크 전 DC 전환</h3>
+          <p>전환 시점까지 쌓인 DB 기준 금액을 DC 계좌로 옮기고, 피크 후에는 낮아진 연봉의 1/12을 매년 납입한다고 봅니다.</p>
+        </article>
+        <article>
+          <span>3</span>
+          <h3>운용수익률 반영</h3>
+          <p>이전된 금액과 이후 납입액을 입력한 연평균 수익률로 운용한다고 가정해 전환 예상액을 계산합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section pwrc-checklist">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">전환 전 체크</p>
+        <h2>계산 결과가 좋아도 이 항목은 확인하세요</h2>
+      </div>
+      <div class="pwrc-check-grid">
+        <p>회사 규약상 DB에서 DC로 전환 가능한 시점</p>
+        <p>전환 후 다시 DB형으로 돌아갈 수 있는지 여부</p>
+        <p>전환 시점까지의 평균임금 산정 기준</p>
+        <p>퇴직연금 사업자의 DC 운용 가능 상품</p>
+        <p>원리금보장형, TDF, ETF 등 상품별 위험도</p>
+        <p>퇴직 예정 시점과 남은 운용기간</p>
+      </div>
+    </section>
+
+    <section class="content-section pwrc-faq">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">FAQ</p>
+        <h2>임금피크제 퇴직금 계산 질문</h2>
+      </div>
+      <div class="pwrc-faq-list">
+        {PEAK_WAGE_FAQ.map((item) => (
+          <details>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="pwrc-related">
+      <div>
+        <p>같이 보면 좋은 페이지</p>
+        <h2>전환 판단은 계산기와 리포트를 함께 보면 더 선명합니다</h2>
+      </div>
+      <div class="pwrc-related__links">
+        {PEAK_WAGE_RELATED_LINKS.map((item) => (
+          <a href={withBase(item.href)}>{item.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="임금피크제 퇴직금 계산기는 언제 필요할까"
+      intro={[
+        "임금피크제가 시작되면 퇴직 직전 평균임금이 낮아질 수 있어 DB형 퇴직연금 근로자는 퇴직급여 산정 기준을 더 민감하게 봐야 합니다. 이 계산기는 임금 삭감 전후 조건을 넣어 DB 유지와 DC 전환의 차이를 빠르게 비교하도록 만들었습니다.",
+        "핵심은 전환 자체가 정답인지가 아니라, 임금 삭감 폭과 남은 근속기간, DC 운용수익률이 함께 움직일 때 어느 쪽을 더 자세히 검토해야 하는지 확인하는 것입니다.",
+      ]}
+      inputPoints={[
+        "현재 연봉과 현재 근속연수를 입력합니다.",
+        "임금피크까지 남은 기간과 피크 후 퇴직까지 기간을 입력합니다.",
+        "임금 삭감률과 DC 예상 운용수익률을 보수적으로 조정합니다.",
+        "DB 유지 추정액, DC 전환 추정액, 손익분기 수익률을 함께 확인합니다.",
+      ]}
+      criteria={[
+        "DB 유지 금액은 임금피크 후 연봉을 퇴직 직전 기준으로 단순 환산해 총 근속연수를 곱한 추정값입니다.",
+        "DC 전환 금액은 전환 시점까지의 DB 기준 금액과 이후 DC 납입액을 입력 수익률로 운용한다고 가정한 추정값입니다.",
+        "손익분기 수익률이 높게 나오면 실제 달성 가능성이 낮을 수 있으므로 전환 판단을 보수적으로 봐야 합니다.",
+        "실제 퇴직급여와 전환 가능 여부는 회사 규약과 퇴직연금 사업자 기준을 반드시 확인해야 합니다.",
+      ]}
+      faq={PEAK_WAGE_FAQ}
+      related={PEAK_WAGE_RELATED_LINKS}
+    />
+  </main>
+
+  <script src={withBase("scripts/peak-wage-retirement-calculator.js")} defer></script>
+</BaseLayout>
