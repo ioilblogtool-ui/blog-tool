@@ -589,6 +589,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "monthly-dividend-etf-calculator",
+    title: "월배당 ETF 배당금 계산기",
+    description: "투자금과 ETF를 선택하면 월 예상 배당금·세후 실수령액을 즉시 계산합니다. CONY·JEPI·JEPQ·SCHD·나스닥100커버드콜 등 14개 ETF 프리셋, 목표 월배당 역산, ETF 비교표 제공.",
+    order: 17.4,
+    eyebrow: "월배당 ETF 계산기",
+    category: "투자·재테크",
+    iframeReady: false,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "ETF 프리셋", value: "14개" },
+      { label: "목표 역산", value: "월 100만원" },
+    ],
+  },
+  {
     slug: "dividend-monthly-income",
     title: "배당주 월급 계산기",
     description: "투자 원금과 배당수익률을 입력해 세후 월 배당금을 계산하거나, 목표 월 배당에 필요한 원금을 역산하는 계산기. 배당 재투자 10년·20년 시뮬레이션 포함.",

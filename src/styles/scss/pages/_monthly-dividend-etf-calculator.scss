@@ -1,0 +1,248 @@
+// ============================================================
+// _monthly-dividend-etf-calculator.scss
+// 월배당 ETF 배당금 계산기
+// prefix: mdec-
+// ============================================================
+
+.mdec-page {
+  --mdec-primary:      #1d4ed8;
+  --mdec-primary-lt:   #dbeafe;
+  --mdec-domestic:     #0f766e;
+  --mdec-domestic-lt:  #ccfbf1;
+  --mdec-us:           #7c3aed;
+  --mdec-us-lt:        #ede9fe;
+  --mdec-warn:         #dc2626;
+  --mdec-warn-lt:      #fee2e2;
+
+  display: grid;
+  gap: 20px;
+
+  .content-section {
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    padding: 22px;
+  }
+}
+
+// ── Hero ─────────────────────────────────────────────────────
+.mdec-hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  color: #fff;
+  padding: 2.5rem 1.5rem 2rem;
+  text-align: center;
+  border-radius: 20px;
+
+  &__eyebrow {
+    display: inline-block; background: rgba(255,255,255,0.18);
+    border-radius: 999px; padding: 0.2rem 0.8rem;
+    font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;
+  }
+  &__title { font-size: clamp(1.3rem,3vw,2rem); font-weight: 800; margin: 0 0 0.75rem; }
+  &__sub { font-size: 0.95rem; opacity: 0.85; margin: 0; line-height: 1.6; }
+  &__sub-note { font-size: 0.8rem; opacity: 0.7; }
+}
+
+// ── 탭 ───────────────────────────────────────────────────────
+.mdec-tabs {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+
+.mdec-tab {
+  padding: 0.5rem 1.2rem; border-radius: 999px;
+  border: 2px solid #cbd5e1; background: #fff;
+  font-size: 0.85rem; cursor: pointer; color: #475569;
+  font-weight: 500; transition: 0.15s;
+
+  &--active { border-color: var(--mdec-primary); color: var(--mdec-primary); background: var(--mdec-primary-lt); font-weight: 700; }
+  &:hover:not(.mdec-tab--active) { background: #f1f5f9; }
+}
+
+// ── ETF 프리셋 ────────────────────────────────────────────────
+.mdec-etf-picker { margin-bottom: 20px; }
+
+.mdec-label { font-size: 0.82rem; font-weight: 700; color: #475569; margin-bottom: 8px; }
+
+.mdec-etf-grid {
+  display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px;
+}
+
+.mdec-etf-btn {
+  padding: 5px 12px; border-radius: 8px; cursor: pointer;
+  border: 1.5px solid; font-size: 0.78rem; transition: 0.12s;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+
+  &__name { font-weight: 700; }
+  &__rate { font-size: 0.7rem; }
+  &__warn { font-size: 0.7rem; color: var(--mdec-warn); }
+
+  &--domestic {
+    border-color: var(--mdec-domestic); color: var(--mdec-domestic); background: #fff;
+    &:hover, &.is-active { background: var(--mdec-domestic-lt); }
+  }
+  &--us {
+    border-color: var(--mdec-us); color: var(--mdec-us); background: #fff;
+    &:hover, &.is-active { background: var(--mdec-us-lt); }
+  }
+}
+
+.mdec-etf-note { font-size: 0.74rem; color: #64748b; margin-top: 6px; }
+
+// ── 배지 ──────────────────────────────────────────────────────
+.mdec-badge {
+  display: inline-block; padding: 1px 7px; border-radius: 999px;
+  font-size: 0.68rem; font-weight: 700; margin-right: 4px;
+  &--domestic { background: var(--mdec-domestic-lt); color: var(--mdec-domestic); }
+  &--us       { background: var(--mdec-us-lt);       color: var(--mdec-us); }
+}
+
+// ── 입력 ──────────────────────────────────────────────────────
+.mdec-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+
+.mdec-input-group { display: flex; flex-direction: column; gap: 5px; }
+
+.mdec-input-label { font-size: 0.82rem; font-weight: 700; color: #334155; }
+
+.mdec-input-wrap { display: flex; align-items: center; gap: 6px; }
+
+.mdec-input {
+  flex: 1; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 10px;
+  font-size: 1.1rem; font-weight: 700; color: #1e293b;
+  transition: border-color 0.15s;
+  &:focus { outline: none; border-color: var(--mdec-primary); }
+}
+
+.mdec-input-unit { font-size: 0.9rem; font-weight: 600; color: #64748b; white-space: nowrap; }
+
+.mdec-input-hint { font-size: 0.72rem; color: #94a3b8; }
+
+.mdec-quick-btns {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px;
+}
+
+.mdec-quick-btn {
+  padding: 3px 9px; border-radius: 6px; border: 1px solid #cbd5e1;
+  background: #f8fafc; font-size: 0.76rem; cursor: pointer; color: #475569;
+  transition: 0.12s;
+  &:hover { background: var(--mdec-primary-lt); border-color: var(--mdec-primary); color: var(--mdec-primary); }
+}
+
+.mdec-tax-btns {
+  display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px;
+}
+
+.mdec-tax-btn {
+  padding: 3px 9px; border-radius: 6px; border: 1px solid #cbd5e1;
+  background: #f8fafc; font-size: 0.76rem; cursor: pointer; color: #475569;
+  transition: 0.12s;
+  &.is-active, &:hover { background: var(--mdec-primary-lt); border-color: var(--mdec-primary); color: var(--mdec-primary); font-weight: 700; }
+}
+
+// ── 결과 카드 ─────────────────────────────────────────────────
+.mdec-result-cards {
+  display: grid; grid-template-columns: 1fr repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
+  @media (max-width: 600px) { grid-template-columns: 1fr 1fr; }
+}
+
+.mdec-result-card {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px;
+  padding: 14px 12px; text-align: center;
+
+  &__label { font-size: 0.75rem; color: #64748b; font-weight: 600; margin: 0 0 4px; }
+  &__value { font-size: 1.4rem; font-weight: 900; color: #1e293b; margin: 0 0 3px; }
+  &__sub   { font-size: 0.7rem; color: #94a3b8; margin: 0; }
+
+  &--main {
+    background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+    border-color: transparent;
+    .mdec-result-card__label { color: rgba(255,255,255,0.8); }
+    .mdec-result-card__value { color: #fff; font-size: 1.8rem; }
+    .mdec-result-card__sub   { color: rgba(255,255,255,0.65); }
+  }
+}
+
+// ── 섹션 제목 ─────────────────────────────────────────────────
+.mdec-section-title {
+  font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 12px;
+}
+.mdec-section-desc { font-size: 0.84rem; color: #64748b; margin: 0 0 16px; }
+
+// ── 표 ───────────────────────────────────────────────────────
+.mdec-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.mdec-table {
+  width: 100%; min-width: 480px; border-collapse: collapse; font-size: 0.84rem;
+
+  th {
+    background: #f1f5f9; color: #475569; padding: 9px 12px;
+    text-align: left; white-space: nowrap; font-size: 0.78rem;
+  }
+  td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+}
+
+.mdec-row--highlight { background: #eff6ff !important; td { color: var(--mdec-primary); } }
+.mdec-cell--muted    { color: #94a3b8; }
+.mdec-cell--rate     { font-size: 1rem; }
+.mdec-cell--highlight { color: var(--mdec-primary); font-size: 1rem; }
+.mdec-cell--remark   { font-size: 0.74rem; color: var(--mdec-warn); }
+
+.mdec-etf-name-sub { font-size: 0.72rem; color: #94a3b8; margin: 2px 0 0; }
+
+.mdec-table-note { font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0; }
+
+.mdec-scenario-rate-display {
+  font-size: 0.78rem; font-weight: 400; color: #64748b;
+  background: #f1f5f9; border-radius: 999px; padding: 2px 8px;
+  margin-left: 6px;
+}
+
+// ── ETF 정보 ──────────────────────────────────────────────────
+.mdec-etf-info {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+  padding: 14px; margin-top: 16px;
+  &__name   { font-weight: 700; font-size: 0.9rem; margin: 0 0 4px; color: #1e293b; }
+  &__desc   { font-size: 0.83rem; color: #475569; margin: 0 0 4px; }
+  &__remark { font-size: 0.8rem; color: var(--mdec-warn); margin: 0; font-weight: 600; }
+}
+
+// ── 목표 역산 결과 ────────────────────────────────────────────
+.mdec-goal-result {
+  background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+  border-radius: 16px; padding: 20px; text-align: center;
+  margin: 16px 0 24px;
+
+  &__label { font-size: 0.82rem; color: rgba(255,255,255,0.8); margin: 0 0 6px; }
+  &__value { font-size: 2rem; font-weight: 900; color: #fff; margin: 0 0 6px; }
+  &__sub   { font-size: 0.75rem; color: rgba(255,255,255,0.65); margin: 0; }
+}
+
+// ── 비교표 필터 ──────────────────────────────────────────────
+.mdec-compare-filter { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+
+.mdec-compare-btn {
+  padding: 5px 13px; border-radius: 999px; border: 1.5px solid #cbd5e1;
+  background: #fff; font-size: 0.8rem; cursor: pointer; color: #475569;
+  transition: 0.12s;
+  &--active, &:hover { border-color: var(--mdec-primary); color: var(--mdec-primary); background: var(--mdec-primary-lt); font-weight: 700; }
+}
+
+// ── 주의사항 ──────────────────────────────────────────────────
+.mdec-caution {
+  border-left: 4px solid #f97316 !important;
+  background: #fff7ed !important;
+
+  &__title { font-size: 0.9rem; font-weight: 700; color: #9a3412; margin: 0 0 10px; }
+  &__list {
+    margin: 0; padding-left: 18px;
+    li { font-size: 0.82rem; color: #7c2d12; margin-bottom: 4px; line-height: 1.55; }
+  }
+}
+
+// ── 반응형 ────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .mdec-inputs { grid-template-columns: 1fr; }
+  .mdec-result-cards { grid-template-columns: 1fr 1fr; }
+  .mdec-result-card--main .mdec-result-card__value { font-size: 1.4rem; }
+}
