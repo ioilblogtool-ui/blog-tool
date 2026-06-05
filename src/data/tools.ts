@@ -18,6 +18,45 @@ export type ToolMeta = {
 
 export const tools: ToolMeta[] = [
   {
+    slug: "dividend-target-calculator",
+    title: "배당금 목표 투자금 계산기",
+    description: "월 배당금 목표 입력 → CONY·YMAX·SCHD 등 ETF별 필요 투자금 자동 계산. 세전·세후 구분, 위험도 비교.",
+    order: 0,
+    eyebrow: "배당 목표 역산",
+    category: "투자·재테크",
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "월 100만원", value: "CONY 기준 1,500만" },
+      { label: "SCHD 기준", value: "약 3.4억" },
+    ],
+  },
+  {
+    slug: "us-dividend-tax-calculator",
+    title: "미국주식 배당소득세 계산기",
+    description: "미국주식 배당금 세후 실수령 계산. 원천징수 15% + 금융소득종합과세 기준 반영.",
+    order: 0,
+    eyebrow: "미국 배당세",
+    category: "투자·재테크",
+    badges: ["신규"],
+    previewStats: [
+      { label: "원천징수", value: "15%" },
+      { label: "종합과세 기준", value: "연 2,000만원" },
+    ],
+  },
+  {
+    slug: "etf-distribution-tax-calculator",
+    title: "ETF 분배금 세후 계산기",
+    description: "국내 ETF(15.4%) vs 미국 ETF(15%) vs ISA 계좌(비과세) 분배금 세후 실수령 비교.",
+    order: 0,
+    eyebrow: "ETF 분배금 세후",
+    category: "투자·재테크",
+    badges: ["신규"],
+    previewStats: [
+      { label: "국내 ETF", value: "15.4%" },
+      { label: "ISA 초과분", value: "9.9%" },
+    ],
+  },
+  {
     slug: "isa-tax-calculator",
     title: "ISA 계좌 절세 시뮬레이터",
     description: "일반형·서민형·농어민형 선택 후 납입액·수익률·기간 입력 → 비과세 혜택·절세액·만기 수령액을 일반 계좌와 자동 비교.",

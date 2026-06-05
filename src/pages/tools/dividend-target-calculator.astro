@@ -1,0 +1,256 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import { DTC_ETF_PRESETS, DTC_META, DTC_FAQS } from "../../data/dividendTargetCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const faqSchema = DTC_FAQS.map((f) => ({
+  "@type": "Question",
+  name: f.question,
+  acceptedAnswer: { "@type": "Answer", text: f.answer },
+}));
+---
+
+<BaseLayout
+  title={DTC_META.title}
+  description={DTC_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "배당금 목표 투자금 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: DTC_META.description,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/dividend-target-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+  <script id="dtcConfig" type="application/json" set:html={JSON.stringify({ presets: DTC_ETF_PRESETS })} />
+
+  <SimpleToolShell calculatorId="dividend-target-calculator" pageClass="dtc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="배당 목표 역산"
+        title="배당금 목표 투자금 계산기"
+        description="월 배당금 목표를 입력하면 CONY·YMAX·SCHD 등 ETF별 필요 투자금을 자동 계산합니다. 세전·세후 구분으로 실제 필요 금액을 확인하세요."
+        stats={[
+          { label: "월 100만원", value: "CONY 기준 약 1,500만원" },
+          { label: "SCHD 기준", value: "약 3.4억" },
+        ]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          "분배율은 최근 추정치이며 실제 지급액은 매월 달라집니다.",
+          "고분배 ETF(CONY 등)는 분배금만큼 주가가 하락하는 구조일 수 있습니다.",
+          "투자 결정 전 ETF의 총수익(주가변동+분배금)을 반드시 확인하세요.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="dtcResetBtn" copyId="dtcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel dtc-input-panel" data-dtc-calculator>
+        <div class="dtc-section">
+          <h2 class="dtc-section-title">목표 월 배당금</h2>
+          <div class="dtc-field">
+            <div class="dtc-input-wrap">
+              <input
+                id="dtcTarget"
+                type="text"
+                class="dtc-input"
+                data-dtc-target
+                value="1,000,000"
+                inputmode="numeric"
+              />
+              <span class="dtc-unit">원/월</span>
+            </div>
+            <div class="dtc-quick-btns">
+              {[30, 50, 100, 200, 300].map(n => (
+                <button class="dtc-quick-btn" data-dtc-quick={n * 10000}>{n}만</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div class="dtc-section">
+          <h2 class="dtc-section-title">세전 / 세후 기준</h2>
+          <div class="dtc-toggle-group">
+            <button class="dtc-toggle active" data-dtc-tax="before">세전 기준</button>
+            <button class="dtc-toggle" data-dtc-tax="after">세후 기준</button>
+          </div>
+          <p class="dtc-tax-desc" data-dtc-tax-desc>세전: 분배금에서 세금 차감 전 금액 기준</p>
+        </div>
+
+        <div class="dtc-section">
+          <h2 class="dtc-section-title">비교할 ETF <span class="dtc-count-badge" data-dtc-selected-count>0개 선택</span></h2>
+          <div class="dtc-group-label">🇺🇸 YieldMax 고분배</div>
+          <div class="dtc-preset-list">
+            {DTC_ETF_PRESETS.filter(p => ["cony","amdy","nvdy","tsly","msfo","aply","ymax","ymag"].includes(p.id)).map((p) => (
+              <label class={`dtc-preset-item${["cony","ymax"].includes(p.id) ? " active" : ""}`} data-dtc-preset-label={p.id}>
+                <input type="checkbox" data-dtc-preset-check={p.id} checked={["cony","ymax"].includes(p.id)} />
+                <div class="dtc-preset-info">
+                  <span class="dtc-preset-name">{p.name}</span>
+                  <span class="dtc-preset-yield">연 {p.annualYield}%</span>
+                  {p.badge && <span class={`dtc-preset-badge dtc-preset-badge--${p.badge === "고위험" ? "danger" : p.badge === "중위험" ? "warn" : "safe"}`}>{p.badge}</span>}
+                </div>
+              </label>
+            ))}
+          </div>
+          <div class="dtc-group-label">🇺🇸 미국 인컴형</div>
+          <div class="dtc-preset-list">
+            {DTC_ETF_PRESETS.filter(p => ["jepi","jepq","o","schd","vym","dvy","qqqi"].includes(p.id)).map((p) => (
+              <label class={`dtc-preset-item${["schd"].includes(p.id) ? " active" : ""}`} data-dtc-preset-label={p.id}>
+                <input type="checkbox" data-dtc-preset-check={p.id} checked={["schd"].includes(p.id)} />
+                <div class="dtc-preset-info">
+                  <span class="dtc-preset-name">{p.name}</span>
+                  <span class="dtc-preset-yield">연 {p.annualYield}%</span>
+                  {p.badge && <span class={`dtc-preset-badge dtc-preset-badge--${p.badge === "고위험" ? "danger" : p.badge === "중위험" ? "warn" : "safe"}`}>{p.badge}</span>}
+                </div>
+              </label>
+            ))}
+          </div>
+          <div class="dtc-group-label">🇰🇷 국내 상장 월배당 ETF</div>
+          <div class="dtc-preset-list">
+            {DTC_ETF_PRESETS.filter(p => ["tiger-plus","kodex-cover","rise-cover","tiger-dow","ace-dow","sol-dow","tiger-reits"].includes(p.id)).map((p) => (
+              <label class={`dtc-preset-item${["tiger-plus"].includes(p.id) ? " active" : ""}`} data-dtc-preset-label={p.id}>
+                <input type="checkbox" data-dtc-preset-check={p.id} checked={["tiger-plus"].includes(p.id)} />
+                <div class="dtc-preset-info">
+                  <span class="dtc-preset-name">{p.name}</span>
+                  <span class="dtc-preset-yield">연 {p.annualYield}%</span>
+                  {p.badge && <span class={`dtc-preset-badge dtc-preset-badge--${p.badge === "고위험" ? "danger" : p.badge === "중위험" ? "warn" : "safe"}`}>{p.badge}</span>}
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      </article>
+    </Fragment>
+
+    <!-- 결과 -->
+    <div class="dtc-results">
+      <div class="dtc-hero-card">
+        <div class="dtc-hero-label">최소 투자금 (최고 분배율 ETF 기준)</div>
+        <div class="dtc-hero-value" data-dtc-min-invest>—</div>
+        <div class="dtc-hero-sub" data-dtc-min-etf>—</div>
+      </div>
+
+      <div class="dtc-table-wrap">
+        <h3 class="dtc-table-title">ETF별 필요 투자금 비교</h3>
+        <div class="dtc-table-scroll">
+          <table class="dtc-table">
+            <thead>
+              <tr>
+                <th>ETF</th>
+                <th>연 분배율</th>
+                <th>필요 투자금</th>
+                <th>세후 월 수령</th>
+                <th>위험도</th>
+              </tr>
+            </thead>
+            <tbody data-dtc-table-body></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dtc-note-box">
+        <p>※ 커버드콜 ETF(CONY·YMAX 등)는 분배율이 높아 보여도 주가 하락으로 원금이 감소할 수 있습니다. 필요 투자금은 현재 분배율 기준 정적 계산값입니다.</p>
+      </div>
+    </div>
+
+    <CompareCta
+      eyebrow="다음 단계"
+      title="받은 배당금, 세금이 얼마나 빠지나요?"
+      description="미국주식 배당소득세 계산기로 원천징수·종합과세 세후 실수령을 확인하세요."
+      variant="hub"
+      links={[
+        { href: "/tools/us-dividend-tax-calculator/", label: "미국 배당소득세 계산기", tone: "primary" },
+        { href: "/tools/etf-distribution-tax-calculator/", label: "ETF 분배금 세후 계산기", tone: "secondary" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <section class="seo-content stack">
+
+        <!-- 사용법 안내 -->
+        <article class="panel seo-panel" id="overview">
+          <div class="panel-heading">
+            <div><p class="panel-heading__eyebrow">상세 안내</p><h2 class="panel__title">배당금 목표 투자금 계산기 사용법</h2></div>
+          </div>
+          <div class="seo-copy">
+            <p>이 계산기는 "매달 얼마의 배당금을 받고 싶다"는 목표에서 출발해 ETF별로 필요한 투자금을 역산합니다. 위에서 목표 월 배당금을 입력하고 비교할 ETF를 선택하면 세전·세후 기준 필요 투자금이 자동으로 계산됩니다.</p>
+            <p>분배율이 높을수록 적은 투자금으로 목표를 달성할 수 있지만, 높은 분배율에는 반드시 그에 상응하는 위험이 따릅니다. 22개 ETF를 세 그룹(YieldMax 고분배 / 미국 인컴형 / 국내 월배당)으로 나눠 본인의 투자 성향에 맞는 조합을 확인해보세요.</p>
+            <p>세전 기준은 분배금 자체 기준이고, 세후 기준은 원천징수 후 실제로 받을 금액 기준입니다. 미국 상장 ETF는 15%, 국내 상장 ETF(TIGER·ACE·SOL 등)는 15.4%가 원천징수됩니다. 세후 기준으로 목표를 설정하면 실제 통장 입금액 기준으로 필요 투자금이 계산됩니다.</p>
+          </div>
+        </article>
+
+        <!-- ETF 유형별 특징 비교 -->
+        <article class="panel seo-panel" id="etf-types">
+          <div class="panel-heading">
+            <div><p class="panel-heading__eyebrow">ETF 유형 비교</p><h2 class="panel__title">유형별 특징과 선택 기준</h2></div>
+          </div>
+          <div class="seo-copy">
+            <p><strong>YieldMax 커버드콜 ETF (CONY·AMDY·NVDY·TSLY 등)</strong><br />
+            단일 종목의 콜옵션을 팔아 월 분배금을 만드는 구조입니다. 연 50~80%의 높은 분배율을 기록하지만, 주가 자체는 분배금만큼 하락하는 경향이 있어 총수익률이 분배율보다 훨씬 낮습니다. 원금이 빠르게 줄어들 수 있으며, 기초 자산(COIN·AMD·NVDA 등)이 급락하면 분배율도 급감합니다. 단기 현금흐름 목적의 소액 투자에는 활용할 수 있지만, 장기 자산 형성에는 부적합합니다.</p>
+
+            <p><strong>JEPI·JEPQ (JPMorgan 인컴 ETF)</strong><br />
+            미국 주식 포트폴리오와 ELN(주가연계증권) 옵션을 결합해 월 분배금을 창출합니다. JEPI는 S&P500, JEPQ는 나스닥100 기반으로 운용됩니다. 운용자산 300억 달러 이상의 대형 ETF로 안정성이 높고, 연 7~9% 분배율이 비교적 안정적입니다. 상승장에서 지수 대비 수익이 다소 제한되지만, 변동성 장세에서 안정적인 현금흐름을 원하는 투자자에게 적합합니다.</p>
+
+            <p><strong>SCHD·VYM·DVY (미국 배당성장 ETF)</strong><br />
+            분배율은 연 3~5% 수준으로 낮지만, 배당 성장 이력이 있는 우량 기업에 분산 투자합니다. SCHD는 과거 10년 배당 성장률이 연 12%대로, 20년 후에는 현재 투자금 대비 훨씬 높은 배당수익률을 기대할 수 있습니다. 주가 성장과 배당 성장이 함께 이루어져 장기 자산 형성과 현금흐름 확보를 동시에 추구하는 투자자에게 적합합니다.</p>
+
+            <p><strong>국내 상장 월배당 ETF (TIGER·ACE·SOL·RISE·KODEX)</strong><br />
+            국내 증권사 계좌에서 원화로 투자할 수 있고, ISA 계좌에 편입해 비과세·저율과세 혜택을 받을 수 있습니다. TIGER 미국배당다우존스는 수수료가 연 0.05%로 매우 저렴하고 SCHD와 유사한 배당성장 전략을 따릅니다. TIGER +7%프리미엄, KODEX 미국배당프리미엄은 커버드콜을 결합해 연 8~9% 분배율을 목표로 합니다. 환전 없이 투자하고 ISA 혜택까지 받고 싶다면 국내 상장 ETF가 유리합니다.</p>
+
+            <p><strong>O (Realty Income) — 월배당 리츠</strong><br />
+            1969년 이후 매월 배당을 지급해온 미국 대표 리츠입니다. 편의점·약국·슈퍼마켓 등 필수소비재 임차인 위주로 포트폴리오를 구성해 경기 침체에도 비교적 안정적입니다. 30년 이상 배당을 연속으로 인상한 '배당 귀족' 종목이지만, 금리 인상 시 리츠 전체가 하락하는 경향이 있어 금리 환경을 함께 고려해야 합니다.</p>
+          </div>
+        </article>
+
+        <!-- 투자 전략 -->
+        <article class="panel seo-panel" id="strategy">
+          <div class="panel-heading">
+            <div><p class="panel-heading__eyebrow">투자 전략</p><h2 class="panel__title">목적별 ETF 선택 가이드</h2></div>
+          </div>
+          <div class="seo-copy">
+            <p><strong>단기 현금흐름이 목적이라면</strong> — JEPI·JEPQ 또는 국내 커버드콜 ETF(TIGER +7%·KODEX)를 고려하세요. YieldMax보다 분배율은 낮지만 원금 훼손이 적고 장기 보유가 가능합니다.</p>
+            <p><strong>장기 자산 형성과 배당 성장이 목적이라면</strong> — SCHD 또는 TIGER 미국배당다우존스를 핵심으로 삼고, ISA 계좌에서 운용하세요. 지금 분배율은 낮아 보여도 10~20년 후 배당 성장 효과로 실질 수익률이 높아집니다.</p>
+            <p><strong>성과급이나 목돈을 일시 투자하는 경우</strong> — 한 ETF에 전액을 넣기보다 위험 수준이 다른 2~3개 ETF를 조합하세요. 예를 들어 SCHD 50% + JEPI 30% + TIGER +7% 20% 조합은 안정성과 현금흐름을 균형 있게 가져갈 수 있습니다.</p>
+            <p><strong>세금 절세가 중요하다면</strong> — 국내 상장 ETF를 ISA 계좌에서 운용하세요. 연간 2,000만원 한도 내에서 납입하면 비과세(200만원)·저율과세(9.9%) 혜택이 적용되어 일반 계좌(15.4%)보다 유리합니다. 미국 ETF는 ISA 편입이 불가하므로 직접 해외주식 계좌를 이용해야 합니다.</p>
+          </div>
+        </article>
+
+        <!-- FAQ -->
+        <article class="panel seo-panel" id="faq">
+          <div class="panel-heading">
+            <div><p class="panel-heading__eyebrow">자주 묻는 질문</p><h2 class="panel__title">배당 투자 FAQ</h2></div>
+          </div>
+          <div class="faq-list">
+            {DTC_FAQS.map((f, i) => (
+              <details class="faq-item" open={i === 0}>
+                <summary>{f.question}</summary>
+                <p>{f.answer}</p>
+              </details>
+            ))}
+          </div>
+        </article>
+
+      </section>
+    </Fragment>
+  </SimpleToolShell>
+</BaseLayout>
+
+<script src={withBase("scripts/dividend-target-calculator.js")} defer></script>

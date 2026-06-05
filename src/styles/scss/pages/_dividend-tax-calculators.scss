@@ -1,0 +1,268 @@
+// 배당 세금 계산기 공통 스타일 (dtc / udta / edtc)
+
+// ── 공통 변수 ────────────────────────────────────────────
+$brand: #1a56db;
+$teal: #0f766e;
+$red: #dc2626;
+$border: #e5e7eb;
+$bg-light: #f9fafb;
+$bg-brand: #eff6ff;
+$bg-teal: #f0fdf4;
+
+@mixin panel-section {
+  display: grid;
+  gap: 10px;
+}
+
+@mixin section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0;
+}
+
+@mixin input-field {
+  width: 100%;
+  padding: 10px 44px 10px 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #111827;
+  background: #fff;
+  &:focus { outline: none; border-color: $brand; }
+}
+
+@mixin input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+@mixin unit-label {
+  position: absolute;
+  right: 12px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+@mixin toggle-btn {
+  padding: 8px 16px;
+  border: 1.5px solid $border;
+  border-radius: 8px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  &.active { border-color: $brand; background: $bg-brand; color: $brand; }
+}
+
+@mixin summary-card {
+  padding: 16px;
+  border: 1.5px solid $border;
+  border-radius: 12px;
+  background: #fff;
+  display: grid;
+  gap: 4px;
+  .label { font-size: 0.78rem; font-weight: 600; color: #6b7280; }
+  .value { font-size: 1.2rem; font-weight: 800; color: #111827; }
+  .sub { font-size: 0.75rem; color: #9ca3af; }
+}
+
+// ── #2 배당 목표 역산 (dtc) ───────────────────────────────
+.dtc-page {
+  .dtc-input-panel { display: grid; gap: 20px; }
+  .dtc-section { @include panel-section; }
+  .dtc-section-title { @include section-title; }
+  .dtc-field { display: grid; gap: 6px; }
+  .dtc-input-wrap { @include input-wrap; }
+  .dtc-input { @include input-field; }
+  .dtc-unit { @include unit-label; }
+
+  .dtc-quick-btns {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    button {
+      padding: 5px 12px;
+      border: 1px solid $border;
+      border-radius: 999px;
+      background: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #374151;
+      &:hover { border-color: $brand; color: $brand; }
+    }
+  }
+
+  .dtc-toggle-group { display: flex; gap: 8px; }
+  .dtc-toggle { @include toggle-btn; }
+  .dtc-tax-desc { font-size: 0.8rem; color: #6b7280; margin: 0; }
+
+  .dtc-preset-list { display: grid; gap: 6px; }
+  .dtc-preset-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    border: 1.5px solid $border;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #fff;
+    &.active { border-color: $brand; background: $bg-brand; }
+    input[type="checkbox"] { accent-color: $brand; width: 15px; height: 15px; flex-shrink: 0; }
+  }
+  .dtc-preset-info { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .dtc-preset-name { font-size: 0.9rem; font-weight: 600; color: #111827; }
+  .dtc-preset-yield { font-size: 0.78rem; color: $brand; font-weight: 700; }
+  .dtc-preset-badge {
+    font-size: 0.72rem; font-weight: 700; padding: 2px 7px;
+    border-radius: 999px;
+    &--danger { background: #fef2f2; color: $red; border: 1px solid #fecaca; }
+    &--warn   { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    &--safe   { background: $bg-teal; color: $teal; border: 1px solid #bbf7d0; }
+  }
+
+  .dtc-group-label {
+    font-size: 0.78rem; font-weight: 700; color: #6b7280;
+    padding: 4px 0 2px;
+    border-bottom: 1px solid $border;
+    margin-top: 4px;
+  }
+
+  .dtc-count-badge {
+    font-size: 0.75rem; font-weight: 700; padding: 2px 8px;
+    border-radius: 999px; background: $bg-brand; color: $brand;
+    border: 1px solid #bfdbfe;
+  }
+
+  .dtc-results { display: grid; gap: 20px; }
+
+  .dtc-hero-card {
+    padding: 20px; border: 2px solid $brand; border-radius: 14px;
+    background: $bg-brand; display: grid; gap: 6px;
+    .dtc-hero-label { font-size: 0.82rem; font-weight: 600; color: #6b7280; }
+    .dtc-hero-value { font-size: 1.5rem; font-weight: 800; color: $brand; }
+    .dtc-hero-sub { font-size: 0.85rem; color: #374151; font-weight: 600; }
+  }
+
+  .dtc-table-wrap { display: grid; gap: 10px; }
+  .dtc-table-title { font-size: 0.95rem; font-weight: 700; color: #374151; margin: 0; }
+  .dtc-table-scroll { overflow-x: auto; border-radius: 10px; border: 1.5px solid $border; }
+  .dtc-table {
+    width: 100%; border-collapse: collapse; font-size: 0.88rem;
+    th { padding: 9px 12px; background: $bg-light; font-weight: 700; color: #374151; text-align: right; border-bottom: 1.5px solid $border; white-space: nowrap; &:first-child { text-align: left; } }
+    td { padding: 11px 12px; border-bottom: 1px solid #f3f4f6; text-align: right; &:first-child { text-align: left; } }
+    tr:last-child td { border-bottom: none; }
+  }
+  .dtc-row--best td { background: $bg-brand; font-weight: 700; }
+  .dtc-rank-badge { display: inline-block; padding: 2px 7px; background: $brand; color: #fff; font-size: 0.72rem; font-weight: 700; border-radius: 999px; margin-right: 4px; }
+  .dtc-td-invest { font-weight: 800; color: $brand; }
+  .dtc-note-box { padding: 12px 14px; background: $bg-light; border-radius: 8px; border: 1px solid $border; font-size: 0.82rem; color: #6b7280; line-height: 1.6; p { margin: 0; } }
+}
+
+// ── #3 미국 배당소득세 (udta) ──────────────────────────────
+.udta-page {
+  .udta-input-panel { display: grid; gap: 20px; }
+  .udta-section { @include panel-section; }
+  .udta-section-title { @include section-title; }
+  .udta-field { display: grid; gap: 6px; }
+  .udta-input-wrap { @include input-wrap; }
+  .udta-input { @include input-field; }
+  .udta-unit { @include unit-label; }
+  .udta-hint { font-size: 0.8rem; color: #6b7280; }
+
+  .udta-preset-list { display: grid; gap: 6px; }
+  .udta-preset-item {
+    display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+    border: 1.5px solid $border; border-radius: 8px; cursor: pointer; background: #fff;
+    &.active { border-color: $brand; background: $bg-brand; }
+    input[type="radio"] { display: none; }
+    font-size: 0.9rem; font-weight: 600; color: #374151;
+  }
+  .udta-yield-badge { margin-left: auto; font-size: 0.75rem; color: $brand; font-weight: 700; }
+
+  .udta-results { display: grid; gap: 20px; }
+  .udta-summary-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+  }
+  .udta-card {
+    @include summary-card;
+    &--main { border-color: $teal; background: $bg-teal;
+      .udta-card-value { color: $teal; }
+    }
+    .udta-card-label { @extend .label; }
+    .udta-card-value { @extend .value; }
+    .udta-card-sub { @extend .sub; }
+  }
+
+  .udta-breakdown { display: grid; gap: 8px; }
+  .udta-breakdown-title { font-size: 0.95rem; font-weight: 700; color: #374151; margin: 0; }
+  .udta-breakdown-rows { border: 1.5px solid $border; border-radius: 10px; overflow: hidden; }
+  .udta-breakdown-row {
+    display: flex; justify-content: space-between; padding: 10px 14px;
+    font-size: 0.9rem; border-bottom: 1px solid #f3f4f6;
+    &:last-child { border-bottom: none; }
+    &--deduct { color: $red; }
+    &--total { background: $bg-brand; font-weight: 800; color: $brand; }
+  }
+}
+
+// ── #4 ETF 분배금 세후 (edtc) ──────────────────────────────
+.edtc-page {
+  .edtc-input-panel { display: grid; gap: 20px; }
+  .edtc-section { @include panel-section; }
+  .edtc-section-title { @include section-title; }
+  .edtc-field { display: grid; gap: 6px; }
+  .edtc-input-wrap { @include input-wrap; }
+  .edtc-input { @include input-field; }
+  .edtc-unit { @include unit-label; }
+
+  .edtc-type-list { display: grid; gap: 6px; }
+  .edtc-type-item {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px;
+    border: 1.5px solid $border; border-radius: 8px; cursor: pointer; background: #fff;
+    &.active { border-color: $brand; background: $bg-brand; }
+    input[type="radio"] { display: none; }
+  }
+  .edtc-type-info { display: grid; gap: 3px; }
+  .edtc-type-name { font-size: 0.92rem; font-weight: 700; color: #111827; }
+  .edtc-type-desc { font-size: 0.78rem; color: #6b7280; }
+  .edtc-type-rate { font-size: 0.78rem; font-weight: 700; color: $brand; }
+
+  .edtc-toggle-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .edtc-toggle {
+    @include toggle-btn;
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+  .edtc-isa-note { font-size: 0.8rem; color: #6b7280; margin: 0; }
+
+  .edtc-results { display: grid; gap: 20px; }
+  .edtc-summary-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+  }
+  .edtc-card {
+    @include summary-card;
+    &--main { border-color: $teal; background: $bg-teal;
+      .edtc-card-value { color: $teal; }
+    }
+    &--isa { border-color: $brand; background: $bg-brand;
+      .edtc-card-value { color: $brand; }
+    }
+    .edtc-card-label { @extend .label; }
+    .edtc-card-value { @extend .value; }
+    .edtc-card-sub { @extend .sub; }
+  }
+
+  .edtc-compare-section { display: grid; gap: 10px; }
+  .edtc-compare-title { font-size: 0.95rem; font-weight: 700; color: #374151; margin: 0; }
+  .edtc-compare-table { border: 1.5px solid $border; border-radius: 10px; overflow: hidden; }
+  .edtc-ct-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    > span { padding: 10px 14px; font-size: 0.88rem; border-bottom: 1px solid #f3f4f6; }
+    &:last-child > span { border-bottom: none; }
+    &--head > span { background: $bg-light; font-weight: 700; font-size: 0.82rem; }
+    &--active > span { background: $bg-brand; font-weight: 700; color: $brand; }
+    &--disabled { opacity: 0.4; }
+  }
+}
