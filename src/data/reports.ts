@@ -106,6 +106,13 @@ export const reports: ReportMeta[] = [
     badges: ["지방선거", "후보재산", "2026"],
   },
   {
+    slug: "local-election-winners-assets-2026",
+    title: "2026 시도지사 당선자 재산 공개 — 오세훈·추미애·전재수 등 16명 완전 비교",
+    description: "오세훈 서울시장, 추미애 경기지사, 전재수 부산시장 등 2026 지방선거 시도지사 당선자 16명의 재산 공개 내역을 한눈에 비교합니다.",
+    order: 7.3,
+    badges: ["당선자재산", "시도지사", "지방선거", "2026"],
+  },
+  {
     slug: "seoul-mayor-candidate-assets-2026",
     title: "서울시장 후보 재산·부동산 비교 2026",
     description: "2026 서울시장 후보 오세훈·정원오의 재산 신고액을 총재산, 부동산, 예금, 증권, 채무 기준으로 비교합니다.",

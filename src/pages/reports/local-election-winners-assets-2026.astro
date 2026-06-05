@@ -1,0 +1,361 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  WINNERS_ASSETS,
+  WINNERS_ASSETS_FAQ,
+  WINNERS_ASSETS_META,
+  WINNERS_ASSETS_RELATED_LINKS,
+  fmtManwon,
+  fmtManwonOrDash,
+} from "../../data/localElectionWinnersAssets2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const meta = WINNERS_ASSETS_META;
+const winners = WINNERS_ASSETS;
+const faqItems = WINNERS_ASSETS_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+
+// KPI 계산 (공개 기준)
+const openWinners = winners.filter((w) => w.totalAsset > 0);
+const richest = openWinners.length > 0
+  ? openWinners.reduce((a, b) => (a.totalAsset > b.totalAsset ? a : b))
+  : null;
+const poorest = openWinners.length > 0
+  ? openWinners.reduce((a, b) => (a.totalAsset < b.totalAsset ? a : b))
+  : null;
+const avgAsset = openWinners.length > 0
+  ? Math.round(openWinners.reduce((s, w) => s + w.totalAsset, 0) / openWinners.length)
+  : 0;
+const realEstateWinners = openWinners.filter((w) => w.realEstate > 0);
+const avgRealEstateRatio = realEstateWinners.length > 0
+  ? Math.round(
+      realEstateWinners.reduce((s, w) => s + (w.realEstate / w.totalAsset) * 100, 0) /
+        realEstateWinners.length
+    )
+  : null;
+
+const dpWinners = winners.filter((w) => w.party === "더불어민주당");
+const pppWinners = winners.filter((w) => w.party === "국민의힘");
+const dpOpenCount = dpWinners.filter((w) => w.totalAsset > 0).length;
+const pppOpenCount = pppWinners.filter((w) => w.totalAsset > 0).length;
+const dpAvg = dpOpenCount > 0
+  ? Math.round(
+      dpWinners.filter((w) => w.totalAsset > 0).reduce((s, w) => s + w.totalAsset, 0) / dpOpenCount
+    )
+  : 0;
+const pppAvg = pppOpenCount > 0
+  ? Math.round(
+      pppWinners.filter((w) => w.totalAsset > 0).reduce((s, w) => s + w.totalAsset, 0) / pppOpenCount
+    )
+  : 0;
+
+function partyCode(party: string) {
+  if (party === "더불어민주당") return "dp";
+  if (party === "국민의힘") return "ppp";
+  return "etc";
+}
+
+const reportDataJson = JSON.stringify({ winners });
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: meta.seoTitle,
+      description: meta.seoDescription,
+      inLanguage: "ko-KR",
+      dateModified: "2026-06-05",
+      mainEntityOfPage: "https://bigyocalc.com/reports/local-election-winners-assets-2026/",
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: WINNERS_ASSETS_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={meta.seoTitle}
+  description={meta.seoDescription}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <script id="lewaReportData" type="application/json" set:html={reportDataJson}></script>
+
+  <main class="container page-shell report-page lewa-page" data-report="local-election-winners-assets-2026">
+    <CalculatorHero
+      eyebrow={meta.eyebrow}
+      title={meta.h1}
+      description="오세훈 서울시장·추미애 경기도지사·전재수 부산시장 등 2026 지방선거 시도지사 당선자 16명의 재산 신고액을 한 페이지에서 비교합니다."
+    />
+
+    <div class="lewa-meta-strip" aria-label="리포트 기준 정보">
+      <span>최근 업데이트: {meta.updatedAt}</span>
+      <span>선거일: 2026.06.03</span>
+      <span>기준: {meta.declarationBasis}</span>
+      <span>단위: 만원·억원 병행</span>
+      <span>총 {winners.length}명 당선자</span>
+    </div>
+
+    <InfoNotice
+      title="재산공개 데이터 안내"
+      lines={[
+        meta.caution,
+        "재산 신고액에는 후보자 본인 외 배우자와 직계존비속의 재산이 포함될 수 있습니다.",
+        "부동산 신고액은 공개자료 신고 기준 금액이며 현재 시세와 다를 수 있습니다.",
+      ]}
+    />
+
+    <!-- A. KPI Cards -->
+    <section class="content-section" aria-labelledby="lewa-kpi-heading">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2 id="lewa-kpi-heading">당선자 재산 핵심 지표</h2>
+        <p>공개 확인된 당선자 기준. 미확인 항목은 업데이트 예정.</p>
+      </div>
+      <div class="lewa-kpi-grid">
+        <article class="lewa-kpi-card lewa-kpi-card--accent">
+          <p class="lewa-kpi-label">최고 재산 당선자</p>
+          <strong class="lewa-kpi-value">
+            {richest ? `${richest.name} ${fmtManwon(richest.totalAsset)}` : "집계중"}
+          </strong>
+          <small class="lewa-kpi-sub">
+            {richest ? `${richest.position} · ${richest.party}` : "재산공개 확인 후 업데이트"}
+          </small>
+        </article>
+        <article class="lewa-kpi-card">
+          <p class="lewa-kpi-label">최저 재산 당선자</p>
+          <strong class="lewa-kpi-value">
+            {poorest ? `${poorest.name} ${fmtManwon(poorest.totalAsset)}` : "집계중"}
+          </strong>
+          <small class="lewa-kpi-sub">
+            {poorest ? `${poorest.position} · ${poorest.party}` : "재산공개 확인 후 업데이트"}
+          </small>
+        </article>
+        <article class="lewa-kpi-card lewa-kpi-card--warn">
+          <p class="lewa-kpi-label">평균 재산</p>
+          <strong class="lewa-kpi-value">
+            {avgAsset > 0 ? fmtManwon(avgAsset) : "집계중"}
+          </strong>
+          <small class="lewa-kpi-sub">
+            {openWinners.length > 0 ? `${openWinners.length}명 공개 기준` : "재산공개 확인 후 집계"}
+          </small>
+        </article>
+        <article class="lewa-kpi-card lewa-kpi-card--muted">
+          <p class="lewa-kpi-label">부동산 비중 평균</p>
+          <strong class="lewa-kpi-value">
+            {avgRealEstateRatio !== null ? `${avgRealEstateRatio}%` : "집계중"}
+          </strong>
+          <small class="lewa-kpi-sub">
+            {realEstateWinners.length > 0 ? `${realEstateWinners.length}명 세부공개 기준` : "세부항목 확인 후 집계"}
+          </small>
+        </article>
+      </div>
+    </section>
+
+    <!-- C. Ranking Table -->
+    <section class="content-section" id="ranking-table" aria-labelledby="lewa-ranking-heading">
+      <div class="section-header section-header--compact">
+        <h2 id="lewa-ranking-heading">시도지사 당선자 재산 순위</h2>
+        <p>행을 클릭하면 해당 당선자 카드로 이동합니다. 재산이 확인되지 않은 항목은 '확인중'으로 표시됩니다.</p>
+      </div>
+      <div id="lewaSortTabs" class="lewa-sort-tabs" aria-label="정렬 선택">
+        <button type="button" class="is-active" data-lewa-sort="assetsDesc">재산 높은 순</button>
+        <button type="button" data-lewa-sort="regionAsc">지역 순</button>
+        <button type="button" data-lewa-sort="partyAsc">정당 순</button>
+      </div>
+      <div class="lewa-table-wrap">
+        <table class="lewa-ranking-table">
+          <caption>2026 시도지사 당선자 재산 순위표 — 선관위 재산공개 기준 (확인중 포함)</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>지역</th>
+              <th>당선자</th>
+              <th>정당</th>
+              <th>신고재산</th>
+              <th>부동산</th>
+              <th>예금·주식</th>
+              <th>채무</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody id="lewaTableBody">
+            <!-- JS로 렌더링 -->
+            {winners.map((w, i) => (
+              <tr
+                data-lewa-row={w.regionId}
+                onclick={`document.getElementById('lewa-card-${w.regionId}')?.scrollIntoView({behavior:'smooth',block:'start'})`}
+              >
+                <td class="lewa-rank-cell">{i + 1}</td>
+                <td>{w.regionNameKo}</td>
+                <td style="font-weight:700">{w.name}</td>
+                <td>
+                  <span class={`lewa-party-badge lewa-party-badge--${partyCode(w.party)}`}>
+                    {w.party}
+                  </span>
+                </td>
+                <td class={`lewa-money-cell${w.totalAsset === 0 ? " lewa-money-cell--zero" : ""}`}>
+                  {fmtManwon(w.totalAsset)}
+                </td>
+                <td class="lewa-money-cell lewa-money-cell--zero">{fmtManwonOrDash(w.realEstate)}</td>
+                <td class="lewa-money-cell lewa-money-cell--zero">{fmtManwonOrDash(w.deposit + w.stock)}</td>
+                <td class="lewa-money-cell lewa-money-cell--zero">{fmtManwonOrDash(w.debt)}</td>
+                <td class="lewa-badge-cell">
+                  <span style={`background:${w.badge === "공개" ? "#d1fae5" : "#fef3c7"};color:${w.badge === "공개" ? "#065f46" : "#92400e"}`}>
+                    {w.badge}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- D. 당선자별 재산 카드 -->
+    <section class="content-section" aria-labelledby="lewa-cards-heading">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">당선자별 재산</p>
+        <h2 id="lewa-cards-heading">16명 당선자 재산 상세 카드</h2>
+        <p>각 카드의 금액은 선관위 재산공개 자료 확인 후 업데이트됩니다. 현재 확인중 항목은 공식 자료 취합 후 수정됩니다.</p>
+      </div>
+      <div class="lewa-cards-grid">
+        {winners.map((w) => (
+          <article class="lewa-winner-card" id={`lewa-card-${w.regionId}`}>
+            <div class="lewa-winner-card__head">
+              <span class={`lewa-party-badge lewa-party-badge--${partyCode(w.party)}`}>{w.party}</span>
+              <span class={`lewa-winner-card__badge lewa-winner-card__badge--${w.badge === "공개" ? "open" : "pending"}`}>
+                {w.badge}
+              </span>
+            </div>
+            <h2>{w.name} {w.position} 재산</h2>
+            <p class="lewa-winner-card__region">{w.regionNameKo} · {w.position}</p>
+            <strong class={`lewa-winner-card__total${w.totalAsset === 0 ? " lewa-winner-card__total--pending" : ""}`}>
+              {fmtManwon(w.totalAsset)}
+            </strong>
+            <dl>
+              <div>
+                <dt>부동산</dt>
+                <dd>{fmtManwonOrDash(w.realEstate)}</dd>
+              </div>
+              <div>
+                <dt>예금·증권</dt>
+                <dd>{fmtManwonOrDash(w.deposit + w.stock)}</dd>
+              </div>
+              <div>
+                <dt>채무</dt>
+                <dd>{fmtManwonOrDash(w.debt)}</dd>
+              </div>
+              <div>
+                <dt>배우자 포함</dt>
+                <dd>{w.includesSpouse ? "포함" : "별도확인"}</dd>
+              </div>
+            </dl>
+            {w.assetChangeYoY !== undefined && (
+              <p class="lewa-winner-card__yoy">
+                전년 대비: {w.assetChangeYoY >= 0 ? "+" : ""}{fmtManwonOrDash(Math.abs(w.assetChangeYoY))}
+                {w.assetChangeYoY >= 0 ? " 증가" : " 감소"}
+              </p>
+            )}
+            {w.noteText && <p class="lewa-winner-card__note">{w.noteText}</p>}
+            <a class="lewa-winner-card__source" href={w.sourceUrl} target="_blank" rel="noopener noreferrer">
+              원문 확인하기 (선관위)
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- E. 정당별 비교 차트 -->
+    <section class="content-section" aria-labelledby="lewa-party-heading">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">정당별 비교</p>
+        <h2 id="lewa-party-heading">민주당 vs 국힘 당선자 평균 재산</h2>
+        <p>재산공개가 확인된 당선자 기준으로 집계합니다. 확인중 항목 업데이트 시 수치가 변경됩니다.</p>
+      </div>
+      <div class="lewa-party-chart">
+        <canvas id="lewaPartyChart" role="img" aria-label="정당별 당선자 평균 재산 가로 막대 차트"></canvas>
+      </div>
+      <div class="lewa-party-stats">
+        <div class="lewa-party-stat-card lewa-party-stat-card--dp">
+          <p class="lewa-party-stat-label">더불어민주당 평균 ({dpWinners.length}명)</p>
+          <strong id="lewaDpAvg">{dpAvg > 0 ? fmtManwon(dpAvg) : "집계중"}</strong>
+          <small id="lewaDpCount">{dpOpenCount > 0 ? `${dpOpenCount}명 공개 기준` : "재산공개 확인 후 집계"}</small>
+        </div>
+        <div class="lewa-party-stat-card lewa-party-stat-card--ppp">
+          <p class="lewa-party-stat-label">국민의힘 평균 ({pppWinners.length}명)</p>
+          <strong id="lewaPppAvg">{pppAvg > 0 ? fmtManwon(pppAvg) : "집계중"}</strong>
+          <small id="lewaPppCount">{pppOpenCount > 0 ? `${pppOpenCount}명 공개 기준` : "재산공개 확인 후 집계"}</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- F. FAQ -->
+    <section class="content-section" aria-labelledby="lewa-faq-heading">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2 id="lewa-faq-heading">시도지사 재산공개 FAQ</h2>
+      </div>
+      <ul class="lewa-faq-list">
+        {WINNERS_ASSETS_FAQ.map((item) => (
+          <li class="lewa-faq-item">
+            <details>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- G. 관련 링크 -->
+    <section class="content-section" aria-labelledby="lewa-related-heading">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 콘텐츠</p>
+        <h2 id="lewa-related-heading">같이 보면 좋은 리포트</h2>
+      </div>
+      <div class="lewa-related-grid">
+        {WINNERS_ASSETS_RELATED_LINKS.map((link) => (
+          <a class="lewa-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      intro={[
+        "2026 지방선거 시도지사 당선자 16명의 재산 공개 내역을 한 페이지에서 비교할 수 있습니다. 오세훈 서울시장 재산, 추미애 경기도지사 재산신고, 전재수 부산시장 재산, 박찬대 인천시장 재산, 정원오 전 성동구청장과의 비교 등 관련 키워드 검색 수요가 급증하고 있습니다.",
+        "시도지사 당선자 재산신고액은 중앙선거관리위원회 후보자 재산공개 자료를 기반으로 합니다. 재산신고에는 본인 외 배우자와 직계존비속 재산이 포함되며, 부동산 신고액은 현재 시세가 아닌 신고 기준 금액입니다.",
+        "2026 지방선거는 더불어민주당이 12개 광역단체를, 국민의힘이 4개 광역단체를 차지하는 결과를 냈습니다. 정당별 당선자 평균 재산 비교는 선관위 재산공개 자료 취합 후 업데이트됩니다.",
+      ]}
+      criteria={[
+        "재산 수치는 선관위 후보자 재산신고 공개 자료를 기준으로 합니다.",
+        "확인중으로 표시된 항목은 선관위 원문 확인 후 업데이트됩니다.",
+        "부동산 신고액은 현재 아파트 시세·실거래가·호가와 다를 수 있습니다.",
+        "순자산과 비중은 이해를 돕기 위한 단순 계산값이며 공식 선관위 수치가 아닙니다.",
+      ]}
+    />
+  </main>
+
+  <script src={withBase("scripts/local-election-winners-assets-2026.js")}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</BaseLayout>
