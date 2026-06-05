@@ -1,0 +1,299 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { ETF_PRESETS } from "../../data/monthlyDividendEtfCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const TITLE = "성과급으로 ETF 투자하면 월 배당금 얼마? — 성과급 투자 계산기";
+const DESC  = "성과급 세후 실수령액을 계산하고, ETF에 투자하면 월 배당금이 얼마인지 바로 확인합니다. 삼성·SK하이닉스·현대차 성과급별 시뮬레이션 제공.";
+
+// 투자 비율 프리셋
+const INVEST_RATIOS = [25, 50, 75, 100];
+
+// 성과급 빠른 입력 프리셋 (만원)
+const BONUS_PRESETS = [500, 1000, 2000, 3000, 5000, 8000];
+
+const faqItems = [
+  { question: "성과급 세율은 어떻게 계산하나요?",
+    answer: "성과급도 근로소득이므로 연봉에 합산해 소득세가 부과됩니다. 간이세율 기준으로 연봉 5천만원 + 성과급 1천만원 = 6천만원 기준으로 세율이 결정됩니다. 이 계산기는 간이세율(소득세+지방소득세+4대보험)을 적용한 추정치를 제공합니다." },
+  { question: "성과급을 어느 ETF에 투자하면 좋을까요?",
+    answer: "안정적인 현금흐름을 원한다면 국내 나스닥100커버드콜 ETF(연 10~12%)나 JEPI(연 8~10%)를 고려해볼 수 있습니다. 높은 분배율의 CONY·AMDY 등은 원금 손실 위험이 크므로 소액 분산 투자가 필요합니다." },
+  { question: "성과급 전액을 ETF에 투자하는 게 좋을까요?",
+    answer: "성과급을 받으면 비상금(3~6개월치 생활비)은 먼저 확보하고, 나머지의 50~70%를 투자하는 것을 권장합니다. 전액 투자보다는 비상금 + 투자 + 소비의 균형을 맞추는 게 중요합니다." },
+  { question: "월 배당금 100만원을 성과급으로 만들려면?",
+    answer: "연 분배율 10%, 세율 15.4% 기준으로 약 1억 3천만원이 필요합니다. 성과급 1천만원으로는 월 약 7만원 수준의 배당금이 가능합니다. 장기적으로 매년 성과급을 ETF에 추가 투자하면 목표에 가까워질 수 있습니다." },
+];
+---
+
+<BaseLayout title={TITLE} description={DESC}>
+  <SiteHeader />
+  <main class="container page-shell calc-page beic-page">
+
+    <!-- Hero -->
+    <section class="beic-hero">
+      <p class="beic-hero__eyebrow">성과급 활용 계산기</p>
+      <h1 class="beic-hero__title">성과급으로 ETF 투자하면<br/>월 배당금 얼마?</h1>
+      <p class="beic-hero__sub">성과급 세후 실수령 → 투자 금액 계산 → 월 배당금 즉시 확인</p>
+    </section>
+
+    <!-- STEP 1: 성과급 입력 -->
+    <section class="beic-section content-section">
+      <div class="beic-step-header">
+        <span class="beic-step-num">STEP 1</span>
+        <h2 class="beic-step-title">성과급·연봉 입력</h2>
+      </div>
+
+      <div class="beic-inputs">
+        <div class="beic-input-group">
+          <label class="beic-label" for="beic-bonus">성과급 (세전)</label>
+          <div class="beic-input-wrap">
+            <input id="beic-bonus" type="number" class="beic-input" value="1000" min="100" step="100" />
+            <span class="beic-unit">만원</span>
+          </div>
+          <div class="beic-quick-btns">
+            {BONUS_PRESETS.map(v => (
+              <button type="button" class="beic-quick-btn" data-target="beic-bonus" data-val={v}>
+                {v >= 10000 ? v/10000 + "억" : v + "만"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="beic-input-group">
+          <label class="beic-label" for="beic-salary">연봉 (성과급 제외)</label>
+          <div class="beic-input-wrap">
+            <input id="beic-salary" type="number" class="beic-input" value="6000" min="1000" step="500" />
+            <span class="beic-unit">만원</span>
+          </div>
+          <div class="beic-quick-btns">
+            {[4000,5000,6000,7000,8000,10000].map(v => (
+              <button type="button" class="beic-quick-btn" data-target="beic-salary" data-val={v}>
+                {v >= 10000 ? v/10000 + "억" : v/1000 + "천"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- 성과급 세후 결과 -->
+      <div class="beic-tax-result">
+        <div class="beic-tax-result__item">
+          <span class="beic-tax-result__label">예상 세금·공제</span>
+          <span class="beic-tax-result__value" id="beic-tax-amount">—</span>
+        </div>
+        <div class="beic-tax-result__item beic-tax-result__item--net">
+          <span class="beic-tax-result__label">성과급 세후 실수령</span>
+          <strong class="beic-tax-result__value" id="beic-net-bonus">—</strong>
+        </div>
+        <p class="beic-tax-result__note">※ 간이세율(소득세+지방소득세+4대보험) 적용 추정치</p>
+      </div>
+    </section>
+
+    <!-- STEP 2: 투자 계획 -->
+    <section class="beic-section content-section">
+      <div class="beic-step-header">
+        <span class="beic-step-num">STEP 2</span>
+        <h2 class="beic-step-title">투자 계획 설정</h2>
+      </div>
+
+      <div class="beic-invest-ratio-section">
+        <label class="beic-label">성과급의 몇 %를 ETF에 투자?</label>
+        <div class="beic-ratio-btns">
+          {INVEST_RATIOS.map((r, i) => (
+            <button type="button"
+              class={`beic-ratio-btn${i === 1 ? " is-active" : ""}`}
+              data-ratio={r}>
+              {r}%
+            </button>
+          ))}
+        </div>
+        <div class="beic-input-wrap" style="max-width:200px;margin-top:8px">
+          <input id="beic-invest-ratio" type="number" class="beic-input" value="50" min="1" max="100" step="5" />
+          <span class="beic-unit">%</span>
+        </div>
+        <p class="beic-invest-hint" id="beic-invest-amount-hint">투자 금액: —</p>
+      </div>
+
+      <div class="beic-inputs" style="margin-top:16px">
+        <!-- ETF 선택 -->
+        <div class="beic-input-group beic-input-group--full">
+          <label class="beic-label">ETF 선택</label>
+          <div class="beic-etf-grid">
+            {ETF_PRESETS.map((etf, i) => (
+              <button
+                type="button"
+                class={`beic-etf-btn beic-etf-btn--${etf.market}${i === 8 ? " is-active" : ""}`}
+                data-rate={etf.annualDistRate}
+                data-tax={etf.taxRate}
+                data-name={etf.ticker}
+                title={etf.description}
+              >
+                <span class="beic-etf-btn__name">{etf.ticker}</span>
+                <span class="beic-etf-btn__rate">{etf.annualDistRate}%</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="beic-input-group">
+          <label class="beic-label" for="beic-etf-rate">연 분배율</label>
+          <div class="beic-input-wrap">
+            <input id="beic-etf-rate" type="number" class="beic-input" value="10" min="0.1" max="100" step="0.5" />
+            <span class="beic-unit">%</span>
+          </div>
+        </div>
+
+        <div class="beic-input-group">
+          <label class="beic-label" for="beic-etf-tax">세율</label>
+          <div class="beic-input-wrap">
+            <input id="beic-etf-tax" type="number" class="beic-input" value="15.4" min="0" max="50" step="0.1" />
+            <span class="beic-unit">%</span>
+          </div>
+          <div class="beic-tax-btns">
+            <button type="button" class="beic-tax-btn is-active" data-tax="15.4">국내 15.4%</button>
+            <button type="button" class="beic-tax-btn" data-tax="22">미국 22%</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: 결과 -->
+    <section class="beic-section content-section">
+      <div class="beic-step-header">
+        <span class="beic-step-num">STEP 3</span>
+        <h2 class="beic-step-title">투자 결과</h2>
+      </div>
+
+      <!-- 메인 결과 카드 -->
+      <div class="beic-main-result" id="beic-main-result">
+        <div class="beic-main-result__card beic-main-result__card--invest">
+          <p class="beic-main-result__label">투자 금액</p>
+          <p class="beic-main-result__value" id="beic-result-invest">—</p>
+        </div>
+        <div class="beic-main-result__arrow">→</div>
+        <div class="beic-main-result__card beic-main-result__card--monthly">
+          <p class="beic-main-result__label">월 세후 배당금</p>
+          <p class="beic-main-result__value" id="beic-result-monthly">—</p>
+          <p class="beic-main-result__sub" id="beic-result-etf-name"></p>
+        </div>
+        <div class="beic-main-result__arrow">×12</div>
+        <div class="beic-main-result__card beic-main-result__card--annual">
+          <p class="beic-main-result__label">연 세후 배당금</p>
+          <p class="beic-main-result__value" id="beic-result-annual">—</p>
+        </div>
+      </div>
+
+      <!-- 투자 비율별 시나리오 -->
+      <h3 class="beic-sub-title">투자 비율별 월 배당금 비교</h3>
+      <div class="beic-scenario-grid" id="beic-scenario-grid">
+        {INVEST_RATIOS.map(r => (
+          <div class="beic-scenario-card" data-ratio={r}>
+            <p class="beic-scenario-card__ratio">{r}% 투자</p>
+            <p class="beic-scenario-card__invest" id={`beic-sc-invest-${r}`}>—</p>
+            <p class="beic-scenario-card__monthly" id={`beic-sc-monthly-${r}`}>월 —</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- 활용 플랜 -->
+      <div class="beic-plan-section">
+        <h3 class="beic-sub-title">💡 성과급 활용 추천 플랜</h3>
+        <div class="beic-plan-grid">
+          <div class="beic-plan-card">
+            <p class="beic-plan-card__label">🏦 비상금 확보</p>
+            <p class="beic-plan-card__ratio">20~30%</p>
+            <p class="beic-plan-card__desc">3~6개월 생활비 우선 확보</p>
+          </div>
+          <div class="beic-plan-card beic-plan-card--highlight">
+            <p class="beic-plan-card__label">📈 ETF 투자</p>
+            <p class="beic-plan-card__ratio">50~60%</p>
+            <p class="beic-plan-card__desc">월배당 ETF·DC 퇴직연금 운용</p>
+          </div>
+          <div class="beic-plan-card">
+            <p class="beic-plan-card__label">🎁 소비·여행</p>
+            <p class="beic-plan-card__ratio">10~20%</p>
+            <p class="beic-plan-card__desc">자기계발·삶의 질 투자</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="beic-faq content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">자주 묻는 질문</p>
+        <h2>성과급 ETF 투자 FAQ</h2>
+      </div>
+      <div class="beic-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+        {faqItems.map(item => (
+          <div class="beic-faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button class="beic-faq-q" itemprop="name" aria-expanded="false">
+              {item.question}<span class="beic-faq-icon">▼</span>
+            </button>
+            <div class="beic-faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" hidden>
+              <p itemprop="text">{item.answer}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 계산기 -->
+    <section class="beic-related content-section">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">이어서 확인하세요</p>
+        <h2>관련 계산기</h2>
+      </div>
+      <div class="ts-link-grid">
+        <a class="ts-link-card" href={withBase("/tools/bonus-after-tax-calculator/")}>
+          <span class="ts-link-card__eyebrow">성과급 계산기</span>
+          <strong>성과급 세후 실수령액 계산기</strong>
+          <p>성과급 세금 상세 계산.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/tools/monthly-dividend-etf-calculator/")}>
+          <span class="ts-link-card__eyebrow">ETF 계산기</span>
+          <strong>월배당 ETF 배당금 계산기</strong>
+          <p>14개 ETF 프리셋으로 월 배당금 계산.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/tools/retirement-dc-db-calculator/")}>
+          <span class="ts-link-card__eyebrow">퇴직연금</span>
+          <strong>퇴직연금 DC형 전환 계산기</strong>
+          <p>성과급을 DC 퇴직연금으로 운용 시 비교.</p>
+        </a>
+        <a class="ts-link-card" href={withBase("/reports/covered-call-etf-guide-2026/")}>
+          <span class="ts-link-card__eyebrow">투자 리포트</span>
+          <strong>커버드콜 ETF 장단점 완전 정리</strong>
+          <p>ETF 투자 전 반드시 알아야 할 내용.</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="성과급으로 ETF 투자하면 월 배당금 얼마? — 비교계산소"
+      intro={[
+        "삼성전자 성과급 1천만원을 월배당 ETF에 투자하면 연 분배율 10%, 세율 15.4% 기준으로 월 약 7만원의 배당금이 발생합니다. 성과급 3천만원을 투자하면 월 약 21만원 수준입니다.",
+        "성과급을 모두 투자하기보다는 비상금(20~30%)을 먼저 확보하고 나머지의 50~60%를 ETF에 투자하는 것을 권장합니다. 커버드콜 ETF의 경우 높은 분배율 대신 강세장 상승 수익이 제한된다는 점을 꼭 확인하세요.",
+        "매년 성과급을 꾸준히 ETF에 투자한다면 복리 효과로 월 배당금이 점진적으로 늘어납니다. 퇴직연금 DC형으로 운용하면 세금 절약 효과까지 누릴 수 있습니다.",
+      ]}
+      criteria={[
+        "성과급 세후 계산은 간이세율 기준 추정치 — 실제 세금은 연말정산 결과에 따라 다름",
+        "ETF 분배율은 최근 실적 기반 추정치 — 미래 분배 보장 없음",
+        "국내 ETF: 15.4% / 미국 ETF: 22% 세율 적용",
+        "이 계산기는 참고용이며 투자 권유가 아닙니다",
+      ]}
+      faq={faqItems.map(f => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/tools/bonus-after-tax-calculator/",      label: "성과급 세후 실수령액 계산기" },
+        { href: "/tools/monthly-dividend-etf-calculator/", label: "월배당 ETF 배당금 계산기" },
+        { href: "/reports/covered-call-etf-guide-2026/",   label: "커버드콜 ETF 장단점 완전 정리" },
+      ]}
+    />
+
+  </main>
+  <script src={withBase("scripts/bonus-etf-investment-calculator.js")} defer></script>
+</BaseLayout>

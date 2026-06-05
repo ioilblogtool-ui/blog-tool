@@ -642,6 +642,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "bonus-etf-investment-calculator",
+    title: "성과급으로 ETF 투자하면 월 배당금 얼마?",
+    description: "성과급 세후 실수령을 계산하고, ETF에 투자하면 월 배당금이 얼마인지 바로 확인합니다. 삼성·하이닉스·현대차 성과급 시뮬레이션.",
+    order: 1.6,
+    eyebrow: "성과급 ETF 투자",
+    category: "투자·재테크",
+    iframeReady: false,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "성과급 1천만", value: "월 7만원 배당" },
+      { label: "연봉 6천만 기준", value: "ETF 연결" },
+    ],
+  },
+  {
     slug: "monthly-dividend-etf-calculator",
     title: "월배당 ETF 배당금 계산기",
     description: "투자금과 ETF를 선택하면 월 예상 배당금·세후 실수령액을 즉시 계산합니다. CONY·JEPI·JEPQ·SCHD·나스닥100커버드콜 등 14개 ETF 프리셋, 목표 월배당 역산, ETF 비교표 제공.",
