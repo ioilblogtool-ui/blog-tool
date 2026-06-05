@@ -239,6 +239,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "retirement-dc-db-calculator",
+    title: "퇴직연금 DB형 DC형 전환 계산기",
+    description: "연봉·근속연수·ETF 수익률 입력 → DB형 vs DC형 퇴직금 자동 비교. 임금 피크제·이직 계획별 시뮬레이션. DC형 전환 시 얼마나 유리한지 즉시 확인.",
+    order: 4.8,
+    eyebrow: "퇴직연금 전환 계산기",
+    category: "투자·재테크",
+    iframeReady: false,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "DC 수익률", value: "5개 시나리오" },
+      { label: "ETF", value: "S&P500·나스닥" },
+    ],
+  },
+  {
     slug: "retirement",
     title: "퇴직금 계산기",
     description: "평균임금 기준 퇴직금과 세후 추정액을 계산하는 페이지",

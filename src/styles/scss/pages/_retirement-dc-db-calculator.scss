@@ -1,0 +1,204 @@
+// ============================================================
+// _retirement-dc-db-calculator.scss
+// DB형 vs DC형 퇴직연금 전환 계산기
+// prefix: rddc-
+// ============================================================
+
+.rddc-page {
+  --rddc-db:      #1d4ed8;
+  --rddc-db-lt:   #dbeafe;
+  --rddc-dc:      #059669;
+  --rddc-dc-lt:   #d1fae5;
+  --rddc-warn:    #dc2626;
+
+  display: grid;
+  gap: 20px;
+
+  .content-section {
+    border: 1px solid #e2e8f0; border-radius: 20px;
+    background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 22px;
+  }
+}
+
+// ── Hero ─────────────────────────────────────────────────────
+.rddc-hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 60%, #059669 100%);
+  color: #fff; padding: 2.5rem 1.5rem 2rem; text-align: center; border-radius: 20px;
+
+  &__eyebrow { display: inline-block; background: rgba(255,255,255,0.18); border-radius: 999px; padding: 0.2rem 0.8rem; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem; }
+  &__title   { font-size: clamp(1.3rem,3vw,2rem); font-weight: 800; margin: 0 0 0.75rem; }
+  &__sub     { font-size: 0.95rem; opacity: 0.85; margin: 0; line-height: 1.6; }
+  &__note    { font-size: 0.78rem; opacity: 0.7; }
+}
+
+// ── 섹션 타이틀 ──────────────────────────────────────────────
+.rddc-section-title {
+  font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 14px;
+}
+
+.rddc-scenario-meta {
+  font-size: 0.76rem; font-weight: 400; color: #64748b;
+  background: #f1f5f9; border-radius: 999px; padding: 2px 8px; margin-left: 6px;
+}
+
+// ── 입력 ──────────────────────────────────────────────────────
+.rddc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.rddc-input-group {
+  display: flex; flex-direction: column; gap: 5px;
+  &--full { grid-column: 1 / -1; }
+}
+
+.rddc-label { font-size: 0.82rem; font-weight: 700; color: #334155; }
+
+.rddc-input-wrap {
+  display: flex; align-items: center; gap: 6px;
+  &--sm { max-width: 200px; margin-top: 8px; }
+}
+
+.rddc-input {
+  flex: 1; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 10px;
+  font-size: 1.1rem; font-weight: 700; color: #1e293b;
+  &:focus { outline: none; border-color: var(--rddc-dc); }
+}
+
+.rddc-unit { font-size: 0.9rem; font-weight: 600; color: #64748b; white-space: nowrap; }
+
+.rddc-quick-btns, .rddc-preset-btns {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px;
+}
+
+.rddc-quick-btn, .rddc-years-btn {
+  padding: 3px 9px; border-radius: 6px; border: 1px solid #cbd5e1;
+  background: #f8fafc; font-size: 0.76rem; cursor: pointer; color: #475569;
+  &:hover { background: var(--rddc-dc-lt); border-color: var(--rddc-dc); color: var(--rddc-dc); }
+}
+
+.rddc-preset-btn {
+  padding: 4px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1;
+  background: #f8fafc; font-size: 0.76rem; cursor: pointer; color: #475569;
+  transition: 0.12s;
+  &.is-active, &:hover { border-color: var(--rddc-dc); color: var(--rddc-dc); background: var(--rddc-dc-lt); font-weight: 700; }
+  &--dc.is-active, &--dc:hover { border-color: var(--btn-color, var(--rddc-dc)); color: var(--btn-color, var(--rddc-dc)); background: rgba(5,150,105,0.08); }
+}
+
+// ── 승자 배너 ─────────────────────────────────────────────────
+.rddc-winner-banner {
+  border-radius: 14px; padding: 16px 20px; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  font-weight: 700; font-size: 1.05rem;
+
+  &--dc      { background: var(--rddc-dc-lt);  color: #065f46; border: 2px solid #6ee7b7; }
+  &--db      { background: var(--rddc-db-lt);  color: #1e3a8a; border: 2px solid #93c5fd; }
+  &--similar { background: #f8fafc;            color: #475569;  border: 2px solid #e2e8f0; }
+
+  &__label { font-size: 1.05rem; font-weight: 800; }
+  &__diff  { font-size: 0.85rem; opacity: 0.8; }
+}
+
+// ── 결과 카드 ─────────────────────────────────────────────────
+.rddc-result-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+
+.rddc-result-card {
+  border-radius: 16px; padding: 18px; border: 2px solid #e2e8f0; transition: 0.2s;
+
+  &__header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  &__type   { font-size: 1.1rem; font-weight: 800; }
+  &__badge  { font-size: 0.72rem; background: #f1f5f9; border-radius: 999px; padding: 2px 8px; color: #64748b; }
+  &__label  { font-size: 0.78rem; color: #64748b; margin: 0 0 3px; }
+  &__value  { font-size: 1.8rem; font-weight: 900; margin: 0 0 4px; }
+  &__sub    { font-size: 0.74rem; color: #94a3b8; margin: 0 0 12px; }
+  &__pros   { margin: 0; padding-left: 16px; li { font-size: 0.78rem; color: #475569; margin-bottom: 3px; } }
+
+  &--db {
+    &__type, &__value { color: var(--rddc-db); }
+  }
+  &--dc {
+    &__type, &__value { color: var(--rddc-dc); }
+  }
+
+  &--winner {
+    border-width: 2.5px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    &.rddc-result-card--db { border-color: var(--rddc-db); background: #eff6ff; }
+    &.rddc-result-card--dc { border-color: var(--rddc-dc); background: #ecfdf5; }
+  }
+}
+
+// ── 바 차트 ──────────────────────────────────────────────────
+.rddc-bar-section { margin-bottom: 14px; }
+
+.rddc-bar-row {
+  display: grid; grid-template-columns: 60px 1fr 100px; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+
+.rddc-bar-label { font-size: 0.78rem; font-weight: 700; color: #475569; }
+
+.rddc-bar-track {
+  background: #f1f5f9; border-radius: 999px; height: 22px; overflow: hidden;
+}
+
+.rddc-bar {
+  height: 100%; border-radius: 999px; transition: width 0.4s ease;
+  &--db { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+  &--dc { background: linear-gradient(90deg, #10b981, #059669); }
+}
+
+.rddc-bar-value { font-size: 0.82rem; font-weight: 700; color: #334155; text-align: right; }
+
+// ── 이유 텍스트 ───────────────────────────────────────────────
+.rddc-reason {
+  background: #f8fafc; border-radius: 10px; padding: 12px 16px;
+  font-size: 0.85rem; color: #334155; line-height: 1.6;
+}
+
+// ── 표 ───────────────────────────────────────────────────────
+.rddc-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.rddc-table {
+  width: 100%; min-width: 480px; border-collapse: collapse; font-size: 0.84rem;
+  th { background: #f1f5f9; color: #475569; padding: 9px 12px; text-align: left; font-size: 0.78rem; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+}
+
+.rddc-cell-sub   { font-size: 0.72rem; color: #94a3b8; }
+.rddc-cell--pos  { color: var(--rddc-dc); font-weight: 700; }
+.rddc-cell--neg  { color: var(--rddc-db); font-weight: 700; }
+.rddc-table-note { font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0; }
+
+.rddc-result-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 700;
+  &--dc { background: var(--rddc-dc-lt); color: #065f46; }
+  &--db { background: var(--rddc-db-lt); color: #1e3a8a; }
+}
+
+// ── 가이드 ────────────────────────────────────────────────────
+.rddc-guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+
+.rddc-guide-card {
+  background: #f8fafc; border-radius: 14px; padding: 16px; border: 1px solid #e2e8f0;
+  &__icon  { font-size: 1.5rem; margin-bottom: 8px; }
+  &__title { font-size: 0.88rem; font-weight: 700; color: #1e293b; margin: 0 0 8px; }
+  &__list  { margin: 0 0 8px; padding-left: 16px; li { font-size: 0.78rem; color: #475569; margin-bottom: 3px; } }
+  &__note  { font-size: 0.72rem; color: var(--rddc-warn); font-weight: 600; margin: 0; }
+}
+
+// ── FAQ ───────────────────────────────────────────────────────
+.rddc-faq-list { display: flex; flex-direction: column; }
+.rddc-faq-item { border-bottom: 1px solid #e2e8f0; &:last-child { border-bottom: none; } }
+.rddc-faq-q {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  gap: 10px; padding: 13px 0; background: none; border: none;
+  font-size: 0.9rem; font-weight: 600; color: #1e293b; text-align: left; cursor: pointer;
+  &:hover { color: var(--rddc-dc); }
+}
+.rddc-faq-icon { flex-shrink: 0; font-size: 0.78rem; color: #94a3b8; transition: transform 0.18s; }
+.rddc-faq-item.is-open .rddc-faq-icon { transform: rotate(180deg); }
+.rddc-faq-a { padding: 0 0 13px; p { margin: 0; font-size: 0.85rem; line-height: 1.75; color: #4a5568; } }
+
+// ── 반응형 ────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .rddc-inputs { grid-template-columns: 1fr; }
+  .rddc-result-cards { grid-template-columns: 1fr; }
+  .rddc-bar-row { grid-template-columns: 50px 1fr 80px; }
+}
