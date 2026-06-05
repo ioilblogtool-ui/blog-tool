@@ -1,8 +1,8 @@
 const formatMoney = (value, unit) => {
   const amount = Number(value);
   if (!Number.isFinite(amount) || amount <= 0) return "확인 필요";
-  if (unit === "manwon") return `${amount.toLocaleString("ko-KR")}만원`;
-  return `${(amount / 10000).toLocaleString("ko-KR", { maximumFractionDigits: 1 })}억`;
+  if (unit === "manwon") return `${amount.toLocaleString("ko-KR")}만 원`;
+  return `${(amount / 10000).toLocaleString("ko-KR", { maximumFractionDigits: 1 })}억 원`;
 };
 
 const setUnit = (unit) => {
@@ -32,4 +32,3 @@ document.querySelectorAll("[data-smca-candidate-card]").forEach((card) => {
     });
   });
 });
-
