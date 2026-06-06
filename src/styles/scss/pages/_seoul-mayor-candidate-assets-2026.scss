@@ -15,7 +15,9 @@
 .smca-meta-strip,
 .smca-candidate-section,
 .smca-oh-focus-section,
+.smca-answer-section,
 .smca-metric-section,
+.smca-checklist-section,
 .smca-table-section,
 .smca-composition-section,
 .smca-breakdown-section,
@@ -60,6 +62,35 @@
   line-height: 1.6;
 }
 
+.smca-answer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.smca-answer-grid a {
+  display: grid;
+  gap: 10px;
+  min-height: 180px;
+  border: 1px solid var(--smca-line);
+  border-radius: 14px;
+  background: #fff;
+  color: inherit;
+  padding: 18px;
+  text-decoration: none;
+}
+
+.smca-answer-grid span {
+  color: var(--smca-accent);
+  font-weight: 900;
+}
+
+.smca-answer-grid strong {
+  color: var(--smca-ink);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
 .smca-meta-strip {
   display: flex;
   flex-wrap: wrap;
@@ -94,6 +125,31 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.smca-checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.smca-checklist-grid article {
+  border: 1px solid var(--smca-line);
+  border-radius: 14px;
+  background: var(--smca-soft);
+  padding: 18px;
+}
+
+.smca-checklist-grid h3 {
+  margin: 14px 0 8px;
+  color: var(--smca-ink);
+  font-size: 1.05rem;
+}
+
+.smca-checklist-grid p {
+  margin: 0;
+  color: var(--smca-muted);
+  line-height: 1.65;
 }
 
 .smca-candidate-card,
@@ -353,8 +409,13 @@
 @media (max-width: 1024px) {
   .smca-metric-grid,
   .smca-guide-steps,
-  .smca-related-grid {
+  .smca-related-grid,
+  .smca-answer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .smca-checklist-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .smca-breakdown-grid {
@@ -372,7 +433,9 @@
   .smca-policy-grid,
   .smca-metric-grid,
   .smca-guide-steps,
-  .smca-related-grid {
+  .smca-related-grid,
+  .smca-answer-grid,
+  .smca-checklist-grid {
     grid-template-columns: 1fr;
   }
 
@@ -390,7 +453,9 @@
 @media (max-width: 520px) {
   .smca-candidate-section,
   .smca-oh-focus-section,
+  .smca-answer-section,
   .smca-metric-section,
+  .smca-checklist-section,
   .smca-table-section,
   .smca-composition-section,
   .smca-breakdown-section,

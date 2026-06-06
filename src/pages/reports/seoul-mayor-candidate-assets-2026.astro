@@ -25,16 +25,19 @@ const ohCandidate = candidates.find((candidate) => candidate.id === "oh-sehoon")
 const jungCandidate = candidates.find((candidate) => candidate.id === "jung-wonoh") ?? candidates[1];
 const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
 const maxTotal = Math.max(...candidates.map((candidate) => candidate.totalAssetsManwon));
+const assetGap = ohCandidate.totalAssetsManwon - jungCandidate.totalAssetsManwon;
+const assetMultiple = ohCandidate.totalAssetsManwon / jungCandidate.totalAssetsManwon;
 
 const tableRows = [
-  { label: "총재산", getter: (id: string) => candidates.find((c) => c.id === id)?.totalAssetsManwon, badge: "보도확인" },
-  { label: "부동산", getter: (id: string) => candidates.find((c) => c.id === id)?.realEstateManwon, badge: "확인필요" },
-  { label: "토지", getter: (id: string) => candidates.find((c) => c.id === id)?.landManwon, badge: "확인필요" },
-  { label: "건물", getter: (id: string) => candidates.find((c) => c.id === id)?.buildingManwon, badge: "확인필요" },
-  { label: "예금", getter: (id: string) => candidates.find((c) => c.id === id)?.depositsManwon, badge: "확인필요" },
-  { label: "증권", getter: (id: string) => candidates.find((c) => c.id === id)?.securitiesManwon, badge: "확인필요" },
-  { label: "채무", getter: (id: string) => candidates.find((c) => c.id === id)?.debtsManwon, badge: "확인필요" },
-  { label: "순자산 추정", getter: (id: string) => calcNetAssets(candidates.find((c) => c.id === id)!), badge: "계산" },
+  { label: "총재산 신고액", getter: (id: string) => candidates.find((c) => c.id === id)?.totalAssetsManwon, badge: "재산공개" },
+  { label: "부동산 합계", getter: (id: string) => candidates.find((c) => c.id === id)?.realEstateManwon, badge: "보도확인" },
+  { label: "토지", getter: (id: string) => candidates.find((c) => c.id === id)?.landManwon, badge: "보도확인" },
+  { label: "건물·아파트", getter: (id: string) => candidates.find((c) => c.id === id)?.buildingManwon, badge: "보도확인" },
+  { label: "예금", getter: (id: string) => candidates.find((c) => c.id === id)?.depositsManwon, badge: "보도확인" },
+  { label: "증권", getter: (id: string) => candidates.find((c) => c.id === id)?.securitiesManwon, badge: "보도확인" },
+  { label: "채무", getter: (id: string) => candidates.find((c) => c.id === id)?.debtsManwon, badge: "보도확인" },
+  { label: "기타·차액", getter: (id: string) => calcOtherAssets(candidates.find((c) => c.id === id)!), badge: "계산" },
+  { label: "순재산", getter: (id: string) => calcNetAssets(candidates.find((c) => c.id === id)!), badge: "재산공개" },
 ];
 
 const jsonLd = {
@@ -44,8 +47,13 @@ const jsonLd = {
       "@type": "Article",
       headline: report.meta.title,
       description: report.meta.description,
+      keywords: ["오세훈 재산", "오세훈 재산신고", "오세훈 재산목록", "서울시장 후보 재산"],
+      about: [
+        { "@type": "Person", name: "오세훈" },
+        { "@type": "Thing", name: "서울시장 후보 재산신고액" },
+      ],
       inLanguage: "ko-KR",
-      dateModified: "2026-06-05",
+      dateModified: "2026-06-06",
       mainEntityOfPage: `https://bigyocalc.com/reports/${report.meta.slug}/`,
       author: { "@type": "Organization", name: "비교계산소" },
       publisher: { "@type": "Organization", name: "비교계산소" },
@@ -70,7 +78,7 @@ const jsonLd = {
       eyebrow={report.meta.eyebrow}
       title={report.meta.h1}
       description="오세훈 재산 신고액과 정원오 재산신고액을 총재산, 부동산, 예금, 증권, 채무 기준으로 나눠 비교합니다."
-      badges={["오세훈 재산", "서울시장 후보", "재산신고액"]}
+      badges={["오세훈 재산", "재산신고액", "재산목록"]}
       updatedAt={report.meta.updatedAt}
     />
 
@@ -85,7 +93,7 @@ const jsonLd = {
       title="후보자 재산 공개자료 안내"
       lines={[
         report.meta.caution,
-        "총재산 headline은 2026년 5월 후보 등록 재산 보도 확인값을 우선 반영했습니다.",
+        "총재산과 주요 세부 항목은 2026년 공직자 정기 재산변동사항을 인용한 보도 확인값을 반영했습니다.",
         "재산 신고액에는 후보자 본인 외 신고 대상 가족 재산이 포함될 수 있으며, 부동산 신고액은 실제 현재 시세와 다를 수 있습니다.",
       ]}
     />
@@ -96,14 +104,15 @@ const jsonLd = {
         <h2>오세훈 재산 신고액은 약 {formatManwon(ohCandidate.totalAssetsManwon)}</h2>
         <p>
           보도 확인 기준 오세훈 재산 headline은 {formatManwon(ohCandidate.totalAssetsManwon)}입니다.
-          정원오 재산신고액 {formatManwon(jungCandidate.totalAssetsManwon)}과 비교하면 총재산 신고액 기준 차이가 큽니다.
+          정원오 재산신고액 {formatManwon(jungCandidate.totalAssetsManwon)}과 비교하면 총재산 신고액 기준 약
+          {assetMultiple.toLocaleString("ko-KR", { maximumFractionDigits: 1 })}배입니다.
         </p>
       </div>
       <div class="smca-focus-grid">
         <article>
           <span>오세훈 재산</span>
           <strong>{formatManwon(ohCandidate.totalAssetsManwon)}</strong>
-          <p>2026년 5월 후보 등록 재산 보도 확인값 기준입니다.</p>
+          <p>2026년 공직자 정기 재산변동사항 보도 확인값 기준입니다.</p>
         </article>
         <article>
           <span>정원오 재산</span>
@@ -112,9 +121,28 @@ const jsonLd = {
         </article>
         <article>
           <span>재산 신고액 차이</span>
-          <strong>{formatManwon(ohCandidate.totalAssetsManwon - jungCandidate.totalAssetsManwon)}</strong>
+          <strong>{formatManwon(assetGap)}</strong>
           <p>총재산 headline 기준 단순 차액입니다.</p>
         </article>
+      </div>
+    </section>
+
+    <section class="content-section smca-answer-section" id="quick-answers">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">검색 의도별 빠른 답</p>
+        <h2>오세훈 재산·재산신고·재산목록 핵심 정리</h2>
+        <p>
+          검색에서 많이 들어오는 표현을 기준으로 바로 확인할 수 있는 답변만 먼저 모았습니다.
+          자세한 금액과 원문 확인법은 아래 비교표와 체크리스트에서 이어서 볼 수 있습니다.
+        </p>
+      </div>
+      <div class="smca-answer-grid">
+        {report.searchIntentAnswers.map((item) => (
+          <a href={item.anchor}>
+            <span>{item.query}</span>
+            <strong>{item.answer}</strong>
+          </a>
+        ))}
       </div>
     </section>
 
@@ -150,6 +178,10 @@ const jsonLd = {
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">핵심 수치</p>
         <h2>오세훈 재산과 정원오 재산신고액 비교 포인트</h2>
+        <p>
+          오세훈 후보의 총재산 신고액은 정원오 후보보다 {formatManwon(assetGap)} 높고,
+          headline 기준으로 약 {assetMultiple.toLocaleString("ko-KR", { maximumFractionDigits: 1 })}배입니다.
+        </p>
       </div>
       <div class="smca-metric-grid">
         {report.metricCards.map((card) => (
@@ -163,11 +195,31 @@ const jsonLd = {
       </div>
     </section>
 
+    <section class="content-section smca-checklist-section" id="asset-disclosure-checklist">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">재산목록 확인 상태</p>
+        <h2>오세훈 재산목록 세부 항목 확인값</h2>
+        <p>
+          총재산만 보면 차이가 크게 보이고, 항목별로 보면 오세훈은 증권·부동산·예금이 모두 큰 구조입니다.
+          후보자별 원문 명세는 공직윤리시스템 또는 전자관보에서 최종 대조합니다.
+        </p>
+      </div>
+      <div class="smca-checklist-grid">
+        {report.disclosureChecklist.map((item) => (
+          <article>
+            <span class="smca-source-badge">{item.status}</span>
+            <h3>{item.label}</h3>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
     <section class="content-section smca-table-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">상세 비교표</p>
         <h2>오세훈 vs 정원오 재산 항목 비교</h2>
-        <p>확인되지 않은 세부 항목은 숫자를 추정하지 않고 확인 필요로 표시합니다.</p>
+        <p>보도 확인된 주요 항목을 만 원 단위 데이터로 정리했습니다. 기타·차액은 공개된 주요 항목과 총재산 신고액 사이의 차이를 맞춘 계산값입니다.</p>
       </div>
       <div class="smca-unit-toggle" aria-label="금액 단위 선택">
         <button type="button" class="is-active" data-smca-unit-toggle="eok" aria-pressed="true">억 원</button>
@@ -216,7 +268,7 @@ const jsonLd = {
     <section class="content-section smca-composition-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">자산 구성</p>
-        <h2>총재산 규모는 보도 확인, 구성 비중은 원문 확인 후 업데이트</h2>
+        <h2>오세훈은 증권·부동산 비중, 정원오는 아파트·예금 비중이 큽니다</h2>
       </div>
       <div class="smca-composition-grid">
         {candidates.map((candidate) => {
@@ -234,13 +286,13 @@ const jsonLd = {
                 <div><dt>부동산</dt><dd>{formatManwon(candidate.realEstateManwon)}</dd></div>
                 <div><dt>예금</dt><dd>{formatManwon(candidate.depositsManwon)}</dd></div>
                 <div><dt>증권</dt><dd>{formatManwon(candidate.securitiesManwon)}</dd></div>
-                <div><dt>기타</dt><dd>{formatManwon(calcOtherAssets(candidate) === candidate.totalAssetsManwon ? null : calcOtherAssets(candidate))}</dd></div>
+                <div><dt>기타·차액</dt><dd>{formatManwon(calcOtherAssets(candidate))}</dd></div>
               </dl>
             </article>
           );
         })}
       </div>
-      <p class="smca-section-note">색상 막대는 두 후보 총재산 headline의 상대 크기만 보여줍니다. 세부 구성 막대는 세부 항목 확인 후 업데이트합니다.</p>
+      <p class="smca-section-note">색상 막대는 두 후보 총재산 신고액의 상대 크기를 보여줍니다. 기타·차액은 공개 보도에서 별도 항목으로 나뉘지 않은 금액을 맞춘 계산값입니다.</p>
     </section>
 
     <section class="content-section smca-breakdown-section">
@@ -255,7 +307,7 @@ const jsonLd = {
         </article>
         <article>
           <h3>세부 항목 확인</h3>
-          <p>부동산, 예금, 증권, 채무는 원문 확인 전에는 추정하지 않습니다. 확인된 값만 분리해서 업데이트합니다.</p>
+          <p>부동산, 예금, 증권, 채무는 보도 확인값을 우선 반영했습니다. 원문 대조가 필요한 세부 명세는 출처 확인 링크로 분리했습니다.</p>
         </article>
         <article>
           <h3>채무와 순자산</h3>
@@ -321,7 +373,7 @@ const jsonLd = {
       intro={report.seoIntro}
       inputPoints={[
         "오세훈 재산 신고액 headline과 정원오 재산신고액을 같은 기준으로 비교할 수 있습니다.",
-        "부동산·예금·증권·채무 세부 항목은 확인 필요로 분리해 추정값과 공식값을 섞지 않습니다.",
+        "부동산·예금·증권·채무 세부 항목을 보도 확인값과 계산값으로 구분해 볼 수 있습니다.",
         "서울시장 후보 재산 공개자료와 부동산 공약을 어디에서 확인하는지 함께 안내합니다.",
       ]}
       criteria={report.seoCriteria}
