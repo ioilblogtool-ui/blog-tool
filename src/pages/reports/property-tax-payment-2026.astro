@@ -1,0 +1,275 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PTX_META,
+  PTX_SCHEDULE,
+  PTX_RATES,
+  PTX_EXAMPLES,
+  PTX_REDUCTIONS,
+  PTX_INSTALLMENT,
+  PTX_PAYMENT_METHODS,
+  PTX_FAQ,
+  PTX_RELATED_LINKS,
+  PTX_SOURCE_LINKS,
+} from "../../data/propertyTaxPayment2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${PTX_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: PTX_META.title,
+    description: PTX_META.description,
+    dateModified: PTX_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: PTX_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: PTX_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={PTX_META.seoTitle}
+  description={PTX_META.seoDescription}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ptx-page" data-report="property-tax-payment-2026">
+    <CalculatorHero
+      eyebrow="부동산 세금 리포트"
+      title={PTX_META.title}
+      description="7월·9월 납부 일정, 공시가격별 세액 예시, 분납 기준, 절세 포인트를 한눈에 확인하세요."
+      badges={["2026 기준", "7월·9월 납부", "재산세", "종부세"]}
+    />
+
+    <InfoNotice
+      title="참고 안내"
+      lines={[
+        PTX_META.dataNote,
+        "재산세는 매년 6월 1일 현재 소유자 기준으로 부과됩니다. 5월 31일 매도·6월 2일 매수 시 납부 의무가 달라집니다.",
+      ]}
+    />
+
+    <!-- 납부 일정 -->
+    <section class="content-section ptx-schedule-section" aria-labelledby="ptx-schedule-title">
+      <div class="ptx-section-heading">
+        <p>납부 일정</p>
+        <h2 id="ptx-schedule-title">재산세는 7월과 9월에 나눠 납부합니다</h2>
+        <span>주택은 세액을 반씩 두 번에 나눠 고지합니다. 20만 원 이하 소액은 7월에 전액 납부.</span>
+      </div>
+      <div class="ptx-schedule-grid">
+        {PTX_SCHEDULE.map((s) => (
+          <article class="ptx-schedule-card">
+            <span class="ptx-month-badge">{s.month}</span>
+            <strong>{s.period}</strong>
+            <p>{s.target}</p>
+            <small>{s.note}</small>
+          </article>
+        ))}
+      </div>
+      <div class="ptx-cta-band">
+        <div>
+          <strong>내 아파트 재산세가 얼마인지 먼저 확인하세요</strong>
+          <p>공시가격을 입력하면 재산세·종부세·농특세까지 2026 기준으로 즉시 계산됩니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/apartment-holding-tax/")}>보유세 계산하기</a>
+      </div>
+    </section>
+
+    <!-- 세율표 -->
+    <section class="content-section ptx-rates-section" aria-labelledby="ptx-rates-title">
+      <div class="ptx-section-heading">
+        <p>세율 구조</p>
+        <h2 id="ptx-rates-title">주택 재산세는 4단계 누진세율로 계산합니다</h2>
+        <span>공시가격 × 공정시장가액비율(70%) = 과세표준. 여기에 아래 세율을 곱합니다.</span>
+      </div>
+      <div class="table-wrap ptx-table-wrap" aria-label="주택 재산세 세율표">
+        <table class="ptx-rate-table">
+          <caption>2026년 주택 재산세 세율표 (과세표준 기준)</caption>
+          <thead>
+            <tr>
+              <th>과세표준 구간</th>
+              <th>세율</th>
+              <th>누진공제</th>
+              <th>계산 예시 (공시가 기준)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PTX_RATES.map((row) => (
+              <tr>
+                <td>{row.range}</td>
+                <td class="ptx-rate-value">{row.rate}</td>
+                <td>{row.deduction}</td>
+                <td class="ptx-example-text">{row.example}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="ptx-table-note">※ 지방교육세(재산세의 20%)와 도시지역분(과세표준의 0.14%)이 별도 합산됩니다.</p>
+    </section>
+
+    <!-- 공시가격별 예시 -->
+    <section class="content-section ptx-examples-section" aria-labelledby="ptx-examples-title">
+      <div class="ptx-section-heading">
+        <p>세액 예시</p>
+        <h2 id="ptx-examples-title">공시가격별 예상 재산세 (1세대1주택 기준)</h2>
+        <span>아래 금액은 재산세 + 지방교육세 합산 추정값입니다. 도시지역분 제외.</span>
+      </div>
+      <div class="ptx-examples-grid">
+        {PTX_EXAMPLES.map((ex) => (
+          <article class:list={["ptx-example-card", ex.highlight && "ptx-example-card--highlight"]}>
+            <span class="ptx-example-label">{ex.label}</span>
+            <div class="ptx-example-row">
+              <span>공시가격</span>
+              <strong>{ex.officialPrice}</strong>
+            </div>
+            <div class="ptx-example-row">
+              <span>과세표준</span>
+              <span>{ex.taxBase}</span>
+            </div>
+            <div class="ptx-example-row">
+              <span>재산세</span>
+              <span>{ex.propertyTax}</span>
+            </div>
+            <div class="ptx-example-row">
+              <span>지방교육세</span>
+              <span>{ex.localEducation}</span>
+            </div>
+            <div class="ptx-example-total">
+              <span>합계 (추정)</span>
+              <strong>{ex.total}</strong>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="ptx-table-note">※ 1세대1주택 특례세율 미적용 기준. 실제 고지세액과 다를 수 있습니다.</p>
+    </section>
+
+    <!-- 감면·공제 -->
+    <section class="content-section ptx-reductions-section" aria-labelledby="ptx-reductions-title">
+      <div class="ptx-section-heading">
+        <p>감면·공제</p>
+        <h2 id="ptx-reductions-title">이 항목에 해당하면 세금이 줄어듭니다</h2>
+        <span>1세대1주택자는 특례세율이 자동 적용됩니다. 고령자·장기보유 공제는 조건 확인이 필요합니다.</span>
+      </div>
+      <div class="ptx-reductions-grid">
+        {PTX_REDUCTIONS.map((item) => (
+          <article class="ptx-reduction-card">
+            <span class="ptx-reduction-badge">{item.badge}</span>
+            <h3>{item.title}</h3>
+            <p class="ptx-reduction-condition">{item.condition}</p>
+            <p class="ptx-reduction-effect">{item.effect}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 분납 기준 -->
+    <section class="content-section ptx-installment-section" aria-labelledby="ptx-installment-title">
+      <div class="ptx-section-heading">
+        <p>분납</p>
+        <h2 id="ptx-installment-title">250만 원 초과 시 분납이 가능합니다</h2>
+        <span>별도 신청 없이 납부기한 내 일부만 내면 됩니다.</span>
+      </div>
+      <div class="ptx-installment-box">
+        <div class="ptx-installment-row">
+          <span>분납 조건</span>
+          <strong>{PTX_INSTALLMENT.threshold}</strong>
+        </div>
+        <div class="ptx-installment-row">
+          <span>분납 방법</span>
+          <span>{PTX_INSTALLMENT.rule}</span>
+        </div>
+        <div class="ptx-installment-row">
+          <span>분납 기한</span>
+          <span>{PTX_INSTALLMENT.deadline}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 납부 방법 -->
+    <section class="content-section ptx-payment-section" aria-labelledby="ptx-payment-title">
+      <div class="ptx-section-heading">
+        <p>납부 방법</p>
+        <h2 id="ptx-payment-title">위택스·앱·ATM·편의점에서 납부할 수 있습니다</h2>
+        <span>고지서 없이도 위택스에서 조회 후 바로 납부 가능합니다.</span>
+      </div>
+      <div class="ptx-payment-grid">
+        {PTX_PAYMENT_METHODS.map((m) => (
+          <article class="ptx-payment-card">
+            <strong>{m.method}</strong>
+            <span class="ptx-payment-channel">{m.channel}</span>
+            <p>{m.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 계산기 -->
+    <section class="content-section ptx-related-section" aria-labelledby="ptx-related-title">
+      <div class="ptx-section-heading">
+        <p>관련 도구</p>
+        <h2 id="ptx-related-title">더 정확한 세액은 계산기로 확인하세요</h2>
+      </div>
+      <div class="ptx-related-grid">
+        {PTX_RELATED_LINKS.map((link) => (
+          <a class="ptx-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ + SEO -->
+    <SeoContent
+      introTitle="2026 재산세 납부 일정과 계산 기준"
+      intro={[
+        "재산세는 매년 6월 1일 현재 소유자를 기준으로 부과되며, 주택은 7월과 9월에 나누어 납부합니다.",
+        "공시가격, 공정시장가액비율, 세율, 지방교육세, 도시지역분, 감면 여부에 따라 실제 고지세액이 달라질 수 있습니다.",
+        PTX_META.dataNote,
+      ]}
+      inputPoints={[
+        "7월·9월 납부 기간과 주택 1기분·2기분 기준을 확인할 수 있습니다.",
+        "공시가격별 재산세 예시와 분납 기준을 함께 볼 수 있습니다.",
+        "아파트 보유세 계산기로 예상 세액을 바로 이어서 계산할 수 있습니다.",
+      ]}
+      criteria={[
+        "재산세는 6월 1일 현재 소유자 기준으로 부과됩니다.",
+        "주택 과세표준은 공시가격에 공정시장가액비율을 곱해 산정합니다.",
+        "출처: " + PTX_SOURCE_LINKS.map((source) => source.label).join(", "),
+      ]}
+      faq={PTX_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={PTX_RELATED_LINKS.map((link) => ({ href: link.href, label: link.label }))}
+    />
+  </main>
+</BaseLayout>

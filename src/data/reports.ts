@@ -512,6 +512,13 @@ export const reports: ReportMeta[] = [
     badges: ["서울", "부동산", "2026"],
   },
   {
+    slug: "property-tax-payment-2026",
+    title: "2026 재산세 납부 완전 가이드",
+    description: "2026년 재산세 7월·9월 납부 일정, 공시가격별 예상 세액, 분납 기준, 절세 포인트를 한눈에 정리합니다.",
+    order: 37.1,
+    badges: ["재산세", "7월납부", "부동산세금", "2026"],
+  },
+  {
     slug: "multi-house-tax-2026",
     title: "2026 다주택자 세금 완전 분석",
     description: "다주택자 세금을 취득세, 종합부동산세, 양도소득세, 임대소득세로 나눠 2주택·3주택 이상 케이스별로 정리합니다.",
