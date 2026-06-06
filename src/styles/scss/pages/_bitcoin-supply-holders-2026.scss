@@ -1,0 +1,782 @@
+// Bitcoin Supply Holders 2026 Report Styles
+// BTC orange theme matching _bitcoin-annual-return-history.scss
+
+$btc-orange: #f7931a;
+$btc-card-bg: #fffbf5;
+$btc-orange-border: #fde8c3;
+$btc-orange-muted: #fef3e2;
+$btc-positive: #16a34a;
+$btc-negative: #dc2626;
+
+$text-heading: #111928;
+$text-body: #374151;
+$text-muted: #6b7280;
+$bg-surface: #f9fafb;
+$border-color: #e5e7eb;
+
+.bsh-page {
+  // Section heading
+  .bsh-section-heading {
+    margin-bottom: 1.5rem;
+    text-align: center;
+
+    p {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: $btc-orange-muted;
+      color: $btc-orange;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 700;
+      color: $text-heading;
+      margin: 0 0 0.5rem;
+    }
+
+    span {
+      display: block;
+      font-size: 0.875rem;
+      color: $text-muted;
+    }
+  }
+
+  // KPI section
+  .bsh-kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bsh-kpi-card {
+    background: #fff;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+
+    &--main {
+      grid-column: span 1;
+      background: $btc-card-bg;
+      border-color: $btc-orange-border;
+    }
+
+    &--lost {
+      border-color: #fecaca;
+      background: #fff5f5;
+    }
+  }
+
+  .bsh-kpi-label {
+    display: block;
+    font-size: 0.78rem;
+    color: $text-muted;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+
+  .bsh-kpi-value {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: $btc-orange;
+    margin-bottom: 0.5rem;
+
+    .bsh-kpi-card--lost & {
+      color: $btc-negative;
+    }
+  }
+
+  .bsh-supply-bar {
+    background: #f3f4f6;
+    border-radius: 99px;
+    height: 8px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+  }
+
+  .bsh-supply-bar-fill {
+    height: 100%;
+    background: $btc-orange;
+    border-radius: 99px;
+    transition: width 0.8s ease;
+  }
+
+  // Distribution section
+  .bsh-dist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bsh-dist-card {
+    background: #fff;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .bsh-dist-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    strong {
+      font-size: 0.9rem;
+      color: $text-heading;
+    }
+  }
+
+  .bsh-dist-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .bsh-dist-bar-wrap {
+    background: #f3f4f6;
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+  }
+
+  .bsh-dist-bar {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.8s ease;
+  }
+
+  .bsh-dist-nums {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: $text-muted;
+  }
+
+  .bsh-dist-pct {
+    font-weight: 700;
+    color: $text-body;
+  }
+
+  .bsh-dist-desc {
+    font-size: 0.78rem;
+    color: $text-muted;
+    margin: 0.4rem 0 0;
+    line-height: 1.5;
+  }
+
+  // Timeline table
+  .bsh-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid $border-color;
+  }
+
+  .bsh-timeline-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    caption {
+      position: absolute;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    thead tr {
+      background: $btc-orange-muted;
+    }
+
+    th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: $text-muted;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid $border-color;
+      vertical-align: middle;
+    }
+
+    .bsh-current-row td {
+      background: $btc-card-bg;
+      font-weight: 600;
+    }
+  }
+
+  .bsh-year-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+
+  .bsh-now-badge {
+    display: inline-block;
+    background: $btc-orange;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 99px;
+  }
+
+  .bsh-btc-cell {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .bsh-pct-cell {
+    color: $btc-orange;
+    font-weight: 700;
+  }
+
+  .bsh-bar-cell {
+    min-width: 120px;
+  }
+
+  .bsh-prog-track {
+    background: #f3f4f6;
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .bsh-prog-fill {
+    height: 100%;
+    background: $btc-orange;
+    border-radius: 99px;
+    transition: width 0.8s ease;
+  }
+
+  .bsh-event-cell {
+    font-size: 0.8rem;
+    color: $text-muted;
+    max-width: 200px;
+  }
+
+  // Country section
+  .bsh-country-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bsh-country-card {
+    background: #fff;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .bsh-country-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .bsh-flag {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .bsh-country-name {
+    display: block;
+    font-size: 0.9rem;
+    color: $text-heading;
+  }
+
+  .bsh-country-rank {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $btc-orange;
+    background: $btc-orange-muted;
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .bsh-status-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-top: 0.2rem;
+
+    &--confirmed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    &--seized {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    &--estimated {
+      background: #fef9c3;
+      color: #92400e;
+    }
+  }
+
+  .bsh-country-btc {
+    margin-bottom: 0.5rem;
+  }
+
+  .bsh-country-amount {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $btc-orange;
+  }
+
+  .bsh-country-usd {
+    font-size: 0.78rem;
+    color: $text-muted;
+  }
+
+  .bsh-country-note {
+    font-size: 0.8rem;
+    color: $text-body;
+    line-height: 1.5;
+    margin: 0 0 0.4rem;
+  }
+
+  .bsh-country-source {
+    font-size: 0.72rem;
+    color: $text-muted;
+  }
+
+  // Corporate treasury
+  .bsh-corp-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .bsh-corp-card {
+    background: #fff;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+
+    &:first-child {
+      border-color: $btc-orange-border;
+      background: $btc-card-bg;
+    }
+  }
+
+  .bsh-corp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    @media (max-width: 480px) {
+      flex-wrap: wrap;
+    }
+  }
+
+  .bsh-corp-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .bsh-corp-rank {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $btc-orange;
+    background: $btc-orange-muted;
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+  }
+
+  .bsh-corp-flag {
+    font-size: 1.1rem;
+  }
+
+  .bsh-corp-name {
+    font-size: 1rem;
+    color: $text-heading;
+  }
+
+  .bsh-corp-ticker {
+    font-size: 0.72rem;
+    background: #f3f4f6;
+    color: $text-muted;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .bsh-corp-btc-wrap {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .bsh-corp-btc {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $btc-orange;
+  }
+
+  .bsh-corp-val {
+    font-size: 0.78rem;
+    color: $text-muted;
+  }
+
+  .bsh-corp-bar-wrap {
+    background: #f3f4f6;
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .bsh-corp-bar {
+    height: 100%;
+    background: $btc-orange;
+    border-radius: 99px;
+    transition: width 0.8s ease;
+  }
+
+  .bsh-corp-pnl {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    margin-bottom: 0.4rem;
+    color: $text-muted;
+  }
+
+  .bsh-corp-strategy {
+    font-size: 0.82rem;
+    color: $text-body;
+    line-height: 1.5;
+    margin: 0.25rem 0 0;
+  }
+
+  .bsh-corp-note {
+    font-size: 0.72rem;
+    color: $text-muted;
+    margin: 0.25rem 0 0;
+    display: block;
+  }
+
+  .bsh-positive {
+    color: $btc-positive;
+    font-weight: 700;
+  }
+
+  .bsh-negative {
+    color: $btc-negative;
+    font-weight: 700;
+  }
+
+  // Satoshi section
+  .bsh-satoshi-box {
+    background: #1a1a2e;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 1.5rem;
+    color: #e5e7eb;
+  }
+
+  .bsh-satoshi-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .bsh-satoshi-kpi {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem 0.75rem;
+
+    span {
+      display: block;
+      font-size: 0.72rem;
+      color: #9ca3af;
+      margin-bottom: 0.3rem;
+    }
+
+    strong {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: $btc-orange;
+    }
+  }
+
+  .bsh-satoshi-facts {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+
+    li {
+      font-size: 0.82rem;
+      color: #d1d5db;
+      padding: 0.5rem 0.75rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      line-height: 1.5;
+
+      &::before {
+        content: "·";
+        color: $btc-orange;
+        font-weight: 900;
+        margin-right: 0.4rem;
+      }
+    }
+  }
+
+  .bsh-satoshi-identity-title {
+    font-size: 0.82rem;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .bsh-identity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .bsh-identity-card {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.75rem;
+
+    strong {
+      display: block;
+      font-size: 0.85rem;
+      color: #e5e7eb;
+      margin-bottom: 0.2rem;
+    }
+
+    span {
+      display: block;
+      font-size: 0.72rem;
+      color: #9ca3af;
+    }
+
+    small {
+      display: block;
+      font-size: 0.68rem;
+      color: $btc-orange;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .bsh-satoshi-research {
+    font-size: 0.72rem;
+    color: #6b7280;
+    margin: 0.5rem 0 0;
+  }
+
+  // ETF section
+  .bsh-etf-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bsh-etf-card {
+    background: #fff;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: 0.5rem;
+
+    &:first-child {
+      grid-column: span 2;
+      border-color: $btc-orange-border;
+      background: $btc-card-bg;
+
+      @media (max-width: 480px) {
+        grid-column: span 1;
+      }
+    }
+  }
+
+  .bsh-etf-rank {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $btc-orange;
+    background: $btc-orange-muted;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .bsh-etf-info {
+    strong {
+      display: block;
+      font-size: 0.9rem;
+      color: $text-heading;
+    }
+
+    .bsh-etf-ticker {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: #f3f4f6;
+      color: $text-body;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      margin-top: 0.2rem;
+    }
+
+    .bsh-etf-issuer {
+      display: block;
+      font-size: 0.75rem;
+      color: $text-muted;
+      margin-top: 0.2rem;
+    }
+  }
+
+  .bsh-etf-nums {
+    text-align: right;
+
+    .bsh-etf-btc {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: $btc-orange;
+    }
+
+    .bsh-etf-aum {
+      display: block;
+      font-size: 0.72rem;
+      color: $text-muted;
+    }
+  }
+
+  .bsh-etf-note {
+    grid-column: 1 / -1;
+    font-size: 0.78rem;
+    color: $text-muted;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  // Related links
+  .bsh-related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bsh-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    background: $btc-card-bg;
+    border: 1px solid $btc-orange-border;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(247, 147, 26, 0.15);
+      transform: translateY(-2px);
+    }
+
+    strong {
+      font-size: 0.9rem;
+      color: $text-heading;
+      font-weight: 700;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: $text-muted;
+      line-height: 1.5;
+    }
+  }
+}
