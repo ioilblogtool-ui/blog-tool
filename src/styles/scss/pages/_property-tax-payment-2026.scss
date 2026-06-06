@@ -1,39 +1,82 @@
 .ptx-page {
+  display: grid;
+  gap: 28px;
+
   .ptx-section-heading {
-    margin-bottom: 1.5rem;
-    p { font-size: 0.8rem; font-weight: 600; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
-    h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem; }
-    span { font-size: 0.9rem; color: var(--color-text-muted); }
+    display: grid;
+    gap: 6px;
+    margin-bottom: 18px;
+
+    p, h2, span { margin: 0; }
+
+    p {
+      font-size: 12px;
+      font-weight: 900;
+      color: #1a56db;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: clamp(20px, 3vw, 30px);
+      line-height: 1.25;
+      color: #111928;
+    }
+
+    span {
+      color: #4b5563;
+      line-height: 1.65;
+    }
   }
 
   // 납부 일정
   .ptx-schedule-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
   }
+
   .ptx-schedule-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    strong { font-size: 1rem; color: var(--color-text); }
-    p { font-size: 0.9rem; color: var(--color-text-muted); margin: 0; }
-    small { font-size: 0.8rem; color: var(--color-text-muted); }
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    box-shadow: 0 12px 30px rgba(26, 86, 219, 0.06);
+    padding: 18px;
+    display: grid;
+    gap: 8px;
+
+    strong {
+      font-size: 16px;
+      font-weight: 900;
+      color: #111928;
+      margin: 0;
+    }
+
+    p, small { margin: 0; }
+
+    p {
+      font-weight: 600;
+      color: #374151;
+    }
+
+    small {
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.55;
+    }
   }
+
   .ptx-month-badge {
-    display: inline-block;
-    background: var(--color-primary);
-    color: #fff;
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
+    display: inline-flex;
     width: fit-content;
+    align-items: center;
+    min-height: 26px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    background: #1a56db;
+    color: #fff;
   }
 
   // CTA 밴드
@@ -41,150 +84,313 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
+    gap: 14px;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    padding: 18px 20px;
     flex-wrap: wrap;
-    strong { display: block; font-size: 1rem; margin-bottom: 0.2rem; }
-    p { font-size: 0.875rem; color: var(--color-text-muted); margin: 0; }
+
+    div { flex: 1; }
+
+    strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 900;
+      color: #111928;
+      margin-bottom: 4px;
+    }
+
+    p {
+      font-size: 13px;
+      color: #4b5563;
+      margin: 0;
+    }
   }
 
   // 세율표
   .ptx-table-wrap {
     overflow-x: auto;
-    margin-bottom: 0.5rem;
+    margin-bottom: 8px;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
   }
+
   .ptx-rate-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
-    caption { caption-side: top; text-align: left; font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 0.5rem; }
-    th, td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--color-border); text-align: left; }
-    thead th { font-weight: 600; background: var(--color-surface); }
+    font-size: 13px;
+    background: #f8faff;
+
+    caption {
+      caption-side: top;
+      text-align: left;
+      font-size: 12px;
+      color: #6b7280;
+      padding: 12px 14px 8px;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e9f5;
+      text-align: left;
+    }
+
+    thead th {
+      font-weight: 900;
+      color: #374151;
+      background: #eef2fb;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
   }
-  .ptx-rate-value { font-weight: 700; color: var(--color-primary); }
-  .ptx-example-text { color: var(--color-text-muted); font-size: 0.82rem; }
-  .ptx-table-note { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.5rem; }
+
+  .ptx-rate-value {
+    font-weight: 900;
+    color: #1a56db;
+  }
+
+  .ptx-example-text {
+    color: #6b7280;
+    font-size: 12px;
+  }
+
+  .ptx-table-note {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 6px;
+  }
 
   // 공시가격별 예시
   .ptx-examples-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 8px;
   }
+
   .ptx-example-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 1.1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    box-shadow: 0 12px 30px rgba(26, 86, 219, 0.06);
+    padding: 16px;
+    display: grid;
+    gap: 8px;
+
     &--highlight {
-      border-color: var(--color-primary);
-      .ptx-example-label { color: var(--color-primary); }
+      border-color: #1a56db;
+      background: #f0f4ff;
     }
   }
-  .ptx-example-label { font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted); }
+
+  .ptx-example-label {
+    font-size: 11px;
+    font-weight: 900;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
   .ptx-example-row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.85rem;
-    span:first-child { color: var(--color-text-muted); }
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+
+    span:first-child { color: #9ca3af; }
+
+    strong {
+      font-weight: 900;
+      color: #111928;
+    }
   }
+
   .ptx-example-total {
     display: flex;
     justify-content: space-between;
-    font-size: 0.9rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--color-border);
-    strong { color: var(--color-primary); }
+    align-items: baseline;
+    font-size: 14px;
+    padding-top: 8px;
+    border-top: 1px solid #dde3f0;
+
+    span { color: #4b5563; }
+
+    strong {
+      font-weight: 900;
+      color: #1a56db;
+    }
   }
 
   // 감면·공제
   .ptx-reductions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
   }
+
   .ptx-reduction-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 1.1rem;
-    h3 { font-size: 0.95rem; font-weight: 700; margin: 0.4rem 0; }
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    box-shadow: 0 12px 30px rgba(26, 86, 219, 0.06);
+    padding: 18px;
+    display: grid;
+    gap: 8px;
+
+    h3 {
+      font-size: 17px;
+      font-weight: 900;
+      color: #111928;
+      margin: 0;
+    }
   }
+
   .ptx-reduction-badge {
-    display: inline-block;
-    background: #f0f4ff;
-    color: var(--color-primary);
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.15rem 0.5rem;
-    border-radius: 20px;
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+    background: #e9f0fb;
+    color: #1a56db;
   }
-  .ptx-reduction-condition { font-size: 0.82rem; color: var(--color-text-muted); margin: 0 0 0.3rem; }
-  .ptx-reduction-effect { font-size: 0.85rem; margin: 0; }
+
+  .ptx-reduction-condition {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .ptx-reduction-effect {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+    line-height: 1.55;
+  }
 
   // 분납
   .ptx-installment-box {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    padding: 20px;
+    display: grid;
+    gap: 12px;
   }
+
   .ptx-installment-row {
     display: flex;
-    gap: 1rem;
-    font-size: 0.9rem;
-    span:first-child { min-width: 80px; color: var(--color-text-muted); flex-shrink: 0; }
-    strong { color: var(--color-primary); }
+    gap: 16px;
+    font-size: 14px;
+    align-items: baseline;
+
+    span:first-child {
+      min-width: 80px;
+      flex-shrink: 0;
+      color: #9ca3af;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    strong {
+      font-weight: 900;
+      color: #1a56db;
+    }
+
+    span:last-child {
+      color: #374151;
+      line-height: 1.55;
+    }
   }
 
   // 납부 방법
   .ptx-payment-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
   }
+
   .ptx-payment-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    strong { font-size: 0.9rem; }
-    p { font-size: 0.82rem; color: var(--color-text-muted); margin: 0; }
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    padding: 16px;
+    display: grid;
+    gap: 6px;
+
+    strong {
+      font-size: 14px;
+      font-weight: 900;
+      color: #111928;
+    }
+
+    p {
+      font-size: 12px;
+      color: #6b7280;
+      margin: 0;
+      line-height: 1.55;
+    }
   }
-  .ptx-payment-channel { font-size: 0.8rem; color: var(--color-primary); font-weight: 600; }
+
+  .ptx-payment-channel {
+    font-size: 12px;
+    font-weight: 900;
+    color: #1a56db;
+  }
 
   // 관련 도구
   .ptx-related-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
   }
+
   .ptx-related-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 1.1rem 1.25rem;
+    display: grid;
+    gap: 6px;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    padding: 18px 20px;
     text-decoration: none;
-    color: var(--color-text);
-    transition: border-color 0.15s;
-    &:hover { border-color: var(--color-primary); }
-    strong { font-size: 0.95rem; }
-    span { font-size: 0.83rem; color: var(--color-text-muted); }
+    color: #111928;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      border-color: #1a56db;
+      box-shadow: 0 4px 16px rgba(26, 86, 219, 0.1);
+    }
+
+    strong {
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    span {
+      font-size: 13px;
+      color: #6b7280;
+    }
+  }
+
+  // 반응형
+  @media (max-width: 768px) {
+    .ptx-schedule-grid,
+    .ptx-reductions-grid,
+    .ptx-related-grid { grid-template-columns: 1fr; }
+
+    .ptx-examples-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .ptx-payment-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 480px) {
+    .ptx-examples-grid,
+    .ptx-payment-grid { grid-template-columns: 1fr; }
   }
 }
