@@ -1,0 +1,1001 @@
+// Satoshi Nakamoto Bitcoin Creator Report
+// Dark mystery theme — deep navy + bitcoin orange
+
+$btc-orange: #f7931a;
+$btc-orange-muted: #fef3e2;
+$btc-orange-border: #fde8c3;
+$dark-navy: #0f172a;
+$dark-card: #1e293b;
+$dark-border: #334155;
+$dark-muted: #94a3b8;
+$dark-text: #e2e8f0;
+
+$text-heading: #111928;
+$text-body: #374151;
+$text-muted: #6b7280;
+$border-color: #e5e7eb;
+$bg-white: #fff;
+
+$green: #16a34a;
+$green-bg: #f0fdf4;
+$green-border: #bbf7d0;
+$yellow: #ca8a04;
+$yellow-bg: #fefce8;
+$yellow-border: #fde68a;
+$red: #dc2626;
+$red-bg: #fef2f2;
+$red-border: #fecaca;
+
+.snk-page {
+  // Section heading
+  .snk-section-heading {
+    margin-bottom: 1.75rem;
+    text-align: center;
+
+    p {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: $btc-orange-muted;
+      color: $btc-orange;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 700;
+      color: $text-heading;
+      margin: 0 0 0.5rem;
+    }
+
+    span {
+      display: block;
+      font-size: 0.875rem;
+      color: $text-muted;
+    }
+  }
+
+  // KPI grid
+  .snk-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .snk-kpi-card {
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    border: 1px solid $border-color;
+    background: $bg-white;
+
+    &--dark {
+      background: $dark-navy;
+      border-color: $dark-border;
+
+      .snk-kpi-label {
+        color: $dark-muted;
+      }
+
+      .snk-kpi-value {
+        color: $dark-text;
+      }
+
+      small {
+        color: $dark-muted;
+      }
+    }
+
+    &--orange {
+      background: $dark-navy;
+      border-color: $btc-orange;
+
+      .snk-kpi-label {
+        color: $dark-muted;
+      }
+
+      .snk-kpi-value {
+        color: $btc-orange;
+      }
+
+      small {
+        color: $dark-muted;
+      }
+    }
+  }
+
+  .snk-kpi-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $text-muted;
+    margin-bottom: 0.4rem;
+  }
+
+  .snk-kpi-value {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $text-heading;
+    margin-bottom: 0.3rem;
+  }
+
+  .snk-kpi-card small {
+    font-size: 0.72rem;
+    color: $text-muted;
+    line-height: 1.4;
+  }
+
+  // Timeline
+  .snk-timeline {
+    position: relative;
+    padding-left: 2rem;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0.5rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, $btc-orange, $dark-navy);
+    }
+  }
+
+  .snk-timeline-item {
+    position: relative;
+    padding-bottom: 2rem;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    &--disappear .snk-timeline-dot {
+      background: #dc2626;
+    }
+
+    &--genesis .snk-timeline-dot {
+      background: $btc-orange;
+      box-shadow: 0 0 0 4px rgba(247, 147, 26, 0.25);
+      width: 14px;
+      height: 14px;
+      top: 3px;
+      left: -1.65rem;
+    }
+
+    &--legal .snk-timeline-dot {
+      background: #7c3aed;
+    }
+
+    &--milestone .snk-timeline-dot {
+      background: $green;
+    }
+
+    &--whitepaper .snk-timeline-dot {
+      background: #1a56db;
+    }
+  }
+
+  .snk-timeline-dot {
+    position: absolute;
+    left: -1.6rem;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $dark-navy;
+    border: 2px solid $btc-orange;
+    flex-shrink: 0;
+  }
+
+  .snk-timeline-content {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    }
+
+    .snk-timeline-item--genesis & {
+      border-color: $btc-orange-border;
+      background: $btc-orange-muted;
+    }
+
+    .snk-timeline-item--disappear & {
+      border-color: #fecaca;
+      background: #fff5f5;
+    }
+
+    .snk-timeline-item--legal & {
+      border-color: #e9d5ff;
+      background: #faf5ff;
+    }
+  }
+
+  .snk-timeline-date {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $btc-orange;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.25rem;
+  }
+
+  .snk-timeline-title {
+    display: block;
+    font-size: 0.95rem;
+    color: $text-heading;
+    margin-bottom: 0.4rem;
+  }
+
+  .snk-timeline-detail {
+    font-size: 0.82rem;
+    color: $text-body;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  // Whitepaper section
+  .snk-wp-box {
+    background: $dark-navy;
+    border-radius: 16px;
+    padding: 2rem;
+    color: $dark-text;
+  }
+
+  .snk-wp-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .snk-wp-meta-item {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+
+    span {
+      display: block;
+      font-size: 0.72rem;
+      color: $dark-muted;
+      margin-bottom: 0.25rem;
+    }
+
+    strong {
+      display: block;
+      font-size: 0.88rem;
+      color: $dark-text;
+    }
+  }
+
+  .snk-wp-quote {
+    border-left: 3px solid $btc-orange;
+    padding: 0.75rem 1.25rem;
+    margin: 0 0 1.25rem;
+    background: rgba(247, 147, 26, 0.08);
+    border-radius: 0 8px 8px 0;
+
+    p {
+      font-size: 0.9rem;
+      color: $btc-orange;
+      font-style: italic;
+      margin: 0;
+    }
+  }
+
+  .snk-wp-core {
+    font-size: 0.875rem;
+    color: $dark-muted;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .snk-wp-innovations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .snk-innovation-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $dark-border;
+    border-radius: 8px;
+    padding: 0.875rem;
+
+    strong {
+      display: block;
+      font-size: 0.85rem;
+      color: $btc-orange;
+      margin-bottom: 0.4rem;
+    }
+
+    p {
+      font-size: 0.78rem;
+      color: $dark-muted;
+      line-height: 1.55;
+      margin: 0;
+    }
+  }
+
+  // Genesis block
+  .snk-genesis-box {
+    background: $dark-navy;
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .snk-genesis-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $dark-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .snk-genesis-message {
+    margin-bottom: 1.5rem;
+  }
+
+  .snk-genesis-code {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    color: $btc-orange;
+    background: rgba(247, 147, 26, 0.1);
+    border: 1px solid rgba(247, 147, 26, 0.3);
+    border-radius: 8px;
+    padding: 0.875rem 1.25rem;
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+  }
+
+  .snk-genesis-message small {
+    font-size: 0.72rem;
+    color: $dark-muted;
+  }
+
+  .snk-genesis-hash {
+    margin-bottom: 1.5rem;
+  }
+
+  .snk-genesis-hash-val {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid $dark-border;
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    word-break: break-all;
+  }
+
+  .snk-genesis-interpretations {
+    margin-bottom: 1.25rem;
+  }
+
+  .snk-genesis-sub {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $dark-muted;
+    margin-bottom: 0.5rem;
+  }
+
+  .snk-genesis-interpretations ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+
+    li {
+      font-size: 0.82rem;
+      color: $dark-text;
+      padding: 0.5rem 0.75rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      line-height: 1.5;
+
+      &::before {
+        content: "▸ ";
+        color: $btc-orange;
+      }
+    }
+  }
+
+  .snk-genesis-note {
+    font-size: 0.82rem;
+    color: $dark-muted;
+    line-height: 1.6;
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid $dark-border;
+  }
+
+  // Holdings section
+  .snk-holdings-box {
+    background: $dark-navy;
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .snk-holdings-kpi {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .snk-hkpi {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.875rem;
+    text-align: center;
+
+    span {
+      display: block;
+      font-size: 0.72rem;
+      color: $dark-muted;
+      margin-bottom: 0.3rem;
+    }
+
+    strong {
+      display: block;
+      font-size: 1rem;
+      font-weight: 800;
+      color: $btc-orange;
+    }
+  }
+
+  .snk-holdings-method {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid $dark-border;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .snk-holdings-method-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $btc-orange;
+    margin-bottom: 0.4rem;
+  }
+
+  .snk-holdings-method p {
+    font-size: 0.82rem;
+    color: $dark-muted;
+    line-height: 1.6;
+    margin: 0 0 0.5rem;
+  }
+
+  .snk-holdings-method small {
+    font-size: 0.72rem;
+    color: #475569;
+  }
+
+  .snk-holdings-facts {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+
+    li {
+      font-size: 0.8rem;
+      color: $dark-text;
+      padding: 0.5rem 0.75rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      line-height: 1.5;
+
+      &::before {
+        content: "·";
+        color: $btc-orange;
+        font-weight: 900;
+        margin-right: 0.4rem;
+      }
+    }
+  }
+
+  .snk-holdings-monitor {
+    font-size: 0.78rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid $dark-border;
+  }
+
+  // Candidates
+  .snk-candidates-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .snk-candidate-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 14px;
+    padding: 1.5rem;
+
+    &--green {
+      border-color: $green-border;
+      background: $green-bg;
+    }
+
+    &--yellow {
+      border-color: $yellow-border;
+      background: $yellow-bg;
+    }
+
+    &--red {
+      border-color: $red-border;
+      background: $red-bg;
+    }
+  }
+
+  .snk-candidate-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .snk-candidate-flag {
+    font-size: 1.75rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .snk-candidate-name-wrap {
+    flex: 1;
+  }
+
+  .snk-candidate-name {
+    display: block;
+    font-size: 1.1rem;
+    color: $text-heading;
+  }
+
+  .snk-candidate-nameko {
+    font-size: 0.78rem;
+    color: $text-muted;
+  }
+
+  .snk-verdict-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.3rem 0.75rem;
+    border-radius: 99px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &--green {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    &--yellow {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    &--red {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  }
+
+  .snk-candidate-bg {
+    font-size: 0.82rem;
+    color: $text-body;
+    line-height: 1.55;
+    margin: 0 0 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .snk-evidence-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .snk-evidence-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+    color: $text-muted;
+  }
+
+  .snk-evidence-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      font-size: 0.78rem;
+      color: $text-body;
+      line-height: 1.5;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &::before {
+        margin-right: 0.35rem;
+      }
+    }
+  }
+
+  .snk-evidence-col--for ul li::before {
+    content: "✓";
+    color: $green;
+  }
+
+  .snk-evidence-col--against ul li::before {
+    content: "✗";
+    color: $red;
+  }
+
+  .snk-candidate-status {
+    font-size: 0.78rem;
+    color: $text-muted;
+    margin: 0;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+    strong {
+      color: $text-heading;
+      margin-right: 0.35rem;
+    }
+  }
+
+  // Court ruling
+  .snk-court-box {
+    background: #faf5ff;
+    border: 1px solid #e9d5ff;
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .snk-court-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .snk-court-meta-item {
+    background: #fff;
+    border: 1px solid #e9d5ff;
+    border-radius: 8px;
+    padding: 0.875rem;
+    text-align: center;
+
+    span {
+      display: block;
+      font-size: 0.72rem;
+      color: $text-muted;
+      margin-bottom: 0.25rem;
+    }
+
+    strong {
+      display: block;
+      font-size: 0.88rem;
+      color: $text-heading;
+    }
+  }
+
+  .snk-court-ruling {
+    margin-bottom: 1.5rem;
+  }
+
+  .snk-court-ruling-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #7c3aed;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .snk-court-ruling blockquote {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-heading;
+    border-left: 4px solid #7c3aed;
+    padding: 0.75rem 1.25rem;
+    background: #fff;
+    border-radius: 0 8px 8px 0;
+    margin: 0;
+  }
+
+  .snk-court-sub {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+  }
+
+  .snk-court-findings,
+  .snk-court-significance {
+    margin-bottom: 1.25rem;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        font-size: 0.82rem;
+        color: $text-body;
+        padding: 0.35rem 0.75rem;
+        line-height: 1.5;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &::before {
+          content: "▸ ";
+          color: #7c3aed;
+        }
+      }
+    }
+  }
+
+  .snk-court-aftermath {
+    font-size: 0.82rem;
+    color: $text-muted;
+    line-height: 1.6;
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid #e9d5ff;
+  }
+
+  // Theories
+  .snk-theories-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .snk-theory-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .snk-theory-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .snk-theory-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .snk-theory-title {
+    display: block;
+    font-size: 0.9rem;
+    color: $text-heading;
+    margin-bottom: 0.3rem;
+    font-weight: 700;
+  }
+
+  .snk-prob-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.1rem 0.5rem;
+    border-radius: 99px;
+
+    &--high {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    &--mid {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    &--low {
+      background: #f3f4f6;
+      color: $text-muted;
+    }
+  }
+
+  .snk-theory-detail {
+    font-size: 0.8rem;
+    color: $text-body;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  // Legacy
+  .snk-legacy-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .snk-legacy-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    }
+  }
+
+  .snk-legacy-icon {
+    font-size: 1.75rem;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 2.5rem;
+    text-align: center;
+    margin-top: 0.1rem;
+  }
+
+  .snk-legacy-content {
+    flex: 1;
+  }
+
+  .snk-legacy-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+    flex-wrap: wrap;
+
+    strong {
+      font-size: 0.95rem;
+      color: $text-heading;
+    }
+  }
+
+  .snk-legacy-year {
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: $btc-orange-muted;
+    color: $btc-orange;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  .snk-legacy-content p {
+    font-size: 0.82rem;
+    color: $text-body;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  // Related
+  .snk-related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .snk-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    background: $btc-orange-muted;
+    border: 1px solid $btc-orange-border;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(247, 147, 26, 0.15);
+      transform: translateY(-2px);
+    }
+
+    strong {
+      font-size: 0.9rem;
+      color: $text-heading;
+      font-weight: 700;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: $text-muted;
+      line-height: 1.5;
+    }
+  }
+}

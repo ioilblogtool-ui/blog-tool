@@ -526,6 +526,13 @@ export const reports: ReportMeta[] = [
     badges: ["비트코인", "연도별수익률", "반감기", "암호화폐", "2026"],
   },
   {
+    slug: "satoshi-nakamoto-bitcoin-creator",
+    title: "사토시 나카모토 — 비트코인 창시자의 모든 것",
+    description: "2008년 백서 발표부터 2011년 돌연 사라질 때까지. 신원 추정 5인, 110만 BTC, 2024년 Craig Wright 법원 판결까지 완전 정리합니다.",
+    order: 37.08,
+    badges: ["사토시 나카모토", "비트코인", "정체 미스터리", "2026"],
+  },
+  {
     slug: "bitcoin-supply-holders-2026",
     title: "비트코인의 94%는 누가 갖고 있나 — 국가·기업·사토시 보유 현황 2026",
     description: "2,100만 개 한도 중 1,974만 개 채굴 완료. 국가별 전략 비축, Strategy·테슬라 등 기업 트레저리, 사토시 추정 보유, ETF 수요까지 한눈에 정리합니다.",

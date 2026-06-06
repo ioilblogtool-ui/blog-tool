@@ -1,0 +1,429 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SNK_META,
+  SNK_TIMELINE,
+  SNK_WHITEPAPER,
+  SNK_GENESIS,
+  SNK_CANDIDATES,
+  SNK_COURT_RULING,
+  SNK_DISAPPEAR_THEORIES,
+  SNK_LEGACY,
+  SNK_HOLDINGS,
+  SNK_FAQ,
+  SNK_RELATED_LINKS,
+} from "../../data/satoshiNakamoto";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SNK_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SNK_META.title,
+    description: SNK_META.description,
+    dateModified: SNK_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SNK_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SNK_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={SNK_META.seoTitle} description={SNK_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page snk-page" data-report="satoshi-nakamoto-bitcoin-creator">
+
+    <CalculatorHero
+      eyebrow="비트코인 창시자 리포트"
+      title={SNK_META.title}
+      description="2008년 백서 한 장으로 세상을 바꾼 사람. 2009년 비트코인을 만들고 2011년 돌연 사라졌습니다. 그가 남긴 110만 BTC는 17년째 단 한 번도 움직이지 않았습니다."
+      badges={["사토시 나카모토", "비트코인", "정체 미스터리", "110만 BTC", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        SNK_META.dataNote,
+        "신원 주장·추정 인물에 대한 평가는 공개된 연구·법원 판결 기반이며, 확정적 결론이 아닙니다.",
+      ]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section snk-kpi-section">
+      <div class="snk-kpi-grid">
+        <article class="snk-kpi-card snk-kpi-card--dark">
+          <span class="snk-kpi-label">백서 발표</span>
+          <strong class="snk-kpi-value">2008년</strong>
+          <small>10월 31일 — 암호학 메일링 리스트</small>
+        </article>
+        <article class="snk-kpi-card snk-kpi-card--dark">
+          <span class="snk-kpi-label">제네시스 블록</span>
+          <strong class="snk-kpi-value">2009년 1월 3일</strong>
+          <small>블록 #0 — 비트코인 탄생</small>
+        </article>
+        <article class="snk-kpi-card snk-kpi-card--dark">
+          <span class="snk-kpi-label">마지막 활동</span>
+          <strong class="snk-kpi-value">2011년 4월 23일</strong>
+          <small>"다른 일로 넘어갔다" 이메일 후 잠적</small>
+        </article>
+        <article class="snk-kpi-card snk-kpi-card--orange">
+          <span class="snk-kpi-label">추정 보유 BTC</span>
+          <strong class="snk-kpi-value">~{SNK_HOLDINGS.estimatedBtc.toLocaleString()} BTC</strong>
+          <small>$60,000 기준 약 91조 원 — 17년째 미이동</small>
+        </article>
+        <article class="snk-kpi-card">
+          <span class="snk-kpi-label">백서 분량</span>
+          <strong class="snk-kpi-value">{SNK_WHITEPAPER.pages}페이지</strong>
+          <small>약 3,200단어로 세계를 바꿨다</small>
+        </article>
+        <article class="snk-kpi-card">
+          <span class="snk-kpi-label">2024년 법원 판결</span>
+          <strong class="snk-kpi-value">Craig Wright ✗</strong>
+          <small>영국 고등법원 — 사토시 아님 확정</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 타임라인 -->
+    <section class="content-section snk-timeline-section" aria-labelledby="snk-timeline-title">
+      <div class="snk-section-heading">
+        <p>연대기</p>
+        <h2 id="snk-timeline-title">사토시 나카모토의 행적 — 2008년부터 지금까지</h2>
+        <span>3년간의 짧은 활동으로 17년이 지난 지금까지 영향을 미치고 있습니다.</span>
+      </div>
+      <div class="snk-timeline">
+        {SNK_TIMELINE.map((event) => (
+          <div class:list={["snk-timeline-item", `snk-timeline-item--${event.type}`]}>
+            <div class="snk-timeline-dot" />
+            <div class="snk-timeline-content">
+              <span class="snk-timeline-date">{event.date}</span>
+              <strong class="snk-timeline-title">{event.title}</strong>
+              <p class="snk-timeline-detail">{event.detail}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 비트코인 백서 -->
+    <section class="content-section snk-whitepaper-section" aria-labelledby="snk-wp-title">
+      <div class="snk-section-heading">
+        <p>비트코인 백서</p>
+        <h2 id="snk-wp-title">9페이지로 금융을 바꾼 문서</h2>
+        <span>"{SNK_WHITEPAPER.title}"</span>
+      </div>
+      <div class="snk-wp-box">
+        <div class="snk-wp-meta">
+          <div class="snk-wp-meta-item">
+            <span>발표일</span>
+            <strong>{SNK_WHITEPAPER.publishedDate}</strong>
+          </div>
+          <div class="snk-wp-meta-item">
+            <span>분량</span>
+            <strong>{SNK_WHITEPAPER.pages}페이지 / {SNK_WHITEPAPER.words.toLocaleString()}단어</strong>
+          </div>
+          <div class="snk-wp-meta-item">
+            <span>발표 채널</span>
+            <strong>{SNK_WHITEPAPER.mailingList}</strong>
+          </div>
+        </div>
+        <blockquote class="snk-wp-quote">
+          <p>"{SNK_WHITEPAPER.famousQuote}"</p>
+        </blockquote>
+        <p class="snk-wp-core">{SNK_WHITEPAPER.coreIdea}</p>
+        <div class="snk-wp-innovations">
+          {SNK_WHITEPAPER.keyInnovations.map((inn) => (
+            <div class="snk-innovation-card">
+              <strong>{inn.title}</strong>
+              <p>{inn.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 제네시스 블록 -->
+    <section class="content-section snk-genesis-section" aria-labelledby="snk-genesis-title">
+      <div class="snk-section-heading">
+        <p>제네시스 블록</p>
+        <h2 id="snk-genesis-title">블록 #0 — 비트코인의 시작점</h2>
+        <span>{SNK_GENESIS.timestamp}</span>
+      </div>
+      <div class="snk-genesis-box">
+        <div class="snk-genesis-message">
+          <span class="snk-genesis-label">숨겨진 메시지</span>
+          <code class="snk-genesis-code">"{SNK_GENESIS.message}"</code>
+          <small>출처: {SNK_GENESIS.messageSource}</small>
+        </div>
+        <div class="snk-genesis-hash">
+          <span class="snk-genesis-label">블록 해시</span>
+          <code class="snk-genesis-hash-val">{SNK_GENESIS.hash}</code>
+        </div>
+        <div class="snk-genesis-interpretations">
+          <p class="snk-genesis-sub">이 메시지의 해석</p>
+          <ul>
+            {SNK_GENESIS.interpretations.map((i) => (
+              <li>{i}</li>
+            ))}
+          </ul>
+        </div>
+        <p class="snk-genesis-note">{SNK_GENESIS.significance}</p>
+      </div>
+    </section>
+
+    <!-- 110만 BTC 보유 분석 -->
+    <section class="content-section snk-holdings-section" aria-labelledby="snk-holdings-title">
+      <div class="snk-section-heading">
+        <p>보유 분석</p>
+        <h2 id="snk-holdings-title">110만 BTC — 17년째 잠든 세계 최대 미스터리 자산</h2>
+        <span>Patoshi 패턴 분석 기준 추정치. $60,000 기준 약 91조 원.</span>
+      </div>
+      <div class="snk-holdings-box">
+        <div class="snk-holdings-kpi">
+          <div class="snk-hkpi">
+            <span>추정 보유량</span>
+            <strong>~{SNK_HOLDINGS.estimatedBtc.toLocaleString()} BTC</strong>
+          </div>
+          <div class="snk-hkpi">
+            <span>추정 가치 (USD)</span>
+            <strong>~${(SNK_HOLDINGS.estimatedValueUsd / 1e9).toFixed(0)}B</strong>
+          </div>
+          <div class="snk-hkpi">
+            <span>추정 가치 (KRW)</span>
+            <strong>~{(SNK_HOLDINGS.estimatedValueKrw / 1e12).toFixed(0)}조 원</strong>
+          </div>
+          <div class="snk-hkpi">
+            <span>추정 지갑 수</span>
+            <strong>~{SNK_HOLDINGS.walletCount.toLocaleString()}개</strong>
+          </div>
+          <div class="snk-hkpi">
+            <span>채굴 기간</span>
+            <strong>{SNK_HOLDINGS.miningPeriod}</strong>
+          </div>
+          <div class="snk-hkpi">
+            <span>분석 방법</span>
+            <strong>{SNK_HOLDINGS.methodName}</strong>
+          </div>
+        </div>
+        <div class="snk-holdings-method">
+          <p class="snk-holdings-method-title">Patoshi 패턴이란?</p>
+          <p>{SNK_HOLDINGS.method}</p>
+          <small>연구자: {SNK_HOLDINGS.researcherName} ({SNK_HOLDINGS.researchYear}년)</small>
+        </div>
+        <ul class="snk-holdings-facts">
+          {SNK_HOLDINGS.keyFacts.map((f) => (
+            <li>{f}</li>
+          ))}
+        </ul>
+        <p class="snk-holdings-monitor">{SNK_HOLDINGS.walletMonitoring}</p>
+      </div>
+    </section>
+
+    <!-- 신원 추정 인물 -->
+    <section class="content-section snk-candidates-section" aria-labelledby="snk-candidates-title">
+      <div class="snk-section-heading">
+        <p>신원 미스터리</p>
+        <h2 id="snk-candidates-title">사토시 나카모토는 누구인가 — 5인 완전 분석</h2>
+        <span>근거·반증·최종 평가를 정리합니다. 2024년 법원 판결로 Craig Wright는 제외됩니다.</span>
+      </div>
+      <div class="snk-candidates-grid">
+        {SNK_CANDIDATES.map((c) => (
+          <article class:list={["snk-candidate-card", `snk-candidate-card--${c.verdictColor}`]}>
+            <div class="snk-candidate-header">
+              <span class="snk-candidate-flag">{c.flag}</span>
+              <div class="snk-candidate-name-wrap">
+                <strong class="snk-candidate-name">{c.name}</strong>
+                <span class="snk-candidate-nameko">{c.nameKo} · {c.nationality}</span>
+              </div>
+              <span class:list={["snk-verdict-badge", `snk-verdict-badge--${c.verdictColor}`]}>
+                {c.verdict}
+              </span>
+            </div>
+            <p class="snk-candidate-bg">{c.background}</p>
+            <div class="snk-evidence-grid">
+              <div class="snk-evidence-col snk-evidence-col--for">
+                <p class="snk-evidence-label">👍 근거</p>
+                <ul>
+                  {c.evidenceFor.map((e) => (
+                    <li>{e}</li>
+                  ))}
+                </ul>
+              </div>
+              <div class="snk-evidence-col snk-evidence-col--against">
+                <p class="snk-evidence-label">👎 반증</p>
+                <ul>
+                  {c.evidenceAgainst.map((e) => (
+                    <li>{e}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <p class="snk-candidate-status"><strong>현황</strong> {c.currentStatus}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Craig Wright 법원 판결 -->
+    <section class="content-section snk-court-section" aria-labelledby="snk-court-title">
+      <div class="snk-section-heading">
+        <p>법원 판결</p>
+        <h2 id="snk-court-title">2024년 영국 법원 — Craig Wright는 사토시가 아니다</h2>
+        <span>{SNK_COURT_RULING.date} · {SNK_COURT_RULING.court}</span>
+      </div>
+      <div class="snk-court-box">
+        <div class="snk-court-meta">
+          <div class="snk-court-meta-item">
+            <span>판사</span>
+            <strong>{SNK_COURT_RULING.judge}</strong>
+          </div>
+          <div class="snk-court-meta-item">
+            <span>원고</span>
+            <strong>{SNK_COURT_RULING.plaintiff}</strong>
+          </div>
+          <div class="snk-court-meta-item">
+            <span>피고</span>
+            <strong>{SNK_COURT_RULING.defendant}</strong>
+          </div>
+        </div>
+        <div class="snk-court-ruling">
+          <p class="snk-court-ruling-label">판결 요지</p>
+          <blockquote>"{SNK_COURT_RULING.ruling}"</blockquote>
+        </div>
+        <div class="snk-court-findings">
+          <p class="snk-court-sub">핵심 판단 근거</p>
+          <ul>
+            {SNK_COURT_RULING.keyFindings.map((f) => (
+              <li>{f}</li>
+            ))}
+          </ul>
+        </div>
+        <div class="snk-court-significance">
+          <p class="snk-court-sub">판결의 의미</p>
+          <ul>
+            {SNK_COURT_RULING.significance.map((s) => (
+              <li>{s}</li>
+            ))}
+          </ul>
+        </div>
+        <p class="snk-court-aftermath">{SNK_COURT_RULING.aftermath}</p>
+      </div>
+    </section>
+
+    <!-- 사라진 이유 -->
+    <section class="content-section snk-theories-section" aria-labelledby="snk-theories-title">
+      <div class="snk-section-heading">
+        <p>잠적 가설</p>
+        <h2 id="snk-theories-title">왜 사라졌나 — 5가지 가설</h2>
+        <span>누구도 확실히 알 수 없습니다. 그러나 몇 가지 합리적 추론이 있습니다.</span>
+      </div>
+      <div class="snk-theories-grid">
+        {SNK_DISAPPEAR_THEORIES.map((t) => (
+          <article class="snk-theory-card">
+            <div class="snk-theory-header">
+              <span class="snk-theory-icon">{t.icon}</span>
+              <div>
+                <strong class="snk-theory-title">{t.title}</strong>
+                <span class:list={[
+                  "snk-prob-badge",
+                  t.probability === "높음" ? "snk-prob-badge--high" :
+                  t.probability === "중간" ? "snk-prob-badge--mid" : "snk-prob-badge--low"
+                ]}>
+                  가능성: {t.probability}
+                </span>
+              </div>
+            </div>
+            <p class="snk-theory-detail">{t.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 유산과 영향 -->
+    <section class="content-section snk-legacy-section" aria-labelledby="snk-legacy-title">
+      <div class="snk-section-heading">
+        <p>유산과 영향</p>
+        <h2 id="snk-legacy-title">사토시가 세상에 남긴 것</h2>
+        <span>9페이지 백서가 만들어낸 17년간의 혁신.</span>
+      </div>
+      <div class="snk-legacy-grid">
+        {SNK_LEGACY.map((l) => (
+          <article class="snk-legacy-card">
+            <div class="snk-legacy-icon">{l.icon}</div>
+            <div class="snk-legacy-content">
+              <div class="snk-legacy-header">
+                <strong>{l.title}</strong>
+                <span class="snk-legacy-year">{l.year}</span>
+              </div>
+              <p>{l.detail}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 리포트 -->
+    <section class="content-section snk-related-section" aria-labelledby="snk-related-title">
+      <div class="snk-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="snk-related-title">비트코인 시리즈 함께 보기</h2>
+      </div>
+      <div class="snk-related-grid">
+        {SNK_RELATED_LINKS.map((link) => (
+          <a class="snk-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="사토시 나카모토 자주 묻는 질문"
+      intro={[
+        SNK_META.dataNote,
+        "사토시 나카모토는 2008년 비트코인 백서를 발표하고 2009년 제네시스 블록을 채굴한 뒤 2011년 완전히 사라진 비트코인 창시자입니다.",
+      ]}
+      inputPoints={[
+        "비트코인 탄생부터 현재까지 전체 타임라인을 확인할 수 있습니다.",
+        "5인의 신원 추정 후보를 근거·반증과 함께 비교할 수 있습니다.",
+        "2024년 영국 법원 판결로 Craig Wright 주장이 공식 부정됐습니다.",
+      ]}
+      criteria={[
+        "보유량 추정: Sergio Demian Lerner의 Patoshi 패턴 분석(2013)",
+        "법원 판결: COPA v Craig Wright, 영국 고등법원(2024.03.14)",
+        "신원 분석: 학계·커뮤니티 공개 연구 종합",
+      ]}
+      faq={SNK_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={SNK_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>
