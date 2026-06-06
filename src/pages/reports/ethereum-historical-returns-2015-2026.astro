@@ -1,0 +1,449 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  calcMultipleFromLaunch,
+  ethereumHistoricalReturns20152026,
+  formatReturn,
+  formatUsd,
+  getReturnTone,
+} from "../../data/ethereumHistoricalReturns20152026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = ethereumHistoricalReturns20152026;
+const rows = report.rows;
+const completedRows = rows.filter((row) => row.returnRate !== null);
+const bestYear = [...completedRows].sort((a, b) => (b.returnRate ?? 0) - (a.returnRate ?? 0))[0];
+const worstYear = [...completedRows].sort((a, b) => (a.returnRate ?? 0) - (b.returnRate ?? 0))[0];
+const positiveYears = completedRows.filter((row) => (row.returnRate ?? 0) > 0).length;
+const negativeYears = completedRows.filter((row) => (row.returnRate ?? 0) < 0).length;
+const latestRow = rows[rows.length - 1];
+const launchMultiple = calcMultipleFromLaunch(latestRow.endPrice);
+const faqItems = report.faq.map((item) => ({ question: item.q, answer: item.a }));
+const defaultInvestmentAmount = 1_000_000;
+const simulatorRows = rows
+  .filter((row) => row.startPrice !== null && row.startPrice > 0)
+  .map((row) => {
+    const multiple = latestRow.endPrice / (row.startPrice ?? latestRow.endPrice);
+    const currentValue = Math.round(defaultInvestmentAmount * multiple);
+    return {
+      year: row.year,
+      startPrice: row.startPrice ?? 0,
+      currentPrice: latestRow.endPrice,
+      multiple,
+      currentValue,
+      profit: currentValue - defaultInvestmentAmount,
+      event: row.mainEvent,
+    };
+  });
+const formatKrw = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: report.meta.title,
+      description: report.meta.description,
+      inLanguage: "ko-KR",
+      dateModified: "2026-06-06",
+      mainEntityOfPage: `https://bigyocalc.com/reports/${report.meta.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+      keywords: ["이더리움 수익률", "이더리움 역사", "ETH 연도별 수익률", "DeFi", "NFT", "The Merge"],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: report.faq.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page eth-history-page">
+    <CalculatorHero
+      eyebrow={report.meta.eyebrow}
+      title={report.meta.h1}
+      description="이더리움이 ICO, 스마트컨트랙트, DeFi, NFT, Merge, 스테이킹, L2, 스테이블코인 인프라로 이어지는 동안 매년 가격이 어떻게 움직였는지 정리합니다."
+      badges={["ETH", "2015-2026", "연도별 수익률", "DeFi", "Merge", "스테이블코인"]}
+      updatedAt={report.meta.updatedAt}
+    />
+
+    <InfoNotice
+      title="데이터 기준"
+      lines={[
+        report.meta.dataBasis,
+        report.meta.caution,
+        "2015년은 거래소별 초기 거래가 차이가 커서 단순 연간 수익률보다 첫 거래가·연말 종가·ICO 가격을 구분해 읽어야 합니다.",
+      ]}
+    />
+
+    <section class="content-section eth-brief-section">
+      <div class="eth-brief-copy">
+        <p class="eth-section-eyebrow">한눈에 보기</p>
+        <h2>ETH는 가격보다 먼저 “쓸 수 있는 블록체인”이라는 서사를 만들었습니다</h2>
+        <p>
+          2017년에는 ICO 플랫폼, 2020년에는 DeFi 담보와 수수료 자산, 2021년에는 NFT 인프라,
+          2022년 이후에는 스테이킹 자산과 L2 정산층으로 해석이 바뀌었습니다. 그래서 이더리움 수익률은
+          단순 가격표가 아니라 “무엇에 쓰였는가”와 같이 봐야 합니다.
+        </p>
+      </div>
+      <div class="eth-brief-grid">
+        <article>
+          <span>최고 수익률</span>
+          <strong>{bestYear.year}년 {formatReturn(bestYear.returnRate)}</strong>
+          <p>{bestYear.mainEvent}</p>
+        </article>
+        <article>
+          <span>최악 수익률</span>
+          <strong>{worstYear.year}년 {formatReturn(worstYear.returnRate)}</strong>
+          <p>{worstYear.mainEvent}</p>
+        </article>
+        <article>
+          <span>상승/하락 연도</span>
+          <strong>{positiveYears}년 상승 · {negativeYears}년 하락</strong>
+          <p>2016~2026 YTD 수익률 기준입니다.</p>
+        </article>
+        <article>
+          <span>2015년 말 대비</span>
+          <strong>약 {launchMultiple.toLocaleString("ko-KR", { maximumFractionDigits: 0 })}배</strong>
+          <p>2015년 종가 {formatUsd(0.9335)} 대비 2026년 현재가 기준입니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section eth-table-section" id="yearly-returns">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도별 표</p>
+        <h2>이더리움 연도별 가격·수익률·주요 사건</h2>
+        <p>
+          표의 가격은 달러 기준입니다. 2026년은 연말 확정값이 아니라 2026년 6월 6일 전후 데이터 기준의 연중 값입니다.
+        </p>
+      </div>
+      <div class="eth-table-wrap">
+        <table class="eth-return-table">
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>시작가</th>
+              <th>연말/현재가</th>
+              <th>수익률</th>
+              <th>고가</th>
+              <th>저가</th>
+              <th>핵심 사건</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr class={`is-${getReturnTone(row.returnRate)}`}>
+                <td><strong>{row.year}</strong><span>{row.marketPhase}</span></td>
+                <td>{formatUsd(row.startPrice)}</td>
+                <td>{formatUsd(row.endPrice)}</td>
+                <td class="eth-return-value">{formatReturn(row.returnRate)}</td>
+                <td>{row.highPrice ? formatUsd(row.highPrice) : "-"}</td>
+                <td>{row.lowPrice ? formatUsd(row.lowPrice) : "-"}</td>
+                <td>{row.mainEvent}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="eth-footnote">
+        2017년처럼 초기 가격이 낮은 구간은 수익률이 비정상적으로 크게 보입니다. 반대로 2018년, 2022년처럼
+        -60~-80%대 하락도 반복됐기 때문에 “몇 배 올랐다”와 “얼마나 버텨야 했나”를 함께 봐야 합니다.
+      </p>
+    </section>
+
+    <section class="content-section eth-simulator-section" id="investment-simulator">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">투자 시뮬레이터</p>
+        <h2>그때 얼마 투자했다면 지금 얼마일까?</h2>
+        <p>
+          각 연도 연초에 ETH를 매수한 뒤 2026년 6월 기준 현재까지 보유했다고 가정합니다.
+          환율, 거래소 수수료, 세금, 스테이킹 보상은 반영하지 않은 단순 달러 가격 기준 시뮬레이션입니다.
+        </p>
+      </div>
+      <div class="eth-simulator-panel">
+        <div class="eth-simulator-controls">
+          <label for="ethInvestmentAmount">
+            <span>투자금</span>
+            <input id="ethInvestmentAmount" type="number" min="10000" step="10000" value={defaultInvestmentAmount} inputmode="numeric" />
+          </label>
+          <div class="eth-simulator-presets" aria-label="투자금 빠른 선택">
+            <button type="button" class="is-active" data-eth-investment-preset="1000000">100만 원</button>
+            <button type="button" data-eth-investment-preset="5000000">500만 원</button>
+            <button type="button" data-eth-investment-preset="10000000">1000만 원</button>
+            <button type="button" data-eth-investment-preset="50000000">5000만 원</button>
+          </div>
+        </div>
+        <div class="eth-simulator-summary">
+          <article>
+            <span>가장 큰 결과</span>
+            <strong id="ethSimulatorBestValue">{formatKrw(Math.max(...simulatorRows.map((row) => row.currentValue)))}</strong>
+            <p id="ethSimulatorBestNote">2016년 연초 매수 기준</p>
+          </article>
+          <article>
+            <span>현재 기준가</span>
+            <strong>{formatUsd(latestRow.endPrice)}</strong>
+            <p>2026년 6월 기준 ETH 가격, 환율 미반영</p>
+          </article>
+          <article>
+            <span>최대 배수</span>
+            <strong id="ethSimulatorBestMultiple">
+              {Math.max(...simulatorRows.map((row) => row.multiple)).toLocaleString("ko-KR", { maximumFractionDigits: 1 })}배
+            </strong>
+            <p>연초 매수가 대비 현재가 배수</p>
+          </article>
+        </div>
+      </div>
+      <div class="eth-table-wrap">
+        <table class="eth-simulator-table">
+          <thead>
+            <tr>
+              <th>매수 연도</th>
+              <th>연초 ETH 가격</th>
+              <th>현재가 기준 배수</th>
+              <th>현재 평가액</th>
+              <th>손익</th>
+              <th>당시 주요 사건</th>
+            </tr>
+          </thead>
+          <tbody id="ethSimulatorBody">
+            {simulatorRows.map((row) => (
+              <tr data-eth-simulator-row data-year={row.year} data-start-price={row.startPrice} data-event={row.event}>
+                <td><strong>{row.year}</strong></td>
+                <td>{formatUsd(row.startPrice)}</td>
+                <td>{row.multiple.toLocaleString("ko-KR", { maximumFractionDigits: 1 })}배</td>
+                <td class="eth-simulator-current">{formatKrw(row.currentValue)}</td>
+                <td class={row.profit >= 0 ? "eth-simulator-profit is-positive" : "eth-simulator-profit is-negative"}>
+                  {row.profit >= 0 ? "+" : ""}{formatKrw(row.profit)}
+                </td>
+                <td>{row.event}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="eth-footnote">
+        예: 2017년 연초 가격에 100만 원을 매수했다면, ETH 수량은 100만 원 ÷ 당시 ETH 가격으로 계산하고
+        현재 평가는 그 수량에 2026년 6월 기준 ETH 가격을 곱한 값입니다. 원화 환율 변동은 제외했습니다.
+      </p>
+    </section>
+
+    <section class="content-section eth-year-card-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도별 해석</p>
+        <h2>각 해의 수익률은 어떤 서사와 연결됐나</h2>
+      </div>
+      <div class="eth-year-card-grid">
+        {rows.map((row) => (
+          <article>
+            <div>
+              <span>{row.year}</span>
+              <strong class={`eth-tone-${getReturnTone(row.returnRate)}`}>{formatReturn(row.returnRate)}</strong>
+            </div>
+            <h3>{row.marketPhase}</h3>
+            <p>{row.interpretation}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section eth-timeline-section" id="history">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">역사 타임라인</p>
+        <h2>ICO에서 AI 에이전트 결제 인프라까지</h2>
+        <p>가격표만 보면 급등락만 보이지만, Ethereum의 서사는 계속 다른 층위로 이동했습니다.</p>
+      </div>
+      <div class="eth-timeline">
+        {report.milestones.map((item) => (
+          <article>
+            <span>{item.year}</span>
+            <div>
+              <p>{item.tag}</p>
+              <h3>{item.title}</h3>
+              <strong>{item.body}</strong>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section eth-theme-section" id="themes">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 테마</p>
+        <h2>ICO, 스마트컨트랙트, DeFi, NFT, Merge, L2를 한 번에 읽기</h2>
+      </div>
+      <div class="eth-theme-grid">
+        {report.themes.map((theme) => (
+          <article>
+            <h3>{theme.title}</h3>
+            <p>{theme.summary}</p>
+            <ul>
+              {theme.bullets.map((bullet) => <li>{bullet}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section eth-stablecoin-section" id="stablecoin-ai">
+      <div class="eth-stablecoin-copy">
+        <p class="eth-section-eyebrow">2026년 관전 포인트</p>
+        <h2>왜 AI 에이전트와 달러 스테이블코인 이야기에서 Ethereum이 계속 나올까</h2>
+        <p>
+          AI 에이전트는 사람처럼 한 달에 몇 번 결제하는 것이 아니라, API 호출·데이터 구매·툴 사용료를
+          아주 작은 단위로 반복 결제할 수 있습니다. 전통 카드망은 계정 개설, 승인, 환불, 수수료, 국가 간 정산에서
+          마찰이 큽니다. 반면 스테이블코인은 달러 표시 가치, 24시간 정산, 프로그래밍 가능한 결제를 제공합니다.
+        </p>
+      </div>
+      <div class="eth-stablecoin-grid">
+        <article>
+          <span>스테이블코인</span>
+          <strong>가격 변동을 줄인 온체인 달러</strong>
+          <p>ETH처럼 크게 출렁이는 자산 대신 USDC·USDT 같은 달러 연동 토큰이 결제 단위로 쓰입니다.</p>
+        </article>
+        <article>
+          <span>스마트컨트랙트</span>
+          <strong>조건부 자동 결제</strong>
+          <p>에이전트가 권한, 한도, 결제 조건을 만족하면 API·콘텐츠·툴 접근 비용을 자동 정산할 수 있습니다.</p>
+        </article>
+        <article>
+          <span>L2</span>
+          <strong>낮은 수수료와 빠른 처리</strong>
+          <p>Base, Arbitrum, Optimism 같은 L2는 잦은 소액 결제를 처리하고 Ethereum을 정산층으로 활용합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section eth-source-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처와 검증</p>
+        <h2>가격 데이터와 사건 해석은 분리해서 확인합니다</h2>
+        <p>
+          가격은 데이터 제공사 기준이 다를 수 있으므로 수익률 표와 역사 서사 출처를 나눠 제시합니다.
+        </p>
+      </div>
+      <div class="eth-source-grid">
+        {report.sources.map((source) => (
+          <a href={source.href} target="_blank" rel="noopener noreferrer">
+            <span>{source.organization}</span>
+            <strong>{source.label}</strong>
+            <p>{source.note}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section eth-next-section">
+      <div class="eth-next-card">
+        <div>
+          <p class="eth-section-eyebrow">다음 흐름</p>
+          <h2>ETH 수익률을 봤다면, 투자 방식과 세금도 같이 봐야 합니다</h2>
+          <p>
+            과거 수익률은 진입 시점을 보여줄 뿐입니다. 실제 투자에서는 적립식, 거래소 수수료, 세금,
+            변동성, 스테이킹 리스크를 같이 계산해야 체감 결과가 달라집니다.
+          </p>
+        </div>
+        <div class="eth-next-links">
+          {report.relatedLinks.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="이더리움 역사 수익률을 읽는 방법"
+      intro={[
+        "이 페이지는 이더리움이 2015년 출시 이후 어떤 해에 크게 올랐고, 어떤 해에 크게 하락했는지 연도별로 정리한 리포트입니다. 단순 가격표가 아니라 ICO, 스마트컨트랙트, DeFi, NFT, Merge, 스테이킹, L2, 스테이블코인이라는 사건 흐름을 함께 봅니다.",
+        "ETH는 비트코인처럼 희소성만으로 설명하기 어렵습니다. 네트워크 수수료, 스마트컨트랙트 실행, 스테이킹, L2 정산, 스테이블코인 결제 등 사용처가 계속 바뀌며 가격 서사도 함께 바뀌었습니다.",
+        "2017년의 초고수익, 2018년의 폭락, 2020년 DeFi 상승, 2021년 NFT 상승, 2022년 Merge와 하락장을 같은 표에서 보면 Ethereum이 기술 진화와 시장 사이클을 동시에 겪은 자산이라는 점이 보입니다.",
+      ]}
+      inputPoints={[
+        "연도별 수익률을 보고 진입 시점에 따라 결과가 얼마나 달라지는지 확인할 수 있습니다.",
+        "ICO, DeFi, NFT, Merge, L2처럼 가격 상승과 연결된 사건을 구분해 볼 수 있습니다.",
+        "AI 에이전트와 스테이블코인 결제에서 Ethereum 생태계가 언급되는 이유를 이해할 수 있습니다.",
+      ]}
+      criteria={[
+        "2015~2026 연도별 가격 표는 CoinLore의 연도별 시작가·종가·고가·저가 데이터를 기본으로 정리했습니다.",
+        "SlickCharts의 전년 종가 대비 연간 수익률은 2021~2026 주요 연도 수익률을 보조 확인하는 자료로 활용했습니다.",
+        "2026년 수익률은 연중 값이며 연말 확정 수익률이 아닙니다.",
+        "이 페이지는 투자 권유가 아니라 과거 데이터와 사건 흐름을 정리한 참고 리포트입니다.",
+      ]}
+      faq={faqItems}
+      related={report.relatedLinks}
+    />
+  </main>
+
+  <script define:vars={{ latestEthPrice: latestRow.endPrice }}>
+    const amountInput = document.getElementById("ethInvestmentAmount");
+    const presetButtons = Array.from(document.querySelectorAll("[data-eth-investment-preset]"));
+    const simulatorRows = Array.from(document.querySelectorAll("[data-eth-simulator-row]"));
+    const bestValueEl = document.getElementById("ethSimulatorBestValue");
+    const bestNoteEl = document.getElementById("ethSimulatorBestNote");
+    const bestMultipleEl = document.getElementById("ethSimulatorBestMultiple");
+
+    const formatWon = (value) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+    const formatMultiple = (value) => `${value.toLocaleString("ko-KR", { maximumFractionDigits: 1 })}배`;
+
+    const updateSimulator = () => {
+      const amount = Math.max(Number(amountInput?.value || 0), 0);
+      let best = { year: "", value: 0, multiple: 0 };
+
+      simulatorRows.forEach((row) => {
+        const startPrice = Number(row.dataset.startPrice || 0);
+        const multiple = startPrice > 0 ? latestEthPrice / startPrice : 0;
+        const currentValue = amount * multiple;
+        const profit = currentValue - amount;
+        const currentCell = row.querySelector(".eth-simulator-current");
+        const profitCell = row.querySelector(".eth-simulator-profit");
+        const multipleCell = row.children[2];
+
+        if (multipleCell) multipleCell.textContent = formatMultiple(multiple);
+        if (currentCell) currentCell.textContent = formatWon(currentValue);
+        if (profitCell) {
+          profitCell.textContent = `${profit >= 0 ? "+" : ""}${formatWon(profit)}`;
+          profitCell.classList.toggle("is-positive", profit >= 0);
+          profitCell.classList.toggle("is-negative", profit < 0);
+        }
+
+        if (currentValue > best.value) {
+          best = { year: row.dataset.year || "", value: currentValue, multiple };
+        }
+      });
+
+      if (bestValueEl) bestValueEl.textContent = formatWon(best.value);
+      if (bestNoteEl) bestNoteEl.textContent = `${best.year}년 연초 매수 기준`;
+      if (bestMultipleEl) bestMultipleEl.textContent = formatMultiple(best.multiple);
+    };
+
+    presetButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const value = Number(button.dataset.ethInvestmentPreset || 0);
+        if (amountInput) amountInput.value = String(value);
+        presetButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+        updateSimulator();
+      });
+    });
+
+    amountInput?.addEventListener("input", () => {
+      presetButtons.forEach((button) => button.classList.remove("is-active"));
+      updateSimulator();
+    });
+
+    updateSimulator();
+  </script>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+</BaseLayout>
