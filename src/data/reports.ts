@@ -526,6 +526,13 @@ export const reports: ReportMeta[] = [
     badges: ["비트코인", "연도별수익률", "반감기", "암호화폐", "2026"],
   },
   {
+    slug: "vitalik-buterin-ethereum-creator",
+    title: "비탈릭 부테린 — 이더리움 창시자의 모든 것",
+    description: "10대에 비트코인을 발견하고 19세에 이더리움 백서를 쓴 천재. 성장 스토리·ETH 보유·$1.5B 기부·더 머지·로드맵까지 완전 정리.",
+    order: 37.09,
+    badges: ["비탈릭 부테린", "이더리움", "더 머지", "스마트 컨트랙트", "2026"],
+  },
+  {
     slug: "satoshi-nakamoto-bitcoin-creator",
     title: "사토시 나카모토 — 비트코인 창시자의 모든 것",
     description: "2008년 백서 발표부터 2011년 돌연 사라질 때까지. 신원 추정 5인, 110만 BTC, 2024년 Craig Wright 법원 판결까지 완전 정리합니다.",

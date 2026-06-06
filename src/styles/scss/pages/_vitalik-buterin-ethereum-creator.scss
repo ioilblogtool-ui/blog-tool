@@ -1,0 +1,1078 @@
+// Vitalik Buterin Ethereum Creator Report
+// Ethereum blue/purple gradient theme
+
+$eth-blue: #627eea;
+$eth-purple: #7c3aed;
+$eth-light: #eef2ff;
+$eth-border: #c7d2fe;
+$eth-card-bg: #f5f7ff;
+$eth-dark: #1e1b4b;
+
+$text-heading: #111928;
+$text-body: #374151;
+$text-muted: #6b7280;
+$border-color: #e5e7eb;
+$bg-white: #fff;
+$bg-surface: #f9fafb;
+
+$green: #16a34a;
+$green-bg: #f0fdf4;
+$green-border: #bbf7d0;
+$yellow: #ca8a04;
+$yellow-bg: #fefce8;
+$red: #dc2626;
+$red-bg: #fef2f2;
+
+.vb-page {
+  // Section heading
+  .vb-section-heading {
+    margin-bottom: 1.75rem;
+    text-align: center;
+
+    p {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: $eth-light;
+      color: $eth-blue;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 700;
+      color: $text-heading;
+      margin: 0 0 0.5rem;
+    }
+
+    span {
+      display: block;
+      font-size: 0.875rem;
+      color: $text-muted;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  }
+
+  // KPI
+  .vb-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .vb-kpi-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+
+    &--main {
+      background: $eth-light;
+      border-color: $eth-border;
+    }
+
+    &--eth {
+      background: #eef2ff;
+      border-color: $eth-blue;
+      border-width: 2px;
+    }
+  }
+
+  .vb-kpi-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $text-muted;
+    margin-bottom: 0.4rem;
+  }
+
+  .vb-kpi-value {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+
+    .vb-kpi-card--main & {
+      color: #3730a3;
+    }
+
+    .vb-kpi-card--eth & {
+      color: $eth-blue;
+    }
+
+    .vb-kpi-card:not(.vb-kpi-card--main):not(.vb-kpi-card--eth) & {
+      color: $text-heading;
+    }
+  }
+
+  .vb-kpi-card small {
+    font-size: 0.72rem;
+    line-height: 1.4;
+    color: $text-muted;
+  }
+
+  // Profile
+  .vb-profile-box {
+    background: $eth-dark;
+    border-radius: 16px;
+    padding: 2rem;
+    color: #e0e7ff;
+  }
+
+  .vb-profile-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .vb-profile-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    align-items: baseline;
+
+    span {
+      font-size: 0.72rem;
+      color: #a5b4fc;
+      min-width: 60px;
+      flex-shrink: 0;
+    }
+
+    strong {
+      font-size: 0.85rem;
+      color: #e0e7ff;
+      font-weight: 600;
+    }
+  }
+
+  .vb-profile-sub {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
+  }
+
+  .vb-profile-known {
+    margin-bottom: 1.25rem;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+      }
+
+      li {
+        font-size: 0.8rem;
+        color: #c7d2fe;
+        padding: 0.35rem 0.6rem;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 5px;
+
+        &::before {
+          content: "✦ ";
+          color: $eth-blue;
+          font-size: 0.6rem;
+        }
+      }
+    }
+  }
+
+  .vb-profile-cofounders {
+    margin-bottom: 1.25rem;
+  }
+
+  .vb-cofounder-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .vb-cofounder-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.75rem;
+    background: rgba(99, 126, 234, 0.15);
+    border: 1px solid rgba(99, 126, 234, 0.3);
+    border-radius: 99px;
+    color: #c7d2fe;
+  }
+
+  .vb-profile-personality {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+    p {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      line-height: 1.65;
+      margin: 0;
+    }
+  }
+
+  // Timeline
+  .vb-timeline {
+    position: relative;
+    padding-left: 2rem;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0.5rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, $eth-blue, $eth-purple);
+    }
+  }
+
+  .vb-timeline-item {
+    position: relative;
+    padding-bottom: 1.75rem;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    &--ethereum .vb-timeline-dot {
+      background: $eth-blue;
+      box-shadow: 0 0 0 4px rgba(99, 126, 234, 0.2);
+      width: 14px;
+      height: 14px;
+      top: 3px;
+      left: -1.65rem;
+    }
+
+    &--tech .vb-timeline-dot {
+      background: $eth-purple;
+    }
+
+    &--controversy .vb-timeline-dot {
+      background: #dc2626;
+    }
+
+    &--social .vb-timeline-dot {
+      background: $green;
+    }
+
+    &--milestone .vb-timeline-dot {
+      background: #f59e0b;
+    }
+  }
+
+  .vb-timeline-dot {
+    position: absolute;
+    left: -1.6rem;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $eth-dark;
+    border: 2px solid $eth-blue;
+    flex-shrink: 0;
+  }
+
+  .vb-timeline-content {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 12px rgba(99, 126, 234, 0.1);
+    }
+
+    .vb-timeline-item--ethereum & {
+      border-color: $eth-border;
+      background: $eth-card-bg;
+    }
+
+    .vb-timeline-item--controversy & {
+      border-color: #fecaca;
+      background: #fff5f5;
+    }
+
+    .vb-timeline-item--tech & {
+      border-color: #ddd6fe;
+      background: #faf5ff;
+    }
+
+    .vb-timeline-item--social & {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+  }
+
+  .vb-timeline-date {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $eth-blue;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.25rem;
+  }
+
+  .vb-timeline-title {
+    display: block;
+    font-size: 0.95rem;
+    color: $text-heading;
+    margin-bottom: 0.4rem;
+  }
+
+  .vb-timeline-detail {
+    font-size: 0.82rem;
+    color: $text-body;
+    line-height: 1.6;
+    margin: 0;
+
+    strong {
+      color: $eth-blue;
+    }
+  }
+
+  // Whitepaper
+  .vb-wp-box {
+    background: $eth-dark;
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .vb-wp-sub {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
+  }
+
+  .vb-wp-why {
+    margin-bottom: 1.5rem;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+      }
+
+      li {
+        font-size: 0.8rem;
+        color: #c7d2fe;
+        padding: 0.5rem 0.75rem;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 6px;
+        line-height: 1.5;
+
+        &::before {
+          content: "✗ ";
+          color: #f87171;
+        }
+      }
+    }
+  }
+
+  .vb-wp-quote {
+    border-left: 3px solid $eth-blue;
+    padding: 0.75rem 1.25rem;
+    margin: 0 0 1.25rem;
+    background: rgba(99, 126, 234, 0.1);
+    border-radius: 0 8px 8px 0;
+
+    p {
+      font-size: 0.88rem;
+      color: $eth-blue;
+      font-style: italic;
+      margin: 0;
+      line-height: 1.6;
+    }
+  }
+
+  .vb-wp-core {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .vb-wp-innovations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .vb-innovation-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(99, 126, 234, 0.2);
+    border-radius: 8px;
+    padding: 0.875rem;
+
+    strong {
+      display: block;
+      font-size: 0.85rem;
+      color: $eth-blue;
+      margin-bottom: 0.4rem;
+    }
+
+    p {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      line-height: 1.55;
+      margin: 0;
+    }
+  }
+
+  // Wealth
+  .vb-wealth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .vb-wealth-kpi-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .vb-wkpi {
+    background: $eth-card-bg;
+    border: 1px solid $eth-border;
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &--highlight {
+      background: $eth-dark;
+      border-color: $eth-blue;
+
+      span {
+        color: #a5b4fc;
+      }
+
+      strong {
+        color: $eth-blue;
+      }
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: $text-muted;
+    }
+
+    strong {
+      font-size: 1rem;
+      font-weight: 800;
+      color: $eth-blue;
+    }
+  }
+
+  .vb-wealth-lifestyle {
+    font-size: 0.78rem;
+    color: $text-muted;
+    line-height: 1.6;
+    margin: 0.5rem 0 0;
+    padding: 0.75rem;
+    background: $bg-surface;
+    border-radius: 8px;
+    border: 1px solid $border-color;
+  }
+
+  .vb-donations-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .vb-donations-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.25rem;
+  }
+
+  .vb-donation-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+  }
+
+  .vb-donation-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .vb-donation-year {
+    font-size: 0.72rem;
+    background: $eth-light;
+    color: $eth-blue;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .vb-donation-amount {
+    font-size: 1rem;
+    font-weight: 800;
+    color: $green;
+  }
+
+  .vb-donation-recipient {
+    font-size: 0.85rem;
+    color: $text-heading;
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+  }
+
+  .vb-donation-note {
+    font-size: 0.72rem;
+    color: $text-muted;
+    display: block;
+    line-height: 1.5;
+  }
+
+  // Legacy
+  .vb-legacy-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .vb-legacy-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 12px rgba(99, 126, 234, 0.1);
+    }
+  }
+
+  .vb-legacy-icon {
+    font-size: 1.75rem;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 2.5rem;
+    text-align: center;
+  }
+
+  .vb-legacy-content {
+    flex: 1;
+  }
+
+  .vb-legacy-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+    flex-wrap: wrap;
+
+    strong {
+      font-size: 0.95rem;
+      color: $text-heading;
+    }
+  }
+
+  .vb-legacy-meta {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  .vb-legacy-year {
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: $eth-light;
+    color: $eth-blue;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+  }
+
+  .vb-legacy-tvl {
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: $green-bg;
+    color: $green;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    border: 1px solid $green-border;
+  }
+
+  .vb-legacy-content p {
+    font-size: 0.82rem;
+    color: $text-body;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  // The Merge
+  .vb-merge-box {
+    background: $eth-dark;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 1.5rem;
+  }
+
+  .vb-merge-compare {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+
+      .vb-merge-arrow {
+        transform: rotate(90deg);
+        text-align: center;
+      }
+    }
+  }
+
+  .vb-merge-side {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    padding: 1rem;
+
+    &--after {
+      border: 1px solid rgba(99, 126, 234, 0.3);
+    }
+  }
+
+  .vb-merge-side-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+
+    .vb-merge-side--before & {
+      color: #f87171;
+    }
+
+    .vb-merge-side--after & {
+      color: $eth-blue;
+    }
+  }
+
+  .vb-merge-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    span {
+      font-size: 0.72rem;
+      color: #64748b;
+    }
+
+    strong {
+      font-size: 0.8rem;
+      color: #c7d2fe;
+      text-align: right;
+    }
+  }
+
+  .vb-merge-highlight {
+    color: #4ade80 !important;
+  }
+
+  .vb-merge-arrow {
+    font-size: 1.5rem;
+    color: $eth-blue;
+    text-align: center;
+    font-weight: 900;
+  }
+
+  .vb-merge-quote {
+    border-left: 3px solid $eth-blue;
+    padding: 0.75rem 1.25rem;
+    margin: 0 0 1.5rem;
+    background: rgba(99, 126, 234, 0.08);
+    border-radius: 0 8px 8px 0;
+
+    p {
+      font-size: 0.88rem;
+      color: $eth-blue;
+      font-style: italic;
+      margin: 0;
+      line-height: 1.6;
+    }
+  }
+
+  .vb-merge-sub {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .vb-merge-significance {
+    margin-bottom: 1.25rem;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        font-size: 0.82rem;
+        color: #c7d2fe;
+        padding: 0.4rem 0.75rem;
+        line-height: 1.5;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &::before {
+          content: "✓ ";
+          color: #4ade80;
+        }
+      }
+    }
+  }
+
+  .vb-merge-tech {
+    font-size: 0.78rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  // Compare table
+  .vb-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid $border-color;
+    margin-top: 1.5rem;
+  }
+
+  .vb-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+
+    caption {
+      position: absolute;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    thead tr {
+      background: $eth-light;
+    }
+
+    th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: $text-muted;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid $border-color;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    tr:hover td {
+      background: $bg-surface;
+    }
+  }
+
+  .vb-compare-cat {
+    font-weight: 700;
+    color: $text-heading;
+    white-space: nowrap;
+  }
+
+  .vb-compare-cell {
+    color: $text-body;
+    font-size: 0.8rem;
+
+    &--win {
+      background: $eth-light;
+      color: $eth-blue;
+      font-weight: 600;
+    }
+  }
+
+  .vb-compare-note {
+    font-size: 0.72rem;
+    color: $text-muted;
+    max-width: 200px;
+  }
+
+  // Controversies
+  .vb-controversy-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .vb-controversy-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+
+    &--high {
+      border-left: 4px solid $red;
+    }
+
+    &--medium {
+      border-left: 4px solid $yellow;
+    }
+
+    &--low {
+      border-left: 4px solid #9ca3af;
+    }
+
+    p {
+      font-size: 0.82rem;
+      color: $text-body;
+      line-height: 1.65;
+      margin: 0;
+    }
+  }
+
+  .vb-controversy-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+
+    strong {
+      font-size: 0.92rem;
+      color: $text-heading;
+      flex: 1;
+    }
+  }
+
+  .vb-severity-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 99px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &--high {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    &--medium {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    &--low {
+      background: #f3f4f6;
+      color: $text-muted;
+    }
+  }
+
+  // Roadmap
+  .vb-roadmap-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .vb-roadmap-item {
+    display: flex;
+    gap: 1rem;
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .vb-roadmap-num {
+    width: 28px;
+    height: 28px;
+    background: $eth-light;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: $eth-blue;
+    flex-shrink: 0;
+  }
+
+  .vb-roadmap-content {
+    flex: 1;
+  }
+
+  .vb-roadmap-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+    flex-wrap: wrap;
+
+    strong {
+      font-size: 0.9rem;
+      color: $text-heading;
+    }
+  }
+
+  .vb-roadmap-status {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+
+    &--done {
+      background: $green-bg;
+      color: #166534;
+    }
+
+    &--active {
+      background: $eth-light;
+      color: $eth-blue;
+    }
+
+    &--plan {
+      background: #f3f4f6;
+      color: $text-muted;
+    }
+  }
+
+  .vb-roadmap-year {
+    font-size: 0.68rem;
+    color: $text-muted;
+    margin-left: auto;
+  }
+
+  .vb-roadmap-content p {
+    font-size: 0.78rem;
+    color: $text-body;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  // Related
+  .vb-related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .vb-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    background: $eth-card-bg;
+    border: 1px solid $eth-border;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(99, 126, 234, 0.15);
+      transform: translateY(-2px);
+    }
+
+    strong {
+      font-size: 0.9rem;
+      color: $text-heading;
+      font-weight: 700;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: $text-muted;
+      line-height: 1.5;
+    }
+  }
+}

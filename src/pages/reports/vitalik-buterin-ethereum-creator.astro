@@ -1,0 +1,437 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  VB_META,
+  VB_KPI,
+  VB_TIMELINE,
+  VB_WHITEPAPER,
+  VB_PROFILE,
+  VB_WEALTH,
+  VB_LEGACY,
+  VB_MERGE,
+  VB_VS_SATOSHI,
+  VB_CONTROVERSIES,
+  VB_ROADMAP,
+  VB_FAQ,
+  VB_RELATED_LINKS,
+} from "../../data/vitalikButerin";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${VB_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const ETH_COLOR = "#627eea";
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: VB_META.title,
+    description: VB_META.description,
+    dateModified: VB_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: VB_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: VB_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={VB_META.seoTitle} description={VB_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page vb-page" data-report="vitalik-buterin-ethereum-creator">
+
+    <CalculatorHero
+      eyebrow="이더리움 창시자 리포트"
+      title={VB_META.title}
+      description="러시아 태생 캐나다 이민자. 10대에 비트코인을 발견하고, 19세에 이더리움 백서를 썼습니다. 스마트 컨트랙트·DeFi·NFT·DAO를 만들어낸 31세 천재의 모든 것."
+      badges={["비탈릭 부테린", "이더리움", "스마트 컨트랙트", "더 머지", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[VB_META.dataNote]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section vb-kpi-section">
+      <div class="vb-kpi-grid">
+        <article class="vb-kpi-card vb-kpi-card--main">
+          <span class="vb-kpi-label">출생</span>
+          <strong class="vb-kpi-value">{VB_KPI.birthYear}년생</strong>
+          <small>러시아 콜롬나 → 캐나다 토론토</small>
+        </article>
+        <article class="vb-kpi-card vb-kpi-card--main">
+          <span class="vb-kpi-label">백서 작성 나이</span>
+          <strong class="vb-kpi-value">{VB_KPI.whitepaperAge}세</strong>
+          <small>2013년 — 대학 재학 중</small>
+        </article>
+        <article class="vb-kpi-card vb-kpi-card--main">
+          <span class="vb-kpi-label">이더리움 론칭</span>
+          <strong class="vb-kpi-value">{VB_KPI.ethereumFoundedYear}년</strong>
+          <small>21세 — 워털루 대학 중퇴 후</small>
+        </article>
+        <article class="vb-kpi-card vb-kpi-card--eth">
+          <span class="vb-kpi-label">추정 ETH 보유</span>
+          <strong class="vb-kpi-value">~{VB_KPI.ethHeld.toLocaleString()} ETH</strong>
+          <small>공개 지갑 기준 · $3,200 기준 약 $768M</small>
+        </article>
+        <article class="vb-kpi-card">
+          <span class="vb-kpi-label">누적 기부 추정</span>
+          <strong class="vb-kpi-value">$1.5B+</strong>
+          <small>SHIB·우크라이나·롱기비티 등</small>
+        </article>
+        <article class="vb-kpi-card">
+          <span class="vb-kpi-label">더 머지 에너지 절감</span>
+          <strong class="vb-kpi-value">{VB_KPI.energyReduction}%</strong>
+          <small>2022년 9월 PoS 전환</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 개인 프로파일 -->
+    <section class="content-section vb-profile-section" aria-labelledby="vb-profile-title">
+      <div class="vb-section-heading">
+        <p>프로파일</p>
+        <h2 id="vb-profile-title">비탈릭 부테린은 어떤 사람인가</h2>
+        <span>극단적으로 검소한 생활, 극단적으로 깊은 기술.</span>
+      </div>
+      <div class="vb-profile-box">
+        <div class="vb-profile-meta">
+          <div class="vb-profile-row"><span>본명</span><strong>{VB_PROFILE.fullName}</strong></div>
+          <div class="vb-profile-row"><span>출생</span><strong>{VB_PROFILE.born}</strong></div>
+          <div class="vb-profile-row"><span>국적</span><strong>{VB_PROFILE.nationality}</strong></div>
+          <div class="vb-profile-row"><span>학력</span><strong>{VB_PROFILE.education}</strong></div>
+          <div class="vb-profile-row">
+            <span>구사 언어</span>
+            <strong>{VB_PROFILE.languages.join(", ")}</strong>
+          </div>
+          <div class="vb-profile-row"><span>역할</span><strong>{VB_PROFILE.role}</strong></div>
+        </div>
+        <div class="vb-profile-known">
+          <p class="vb-profile-sub">주요 업적</p>
+          <ul>
+            {VB_PROFILE.knownFor.map((k) => <li>{k}</li>)}
+          </ul>
+        </div>
+        <div class="vb-profile-cofounders">
+          <p class="vb-profile-sub">이더리움 공동 창립자 7인</p>
+          <div class="vb-cofounder-grid">
+            {VB_PROFILE.coFounders.map((c) => (
+              <span class="vb-cofounder-tag">{c}</span>
+            ))}
+          </div>
+        </div>
+        <div class="vb-profile-personality">
+          <p class="vb-profile-sub">라이프스타일</p>
+          <p>{VB_PROFILE.personality}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 타임라인 -->
+    <section class="content-section vb-timeline-section" aria-labelledby="vb-timeline-title">
+      <div class="vb-section-heading">
+        <p>연대기</p>
+        <h2 id="vb-timeline-title">1994년부터 현재까지 — 비탈릭의 행적</h2>
+        <span>어린 시절 수학 천재에서 세계 블록체인 혁신의 중심으로.</span>
+      </div>
+      <div class="vb-timeline">
+        {VB_TIMELINE.map((event) => (
+          <div class:list={["vb-timeline-item", `vb-timeline-item--${event.type}`]}>
+            <div class="vb-timeline-dot" />
+            <div class="vb-timeline-content">
+              <span class="vb-timeline-date">{event.date}</span>
+              <strong class="vb-timeline-title">{event.title}</strong>
+              <p class="vb-timeline-detail" set:html={event.detail.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 이더리움 백서 -->
+    <section class="content-section vb-whitepaper-section" aria-labelledby="vb-wp-title">
+      <div class="vb-section-heading">
+        <p>이더리움 백서</p>
+        <h2 id="vb-wp-title">19세가 쓴 백서 — 블록체인을 컴퓨터로 만들다</h2>
+        <span>"{VB_WHITEPAPER.title}"</span>
+      </div>
+      <div class="vb-wp-box">
+        <div class="vb-wp-why">
+          <p class="vb-wp-sub">비트코인으로는 부족했던 이유</p>
+          <ul>
+            {VB_WHITEPAPER.whyBitcoinWasntEnough.map((w) => <li>{w}</li>)}
+          </ul>
+        </div>
+        <blockquote class="vb-wp-quote">
+          <p>"{VB_WHITEPAPER.famousQuote}"</p>
+        </blockquote>
+        <p class="vb-wp-core">{VB_WHITEPAPER.coreIdea}</p>
+        <div class="vb-wp-innovations">
+          {VB_WHITEPAPER.keyInnovations.map((inn) => (
+            <div class="vb-innovation-card">
+              <strong>{inn.title}</strong>
+              <p>{inn.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 재산·기부 -->
+    <section class="content-section vb-wealth-section" aria-labelledby="vb-wealth-title">
+      <div class="vb-section-heading">
+        <p>재산과 기부</p>
+        <h2 id="vb-wealth-title">약 14억 달러 추정 — 그러나 가방 하나로 여행한다</h2>
+        <span>역대 가장 많이 기부한 블록체인 창시자.</span>
+      </div>
+      <div class="vb-wealth-grid">
+        <div class="vb-wealth-kpi-col">
+          <div class="vb-wkpi">
+            <span>추정 순자산</span>
+            <strong>${(VB_WEALTH.estimatedNetWorthUsd / 1e9).toFixed(1)}B</strong>
+          </div>
+          <div class="vb-wkpi">
+            <span>공개 지갑 ETH</span>
+            <strong>~{VB_WEALTH.totalKnownEth.toLocaleString()} ETH</strong>
+          </div>
+          <div class="vb-wkpi">
+            <span>ETH 평가액</span>
+            <strong>${(VB_WEALTH.estimatedEthValue / 1e6).toFixed(0)}M</strong>
+          </div>
+          <div class="vb-wkpi vb-wkpi--highlight">
+            <span>총 기부 추정</span>
+            <strong>$1.5B+</strong>
+          </div>
+          <p class="vb-wealth-lifestyle">{VB_WEALTH.lifestyle}</p>
+        </div>
+        <div class="vb-donations-col">
+          <p class="vb-donations-title">주요 기부 내역</p>
+          {VB_WEALTH.majorDonations.map((d) => (
+            <div class="vb-donation-card">
+              <div class="vb-donation-header">
+                <span class="vb-donation-year">{d.year}</span>
+                <strong class="vb-donation-amount">{d.amount}</strong>
+              </div>
+              <p class="vb-donation-recipient">{d.recipient}</p>
+              <small class="vb-donation-note">{d.note}</small>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 이더리움이 만든 것들 -->
+    <section class="content-section vb-legacy-section" aria-labelledby="vb-legacy-title">
+      <div class="vb-section-heading">
+        <p>기술 유산</p>
+        <h2 id="vb-legacy-title">이더리움이 세상에 가져온 것</h2>
+        <span>스마트 컨트랙트 하나에서 파생된 산업들.</span>
+      </div>
+      <div class="vb-legacy-grid">
+        {VB_LEGACY.map((l) => (
+          <article class="vb-legacy-card">
+            <div class="vb-legacy-icon">{l.icon}</div>
+            <div class="vb-legacy-content">
+              <div class="vb-legacy-header">
+                <strong>{l.title}</strong>
+                <div class="vb-legacy-meta">
+                  <span class="vb-legacy-year">{l.year}</span>
+                  <span class="vb-legacy-tvl">{l.tvl}</span>
+                </div>
+              </div>
+              <p>{l.detail}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 더 머지 -->
+    <section class="content-section vb-merge-section" aria-labelledby="vb-merge-title">
+      <div class="vb-section-heading">
+        <p>더 머지</p>
+        <h2 id="vb-merge-title">The Merge — 이더리움 역사상 가장 중요한 순간</h2>
+        <span>{VB_MERGE.date} · 블록 #{VB_MERGE.blockNumber.toLocaleString()}</span>
+      </div>
+      <div class="vb-merge-box">
+        <div class="vb-merge-compare">
+          <div class="vb-merge-side vb-merge-side--before">
+            <p class="vb-merge-side-label">머지 이전 (PoW)</p>
+            <div class="vb-merge-row"><span>합의 방식</span><strong>{VB_MERGE.before.consensus}</strong></div>
+            <div class="vb-merge-row"><span>연간 에너지</span><strong>{VB_MERGE.before.energyPerYear}</strong></div>
+            <div class="vb-merge-row"><span>참여자</span><strong>{VB_MERGE.before.validators}</strong></div>
+            <div class="vb-merge-row"><span>진입 장벽</span><strong>{VB_MERGE.before.entryBarrier}</strong></div>
+          </div>
+          <div class="vb-merge-arrow">→</div>
+          <div class="vb-merge-side vb-merge-side--after">
+            <p class="vb-merge-side-label">머지 이후 (PoS)</p>
+            <div class="vb-merge-row"><span>합의 방식</span><strong>{VB_MERGE.after.consensus}</strong></div>
+            <div class="vb-merge-row"><span>연간 에너지</span><strong class="vb-merge-highlight">{VB_MERGE.after.energyPerYear}</strong></div>
+            <div class="vb-merge-row"><span>참여자</span><strong>{VB_MERGE.after.validators}</strong></div>
+            <div class="vb-merge-row"><span>진입 장벽</span><strong>{VB_MERGE.after.entryBarrier}</strong></div>
+          </div>
+        </div>
+        <blockquote class="vb-merge-quote">
+          <p>"{VB_MERGE.vitalikQuote}"</p>
+        </blockquote>
+        <div class="vb-merge-significance">
+          <p class="vb-merge-sub">의미와 영향</p>
+          <ul>
+            {VB_MERGE.significance.map((s) => <li>{s}</li>)}
+          </ul>
+        </div>
+        <p class="vb-merge-tech">{VB_MERGE.techNote}</p>
+      </div>
+    </section>
+
+    <!-- 사토시 vs 비탈릭 -->
+    <section class="content-section vb-compare-section" aria-labelledby="vb-compare-title">
+      <div class="vb-section-heading">
+        <p>비교 분석</p>
+        <h2 id="vb-compare-title">사토시 나카모토 vs 비탈릭 부테린</h2>
+        <span>두 천재의 철학과 결과물은 어떻게 다른가.</span>
+      </div>
+      <div class="table-wrap vb-table-wrap">
+        <table class="vb-compare-table">
+          <caption>사토시 나카모토 vs 비탈릭 부테린 비교</caption>
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>₿ 사토시 나카모토</th>
+              <th>⟠ 비탈릭 부테린</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {VB_VS_SATOSHI.map((row) => (
+              <tr>
+                <td class="vb-compare-cat">{row.category}</td>
+                <td class:list={["vb-compare-cell", row.winner === "satoshi" && "vb-compare-cell--win"]}>
+                  {row.satoshi}
+                </td>
+                <td class:list={["vb-compare-cell", row.winner === "vitalik" && "vb-compare-cell--win"]}>
+                  {row.vitalik}
+                </td>
+                <td class="vb-compare-note">{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 논란과 비판 -->
+    <section class="content-section vb-controversy-section" aria-labelledby="vb-controversy-title">
+      <div class="vb-section-heading">
+        <p>논란과 비판</p>
+        <h2 id="vb-controversy-title">이더리움과 비탈릭을 둘러싼 논쟁들</h2>
+        <span>혁신에는 항상 논란이 따릅니다.</span>
+      </div>
+      <div class="vb-controversy-list">
+        {VB_CONTROVERSIES.map((c) => (
+          <article class:list={["vb-controversy-card", `vb-controversy-card--${c.severity}`]}>
+            <div class="vb-controversy-header">
+              <strong>{c.title}</strong>
+              <span class:list={["vb-severity-badge", `vb-severity-badge--${c.severity}`]}>
+                {c.severity === "high" ? "높음" : c.severity === "medium" ? "보통" : "낮음"}
+              </span>
+            </div>
+            <p>{c.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 이더리움 로드맵 -->
+    <section class="content-section vb-roadmap-section" aria-labelledby="vb-roadmap-title">
+      <div class="vb-section-heading">
+        <p>이더리움 로드맵</p>
+        <h2 id="vb-roadmap-title">Merge → Surge → Scourge → Verge → Purge → Splurge</h2>
+        <span>비탈릭이 설계한 이더리움의 6단계 완성 로드맵.</span>
+      </div>
+      <div class="vb-roadmap-list">
+        {VB_ROADMAP.map((r, i) => (
+          <div class="vb-roadmap-item">
+            <div class="vb-roadmap-num">{i + 1}</div>
+            <div class="vb-roadmap-content">
+              <div class="vb-roadmap-header">
+                <strong>{r.phase}</strong>
+                <span class:list={[
+                  "vb-roadmap-status",
+                  r.status === "완료" ? "vb-roadmap-status--done" :
+                  r.status === "진행 중" ? "vb-roadmap-status--active" : "vb-roadmap-status--plan"
+                ]}>
+                  {r.status}
+                </span>
+                <span class="vb-roadmap-year">{r.year}</span>
+              </div>
+              <p>{r.detail}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 리포트 -->
+    <section class="content-section vb-related-section" aria-labelledby="vb-related-title">
+      <div class="vb-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="vb-related-title">암호화폐 창시자 시리즈</h2>
+      </div>
+      <div class="vb-related-grid">
+        {VB_RELATED_LINKS.map((link) => (
+          <a class="vb-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="비탈릭 부테린 자주 묻는 질문"
+      intro={[
+        VB_META.dataNote,
+        "비탈릭 부테린은 1994년생으로 19세에 이더리움 백서를 작성하고 21세에 이더리움 메인넷을 론칭한 이더리움 창시자입니다.",
+      ]}
+      inputPoints={[
+        "비탈릭 부테린의 성장 스토리와 이더리움 창시 과정을 확인할 수 있습니다.",
+        "이더리움 백서의 핵심 아이디어와 비트코인과의 차이를 비교합니다.",
+        "더 머지(PoS 전환), 기부 내역, 로드맵까지 현재까지의 행적을 정리합니다.",
+      ]}
+      criteria={[
+        "ETH 보유량: 공개 온체인 지갑(vitalik.eth) 기준 추정",
+        "기부 내역: 이더리움 재단 공개 발표·온체인 데이터",
+        "로드맵: ethereum.org 공식 문서 기준",
+      ]}
+      faq={VB_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={VB_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>
