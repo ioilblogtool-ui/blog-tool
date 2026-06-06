@@ -10,7 +10,7 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
-type ReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics";
+type ReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics" | "crypto";
 type ReportTagMod = "salary" | "asset";
 
 type ReportIndexMeta = {
@@ -414,7 +414,7 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
       { label: "금", mod: "asset" },
       { label: "S&P500", mod: "asset" },
     ],
-    category: "asset",
+    category: "crypto",
     isNew: true,
   },
   "ethereum-historical-returns-2015-2026": {
@@ -424,7 +424,7 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
       { label: "연도별 수익률", mod: "asset" },
       { label: "스테이블코인", mod: "asset" },
     ],
-    category: "asset",
+    category: "crypto",
     isNew: true,
   },
   "etf-vs-direct-stock-10year-2026": {
@@ -470,7 +470,47 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
       { label: "거래소", mod: "asset" },
       { label: "수수료", mod: "asset" },
     ],
-    category: "asset",
+    category: "crypto",
+    isNew: true,
+  },
+  "bitcoin-annual-return-history": {
+    eyebrow: "비트코인 역사",
+    tags: [
+      { label: "BTC", mod: "asset" },
+      { label: "연도별 수익률", mod: "asset" },
+      { label: "반감기", mod: "asset" },
+    ],
+    category: "crypto",
+    isNew: true,
+  },
+  "bitcoin-supply-holders-2026": {
+    eyebrow: "비트코인 보유 현황",
+    tags: [
+      { label: "BTC", mod: "asset" },
+      { label: "국가·기업", mod: "asset" },
+      { label: "사토시", mod: "asset" },
+    ],
+    category: "crypto",
+    isNew: true,
+  },
+  "satoshi-nakamoto-bitcoin-creator": {
+    eyebrow: "비트코인 창시자",
+    tags: [
+      { label: "사토시", mod: "asset" },
+      { label: "정체 미스터리", mod: "asset" },
+      { label: "110만 BTC", mod: "asset" },
+    ],
+    category: "crypto",
+    isNew: true,
+  },
+  "vitalik-buterin-ethereum-creator": {
+    eyebrow: "이더리움 창시자",
+    tags: [
+      { label: "비탈릭", mod: "asset" },
+      { label: "이더리움", mod: "asset" },
+      { label: "더 머지", mod: "asset" },
+    ],
+    category: "crypto",
     isNew: true,
   },
   "ai-side-income-comparison-2026": {
@@ -759,6 +799,7 @@ const cultureSeries = reportEntries.filter((report) => report.category === "cult
 const supportSeries = reportEntries.filter((report) => report.category === "support");
 const insuranceSeries = reportEntries.filter((report) => report.category === "insurance");
 const taxSeries = reportEntries.filter((report) => report.category === "tax");
+const cryptoSeries = reportEntries.filter((report) => report.category === "crypto");
 
 const totalReports = reportEntries.length;
 const featuredReport = [...reportEntries].sort((a, b) => b.order - a.order)[0];
@@ -800,6 +841,7 @@ const seriesIntroductions: Record<ReportCategory, string> = {
   support: "정부 지원금, 복지급여, 신청 기준처럼 제도 확인이 먼저 필요한 주제를 모았습니다.",
   insurance: "실손보험, 태아보험처럼 보장 구조와 실제 부담액을 같이 봐야 하는 주제를 모았습니다.",
   tax: "연말정산, 세액공제, 절세 전략처럼 신고 전 점검이 필요한 주제를 모았습니다.",
+  crypto: "비트코인·이더리움 수익률, 창시자 스토리, 국가·기업 보유 현황처럼 암호화폐를 숫자로 읽는 시리즈입니다.",
 };
 
 const reportToToolBridges = [
@@ -998,6 +1040,7 @@ const reportFaqJsonLd = {
       <button class="reports-filter-chip" data-filter="insurance">보험</button>
       <button class="reports-filter-chip" data-filter="tax">세금</button>
       <button class="reports-filter-chip" data-filter="culture">문화·엔터</button>
+      <button class="reports-filter-chip" data-filter="crypto">암호화폐</button>
       <button class="reports-filter-chip" data-filter="new">신규</button>
     </div>
 
@@ -1206,6 +1249,32 @@ const reportFaqJsonLd = {
         </div>
         <div class="reports-card-grid">
           {taxSeries.map((r) => (
+            <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
+              <p class="rc-eyebrow">{r.eyebrow}</p>
+              <p class="rc-title">{r.title}</p>
+              <p class="rc-desc">{r.desc}</p>
+              <div class="rc-footer">
+                <div class="rc-tags">
+                  {r.tags.map((t) => (
+                    <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                  ))}
+                </div>
+                <span class="rc-arrow">→</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {cryptoSeries.length > 0 && (
+      <section class="reports-series" data-series="crypto">
+        <div class="reports-series__head">
+          <h3 class="reports-series__label">암호화폐 시리즈</h3>
+          <p class="reports-series__desc">{seriesIntroductions.crypto}</p>
+        </div>
+        <div class="reports-card-grid">
+          {cryptoSeries.map((r) => (
             <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
               <p class="rc-eyebrow">{r.eyebrow}</p>
               <p class="rc-title">{r.title}</p>
