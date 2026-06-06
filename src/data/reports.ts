@@ -372,6 +372,13 @@ export const reports: ReportMeta[] = [
     badges: ["투자", "자산비교", "10년비교", "2026"],
   },
   {
+    slug: "ethereum-historical-returns-2015-2026",
+    title: "이더리움 역사 수익률 2015-2026 | 매년 얼마 올랐나",
+    description: "이더리움 2015~2026년 연도별 가격과 수익률을 ICO, 스마트컨트랙트, DeFi, NFT, Merge, 스테이킹, L2, 스테이블코인 흐름과 함께 정리합니다.",
+    order: 26.1,
+    badges: ["이더리움", "ETH", "연도별 수익률", "2026"],
+  },
+  {
     slug: "elementary-school-ready-cost-2026",
     title: "초등학교 입학 준비물·비용 총정리 2026",
     description: "책가방, 실내화, 문구, 체육복, 돌봄과 방과후까지 초등학교 입학 전 준비물과 첫 달 비용을 한 번에 정리한 리포트입니다.",
@@ -510,6 +517,13 @@ export const reports: ReportMeta[] = [
     description: "서울 주요 구 아파트 실거래가를 평균가, 84㎡ 환산가, 전년 대비, 전세가율 기준으로 비교합니다.",
     order: 37,
     badges: ["서울", "부동산", "2026"],
+  },
+  {
+    slug: "bitcoin-annual-return-history",
+    title: "비트코인 연도별 수익률 역사 2011~2026",
+    description: "2011년부터 연도별 시작가·종가·수익률, 반감기 사이클, 폭락 구간, 투자 시뮬레이터까지 한눈에 정리합니다.",
+    order: 37.05,
+    badges: ["비트코인", "연도별수익률", "반감기", "암호화폐", "2026"],
   },
   {
     slug: "property-tax-payment-2026",

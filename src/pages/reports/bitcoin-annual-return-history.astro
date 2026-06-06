@@ -1,0 +1,349 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  BTC_META,
+  BTC_YEARS,
+  BTC_HALVINGS,
+  BTC_MDD_EVENTS,
+  BTC_KPI,
+  BTC_SIMULATOR_YEARS,
+  BTC_FAQ,
+  BTC_RELATED_LINKS,
+  BTC_SOURCE_LINKS,
+} from "../../data/bitcoinAnnualReturn";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${BTC_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const simulatorData = JSON.stringify(BTC_SIMULATOR_YEARS);
+
+const formatUsd = (v: number) =>
+  v >= 1000
+    ? "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 })
+    : "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const formatPct = (v: number) => {
+  const sign = v > 0 ? "+" : "";
+  return sign + v.toLocaleString("en-US", { maximumFractionDigits: 0 }) + "%";
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: BTC_META.title,
+    description: BTC_META.description,
+    dateModified: BTC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: BTC_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: BTC_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={BTC_META.seoTitle} description={BTC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main
+    class="container page-shell report-page btc-return-page"
+    data-report="bitcoin-annual-return-history"
+    data-simulator={simulatorData}
+    data-current-price={BTC_KPI.currentPrice}
+  >
+    <CalculatorHero
+      eyebrow="암호화폐 리포트"
+      title={BTC_META.title}
+      description="2011년부터 연도별 시작가·종가·수익률, 반감기 사이클, 폭락 구간, 투자 시뮬레이터까지 한눈에 정리합니다."
+      badges={["비트코인", "연도별 수익률", "반감기", "2026 기준"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        BTC_META.dataNote,
+        "투자 권유 목적이 아닌 역사적 참고 자료입니다. 암호화폐 투자는 원금 손실 가능성이 있습니다.",
+      ]}
+    />
+
+    <!-- KPI 카드 -->
+    <section class="content-section btc-kpi-section" aria-labelledby="btc-kpi-title">
+      <div class="btc-section-heading">
+        <p>핵심 지표</p>
+        <h2 id="btc-kpi-title">비트코인, 숫자로 먼저 봅니다</h2>
+        <span>{BTC_KPI.currentPriceDate} 기준</span>
+      </div>
+      <div class="btc-kpi-grid">
+        <article class="btc-kpi-card">
+          <span class="btc-kpi-label">현재가 (추정)</span>
+          <strong class="btc-kpi-value">{formatUsd(BTC_KPI.currentPrice)}</strong>
+          <small>2026년 6월 기준</small>
+        </article>
+        <article class="btc-kpi-card">
+          <span class="btc-kpi-label">역대 최고가</span>
+          <strong class="btc-kpi-value">{formatUsd(BTC_KPI.allTimeHigh)}</strong>
+          <small>{BTC_KPI.allTimeHighDate}</small>
+        </article>
+        <article class="btc-kpi-card btc-kpi-card--best">
+          <span class="btc-kpi-label">역대 최고 연간 수익</span>
+          <strong class="btc-kpi-value btc-positive">{formatPct(BTC_KPI.bestYear.returnPct)}</strong>
+          <small>{BTC_KPI.bestYear.year}년</small>
+        </article>
+        <article class="btc-kpi-card btc-kpi-card--worst">
+          <span class="btc-kpi-label">역대 최대 연간 손실</span>
+          <strong class="btc-kpi-value btc-negative">{formatPct(BTC_KPI.worstYear.returnPct)}</strong>
+          <small>{BTC_KPI.worstYear.year}년</small>
+        </article>
+        <article class="btc-kpi-card">
+          <span class="btc-kpi-label">현재까지 채굴량</span>
+          <strong class="btc-kpi-value">{BTC_KPI.minedSupply.toLocaleString()} BTC</strong>
+          <small>총 발행 한도의 {BTC_KPI.minedPct}%</small>
+        </article>
+        <article class="btc-kpi-card">
+          <span class="btc-kpi-label">반감기 이후 1년 평균 수익</span>
+          <strong class="btc-kpi-value btc-positive">+{BTC_KPI.halvingAvgReturn1Y}%</strong>
+          <small>1~3차 반감기 평균 (참고)</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 연도별 수익률 테이블 -->
+    <section class="content-section btc-table-section" aria-labelledby="btc-table-title">
+      <div class="btc-section-heading">
+        <p>연도별 기록</p>
+        <h2 id="btc-table-title">2011년부터 2026년까지 연도별 가격과 수익률</h2>
+        <span>매년 1월 1일 시작가 → 12월 31일 종가 기준. 🔶 반감기 해.</span>
+      </div>
+      <div class="table-wrap btc-table-wrap">
+        <table class="btc-annual-table">
+          <caption>비트코인 연도별 가격·수익률 기록 (2011~2026)</caption>
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>연초가 (USD)</th>
+              <th>연말가 (USD)</th>
+              <th>연간 수익률</th>
+              <th>수익률 바</th>
+              <th>주요 이벤트</th>
+            </tr>
+          </thead>
+          <tbody>
+            {BTC_YEARS.map((row) => {
+              const isPos = row.returnPct >= 0;
+              const barWidth = Math.min(Math.abs(row.returnPct) / 55, 100);
+              return (
+                <tr class:list={[row.highlight && "btc-halving-row", row.isEstimate && "btc-estimate-row"]}>
+                  <td class="btc-year-cell">
+                    <strong>{row.year}</strong>
+                    {row.highlight && <span class="btc-halving-badge">🔶 반감기</span>}
+                    {row.isEstimate && <span class="btc-estimate-badge">추정</span>}
+                  </td>
+                  <td class="btc-price-cell">{formatUsd(row.startPrice)}</td>
+                  <td class="btc-price-cell">{formatUsd(row.endPrice)}</td>
+                  <td class:list={["btc-return-cell", isPos ? "btc-positive" : "btc-negative"]}>
+                    {formatPct(row.returnPct)}
+                  </td>
+                  <td class="btc-bar-cell" aria-hidden="true">
+                    <div class:list={["btc-bar-track"]}>
+                      <div
+                        class:list={["btc-bar-fill", isPos ? "btc-bar-fill--pos" : "btc-bar-fill--neg"]}
+                        style={`width:${barWidth}%`}
+                      />
+                    </div>
+                  </td>
+                  <td class="btc-event-cell">{row.keyEvent}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="btc-table-note">※ 2025·2026년 수치는 추정·참고값입니다. 2026년은 6월 기준 YTD.</p>
+    </section>
+
+    <!-- 투자 시뮬레이터 -->
+    <section class="content-section btc-simulator-section" aria-labelledby="btc-sim-title">
+      <div class="btc-section-heading">
+        <p>투자 시뮬레이터</p>
+        <h2 id="btc-sim-title">그때 얼마 투자했다면 지금 얼마일까?</h2>
+        <span>연초에 매수 후 2026년 6월 기준 현재까지 보유 가정 (환율 미반영)</span>
+      </div>
+      <div class="btc-simulator-box">
+        <div class="btc-sim-inputs">
+          <div class="btc-sim-field">
+            <label for="btc-sim-year">투자 시작 연도</label>
+            <select id="btc-sim-year">
+              {BTC_SIMULATOR_YEARS.map((y) => (
+                <option value={y.year}>{y.year}년 (연초 {formatUsd(y.startPrice)})</option>
+              ))}
+            </select>
+          </div>
+          <div class="btc-sim-field">
+            <label for="btc-sim-amount">투자 금액 (원)</label>
+            <input id="btc-sim-amount" type="number" value="1000000" min="1000" step="100000" />
+          </div>
+        </div>
+        <div class="btc-sim-result" id="btc-sim-result" aria-live="polite">
+          <div class="btc-sim-result-row">
+            <span>투자 당시 BTC 취득량 (추정)</span>
+            <strong id="btc-sim-btc-amount">—</strong>
+          </div>
+          <div class="btc-sim-result-row">
+            <span>현재 평가금액 (추정)</span>
+            <strong id="btc-sim-current-krw" class="btc-sim-highlight">—</strong>
+          </div>
+          <div class="btc-sim-result-row">
+            <span>수익 배수</span>
+            <strong id="btc-sim-multiple">—</strong>
+          </div>
+          <div class="btc-sim-result-row">
+            <span>총 수익률</span>
+            <strong id="btc-sim-return-pct">—</strong>
+          </div>
+        </div>
+        <p class="btc-sim-note">
+          ※ USD 기준 단순 계산입니다. 원화 환율, 거래 수수료, 세금은 반영하지 않습니다.
+          실제 투자 성과와 다를 수 있습니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- 반감기 사이클 -->
+    <section class="content-section btc-halving-section" aria-labelledby="btc-halving-title">
+      <div class="btc-section-heading">
+        <p>반감기 사이클</p>
+        <h2 id="btc-halving-title">4번의 반감기 — 공급이 줄었을 때 시장은 어떻게 반응했나</h2>
+        <span>반감기 1년 전 가격 대비 이후 최고가까지의 변화입니다.</span>
+      </div>
+      <div class="btc-halving-grid">
+        {BTC_HALVINGS.map((h) => (
+          <article class="btc-halving-card">
+            <div class="btc-halving-header">
+              <span class="btc-cycle-badge">{h.cycle}차 반감기</span>
+              <strong class="btc-halving-date">{h.halvingDate}</strong>
+            </div>
+            <div class="btc-halving-reward">
+              <span>{h.rewardBefore}</span>
+              <span class="btc-arrow">→</span>
+              <span class="btc-reward-after">{h.rewardAfter}</span>
+            </div>
+            <div class="btc-halving-stats">
+              <div class="btc-halving-stat">
+                <span>반감기 시점 가격</span>
+                <strong>{formatUsd(h.priceAtHalving)}</strong>
+              </div>
+              <div class="btc-halving-stat">
+                <span>이후 최고가</span>
+                <strong class="btc-positive">{formatUsd(h.peakPrice)}</strong>
+              </div>
+              <div class="btc-halving-stat">
+                <span>최고가 달성</span>
+                <strong>{h.peakDate}</strong>
+              </div>
+              <div class="btc-halving-stat">
+                <span>반감기 전 1년 대비 최고가</span>
+                <strong class="btc-positive">+{h.returnFrom1YearBefore.toLocaleString()}%</strong>
+              </div>
+            </div>
+            <p class="btc-halving-note">{h.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 주요 폭락 구간 -->
+    <section class="content-section btc-mdd-section" aria-labelledby="btc-mdd-title">
+      <div class="btc-section-heading">
+        <p>주요 폭락 구간</p>
+        <h2 id="btc-mdd-title">비트코인은 어떤 이유로, 얼마나 떨어졌나</h2>
+        <span>고점 대비 저점 낙폭(MDD)과 회복까지 걸린 시간입니다.</span>
+      </div>
+      <div class="btc-mdd-grid">
+        {BTC_MDD_EVENTS.map((ev) => (
+          <article class="btc-mdd-card">
+            <div class="btc-mdd-header">
+              <span class="btc-mdd-label">{ev.label}</span>
+              <span class="btc-mdd-period">{ev.period}</span>
+            </div>
+            <div class="btc-mdd-drawdown">
+              <span class="btc-mdd-pct btc-negative">{ev.drawdownPct}%</span>
+              <span class="btc-mdd-prices">
+                {formatUsd(ev.peakPrice)} → {formatUsd(ev.troughPrice)}
+              </span>
+            </div>
+            <div class="btc-mdd-recovery">
+              {ev.recoveryDate ? (
+                <span>회복: {ev.recoveryDate} ({ev.recoveryMonths}개월 소요)</span>
+              ) : (
+                <span class="btc-mdd-no-recovery">미회복 (전고점 기준)</span>
+              )}
+            </div>
+            <p class="btc-mdd-cause">{ev.cause}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 도구 -->
+    <section class="content-section btc-related-section" aria-labelledby="btc-related-title">
+      <div class="btc-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="btc-related-title">함께 보면 좋은 콘텐츠</h2>
+      </div>
+      <div class="btc-related-grid">
+        {BTC_RELATED_LINKS.map((link) => (
+          <a class="btc-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="비트코인 수익률 자주 묻는 질문"
+      intro={[
+        BTC_META.dataNote,
+        "비트코인은 2009년 사토시 나카모토가 최초 채굴을 시작한 이후 2011년부터 공개 시장 거래가 활성화됐습니다.",
+      ]}
+      inputPoints={[
+        "연도별 시작가·종가·수익률을 확인할 수 있습니다.",
+        "반감기 사이클 4회의 가격 변화 패턴을 비교합니다.",
+        "투자 시뮬레이터로 특정 연도 투자 시 현재 가치를 추정합니다.",
+      ]}
+      criteria={[
+        "가격 데이터 출처: CoinGecko, CoinMarketCap",
+        "반감기 블록 정보: BitcoinBlockHalf",
+        "2025·2026년 수치는 추정값입니다.",
+      ]}
+      faq={BTC_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={BTC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+
+  <script src="/scripts/bitcoin-annual-return-history.js" defer></script>
+</BaseLayout>

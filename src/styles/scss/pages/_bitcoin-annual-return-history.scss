@@ -1,0 +1,472 @@
+// BTC 테마 컬러
+$btc-orange: #f7931a;
+$btc-orange-light: #fff4e6;
+$btc-orange-border: #fde8c3;
+$btc-dark: #1a1209;
+$btc-heading: #241a08;
+$btc-muted: #6b5c42;
+$btc-card-bg: #fffbf5;
+$btc-positive: #16a34a;
+$btc-negative: #dc2626;
+
+.btc-return-page {
+  display: grid;
+  gap: 28px;
+
+  .btc-section-heading {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 18px;
+
+    p, h2, span { margin: 0; }
+
+    p {
+      font-size: 12px;
+      font-weight: 900;
+      color: $btc-orange;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: clamp(20px, 3vw, 30px);
+      line-height: 1.25;
+      color: $btc-heading;
+    }
+
+    span {
+      font-size: 14px;
+      color: $btc-muted;
+      line-height: 1.65;
+    }
+  }
+
+  .btc-positive { color: $btc-positive; }
+  .btc-negative { color: $btc-negative; }
+
+  // KPI 카드
+  .btc-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .btc-kpi-card {
+    border: 1px solid $btc-orange-border;
+    border-radius: 10px;
+    background: $btc-card-bg;
+    box-shadow: 0 10px 28px rgba(247, 147, 26, 0.07);
+    padding: 18px;
+    display: grid;
+    gap: 6px;
+
+    &--best { border-color: #bbf7d0; background: #f0fdf4; }
+    &--worst { border-color: #fecaca; background: #fff5f5; }
+  }
+
+  .btc-kpi-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: $btc-muted;
+  }
+
+  .btc-kpi-value {
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 900;
+    color: $btc-heading;
+    line-height: 1.1;
+  }
+
+  .btc-kpi-card small {
+    font-size: 12px;
+    color: $btc-muted;
+  }
+
+  // 연도별 테이블
+  .btc-table-wrap {
+    overflow-x: auto;
+    border: 1px solid $btc-orange-border;
+    border-radius: 10px;
+    background: $btc-card-bg;
+    margin-bottom: 8px;
+  }
+
+  .btc-annual-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+
+    caption {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+    }
+
+    th, td {
+      padding: 11px 14px;
+      border-bottom: 1px solid $btc-orange-border;
+      text-align: left;
+      vertical-align: middle;
+      line-height: 1.4;
+    }
+
+    thead th {
+      background: #fff4e6;
+      font-size: 12px;
+      font-weight: 900;
+      color: #7c4a00;
+      white-space: nowrap;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover { background: #fff8f0; }
+  }
+
+  .btc-halving-row {
+    background: #fff8ee !important;
+  }
+
+  .btc-estimate-row {
+    opacity: 0.8;
+  }
+
+  .btc-year-cell {
+    white-space: nowrap;
+    strong { font-weight: 900; color: $btc-heading; }
+  }
+
+  .btc-halving-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 6px;
+    color: #92400e;
+  }
+
+  .btc-estimate-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #e5e7eb;
+    color: #6b7280;
+    margin-left: 4px;
+  }
+
+  .btc-price-cell {
+    font-size: 13px;
+    color: $btc-heading;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btc-return-cell {
+    font-weight: 900;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .btc-bar-cell {
+    min-width: 100px;
+  }
+
+  .btc-bar-track {
+    height: 8px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .btc-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+
+    &--pos { background: $btc-positive; }
+    &--neg { background: $btc-negative; }
+  }
+
+  .btc-event-cell {
+    font-size: 12px;
+    color: $btc-muted;
+    max-width: 260px;
+  }
+
+  .btc-table-note {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 6px;
+  }
+
+  // 투자 시뮬레이터
+  .btc-simulator-box {
+    border: 2px solid $btc-orange;
+    border-radius: 12px;
+    background: $btc-orange-light;
+    padding: 24px;
+    display: grid;
+    gap: 20px;
+  }
+
+  .btc-sim-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .btc-sim-field {
+    display: grid;
+    gap: 6px;
+
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: $btc-heading;
+    }
+
+    select, input {
+      padding: 10px 14px;
+      border: 1px solid $btc-orange-border;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+      color: $btc-heading;
+      width: 100%;
+      appearance: none;
+
+      &:focus {
+        outline: none;
+        border-color: $btc-orange;
+        box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.15);
+      }
+    }
+  }
+
+  .btc-sim-result {
+    background: #fff;
+    border: 1px solid $btc-orange-border;
+    border-radius: 10px;
+    padding: 18px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .btc-sim-result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 14px;
+    gap: 12px;
+
+    span { color: $btc-muted; }
+
+    strong {
+      font-weight: 900;
+      font-size: 16px;
+      color: $btc-heading;
+    }
+  }
+
+  .btc-sim-highlight {
+    font-size: 24px !important;
+    color: $btc-orange !important;
+  }
+
+  .btc-sim-note {
+    font-size: 12px;
+    color: #9ca3af;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  // 반감기 사이클
+  .btc-halving-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .btc-halving-card {
+    border: 1px solid $btc-orange-border;
+    border-radius: 10px;
+    background: $btc-card-bg;
+    box-shadow: 0 10px 28px rgba(247, 147, 26, 0.07);
+    padding: 20px;
+    display: grid;
+    gap: 14px;
+  }
+
+  .btc-halving-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btc-cycle-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: $btc-orange;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .btc-halving-date {
+    font-size: 14px;
+    font-weight: 700;
+    color: $btc-heading;
+  }
+
+  .btc-halving-reward {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 900;
+    color: $btc-muted;
+  }
+
+  .btc-arrow { color: #d1d5db; }
+  .btc-reward-after { color: $btc-orange; }
+
+  .btc-halving-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .btc-halving-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    span { font-size: 11px; color: $btc-muted; }
+    strong { font-size: 15px; font-weight: 900; color: $btc-heading; }
+  }
+
+  .btc-halving-note {
+    font-size: 13px;
+    color: $btc-muted;
+    margin: 0;
+    line-height: 1.6;
+    padding-top: 8px;
+    border-top: 1px solid $btc-orange-border;
+  }
+
+  // 폭락 구간
+  .btc-mdd-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .btc-mdd-card {
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: #fff9f9;
+    padding: 16px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .btc-mdd-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .btc-mdd-label {
+    font-size: 14px;
+    font-weight: 900;
+    color: $btc-heading;
+  }
+
+  .btc-mdd-period {
+    font-size: 11px;
+    color: $btc-muted;
+  }
+
+  .btc-mdd-drawdown {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .btc-mdd-pct {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .btc-mdd-prices {
+    font-size: 12px;
+    color: $btc-muted;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btc-mdd-recovery {
+    font-size: 12px;
+    color: $btc-positive;
+    font-weight: 600;
+  }
+
+  .btc-mdd-no-recovery {
+    color: $btc-negative;
+    font-weight: 700;
+  }
+
+  .btc-mdd-cause {
+    font-size: 12px;
+    color: $btc-muted;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  // 관련 리포트
+  .btc-related-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .btc-related-card {
+    display: grid;
+    gap: 6px;
+    border: 1px solid $btc-orange-border;
+    border-radius: 10px;
+    background: $btc-card-bg;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: $btc-heading;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      border-color: $btc-orange;
+      box-shadow: 0 4px 16px rgba(247, 147, 26, 0.15);
+    }
+
+    strong { font-size: 15px; font-weight: 900; }
+    span { font-size: 13px; color: $btc-muted; }
+  }
+
+  // 반응형
+  @media (max-width: 900px) {
+    .btc-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .btc-mdd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    .btc-kpi-grid { grid-template-columns: 1fr; }
+    .btc-halving-grid { grid-template-columns: 1fr; }
+    .btc-mdd-grid { grid-template-columns: 1fr; }
+    .btc-related-grid { grid-template-columns: 1fr; }
+    .btc-sim-inputs { grid-template-columns: 1fr; }
+    .btc-halving-stats { grid-template-columns: 1fr; }
+  }
+}
