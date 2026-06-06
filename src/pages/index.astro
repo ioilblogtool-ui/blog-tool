@@ -80,8 +80,8 @@ const topicBySlug: Record<string, string> = {
   "fire-calculator": "투자·재테크",
   "national-pension-calculator": "투자·재테크",
   "irp-pension-calculator": "투자·재테크",
-  "coin-dca-calculator": "투자·재테크",
-  "coin-tax-calculator": "투자·재테크",
+  "coin-dca-calculator": "암호화폐",
+  "coin-tax-calculator": "암호화폐",
   "domestic-stock-capital-gains-tax": "투자·재테크",
   "pension-optimal-age": "투자·재테크",
   "early-retirement-age": "투자·재테크",
@@ -110,7 +110,7 @@ const topicBySlug: Record<string, string> = {
 };
 
 const categories = [...new Set(orderedTools.map((t) => topicBySlug[t.slug]).filter(Boolean))];
-type HomeReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics";
+type HomeReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics" | "crypto";
 
 type HomeReportMeta = {
   category: HomeReportCategory;
@@ -157,8 +157,8 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "monthly-dividend-etf-2026": { category: "asset", isNew: true },
   "semiconductor-stocks-forecast-2026-2028": { category: "asset", isNew: true },
   "semiconductor-value-chain": { category: "asset", isNew: true },
-  "bitcoin-gold-sp500-10year-comparison-2026": { category: "asset", isNew: true },
-  "ethereum-historical-returns-2015-2026": { category: "asset", isNew: true },
+  "bitcoin-gold-sp500-10year-comparison-2026": { category: "crypto", isNew: true },
+  "ethereum-historical-returns-2015-2026": { category: "crypto", isNew: true },
   "teacher-salary-2026": { category: "salary", isNew: true },
   "local-election-superintendent-2026": { category: "politics", isNew: true },
   "local-election-byeollection-2026": { category: "politics", isNew: true },
@@ -181,7 +181,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "ai-job-salary-impact-2026": { category: "salary", isNew: true },
   "etf-vs-direct-stock-10year-2026": { category: "asset", isNew: true },
   "stock-brokerage-fee-comparison-2026": { category: "asset", isNew: true },
-  "coin-exchange-comparison-2026": { category: "asset", isNew: true },
+  "coin-exchange-comparison-2026": { category: "crypto", isNew: true },
   "2026-seoul-apt-cheonyak-cutline": { category: "estate", isNew: true },
   "samsung-shuttle-real-estate-2026": { category: "estate", isNew: true },
   "seoul-mortgage-refinancing-2026": { category: "estate", isNew: true },
@@ -213,6 +213,10 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "local-election-candidate-real-estate-2026": { category: "politics", isNew: true },
   "governor-mayor-candidate-assets-comparison-2026": { category: "politics", isNew: true },
   "gyeonggi-governor-candidate-assets-2026": { category: "politics", isNew: true },
+  "bitcoin-annual-return-history": { category: "crypto", isNew: true },
+  "bitcoin-supply-holders-2026": { category: "crypto", isNew: true },
+  "satoshi-nakamoto-bitcoin-creator": { category: "crypto", isNew: true },
+  "vitalik-buterin-ethereum-creator": { category: "crypto", isNew: true },
 };
 
 const reportCategoryLabels: Record<HomeReportCategory, string> = {
@@ -226,9 +230,10 @@ const reportCategoryLabels: Record<HomeReportCategory, string> = {
   insurance: "보험",
   tax: "세금",
   politics: "정치·선거",
+  crypto: "암호화폐",
 };
 
-const reportFilterOrder: Array<HomeReportCategory | "new"> = ["politics", "salary", "bonus", "estate", "asset", "life", "support", "insurance", "tax", "culture", "new"];
+const reportFilterOrder: Array<HomeReportCategory | "new"> = ["politics", "salary", "bonus", "estate", "asset", "crypto", "life", "support", "insurance", "tax", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
 const homeCompareCards = [
