@@ -35,6 +35,18 @@ export interface EthereumFaq {
   a: string;
 }
 
+export interface EthereumDrawdownEvent {
+  rank: number;
+  label: string;
+  period: string;
+  peakPrice: number;
+  troughPrice: number;
+  drawdownPct: number;
+  recovery: string;
+  cause: string;
+  lesson: string;
+}
+
 export const ETHEREUM_HISTORICAL_RETURNS_SLUG = "ethereum-historical-returns-2015-2026";
 
 export const ethereumReturnRows: EthereumReturnRow[] = [
@@ -296,6 +308,64 @@ export const ethereumThemes: EthereumTheme[] = [
   },
 ];
 
+export const ethereumDrawdownEvents: EthereumDrawdownEvent[] = [
+  {
+    rank: 1,
+    label: "2018년 ICO 버블 붕괴",
+    period: "2018.01 고점 -> 2018.12 저점",
+    peakPrice: 1433,
+    troughPrice: 82.83,
+    drawdownPct: -94.2,
+    recovery: "이전 고점 회복까지 약 3년, 2021년 강세장에서 돌파",
+    cause: "ICO 과열 해소, 규제 우려, 실사용 부재 논란, 크립토 겨울이 겹치며 ETH가 가장 깊은 조정을 겪었습니다.",
+    lesson: "연간 수익률이 좋아 보여도 사이클 고점에서 진입하면 90% 이상 손실 구간을 견뎌야 할 수 있습니다.",
+  },
+  {
+    rank: 2,
+    label: "2021-2022년 NFT 이후 크립토 겨울",
+    period: "2021.11 고점 -> 2022.06 저점권",
+    peakPrice: 4858,
+    troughPrice: 880,
+    drawdownPct: -81.9,
+    recovery: "2024년 ETF 기대와 2025년 재상승 구간에서 고점권 재접근",
+    cause: "금리 인상, 레버리지 청산, Terra·FTX 충격, NFT 거래 둔화가 동시에 반영됐습니다.",
+    lesson: "The Merge 같은 기술적 호재가 있어도 유동성 축소 국면에서는 가격이 먼저 무너질 수 있습니다.",
+  },
+  {
+    rank: 3,
+    label: "2016년 The DAO 해킹 조정",
+    period: "2016.06 고점 -> 2016.12 저점권",
+    peakPrice: 21.52,
+    troughPrice: 6,
+    drawdownPct: -72.1,
+    recovery: "2017년 ICO 사이클에서 빠르게 회복 후 신고가 경신",
+    cause: "The DAO 해킹과 Ethereum Classic 분기로 스마트컨트랙트 보안·거버넌스 리스크가 가격에 반영됐습니다.",
+    lesson: "초기 기술 플랫폼은 가격보다 코드 보안, 커뮤니티 합의, 체인 분기 리스크가 더 큰 변수로 작동할 수 있습니다.",
+  },
+  {
+    rank: 4,
+    label: "2025년 트레저리·거시 변동성 조정",
+    period: "2025년 고점 -> 2025년 저점",
+    peakPrice: 4952,
+    troughPrice: 1396,
+    drawdownPct: -71.8,
+    recovery: "2026년 6월 기준 이전 고점 미회복",
+    cause: "기업 ETH 보유 기대, 스테이블코인·RWA 서사가 컸지만 고점 이후 거시 불확실성과 차익 실현이 커졌습니다.",
+    lesson: "새로운 기관 수요 서사가 생겨도 실제 매수 지속성, 락업, 회계 처리, 시장 유동성을 함께 확인해야 합니다.",
+  },
+  {
+    rank: 5,
+    label: "2020년 코로나 유동성 쇼크",
+    period: "2020.02 고점권 -> 2020.03 저점",
+    peakPrice: 288,
+    troughPrice: 89.35,
+    drawdownPct: -69,
+    recovery: "DeFi Summer와 유동성 회복으로 2020년 말 강하게 반등",
+    cause: "코로나19 초기 글로벌 위험자산 급락과 온체인 담보 청산이 겹치며 단기 폭락이 발생했습니다.",
+    lesson: "ETH는 장기 성장 서사가 있어도 단기에는 주식·레버리지 시장과 함께 급락하는 위험자산 성격을 보입니다.",
+  },
+];
+
 export const ethereumSources: EthereumSource[] = [
   {
     label: "Ethereum Returns by Year",
@@ -353,6 +423,7 @@ export const ethereumFaq: EthereumFaq[] = [
 ];
 
 export const ethereumRelatedLinks = [
+  { href: "/reports/bitcoin-annual-return-history/", label: "비트코인 연도별 수익률 역사" },
   { href: "/tools/dca-investment-calculator/", label: "적립식 투자 계산기" },
   { href: "/tools/coin-dca-calculator/", label: "코인 적립식 계산기" },
   { href: "/tools/coin-tax-calculator/", label: "코인 세금 계산기" },
@@ -376,6 +447,7 @@ export const ethereumHistoricalReturns20152026 = {
   rows: ethereumReturnRows,
   milestones: ethereumMilestones,
   themes: ethereumThemes,
+  drawdownEvents: ethereumDrawdownEvents,
   sources: ethereumSources,
   faq: ethereumFaq,
   relatedLinks: ethereumRelatedLinks,

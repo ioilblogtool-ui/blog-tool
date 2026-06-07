@@ -582,6 +582,13 @@ export const reports: ReportMeta[] = [
     badges: ["임신", "검사비", "2026"],
   },
   {
+    slug: "health-checkup-cost-comparison-2026",
+    title: "건강검진 비용 비교 2026 | 국가검진 vs 사설 종합검진",
+    description: "국가건강검진, 국가암검진, 보건소 산전검사, 사설 기본·정밀 종합검진 비용을 비교하고 연령대·가족력·임신 시기별 선택 기준을 정리합니다.",
+    order: 38.1,
+    badges: ["건강검진", "국가검진", "사설검진", "2026"],
+  },
+  {
     slug: "birth-support-by-region-2026",
     title: "2026 지역별 출산지원금 완전 비교",
     description: "국가 공통 지원과 지자체 출산장려금을 서울·경기·지방 지역별로 비교하고 신청기한과 거주요건을 정리합니다.",

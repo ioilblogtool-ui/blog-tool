@@ -262,6 +262,45 @@ const jsonLd = {
       </div>
     </section>
 
+    <section class="content-section eth-drawdown-section" id="drawdown-top5">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">최대 폭락</p>
+        <h2>이더리움 역대 최대 TOP5 폭락 구간</h2>
+        <p>
+          고점과 저점은 CoinLore·시장 데이터 기준을 반올림해 정리했습니다. 거래소, 집계 시간, 일중 저가 기준에 따라 수치는 조금 달라질 수 있으므로
+          투자 판단용 확정 가격이 아니라 사이클 위험을 읽는 참고 지표로 보는 것이 좋습니다.
+        </p>
+      </div>
+      <div class="eth-drawdown-grid">
+        {report.drawdownEvents.map((event) => (
+          <article>
+            <div class="eth-drawdown-rank">TOP {event.rank}</div>
+            <h3>{event.label}</h3>
+            <p class="eth-drawdown-period">{event.period}</p>
+            <div class="eth-drawdown-price-row">
+              <span>고점 {formatUsd(event.peakPrice)}</span>
+              <strong>{formatReturn(event.drawdownPct)}</strong>
+              <span>저점 {formatUsd(event.troughPrice)}</span>
+            </div>
+            <dl>
+              <div>
+                <dt>원인</dt>
+                <dd>{event.cause}</dd>
+              </div>
+              <div>
+                <dt>회복</dt>
+                <dd>{event.recovery}</dd>
+              </div>
+              <div>
+                <dt>해석</dt>
+                <dd>{event.lesson}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+
     <section class="content-section eth-timeline-section" id="history">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">역사 타임라인</p>
@@ -326,6 +365,21 @@ const jsonLd = {
           <strong>낮은 수수료와 빠른 처리</strong>
           <p>Base, Arbitrum, Optimism 같은 L2는 잦은 소액 결제를 처리하고 Ethereum을 정산층으로 활용합니다.</p>
         </article>
+      </div>
+    </section>
+
+    <section class="content-section eth-bitcoin-cta-section">
+      <div>
+        <p class="eth-section-eyebrow">비교해서 보기</p>
+        <h2>비트코인 연도별 수익률과 나란히 보면 ETH의 성격이 더 선명해집니다</h2>
+        <p>
+          비트코인은 발행량과 희소성, 기관 보유, 반감기 사이클 중심으로 움직이고 이더리움은 스마트컨트랙트, DeFi, NFT, L2, 스테이블코인 사용량의 영향을 더 크게 받습니다.
+          두 리포트를 함께 보면 같은 암호화폐라도 가격을 움직이는 논리가 어떻게 다른지 비교할 수 있습니다.
+        </p>
+      </div>
+      <div class="eth-bitcoin-cta-actions">
+        <a class="button button--primary" href={withBase("/reports/bitcoin-annual-return-history/")}>비트코인 연도별 수익률 보기</a>
+        <a class="button button--secondary" href={withBase("/reports/bitcoin-supply-holders-2026/")}>비트코인 채굴량·보유 현황 보기</a>
       </div>
     </section>
 
