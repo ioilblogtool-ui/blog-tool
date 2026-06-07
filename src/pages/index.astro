@@ -110,7 +110,7 @@ const topicBySlug: Record<string, string> = {
 };
 
 const categories = [...new Set(orderedTools.map((t) => topicBySlug[t.slug]).filter(Boolean))];
-type HomeReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics" | "crypto";
+type HomeReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics" | "crypto" | "sports";
 
 type HomeReportMeta = {
   category: HomeReportCategory;
@@ -217,6 +217,7 @@ const reportMetaBySlug: Record<string, HomeReportMeta> = {
   "bitcoin-supply-holders-2026": { category: "crypto", isNew: true },
   "satoshi-nakamoto-bitcoin-creator": { category: "crypto", isNew: true },
   "vitalik-buterin-ethereum-creator": { category: "crypto", isNew: true },
+  "kbo-salary-comparison-2026": { category: "sports", isNew: true },
 };
 
 const reportCategoryLabels: Record<HomeReportCategory, string> = {
@@ -231,9 +232,10 @@ const reportCategoryLabels: Record<HomeReportCategory, string> = {
   tax: "세금",
   politics: "정치·선거",
   crypto: "암호화폐",
+  sports: "스포츠",
 };
 
-const reportFilterOrder: Array<HomeReportCategory | "new"> = ["politics", "salary", "bonus", "estate", "asset", "crypto", "life", "support", "insurance", "tax", "culture", "new"];
+const reportFilterOrder: Array<HomeReportCategory | "new"> = ["politics", "salary", "bonus", "estate", "asset", "crypto", "sports", "life", "support", "insurance", "tax", "culture", "new"];
 const finalShowcase = orderedTools.slice(0, 4);
 
 const homeCompareCards = [

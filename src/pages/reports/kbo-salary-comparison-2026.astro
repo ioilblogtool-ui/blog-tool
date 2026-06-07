@@ -1,0 +1,436 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  KBO_META,
+  KBO_TEAMS,
+  KBO_KPI,
+  KBO_TOP_CONTRACTS,
+  KBO_POSITION_AVG,
+  KBO_YEARLY_TREND,
+  KBO_MLB_PLAYERS,
+  KBO_FA_2026,
+  KBO_FAQ,
+  KBO_RELATED_LINKS,
+} from "../../data/kboSalaryComparison2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${KBO_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const maxTotal = Math.max(...KBO_TEAMS.map((t) => t.totalBillion));
+const maxTopSalary = Math.max(...KBO_TEAMS.map((t) => t.topPlayerSalaryMillion));
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: KBO_META.title,
+    description: KBO_META.description,
+    dateModified: KBO_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: KBO_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: KBO_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={KBO_META.seoTitle} description={KBO_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page kbo-page" data-report="kbo-salary-comparison-2026">
+
+    <CalculatorHero
+      eyebrow="KBO 스포츠 리포트"
+      title={KBO_META.title}
+      description="류현진 25억, 최정 15억, 이정후 MLB 이적 후 키움 92억으로 최저. 2026년 KBO 10구단 연봉 총액·최고 연봉 선수·평균을 구단별로 완전 비교합니다."
+      badges={["KBO", "구단별 연봉", "총액 순위", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[KBO_META.dataNote]}
+    />
+
+    <!-- 리그 KPI -->
+    <section class="content-section kbo-kpi-section">
+      <div class="kbo-kpi-grid">
+        <article class="kbo-kpi-card kbo-kpi-card--main">
+          <span class="kbo-kpi-label">리그 연봉 총액</span>
+          <strong class="kbo-kpi-value">{KBO_KPI.totalLeaguePayroll.toLocaleString()}억 원</strong>
+          <small>10구단 합산 · 외국인 제외</small>
+        </article>
+        <article class="kbo-kpi-card kbo-kpi-card--main">
+          <span class="kbo-kpi-label">구단 평균 총액</span>
+          <strong class="kbo-kpi-value">{KBO_KPI.avgTeamPayroll}억 원</strong>
+          <small>전년 대비 +{KBO_KPI.yoyLeagueChange}%</small>
+        </article>
+        <article class="kbo-kpi-card kbo-kpi-card--main">
+          <span class="kbo-kpi-label">선수 평균 연봉</span>
+          <strong class="kbo-kpi-value">{(KBO_KPI.leagueAvgSalary / 10000).toFixed(1)}억 원</strong>
+          <small>리그 전체 공시 선수 기준</small>
+        </article>
+        <article class="kbo-kpi-card kbo-kpi-card--top">
+          <span class="kbo-kpi-label">최고 연봉 선수</span>
+          <strong class="kbo-kpi-value">{KBO_KPI.highestPaidPlayer.name}</strong>
+          <small>{KBO_KPI.highestPaidPlayer.team} · {(KBO_KPI.highestPaidPlayer.salary / 10000).toFixed(0)}억 원</small>
+        </article>
+        <article class="kbo-kpi-card">
+          <span class="kbo-kpi-label">최고 총액 구단</span>
+          <strong class="kbo-kpi-value">{KBO_KPI.highestPayrollTeam}</strong>
+          <small>{maxTotal}억 원</small>
+        </article>
+        <article class="kbo-kpi-card">
+          <span class="kbo-kpi-label">1위↔10위 격차</span>
+          <strong class="kbo-kpi-value">{KBO_KPI.payrollGap}억 원</strong>
+          <small>{KBO_KPI.highestPayrollTeam} vs {KBO_KPI.lowestPayrollTeam}</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 구단별 연봉 총액 순위 -->
+    <section class="content-section kbo-ranking-section" aria-labelledby="kbo-ranking-title">
+      <div class="kbo-section-heading">
+        <p>총액 순위</p>
+        <h2 id="kbo-ranking-title">구단별 연봉 총액 순위 — 한화 168억 1위</h2>
+        <span>외국인 선수 제외, 기본 연봉 공시 기준. 1위와 10위 격차 76억 원.</span>
+      </div>
+      <div class="kbo-ranking-list">
+        {KBO_TEAMS.map((team) => (
+          <article class="kbo-rank-card">
+            <div class="kbo-rank-header">
+              <span class="kbo-rank-num" style={`background:${team.color}20; color:${team.color}`}>
+                {team.rank}위
+              </span>
+              <strong class="kbo-rank-name" style={`color:${team.color}`}>{team.team}</strong>
+              <span class="kbo-rank-stadium">{team.stadium}</span>
+              <span class:list={[
+                "kbo-yoy-badge",
+                team.yoyChangePct >= 0 ? "kbo-yoy-badge--up" : "kbo-yoy-badge--down"
+              ]}>
+                {team.yoyChangePct >= 0 ? "▲" : "▼"} {Math.abs(team.yoyChangePct)}%
+              </span>
+            </div>
+            <div class="kbo-rank-bar-wrap">
+              <div
+                class="kbo-rank-bar"
+                style={`width:${(team.totalBillion / maxTotal) * 100}%; background:${team.color}`}
+              />
+              <span class="kbo-rank-total">{team.totalBillion}억</span>
+            </div>
+            <div class="kbo-rank-stats">
+              <div class="kbo-rank-stat">
+                <span>선수 평균</span>
+                <strong>{(team.avgMillion / 10000).toFixed(1)}억</strong>
+              </div>
+              <div class="kbo-rank-stat">
+                <span>공시 선수</span>
+                <strong>{team.playerCount}명</strong>
+              </div>
+              <div class="kbo-rank-stat">
+                <span>최고 연봉</span>
+                <strong style={`color:${team.color}`}>{team.topPlayer}</strong>
+              </div>
+              <div class="kbo-rank-stat">
+                <span>최고 연봉액</span>
+                <strong>{(team.topPlayerSalaryMillion / 10000).toFixed(1)}억</strong>
+              </div>
+            </div>
+            <p class="kbo-rank-note">{team.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 구단별 TOP3 선수 비교 -->
+    <section class="content-section kbo-top3-section" aria-labelledby="kbo-top3-title">
+      <div class="kbo-section-heading">
+        <p>구단별 TOP 3</p>
+        <h2 id="kbo-top3-title">각 구단 최고 연봉 선수 3인</h2>
+        <span>구단별 최고 연봉 TOP 3 선수 연봉 비교. 단위: 억 원.</span>
+      </div>
+      <div class="table-wrap kbo-table-wrap">
+        <table class="kbo-top3-table">
+          <caption>KBO 구단별 TOP3 선수 연봉 비교</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>구단</th>
+              <th>1위 선수</th>
+              <th>연봉</th>
+              <th>2위 선수</th>
+              <th>연봉</th>
+              <th>3위 선수</th>
+              <th>연봉</th>
+            </tr>
+          </thead>
+          <tbody>
+            {KBO_TEAMS.map((team) => (
+              <tr>
+                <td class="kbo-tbl-rank" style={`color:${team.color}`}>{team.rank}</td>
+                <td class="kbo-tbl-team">
+                  <span class="kbo-team-dot" style={`background:${team.color}`} />
+                  {team.shortName}
+                </td>
+                <td class="kbo-tbl-player">
+                  <strong>{team.topPlayer}</strong>
+                  <small>{team.topPlayerPosition}</small>
+                </td>
+                <td class="kbo-tbl-salary kbo-tbl-salary--top" style={`color:${team.color}`}>
+                  {(team.topPlayerSalaryMillion / 10000).toFixed(1)}억
+                </td>
+                <td class="kbo-tbl-player"><strong>{team.secondPlayer}</strong></td>
+                <td class="kbo-tbl-salary">{(team.secondPlayerSalaryMillion / 10000).toFixed(1)}억</td>
+                <td class="kbo-tbl-player"><strong>{team.thirdPlayer}</strong></td>
+                <td class="kbo-tbl-salary">{(team.thirdPlayerSalaryMillion / 10000).toFixed(1)}억</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 리그 전체 연봉 TOP 10 계약 -->
+    <section class="content-section kbo-contracts-section" aria-labelledby="kbo-contracts-title">
+      <div class="kbo-section-heading">
+        <p>리그 최고 연봉</p>
+        <h2 id="kbo-contracts-title">KBO 연봉 TOP 10 선수 — 류현진 25억으로 압도적 1위</h2>
+        <span>기본 연봉 기준. 인센티브·옵션 미포함.</span>
+      </div>
+      <div class="kbo-contracts-list">
+        {KBO_TOP_CONTRACTS.map((c, i) => {
+          const teamData = KBO_TEAMS.find((t) => t.team.includes(c.team) || t.shortName === c.team);
+          const color = teamData?.color ?? "#374151";
+          const barW = (c.salary / KBO_TOP_CONTRACTS[0].salary) * 100;
+          return (
+            <div class="kbo-contract-row">
+              <span class="kbo-ct-rank" style={`color:${color}; background:${color}20`}>{i + 1}</span>
+              <div class="kbo-ct-info">
+                <strong class="kbo-ct-player">{c.player}</strong>
+                <span class="kbo-ct-team" style={`color:${color}`}>{c.team}</span>
+                {i === 0 && <span class="kbo-ct-badge">리그 최고</span>}
+              </div>
+              <div class="kbo-ct-bar-wrap">
+                <div class="kbo-ct-bar" style={`width:${barW}%; background:${color}`} />
+              </div>
+              <span class="kbo-ct-salary">{(c.salary / 10000).toFixed(0)}억</span>
+              <span class="kbo-ct-note">{c.note}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 포지션별 평균 -->
+    <section class="content-section kbo-position-section" aria-labelledby="kbo-position-title">
+      <div class="kbo-section-heading">
+        <p>포지션별 연봉</p>
+        <h2 id="kbo-position-title">리그 포지션별 평균 연봉 — 선발투수가 압도적 최상위</h2>
+        <span>리그 전체 공시 선수 기준 추정 평균.</span>
+      </div>
+      <div class="kbo-position-grid">
+        {KBO_POSITION_AVG.map((pos) => {
+          const maxAvg = Math.max(...KBO_POSITION_AVG.map((p) => p.avgMillion));
+          const barW = (pos.avgMillion / maxAvg) * 100;
+          return (
+            <article class="kbo-position-card">
+              <div class="kbo-pos-header">
+                <span class="kbo-pos-icon">{pos.icon}</span>
+                <strong class="kbo-pos-name">{pos.position}</strong>
+                <span class="kbo-pos-count">{pos.playerCount}명</span>
+              </div>
+              <div class="kbo-pos-bar-wrap">
+                <div class="kbo-pos-bar" style={`width:${barW}%`} />
+              </div>
+              <div class="kbo-pos-nums">
+                <span>평균 {(pos.avgMillion / 10000).toFixed(2)}억</span>
+                <span class="kbo-pos-top">최고 {(pos.topSalary / 10000).toFixed(0)}억</span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 구단별 포지션 평균 비교 -->
+    <section class="content-section kbo-poscompare-section" aria-labelledby="kbo-poscompare-title">
+      <div class="kbo-section-heading">
+        <p>포지션 × 구단</p>
+        <h2 id="kbo-poscompare-title">구단별 포지션 평균 연봉 비교</h2>
+        <span>투수·포수·내야수·외야수 평균 연봉을 구단별로 비교합니다. 단위: 만 원.</span>
+      </div>
+      <div class="table-wrap kbo-table-wrap">
+        <table class="kbo-poscompare-table">
+          <caption>구단별 포지션 평균 연봉 비교</caption>
+          <thead>
+            <tr>
+              <th>구단</th>
+              <th>⚾ 투수</th>
+              <th>🧤 포수</th>
+              <th>🏃 내야수</th>
+              <th>🎯 외야수</th>
+            </tr>
+          </thead>
+          <tbody>
+            {KBO_TEAMS.map((team) => (
+              <tr>
+                <td class="kbo-tbl-team">
+                  <span class="kbo-team-dot" style={`background:${team.color}`} />
+                  {team.shortName}
+                </td>
+                <td class="kbo-pos-cell">{team.positionAvg.pitcher.toLocaleString()}</td>
+                <td class="kbo-pos-cell">{team.positionAvg.catcher.toLocaleString()}</td>
+                <td class="kbo-pos-cell">{team.positionAvg.infield.toLocaleString()}</td>
+                <td class="kbo-pos-cell">{team.positionAvg.outfield.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 리그 총액 연도별 추이 -->
+    <section class="content-section kbo-trend-section" aria-labelledby="kbo-trend-title">
+      <div class="kbo-section-heading">
+        <p>연도별 추이</p>
+        <h2 id="kbo-trend-title">KBO 리그 연봉 총액 추이 — 7년 연속 성장</h2>
+        <span>10구단 합산 기준. 외국인 선수 제외.</span>
+      </div>
+      <div class="kbo-trend-list">
+        {KBO_YEARLY_TREND.map((y) => {
+          const maxT = Math.max(...KBO_YEARLY_TREND.map((t) => t.totalBillion));
+          const barW = (y.totalBillion / maxT) * 100;
+          return (
+            <div class:list={["kbo-trend-row", y.year === 2026 && "kbo-trend-row--current"]}>
+              <span class="kbo-trend-year">
+                {y.year}
+                {y.year === 2026 && <span class="kbo-now-badge">현재</span>}
+              </span>
+              <div class="kbo-trend-bar-wrap">
+                <div class="kbo-trend-bar" style={`width:${barW}%`} />
+              </div>
+              <span class="kbo-trend-total">{y.totalBillion.toLocaleString()}억</span>
+              <span class="kbo-trend-note">{y.note}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- MLB 진출 선수 -->
+    <section class="content-section kbo-mlb-section" aria-labelledby="kbo-mlb-title">
+      <div class="kbo-section-heading">
+        <p>MLB 이적</p>
+        <h2 id="kbo-mlb-title">KBO에서 MLB로 — 연봉 격차가 만든 이탈</h2>
+        <span>KBO 최상위 선수들이 MLB 시장을 선택하는 이유는 연봉 격차에 있습니다.</span>
+      </div>
+      <div class="kbo-mlb-grid">
+        {KBO_MLB_PLAYERS.map((p) => (
+          <article class="kbo-mlb-card">
+            <div class="kbo-mlb-header">
+              <strong class="kbo-mlb-name">{p.player}</strong>
+              <span class="kbo-mlb-team">{p.team}</span>
+            </div>
+            <div class="kbo-mlb-compare">
+              <div class="kbo-mlb-kbo">
+                <span>KBO 마지막 연봉</span>
+                <strong>{(p.kboLastSalary / 10000).toFixed(1)}억 원</strong>
+              </div>
+              <span class="kbo-mlb-arrow">→</span>
+              <div class="kbo-mlb-mlb">
+                <span>MLB 계약</span>
+                <strong class="kbo-mlb-contract">{p.mlbContract}</strong>
+              </div>
+            </div>
+            <small class="kbo-mlb-note">{p.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 2026 FA 주요 계약 -->
+    <section class="content-section kbo-fa-section" aria-labelledby="kbo-fa-title">
+      <div class="kbo-section-heading">
+        <p>FA 계약</p>
+        <h2 id="kbo-fa-title">2025→2026 시즌 주요 FA 계약</h2>
+        <span>원태인 6년 60억이 최대 규모. 대부분 잔류 계약.</span>
+      </div>
+      <div class="kbo-fa-list">
+        {KBO_FA_2026.map((fa) => {
+          const teamData = KBO_TEAMS.find((t) => t.team.includes(fa.toTeam) || t.shortName === fa.toTeam);
+          const color = teamData?.color ?? "#374151";
+          return (
+            <div class="kbo-fa-row">
+              <strong class="kbo-fa-player">{fa.player}</strong>
+              <span class="kbo-fa-teams" style={`color:${color}`}>{fa.fromTeam} → {fa.toTeam}</span>
+              <span class:list={["kbo-fa-type", fa.type === "잔류" ? "kbo-fa-type--stay" : "kbo-fa-type--move"]}>
+                {fa.type}
+              </span>
+              <span class="kbo-fa-years">{fa.years}년</span>
+              <span class="kbo-fa-total">{fa.totalBillion}억 원</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 관련 리포트 -->
+    <section class="content-section kbo-related-section" aria-labelledby="kbo-related-title">
+      <div class="kbo-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="kbo-related-title">함께 보면 좋은 연봉 비교</h2>
+      </div>
+      <div class="kbo-related-grid">
+        {KBO_RELATED_LINKS.map((link) => (
+          <a class="kbo-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="KBO 구단별 연봉 자주 묻는 질문"
+      intro={[
+        KBO_META.dataNote,
+        "2026년 KBO 리그 10개 구단 연봉 총액은 약 1,395억 원으로 역대 최대입니다. 한화 이글스가 168억으로 1위, 키움 히어로즈가 92억으로 최저입니다.",
+      ]}
+      inputPoints={[
+        "구단별 연봉 총액 순위와 전년 대비 증감을 비교할 수 있습니다.",
+        "각 구단 최고 연봉 선수와 리그 TOP 10 고액 연봉자를 확인할 수 있습니다.",
+        "포지션별 평균 연봉과 MLB 진출 선수의 계약 규모를 비교할 수 있습니다.",
+      ]}
+      criteria={[
+        "연봉 데이터: KBO 공시 기준 기본 연봉 (인센티브·외국인 제외)",
+        "추이 데이터: KBO 연도별 리그 연봉 총액 공식 발표 기준",
+        "MLB 계약: 각 구단·선수 공식 발표 기준",
+      ]}
+      faq={KBO_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={KBO_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

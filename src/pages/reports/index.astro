@@ -10,7 +10,7 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
-type ReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics" | "crypto";
+type ReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics" | "crypto" | "sports";
 type ReportTagMod = "salary" | "asset";
 
 type ReportIndexMeta = {
@@ -513,6 +513,16 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
     category: "crypto",
     isNew: true,
   },
+  "kbo-salary-comparison-2026": {
+    eyebrow: "KBO 연봉 비교",
+    tags: [
+      { label: "KBO", mod: "salary" },
+      { label: "구단별 연봉", mod: "salary" },
+      { label: "2026", mod: "salary" },
+    ],
+    category: "sports",
+    isNew: true,
+  },
   "ai-side-income-comparison-2026": {
     eyebrow: "AI 부업 수입",
     tags: [
@@ -800,6 +810,7 @@ const supportSeries = reportEntries.filter((report) => report.category === "supp
 const insuranceSeries = reportEntries.filter((report) => report.category === "insurance");
 const taxSeries = reportEntries.filter((report) => report.category === "tax");
 const cryptoSeries = reportEntries.filter((report) => report.category === "crypto");
+const sportsSeries = reportEntries.filter((report) => report.category === "sports");
 
 const totalReports = reportEntries.length;
 const featuredReport = [...reportEntries].sort((a, b) => b.order - a.order)[0];
@@ -842,6 +853,7 @@ const seriesIntroductions: Record<ReportCategory, string> = {
   insurance: "실손보험, 태아보험처럼 보장 구조와 실제 부담액을 같이 봐야 하는 주제를 모았습니다.",
   tax: "연말정산, 세액공제, 절세 전략처럼 신고 전 점검이 필요한 주제를 모았습니다.",
   crypto: "비트코인·이더리움 수익률, 창시자 스토리, 국가·기업 보유 현황처럼 암호화폐를 숫자로 읽는 시리즈입니다.",
+  sports: "KBO 구단별 연봉, 포지션별 평균, MLB 이적 계약처럼 스포츠 산업을 숫자로 읽는 시리즈입니다.",
 };
 
 const reportToToolBridges = [
@@ -1041,6 +1053,7 @@ const reportFaqJsonLd = {
       <button class="reports-filter-chip" data-filter="tax">세금</button>
       <button class="reports-filter-chip" data-filter="culture">문화·엔터</button>
       <button class="reports-filter-chip" data-filter="crypto">암호화폐</button>
+      <button class="reports-filter-chip" data-filter="sports">스포츠</button>
       <button class="reports-filter-chip" data-filter="new">신규</button>
     </div>
 
@@ -1275,6 +1288,32 @@ const reportFaqJsonLd = {
         </div>
         <div class="reports-card-grid">
           {cryptoSeries.map((r) => (
+            <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
+              <p class="rc-eyebrow">{r.eyebrow}</p>
+              <p class="rc-title">{r.title}</p>
+              <p class="rc-desc">{r.desc}</p>
+              <div class="rc-footer">
+                <div class="rc-tags">
+                  {r.tags.map((t) => (
+                    <span class={`rc-tag rc-tag--${t.mod}`}>{t.label}</span>
+                  ))}
+                </div>
+                <span class="rc-arrow">→</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {sportsSeries.length > 0 && (
+      <section class="reports-series" data-series="sports">
+        <div class="reports-series__head">
+          <h3 class="reports-series__label">스포츠 시리즈</h3>
+          <p class="reports-series__desc">{seriesIntroductions.sports}</p>
+        </div>
+        <div class="reports-card-grid">
+          {sportsSeries.map((r) => (
             <a href={withBase(`/reports/${r.slug}/`)} class="report-card-item" data-category={r.category} data-tag={r.isNew ? "new" : ""}>
               <p class="rc-eyebrow">{r.eyebrow}</p>
               <p class="rc-title">{r.title}</p>

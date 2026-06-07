@@ -1,0 +1,787 @@
+// KBO 구단별 연봉 비교 2026
+// 야구 테마: KBO 공식 진한 그린 + 팀 고유색 활용
+
+$kbo-green: #1a6b3a;
+$kbo-green-light: #e8f5ee;
+$kbo-green-border: #b8dfc9;
+$kbo-navy: #0f1f3d;
+$kbo-bg: #fafafa;
+$kbo-card-bg: #ffffff;
+$kbo-border: #e5e7eb;
+$kbo-text: #111827;
+$kbo-muted: #6b7280;
+$kbo-up: #16a34a;
+$kbo-down: #dc2626;
+$kbo-gold: #d97706;
+
+// ─── KPI ─────────────────────────────────────────────────────
+.kbo-kpi-section {
+  margin-bottom: 2rem;
+}
+
+.kbo-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kbo-kpi-card {
+  background: $kbo-card-bg;
+  border: 1px solid $kbo-border;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  &--main {
+    background: $kbo-green-light;
+    border-color: $kbo-green-border;
+    border-top: 3px solid $kbo-green;
+
+    .kbo-kpi-value {
+      color: $kbo-green;
+    }
+  }
+
+  &--top {
+    background: #fffbeb;
+    border-color: #fde68a;
+    border-top: 3px solid $kbo-gold;
+
+    .kbo-kpi-value {
+      color: $kbo-gold;
+    }
+  }
+}
+
+.kbo-kpi-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $kbo-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kbo-kpi-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: $kbo-navy;
+  line-height: 1.1;
+
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+  }
+}
+
+.kbo-kpi-card small {
+  font-size: 0.72rem;
+  color: $kbo-muted;
+}
+
+// ─── 섹션 공통 헤딩 ─────────────────────────────────────────
+.kbo-section-heading {
+  margin-bottom: 1.5rem;
+
+  p {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $kbo-green;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.3rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: $kbo-navy;
+    margin: 0 0 0.4rem;
+    line-height: 1.3;
+
+    @media (max-width: 480px) {
+      font-size: 1.1rem;
+    }
+  }
+
+  span {
+    font-size: 0.82rem;
+    color: $kbo-muted;
+  }
+}
+
+// ─── 구단 랭킹 리스트 ────────────────────────────────────────
+.kbo-ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kbo-rank-card {
+  background: $kbo-card-bg;
+  border: 1px solid $kbo-border;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
+}
+
+.kbo-rank-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.kbo-rank-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.kbo-rank-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.kbo-rank-stadium {
+  font-size: 0.75rem;
+  color: $kbo-muted;
+  flex: 1;
+}
+
+.kbo-yoy-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+
+  &--up {
+    background: #dcfce7;
+    color: $kbo-up;
+  }
+
+  &--down {
+    background: #fee2e2;
+    color: $kbo-down;
+  }
+}
+
+.kbo-rank-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.kbo-rank-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.kbo-rank-total {
+  position: absolute;
+  right: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $kbo-navy;
+  background: rgba(255,255,255,0.9);
+  padding: 0 0.25rem;
+  border-radius: 3px;
+}
+
+.kbo-rank-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.kbo-rank-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  span {
+    font-size: 0.68rem;
+    color: $kbo-muted;
+  }
+
+  strong {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $kbo-navy;
+  }
+}
+
+.kbo-rank-note {
+  font-size: 0.78rem;
+  color: $kbo-muted;
+  margin: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid $kbo-border;
+  line-height: 1.5;
+}
+
+// ─── 테이블 공통 ─────────────────────────────────────────────
+.kbo-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid $kbo-border;
+}
+
+.kbo-top3-table,
+.kbo-poscompare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  caption {
+    display: none;
+  }
+
+  th {
+    background: $kbo-navy;
+    color: #ffffff;
+    padding: 0.7rem 0.75rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid $kbo-border;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:nth-child(even) td {
+    background: #f9fafb;
+  }
+}
+
+.kbo-tbl-rank {
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.kbo-tbl-team {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.kbo-team-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.kbo-tbl-player {
+  strong {
+    display: block;
+    font-weight: 700;
+    font-size: 0.82rem;
+  }
+
+  small {
+    font-size: 0.7rem;
+    color: $kbo-muted;
+  }
+}
+
+.kbo-tbl-salary {
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+
+  &--top {
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+}
+
+.kbo-pos-cell {
+  text-align: right;
+  font-weight: 600;
+}
+
+// ─── TOP 10 계약 ─────────────────────────────────────────────
+.kbo-contracts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.kbo-contract-row {
+  display: grid;
+  grid-template-columns: 2rem 10rem 1fr 5rem 8rem;
+  align-items: center;
+  gap: 0.75rem;
+  background: $kbo-card-bg;
+  border: 1px solid $kbo-border;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 2rem auto 1fr auto;
+    grid-template-rows: auto auto;
+
+    .kbo-ct-note {
+      grid-column: 2 / -1;
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 2rem 1fr auto;
+
+    .kbo-ct-bar-wrap {
+      display: none;
+    }
+
+    .kbo-ct-note {
+      grid-column: 2 / -1;
+    }
+  }
+}
+
+.kbo-ct-rank {
+  font-size: 0.8rem;
+  font-weight: 800;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kbo-ct-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.kbo-ct-player {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: $kbo-navy;
+}
+
+.kbo-ct-team {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.kbo-ct-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: #fef3c7;
+  color: $kbo-gold;
+  border: 1px solid #fde68a;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  display: inline-block;
+  margin-top: 0.15rem;
+}
+
+.kbo-ct-bar-wrap {
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.kbo-ct-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.kbo-ct-salary {
+  font-size: 1rem;
+  font-weight: 800;
+  color: $kbo-navy;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.kbo-ct-note {
+  font-size: 0.72rem;
+  color: $kbo-muted;
+}
+
+// ─── 포지션별 평균 ───────────────────────────────────────────
+.kbo-position-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kbo-position-card {
+  background: $kbo-card-bg;
+  border: 1px solid $kbo-border;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.kbo-pos-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kbo-pos-icon {
+  font-size: 1.4rem;
+}
+
+.kbo-pos-name {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: $kbo-navy;
+  flex: 1;
+}
+
+.kbo-pos-count {
+  font-size: 0.7rem;
+  color: $kbo-muted;
+}
+
+.kbo-pos-bar-wrap {
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.kbo-pos-bar {
+  height: 100%;
+  background: $kbo-green;
+  border-radius: 4px;
+}
+
+.kbo-pos-nums {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $kbo-navy;
+}
+
+.kbo-pos-top {
+  color: $kbo-muted;
+  font-weight: 400;
+}
+
+// ─── 연도별 추이 ──────────────────────────────────────────────
+.kbo-trend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kbo-trend-row {
+  display: grid;
+  grid-template-columns: 6rem 1fr 5rem 10rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  background: $kbo-card-bg;
+  border: 1px solid $kbo-border;
+
+  &--current {
+    background: $kbo-green-light;
+    border-color: $kbo-green-border;
+
+    .kbo-trend-total {
+      color: $kbo-green;
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 5rem 1fr 4.5rem;
+
+    .kbo-trend-note {
+      display: none;
+    }
+  }
+}
+
+.kbo-trend-year {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: $kbo-navy;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kbo-now-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  background: $kbo-green;
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+}
+
+.kbo-trend-bar-wrap {
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.kbo-trend-bar {
+  height: 100%;
+  background: $kbo-green;
+  border-radius: 4px;
+}
+
+.kbo-trend-total {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: $kbo-navy;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.kbo-trend-note {
+  font-size: 0.72rem;
+  color: $kbo-muted;
+}
+
+// ─── MLB 진출 ─────────────────────────────────────────────────
+.kbo-mlb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kbo-mlb-card {
+  background: #f0f4ff;
+  border: 1px solid #c7d4f5;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.kbo-mlb-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.kbo-mlb-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: $kbo-navy;
+}
+
+.kbo-mlb-team {
+  font-size: 0.78rem;
+  color: #4b5563;
+}
+
+.kbo-mlb-compare {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.kbo-mlb-kbo,
+.kbo-mlb-mlb {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+
+  span {
+    font-size: 0.68rem;
+    color: $kbo-muted;
+  }
+
+  strong {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $kbo-navy;
+  }
+}
+
+.kbo-mlb-contract {
+  color: #1d4ed8 !important;
+  font-size: 0.95rem !important;
+}
+
+.kbo-mlb-arrow {
+  font-size: 1.2rem;
+  color: $kbo-muted;
+  flex-shrink: 0;
+}
+
+.kbo-mlb-note {
+  font-size: 0.72rem;
+  color: $kbo-muted;
+  line-height: 1.4;
+}
+
+// ─── FA 계약 ─────────────────────────────────────────────────
+.kbo-fa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kbo-fa-row {
+  display: grid;
+  grid-template-columns: 6rem 12rem auto 4rem 6rem;
+  align-items: center;
+  gap: 0.75rem;
+  background: $kbo-card-bg;
+  border: 1px solid $kbo-border;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr 1fr auto;
+    grid-template-rows: auto auto;
+
+    .kbo-fa-years,
+    .kbo-fa-total {
+      text-align: right;
+    }
+  }
+}
+
+.kbo-fa-player {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: $kbo-navy;
+}
+
+.kbo-fa-teams {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.kbo-fa-type {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-align: center;
+
+  &--stay {
+    background: #dcfce7;
+    color: $kbo-up;
+  }
+
+  &--move {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+}
+
+.kbo-fa-years {
+  font-size: 0.8rem;
+  color: $kbo-muted;
+  text-align: center;
+}
+
+.kbo-fa-total {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: $kbo-navy;
+  text-align: right;
+}
+
+// ─── 관련 리포트 ──────────────────────────────────────────────
+.kbo-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kbo-related-card {
+  background: $kbo-card-bg;
+  border: 1px solid $kbo-border;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  strong {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $kbo-navy;
+  }
+
+  span {
+    font-size: 0.75rem;
+    color: $kbo-muted;
+  }
+
+  &:hover {
+    border-color: $kbo-green;
+    box-shadow: 0 2px 8px rgba($kbo-green, 0.12);
+  }
+}
