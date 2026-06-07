@@ -1,0 +1,71 @@
+export const ELECTRICITY_RATES = {
+  basicCharge: [
+    { maxKwh: 200, charge: 910 },
+    { maxKwh: 400, charge: 1600 },
+    { maxKwh: Infinity, charge: 7300 },
+  ],
+  normalTiers: [
+    { maxKwh: 200, rate: 93.3 },
+    { maxKwh: 400, rate: 187.9 },
+    { maxKwh: Infinity, rate: 280.6 },
+  ],
+  summerTiers: [
+    { maxKwh: 300, rate: 93.3 },
+    { maxKwh: 450, rate: 187.9 },
+    { maxKwh: Infinity, rate: 280.6 },
+  ],
+  climateCharge: 9.0,
+  fuelAdjustment: 5.0,
+  vatRate: 0.10,
+  fundRate: 0.037,
+};
+
+export const AIRCON_PRESETS = [
+  { id: "wall-small",  label: "벽걸이 소형 (6평 이하)", watt: 750 },
+  { id: "wall-mid",    label: "벽걸이 중형 (10평)",    watt: 1200 },
+  { id: "stand-small", label: "스탠드 소형 (15평)",    watt: 2000 },
+  { id: "stand-large", label: "스탠드 대형 (20평+)",   watt: 3200 },
+  { id: "custom",      label: "직접 입력",             watt: 0 },
+];
+
+export const INVERTER_RATIO = 0.6;
+
+export const ACC_FAQS = [
+  {
+    question: "에어컨 전기요금은 어떻게 계산하나요?",
+    answer: "소비전력(kW) × 하루 사용 시간 × 월 사용 일수 = 월 소비 kWh를 구한 뒤, 가정 기존 사용량과 합산해 누진 요금을 계산합니다. 에어컨 추가 요금 = 합산 요금 − 기존 요금으로 산출합니다.",
+  },
+  {
+    question: "인버터 에어컨은 전기요금이 다른가요?",
+    answer: "인버터 에어컨은 정격 소비전력의 약 40~70% 수준으로 작동합니다. 본 계산기는 인버터 선택 시 정격 소비전력의 60%를 실소비전력으로 적용합니다.",
+  },
+  {
+    question: "여름철 전기요금 누진 완화란 무엇인가요?",
+    answer: "한국전력은 매년 7~8월 냉방 수요 집중 기간에 1단계 구간을 200kWh에서 300kWh로, 2단계를 400kWh에서 450kWh로 한시 확대합니다. 계절 설정을 '여름(7~8월)'으로 선택하면 완화 기준이 자동 적용됩니다.",
+  },
+  {
+    question: "에어컨 온도를 1도 높이면 얼마나 절약되나요?",
+    answer: "설정 온도를 1°C 높이면 소비전력이 약 7~10% 감소하는 것으로 알려져 있습니다. 26°C → 28°C로 올리면 월 사용량에 따라 수천 원에서 수만 원 절약될 수 있습니다.",
+  },
+  {
+    question: "전기요금이 실제 고지서와 다를 수 있나요?",
+    answer: "본 계산기는 한국전력 2026년 주택용 전력(저압) 기준입니다. 연료비조정액은 분기별로 변동되며, 복지 할인·에너지 바우처 적용 여부에 따라 실제 고지서 금액과 다를 수 있습니다.",
+  },
+];
+
+export const ACC_SEO_INTRO = `에어컨을 켤 때마다 드는 전기요금이 실제로 얼마인지 계산하기 어렵습니다. 단순히 소비전력에 단가를 곱하면 누진세 효과가 빠집니다. 본 계산기는 가정 기존 사용량에 에어컨 추가분을 더해 누진 구간 교차 효과까지 반영한 정확한 추가 요금을 계산합니다.`;
+
+export const ACC_SEO_CRITERIA = [
+  "한국전력 2026년 주택용 전력(저압) 누진 3단계 기준을 사용합니다.",
+  "기후환경요금 9원/kWh, 연료비조정액 5원/kWh(추정)를 포함합니다.",
+  "부가가치세 10%, 전력산업기반기금 3.7%를 적용합니다.",
+  "인버터 에어컨은 정격 소비전력의 60%를 실소비전력으로 추정 적용합니다.",
+  "여름(7~8월) 완화 기준: 1단계 300kWh, 2단계 450kWh로 확대 적용합니다.",
+  "계산 결과는 추정값이며 실제 고지서와 다를 수 있습니다.",
+];
+
+export const ACC_RELATED = [
+  { href: "/tools/minimum-wage-2026/", label: "최저임금 계산기", description: "2026 최저시급 세후 실수령 계산" },
+  { href: "/tools/overtime-pay-calculator/", label: "야근수당 계산기", description: "연장·야간·휴일근로수당 계산" },
+  { href: "/reports/multi-house-tax-2026/", label: "다주택 세금 비교", description: "보유세·양도세 시나리오 비교" },
+];

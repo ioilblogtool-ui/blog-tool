@@ -18,6 +18,32 @@ export type ToolMeta = {
 
 export const tools: ToolMeta[] = [
   {
+    slug: "gift-tax-calculator",
+    title: "증여세 계산기",
+    description: "배우자·자녀·부모 등 관계별 공제 한도, 누진세율, 신고세액공제까지 한 번에 계산. 10년 분할 증여 전략 포함.",
+    order: 0,
+    eyebrow: "증여세",
+    category: "부동산·세금",
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "성인 자녀 공제", value: "5,000만원" },
+      { label: "배우자 공제", value: "6억원" },
+    ],
+  },
+  {
+    slug: "aircon-electricity-cost",
+    title: "에어컨 전기요금 계산기",
+    description: "에어컨 소비전력·사용 시간으로 월 전기요금 추가분과 누진 구간을 계산합니다. 인버터 보정, 여름 완화 구간 자동 적용.",
+    order: 0,
+    eyebrow: "에어컨 전기요금",
+    category: "생활·유틸리티",
+    badges: ["신규", "여름"],
+    previewStats: [
+      { label: "벽걸이 중형·8h", value: "월 +3~6만원" },
+      { label: "누진 구간 반영", value: "정확한 추가 요금" },
+    ],
+  },
+  {
     slug: "dividend-target-calculator",
     title: "배당금 목표 투자금 계산기",
     description: "월 배당금 목표 입력 → CONY·YMAX·SCHD 등 ETF별 필요 투자금 자동 계산. 세전·세후 구분, 위험도 비교.",
