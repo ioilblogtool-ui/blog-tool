@@ -1,0 +1,402 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  GTC_DEFAULTS,
+  GTC_FAQ,
+  GTC_META,
+  GTC_QUICK_AMOUNTS,
+  GTC_RELATED_LINKS,
+  GTC_RELATIONS,
+  GTC_SIMULATION_CASES,
+  GTC_SOURCE_LINKS,
+  GTC_TAX_BRACKETS,
+} from "../../data/giftTaxCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: GTC_META.title,
+      url: `${import.meta.env.SITE}/tools/${GTC_META.slug}/`,
+      description: GTC_META.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: GTC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={GTC_META.seoTitle} description={GTC_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="gift-tax-calculator" pageClass="op-page gtc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="증여세 계산기"
+        title={GTC_META.title}
+        description="배우자·자녀·부모 등 관계별 공제 한도, 과세표준, 누진세율, 신고세액공제까지 한 번에 계산합니다."
+      />
+      <InfoNotice
+        title="증여세 신고 전 확인하세요"
+        lines={[
+          GTC_META.caution,
+          "10년 이내 동일인 증여 합산 규정에 따라 이전 증여액을 반드시 입력하세요.",
+          "부동산 증여 시 재산가액은 시가(감정평가·유사거래) 기준이 원칙입니다.",
+        ]}
+      />
+      <DesignTrustPanel
+        title="증여세 계산 기준"
+        updatedAt={GTC_META.updatedAt}
+        notes={[
+          "상속세 및 증여세법 기준, 2026년 세율·공제 한도 적용.",
+          "신고세액공제(3%)는 증여세 신고 기한(증여일 말일 기준 3개월) 이내 신고 시 적용됩니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetGtcBtn" copyId="copyGtcLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="op-panel" data-gtc-root>
+        <div class="op-panel__head">
+          <p>입력</p>
+          <h2>증여 조건</h2>
+        </div>
+
+        <label class="op-field">
+          <span>증여자와 수증자 관계</span>
+          <select data-gtc-input="relation">
+            {GTC_RELATIONS.map((r) => (
+              <option value={r.value} selected={r.value === GTC_DEFAULTS.relation}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div class="gtc-deduction-badge" data-gtc-output="deductionBadge">
+          공제 한도 — 입력 후 표시됩니다
+        </div>
+
+        <label class="op-field">
+          <span>이번 증여금액 (원)</span>
+          <input
+            data-gtc-input="giftAmount"
+            inputmode="numeric"
+            value={GTC_DEFAULTS.giftAmount.toLocaleString("ko-KR")}
+          />
+        </label>
+
+        <div class="gtc-quick-row" aria-label="증여금액 빠른 선택">
+          {GTC_QUICK_AMOUNTS.map((item) => (
+            <button type="button" data-gtc-quick={item.value}>{item.label}</button>
+          ))}
+        </div>
+
+        <label class="op-field">
+          <span>10년 내 기증여액 (원)</span>
+          <input
+            data-gtc-input="priorGiftAmount"
+            inputmode="numeric"
+            placeholder="이전 증여액 없으면 0"
+            value="0"
+          />
+        </label>
+        <p class="gtc-field-note">동일인으로부터 10년 이내 증여받은 금액 합계</p>
+
+        <label class="op-check">
+          <input data-gtc-input="selfReport" type="checkbox" checked />
+          기한 내 자진 신고 (신고세액공제 3% 적용)
+        </label>
+      </section>
+    </Fragment>
+
+    <!-- 결과 요약 -->
+    <section class="op-section">
+      <div class="op-result-grid gtc-result-grid">
+        <article class="op-result-card">
+          <p>증여재산 공제</p>
+          <strong data-gtc-output="deductionAmount">-</strong>
+          <span data-gtc-output="deductionNote">관계별 10년 공제</span>
+        </article>
+        <article class="op-result-card">
+          <p>과세표준</p>
+          <strong data-gtc-output="taxBase">-</strong>
+          <span data-gtc-output="taxBaseNote">증여액 - 공제</span>
+        </article>
+        <article class="op-result-card">
+          <p>적용 세율</p>
+          <strong data-gtc-output="taxRate">-</strong>
+          <span data-gtc-output="taxRateNote">누진세율 구간</span>
+        </article>
+        <article class="op-result-card">
+          <p>산출세액</p>
+          <strong data-gtc-output="calculatedTax">-</strong>
+          <span>누진공제 적용 전</span>
+        </article>
+        <article class="op-result-card">
+          <p>신고세액공제</p>
+          <strong data-gtc-output="selfReportDiscount">-</strong>
+          <span>기한 내 신고 시 3%</span>
+        </article>
+        <article class="op-result-card op-result-card--accent">
+          <p>최종 납부세액</p>
+          <strong data-gtc-output="finalTax">-</strong>
+          <span data-gtc-output="finalTaxNote">공제 후 납부액</span>
+        </article>
+      </div>
+      <div class="gtc-result-message" data-gtc-output="message"></div>
+    </section>
+
+    <!-- 계산 내역 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">계산 내역</p>
+        <h2>단계별 증여세 산출 과정</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="gtc-breakdown-table">
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>항목</th>
+              <th>금액</th>
+            </tr>
+          </thead>
+          <tbody data-gtc-output="breakdown"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 공제 잔액 안내 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공제 한도 현황</p>
+        <h2>이번 증여 후 공제 잔액</h2>
+      </div>
+      <div class="gtc-quota-panel" data-gtc-output="quotaPanel">
+        <div class="gtc-quota-bar-wrap">
+          <div class="gtc-quota-bar">
+            <div class="gtc-quota-bar__used" data-gtc-output="quotaBarUsed"></div>
+          </div>
+          <div class="gtc-quota-labels">
+            <span data-gtc-output="quotaUsedLabel">사용</span>
+            <span data-gtc-output="quotaRemainLabel">잔액</span>
+          </div>
+        </div>
+        <p class="gtc-quota-desc" data-gtc-output="quotaDesc"></p>
+      </div>
+    </section>
+
+    <!-- 세율표 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">세율표</p>
+        <h2>증여세 누진세율 구간</h2>
+        <p>과세표준(증여액 – 공제액) 기준입니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="gtc-rate-table">
+          <thead>
+            <tr>
+              <th>과세표준 구간</th>
+              <th>세율</th>
+              <th>누진공제액</th>
+              <th>계산 예시</th>
+            </tr>
+          </thead>
+          <tbody>
+            {GTC_TAX_BRACKETS.map((b, i) => (
+              <tr data-gtc-bracket={i}>
+                <td>{b.label}</td>
+                <td class="gtc-rate-cell">{(b.rate * 100).toFixed(0)}%</td>
+                <td>{b.deduction.toLocaleString("ko-KR")}원</td>
+                <td class="gtc-example-cell">
+                  {i === 0
+                    ? "5,000만 × 10% = 500만"
+                    : i === 1
+                    ? "3억 × 20% - 1,000만 = 5,000만"
+                    : i === 2
+                    ? "7억 × 30% - 6,000만 = 1.5억"
+                    : i === 3
+                    ? "20억 × 40% - 1.6억 = 6.4억"
+                    : "35억 × 50% - 4.6억 = 13억"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 관계별 공제 한도 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공제 한도 안내</p>
+        <h2>관계별 증여재산 공제 한도 (10년 기준)</h2>
+      </div>
+      <div class="gtc-relation-grid">
+        {GTC_RELATIONS.map((r) => (
+          <article class="gtc-relation-card">
+            <strong>{r.label}</strong>
+            <span class="gtc-relation-card__amount">
+              {r.deduction === 0
+                ? "공제 없음"
+                : r.deduction >= 100_000_000
+                ? `${(r.deduction / 100_000_000).toFixed(0)}억원`
+                : `${(r.deduction / 10_000).toLocaleString("ko-KR")}만원`}
+            </span>
+            <p>{r.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 시뮬레이션 케이스 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">시뮬레이션 표</p>
+        <h2>주요 증여 케이스별 세금 예시</h2>
+        <p>신고세액공제(3%) 적용 후 납부세액 기준 추정입니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="gtc-simulation-table">
+          <thead>
+            <tr>
+              <th>케이스</th>
+              <th>관계</th>
+              <th>증여금액</th>
+              <th>공제액</th>
+              <th>과세표준</th>
+              <th>납부세액</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {GTC_SIMULATION_CASES.map((item) => (
+              <tr>
+                <td>{item.label}</td>
+                <td>{item.relation}</td>
+                <td>{item.giftAmount.toLocaleString("ko-KR")}원</td>
+                <td>{item.deduction.toLocaleString("ko-KR")}원</td>
+                <td>{item.taxBase.toLocaleString("ko-KR")}원</td>
+                <td class={item.tax === 0 ? "gtc-zero-tax" : "gtc-has-tax"}>
+                  {item.tax.toLocaleString("ko-KR")}원
+                </td>
+                <td>{item.totalNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 절세 전략 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">절세 팁</p>
+        <h2>증여세 절세 핵심 포인트</h2>
+      </div>
+      <div class="gtc-tip-grid">
+        <article class="gtc-tip-card">
+          <strong>10년 주기 분할 증여</strong>
+          <ul>
+            <li>공제 한도는 10년마다 리셋됩니다.</li>
+            <li>자녀가 태어나면 미성년 공제(2,000만원) 활용</li>
+            <li>만 19세 이후 성인 공제(5,000만원) 추가 활용</li>
+            <li>조부모가 손주에게 증여 시 별도 한도 적용</li>
+          </ul>
+        </article>
+        <article class="gtc-tip-card">
+          <strong>배우자 증여 활용</strong>
+          <ul>
+            <li>10년간 6억원까지 비과세</li>
+            <li>부동산 공동명의 이전 시 활용 가능</li>
+            <li>배우자 공제 후 상속 시 추가 공제와 중복 활용 검토</li>
+            <li>양도소득세 절감 목적 증여 시 취득가액 승계 주의</li>
+          </ul>
+        </article>
+        <article class="gtc-tip-card">
+          <strong>신고 기한 준수</strong>
+          <ul>
+            <li>증여일이 속한 달 말일 기준 3개월 이내 신고</li>
+            <li>기한 내 신고 시 산출세액의 3% 공제</li>
+            <li>무신고 시 가산세(20%) + 납부 지연 가산세</li>
+            <li>부동산은 등기일 기준으로도 확인 필요</li>
+          </ul>
+        </article>
+        <article class="gtc-tip-card">
+          <strong>부동산 증여 주의사항</strong>
+          <ul>
+            <li>취득세 별도 발생 (증여 취득세율 3.5% 기본)</li>
+            <li>조정대상지역 주택은 취득세 중과 가능</li>
+            <li>증여 후 5년 내 양도 시 이월과세 적용 검토</li>
+            <li>재산가액은 시가 기준(감정평가 권장)</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <div class="gtc-source-links">
+        {GTC_SOURCE_LINKS.map((item) => (
+          <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="증여세 계산기 — 자녀·배우자·부모 증여 세금 완벽 이해"
+        intro={[
+          "증여세는 타인에게 재산을 무상으로 받을 때 수증자(받는 사람)가 납부하는 세금입니다. 가족 간 증여도 예외가 없지만, 관계에 따라 10년간 일정 금액까지 공제됩니다.",
+          "자녀 증여의 경우 성인(만 19세 이상)은 10년간 5,000만 원, 미성년자는 10년간 2,000만 원까지 비과세입니다. 배우자는 10년간 6억 원까지 공제됩니다.",
+          "공제 한도를 초과하는 금액에 대해 누진세율(10%~50%)이 적용됩니다. 1억 이하 10%, 1억~5억 20%, 5억~10억 30%, 10억~30억 40%, 30억 초과 50%입니다.",
+          "증여세 절세의 핵심은 10년 주기 분할 증여입니다. 자녀가 어릴 때부터 10년 단위로 나눠 증여하면 각 구간의 공제 한도를 최대한 활용할 수 있습니다.",
+          "이 계산기는 2026년 기준 일반적인 증여세를 추정합니다. 창업자금·영농증여·가업승계 등 특례, 공익법인 증여는 별도 기준이 적용되므로 세무 전문가 상담을 권장합니다.",
+        ]}
+        criteria={[
+          "상속세 및 증여세법 기준, 2026년 공제 한도 및 누진세율 적용.",
+          "신고세액공제(3%)는 증여일이 속한 달 말일 기준 3개월 이내 자진신고 시 적용됩니다.",
+          "10년 이내 동일인 증여액 합산 규정을 반영하여 기증여액을 입력하면 남은 공제 한도를 자동 계산합니다.",
+          "부동산 증여 시 취득세는 별도 계산이 필요합니다. 취득세 계산기를 함께 활용하세요.",
+        ]}
+        faq={GTC_FAQ}
+        related={GTC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="gtcConfig" type="application/json" set:html={JSON.stringify({
+    defaults: GTC_DEFAULTS,
+    relations: GTC_RELATIONS,
+    brackets: GTC_TAX_BRACKETS.map(b => ({ ...b, limit: b.limit === Infinity ? null : b.limit })),
+  })}></script>
+  <script type="module" src={withBase("/scripts/gift-tax-calculator.js")}></script>
+</BaseLayout>
