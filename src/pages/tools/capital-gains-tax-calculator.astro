@@ -11,7 +11,6 @@ import {
   CGT_DEFAULTS,
   CGT_PROPERTY_TYPES,
   CGT_HOUSE_COUNTS,
-  CGT_TAX_BRACKETS,
   CGT_QUICK_SELL,
   CGT_QUICK_ACQUIRE,
   CGT_SIMULATION_CASES,
@@ -50,16 +49,15 @@ const jsonLd = {
   ],
 };
 
-// 기본 세율 표 렌더용
 const bracketRows = [
-  { range: "1,400만 이하",          rate: "6%",  cumDed: "0원" },
-  { range: "1,400만 ~ 5,000만",     rate: "15%", cumDed: "126만 원" },
-  { range: "5,000만 ~ 8,800만",     rate: "24%", cumDed: "576만 원" },
-  { range: "8,800만 ~ 1억 5천만",   rate: "35%", cumDed: "1,544만 원" },
-  { range: "1억 5천만 ~ 3억",       rate: "38%", cumDed: "1,994만 원" },
-  { range: "3억 ~ 5억",             rate: "40%", cumDed: "2,594만 원" },
-  { range: "5억 ~ 10억",            rate: "42%", cumDed: "3,594만 원" },
-  { range: "10억 초과",             rate: "45%", cumDed: "6,594만 원" },
+  { range: "1,400만 이하",         rate: "6%",  cumDed: "0원" },
+  { range: "1,400만 ~ 5,000만",    rate: "15%", cumDed: "126만 원" },
+  { range: "5,000만 ~ 8,800만",    rate: "24%", cumDed: "576만 원" },
+  { range: "8,800만 ~ 1억 5천만",  rate: "35%", cumDed: "1,544만 원" },
+  { range: "1억 5천만 ~ 3억",      rate: "38%", cumDed: "1,994만 원" },
+  { range: "3억 ~ 5억",            rate: "40%", cumDed: "2,594만 원" },
+  { range: "5억 ~ 10억",           rate: "42%", cumDed: "3,594만 원" },
+  { range: "10억 초과",            rate: "45%", cumDed: "6,594만 원" },
 ];
 ---
 
@@ -68,6 +66,7 @@ const bracketRows = [
 
   <SimpleToolShell calculatorId="capital-gains-tax-calculator" pageClass="op-page cgt-page" resultFirst={true}>
 
+    <!-- ── HERO ─────────────────────────────────────────────── -->
     <Fragment slot="hero">
       <CalculatorHero
         eyebrow="부동산 세금 계산기"
@@ -75,199 +74,205 @@ const bracketRows = [
         description="1주택 비과세·장기보유특별공제·단기양도세율·다주택 중과까지 모두 반영. 아파트·토지·상가 양도 전 세금을 미리 확인하세요."
         badges={["1주택 비과세", "장특공제 최대 80%", "다주택 중과", "2026년 기준"]}
       />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[CGT_META.caution, CGT_META.dataNote]}
+      />
     </Fragment>
 
-    <!-- ── 결과 영역 (resultFirst) ──────────────────────── -->
-    <Fragment slot="results">
-
-      <!-- 비과세 배너 -->
-      <div id="cgt-exempt-banner" class="cgt-exempt-banner" style="display:none">
-        🎉 <strong>1가구 1주택 비과세 적용 — 납부세액 0원</strong>
-        <span>2년 이상 보유·거주, 양도가액 12억 이하 요건 충족</span>
-      </div>
-
-      <!-- 12억 초과 부분과세 배너 -->
-      <div id="cgt-partial-banner" class="cgt-partial-banner" style="display:none">
-        ℹ️ <strong>1주택 12억 초과 — 초과분에 해당하는 차익만 과세됩니다</strong>
-      </div>
-
-      <!-- 결과 카드 6개 -->
-      <div class="cgt-result-grid">
-        <div class="cgt-result-card cgt-card--main">
-          <span class="cgt-result-label">최종 납부세액 합계</span>
-          <strong class="cgt-result-value" id="cgt-result-total">-</strong>
-          <small>양도소득세 + 지방소득세</small>
-        </div>
-        <div class="cgt-result-card">
-          <span class="cgt-result-label">양도소득세</span>
-          <strong class="cgt-result-value" id="cgt-result-tax">-</strong>
-          <small>국세</small>
-        </div>
-        <div class="cgt-result-card">
-          <span class="cgt-result-label">지방소득세</span>
-          <strong class="cgt-result-value" id="cgt-result-local">-</strong>
-          <small>양도소득세의 10%</small>
-        </div>
-        <div class="cgt-result-card">
-          <span class="cgt-result-label">양도차익</span>
-          <strong class="cgt-result-value" id="cgt-result-gain">-</strong>
-          <small>양도가액 − 취득가액 − 경비</small>
-        </div>
-        <div class="cgt-result-card">
-          <span class="cgt-result-label">적용 세율</span>
-          <strong class="cgt-result-value" id="cgt-result-rate">-</strong>
-          <small>기본세율·단기·중과</small>
-        </div>
-        <div class="cgt-result-card">
-          <span class="cgt-result-label">실효세율</span>
-          <strong class="cgt-result-value" id="cgt-result-eff">-</strong>
-          <small>총 납부세액 / 양도차익</small>
-        </div>
-      </div>
-
-      <!-- 장기보유특별공제 바 -->
-      <div class="cgt-deduct-section">
-        <span class="cgt-deduct-title">장기보유특별공제</span>
-        <div class="cgt-deduct-bar-bg">
-          <div class="cgt-deduct-bar" id="cgt-deduct-bar" style="width:0%"></div>
-        </div>
-        <p class="cgt-deduct-label" id="cgt-deduct-label">보유기간 입력 후 공제율이 표시됩니다</p>
-      </div>
-
-      <!-- 계산 내역 상세 -->
-      <div class="cgt-breakdown-section">
-        <strong class="cgt-breakdown-title">세금 계산 내역</strong>
-        <div class="table-wrap">
-          <table class="cgt-breakdown-table">
-            <tbody id="cgt-breakdown-body">
-              <tr><td colspan="2" style="text-align:center;color:#9ca3af;padding:20px">입력값을 입력하면 계산 내역이 표시됩니다.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+    <!-- ── ACTIONS ───────────────────────────────────────────── -->
+    <Fragment slot="actions">
       <ToolActionBar resetId="cgt-reset" copyId="cgt-copy-link" />
     </Fragment>
 
-    <!-- ── 입력 영역 ────────────────────────────────────── -->
-    <Fragment slot="inputs">
-
-      <!-- 부동산 유형 -->
-      <div class="cgt-input-section">
-        <label class="cgt-input-label" for="cgt-property-type">부동산 유형</label>
-        <select class="cgt-select" id="cgt-property-type">
-          {CGT_PROPERTY_TYPES.map((pt) => (
-            <option value={pt.value}>{pt.label}</option>
-          ))}
-        </select>
-      </div>
-
-      <!-- 주택 수 (주택 선택 시) -->
-      <div class="cgt-input-section" id="cgt-house-count-row">
-        <label class="cgt-input-label">보유 주택 수 <span class="cgt-badge-tip">비과세·중과 기준</span></label>
-        <div class="cgt-radio-group">
-          {CGT_HOUSE_COUNTS.map((hc) => (
-            <label class="cgt-radio-card">
-              <input type="radio" name="cgt-house-count-radio"
-                id={`cgt-radio-${hc.value}`}
-                value={hc.value}
-                data-cgt-house-radio
-                checked={hc.value === "one"}
-              />
-              <span class="cgt-radio-label">{hc.label}</span>
-              <small class="cgt-radio-desc">{hc.desc}</small>
-            </label>
-          ))}
+    <!-- ── ASIDE (입력) ──────────────────────────────────────── -->
+    <Fragment slot="aside">
+      <section class="op-panel" id="cgt-input-panel">
+        <div class="op-panel__head">
+          <p>입력</p>
+          <h2>양도 조건 입력</h2>
         </div>
-      </div>
 
-      <!-- 조정대상지역 -->
-      <div class="cgt-input-section" id="cgt-adjusted-row">
-        <label class="cgt-check-label">
-          <input type="checkbox" id="cgt-adjusted-zone" />
-          <span>조정대상지역 (투기·과열지구)</span>
-        </label>
-        <small class="cgt-input-hint">조정지역 1주택: 2년 거주 요건 추가. 선택 안 하면 비조정 지역으로 계산.</small>
-      </div>
-
-      <!-- 1주택 거주 기간 (1주택+조정지역 시) -->
-      <div class="cgt-input-section" id="cgt-residence-row">
-        <label class="cgt-input-label" for="cgt-residence-years">실제 거주 기간 <span class="cgt-unit">년</span></label>
-        <input type="number" class="cgt-input" id="cgt-residence-years"
-          min="0" max="50" step="1" value={CGT_DEFAULTS.residenceYears}
-          placeholder="거주 년수"
-        />
-        <small class="cgt-input-hint">1주택 장기보유특별공제(보유 연4% + 거주 연4%) 산정 기준. 비거주 시 0 입력.</small>
-      </div>
-
-      <!-- 다주택 중과 선택 -->
-      <div class="cgt-input-section" id="cgt-heavy-tax-row" style="display:none">
-        <label class="cgt-check-label">
-          <input type="checkbox" id="cgt-heavy-tax" />
-          <span>다주택 중과세 적용 (조정지역 한정)</span>
-        </label>
-        <small class="cgt-input-hint">현재 2주택 +20%p, 3주택 이상 +30%p. 2022.5~한시 배제 중 → 기본값 미체크.</small>
-      </div>
-
-      <!-- 양도가액 -->
-      <div class="cgt-input-section">
-        <label class="cgt-input-label" for="cgt-sell-price">양도가액 (매도가격) <span class="cgt-unit">원</span></label>
-        <input type="text" class="cgt-input cgt-input--large" id="cgt-sell-price"
-          inputmode="numeric" value="600,000,000" placeholder="예: 600,000,000"
-        />
-        <div class="cgt-quick-row">
-          {CGT_QUICK_SELL.map((q) => (
-            <button class="cgt-quick-btn" type="button" data-quick-sell={q.value}>{q.label}</button>
-          ))}
+        <!-- 부동산 유형 -->
+        <div class="cgt-field">
+          <label class="cgt-field-label" for="cgt-property-type">부동산 유형</label>
+          <select class="op-select" id="cgt-property-type">
+            {CGT_PROPERTY_TYPES.map((pt) => (
+              <option value={pt.value}>{pt.label}</option>
+            ))}
+          </select>
         </div>
-      </div>
 
-      <!-- 취득가액 -->
-      <div class="cgt-input-section">
-        <label class="cgt-input-label" for="cgt-acquire-price">취득가액 (매수가격) <span class="cgt-unit">원</span></label>
-        <input type="text" class="cgt-input cgt-input--large" id="cgt-acquire-price"
-          inputmode="numeric" value="300,000,000" placeholder="예: 300,000,000"
-        />
-        <div class="cgt-quick-row">
-          {CGT_QUICK_ACQUIRE.map((q) => (
-            <button class="cgt-quick-btn" type="button" data-quick-acquire={q.value}>{q.label}</button>
-          ))}
-        </div>
-      </div>
-
-      <!-- 필요경비 -->
-      <div class="cgt-input-section">
-        <label class="cgt-input-label" for="cgt-expenses">
-          필요경비 <span class="cgt-unit">원</span>
-          <span class="cgt-badge-tip">취득세·중개비·자본적지출</span>
-        </label>
-        <input type="text" class="cgt-input" id="cgt-expenses"
-          inputmode="numeric" value="10,000,000" placeholder="예: 10,000,000"
-        />
-      </div>
-
-      <!-- 보유기간 -->
-      <div class="cgt-input-section">
-        <label class="cgt-input-label">보유 기간 <span class="cgt-badge-tip">장기보유특별공제·세율 결정</span></label>
-        <div class="cgt-hold-row">
-          <div class="cgt-hold-group">
-            <input type="number" class="cgt-input" id="cgt-hold-years"
-              min="0" max="50" step="1" value={CGT_DEFAULTS.holdingYears} />
-            <span class="cgt-unit">년</span>
-          </div>
-          <div class="cgt-hold-group">
-            <input type="number" class="cgt-input" id="cgt-hold-months"
-              min="0" max="11" step="1" value={CGT_DEFAULTS.holdMonths} />
-            <span class="cgt-unit">개월</span>
+        <!-- 주택 수 (주택 선택 시) -->
+        <div class="cgt-field" id="cgt-house-count-row">
+          <label class="cgt-field-label">보유 주택 수</label>
+          <div class="cgt-radio-group">
+            {CGT_HOUSE_COUNTS.map((hc) => (
+              <label class="cgt-radio-card">
+                <input type="radio" name="cgt-house-count-radio"
+                  id={`cgt-radio-${hc.value}`}
+                  value={hc.value}
+                  data-cgt-house-radio
+                  checked={hc.value === "one"}
+                />
+                <span class="cgt-radio-label">{hc.label}</span>
+                <small class="cgt-radio-desc">{hc.desc}</small>
+              </label>
+            ))}
           </div>
         </div>
-        <small class="cgt-input-hint">2년(24개월) 미만이면 단기양도세율 적용 (주택 70%/60%)</small>
-      </div>
 
+        <!-- 조정대상지역 -->
+        <div class="cgt-field" id="cgt-adjusted-row">
+          <label class="cgt-check-label">
+            <input type="checkbox" id="cgt-adjusted-zone" />
+            <span>조정대상지역</span>
+          </label>
+          <small class="cgt-field-hint">1주택: 2년 거주 요건 추가 적용</small>
+        </div>
+
+        <!-- 거주 기간 (1주택 시) -->
+        <div class="cgt-field" id="cgt-residence-row">
+          <label class="cgt-field-label" for="cgt-residence-years">실제 거주 기간 <span class="cgt-unit">년</span></label>
+          <input type="number" class="op-input" id="cgt-residence-years"
+            min="0" max="50" step="1" value={CGT_DEFAULTS.residenceYears} />
+          <small class="cgt-field-hint">보유 연4% + 거주 연4% 장특공제 산정 기준</small>
+        </div>
+
+        <!-- 다주택 중과 (2주택+ 시) -->
+        <div class="cgt-field" id="cgt-heavy-tax-row" style="display:none">
+          <label class="cgt-check-label">
+            <input type="checkbox" id="cgt-heavy-tax" />
+            <span>다주택 중과 적용</span>
+          </label>
+          <small class="cgt-field-hint">2주택 +20%p, 3주택+ +30%p. 현재 한시 배제 중 → 기본값 미체크</small>
+        </div>
+
+        <!-- 양도가액 -->
+        <div class="cgt-field">
+          <label class="cgt-field-label" for="cgt-sell-price">양도가액 (매도가) <span class="cgt-unit">원</span></label>
+          <input type="text" class="op-input" id="cgt-sell-price"
+            inputmode="numeric" value="600,000,000" placeholder="예: 600,000,000" />
+          <div class="cgt-quick-row">
+            {CGT_QUICK_SELL.map((q) => (
+              <button class="cgt-quick-btn" type="button" data-quick-sell={q.value}>{q.label}</button>
+            ))}
+          </div>
+        </div>
+
+        <!-- 취득가액 -->
+        <div class="cgt-field">
+          <label class="cgt-field-label" for="cgt-acquire-price">취득가액 (매수가) <span class="cgt-unit">원</span></label>
+          <input type="text" class="op-input" id="cgt-acquire-price"
+            inputmode="numeric" value="300,000,000" placeholder="예: 300,000,000" />
+          <div class="cgt-quick-row">
+            {CGT_QUICK_ACQUIRE.map((q) => (
+              <button class="cgt-quick-btn" type="button" data-quick-acquire={q.value}>{q.label}</button>
+            ))}
+          </div>
+        </div>
+
+        <!-- 필요경비 -->
+        <div class="cgt-field">
+          <label class="cgt-field-label" for="cgt-expenses">
+            필요경비 <span class="cgt-unit">원</span>
+            <span class="cgt-badge-tip">취득세·중개비·자본지출</span>
+          </label>
+          <input type="text" class="op-input" id="cgt-expenses"
+            inputmode="numeric" value="10,000,000" placeholder="예: 10,000,000" />
+        </div>
+
+        <!-- 보유기간 -->
+        <div class="cgt-field">
+          <label class="cgt-field-label">보유 기간 <span class="cgt-badge-tip">장특공제·세율 결정</span></label>
+          <div class="cgt-hold-row">
+            <div class="cgt-hold-group">
+              <input type="number" class="op-input" id="cgt-hold-years"
+                min="0" max="50" step="1" value={CGT_DEFAULTS.holdingYears} />
+              <span class="cgt-unit">년</span>
+            </div>
+            <div class="cgt-hold-group">
+              <input type="number" class="op-input" id="cgt-hold-months"
+                min="0" max="11" step="1" value={CGT_DEFAULTS.holdMonths} />
+              <span class="cgt-unit">개월</span>
+            </div>
+          </div>
+          <small class="cgt-field-hint">2년 미만 → 단기세율 (주택 70%/60%)</small>
+        </div>
+
+      </section>
     </Fragment>
 
-    <!-- ── 추가 콘텐츠 ───────────────────────────────────── -->
-    <Fragment slot="after-tool">
+    <!-- ── DEFAULT (결과) ─────────────────────────────────────── -->
+
+    <!-- 비과세 배너 -->
+    <div id="cgt-exempt-banner" class="cgt-exempt-banner" style="display:none">
+      🎉 <strong>1가구 1주택 비과세 — 납부세액 0원</strong>
+      <span>2년 이상 보유·거주, 양도가액 12억 이하 요건 충족</span>
+    </div>
+
+    <!-- 12억 초과 부분과세 배너 -->
+    <div id="cgt-partial-banner" class="cgt-partial-banner" style="display:none">
+      ℹ️ <strong>1주택 12억 초과 — 초과분 해당 차익만 과세</strong>
+    </div>
+
+    <!-- 결과 카드 6개 -->
+    <div class="cgt-result-grid">
+      <div class="cgt-result-card cgt-card--main">
+        <span class="cgt-result-label">최종 납부세액 합계</span>
+        <strong class="cgt-result-value" id="cgt-result-total">입력 대기</strong>
+        <small>양도소득세 + 지방소득세</small>
+      </div>
+      <div class="cgt-result-card">
+        <span class="cgt-result-label">양도소득세</span>
+        <strong class="cgt-result-value" id="cgt-result-tax">-</strong>
+        <small>국세</small>
+      </div>
+      <div class="cgt-result-card">
+        <span class="cgt-result-label">지방소득세</span>
+        <strong class="cgt-result-value" id="cgt-result-local">-</strong>
+        <small>양도소득세의 10%</small>
+      </div>
+      <div class="cgt-result-card">
+        <span class="cgt-result-label">양도차익</span>
+        <strong class="cgt-result-value" id="cgt-result-gain">-</strong>
+        <small>양도가액 − 취득가액 − 경비</small>
+      </div>
+      <div class="cgt-result-card">
+        <span class="cgt-result-label">적용 세율</span>
+        <strong class="cgt-result-value" id="cgt-result-rate">-</strong>
+        <small>기본세율·단기·중과</small>
+      </div>
+      <div class="cgt-result-card">
+        <span class="cgt-result-label">실효세율</span>
+        <strong class="cgt-result-value" id="cgt-result-eff">-</strong>
+        <small>총 납부세액 / 양도차익</small>
+      </div>
+    </div>
+
+    <!-- 장기보유특별공제 바 -->
+    <div class="cgt-deduct-section">
+      <span class="cgt-deduct-title">장기보유특별공제</span>
+      <div class="cgt-deduct-bar-bg">
+        <div class="cgt-deduct-bar" id="cgt-deduct-bar" style="width:0%"></div>
+      </div>
+      <p class="cgt-deduct-label" id="cgt-deduct-label">보유기간 입력 후 공제율이 표시됩니다</p>
+    </div>
+
+    <!-- 계산 내역 -->
+    <div class="cgt-breakdown-section">
+      <strong class="cgt-breakdown-title">세금 계산 내역</strong>
+      <div class="table-wrap">
+        <table class="cgt-breakdown-table">
+          <tbody id="cgt-breakdown-body">
+            <tr><td colspan="2" style="text-align:center;color:#9ca3af;padding:20px">입력값을 확인 후 계산됩니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── SEO 슬롯 (전체 폭 섹션들) ─────────────────────────── -->
+    <Fragment slot="seo">
 
       <!-- 시뮬레이션 케이스 -->
       <section class="content-section cgt-sim-section" aria-labelledby="cgt-sim-title">
@@ -341,7 +346,7 @@ const bracketRows = [
       </section>
 
       <!-- 증여세 계산기 CTA -->
-      <section class="content-section cgt-cta-section">
+      <section class="content-section">
         <a class="cgt-cta-banner" href={withBase("/tools/gift-tax-calculator/")}>
           <div class="cgt-cta-text">
             <strong>증여세 계산기도 확인해보세요</strong>
@@ -383,10 +388,8 @@ const bracketRows = [
   <!-- 라디오 카드 active 클래스 처리 -->
   <script is:inline>
     document.addEventListener("DOMContentLoaded", function () {
-      // 초기 active 설정
       var checked = document.querySelector("[data-cgt-house-radio]:checked");
       if (checked) checked.closest(".cgt-radio-card").classList.add("active");
-      // 변경 시 active 이동 (JS main에서 render도 같이 처리)
       document.querySelectorAll("[data-cgt-house-radio]").forEach(function (radio) {
         radio.addEventListener("change", function () {
           document.querySelectorAll(".cgt-radio-card").forEach(function (c) { c.classList.remove("active"); });
