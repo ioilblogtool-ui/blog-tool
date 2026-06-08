@@ -392,6 +392,11 @@ export const KBO_FAQ = [
 // ─── 관련 링크 ────────────────────────────────────────────────
 export const KBO_RELATED_LINKS = [
   {
+    href: "/tools/kbo-salary-calculator/",
+    label: "KBO 선수 연봉 계산기",
+    desc: "내 연봉이 KBO 리그 몇 %인지 바로 계산",
+  },
+  {
     href: "/reports/kleague-salary-comparison-2026/",
     label: "K리그1 12구단 연봉 비교 2026",
     desc: "구스타보·나상호·세징야 — K리그 구단별 총액 완전 비교",

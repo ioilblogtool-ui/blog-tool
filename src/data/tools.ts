@@ -18,6 +18,19 @@ export type ToolMeta = {
 
 export const tools: ToolMeta[] = [
   {
+    slug: "kbo-salary-calculator",
+    title: "KBO 선수 연봉 계산기",
+    description: "KBO 선수 연봉 입력 → 세후 월 실수령·리그 내 상위 몇%·포지션 평균 대비·류현진 등 대표 선수 비교.",
+    order: 0,
+    eyebrow: "KBO 연봉",
+    category: "스포츠",
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "리그 평균", value: "1.4억" },
+      { label: "류현진", value: "25억 (1위)" },
+    ],
+  },
+  {
     slug: "gift-tax-calculator",
     title: "증여세 계산기",
     description: "배우자·자녀·부모 등 관계별 공제 한도, 누진세율, 신고세액공제까지 한 번에 계산. 10년 분할 증여 전략 포함.",

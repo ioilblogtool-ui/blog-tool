@@ -1,0 +1,371 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  KSC_META,
+  KSC_DEFAULTS,
+  KSC_QUICK_SALARIES,
+  KSC_DISTRIBUTION,
+  KSC_POSITION_AVG,
+  KSC_BENCHMARKS,
+  KSC_FAQ,
+  KSC_RELATED_LINKS,
+} from "../../data/kboSalaryCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: KSC_META.title,
+      url: `${import.meta.env.SITE}/tools/${KSC_META.slug}/`,
+      description: KSC_META.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: KSC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+
+const maxDistCount = Math.max(...KSC_DISTRIBUTION.map((d) => d.count));
+---
+
+<BaseLayout title={KSC_META.seoTitle} description={KSC_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="kbo-salary-calculator" pageClass="op-page ksc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="KBO 연봉 계산기"
+        title={KSC_META.title}
+        description="KBO 선수 연봉 입력 → 세후 월 실수령·4대보험·소득세 내역·리그 내 상위 몇%·포지션 평균 대비를 한 번에 계산합니다."
+        badges={["KBO", "세후 실수령", "리그 분포"]}
+      />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[KSC_META.caution]}
+      />
+      <DesignTrustPanel
+        title="KBO 연봉 계산 기준"
+        updatedAt={KSC_META.updatedAt}
+        notes={[
+          "세금·보험료는 일반 근로소득 기준 추정치입니다. 실제 선수 계약 구조와 다를 수 있습니다.",
+          "리그 분포는 KBO 공시 선수 약 600명 기준 추정입니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetKscBtn" copyId="copyKscLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="op-panel" data-ksc-root>
+        <div class="op-panel__head">
+          <p>입력</p>
+          <h2>연봉 조건</h2>
+        </div>
+
+        <label class="op-field">
+          <span>KBO 선수 연봉 (원)</span>
+          <input
+            data-ksc-input="salary"
+            inputmode="numeric"
+            value={KSC_DEFAULTS.salary.toLocaleString("ko-KR")}
+          />
+        </label>
+
+        <!-- 슬라이더 -->
+        <div class="ksc-slider-wrap">
+          <input
+            data-ksc-input="salarySlider"
+            type="range"
+            min="36000000"
+            max="2500000000"
+            step="10000000"
+            value={KSC_DEFAULTS.salary}
+            class="ksc-slider"
+          />
+          <div class="ksc-slider-labels">
+            <span>최저 3,600만</span>
+            <span>25억 (류현진)</span>
+          </div>
+        </div>
+
+        <!-- 빠른 선택 -->
+        <div class="ksc-quick-row">
+          {KSC_QUICK_SALARIES.map((item) => (
+            <button type="button" data-ksc-quick={item.value} title={item.note}>
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <label class="op-check">
+          <input data-ksc-input="includeSigning" type="checkbox" />
+          계약금(FA 사이닝보너스) 별도 입력
+        </label>
+
+        <div data-ksc-field="signing" hidden>
+          <label class="op-field">
+            <span>계약금 (원)</span>
+            <input data-ksc-input="signing" inputmode="numeric" placeholder="예: 500,000,000" value="0" />
+          </label>
+          <label class="op-field">
+            <span>계약 연수</span>
+            <select data-ksc-input="signingYears">
+              <option value="1">1년</option>
+              <option value="2">2년</option>
+              <option value="3" selected>3년</option>
+              <option value="4">4년</option>
+              <option value="5">5년</option>
+              <option value="6">6년</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <!-- 포지션별 리그 평균 참고 -->
+      <section class="op-panel ksc-pos-panel">
+        <div class="op-panel__head">
+          <p>참고</p>
+          <h2>포지션별 리그 평균</h2>
+        </div>
+        <div class="ksc-pos-list">
+          {KSC_POSITION_AVG.map((pos) => (
+            <div class="ksc-pos-row" data-ksc-pos-avg={pos.avgMillion}>
+              <span class="ksc-pos-icon">{pos.icon}</span>
+              <span class="ksc-pos-name">{pos.position}</span>
+              <strong class="ksc-pos-avg" data-ksc-pos-name={pos.position}>
+                {(pos.avgMillion / 10000).toFixed(2)}억
+              </strong>
+            </div>
+          ))}
+        </div>
+      </section>
+    </Fragment>
+
+    <!-- 핵심 결과 -->
+    <section class="op-section">
+      <div class="op-result-grid ksc-result-grid">
+        <article class="op-result-card op-result-card--accent">
+          <p>월 실수령액</p>
+          <strong data-ksc-output="monthlyNet">-</strong>
+          <span data-ksc-output="monthlyNetNote">세후 추정</span>
+        </article>
+        <article class="op-result-card">
+          <p>월 총액 (세전)</p>
+          <strong data-ksc-output="monthlyGross">-</strong>
+          <span>연봉 ÷ 12</span>
+        </article>
+        <article class="op-result-card">
+          <p>실수령률</p>
+          <strong data-ksc-output="netRate">-</strong>
+          <span>실수령 / 총액</span>
+        </article>
+        <article class="op-result-card">
+          <p>연간 세금·보험 합계</p>
+          <strong data-ksc-output="annualDeduction">-</strong>
+          <span data-ksc-output="annualDeductionNote">연간 공제 합계</span>
+        </article>
+        <article class="op-result-card">
+          <p>리그 내 상위</p>
+          <strong data-ksc-output="leagueRank">-</strong>
+          <span data-ksc-output="leagueRankNote">약 600명 기준</span>
+        </article>
+        <article class="op-result-card">
+          <p>리그 평균 대비</p>
+          <strong data-ksc-output="vsAvg">-</strong>
+          <span>리그 평균 1.4억 기준</span>
+        </article>
+      </div>
+
+      <!-- FA 계약금 결과 (조건부) -->
+      <div class="ksc-signing-result" data-ksc-output="signingResult" hidden>
+        <p>계약금 포함 실질 연봉</p>
+        <strong data-ksc-output="totalWithSigning">-</strong>
+        <span data-ksc-output="signingNote">연봉 + 계약금 연할</span>
+      </div>
+    </section>
+
+    <!-- 세금·보험 내역 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공제 내역</p>
+        <h2>월별 세금·보험료 상세</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="ksc-breakdown-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>기준</th>
+              <th>월 공제액</th>
+              <th>연간 합계</th>
+            </tr>
+          </thead>
+          <tbody data-ksc-output="breakdown"></tbody>
+          <tfoot>
+            <tr class="ksc-breakdown-total">
+              <td colspan="2">합계</td>
+              <td data-ksc-output="totalMonthlyDeduction">-</td>
+              <td data-ksc-output="totalAnnualDeduction">-</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- 리그 분포 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리그 분포</p>
+        <h2>연봉 구간별 선수 분포 — 내 위치는?</h2>
+        <p>KBO 공시 선수 약 600명 기준 추정입니다.</p>
+      </div>
+      <div class="ksc-dist-list">
+        {KSC_DISTRIBUTION.map((d, i) => (
+          <div class="ksc-dist-row" data-dist-idx={i} data-dist-min={d.min} data-dist-max={d.max === Infinity ? "Infinity" : d.max}>
+            <div class="ksc-dist-label">
+              <span class="ksc-dist-range">{d.label}</span>
+              <span class="ksc-dist-count">{d.count}명 ({d.pct}%)</span>
+            </div>
+            <div class="ksc-dist-bar-wrap">
+              <div
+                class="ksc-dist-bar"
+                style={`width:${(d.count / maxDistCount) * 100}%`}
+              />
+              <span class="ksc-dist-you" data-ksc-dist-you={i} hidden>← 내 연봉</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 대표 선수 비교 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">선수 비교</p>
+        <h2>KBO 대표 선수 연봉과 비교</h2>
+        <p>내 입력 연봉 대비 주요 선수의 연봉 배수를 비교합니다.</p>
+      </div>
+      <div class="ksc-benchmark-list">
+        {KSC_BENCHMARKS.map((b) => (
+          <div class="ksc-bench-row" data-bench-salary={b.salary}>
+            <div class="ksc-bench-info">
+              <strong class="ksc-bench-name">{b.name}</strong>
+              <span class="ksc-bench-meta">{b.team} · {b.position}</span>
+            </div>
+            <div class="ksc-bench-bar-wrap">
+              <div
+                class="ksc-bench-bar"
+                style={`width:${(b.salary / KSC_BENCHMARKS[0].salary) * 100}%`}
+              />
+            </div>
+            <span class="ksc-bench-salary">{(b.salary / 100_000_000).toFixed(1)}억</span>
+            <span class="ksc-bench-ratio" data-ksc-bench-ratio={b.salary}>-</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 포지션별 비교 -->
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">포지션 비교</p>
+        <h2>포지션별 리그 평균 대비 내 연봉</h2>
+      </div>
+      <div class="ksc-pos-compare-grid">
+        {KSC_POSITION_AVG.map((pos) => (
+          <article class="ksc-pos-compare-card" data-pos-avg={pos.avgMillion}>
+            <span class="ksc-poc-icon">{pos.icon}</span>
+            <strong class="ksc-poc-name">{pos.position}</strong>
+            <div class="ksc-poc-row">
+              <span>포지션 평균</span>
+              <strong>{(pos.avgMillion / 10000).toFixed(2)}억</strong>
+            </div>
+            <div class="ksc-poc-row ksc-poc-row--mine">
+              <span>내 연봉 대비</span>
+              <strong class="ksc-poc-ratio" data-poc-avg={pos.avgMillion}>-</strong>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- KBO·K리그 리포트 CTA -->
+    <section class="op-section ksc-cta-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 리포트</p>
+        <h2>구단별 연봉 현황이 궁금하다면</h2>
+      </div>
+      <div class="ksc-cta-grid">
+        <a class="ksc-cta-card ksc-cta-card--kbo" href={withBase("/reports/kbo-salary-comparison-2026/")}>
+          <span class="ksc-cta-icon">⚾</span>
+          <div>
+            <strong>KBO 10구단 연봉 비교 2026</strong>
+            <span>한화 168억 1위 — 구단별 총액·에이스 완전 분석</span>
+          </div>
+          <span class="ksc-cta-arrow">→</span>
+        </a>
+        <a class="ksc-cta-card ksc-cta-card--kle" href={withBase("/reports/kleague-salary-comparison-2026/")}>
+          <span class="ksc-cta-icon">⚽</span>
+          <div>
+            <strong>K리그1 12구단 연봉 비교 2026</strong>
+            <span>구스타보 4.8억 1위 — K리그 vs KBO 비교</span>
+          </div>
+          <span class="ksc-cta-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="KBO 선수 연봉 계산기 — 자주 묻는 질문"
+        intro={[
+          "KBO 선수 연봉 계산기는 야구 선수의 연봉을 입력하면 세후 월 실수령액, 4대보험·소득세 공제 내역, 리그 내 상위 몇% 수준인지를 즉시 계산합니다.",
+          "2026년 KBO 리그 평균 연봉은 약 1억 4,000만 원입니다. 최저 연봉은 3,600만 원이며, 류현진(한화)이 25억으로 리그 최고 연봉을 받고 있습니다.",
+          "연봉 1억 원의 경우 세후 월 실수령은 약 650만~700만 원 수준이며, 리그 내 상위 35~40% 수준에 해당합니다.",
+          "FA(자유계약선수) 계약금을 별도로 입력하면 계약 연수로 나눈 실질 연평균 연봉과 월 실수령도 함께 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "세금·보험료는 일반 근로소득 기준 추정입니다. 실제 선수 계약 구조(사업소득·원천징수 등)와 다를 수 있습니다.",
+          "리그 분포는 KBO 공시 선수 약 600명 기준 추정이며 외국인 선수는 제외됩니다.",
+          "리그 평균 연봉(1.4억)은 2026년 KBO 공시 기준 전체 평균입니다.",
+        ]}
+        faq={KSC_FAQ}
+        related={KSC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="kscConfig" type="application/json" set:html={JSON.stringify({
+    defaults: KSC_DEFAULTS,
+    leagueAvg: 140_000_000,
+    totalPlayers: 600,
+    distribution: KSC_DISTRIBUTION.map(d => ({ ...d, max: d.max === Infinity ? null : d.max })),
+    benchmarks: KSC_BENCHMARKS,
+  })}></script>
+  <script type="module" src={withBase("/scripts/kbo-salary-calculator.js")}></script>
+</BaseLayout>

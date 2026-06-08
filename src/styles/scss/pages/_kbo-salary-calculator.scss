@@ -1,0 +1,412 @@
+.ksc-page {
+  --ksc-ink: #172026;
+  --ksc-muted: #58636d;
+  --ksc-line: #d9e1e7;
+  --ksc-soft: #f6f9fb;
+  --ksc-green: #0f6e56;
+  --ksc-green-soft: #e1f5ee;
+  --ksc-blue: #1a56db;
+  --ksc-blue-soft: #eff6ff;
+  --ksc-amber: #b45309;
+  --ksc-red: #b91c1c;
+  --ksc-kbo: #c20430;
+
+  color: var(--ksc-ink);
+}
+
+/* 슬라이더 */
+.ksc-slider-wrap {
+  margin: -4px 0 14px;
+}
+
+.ksc-slider {
+  width: 100%;
+  accent-color: var(--ksc-green);
+  cursor: pointer;
+}
+
+.ksc-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--ksc-muted);
+  margin-top: 2px;
+}
+
+/* 빠른 선택 */
+.ksc-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+
+  button {
+    padding: 6px 11px;
+    font-size: 0.82rem;
+    border: 1px solid var(--ksc-line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ksc-muted);
+    cursor: pointer;
+    font-weight: 700;
+    transition: border-color 0.15s, color 0.15s;
+
+    &:hover {
+      border-color: var(--ksc-green);
+      color: var(--ksc-green);
+    }
+  }
+}
+
+/* 포지션 패널 */
+.ksc-pos-panel {
+  margin-top: 14px;
+}
+
+.ksc-pos-list {
+  display: grid;
+  gap: 6px;
+}
+
+.ksc-pos-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--ksc-soft);
+  font-size: 0.86rem;
+}
+
+.ksc-pos-icon { font-size: 1rem; }
+.ksc-pos-name { flex: 1; color: var(--ksc-muted); }
+.ksc-pos-avg { font-weight: 700; color: var(--ksc-green); }
+
+/* 결과 그리드 */
+.ksc-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 계약금 결과 */
+.ksc-signing-result {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--ksc-blue-soft);
+  border: 1px solid var(--ksc-blue);
+
+  p {
+    font-size: 0.82rem;
+    color: var(--ksc-blue);
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--ksc-blue);
+    margin-bottom: 2px;
+  }
+
+  span {
+    font-size: 0.8rem;
+    color: var(--ksc-muted);
+  }
+}
+
+/* 공제 내역 테이블 */
+.ksc-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+
+  th, td {
+    padding: 9px 11px;
+    text-align: left;
+    border-bottom: 1px solid var(--ksc-line);
+  }
+
+  th {
+    background: var(--ksc-soft);
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--ksc-muted);
+  }
+
+  .ksc-bd-label { font-weight: 700; }
+  .ksc-bd-basis { color: var(--ksc-muted); font-size: 0.8rem; }
+  .ksc-bd-monthly, .ksc-bd-annual {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ksc-bd-annual { color: var(--ksc-muted); }
+}
+
+.ksc-breakdown-total {
+  td {
+    font-weight: 800;
+    color: var(--ksc-red);
+    background: #fff5f5;
+  }
+
+  td:last-child, td:nth-child(3) {
+    text-align: right;
+  }
+}
+
+/* 리그 분포 */
+.ksc-dist-list {
+  display: grid;
+  gap: 8px;
+}
+
+.ksc-dist-row {
+  padding: 10px 14px;
+  border: 1px solid var(--ksc-line);
+  border-radius: 10px;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+
+  &--active {
+    border-color: var(--ksc-green);
+    background: var(--ksc-green-soft);
+  }
+}
+
+.ksc-dist-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.ksc-dist-range {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.ksc-dist-count {
+  font-size: 0.78rem;
+  color: var(--ksc-muted);
+}
+
+.ksc-dist-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 10px;
+  background: var(--ksc-line);
+  border-radius: 999px;
+  overflow: visible;
+  position: relative;
+}
+
+.ksc-dist-bar {
+  height: 10px;
+  background: var(--ksc-green);
+  border-radius: 999px;
+  min-width: 6px;
+  transition: width 0.3s;
+}
+
+.ksc-dist-you {
+  position: absolute;
+  right: 0;
+  top: -20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ksc-kbo);
+  white-space: nowrap;
+}
+
+/* 대표 선수 비교 */
+.ksc-benchmark-list {
+  display: grid;
+  gap: 8px;
+}
+
+.ksc-bench-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--ksc-line);
+  border-radius: 10px;
+  background: #fff;
+  flex-wrap: wrap;
+}
+
+.ksc-bench-info {
+  min-width: 100px;
+
+  strong {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 800;
+  }
+
+  span {
+    font-size: 0.76rem;
+    color: var(--ksc-muted);
+  }
+}
+
+.ksc-bench-bar-wrap {
+  flex: 1;
+  min-width: 60px;
+  height: 8px;
+  background: var(--ksc-line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.ksc-bench-bar {
+  height: 100%;
+  background: var(--ksc-kbo);
+  border-radius: 999px;
+}
+
+.ksc-bench-salary {
+  font-weight: 800;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  min-width: 42px;
+  text-align: right;
+}
+
+.ksc-bench-ratio {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: right;
+
+  &--above { color: var(--ksc-red); }
+  &--below { color: var(--ksc-green); }
+}
+
+/* 포지션 비교 카드 */
+.ksc-pos-compare-grid {
+  display: grid;
+  gap: 10px;
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.ksc-pos-compare-card {
+  padding: 14px;
+  border: 1px solid var(--ksc-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.ksc-poc-icon { font-size: 1.2rem; display: block; margin-bottom: 4px; }
+.ksc-poc-name {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.ksc-poc-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.84rem;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--ksc-line);
+
+  &:last-child { border-bottom: none; }
+
+  span { color: var(--ksc-muted); }
+  strong { font-weight: 700; }
+
+  &--mine {
+    strong { font-size: 0.88rem; }
+  }
+}
+
+.ksc-poc-ratio {
+  &--above { color: var(--ksc-green); }
+  &--below { color: var(--ksc-red); }
+}
+
+/* CTA 섹션 */
+.ksc-cta-grid {
+  display: grid;
+  gap: 12px;
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.ksc-cta-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &--kbo {
+    background: linear-gradient(135deg, #c20430, #8b0221);
+    color: #fff;
+
+    strong, span { color: #fff; }
+  }
+
+  &--kle {
+    background: linear-gradient(135deg, #00469b, #002f6c);
+    color: #fff;
+
+    strong, span { color: #fff; }
+  }
+
+  div {
+    flex: 1;
+
+    strong {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    span {
+      font-size: 0.78rem;
+      opacity: 0.85;
+    }
+  }
+}
+
+.ksc-cta-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.ksc-cta-arrow {
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
