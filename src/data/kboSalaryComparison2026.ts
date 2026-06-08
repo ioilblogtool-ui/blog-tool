@@ -392,6 +392,11 @@ export const KBO_FAQ = [
 // ─── 관련 링크 ────────────────────────────────────────────────
 export const KBO_RELATED_LINKS = [
   {
+    href: "/reports/kleague-salary-comparison-2026/",
+    label: "K리그1 12구단 연봉 비교 2026",
+    desc: "구스타보·나상호·세징야 — K리그 구단별 총액 완전 비교",
+  },
+  {
     href: "/reports/new-employee-salary-2026/",
     label: "2026 신입 초봉 순위",
     desc: "대기업·IT·공기업 신입 연봉 비교",

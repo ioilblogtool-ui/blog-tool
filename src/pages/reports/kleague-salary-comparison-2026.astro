@@ -1,0 +1,511 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  KLE_META,
+  KLE_TEAMS,
+  KLE_KPI,
+  KLE_TOP_CONTRACTS,
+  KLE_POSITION_AVG,
+  KLE_YEARLY_TREND,
+  KLE_FOREIGN_PLAYERS,
+  KLE_TRANSFERS_2026,
+  KLE_VS_KBO,
+  KLE_FAQ,
+  KLE_RELATED_LINKS,
+} from "../../data/kleagueSalaryComparison2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${KLE_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const maxTotal = Math.max(...KLE_TEAMS.map((t) => t.totalBillion));
+const maxTopSalary = Math.max(...KLE_TEAMS.map((t) => t.topPlayerSalaryMillion));
+const maxContract = Math.max(...KLE_TOP_CONTRACTS.map((c) => c.salary));
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: KLE_META.title,
+    description: KLE_META.description,
+    dateModified: KLE_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: KLE_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: KLE_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={KLE_META.seoTitle} description={KLE_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page kle-page" data-report="kleague-salary-comparison-2026">
+
+    <CalculatorHero
+      eyebrow="K리그 스포츠 리포트"
+      title={KLE_META.title}
+      description="구스타보 4.8억·나상호 3.4억·세징야 대구 원클럽맨. 2026년 K리그1 12구단 연봉 총액·에이스 연봉·외국인 계약액을 구단별로 완전 비교합니다."
+      badges={["K리그1", "구단별 연봉", "총액 순위", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[KLE_META.dataNote]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section kle-kpi-section">
+      <div class="kle-kpi-grid">
+        <article class="kle-kpi-card kle-kpi-card--main">
+          <span class="kle-kpi-label">리그 연봉 총액</span>
+          <strong class="kle-kpi-value">{KLE_KPI.totalLeaguePayroll.toLocaleString()}억 원</strong>
+          <small>12구단 합산 · 추정</small>
+        </article>
+        <article class="kle-kpi-card kle-kpi-card--main">
+          <span class="kle-kpi-label">구단 평균 총액</span>
+          <strong class="kle-kpi-value">{KLE_KPI.avgTeamPayroll}억 원</strong>
+          <small>전년 대비 +{KLE_KPI.yoyLeagueChange}%</small>
+        </article>
+        <article class="kle-kpi-card kle-kpi-card--main">
+          <span class="kle-kpi-label">선수 평균 연봉</span>
+          <strong class="kle-kpi-value">{(KLE_KPI.leagueAvgSalary / 10000).toFixed(2)}억 원</strong>
+          <small>리그 전체 공시 선수 기준</small>
+        </article>
+        <article class="kle-kpi-card kle-kpi-card--top">
+          <span class="kle-kpi-label">최고 연봉 선수</span>
+          <strong class="kle-kpi-value">{KLE_KPI.highestPaidPlayer.name}</strong>
+          <small>{KLE_KPI.highestPaidPlayer.team} · {(KLE_KPI.highestPaidPlayer.salary / 10000).toFixed(1)}억 원</small>
+        </article>
+        <article class="kle-kpi-card">
+          <span class="kle-kpi-label">최고 총액 구단</span>
+          <strong class="kle-kpi-value">{KLE_KPI.highestPayrollTeam}</strong>
+          <small>{maxTotal}억 원</small>
+        </article>
+        <article class="kle-kpi-card">
+          <span class="kle-kpi-label">1위↔12위 격차</span>
+          <strong class="kle-kpi-value">{KLE_KPI.payrollGap}억 원</strong>
+          <small>{KLE_KPI.highestPayrollTeam} vs {KLE_KPI.lowestPayrollTeam}</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 구단별 총액 순위 -->
+    <section class="content-section kle-ranking-section" aria-labelledby="kle-ranking-title">
+      <div class="kle-section-heading">
+        <p>총액 순위</p>
+        <h2 id="kle-ranking-title">구단별 연봉 총액 순위 — 전북 112억 1위</h2>
+        <span>12구단 추정 기준. 1위 전북과 12위 수원FC 격차 74억 원.</span>
+      </div>
+      <div class="kle-ranking-list">
+        {KLE_TEAMS.map((team) => (
+          <article class="kle-rank-card">
+            <div class="kle-rank-header">
+              <span class="kle-rank-num" style={`background:${team.color}20; color:${team.color}`}>
+                {team.rank}위
+              </span>
+              <strong class="kle-rank-name" style={`color:${team.color}`}>{team.team}</strong>
+              <span class="kle-rank-stadium">{team.stadium}</span>
+              {team.champion2025 && <span class="kle-champion-badge">🏆 2025챔피언</span>}
+              <span class:list={[
+                "kle-yoy-badge",
+                team.yoyChangePct >= 0 ? "kle-yoy-badge--up" : "kle-yoy-badge--down"
+              ]}>
+                {team.yoyChangePct >= 0 ? "▲" : "▼"} {Math.abs(team.yoyChangePct)}%
+              </span>
+            </div>
+            <div class="kle-rank-bar-wrap">
+              <div
+                class="kle-rank-bar"
+                style={`width:${(team.totalBillion / maxTotal) * 100}%; background:${team.color}`}
+              />
+              <span class="kle-rank-total">{team.totalBillion}억</span>
+            </div>
+            <div class="kle-rank-stats">
+              <div class="kle-rank-stat">
+                <span>선수 평균</span>
+                <strong>{(team.avgMillion / 10000).toFixed(2)}억</strong>
+              </div>
+              <div class="kle-rank-stat">
+                <span>등록 선수</span>
+                <strong>{team.playerCount}명</strong>
+              </div>
+              <div class="kle-rank-stat">
+                <span>에이스</span>
+                <strong style={`color:${team.color}`}>{team.topPlayer}</strong>
+              </div>
+              <div class="kle-rank-stat">
+                <span>에이스 연봉</span>
+                <strong>{(team.topPlayerSalaryMillion / 10000).toFixed(1)}억</strong>
+              </div>
+              <div class="kle-rank-stat">
+                <span>외국인 에이스</span>
+                <strong>{team.topForeignPlayer} ({team.topForeignNation})</strong>
+              </div>
+              <div class="kle-rank-stat">
+                <span>외국인 연봉</span>
+                <strong style={`color:${team.color}`}>{(team.topForeignSalaryMillion / 10000).toFixed(1)}억</strong>
+              </div>
+            </div>
+            <p class="kle-rank-note">{team.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 구단별 TOP3 선수 -->
+    <section class="content-section kle-top3-section" aria-labelledby="kle-top3-title">
+      <div class="kle-section-heading">
+        <p>구단별 TOP 3</p>
+        <h2 id="kle-top3-title">각 구단 최고 연봉 선수 3인</h2>
+        <span>구단별 한국인 최고 연봉 TOP 3 선수. 단위: 억 원. 외국인 별도 표기.</span>
+      </div>
+      <div class="table-wrap kle-table-wrap">
+        <table class="kle-top3-table">
+          <caption>K리그1 구단별 TOP3 선수 연봉 비교</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>구단</th>
+              <th>1위 선수</th>
+              <th>연봉</th>
+              <th>2위 선수</th>
+              <th>연봉</th>
+              <th>3위 선수</th>
+              <th>연봉</th>
+            </tr>
+          </thead>
+          <tbody>
+            {KLE_TEAMS.map((team) => (
+              <tr>
+                <td class="kle-tbl-rank" style={`color:${team.color}`}>{team.rank}</td>
+                <td class="kle-tbl-team">
+                  <span class="kle-team-dot" style={`background:${team.color}`} />
+                  {team.shortName}
+                </td>
+                <td class="kle-tbl-player">
+                  <strong>{team.topPlayer}</strong>
+                  <small>{team.topPlayerPosition}</small>
+                </td>
+                <td class="kle-tbl-salary kle-tbl-salary--top" style={`color:${team.color}`}>
+                  {(team.topPlayerSalaryMillion / 10000).toFixed(1)}억
+                </td>
+                <td class="kle-tbl-player"><strong>{team.secondPlayer}</strong></td>
+                <td class="kle-tbl-salary">{(team.secondPlayerSalaryMillion / 10000).toFixed(1)}억</td>
+                <td class="kle-tbl-player"><strong>{team.thirdPlayer}</strong></td>
+                <td class="kle-tbl-salary">{(team.thirdPlayerSalaryMillion / 10000).toFixed(1)}억</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 리그 TOP10 계약 -->
+    <section class="content-section kle-contracts-section" aria-labelledby="kle-contracts-title">
+      <div class="kle-section-heading">
+        <p>리그 최고 연봉</p>
+        <h2 id="kle-contracts-title">K리그1 연봉 TOP 10 — 구스타보 4.8억으로 압도적 1위</h2>
+        <span>외국인·한국인 통합 기준. 추정치.</span>
+      </div>
+      <div class="kle-contracts-list">
+        {KLE_TOP_CONTRACTS.map((c, i) => {
+          const teamData = KLE_TEAMS.find((t) => t.shortName === c.team || t.team.includes(c.team));
+          const color = teamData?.color ?? "#374151";
+          const barW = (c.salary / maxContract) * 100;
+          const isForeign = c.nation !== "한국";
+          return (
+            <div class="kle-contract-row">
+              <span class="kle-ct-rank" style={`color:${color}; background:${color}20`}>{i + 1}</span>
+              <div class="kle-ct-info">
+                <strong class="kle-ct-player">{c.player}</strong>
+                <span class="kle-ct-team" style={`color:${color}`}>{c.team}</span>
+                {isForeign && <span class="kle-ct-badge kle-ct-badge--foreign">외국인 · {c.nation}</span>}
+                {i === 0 && <span class="kle-ct-badge">리그 최고</span>}
+              </div>
+              <div class="kle-ct-bar-wrap">
+                <div class="kle-ct-bar" style={`width:${barW}%; background:${color}`} />
+              </div>
+              <span class="kle-ct-salary">{(c.salary / 10000).toFixed(1)}억</span>
+              <span class="kle-ct-note">{c.note}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 외국인 선수 -->
+    <section class="content-section kle-foreign-section" aria-labelledby="kle-foreign-title">
+      <div class="kle-section-heading">
+        <p>외국인 선수</p>
+        <h2 id="kle-foreign-title">K리그 핵심 외국인 선수 — 브라질이 압도적 1위</h2>
+        <span>K리그 전체 외국인 {KLE_KPI.totalForeignPlayers}명 등록. 브라질·나이지리아·세르비아 출신 다수.</span>
+      </div>
+      <div class="kle-foreign-grid">
+        {KLE_FOREIGN_PLAYERS.map((p) => {
+          const teamData = KLE_TEAMS.find((t) => t.shortName === p.team || t.team.includes(p.team));
+          const color = teamData?.color ?? "#374151";
+          return (
+            <article class="kle-foreign-card">
+              <div class="kle-foreign-header">
+                <strong class="kle-foreign-name">{p.player}</strong>
+                <span class="kle-foreign-nation">{p.nation}</span>
+                <span class="kle-foreign-team" style={`color:${color}`}>{p.team}</span>
+              </div>
+              <div class="kle-foreign-body">
+                <div class="kle-foreign-stat">
+                  <span>포지션</span>
+                  <strong>{p.position}</strong>
+                </div>
+                <div class="kle-foreign-stat">
+                  <span>연봉 (추정)</span>
+                  <strong style={`color:${color}`}>{(p.salaryMillion / 10000).toFixed(1)}억원</strong>
+                </div>
+                <div class="kle-foreign-stat">
+                  <span>이전 리그</span>
+                  <strong>{p.prevLeague}</strong>
+                </div>
+              </div>
+              <p class="kle-foreign-note">{p.note}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 포지션별 평균 -->
+    <section class="content-section kle-position-section" aria-labelledby="kle-position-title">
+      <div class="kle-section-heading">
+        <p>포지션별 연봉</p>
+        <h2 id="kle-position-title">리그 포지션별 평균 연봉 — 공격수가 압도적 최상위</h2>
+        <span>리그 전체 등록 선수 기준 추정 평균.</span>
+      </div>
+      <div class="kle-position-grid">
+        {KLE_POSITION_AVG.map((pos) => {
+          const maxAvg = Math.max(...KLE_POSITION_AVG.map((p) => p.avgMillion));
+          const barW = (pos.avgMillion / maxAvg) * 100;
+          return (
+            <article class="kle-position-card">
+              <div class="kle-pos-header">
+                <span class="kle-pos-icon">{pos.icon}</span>
+                <strong class="kle-pos-name">{pos.position}</strong>
+                <span class="kle-pos-count">{pos.playerCount}명</span>
+              </div>
+              <div class="kle-pos-bar-wrap">
+                <div class="kle-pos-bar" style={`width:${barW}%`} />
+              </div>
+              <div class="kle-pos-nums">
+                <span>평균 {(pos.avgMillion / 10000).toFixed(2)}억</span>
+                <span class="kle-pos-top">최고 {(pos.topSalary / 10000).toFixed(1)}억</span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 구단별 포지션 평균 비교 -->
+    <section class="content-section kle-poscompare-section" aria-labelledby="kle-poscompare-title">
+      <div class="kle-section-heading">
+        <p>포지션 × 구단</p>
+        <h2 id="kle-poscompare-title">구단별 포지션 평균 연봉 비교</h2>
+        <span>FW·MF·DF·GK 평균 연봉을 구단별로 비교합니다. 단위: 만 원.</span>
+      </div>
+      <div class="table-wrap kle-table-wrap">
+        <table class="kle-poscompare-table">
+          <caption>K리그1 구단별 포지션 평균 연봉 비교</caption>
+          <thead>
+            <tr>
+              <th>구단</th>
+              <th>⚽ 공격수</th>
+              <th>🎯 미드필더</th>
+              <th>🛡️ 수비수</th>
+              <th>🧤 골키퍼</th>
+            </tr>
+          </thead>
+          <tbody>
+            {KLE_TEAMS.map((team) => (
+              <tr>
+                <td class="kle-tbl-team">
+                  <span class="kle-team-dot" style={`background:${team.color}`} />
+                  {team.shortName}
+                </td>
+                <td class="kle-pos-cell">{team.positionAvg.fw.toLocaleString()}</td>
+                <td class="kle-pos-cell">{team.positionAvg.mf.toLocaleString()}</td>
+                <td class="kle-pos-cell">{team.positionAvg.df.toLocaleString()}</td>
+                <td class="kle-pos-cell">{team.positionAvg.gk.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 연도별 추이 -->
+    <section class="content-section kle-trend-section" aria-labelledby="kle-trend-title">
+      <div class="kle-section-heading">
+        <p>연도별 추이</p>
+        <h2 id="kle-trend-title">K리그 리그 연봉 총액 추이 — 역대 최고 832억</h2>
+        <span>12구단 합산 기준. 추정치.</span>
+      </div>
+      <div class="kle-trend-list">
+        {KLE_YEARLY_TREND.map((y) => {
+          const maxT = Math.max(...KLE_YEARLY_TREND.map((t) => t.totalBillion));
+          const barW = (y.totalBillion / maxT) * 100;
+          return (
+            <div class:list={["kle-trend-row", y.year === 2026 && "kle-trend-row--current"]}>
+              <span class="kle-trend-year">
+                {y.year}
+                {y.year === 2026 && <span class="kle-now-badge">현재</span>}
+              </span>
+              <div class="kle-trend-bar-wrap">
+                <div class="kle-trend-bar" style={`width:${barW}%`} />
+              </div>
+              <span class="kle-trend-total">{y.totalBillion.toLocaleString()}억</span>
+              <span class="kle-trend-note">{y.note}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 주요 이적 -->
+    <section class="content-section kle-transfer-section" aria-labelledby="kle-transfer-title">
+      <div class="kle-section-heading">
+        <p>2025→2026 이적</p>
+        <h2 id="kle-transfer-title">2025→2026 시즌 주요 이적·잔류</h2>
+        <span>잔류 중심. 국가대표 핵심 선수 대부분 팀 유지.</span>
+      </div>
+      <div class="kle-transfer-list">
+        {KLE_TRANSFERS_2026.map((tr) => {
+          const teamData = KLE_TEAMS.find((t) => t.shortName === tr.toTeam || t.team.includes(tr.toTeam));
+          const color = teamData?.color ?? "#374151";
+          return (
+            <div class="kle-transfer-row">
+              <strong class="kle-tr-player">{tr.player}</strong>
+              <span class="kle-tr-teams" style={`color:${color}`}>{tr.fromTeam} → {tr.toTeam}</span>
+              <span class:list={[
+                "kle-tr-type",
+                tr.type === "잔류" ? "kle-tr-type--stay" : "kle-tr-type--move"
+              ]}>{tr.type}</span>
+              <span class="kle-tr-note">{tr.note}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- KBO vs K리그 비교 (CTA) -->
+    <section class="content-section kle-vskbo-section" aria-labelledby="kle-vskbo-title">
+      <div class="kle-section-heading">
+        <p>스포츠 연봉 비교</p>
+        <h2 id="kle-vskbo-title">K리그 vs KBO — 같은 한국 프로스포츠, 연봉 격차는?</h2>
+        <span>리그 총액·구단 평균·최고 연봉 선수를 직접 비교합니다.</span>
+      </div>
+      <div class="kle-vskbo-grid">
+        <article class="kle-vskbo-card kle-vskbo-card--kle">
+          <div class="kle-vskbo-logo">⚽ K리그1</div>
+          <div class="kle-vskbo-row">
+            <span>리그 총액</span>
+            <strong>{KLE_VS_KBO.kleagueTotalPayroll}억 원</strong>
+          </div>
+          <div class="kle-vskbo-row">
+            <span>구단 평균</span>
+            <strong>{KLE_VS_KBO.kleagueAvgTeam}억 원</strong>
+          </div>
+          <div class="kle-vskbo-row">
+            <span>최고 연봉</span>
+            <strong>{KLE_VS_KBO.kleagueTopPlayer.name} {KLE_VS_KBO.kleagueTopPlayer.salary}억</strong>
+          </div>
+          <div class="kle-vskbo-row">
+            <span>선수 평균</span>
+            <strong>{KLE_VS_KBO.kleagueAvgPlayer}억 원</strong>
+          </div>
+        </article>
+        <div class="kle-vskbo-vs">VS</div>
+        <article class="kle-vskbo-card kle-vskbo-card--kbo">
+          <div class="kle-vskbo-logo">⚾ KBO</div>
+          <div class="kle-vskbo-row">
+            <span>리그 총액</span>
+            <strong>{KLE_VS_KBO.kboTotalPayroll}억 원</strong>
+          </div>
+          <div class="kle-vskbo-row">
+            <span>구단 평균</span>
+            <strong>{KLE_VS_KBO.kboAvgTeam}억 원</strong>
+          </div>
+          <div class="kle-vskbo-row">
+            <span>최고 연봉</span>
+            <strong>{KLE_VS_KBO.kboTopPlayer.name} {KLE_VS_KBO.kboTopPlayer.salary}억</strong>
+          </div>
+          <div class="kle-vskbo-row">
+            <span>선수 평균</span>
+            <strong>{KLE_VS_KBO.kboAvgPlayer}억 원</strong>
+          </div>
+        </article>
+      </div>
+      <p class="kle-vskbo-note">{KLE_VS_KBO.note}</p>
+      <a class="kle-vskbo-cta" href={withBase("/reports/kbo-salary-comparison-2026/")}>
+        ⚾ KBO 10구단 연봉 비교 상세 리포트 보기 →
+      </a>
+    </section>
+
+    <!-- 관련 리포트 -->
+    <section class="content-section kle-related-section" aria-labelledby="kle-related-title">
+      <div class="kle-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="kle-related-title">함께 보면 좋은 연봉 비교</h2>
+      </div>
+      <div class="kle-related-grid">
+        {KLE_RELATED_LINKS.map((link) => (
+          <a class="kle-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="K리그 구단별 연봉 자주 묻는 질문"
+      intro={[
+        KLE_META.dataNote,
+        "2026년 K리그1 12개 구단 연봉 총액은 약 832억 원으로 역대 최대입니다. 전북 현대가 112억으로 1위, 수원 FC가 38억으로 최저입니다.",
+      ]}
+      inputPoints={[
+        "구단별 연봉 총액 순위와 전년 대비 증감을 비교할 수 있습니다.",
+        "각 구단 에이스와 외국인 선수 계약 규모를 확인할 수 있습니다.",
+        "포지션별 평균 연봉과 KBO와의 비교까지 한눈에 파악합니다.",
+      ]}
+      criteria={[
+        "연봉 데이터: K리그 공시 및 언론 보도 기준 추정치 (옵션·인센티브 제외)",
+        "외국인 선수: 공개 계약 기준 추정, 실제와 다를 수 있음",
+        "추이 데이터: 한국프로축구연맹(K리그) 연도별 발표 기준",
+      ]}
+      faq={KLE_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={KLE_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

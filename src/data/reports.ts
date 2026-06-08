@@ -554,6 +554,13 @@ export const reports: ReportMeta[] = [
     badges: ["KBO", "구단별 연봉", "스포츠", "2026"],
   },
   {
+    slug: "kleague-salary-comparison-2026",
+    title: "K리그1 12구단 연봉 비교 2026 — 팀별 총액·에이스·외국인 선수 완전 분석",
+    description: "2026년 K리그1 12구단 연봉 총액 순위, 구스타보·나상호·세징야 최고 연봉, 포지션별 평균, KBO 비교까지 구단별로 완전 분석합니다.",
+    order: 37.12,
+    badges: ["K리그", "구단별 연봉", "스포츠", "2026"],
+  },
+  {
     slug: "property-tax-payment-2026",
     title: "2026 재산세 납부 완전 가이드",
     description: "2026년 재산세 7월·9월 납부 일정, 공시가격별 예상 세액, 분납 기준, 절세 포인트를 한눈에 정리합니다.",
