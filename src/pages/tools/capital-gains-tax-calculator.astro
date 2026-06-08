@@ -94,18 +94,18 @@ const bracketRows = [
         </div>
 
         <!-- 부동산 유형 -->
-        <div class="cgt-field">
-          <label class="cgt-field-label" for="cgt-property-type">부동산 유형</label>
-          <select class="op-select" id="cgt-property-type">
+        <label class="op-field" for="cgt-property-type">
+          <span>부동산 유형</span>
+          <select id="cgt-property-type">
             {CGT_PROPERTY_TYPES.map((pt) => (
               <option value={pt.value}>{pt.label}</option>
             ))}
           </select>
-        </div>
+        </label>
 
         <!-- 주택 수 (주택 선택 시) -->
-        <div class="cgt-field" id="cgt-house-count-row">
-          <label class="cgt-field-label">보유 주택 수</label>
+        <div class="op-field" id="cgt-house-count-row">
+          <span>보유 주택 수</span>
           <div class="cgt-radio-group">
             {CGT_HOUSE_COUNTS.map((hc) => (
               <label class="cgt-radio-card">
@@ -123,8 +123,8 @@ const bracketRows = [
         </div>
 
         <!-- 조정대상지역 -->
-        <div class="cgt-field" id="cgt-adjusted-row">
-          <label class="cgt-check-label">
+        <div class="op-field" id="cgt-adjusted-row">
+          <label class="op-check">
             <input type="checkbox" id="cgt-adjusted-zone" />
             <span>조정대상지역</span>
           </label>
@@ -132,16 +132,16 @@ const bracketRows = [
         </div>
 
         <!-- 거주 기간 (1주택 시) -->
-        <div class="cgt-field" id="cgt-residence-row">
-          <label class="cgt-field-label" for="cgt-residence-years">실제 거주 기간 <span class="cgt-unit">년</span></label>
-          <input type="number" class="op-input" id="cgt-residence-years"
+        <div class="op-field" id="cgt-residence-row">
+          <span>실제 거주 기간 <em class="cgt-unit">년</em></span>
+          <input type="number" id="cgt-residence-years"
             min="0" max="50" step="1" value={CGT_DEFAULTS.residenceYears} />
           <small class="cgt-field-hint">보유 연4% + 거주 연4% 장특공제 산정 기준</small>
         </div>
 
         <!-- 다주택 중과 (2주택+ 시) -->
-        <div class="cgt-field" id="cgt-heavy-tax-row" style="display:none">
-          <label class="cgt-check-label">
+        <div class="op-field" id="cgt-heavy-tax-row" style="display:none">
+          <label class="op-check">
             <input type="checkbox" id="cgt-heavy-tax" />
             <span>다주택 중과 적용</span>
           </label>
@@ -149,9 +149,9 @@ const bracketRows = [
         </div>
 
         <!-- 양도가액 -->
-        <div class="cgt-field">
-          <label class="cgt-field-label" for="cgt-sell-price">양도가액 (매도가) <span class="cgt-unit">원</span></label>
-          <input type="text" class="op-input" id="cgt-sell-price"
+        <div class="op-field">
+          <span>양도가액 (매도가) <em class="cgt-unit">원</em></span>
+          <input type="text" id="cgt-sell-price"
             inputmode="numeric" value="600,000,000" placeholder="예: 600,000,000" />
           <div class="cgt-quick-row">
             {CGT_QUICK_SELL.map((q) => (
@@ -161,9 +161,9 @@ const bracketRows = [
         </div>
 
         <!-- 취득가액 -->
-        <div class="cgt-field">
-          <label class="cgt-field-label" for="cgt-acquire-price">취득가액 (매수가) <span class="cgt-unit">원</span></label>
-          <input type="text" class="op-input" id="cgt-acquire-price"
+        <div class="op-field">
+          <span>취득가액 (매수가) <em class="cgt-unit">원</em></span>
+          <input type="text" id="cgt-acquire-price"
             inputmode="numeric" value="300,000,000" placeholder="예: 300,000,000" />
           <div class="cgt-quick-row">
             {CGT_QUICK_ACQUIRE.map((q) => (
@@ -173,26 +173,23 @@ const bracketRows = [
         </div>
 
         <!-- 필요경비 -->
-        <div class="cgt-field">
-          <label class="cgt-field-label" for="cgt-expenses">
-            필요경비 <span class="cgt-unit">원</span>
-            <span class="cgt-badge-tip">취득세·중개비·자본지출</span>
-          </label>
-          <input type="text" class="op-input" id="cgt-expenses"
+        <div class="op-field">
+          <span>필요경비 <em class="cgt-unit">원</em> <span class="cgt-badge-tip">취득세·중개비·자본지출</span></span>
+          <input type="text" id="cgt-expenses"
             inputmode="numeric" value="10,000,000" placeholder="예: 10,000,000" />
         </div>
 
         <!-- 보유기간 -->
-        <div class="cgt-field">
-          <label class="cgt-field-label">보유 기간 <span class="cgt-badge-tip">장특공제·세율 결정</span></label>
+        <div class="op-field">
+          <span>보유 기간 <span class="cgt-badge-tip">장특공제·세율 결정</span></span>
           <div class="cgt-hold-row">
             <div class="cgt-hold-group">
-              <input type="number" class="op-input" id="cgt-hold-years"
+              <input type="number" id="cgt-hold-years"
                 min="0" max="50" step="1" value={CGT_DEFAULTS.holdingYears} />
               <span class="cgt-unit">년</span>
             </div>
             <div class="cgt-hold-group">
-              <input type="number" class="op-input" id="cgt-hold-months"
+              <input type="number" id="cgt-hold-months"
                 min="0" max="11" step="1" value={CGT_DEFAULTS.holdMonths} />
               <span class="cgt-unit">개월</span>
             </div>
