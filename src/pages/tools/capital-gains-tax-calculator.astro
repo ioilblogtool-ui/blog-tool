@@ -168,7 +168,8 @@ const bracketRows = [
         <div class="cgt-radio-group">
           {CGT_HOUSE_COUNTS.map((hc) => (
             <label class="cgt-radio-card">
-              <input type="radio" name="cgt-house-count-radio" id={hc.value === "one" ? "cgt-house-count" : undefined}
+              <input type="radio" name="cgt-house-count-radio"
+                id={`cgt-radio-${hc.value}`}
                 value={hc.value}
                 data-cgt-house-radio
                 checked={hc.value === "one"}
@@ -178,7 +179,6 @@ const bracketRows = [
             </label>
           ))}
         </div>
-        <input type="hidden" id="cgt-house-count" value="one" />
       </div>
 
       <!-- 조정대상지역 -->
@@ -380,21 +380,19 @@ const bracketRows = [
 
   <script src={`${normalizedBase}scripts/capital-gains-tax-calculator.js`}></script>
 
-  <!-- 라디오 → hidden input 동기화 -->
+  <!-- 라디오 카드 active 클래스 처리 -->
   <script is:inline>
     document.addEventListener("DOMContentLoaded", function () {
+      // 초기 active 설정
+      var checked = document.querySelector("[data-cgt-house-radio]:checked");
+      if (checked) checked.closest(".cgt-radio-card").classList.add("active");
+      // 변경 시 active 이동 (JS main에서 render도 같이 처리)
       document.querySelectorAll("[data-cgt-house-radio]").forEach(function (radio) {
         radio.addEventListener("change", function () {
-          const hidden = document.getElementById("cgt-house-count");
-          if (hidden) hidden.value = this.value;
-          // 라디오 카드 active 처리
           document.querySelectorAll(".cgt-radio-card").forEach(function (c) { c.classList.remove("active"); });
-          this.closest(".cgt-radio-card")?.classList.add("active");
+          this.closest(".cgt-radio-card").classList.add("active");
         });
       });
-      // 초기 active 설정
-      const checked = document.querySelector("[data-cgt-house-radio]:checked");
-      if (checked) checked.closest(".cgt-radio-card")?.classList.add("active");
     });
   </script>
 

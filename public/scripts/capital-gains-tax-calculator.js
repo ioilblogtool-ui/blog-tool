@@ -168,11 +168,12 @@
   // ── DOM 읽기 ──────────────────────────────────────────────
   function read() {
     const g = (id) => document.getElementById(id);
-    const parseMon = (v) => Math.round(parseFloat(v || "0") * 12 + parseFloat(document.getElementById("cgt-hold-months")?.value || "0"));
+    // 라디오 버튼에서 직접 읽기 (hidden input 충돌 제거)
+    const checkedRadio = document.querySelector("[data-cgt-house-radio]:checked");
 
     return {
       propertyType: g("cgt-property-type")?.value || "house",
-      houseCount: g("cgt-house-count")?.value || "one",
+      houseCount: checkedRadio?.value || "one",
       adjustedZone: g("cgt-adjusted-zone")?.checked || false,
       residenceYears: parseFloat(g("cgt-residence-years")?.value || "0"),
       acquirePrice: parseFloat((g("cgt-acquire-price")?.value || "0").replace(/,/g, "")) || 0,
@@ -196,7 +197,7 @@
   };
   const pct = (n) => n.toFixed(1) + "%";
 
-  // ── 렌더 ────────────────────────────────────────────────
+  // ── 렌더 ───────────────────��────────────────────────────
   function render() {
     const p = read();
 
@@ -210,6 +211,28 @@
     if (residenceRow) residenceRow.style.display = (p.propertyType === "house" && p.houseCount === "one") ? "" : "none";
     if (adjustedRow) adjustedRow.style.display = p.propertyType === "house" ? "" : "none";
     if (heavyTaxRow) heavyTaxRow.style.display = (p.propertyType === "house" && p.houseCount !== "one") ? "" : "none";
+
+    // 양도가액 or 취득가액이 0이면 입력 대기 상태
+    if (p.sellPrice === 0 || p.acquirePrice === 0) {
+      setCard("cgt-result-total", "입력 대기", "cgt-card--main");
+      setCard("cgt-result-tax",   "-");
+      setCard("cgt-result-local", "-");
+      setCard("cgt-result-gain",  "-");
+      setCard("cgt-result-rate",  "-");
+      setCard("cgt-result-eff",   "-");
+      const deductLabel = document.getElementById("cgt-deduct-label");
+      if (deductLabel) deductLabel.textContent = "보유기간 입력 후 공제율이 표시됩니다";
+      const deductBar = document.getElementById("cgt-deduct-bar");
+      if (deductBar) deductBar.style.width = "0%";
+      const tbody = document.getElementById("cgt-breakdown-body");
+      if (tbody) tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;color:#9ca3af;padding:20px">양도가액과 취득가액을 입력하면 계산됩니다.</td></tr>`;
+      const exemptBanner = document.getElementById("cgt-exempt-banner");
+      const partialBanner = document.getElementById("cgt-partial-banner");
+      if (exemptBanner) exemptBanner.style.display = "none";
+      if (partialBanner) partialBanner.style.display = "none";
+      saveUrl(p);
+      return;
+    }
 
     const r = calcCapitalGainsTax(p);
 
@@ -315,16 +338,36 @@
     try {
       const sp = new URLSearchParams(location.search);
       const g = (id) => document.getElementById(id);
+
       if (sp.get("pt")) { const el = g("cgt-property-type"); if (el) el.value = sp.get("pt"); }
-      if (sp.get("hc")) { const el = g("cgt-house-count"); if (el) el.value = sp.get("hc"); }
-      if (sp.get("az")) { const el = g("cgt-adjusted-zone"); if (el) el.checked = sp.get("az") === "1"; }
-      if (sp.get("ry")) { const el = g("cgt-residence-years"); if (el) el.value = sp.get("ry"); }
-      if (sp.get("ap")) { const el = g("cgt-acquire-price"); if (el) el.value = formatInput(parseFloat(sp.get("ap"))); }
-      if (sp.get("sp")) { const el = g("cgt-sell-price"); if (el) el.value = formatInput(parseFloat(sp.get("sp"))); }
-      if (sp.get("ex")) { const el = g("cgt-expenses"); if (el) el.value = formatInput(parseFloat(sp.get("ex"))); }
-      if (sp.get("hy")) { const el = g("cgt-hold-years"); if (el) el.value = sp.get("hy"); }
-      if (sp.get("hm")) { const el = g("cgt-hold-months"); if (el) el.value = sp.get("hm"); }
-      if (sp.get("ht")) { const el = g("cgt-heavy-tax"); if (el) el.checked = sp.get("ht") === "1"; }
+
+      // 라디오 버튼 복원 — hidden input 없이 직접 체크
+      if (sp.get("hc")) {
+        const hcVal = sp.get("hc");
+        const radio = document.querySelector(`[data-cgt-house-radio][value="${hcVal}"]`);
+        if (radio) {
+          // 모든 라디오 uncheck 후 해당 값만 check
+          document.querySelectorAll("[data-cgt-house-radio]").forEach((r) => { r.checked = false; r.closest(".cgt-radio-card")?.classList.remove("active"); });
+          radio.checked = true;
+          radio.closest(".cgt-radio-card")?.classList.add("active");
+        }
+      }
+
+      // 체크박스: "0"이면 false, "1"이면 true
+      if (sp.has("az")) { const el = g("cgt-adjusted-zone"); if (el) el.checked = sp.get("az") === "1"; }
+      if (sp.has("ht")) { const el = g("cgt-heavy-tax"); if (el) el.checked = sp.get("ht") === "1"; }
+
+      // 숫자: 0이면 기본값 유지 (공유 URL에서 0으로 넘어오면 빈 화면 방지)
+      const apVal = parseFloat(sp.get("ap") || "0");
+      const spVal = parseFloat(sp.get("sp") || "0");
+      const exVal = parseFloat(sp.get("ex") || "0");
+      if (apVal > 0) { const el = g("cgt-acquire-price"); if (el) el.value = formatInput(apVal); }
+      if (spVal > 0) { const el = g("cgt-sell-price"); if (el) el.value = formatInput(spVal); }
+      if (sp.has("ex")) { const el = g("cgt-expenses"); if (el) el.value = formatInput(exVal); }
+
+      if (sp.has("ry")) { const el = g("cgt-residence-years"); if (el) el.value = sp.get("ry"); }
+      if (sp.has("hy")) { const el = g("cgt-hold-years"); if (el) el.value = sp.get("hy"); }
+      if (sp.has("hm")) { const el = g("cgt-hold-months"); if (el) el.value = sp.get("hm"); }
     } catch {}
   }
 
@@ -336,7 +379,7 @@
   function bindEvents() {
     // 모든 입력 → render
     const inputIds = [
-      "cgt-property-type", "cgt-house-count",
+      "cgt-property-type",
       "cgt-residence-years", "cgt-acquire-price",
       "cgt-sell-price", "cgt-expenses",
       "cgt-hold-years", "cgt-hold-months",
@@ -344,6 +387,10 @@
     inputIds.forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.addEventListener("input", render);
+    });
+    // 라디오 버튼 → render (hidden input 대신 직접)
+    document.querySelectorAll("[data-cgt-house-radio]").forEach((radio) => {
+      radio.addEventListener("change", render);
     });
     const checkIds = ["cgt-adjusted-zone", "cgt-heavy-tax"];
     checkIds.forEach((id) => {
