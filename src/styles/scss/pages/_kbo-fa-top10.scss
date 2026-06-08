@@ -1,0 +1,688 @@
+.kfa-page {
+  // ── KPI ──────────────────────────────────────────────
+  .kfa-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .kfa-kpi-card {
+    background: var(--surface-2, #f8f9fa);
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &--main {
+      border-top: 3px solid var(--primary, #1a56db);
+    }
+
+    &--top {
+      border-top: 3px solid #16a34a;
+    }
+  }
+
+  .kfa-kpi-label {
+    font-size: 0.75rem;
+    color: var(--text-muted, #6b7280);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .kfa-kpi-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text, #111827);
+    line-height: 1.2;
+  }
+
+  .kfa-kpi-card small {
+    font-size: 0.73rem;
+    color: var(--text-muted, #6b7280);
+  }
+
+  // ── Section Heading ───────────────────────────────────
+  .kfa-section-heading {
+    margin-bottom: 20px;
+
+    p {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary, #1a56db);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 4px;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text, #111827);
+      margin: 0 0 6px;
+    }
+
+    span {
+      font-size: 0.82rem;
+      color: var(--text-muted, #6b7280);
+    }
+  }
+
+  // ── Contract Cards ────────────────────────────────────
+  .kfa-contract-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .kfa-contract-card {
+    background: #fff;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 12px;
+    padding: 18px 20px;
+
+    @media (max-width: 600px) {
+      padding: 14px 14px;
+    }
+  }
+
+  .kfa-cc-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .kfa-cc-rank {
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .kfa-cc-player {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    strong {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    span {
+      font-size: 0.78rem;
+      background: var(--surface-2, #f3f4f6);
+      padding: 2px 8px;
+      border-radius: 10px;
+      color: var(--text-muted, #6b7280);
+    }
+  }
+
+  .kfa-cc-move {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.82rem;
+    margin-left: auto;
+
+    @media (max-width: 480px) {
+      margin-left: 0;
+    }
+  }
+
+  .kfa-cc-from {
+    color: var(--text-muted, #6b7280);
+  }
+
+  .kfa-cc-arrow {
+    color: var(--text-muted, #9ca3af);
+  }
+
+  .kfa-cc-to {
+    font-weight: 700;
+  }
+
+  .kfa-cc-year {
+    font-size: 0.75rem;
+    color: var(--text-muted, #9ca3af);
+    margin-left: 4px;
+  }
+
+  // 평가 배지
+  .kfa-eval {
+    font-size: 0.73rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 12px;
+    white-space: nowrap;
+
+    &--success {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    &--partial {
+      background: #fef9c3;
+      color: #a16207;
+    }
+
+    &--fail {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    &--ongoing {
+      background: #ede9fe;
+      color: #7c3aed;
+    }
+  }
+
+  // 금액 바
+  .kfa-cc-amount-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .kfa-cc-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-2, #f3f4f6);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .kfa-cc-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+
+  .kfa-cc-total {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text, #111827);
+    min-width: 50px;
+    text-align: right;
+  }
+
+  // 계약 상세 수치
+  .kfa-cc-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .kfa-cc-stat {
+    background: var(--surface-2, #f8f9fa);
+    border-radius: 8px;
+    padding: 10px 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      font-size: 0.72rem;
+      color: var(--text-muted, #6b7280);
+    }
+
+    strong {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text, #111827);
+    }
+  }
+
+  // 성적·배경·평가
+  .kfa-cc-detail {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .kfa-cc-stats-highlight,
+  .kfa-cc-context,
+  .kfa-cc-eval-note {
+    background: var(--surface-2, #f8f9fa);
+    border-radius: 8px;
+    padding: 10px 12px;
+
+    p {
+      font-size: 0.8rem;
+      color: var(--text, #374151);
+      margin: 4px 0 0;
+      line-height: 1.5;
+    }
+  }
+
+  .kfa-cc-detail-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  // ── Team Spend ────────────────────────────────────────
+  .kfa-team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .kfa-team-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 8px;
+  }
+
+  .kfa-team-rank {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted, #9ca3af);
+    width: 20px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .kfa-team-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .kfa-team-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    min-width: 52px;
+    flex-shrink: 0;
+  }
+
+  .kfa-team-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-2, #f3f4f6);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .kfa-team-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .kfa-team-total {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text, #111827);
+    min-width: 48px;
+    text-align: right;
+  }
+
+  .kfa-team-count {
+    font-size: 0.75rem;
+    color: var(--text-muted, #9ca3af);
+    min-width: 22px;
+    text-align: right;
+  }
+
+  .kfa-team-note {
+    font-size: 0.75rem;
+    color: var(--text-muted, #6b7280);
+    min-width: 80px;
+
+    @media (max-width: 600px) {
+      display: none;
+    }
+  }
+
+  // ── Position ──────────────────────────────────────────
+  .kfa-position-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .kfa-position-card {
+    background: #fff;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+  }
+
+  .kfa-pos-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+
+    strong {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text, #111827);
+      flex: 1;
+    }
+  }
+
+  .kfa-pos-icon {
+    font-size: 1.1rem;
+  }
+
+  .kfa-pos-count {
+    font-size: 0.72rem;
+    background: var(--surface-2, #f3f4f6);
+    padding: 2px 7px;
+    border-radius: 10px;
+    color: var(--text-muted, #6b7280);
+  }
+
+  .kfa-pos-bar-wrap {
+    height: 6px;
+    background: var(--surface-2, #f3f4f6);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .kfa-pos-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .kfa-pos-nums {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--text, #374151);
+  }
+
+  .kfa-pos-top {
+    color: var(--text-muted, #9ca3af);
+    font-size: 0.73rem;
+  }
+
+  // ── Yearly ────────────────────────────────────────────
+  .kfa-yearly-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .kfa-yearly-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 8px;
+
+    &--record {
+      border-color: #f59e0b;
+      background: #fffbeb;
+    }
+  }
+
+  .kfa-yearly-year {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted, #6b7280);
+    min-width: 36px;
+  }
+
+  .kfa-yearly-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 90px;
+
+    strong {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text, #111827);
+    }
+
+    span {
+      font-size: 0.73rem;
+      color: var(--text-muted, #9ca3af);
+    }
+  }
+
+  .kfa-yearly-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-2, #f3f4f6);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .kfa-yearly-bar {
+    height: 100%;
+    background: var(--primary, #1a56db);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+
+    .kfa-yearly-row--record & {
+      background: #f59e0b;
+    }
+  }
+
+  .kfa-yearly-total {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text, #111827);
+    min-width: 44px;
+    text-align: right;
+  }
+
+  .kfa-yearly-note {
+    font-size: 0.72rem;
+    color: var(--text-muted, #6b7280);
+    min-width: 60px;
+
+    @media (max-width: 600px) {
+      display: none;
+    }
+  }
+
+  // ── Success Analysis ──────────────────────────────────
+  .kfa-success-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .kfa-success-card {
+    background: #fff;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .kfa-success-category {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--text, #111827);
+  }
+
+  .kfa-success-rate-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kfa-success-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-2, #f3f4f6);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .kfa-success-bar {
+    height: 100%;
+    background: #16a34a;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .kfa-success-pct {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #16a34a;
+    min-width: 34px;
+    text-align: right;
+  }
+
+  .kfa-success-avg {
+    font-size: 0.8rem;
+    color: var(--text, #374151);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .kfa-success-note {
+    font-size: 0.78rem;
+    color: var(--text-muted, #6b7280);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .kfa-success-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .kfa-success-ex {
+    font-size: 0.72rem;
+    background: var(--surface-2, #f3f4f6);
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: var(--text, #374151);
+  }
+
+  // ── Evaluation Table ──────────────────────────────────
+  .kfa-eval-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+
+    caption {
+      text-align: left;
+      font-size: 0.75rem;
+      color: var(--text-muted, #6b7280);
+      margin-bottom: 8px;
+    }
+
+    th {
+      background: var(--surface-2, #f3f4f6);
+      padding: 8px 10px;
+      font-weight: 700;
+      color: var(--text, #374151);
+      text-align: left;
+      border-bottom: 2px solid var(--border, #e5e7eb);
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border, #e5e7eb);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  .kfa-eval-player strong {
+    font-size: 0.88rem;
+  }
+
+  .kfa-eval-total {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .kfa-eval-note-cell {
+    font-size: 0.78rem;
+    color: var(--text-muted, #6b7280);
+    max-width: 240px;
+  }
+
+  // ── Related CTA ───────────────────────────────────────
+  .kfa-related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .kfa-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #1a56db 0%, #1d4ed8 100%);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(26, 86, 219, 0.3);
+      text-decoration: none;
+    }
+
+    strong {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}

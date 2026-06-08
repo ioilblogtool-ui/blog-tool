@@ -95,6 +95,7 @@ export const KSC_FAQ = [
 
 export const KSC_RELATED_LINKS = [
   { label: "KBO 10구단 연봉 비교 2026", href: "/reports/kbo-salary-comparison-2026/" },
+  { label: "KBO 역대 FA 최고 계약 TOP10", href: "/reports/kbo-fa-top10/" },
   { label: "K리그1 구단별 연봉 비교 2026", href: "/reports/kleague-salary-comparison-2026/" },
   { label: "연봉 실수령액 계산기", href: "/tools/salary/" },
   { label: "세후 보너스 계산기", href: "/tools/bonus-after-tax-calculator/" },

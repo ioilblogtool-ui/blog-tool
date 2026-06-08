@@ -402,6 +402,11 @@ export const KBO_RELATED_LINKS = [
     desc: "구스타보·나상호·세징야 — K리그 구단별 총액 완전 비교",
   },
   {
+    href: "/reports/kbo-fa-top10/",
+    label: "KBO 역대 FA 최고 계약 TOP10",
+    desc: "이대호 150억 역대 최대 — FA 빅딜 성공·실패 분석",
+  },
+  {
     href: "/reports/new-employee-salary-2026/",
     label: "2026 신입 초봉 순위",
     desc: "대기업·IT·공기업 신입 연봉 비교",

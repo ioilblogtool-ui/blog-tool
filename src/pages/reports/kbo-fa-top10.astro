@@ -1,0 +1,387 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  KFA_META,
+  KFA_KPI,
+  KFA_CONTRACTS,
+  KFA_TEAM_SPEND,
+  KFA_BY_POSITION,
+  KFA_YEARLY,
+  KFA_SUCCESS_ANALYSIS,
+  KFA_FAQ,
+  KFA_RELATED_LINKS,
+} from "../../data/kboFaTop10";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${KFA_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const maxTotal = Math.max(...KFA_CONTRACTS.map((c) => c.totalBillion));
+const maxTeamSpend = Math.max(...KFA_TEAM_SPEND.map((t) => t.totalBillion));
+const maxYearly = Math.max(...KFA_YEARLY.map((y) => y.totalBillion));
+const maxPosAvg = Math.max(...KFA_BY_POSITION.map((p) => p.avgTotal));
+
+const evalClass = (e: string) => {
+  if (e === "성공") return "kfa-eval--success";
+  if (e === "부분성공") return "kfa-eval--partial";
+  if (e === "실패") return "kfa-eval--fail";
+  return "kfa-eval--ongoing";
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: KFA_META.title,
+    description: KFA_META.description,
+    dateModified: KFA_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: KFA_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: KFA_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={KFA_META.seoTitle} description={KFA_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page kfa-page" data-report="kbo-fa-top10">
+
+    <CalculatorHero
+      eyebrow="KBO FA 리포트"
+      title={KFA_META.title}
+      description="이대호 4년 150억 역대 최대부터 원태인 6년 60억까지. KBO 역대 FA 빅딜 TOP10의 계약 구조, 실제 성적, 성공·실패 분석을 완전 정리합니다."
+      badges={["KBO", "FA 계약", "역대 TOP10", "성적 분석"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[KFA_META.dataNote]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section kfa-kpi-section">
+      <div class="kfa-kpi-grid">
+        <article class="kfa-kpi-card kfa-kpi-card--main">
+          <span class="kfa-kpi-label">역대 최대 계약</span>
+          <strong class="kfa-kpi-value">{KFA_KPI.largestContract.player} {KFA_KPI.largestContract.total}억</strong>
+          <small>{KFA_KPI.largestContract.year} · {KFA_KPI.largestContract.team} — 아직 미경신</small>
+        </article>
+        <article class="kfa-kpi-card kfa-kpi-card--main">
+          <span class="kfa-kpi-label">TOP10 평균 총액</span>
+          <strong class="kfa-kpi-value">{KFA_KPI.avgTop10Total}억 원</strong>
+          <small>계약금+연봉 합산</small>
+        </article>
+        <article class="kfa-kpi-card kfa-kpi-card--main">
+          <span class="kfa-kpi-label">TOP10 총 지출</span>
+          <strong class="kfa-kpi-value">{KFA_KPI.totalTop10Spend}억 원</strong>
+          <small>10개 계약 합산</small>
+        </article>
+        <article class="kfa-kpi-card kfa-kpi-card--top">
+          <span class="kfa-kpi-label">성공·부분성공률</span>
+          <strong class="kfa-kpi-value">{KFA_KPI.successRate}%</strong>
+          <small>진행 중 계약 제외 기준</small>
+        </article>
+        <article class="kfa-kpi-card">
+          <span class="kfa-kpi-label">최대 투자 포지션</span>
+          <strong class="kfa-kpi-value">{KFA_KPI.mostExpensivePosition}</strong>
+          <small>총액 기준</small>
+        </article>
+        <article class="kfa-kpi-card">
+          <span class="kfa-kpi-label">최근 빅딜</span>
+          <strong class="kfa-kpi-value">{KFA_KPI.latestBigDeal.player} {KFA_KPI.latestBigDeal.total}억</strong>
+          <small>{KFA_KPI.latestBigDeal.year}년 체결</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 역대 FA TOP10 메인 리스트 -->
+    <section class="content-section kfa-main-section" aria-labelledby="kfa-main-title">
+      <div class="kfa-section-heading">
+        <p>역대 TOP10</p>
+        <h2 id="kfa-main-title">KBO 역대 FA 최고 계약 TOP10 — 총액 기준</h2>
+        <span>계약금 + 연봉 합산 총액 기준. 언론 보도 추정치.</span>
+      </div>
+      <div class="kfa-contract-list">
+        {KFA_CONTRACTS.map((c) => (
+          <article class="kfa-contract-card" style={`border-left: 4px solid ${c.color}`}>
+            <div class="kfa-cc-header">
+              <span class="kfa-cc-rank" style={`color:${c.color}; background:${c.color}20`}>
+                {c.rank}위
+              </span>
+              <div class="kfa-cc-player">
+                <strong style={`color:${c.color}`}>{c.player}</strong>
+                <span>{c.position}</span>
+              </div>
+              <div class="kfa-cc-move">
+                <span class="kfa-cc-from">{c.fromTeam}</span>
+                <span class="kfa-cc-arrow">→</span>
+                <span class="kfa-cc-to" style={`color:${c.color}`}>{c.toTeam}</span>
+                <span class="kfa-cc-year">{c.year}년</span>
+              </div>
+              <span class:list={["kfa-eval", evalClass(c.evaluation)]}>
+                {c.evaluation}
+              </span>
+            </div>
+
+            <!-- 계약 금액 바 -->
+            <div class="kfa-cc-amount-row">
+              <div class="kfa-cc-bar-wrap">
+                <div
+                  class="kfa-cc-bar"
+                  style={`width:${(c.totalBillion / maxTotal) * 100}%; background:${c.color}`}
+                />
+              </div>
+              <span class="kfa-cc-total">{c.totalBillion}억</span>
+            </div>
+
+            <!-- 계약 상세 -->
+            <div class="kfa-cc-stats">
+              <div class="kfa-cc-stat">
+                <span>계약 총액</span>
+                <strong>{c.totalBillion}억 원</strong>
+              </div>
+              <div class="kfa-cc-stat">
+                <span>계약 연수</span>
+                <strong>{c.years}년</strong>
+              </div>
+              <div class="kfa-cc-stat">
+                <span>연평균</span>
+                <strong style={`color:${c.color}`}>{c.avgPerYear}억/년</strong>
+              </div>
+              <div class="kfa-cc-stat">
+                <span>계약금 (추정)</span>
+                <strong>{c.signingBonus}억 원</strong>
+              </div>
+            </div>
+
+            <!-- 성적·배경 -->
+            <div class="kfa-cc-detail">
+              <div class="kfa-cc-stats-highlight">
+                <span class="kfa-cc-detail-label">📊 주요 성적</span>
+                <p>{c.statsHighlight}</p>
+              </div>
+              <div class="kfa-cc-context">
+                <span class="kfa-cc-detail-label">💬 계약 배경</span>
+                <p>{c.context}</p>
+              </div>
+              <div class="kfa-cc-eval-note">
+                <span class="kfa-cc-detail-label">📋 평가</span>
+                <p>{c.evaluationNote}</p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 구단별 FA 투자 -->
+    <section class="content-section kfa-team-section" aria-labelledby="kfa-team-title">
+      <div class="kfa-section-heading">
+        <p>구단별 투자</p>
+        <h2 id="kfa-team-title">구단별 FA TOP10 투자 규모</h2>
+        <span>TOP10 계약 기준 구단별 지출 합산.</span>
+      </div>
+      <div class="kfa-team-list">
+        {KFA_TEAM_SPEND.sort((a, b) => b.totalBillion - a.totalBillion).map((t, i) => (
+          <div class="kfa-team-row">
+            <span class="kfa-team-rank">{i + 1}</span>
+            <span class="kfa-team-dot" style={`background:${t.color}`} />
+            <strong class="kfa-team-name" style={`color:${t.color}`}>{t.team}</strong>
+            <div class="kfa-team-bar-wrap">
+              <div
+                class="kfa-team-bar"
+                style={`width:${(t.totalBillion / maxTeamSpend) * 100}%; background:${t.color}`}
+              />
+            </div>
+            <span class="kfa-team-total">{t.totalBillion}억</span>
+            <span class="kfa-team-count">{t.count}건</span>
+            <span class="kfa-team-note">{t.note}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 포지션별 분포 -->
+    <section class="content-section kfa-position-section" aria-labelledby="kfa-position-title">
+      <div class="kfa-section-heading">
+        <p>포지션별</p>
+        <h2 id="kfa-position-title">포지션별 FA 계약 분포 — 외야수 최다 총액</h2>
+        <span>TOP10 계약 기준 포지션별 평균 및 최대 총액.</span>
+      </div>
+      <div class="kfa-position-grid">
+        {KFA_BY_POSITION.map((pos) => (
+          <article class="kfa-position-card">
+            <div class="kfa-pos-header">
+              <span class="kfa-pos-icon">{pos.icon}</span>
+              <strong>{pos.position}</strong>
+              <span class="kfa-pos-count">{pos.count}건</span>
+            </div>
+            <div class="kfa-pos-bar-wrap">
+              <div
+                class="kfa-pos-bar"
+                style={`width:${(pos.avgTotal / maxPosAvg) * 100}%; background:${pos.color}`}
+              />
+            </div>
+            <div class="kfa-pos-nums">
+              <span>평균 {pos.avgTotal}억</span>
+              <span class="kfa-pos-top">최대 {pos.topTotal}억</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 연도별 최고 계약 추이 -->
+    <section class="content-section kfa-yearly-section" aria-labelledby="kfa-yearly-title">
+      <div class="kfa-section-heading">
+        <p>연도별 추이</p>
+        <h2 id="kfa-yearly-title">연도별 FA 최고 계약 추이 — 이대호 150억 이후 미경신</h2>
+        <span>각 연도 FA 시장 최고 계약 기준.</span>
+      </div>
+      <div class="kfa-yearly-list">
+        {KFA_YEARLY.map((y) => {
+          const barW = (y.totalBillion / maxYearly) * 100;
+          const isRecord = y.totalBillion === maxYearly;
+          return (
+            <div class:list={["kfa-yearly-row", isRecord && "kfa-yearly-row--record"]}>
+              <span class="kfa-yearly-year">{y.year}</span>
+              <div class="kfa-yearly-info">
+                <strong>{y.player}</strong>
+                <span>{y.team}</span>
+              </div>
+              <div class="kfa-yearly-bar-wrap">
+                <div class="kfa-yearly-bar" style={`width:${barW}%`} />
+              </div>
+              <span class="kfa-yearly-total">{y.totalBillion}억</span>
+              <span class="kfa-yearly-note">{y.note}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- FA 성공 분석 -->
+    <section class="content-section kfa-success-section" aria-labelledby="kfa-success-title">
+      <div class="kfa-section-heading">
+        <p>성공·실패 분석</p>
+        <h2 id="kfa-success-title">FA 유형별 성공률 분석 — 잔류형이 가장 안전</h2>
+        <span>TOP10 계약 성공·부분성공·실패·진행중 기준 분류.</span>
+      </div>
+      <div class="kfa-success-grid">
+        {KFA_SUCCESS_ANALYSIS.map((s) => (
+          <article class="kfa-success-card">
+            <strong class="kfa-success-category">{s.category}</strong>
+            <div class="kfa-success-rate-wrap">
+              <div class="kfa-success-bar-bg">
+                <div class="kfa-success-bar" style={`width:${s.successRate}%`} />
+              </div>
+              <span class="kfa-success-pct">{s.successRate}%</span>
+            </div>
+            <p class="kfa-success-avg">평균 계약 총액 {s.avgTotal}억</p>
+            <p class="kfa-success-note">{s.note}</p>
+            <div class="kfa-success-examples">
+              {s.examples.map((ex) => (
+                <span class="kfa-success-ex">{ex}</span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- 성공/실패 요약 표 -->
+      <div class="table-wrap" style="margin-top:20px">
+        <table class="kfa-eval-table">
+          <caption>KBO FA TOP10 성공·실패 평가 요약</caption>
+          <thead>
+            <tr>
+              <th>선수</th>
+              <th>구단</th>
+              <th>총액</th>
+              <th>연수</th>
+              <th>평가</th>
+              <th>평가 근거</th>
+            </tr>
+          </thead>
+          <tbody>
+            {KFA_CONTRACTS.map((c) => (
+              <tr>
+                <td class="kfa-eval-player" style={`color:${c.color}`}><strong>{c.player}</strong></td>
+                <td>{c.toTeam}</td>
+                <td class="kfa-eval-total">{c.totalBillion}억</td>
+                <td>{c.years}년</td>
+                <td>
+                  <span class:list={["kfa-eval", evalClass(c.evaluation)]}>
+                    {c.evaluation}
+                  </span>
+                </td>
+                <td class="kfa-eval-note-cell">{c.evaluationNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 관련 페이지 CTA -->
+    <section class="content-section kfa-related-section" aria-labelledby="kfa-related-title">
+      <div class="kfa-section-heading">
+        <p>관련 콘텐츠</p>
+        <h2 id="kfa-related-title">함께 보면 좋은 KBO 콘텐츠</h2>
+      </div>
+      <div class="kfa-related-grid">
+        {KFA_RELATED_LINKS.map((link) => (
+          <a class="kfa-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="KBO 역대 FA 계약 자주 묻는 질문"
+      intro={[
+        KFA_META.dataNote,
+        "KBO 역대 FA 최대 계약은 2017년 이대호(롯데)의 4년 총액 150억 원입니다. 이 기록은 2026년 현재까지 경신되지 않고 있습니다.",
+        "최근 빅딜은 류현진(한화, 4년 120억·2023)과 원태인(삼성, 6년 60억·2025)입니다. KBO FA 시장은 MLB 복귀 선수와 잔류 계약이 주도하고 있습니다.",
+      ]}
+      inputPoints={[
+        "역대 TOP10 FA 계약의 총액·연평균·계약 연수를 한눈에 비교합니다.",
+        "계약 이후 실제 성적과 성공·실패 평가를 함께 확인합니다.",
+        "구단별 FA 투자 규모와 연도별 FA 시장 추이를 분석합니다.",
+      ]}
+      criteria={[
+        "계약 금액: 계약금 + 연봉 합산 총액 기준 언론 보도 추정치",
+        "성공 평가: 성적 + 팀 기여도 + 건강 유지 종합 주관 평가",
+        "연도별 추이: 각 연도 FA 시장 최고 계약 기준",
+      ]}
+      faq={KFA_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={KFA_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

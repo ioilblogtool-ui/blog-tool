@@ -561,6 +561,13 @@ export const reports: ReportMeta[] = [
     badges: ["K리그", "구단별 연봉", "스포츠", "2026"],
   },
   {
+    slug: "kbo-fa-top10",
+    title: "KBO 역대 FA 최고 계약 TOP10 — 이대호 150억부터 류현진 120억까지",
+    description: "KBO 역대 FA 계약 최고 총액 TOP10을 계약 구조, 이적·잔류 성적, 성공·실패 평가와 함께 완전 분석합니다.",
+    order: 37.13,
+    badges: ["KBO", "FA", "역대 TOP10", "스포츠"],
+  },
+  {
     slug: "property-tax-payment-2026",
     title: "2026 재산세 납부 완전 가이드",
     description: "2026년 재산세 7월·9월 납부 일정, 공시가격별 예상 세액, 분납 기준, 절세 포인트를 한눈에 정리합니다.",
