@@ -31,13 +31,26 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "capital-gains-tax-calculator",
+    title: "양도소득세 계산기",
+    description: "1주택 비과세·장기보유특별공제·단기양도세율·다주택 중과까지 자동 반영. 아파트·토지·상가 양도세를 미리 계산하세요.",
+    order: 0,
+    eyebrow: "양도소득세",
+    category: "부동산·세금",
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "1주택 비과세", value: "12억 이하" },
+      { label: "장특공제 최대", value: "80%" },
+    ],
+  },
+  {
     slug: "gift-tax-calculator",
     title: "증여세 계산기",
     description: "배우자·자녀·부모 등 관계별 공제 한도, 누진세율, 신고세액공제까지 한 번에 계산. 10년 분할 증여 전략 포함.",
     order: 0,
     eyebrow: "증여세",
     category: "부동산·세금",
-    badges: ["신규", "추천"],
+    badges: ["추천"],
     previewStats: [
       { label: "성인 자녀 공제", value: "5,000만원" },
       { label: "배우자 공제", value: "6억원" },

@@ -144,6 +144,7 @@ export const GTC_FAQ = [
 ];
 
 export const GTC_RELATED_LINKS = [
+  { label: "양도소득세 계산기", href: "/tools/capital-gains-tax-calculator/" },
   { label: "부동산 취득세 계산기", href: "/tools/real-estate-acquisition-tax/" },
   { label: "아파트 보유세 계산기", href: "/tools/apartment-holding-tax/" },
   { label: "연말정산 세금 환급 계산기", href: "/tools/year-end-tax-refund-calculator/" },

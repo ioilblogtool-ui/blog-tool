@@ -1,0 +1,544 @@
+.cgt-page {
+  // ── 비과세·부분과세 배너 ──────────────────────────────────
+  .cgt-exempt-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    color: #15803d;
+
+    strong { font-weight: 800; }
+    span { font-size: 0.82rem; color: #166534; }
+  }
+
+  .cgt-partial-banner {
+    background: #fef9c3;
+    border: 1px solid #fde047;
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+    color: #a16207;
+    strong { font-weight: 700; }
+  }
+
+  // ── 결과 카드 ─────────────────────────────────────────────
+  .cgt-result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .cgt-result-card {
+    background: var(--surface-2, #f8f9fa);
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 10px;
+    padding: 14px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color 0.2s;
+
+    &.cgt-card--main {
+      border-top: 3px solid var(--primary, #1a56db);
+      background: #eff6ff;
+
+      .cgt-result-value { color: var(--primary, #1a56db); }
+    }
+
+    &.cgt-card--exempt {
+      border-top: 3px solid #16a34a;
+      background: #f0fdf4;
+
+      .cgt-result-value { color: #15803d; }
+    }
+
+    &.cgt-card--loss {
+      border-top: 3px solid #9ca3af;
+      background: var(--surface-2);
+    }
+  }
+
+  .cgt-result-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .cgt-result-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text, #111827);
+    line-height: 1.2;
+    word-break: break-all;
+  }
+
+  .cgt-result-card small {
+    font-size: 0.7rem;
+    color: var(--text-muted, #9ca3af);
+  }
+
+  // ── 장기보유특별공제 바 ──────────────────────────────────
+  .cgt-deduct-section {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--surface-2, #f8f9fa);
+    border-radius: 10px;
+    border: 1px solid var(--border, #e5e7eb);
+  }
+
+  .cgt-deduct-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .cgt-deduct-bar-bg {
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .cgt-deduct-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #1a56db, #06b6d4);
+    border-radius: 5px;
+    transition: width 0.6s ease;
+  }
+
+  .cgt-deduct-label {
+    font-size: 0.78rem;
+    color: var(--text, #374151);
+    margin: 0;
+  }
+
+  // ── 계산 내역 ─────────────────────────────────────────────
+  .cgt-breakdown-section {
+    margin-bottom: 8px;
+  }
+
+  .cgt-breakdown-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted, #6b7280);
+    display: block;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .cgt-breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+
+    .cgt-bd-label {
+      padding: 7px 10px;
+      color: var(--text-muted, #6b7280);
+      border-bottom: 1px solid var(--border, #f3f4f6);
+      white-space: nowrap;
+    }
+
+    .cgt-bd-val {
+      padding: 7px 10px;
+      text-align: right;
+      color: var(--text, #111827);
+      font-variant-numeric: tabular-nums;
+      border-bottom: 1px solid var(--border, #f3f4f6);
+    }
+
+    tr:last-child td { border-bottom: none; }
+  }
+
+  // ── 입력 영역 ─────────────────────────────────────────────
+  .cgt-input-section {
+    margin-bottom: 18px;
+  }
+
+  .cgt-input-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text, #111827);
+    margin-bottom: 8px;
+  }
+
+  .cgt-unit {
+    font-size: 0.78rem;
+    color: var(--text-muted, #9ca3af);
+    font-weight: 400;
+  }
+
+  .cgt-badge-tip {
+    font-size: 0.7rem;
+    background: #eff6ff;
+    color: var(--primary, #1a56db);
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 2px 7px;
+    font-weight: 600;
+  }
+
+  .cgt-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: #fff;
+    color: var(--text, #111827);
+    cursor: pointer;
+
+    &:focus { outline: 2px solid var(--primary, #1a56db); border-color: transparent; }
+  }
+
+  .cgt-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: var(--text, #111827);
+    background: #fff;
+    font-variant-numeric: tabular-nums;
+    box-sizing: border-box;
+
+    &:focus { outline: 2px solid var(--primary, #1a56db); border-color: transparent; }
+
+    &--large {
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 12px 14px;
+    }
+  }
+
+  .cgt-input-hint {
+    display: block;
+    font-size: 0.73rem;
+    color: var(--text-muted, #9ca3af);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .cgt-check-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text, #111827);
+    cursor: pointer;
+
+    input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+  }
+
+  // 라디오 카드
+  .cgt-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cgt-radio-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+
+    &.active, &:has(input:checked) {
+      border-color: var(--primary, #1a56db);
+      background: #eff6ff;
+    }
+
+    input[type="radio"] { margin-top: 2px; cursor: pointer; }
+  }
+
+  .cgt-radio-label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text, #111827);
+    display: block;
+  }
+
+  .cgt-radio-desc {
+    font-size: 0.73rem;
+    color: var(--text-muted, #9ca3af);
+    display: block;
+    margin-top: 2px;
+  }
+
+  // 빠른 금액 버튼
+  .cgt-quick-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .cgt-quick-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 20px;
+    background: var(--surface-2, #f8f9fa);
+    color: var(--text, #374151);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+
+    &:hover, &.active {
+      background: var(--primary, #1a56db);
+      border-color: var(--primary, #1a56db);
+      color: #fff;
+    }
+  }
+
+  // 보유기간 입력 행
+  .cgt-hold-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .cgt-hold-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+
+    .cgt-input { flex: 1; }
+    .cgt-unit { white-space: nowrap; }
+  }
+
+  // ── Section Heading ───────────────────────────────────────
+  .cgt-section-heading {
+    margin-bottom: 18px;
+
+    p {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary, #1a56db);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 4px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text, #111827);
+      margin: 0 0 6px;
+    }
+
+    span {
+      font-size: 0.82rem;
+      color: var(--text-muted, #6b7280);
+    }
+  }
+
+  // ── 시뮬레이션 케이스 ────────────────────────────────────
+  .cgt-sim-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+
+    @media (max-width: 700px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .cgt-sim-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 14px 12px;
+    background: #fff;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 10px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover, &.active {
+      border-color: var(--primary, #1a56db);
+      box-shadow: 0 2px 8px rgba(26, 86, 219, 0.12);
+    }
+
+    strong {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text, #111827);
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: var(--text-muted, #6b7280);
+    }
+  }
+
+  .cgt-sim-tax {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary, #1a56db);
+    font-style: normal;
+    margin-top: 2px;
+  }
+
+  // ── 세율 표 ───────────────────────────────────────────────
+  .cgt-rate-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+
+    th {
+      background: var(--surface-2, #f3f4f6);
+      padding: 9px 12px;
+      font-weight: 700;
+      color: var(--text, #374151);
+      text-align: left;
+      border-bottom: 2px solid var(--border, #e5e7eb);
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border, #f3f4f6);
+      color: var(--text, #374151);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(7), tr:nth-child(8) { background: #fef9c3; }
+  }
+
+  .cgt-rate-cell strong {
+    font-size: 0.92rem;
+    color: var(--primary, #1a56db);
+  }
+
+  .cgt-deduct-cell {
+    color: var(--text-muted, #6b7280);
+    font-size: 0.82rem;
+  }
+
+  .cgt-rate-note {
+    font-size: 0.78rem;
+    color: var(--text-muted, #6b7280);
+    padding: 10px 12px;
+    background: var(--surface-2, #f8f9fa);
+    border-top: 2px solid var(--border, #e5e7eb);
+  }
+
+  // ── 절세 팁 ───────────────────────────────────────────────
+  .cgt-tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    @media (max-width: 700px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .cgt-tip-card {
+    background: #fff;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 10px;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cgt-tip-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .cgt-tip-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text, #111827);
+  }
+
+  .cgt-tip-body {
+    font-size: 0.8rem;
+    color: var(--text, #4b5563);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  // ── 증여세 CTA ────────────────────────────────────────────
+  .cgt-cta-section {
+    padding: 0;
+  }
+
+  .cgt-cta-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, #1a56db 0%, #1d4ed8 100%);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: box-shadow 0.15s, transform 0.15s;
+
+    &:hover {
+      box-shadow: 0 6px 24px rgba(26, 86, 219, 0.3);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+  }
+
+  .cgt-cta-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    strong {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    span {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.85);
+    }
+  }
+
+  .cgt-cta-arrow {
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.8);
+    flex-shrink: 0;
+  }
+}

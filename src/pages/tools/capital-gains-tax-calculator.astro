@@ -1,0 +1,401 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  CGT_META,
+  CGT_DEFAULTS,
+  CGT_PROPERTY_TYPES,
+  CGT_HOUSE_COUNTS,
+  CGT_TAX_BRACKETS,
+  CGT_QUICK_SELL,
+  CGT_QUICK_ACQUIRE,
+  CGT_SIMULATION_CASES,
+  CGT_TAX_TIPS,
+  CGT_FAQ,
+  CGT_RELATED_LINKS,
+} from "../../data/capitalGainsTaxCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: CGT_META.title,
+      url: `${import.meta.env.SITE}/tools/${CGT_META.slug}/`,
+      description: CGT_META.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: CGT_FAQ.map((f) => ({
+        "@type": "Question",
+        name: f.question,
+        acceptedAnswer: { "@type": "Answer", text: f.answer },
+      })),
+    },
+  ],
+};
+
+// 기본 세율 표 렌더용
+const bracketRows = [
+  { range: "1,400만 이하",          rate: "6%",  cumDed: "0원" },
+  { range: "1,400만 ~ 5,000만",     rate: "15%", cumDed: "126만 원" },
+  { range: "5,000만 ~ 8,800만",     rate: "24%", cumDed: "576만 원" },
+  { range: "8,800만 ~ 1억 5천만",   rate: "35%", cumDed: "1,544만 원" },
+  { range: "1억 5천만 ~ 3억",       rate: "38%", cumDed: "1,994만 원" },
+  { range: "3억 ~ 5억",             rate: "40%", cumDed: "2,594만 원" },
+  { range: "5억 ~ 10억",            rate: "42%", cumDed: "3,594만 원" },
+  { range: "10억 초과",             rate: "45%", cumDed: "6,594만 원" },
+];
+---
+
+<BaseLayout title={CGT_META.seoTitle} description={CGT_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="capital-gains-tax-calculator" pageClass="op-page cgt-page" resultFirst={true}>
+
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="부동산 세금 계산기"
+        title={CGT_META.title}
+        description="1주택 비과세·장기보유특별공제·단기양도세율·다주택 중과까지 모두 반영. 아파트·토지·상가 양도 전 세금을 미리 확인하세요."
+        badges={["1주택 비과세", "장특공제 최대 80%", "다주택 중과", "2026년 기준"]}
+      />
+    </Fragment>
+
+    <!-- ── 결과 영역 (resultFirst) ──────────────────────── -->
+    <Fragment slot="results">
+
+      <!-- 비과세 배너 -->
+      <div id="cgt-exempt-banner" class="cgt-exempt-banner" style="display:none">
+        🎉 <strong>1가구 1주택 비과세 적용 — 납부세액 0원</strong>
+        <span>2년 이상 보유·거주, 양도가액 12억 이하 요건 충족</span>
+      </div>
+
+      <!-- 12억 초과 부분과세 배너 -->
+      <div id="cgt-partial-banner" class="cgt-partial-banner" style="display:none">
+        ℹ️ <strong>1주택 12억 초과 — 초과분에 해당하는 차익만 과세됩니다</strong>
+      </div>
+
+      <!-- 결과 카드 6개 -->
+      <div class="cgt-result-grid">
+        <div class="cgt-result-card cgt-card--main">
+          <span class="cgt-result-label">최종 납부세액 합계</span>
+          <strong class="cgt-result-value" id="cgt-result-total">-</strong>
+          <small>양도소득세 + 지방소득세</small>
+        </div>
+        <div class="cgt-result-card">
+          <span class="cgt-result-label">양도소득세</span>
+          <strong class="cgt-result-value" id="cgt-result-tax">-</strong>
+          <small>국세</small>
+        </div>
+        <div class="cgt-result-card">
+          <span class="cgt-result-label">지방소득세</span>
+          <strong class="cgt-result-value" id="cgt-result-local">-</strong>
+          <small>양도소득세의 10%</small>
+        </div>
+        <div class="cgt-result-card">
+          <span class="cgt-result-label">양도차익</span>
+          <strong class="cgt-result-value" id="cgt-result-gain">-</strong>
+          <small>양도가액 − 취득가액 − 경비</small>
+        </div>
+        <div class="cgt-result-card">
+          <span class="cgt-result-label">적용 세율</span>
+          <strong class="cgt-result-value" id="cgt-result-rate">-</strong>
+          <small>기본세율·단기·중과</small>
+        </div>
+        <div class="cgt-result-card">
+          <span class="cgt-result-label">실효세율</span>
+          <strong class="cgt-result-value" id="cgt-result-eff">-</strong>
+          <small>총 납부세액 / 양도차익</small>
+        </div>
+      </div>
+
+      <!-- 장기보유특별공제 바 -->
+      <div class="cgt-deduct-section">
+        <span class="cgt-deduct-title">장기보유특별공제</span>
+        <div class="cgt-deduct-bar-bg">
+          <div class="cgt-deduct-bar" id="cgt-deduct-bar" style="width:0%"></div>
+        </div>
+        <p class="cgt-deduct-label" id="cgt-deduct-label">보유기간 입력 후 공제율이 표시됩니다</p>
+      </div>
+
+      <!-- 계산 내역 상세 -->
+      <div class="cgt-breakdown-section">
+        <strong class="cgt-breakdown-title">세금 계산 내역</strong>
+        <div class="table-wrap">
+          <table class="cgt-breakdown-table">
+            <tbody id="cgt-breakdown-body">
+              <tr><td colspan="2" style="text-align:center;color:#9ca3af;padding:20px">입력값을 입력하면 계산 내역이 표시됩니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <ToolActionBar resetId="cgt-reset" copyId="cgt-copy-link" />
+    </Fragment>
+
+    <!-- ── 입력 영역 ────────────────────────────────────── -->
+    <Fragment slot="inputs">
+
+      <!-- 부동산 유형 -->
+      <div class="cgt-input-section">
+        <label class="cgt-input-label" for="cgt-property-type">부동산 유형</label>
+        <select class="cgt-select" id="cgt-property-type">
+          {CGT_PROPERTY_TYPES.map((pt) => (
+            <option value={pt.value}>{pt.label}</option>
+          ))}
+        </select>
+      </div>
+
+      <!-- 주택 수 (주택 선택 시) -->
+      <div class="cgt-input-section" id="cgt-house-count-row">
+        <label class="cgt-input-label">보유 주택 수 <span class="cgt-badge-tip">비과세·중과 기준</span></label>
+        <div class="cgt-radio-group">
+          {CGT_HOUSE_COUNTS.map((hc) => (
+            <label class="cgt-radio-card">
+              <input type="radio" name="cgt-house-count-radio" id={hc.value === "one" ? "cgt-house-count" : undefined}
+                value={hc.value}
+                data-cgt-house-radio
+                checked={hc.value === "one"}
+              />
+              <span class="cgt-radio-label">{hc.label}</span>
+              <small class="cgt-radio-desc">{hc.desc}</small>
+            </label>
+          ))}
+        </div>
+        <input type="hidden" id="cgt-house-count" value="one" />
+      </div>
+
+      <!-- 조정대상지역 -->
+      <div class="cgt-input-section" id="cgt-adjusted-row">
+        <label class="cgt-check-label">
+          <input type="checkbox" id="cgt-adjusted-zone" />
+          <span>조정대상지역 (투기·과열지구)</span>
+        </label>
+        <small class="cgt-input-hint">조정지역 1주택: 2년 거주 요건 추가. 선택 안 하면 비조정 지역으로 계산.</small>
+      </div>
+
+      <!-- 1주택 거주 기간 (1주택+조정지역 시) -->
+      <div class="cgt-input-section" id="cgt-residence-row">
+        <label class="cgt-input-label" for="cgt-residence-years">실제 거주 기간 <span class="cgt-unit">년</span></label>
+        <input type="number" class="cgt-input" id="cgt-residence-years"
+          min="0" max="50" step="1" value={CGT_DEFAULTS.residenceYears}
+          placeholder="거주 년수"
+        />
+        <small class="cgt-input-hint">1주택 장기보유특별공제(보유 연4% + 거주 연4%) 산정 기준. 비거주 시 0 입력.</small>
+      </div>
+
+      <!-- 다주택 중과 선택 -->
+      <div class="cgt-input-section" id="cgt-heavy-tax-row" style="display:none">
+        <label class="cgt-check-label">
+          <input type="checkbox" id="cgt-heavy-tax" />
+          <span>다주택 중과세 적용 (조정지역 한정)</span>
+        </label>
+        <small class="cgt-input-hint">현재 2주택 +20%p, 3주택 이상 +30%p. 2022.5~한시 배제 중 → 기본값 미체크.</small>
+      </div>
+
+      <!-- 양도가액 -->
+      <div class="cgt-input-section">
+        <label class="cgt-input-label" for="cgt-sell-price">양도가액 (매도가격) <span class="cgt-unit">원</span></label>
+        <input type="text" class="cgt-input cgt-input--large" id="cgt-sell-price"
+          inputmode="numeric" value="600,000,000" placeholder="예: 600,000,000"
+        />
+        <div class="cgt-quick-row">
+          {CGT_QUICK_SELL.map((q) => (
+            <button class="cgt-quick-btn" type="button" data-quick-sell={q.value}>{q.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <!-- 취득가액 -->
+      <div class="cgt-input-section">
+        <label class="cgt-input-label" for="cgt-acquire-price">취득가액 (매수가격) <span class="cgt-unit">원</span></label>
+        <input type="text" class="cgt-input cgt-input--large" id="cgt-acquire-price"
+          inputmode="numeric" value="300,000,000" placeholder="예: 300,000,000"
+        />
+        <div class="cgt-quick-row">
+          {CGT_QUICK_ACQUIRE.map((q) => (
+            <button class="cgt-quick-btn" type="button" data-quick-acquire={q.value}>{q.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <!-- 필요경비 -->
+      <div class="cgt-input-section">
+        <label class="cgt-input-label" for="cgt-expenses">
+          필요경비 <span class="cgt-unit">원</span>
+          <span class="cgt-badge-tip">취득세·중개비·자본적지출</span>
+        </label>
+        <input type="text" class="cgt-input" id="cgt-expenses"
+          inputmode="numeric" value="10,000,000" placeholder="예: 10,000,000"
+        />
+      </div>
+
+      <!-- 보유기간 -->
+      <div class="cgt-input-section">
+        <label class="cgt-input-label">보유 기간 <span class="cgt-badge-tip">장기보유특별공제·세율 결정</span></label>
+        <div class="cgt-hold-row">
+          <div class="cgt-hold-group">
+            <input type="number" class="cgt-input" id="cgt-hold-years"
+              min="0" max="50" step="1" value={CGT_DEFAULTS.holdingYears} />
+            <span class="cgt-unit">년</span>
+          </div>
+          <div class="cgt-hold-group">
+            <input type="number" class="cgt-input" id="cgt-hold-months"
+              min="0" max="11" step="1" value={CGT_DEFAULTS.holdMonths} />
+            <span class="cgt-unit">개월</span>
+          </div>
+        </div>
+        <small class="cgt-input-hint">2년(24개월) 미만이면 단기양도세율 적용 (주택 70%/60%)</small>
+      </div>
+
+    </Fragment>
+
+    <!-- ── 추가 콘텐츠 ───────────────────────────────────── -->
+    <Fragment slot="after-tool">
+
+      <!-- 시뮬레이션 케이스 -->
+      <section class="content-section cgt-sim-section" aria-labelledby="cgt-sim-title">
+        <div class="cgt-section-heading">
+          <p>실전 사례</p>
+          <h2 id="cgt-sim-title">양도세 계산 실전 케이스 — 클릭하면 자동 입력</h2>
+          <span>자주 묻는 케이스를 클릭하면 입력값이 자동으로 채워집니다.</span>
+        </div>
+        <div class="cgt-sim-grid">
+          {CGT_SIMULATION_CASES.map((c, i) => (
+            <button class="cgt-sim-card" type="button" data-sim-index={i}>
+              <strong>{c.label}</strong>
+              <span>{c.desc}</span>
+              <em class="cgt-sim-tax">{c.taxNote}</em>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <!-- 기본세율 표 -->
+      <section class="content-section cgt-rate-section" aria-labelledby="cgt-rate-title">
+        <div class="cgt-section-heading">
+          <p>세율 참고표</p>
+          <h2 id="cgt-rate-title">2026년 양도소득세 기본 누진세율</h2>
+          <span>2년 이상 보유 일반세율 (지방소득세 10% 별도)</span>
+        </div>
+        <div class="table-wrap">
+          <table class="cgt-rate-table">
+            <thead>
+              <tr>
+                <th>과세표준 구간</th>
+                <th>세율</th>
+                <th>누진공제</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bracketRows.map((r) => (
+                <tr>
+                  <td>{r.range}</td>
+                  <td class="cgt-rate-cell"><strong>{r.rate}</strong></td>
+                  <td class="cgt-deduct-cell">{r.cumDed}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="cgt-rate-note">
+                  단기: 주택 1년 미만 70% / 2년 미만 60% | 비주택 1년 미만 50% / 2년 미만 40%
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <!-- 절세 팁 -->
+      <section class="content-section cgt-tips-section" aria-labelledby="cgt-tips-title">
+        <div class="cgt-section-heading">
+          <p>절세 가이드</p>
+          <h2 id="cgt-tips-title">양도소득세 절세 핵심 포인트 6가지</h2>
+        </div>
+        <div class="cgt-tips-grid">
+          {CGT_TAX_TIPS.map((tip) => (
+            <article class="cgt-tip-card">
+              <span class="cgt-tip-icon">{tip.icon}</span>
+              <strong class="cgt-tip-title">{tip.title}</strong>
+              <p class="cgt-tip-body">{tip.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- 증여세 계산기 CTA -->
+      <section class="content-section cgt-cta-section">
+        <a class="cgt-cta-banner" href={withBase("/tools/gift-tax-calculator/")}>
+          <div class="cgt-cta-text">
+            <strong>증여세 계산기도 확인해보세요</strong>
+            <span>자녀·배우자 증여 한도, 10년 주기 절세 전략까지 한 번에</span>
+          </div>
+          <span class="cgt-cta-arrow">→</span>
+        </a>
+      </section>
+
+      <SeoContent
+        introTitle="양도소득세 자주 묻는 질문"
+        intro={[
+          "양도소득세는 부동산을 매도할 때 발생한 차익(양도차익)에 부과되는 세금으로, 양도가액에서 취득가액과 필요경비를 뺀 금액이 과세 기준이 됩니다.",
+          "1가구 1주택은 2년 이상 보유(조정지역: 거주 추가)하고 양도가액 12억 이하이면 전액 비과세입니다. 12억을 초과하면 초과분에 해당하는 차익만 과세됩니다.",
+          "2026년 기준 다주택 중과세(조정지역 2주택 +20%p, 3주택 +30%p)는 2022년 5월부터 한시 배제 중이어서 대부분 기본세율이 적용됩니다.",
+          CGT_META.caution,
+        ]}
+        inputPoints={[
+          "부동산 유형(주택·토지·상가)과 보유 주택 수를 선택합니다.",
+          "양도가액, 취득가액, 필요경비(취득세·중개수수료·자본적 지출)를 입력합니다.",
+          "보유 기간과 거주 기간을 입력하면 장기보유특별공제가 자동 반영됩니다.",
+        ]}
+        criteria={[
+          "기준: 2026년 소득세법 §95~§104 양도소득세 누진세율",
+          "1주택 비과세 한도: 12억 원 (소득세법 §89)",
+          "장기보유특별공제: 1주택 거주 최대 80%, 일반 최대 30%",
+          "지방소득세: 산출세액의 10%",
+          "다주택 중과: 조정지역 한정, 현재 한시 배제 중",
+        ]}
+        faq={CGT_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+        related={CGT_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+      />
+
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src={`${normalizedBase}scripts/capital-gains-tax-calculator.js`}></script>
+
+  <!-- 라디오 → hidden input 동기화 -->
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("[data-cgt-house-radio]").forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          const hidden = document.getElementById("cgt-house-count");
+          if (hidden) hidden.value = this.value;
+          // 라디오 카드 active 처리
+          document.querySelectorAll(".cgt-radio-card").forEach(function (c) { c.classList.remove("active"); });
+          this.closest(".cgt-radio-card")?.classList.add("active");
+        });
+      });
+      // 초기 active 설정
+      const checked = document.querySelector("[data-cgt-house-radio]:checked");
+      if (checked) checked.closest(".cgt-radio-card")?.classList.add("active");
+    });
+  </script>
+
+</BaseLayout>
