@@ -1,0 +1,249 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  LWG_META,
+  LWG_RANKINGS,
+  LWG_STATS,
+  LWG_BRACKETS,
+  LWG_FAQ,
+  LWG_RELATED_LINKS,
+} from "../../data/localLeadersWealthGap2026.ts";
+
+const maxAsset = LWG_RANKINGS[0].totalAsset;
+
+function fmt(val: number) {
+  if (val >= 100000) return `${(val / 100000).toFixed(1)}억`;
+  return `${(val / 10000).toFixed(1)}억`;
+}
+function fmtCrore(val: number) {
+  return (val / 10000).toFixed(1);
+}
+---
+
+<BaseLayout
+  title={LWG_META.seoTitle}
+  description={LWG_META.seoDescription}
+  ogType="article"
+>
+  <main class="container page-shell report-page lwg-page">
+
+    <!-- ── Hero ─────────────────────────────────────────── -->
+    <header class="lwg-hero">
+      <div class="lwg-hero__badge">2026 지방선거 · 광역단체장 재산</div>
+      <h1 class="lwg-hero__title">
+        시도지사 16명 재산 순위<br />
+        <span class="lwg-hero__accent">최고 72.9억 vs 최저 5.7억 — 격차 13배</span>
+      </h1>
+      <p class="lwg-hero__desc">
+        2026년 지방선거 광역단체장 당선자 16명의 선관위 신고 재산을 순위·정당별로 비교분석합니다.
+        서울시장부터 제주도지사까지 한 페이지에서 확인하세요.
+      </p>
+      <div class="lwg-hero__meta">
+        <span>📅 기준일: 2026년 5~6월 선관위 후보 등록 신고</span>
+        <span>👤 대상: 광역단체장 당선자 16명</span>
+        <span>📊 단위: 만원 (본인·배우자·직계존비속 합산)</span>
+      </div>
+    </header>
+
+    <!-- ── KPI 카드 ───────────────────────────────────────── -->
+    <section class="lwg-kpi-grid content-section">
+      <div class="lwg-kpi-card">
+        <span class="lwg-kpi-label">전체 평균 재산</span>
+        <strong class="lwg-kpi-value">{fmt(LWG_STATS.avgAsset)}</strong>
+        <span class="lwg-kpi-sub">16명 평균</span>
+      </div>
+      <div class="lwg-kpi-card lwg-kpi-card--max">
+        <span class="lwg-kpi-label">최고 재산</span>
+        <strong class="lwg-kpi-value">{fmt(LWG_STATS.maxAsset)}</strong>
+        <span class="lwg-kpi-sub">오세훈 (서울시장)</span>
+      </div>
+      <div class="lwg-kpi-card lwg-kpi-card--min">
+        <span class="lwg-kpi-label">최저 재산</span>
+        <strong class="lwg-kpi-value">{fmt(LWG_STATS.minAsset)}</strong>
+        <span class="lwg-kpi-sub">위성곤 (제주도지사)</span>
+      </div>
+      <div class="lwg-kpi-card">
+        <span class="lwg-kpi-label">재산 격차</span>
+        <strong class="lwg-kpi-value">{LWG_STATS.gapRatio}배</strong>
+        <span class="lwg-kpi-sub">최고 ÷ 최저</span>
+      </div>
+      <div class="lwg-kpi-card lwg-kpi-card--ppp">
+        <span class="lwg-kpi-label">국민의힘 평균 (4명)</span>
+        <strong class="lwg-kpi-value">{fmt(LWG_STATS.ppp.avgAsset)}</strong>
+        <span class="lwg-kpi-sub">서울·대구·경남·경북</span>
+      </div>
+      <div class="lwg-kpi-card lwg-kpi-card--dp">
+        <span class="lwg-kpi-label">더불어민주당 평균 (12명)</span>
+        <strong class="lwg-kpi-value">{fmt(LWG_STATS.dp.avgAsset)}</strong>
+        <span class="lwg-kpi-sub">나머지 12개 지역</span>
+      </div>
+    </section>
+
+    <!-- ── 재산 순위 바 차트 ──────────────────────────────── -->
+    <section class="lwg-ranking content-section">
+      <div class="lwg-section-head">
+        <h2>재산 순위 — 16명 전체 비교</h2>
+        <p>선관위 후보 등록 기준 신고 재산 (단위: 억원)</p>
+      </div>
+      <div class="lwg-bar-list">
+        {LWG_RANKINGS.map((item) => {
+          const pct = Math.round((item.totalAsset / maxAsset) * 100);
+          const isPpp = item.party === "국민의힘";
+          return (
+            <div class:list={["lwg-bar-row", isPpp ? "lwg-bar-row--ppp" : "lwg-bar-row--dp"]}>
+              <div class="lwg-bar-rank">{item.rank}</div>
+              <div class="lwg-bar-info">
+                <div class="lwg-bar-name">
+                  <strong>{item.name}</strong>
+                  <span class:list={["lwg-party-tag", isPpp ? "lwg-party-tag--ppp" : "lwg-party-tag--dp"]}>
+                    {isPpp ? "국힘" : "민주"}
+                  </span>
+                  <em class="lwg-region">{item.regionNameKo} {item.position}</em>
+                </div>
+                <div class="lwg-bar-bg">
+                  <div
+                    class="lwg-bar-fill"
+                    style={`width:${pct}%`}
+                    data-ppp={isPpp}
+                  />
+                </div>
+              </div>
+              <div class="lwg-bar-val">{fmt(item.totalAsset)}</div>
+            </div>
+          );
+        })}
+      </div>
+      <p class="lwg-bar-note">* 추정값 포함. 선관위 원문 확인 권장. 취임 후 공직자 윤리위 공시와 다를 수 있음.</p>
+    </section>
+
+    <!-- ── 정당별 비교 ────────────────────────────────────── -->
+    <section class="lwg-party content-section">
+      <div class="lwg-section-head">
+        <h2>정당별 재산 비교</h2>
+        <p>국민의힘 vs 더불어민주당 평균 재산 차이</p>
+      </div>
+      <div class="lwg-party-grid">
+        <div class="lwg-party-card lwg-party-card--ppp">
+          <div class="lwg-party-header">
+            <span class="lwg-party-name">🔴 국민의힘</span>
+            <span class="lwg-party-count">{LWG_STATS.ppp.count}명 당선</span>
+          </div>
+          <strong class="lwg-party-avg">{fmt(LWG_STATS.ppp.avgAsset)}</strong>
+          <span class="lwg-party-avg-label">평균 재산</span>
+          <div class="lwg-party-members">
+            {LWG_STATS.ppp.members.map(m => <span class="lwg-member-tag">{m}</span>)}
+          </div>
+          <p class="lwg-party-note">서울·대구·경남·경북 4개 지역 당선. 오세훈(72.9억)·추경호(47.1억)가 평균을 상향.</p>
+        </div>
+        <div class="lwg-party-card lwg-party-card--dp">
+          <div class="lwg-party-header">
+            <span class="lwg-party-name">🔵 더불어민주당</span>
+            <span class="lwg-party-count">{LWG_STATS.dp.count}명 당선</span>
+          </div>
+          <strong class="lwg-party-avg">{fmt(LWG_STATS.dp.avgAsset)}</strong>
+          <span class="lwg-party-avg-label">평균 재산</span>
+          <div class="lwg-party-members">
+            {LWG_STATS.dp.members.map(m => <span class="lwg-member-tag">{m}</span>)}
+          </div>
+          <p class="lwg-party-note">12개 지역 당선. 신용한(34억)·박찬대(30.8억)가 상위권, 위성곤(5.7억)·허태정(5.9억)이 하위권.</p>
+        </div>
+      </div>
+      <div class="lwg-party-gap-note">
+        <strong>국민의힘 평균({fmt(LWG_STATS.ppp.avgAsset)}) vs 더불어민주당 평균({fmt(LWG_STATS.dp.avgAsset)}) — 약 {Math.round(LWG_STATS.ppp.avgAsset / LWG_STATS.dp.avgAsset * 10) / 10}배 차이</strong>
+        <p>단, 이는 개인 재산 차이이며 정당별 평균 자체보다 개인별 편차가 훨씬 큽니다.</p>
+      </div>
+    </section>
+
+    <!-- ── 재산 구간 분포 ─────────────────────────────────── -->
+    <section class="lwg-bracket content-section">
+      <div class="lwg-section-head">
+        <h2>재산 구간별 분포</h2>
+        <p>16명을 5구간으로 나눈 재산 분포</p>
+      </div>
+      <div class="lwg-bracket-list">
+        {LWG_BRACKETS.map((b) => (
+          <div class="lwg-bracket-row">
+            <div class="lwg-bracket-label">{b.label}</div>
+            <div class="lwg-bracket-bar-wrap">
+              <div
+                class="lwg-bracket-bar"
+                style={`width:${Math.round((b.count / LWG_STATS.totalCount) * 100)}%`}
+              />
+            </div>
+            <div class="lwg-bracket-count">{b.count}명</div>
+            <div class="lwg-bracket-members">{b.members.join(", ")}</div>
+          </div>
+        ))}
+      </div>
+      <p class="lwg-bracket-note">
+        전체 16명 중 10억 미만이 6명(37.5%)으로 가장 많고, 50억 이상은 오세훈 1명뿐입니다.
+        중앙값은 약 <strong>18.9억원</strong>(민형배·우상호 사이)입니다.
+      </p>
+    </section>
+
+    <!-- ── 분석 포인트 ────────────────────────────────────── -->
+    <section class="lwg-analysis content-section">
+      <div class="lwg-section-head">
+        <h2>핵심 분석 포인트</h2>
+      </div>
+      <div class="lwg-analysis-grid">
+        <div class="lwg-analysis-card">
+          <div class="lwg-analysis-icon">🏙️</div>
+          <h3>대도시 단체장이 더 부유한가?</h3>
+          <p>
+            서울(72.9억) · 대구(47.1억) · 인천(30.8억) 순으로 대도시 단체장이 상위권에 위치합니다.
+            그러나 부산(7.2억) · 대전(5.9억)은 하위권으로, 도시 규모와 재산이 반드시 비례하지는 않습니다.
+          </p>
+        </div>
+        <div class="lwg-analysis-card">
+          <div class="lwg-analysis-icon">⚖️</div>
+          <h3>재산신고와 실제 재산의 차이</h3>
+          <p>
+            선관위 신고액은 후보 등록 시 기준이며, 취임 후 공직자윤리위원회 신고와 다를 수 있습니다.
+            부동산 공시가액 기준이라 시장가액보다 낮게 평가될 수 있습니다.
+          </p>
+        </div>
+        <div class="lwg-analysis-card">
+          <div class="lwg-analysis-icon">📈</div>
+          <h3>2022년 vs 2026년 비교 포인트</h3>
+          <p>
+            오세훈 서울시장은 2022년 재산 대비 2026년 신고액이 변동되었습니다. 재산 변동 내역은
+            취임 후 공직자 재산공시를 통해 연 1회 확인할 수 있습니다.
+          </p>
+        </div>
+        <div class="lwg-analysis-card">
+          <div class="lwg-analysis-icon">🗺️</div>
+          <h3>광주·전남 통합특별시 주목</h3>
+          <p>
+            민형배 초대 광주전남특별시장(18.3억)은 2026년 7월 1일 출범하는 통합특별시를 이끌게 됩니다.
+            인구 약 290만 명의 새 광역단체 초대 시장입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Related CTA ────────────────────────────────────── -->
+    <section class="lwg-cta content-section">
+      <div class="lwg-section-head">
+        <h2>관련 페이지</h2>
+      </div>
+      <div class="lwg-cta-grid">
+        {LWG_RELATED_LINKS.map((link) => (
+          <a href={link.href} class="lwg-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── SEO Content ────────────────────────────────────── -->
+    <SeoContent
+      introTitle="2026 광역단체장 재산 순위 — 자주 묻는 질문"
+      intro={["2026 지방선거 광역단체장 16명의 선관위 신고 재산 순위를 비교합니다. 국민의힘·더불어민주당 평균 재산 차이, 최고·최저 재산 격차 분석을 포함합니다."]}
+      faq={LWG_FAQ.map((f) => ({ question: f.q, answer: f.a }))}
+    />
+
+  </main>
+</BaseLayout>
