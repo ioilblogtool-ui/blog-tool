@@ -1,0 +1,411 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  NAW_META,
+  NAW_TOP30,
+  NAW_BOTTOM10,
+  NAW_KPI,
+  NAW_BY_PARTY,
+  NAW_ASSET_COMPOSITION,
+  NAW_BY_BACKGROUND,
+  NAW_YEARLY_TREND,
+  NAW_DISTRIBUTION,
+  NAW_FAQ,
+  NAW_RELATED_LINKS,
+  NAW_SOURCE_LINKS,
+  NAW_PARTY_COLORS,
+} from "../../data/nationalAssemblyWealth2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${NAW_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const maxTop = NAW_TOP30[0].totalBillion;
+const maxPartyAvg = Math.max(...NAW_BY_PARTY.map((p) => p.avgBillion));
+const maxBg = Math.max(...NAW_BY_BACKGROUND.map((b) => b.avgBillion));
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: NAW_META.title,
+    description: NAW_META.description,
+    dateModified: NAW_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: NAW_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: NAW_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={NAW_META.seoTitle} description={NAW_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page naw-page" data-report="national-assembly-wealth-2026">
+
+    <CalculatorHero
+      eyebrow="정치·공직자 재산 리포트"
+      title={NAW_META.title}
+      description="공직자윤리위원회 2026년 정기 공시 기준. 300명 평균 28.4억, 최고 487억, 최저 1.2억. 정당별·직업별·재산 구성별로 완전 분석합니다."
+      badges={["공직자 재산", "22대 국회", "TOP 30", "정당별 비교", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        NAW_META.dataNote,
+        "본인·배우자·직계존비속 합산 기준이며 비상장주식은 취득가액 신고로 시세와 차이가 있을 수 있습니다.",
+      ]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section naw-kpi-section">
+      <div class="naw-kpi-grid">
+        <article class="naw-kpi-card naw-kpi-card--main">
+          <span class="naw-kpi-label">의원 평균 재산</span>
+          <strong class="naw-kpi-value">{NAW_KPI.avgBillion}억 원</strong>
+          <small>300명 신고 평균 · 추정</small>
+        </article>
+        <article class="naw-kpi-card naw-kpi-card--main">
+          <span class="naw-kpi-label">중앙값 (실감 기준)</span>
+          <strong class="naw-kpi-value">{NAW_KPI.medianBillion}억 원</strong>
+          <small>평균값 왜곡 보정 지표</small>
+        </article>
+        <article class="naw-kpi-card naw-kpi-card--top">
+          <span class="naw-kpi-label">최고 재산 의원</span>
+          <strong class="naw-kpi-value">{NAW_KPI.top1Name}</strong>
+          <small>{NAW_KPI.top1Billion.toLocaleString()}억 원</small>
+        </article>
+        <article class="naw-kpi-card">
+          <span class="naw-kpi-label">100억 이상 의원</span>
+          <strong class="naw-kpi-value">{NAW_KPI.over100Count}명</strong>
+          <small>전체 300명의 {(NAW_KPI.over100Count / 3).toFixed(1)}%</small>
+        </article>
+        <article class="naw-kpi-card">
+          <span class="naw-kpi-label">10억 미만 의원</span>
+          <strong class="naw-kpi-value">{NAW_KPI.under10Count}명</strong>
+          <small>전체의 {(NAW_KPI.under10Count / 3).toFixed(1)}%</small>
+        </article>
+        <article class="naw-kpi-card">
+          <span class="naw-kpi-label">최저 재산 의원</span>
+          <strong class="naw-kpi-value">{NAW_KPI.bottomName}</strong>
+          <small>{NAW_KPI.bottomBillion}억 원</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 재산 분포 구간 -->
+    <section class="content-section naw-dist-section" aria-labelledby="naw-dist-title">
+      <div class="naw-section-heading">
+        <p>재산 분포</p>
+        <h2 id="naw-dist-title">국회의원 300명 재산 분포 — 100억 이상이 9.3%</h2>
+        <span>상위 9.3%가 전체 재산의 40% 이상을 차지합니다.</span>
+      </div>
+      <div class="naw-dist-list">
+        {NAW_DISTRIBUTION.map((d) => {
+          const barW = (d.count / 68) * 100;
+          return (
+            <div class="naw-dist-row">
+              <span class="naw-dist-range">{d.range}</span>
+              <div class="naw-dist-bar-wrap">
+                <div class="naw-dist-bar" style={`width:${barW}%`} />
+              </div>
+              <span class="naw-dist-count">{d.count}명</span>
+              <span class="naw-dist-pct">({d.pct}%)</span>
+              <span class="naw-dist-label">{d.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- TOP 30 -->
+    <section class="content-section naw-top30-section" aria-labelledby="naw-top30-title">
+      <div class="naw-section-heading">
+        <p>재산 순위</p>
+        <h2 id="naw-top30-title">국회의원 재산 TOP 30 — 1위 487억, 30위 48억</h2>
+        <span>공직자윤리위원회 2026년 정기 공시 기준 추정. 단위: 억 원.</span>
+      </div>
+      <div class="naw-top30-list">
+        {NAW_TOP30.map((m) => {
+          const barW = (m.totalBillion / maxTop) * 100;
+          const color = NAW_PARTY_COLORS[m.party] ?? "#374151";
+          return (
+            <article class="naw-member-card">
+              <div class="naw-member-header">
+                <span class="naw-member-rank" style={`background:${color}18; color:${color}`}>{m.rank}</span>
+                <strong class="naw-member-name">{m.name}</strong>
+                <span class="naw-member-party" style={`color:${color}`}>{m.party}</span>
+                <span class="naw-member-district">{m.district}</span>
+                <span class="naw-member-bg">{m.background}</span>
+                <span class:list={["naw-yoy-badge", m.yoyChangeBillion >= 0 ? "naw-yoy--up" : "naw-yoy--down"]}>
+                  {m.yoyChangeBillion >= 0 ? "▲" : "▼"} {Math.abs(m.yoyChangeBillion)}억
+                </span>
+              </div>
+              <div class="naw-member-bar-wrap">
+                <div class="naw-member-bar" style={`width:${barW}%; background:${color}`} />
+                <span class="naw-member-total">{m.totalBillion.toLocaleString()}억</span>
+              </div>
+              <div class="naw-member-breakdown">
+                <div class="naw-bd-item">
+                  <span>부동산</span>
+                  <strong>{m.realEstateBillion}억</strong>
+                </div>
+                <div class="naw-bd-item">
+                  <span>주식·증권</span>
+                  <strong>{m.stockBillion}억</strong>
+                </div>
+                <div class="naw-bd-item">
+                  <span>예금·현금</span>
+                  <strong>{m.depositBillion}억</strong>
+                </div>
+                <div class="naw-bd-item naw-bd-item--debt">
+                  <span>채무</span>
+                  <strong>-{m.debtBillion}억</strong>
+                </div>
+              </div>
+              <p class="naw-member-note">{m.mainAsset} — {m.note}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 하위 10명 -->
+    <section class="content-section naw-bottom-section" aria-labelledby="naw-bottom-title">
+      <div class="naw-section-heading">
+        <p>재산 하위권</p>
+        <h2 id="naw-bottom-title">가장 적게 신고한 의원 — 최저 1.2억</h2>
+        <span>비례대표·진보 성향 의원 비중이 높습니다. TOP 1 대비 약 400배 격차.</span>
+      </div>
+      <div class="table-wrap naw-table-wrap">
+        <table class="naw-bottom-table">
+          <caption>국회의원 재산 하위 10명</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>이름</th>
+              <th>정당</th>
+              <th>지역구</th>
+              <th>신고 재산</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {NAW_BOTTOM10.map((m) => {
+              const color = NAW_PARTY_COLORS[m.party] ?? "#374151";
+              return (
+                <tr>
+                  <td class="naw-tbl-rank">{m.rank}</td>
+                  <td class="naw-tbl-name"><strong>{m.name}</strong></td>
+                  <td class="naw-tbl-party" style={`color:${color}`}>{m.party}</td>
+                  <td class="naw-tbl-district">{m.district}</td>
+                  <td class="naw-tbl-amt">{m.totalBillion}억</td>
+                  <td class="naw-tbl-note">{m.note}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 정당별 평균 -->
+    <section class="content-section naw-party-section" aria-labelledby="naw-party-title">
+      <div class="naw-section-heading">
+        <p>정당별 비교</p>
+        <h2 id="naw-party-title">정당별 평균 재산 — 국민의힘 38.6억 vs 민주당 22.8억</h2>
+        <span>의석 수와 당 성격에 따라 평균 재산이 크게 달라집니다.</span>
+      </div>
+      <div class="naw-party-list">
+        {NAW_BY_PARTY.map((p) => {
+          const color = NAW_PARTY_COLORS[p.party] ?? "#374151";
+          const barW = (p.avgBillion / maxPartyAvg) * 100;
+          return (
+            <article class="naw-party-card">
+              <div class="naw-party-header">
+                <span class="naw-party-dot" style={`background:${color}`} />
+                <strong class="naw-party-name" style={`color:${color}`}>{p.party}</strong>
+                <span class="naw-party-seats">{p.seats}석</span>
+                <span class="naw-party-top">최고 {p.top1Name} {p.top1Billion}억</span>
+                {p.over100Count > 0 && (
+                  <span class="naw-party-rich">100억↑ {p.over100Count}명</span>
+                )}
+              </div>
+              <div class="naw-party-bar-wrap">
+                <div class="naw-party-bar" style={`width:${barW}%; background:${color}`} />
+              </div>
+              <div class="naw-party-nums">
+                <span>평균 <strong>{p.avgBillion}억</strong></span>
+                <span>중앙값 <strong>{p.medianBillion}억</strong></span>
+              </div>
+              <p class="naw-party-note">{p.note}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 재산 구성 분석 -->
+    <section class="content-section naw-composition-section" aria-labelledby="naw-comp-title">
+      <div class="naw-section-heading">
+        <p>재산 구성</p>
+        <h2 id="naw-comp-title">국회의원 재산의 62%는 부동산 — 주식 18% · 예금 12%</h2>
+        <span>전국 가구 평균 대비 부동산 비중은 낮지만 절대 금액은 압도적으로 높습니다.</span>
+      </div>
+      <div class="naw-comp-grid">
+        {NAW_ASSET_COMPOSITION.map((a) => {
+          const absPct = Math.abs(a.pct);
+          return (
+            <article class:list={["naw-comp-card", a.pct < 0 && "naw-comp-card--debt"]}>
+              <div class="naw-comp-header">
+                <span class="naw-comp-label">{a.label}</span>
+                <strong class="naw-comp-pct" style={`color:${a.color}`}>{a.pct > 0 ? "+" : ""}{a.pct}%</strong>
+              </div>
+              <div class="naw-comp-bar-bg">
+                <div class="naw-comp-bar" style={`width:${absPct * 1.4}%; background:${a.color}`} />
+              </div>
+              <p class="naw-comp-avg">평균 {Math.abs(a.avgBillion).toFixed(1)}억</p>
+              <p class="naw-comp-note">{a.note}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 직업 배경별 -->
+    <section class="content-section naw-bg-section" aria-labelledby="naw-bg-title">
+      <div class="naw-section-heading">
+        <p>직업 배경별</p>
+        <h2 id="naw-bg-title">기업인 출신 68.4억 압도적 1위 — 시민사회·노동계 6.8억 최저</h2>
+        <span>출신 직업이 재산 규모를 결정하는 가장 강력한 변수입니다.</span>
+      </div>
+      <div class="naw-bg-list">
+        {NAW_BY_BACKGROUND.map((b) => {
+          const barW = (b.avgBillion / maxBg) * 100;
+          return (
+            <div class="naw-bg-row">
+              <span class="naw-bg-name">{b.background}</span>
+              <span class="naw-bg-count">{b.count}명</span>
+              <div class="naw-bg-bar-wrap">
+                <div class="naw-bg-bar" style={`width:${barW}%`} />
+              </div>
+              <span class="naw-bg-avg">평균 {b.avgBillion}억</span>
+              <span class="naw-bg-top">최고 {b.topBillion}억</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 연도별 추이 -->
+    <section class="content-section naw-trend-section" aria-labelledby="naw-trend-title">
+      <div class="naw-section-heading">
+        <p>연도별 추이</p>
+        <h2 id="naw-trend-title">국회의원 평균 재산 추이 2020→2026 — 7년간 39% 증가</h2>
+        <span>서울 부동산 상승과 주식 평가액 증가가 주요 상승 요인입니다.</span>
+      </div>
+      <div class="naw-trend-list">
+        {NAW_YEARLY_TREND.map((y) => {
+          const maxAvg = Math.max(...NAW_YEARLY_TREND.map((t) => t.avgBillion));
+          const barW = (y.avgBillion / maxAvg) * 100;
+          return (
+            <div class:list={["naw-trend-row", y.year === 2026 && "naw-trend-row--current"]}>
+              <span class="naw-trend-year">
+                {y.year}
+                {y.year === 2026 && <span class="naw-now-badge">현재</span>}
+              </span>
+              <div class="naw-trend-bar-wrap">
+                <div class="naw-trend-bar" style={`width:${barW}%`} />
+              </div>
+              <span class="naw-trend-avg">{y.avgBillion}억</span>
+              <span class="naw-trend-median">중앙 {y.medianBillion}억</span>
+              <span class="naw-trend-over">100억↑ {y.over100Count}명</span>
+              <span class="naw-trend-note">{y.note}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 출처 -->
+    <section class="content-section naw-source-section" aria-labelledby="naw-source-title">
+      <div class="naw-section-heading">
+        <p>공식 출처</p>
+        <h2 id="naw-source-title">원본 데이터 확인처</h2>
+      </div>
+      <div class="naw-source-list">
+        {NAW_SOURCE_LINKS.map((s) => (
+          <a class="naw-source-card" href={s.url} target="_blank" rel="noopener noreferrer">
+            <strong>{s.label}</strong>
+            <span>{s.note}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 리포트 -->
+    <section class="content-section naw-related-section" aria-labelledby="naw-related-title">
+      <div class="naw-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="naw-related-title">함께 보면 좋은 공직자 재산 비교</h2>
+      </div>
+      <div class="naw-related-grid">
+        {NAW_RELATED_LINKS.map((link) => (
+          <a class="naw-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="국회의원 재산 공개 — 자주 묻는 질문"
+      intro={[
+        "2026년 공직자윤리위원회 정기 공시 기준 22대 국회의원 300명의 평균 신고 재산은 약 28.4억 원입니다. 그러나 상위 10%인 30명이 전체 재산의 약 40% 이상을 차지할 만큼 쏠림이 극심해, 실제 체감 기준인 중앙값은 14.2억 원으로 평균의 절반 수준입니다.",
+        "재산 최고 의원은 487억 원으로 상장사 대주주 지분과 수도권 상업용 부동산을 보유하고 있습니다. 최저 신고 의원은 1.2억 원으로 두 의원의 격차가 약 400배에 달합니다. 전국 가구 평균 순자산이 4~5억 원 수준임을 감안하면 국회의원 평균은 일반 가구 대비 약 5~7배입니다.",
+        "정당별로는 국민의힘 의원 평균이 38.6억 원으로 가장 높고, 더불어민주당 22.8억 원, 조국혁신당 18.2억 원, 진보당 5.2억 원 순입니다. 기업인·법조인 출신 비중이 높은 정당일수록 평균 재산이 높게 나타납니다.",
+        "재산 구성에서 부동산 비중이 62%로 가장 높고, 주식·증권 18%, 예금·현금 12%, 기타 5%, 채무 -4% 순입니다. 기업인 출신 의원은 상장·비상장 지분 비중이 높아 주가 변동에 따라 연간 재산 증감이 수십억 원에 달하는 경우도 있습니다.",
+        "직업 배경별로는 기업인 출신이 평균 68.4억 원으로 압도적 1위입니다. 법조인 출신이 42.8억 원, 관료 출신 28.6억 원, 의료인 22.4억 원 순이며, 시민사회·노동계 출신은 평균 6.8억 원으로 기업인 대비 10배 이상 차이가 납니다. 출신 직업이 재산 규모를 결정하는 가장 강력한 변수입니다.",
+      ]}
+      inputPoints={[
+        "TOP 30 순위와 각 의원의 재산 구성(부동산·주식·예금·채무)을 비교할 수 있습니다.",
+        "하위 10명 명단과 정당별 평균 재산을 한눈에 확인할 수 있습니다.",
+        "직업 배경별·연도별 추이를 통해 재산 집중 구조를 파악할 수 있습니다.",
+      ]}
+      criteria={[
+        "공직자윤리위원회 2026년 3~4월 정기 재산변동 공개(관보 기준) 추정치",
+        "본인·배우자·직계존비속(부모·자녀) 합산 신고 기준",
+        "비상장주식은 취득가액 신고로 현재 시세와 차이 있을 수 있음",
+        "이 리포트는 공개 데이터 기반 참고 정보이며 정치적 평가나 투자 권유가 아닙니다",
+      ]}
+      faq={NAW_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={NAW_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

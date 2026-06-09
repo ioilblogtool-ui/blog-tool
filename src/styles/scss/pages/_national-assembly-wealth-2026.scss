@@ -1,0 +1,685 @@
+// 국회의원 재산 순위 2026
+// 정치 테마: 국회 청색 + 중립 회색 기반
+
+$naw-navy: #0f172a;
+$naw-blue: #1a3a6b;
+$naw-blue-light: #e8eef8;
+$naw-blue-border: #c4d1e8;
+$naw-gold: #b45309;
+$naw-gold-light: #fef3c7;
+$naw-bg: #fafafa;
+$naw-card-bg: #ffffff;
+$naw-border: #e5e7eb;
+$naw-text: #111827;
+$naw-muted: #6b7280;
+$naw-up: #16a34a;
+$naw-down: #dc2626;
+$naw-debt: #dc2626;
+
+// ─── KPI ─────────────────────────────────────────────────────
+.naw-kpi-section {
+  margin-bottom: 2rem;
+}
+
+.naw-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.naw-kpi-card {
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  &--main {
+    background: $naw-blue-light;
+    border-color: $naw-blue-border;
+    border-top: 3px solid $naw-blue;
+    .naw-kpi-value { color: $naw-blue; }
+  }
+
+  &--top {
+    background: $naw-gold-light;
+    border-color: #fde68a;
+    border-top: 3px solid $naw-gold;
+    .naw-kpi-value { color: $naw-gold; }
+  }
+}
+
+.naw-kpi-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $naw-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.naw-kpi-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: $naw-navy;
+  line-height: 1.1;
+
+  @media (max-width: 480px) { font-size: 1.3rem; }
+}
+
+.naw-kpi-card small {
+  font-size: 0.72rem;
+  color: $naw-muted;
+}
+
+// ─── 섹션 공통 헤딩 ──────────────────────────────────────────
+.naw-section-heading {
+  margin-bottom: 1.5rem;
+
+  p {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $naw-blue;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.3rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: $naw-navy;
+    margin: 0 0 0.4rem;
+    line-height: 1.3;
+
+    @media (max-width: 480px) { font-size: 1.1rem; }
+  }
+
+  span {
+    font-size: 0.82rem;
+    color: $naw-muted;
+  }
+}
+
+// ─── 재산 분포 ───────────────────────────────────────────────
+.naw-dist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.naw-dist-row {
+  display: grid;
+  grid-template-columns: 8rem 1fr 3.5rem 4rem 6rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 8px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 7rem 1fr 3rem 3.5rem;
+    .naw-dist-label { display: none; }
+  }
+}
+
+.naw-dist-range {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $naw-navy;
+}
+
+.naw-dist-bar-wrap {
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.naw-dist-bar {
+  height: 100%;
+  background: $naw-blue;
+  border-radius: 4px;
+}
+
+.naw-dist-count {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: right;
+  color: $naw-navy;
+}
+
+.naw-dist-pct {
+  font-size: 0.72rem;
+  color: $naw-muted;
+}
+
+.naw-dist-label {
+  font-size: 0.72rem;
+  color: $naw-muted;
+}
+
+// ─── TOP 30 멤버 카드 ─────────────────────────────────────────
+.naw-top30-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.naw-member-card {
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.naw-member-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.naw-member-rank {
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.18rem 0.55rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.naw-member-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: $naw-navy;
+}
+
+.naw-member-party {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.naw-member-district {
+  font-size: 0.72rem;
+  color: $naw-muted;
+  flex: 1;
+}
+
+.naw-member-bg {
+  font-size: 0.7rem;
+  color: $naw-muted;
+  background: #f3f4f6;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+}
+
+.naw-yoy-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 4px;
+
+  &.naw-yoy--up { background: #dcfce7; color: $naw-up; }
+  &.naw-yoy--down { background: #fee2e2; color: $naw-down; }
+}
+
+.naw-member-bar-wrap {
+  position: relative;
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.naw-member-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.naw-member-total {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $naw-navy;
+  background: rgba(255,255,255,0.9);
+  padding: 0 0.2rem;
+  border-radius: 3px;
+}
+
+.naw-member-breakdown {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+
+  @media (max-width: 480px) { grid-template-columns: 1fr 1fr; }
+}
+
+.naw-bd-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+
+  span { font-size: 0.65rem; color: $naw-muted; }
+  strong { font-size: 0.82rem; font-weight: 700; color: $naw-navy; }
+
+  &--debt strong { color: $naw-debt; }
+}
+
+.naw-member-note {
+  font-size: 0.75rem;
+  color: $naw-muted;
+  margin: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid $naw-border;
+  line-height: 1.5;
+}
+
+// ─── 하위 10명 테이블 ─────────────────────────────────────────
+.naw-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid $naw-border;
+}
+
+.naw-bottom-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  caption { display: none; }
+
+  th {
+    background: $naw-navy;
+    color: #ffffff;
+    padding: 0.7rem 0.75rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid $naw-border;
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f9fafb; }
+}
+
+.naw-tbl-rank { font-weight: 800; text-align: center; color: $naw-muted; }
+.naw-tbl-name strong { font-weight: 800; color: $naw-navy; }
+.naw-tbl-party { font-weight: 700; font-size: 0.8rem; }
+.naw-tbl-district { font-size: 0.78rem; color: $naw-muted; }
+.naw-tbl-amt { font-weight: 800; text-align: right; color: $naw-navy; }
+.naw-tbl-note { font-size: 0.72rem; color: $naw-muted; }
+
+// ─── 정당별 ──────────────────────────────────────────────────
+.naw-party-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.naw-party-card {
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.naw-party-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.naw-party-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.naw-party-name {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.naw-party-seats {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #f3f4f6;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  color: $naw-muted;
+}
+
+.naw-party-top {
+  font-size: 0.72rem;
+  color: $naw-muted;
+  flex: 1;
+}
+
+.naw-party-rich {
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: $naw-gold-light;
+  color: $naw-gold;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+}
+
+.naw-party-bar-wrap {
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.naw-party-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.naw-party-nums {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: $naw-muted;
+  margin-bottom: 0.4rem;
+
+  strong { font-weight: 700; color: $naw-navy; }
+}
+
+.naw-party-note {
+  font-size: 0.75rem;
+  color: $naw-muted;
+  margin: 0;
+  padding-top: 0.4rem;
+  border-top: 1px solid $naw-border;
+  line-height: 1.5;
+}
+
+// ─── 재산 구성 ───────────────────────────────────────────────
+.naw-comp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.naw-comp-card {
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &--debt {
+    background: #fff5f5;
+    border-color: #fecaca;
+  }
+}
+
+.naw-comp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.naw-comp-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $naw-navy;
+}
+
+.naw-comp-pct {
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.naw-comp-bar-bg {
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.naw-comp-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.naw-comp-avg {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $naw-navy;
+  margin: 0;
+}
+
+.naw-comp-note {
+  font-size: 0.72rem;
+  color: $naw-muted;
+  margin: 0;
+  line-height: 1.4;
+}
+
+// ─── 직업 배경별 ─────────────────────────────────────────────
+.naw-bg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.naw-bg-row {
+  display: grid;
+  grid-template-columns: 9rem 3.5rem 1fr 6rem 6rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 8px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 7rem 1fr 5rem;
+    .naw-bg-count, .naw-bg-top { display: none; }
+  }
+}
+
+.naw-bg-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $naw-navy;
+}
+
+.naw-bg-count {
+  font-size: 0.72rem;
+  color: $naw-muted;
+  text-align: center;
+}
+
+.naw-bg-bar-wrap {
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.naw-bg-bar {
+  height: 100%;
+  background: $naw-blue;
+  border-radius: 4px;
+}
+
+.naw-bg-avg {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $naw-navy;
+  text-align: right;
+}
+
+.naw-bg-top {
+  font-size: 0.72rem;
+  color: $naw-muted;
+}
+
+// ─── 연도별 추이 ─────────────────────────────────────────────
+.naw-trend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.naw-trend-row {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr 5rem 5.5rem 5.5rem 10rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 8px;
+
+  &--current {
+    background: $naw-blue-light;
+    border-color: $naw-blue-border;
+
+    .naw-trend-avg { color: $naw-blue; font-size: 1rem; }
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 6rem 1fr 4.5rem 4.5rem;
+    .naw-trend-over, .naw-trend-note { display: none; }
+  }
+}
+
+.naw-trend-year {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: $naw-navy;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.naw-now-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  background: $naw-blue;
+  color: #fff;
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+}
+
+.naw-trend-bar-wrap {
+  background: #f3f4f6;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.naw-trend-bar {
+  height: 100%;
+  background: $naw-blue;
+  border-radius: 4px;
+}
+
+.naw-trend-avg {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: $naw-navy;
+  text-align: right;
+}
+
+.naw-trend-median,
+.naw-trend-over {
+  font-size: 0.72rem;
+  color: $naw-muted;
+}
+
+.naw-trend-note {
+  font-size: 0.72rem;
+  color: $naw-muted;
+}
+
+// ─── 출처 ─────────────────────────────────────────────────────
+.naw-source-list {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.naw-source-card {
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: border-color 0.15s;
+  min-width: 160px;
+
+  strong { font-size: 0.85rem; font-weight: 700; color: $naw-navy; }
+  span { font-size: 0.72rem; color: $naw-muted; }
+
+  &:hover { border-color: $naw-blue; }
+}
+
+// ─── 관련 리포트 ─────────────────────────────────────────────
+.naw-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.naw-related-card {
+  background: $naw-card-bg;
+  border: 1px solid $naw-border;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  strong { font-size: 0.9rem; font-weight: 700; color: $naw-navy; }
+  span { font-size: 0.75rem; color: $naw-muted; }
+
+  &:hover {
+    border-color: $naw-blue;
+    box-shadow: 0 2px 8px rgba($naw-blue, 0.1);
+  }
+}

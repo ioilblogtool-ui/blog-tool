@@ -562,6 +562,13 @@ export const reports: ReportMeta[] = [
     badges: ["KBO", "구단별 연봉", "스포츠", "2026"],
   },
   {
+    slug: "national-assembly-wealth-2026",
+    title: "국회의원 재산 순위 2026 — TOP 30 완전 분석",
+    description: "공직자윤리위원회 2026년 정기 공시 기준 국회의원 재산 TOP 30 순위, 정당별 평균, 직업 배경별 비교, 재산 구성(부동산·주식·예금)을 완전 분석합니다.",
+    order: 37.12,
+    badges: ["국회의원 재산", "공직자 재산", "정당별 비교", "2026"],
+  },
+  {
     slug: "kleague-salary-comparison-2026",
     title: "K리그1 12구단 연봉 비교 2026 — 팀별 총액·에이스·외국인 선수 완전 분석",
     description: "2026년 K리그1 12구단 연봉 총액 순위, 구스타보·나상호·세징야 최고 연봉, 포지션별 평균, KBO 비교까지 구단별로 완전 분석합니다.",
