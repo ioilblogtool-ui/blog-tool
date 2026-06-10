@@ -2,11 +2,48 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import CalculatorHero from "../components/CalculatorHero.astro";
+
+const disclaimerFaq = [
+  {
+    question: "계산 결과와 회사·기관 공지 금액이 다른 이유는 무엇인가요?",
+    answer: "비교계산소의 계산 결과는 입력한 값과 일반적인 공개 기준을 바탕으로 산출한 추정치입니다. 회사별 지급 기준, 개인별 공제 항목, 기관의 세부 운영 지침이 다르면 실제 금액과 차이가 발생할 수 있습니다.",
+  },
+  {
+    question: "정책이나 세율이 바뀌면 계산기에 바로 반영되나요?",
+    answer: "정책, 최저임금, 세율, 지급 상한 등 기준이 바뀌는 항목은 확인되는 대로 업데이트하지만, 시행 시점과 반영 시점 사이에 차이가 있을 수 있습니다. 각 페이지의 기준일 표기를 함께 확인해 주세요.",
+  },
+  {
+    question: "계산 결과를 근거로 손해가 발생하면 책임을 질 수 있나요?",
+    answer: "비교계산소는 참고용 정보를 제공할 뿐 법률·세무·투자 자문을 제공하지 않으며, 계산 결과를 근거로 한 판단이나 행동으로 발생한 손해에 대해 법적 책임을 지지 않습니다. 자세한 내용은 이용약관을 참고해 주세요.",
+  },
+  {
+    question: "추정값과 공식값은 어떻게 구분하나요?",
+    answer: "공식 자료가 있는 항목은 출처를 함께 표시하고, 변동성이 크거나 개인 조건에 따라 달라지는 항목은 '추정' 또는 '참고'로 표시합니다. 표시가 불명확하거나 오해의 소지가 있다면 문의 페이지로 알려주세요.",
+  },
+  {
+    question: "잘못된 계산 결과를 발견하면 어떻게 해야 하나요?",
+    answer: "문의 페이지 또는 이메일로 어떤 페이지에서 어떤 입력값으로 어떤 결과가 나왔는지 알려주시면 확인 후 수정합니다.",
+  },
+];
+
+const disclaimerFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: disclaimerFaq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
 ---
 
 <BaseLayout
   title="이용안내 및 면책 | 비교계산소"
   description="비교계산소 계산 결과의 해석 범위와 이용 시 유의사항을 안내합니다."
+  jsonLd={disclaimerFaqJsonLd}
 >
   <SiteHeader />
 
@@ -60,6 +97,46 @@ import CalculatorHero from "../components/CalculatorHero.astro";
           <p>
             계산 결과 또는 설명 내용과 관련한 오류 제보나 수정 요청은 <a href="/contact/">문의 페이지</a> 또는 이메일을 통해 전달할 수 있습니다.
           </p>
+        </div>
+      </article>
+
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">자주 묻는 질문</p>
+          <h2 class="ip-section__title">이용안내 및 면책 FAQ</h2>
+        </div>
+        <div class="info-faq-list">
+          {disclaimerFaq.map((item, index) => (
+            <details class="info-faq-item" open={index === 0}>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel info-panel info-panel--wide">
+        <div class="ip-section__head">
+          <p class="ip-section__eyebrow">관련 페이지</p>
+          <h2 class="ip-section__title">관련 페이지</h2>
+        </div>
+        <div class="info-link-grid">
+          <a class="info-link-card" href="/terms/">
+            <strong>이용약관</strong>
+            <p>서비스 이용 조건과 계산 결과의 법적 성격을 확인합니다.</p>
+          </a>
+          <a class="info-link-card" href="/privacy/">
+            <strong>개인정보처리방침</strong>
+            <p>비교계산소의 개인정보 처리 기준과 쿠키 사용 안내를 확인합니다.</p>
+          </a>
+          <a class="info-link-card" href="/about/">
+            <strong>사이트 소개</strong>
+            <p>비교계산소의 운영 원칙과 콘텐츠 기준을 확인합니다.</p>
+          </a>
+          <a class="info-link-card" href="/contact/">
+            <strong>문의 안내</strong>
+            <p>계산 오류 제보, 업데이트 요청, 기타 문의를 보낼 수 있습니다.</p>
+          </a>
         </div>
       </article>
     </section>
