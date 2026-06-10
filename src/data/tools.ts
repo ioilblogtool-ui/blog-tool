@@ -582,6 +582,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "income-home-affordability",
+    title: "소득 대비 집값 부담 계산기",
+    description: "연봉과 보유 현금을 입력하면 DSR·LTV 기준 최대 대출 가능액과 적정 매매가, 연봉 대비 집값 배수(PIR), 월 상환 부담률을 계산하는 페이지",
+    order: 14.45,
+    eyebrow: "부동산 계산기",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규"],
+    previewStats: [
+      { label: "적정 매매가", value: "연봉의 약 12배", context: "연봉 6천·현금 1.5억 기준" },
+      { label: "월 상환 부담률", value: "월급의 약 38%" },
+    ],
+  },
+  {
     slug: "mortgage-prepayment-penalty",
     title: "중도상환 수수료 계산기",
     description: "대출 잔여 원금, 수수료율, 잔여 기간을 입력하면 중도상환 수수료와 이자 절감액을 비교해 갚는 게 유리한지 바로 확인합니다.",

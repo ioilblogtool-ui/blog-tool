@@ -1,0 +1,360 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PAGE_META,
+  PRESETS,
+  DSR_OPTIONS,
+  PAGE_FAQ,
+  relatedLinks,
+} from "../../data/incomeHomeAffordability";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title={PAGE_META.title}
+  description={PAGE_META.subtitle}
+  ogImage="/og/tools/income-home-affordability.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "소득 대비 집값 부담 계산기",
+    "url": `${import.meta.env.SITE}/tools/income-home-affordability/`,
+    "description": PAGE_META.subtitle,
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="income-home-affordability" pageClass="iha-page">
+
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="부동산 계산기"
+        title="소득 대비 집값 부담 계산기"
+        description="연봉과 보유 현금을 입력하면 DSR·LTV 기준 최대 대출 가능액과 적정 매매가, 연봉 대비 집값 배수(PIR)를 바로 계산합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetIhaBtn" copyId="copyIhaLinkBtn" />
+    </Fragment>
+
+    <!-- ① 입력 영역 -->
+    <Fragment slot="aside">
+
+      <!-- 프리셋 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 선택</p>
+            <h2 class="panel__title">시나리오 프리셋</h2>
+          </div>
+          <p class="panel-heading__summary">클릭 시 아래 입력값이 자동으로 채워집니다.</p>
+        </div>
+        <div class="iha-presets">
+          {PRESETS.map((preset) => (
+            <button
+              class="iha-preset-btn"
+              type="button"
+              data-preset={JSON.stringify(preset)}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <!-- 연소득 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">소득</p>
+            <h2 class="panel__title">연소득 (세전)</h2>
+          </div>
+        </div>
+        <div class="iha-price-row">
+          <div class="calc-slider-row">
+            <input type="range" id="ihaIncomeSlider" class="calc-slider"
+              min="1000" max="30000" step="100" value="6000" />
+            <span id="ihaIncomeLabel" class="calc-slider-val">6,000만원</span>
+          </div>
+          <div class="iha-price-direct">
+            <input type="number" id="ihaIncomeInput" class="iha-num-input"
+              min="1" max="100000" step="100" value="6000" />
+            <span class="iha-unit">만원</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 보유 현금 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">자산</p>
+            <h2 class="panel__title">보유 현금</h2>
+          </div>
+        </div>
+        <div class="iha-price-row">
+          <div class="calc-slider-row">
+            <input type="range" id="ihaCashSlider" class="calc-slider"
+              min="0" max="200000" step="100" value="15000" />
+            <span id="ihaCashLabel" class="calc-slider-val">1억 5,000만원</span>
+          </div>
+          <div class="iha-price-direct">
+            <input type="number" id="ihaCashInput" class="iha-num-input"
+              min="0" max="10000000" step="100" value="15000" />
+            <span class="iha-unit">만원</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 기존 대출 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기존 부채</p>
+            <h2 class="panel__title">기존 대출 연간 원리금 상환액</h2>
+          </div>
+        </div>
+        <div class="iha-price-direct">
+          <input type="number" id="ihaDebtInput" class="iha-num-input"
+            min="0" max="5000" step="10" value="0" />
+          <span class="iha-unit">만원/년</span>
+        </div>
+      </article>
+
+      <!-- 지역 유형 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">지역 설정</p>
+            <h2 class="panel__title">지역 유형</h2>
+          </div>
+        </div>
+        <div class="iha-radio-group">
+          <label class="iha-radio-row">
+            <input type="radio" name="ihaRegion" value="overheated" />
+            <span class="iha-radio-label">투기과열지구 + 토허제</span>
+            <span class="iha-radio-hint">서울 전역 등 · LTV 50%</span>
+          </label>
+          <label class="iha-radio-row">
+            <input type="radio" name="ihaRegion" value="regulated" checked />
+            <span class="iha-radio-label">조정대상지역</span>
+            <span class="iha-radio-hint">서울·경기 12개 지역 등 · LTV 70%</span>
+          </label>
+          <label class="iha-radio-row">
+            <input type="radio" name="ihaRegion" value="unregulated" />
+            <span class="iha-radio-label">비규제지역</span>
+            <span class="iha-radio-hint">그 외 지역 · LTV 70%</span>
+          </label>
+        </div>
+      </article>
+
+      <!-- 주택 보유 수 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">보유 현황</p>
+            <h2 class="panel__title">현재 주택 보유 수</h2>
+          </div>
+        </div>
+        <div class="iha-radio-group">
+          <label class="iha-radio-row">
+            <input type="radio" name="ihaOwnership" value="none" checked />
+            <span class="iha-radio-label">무주택</span>
+          </label>
+          <label class="iha-radio-row">
+            <input type="radio" name="ihaOwnership" value="one" />
+            <span class="iha-radio-label">1주택</span>
+          </label>
+          <label class="iha-radio-row">
+            <input type="radio" name="ihaOwnership" value="two_plus" />
+            <span class="iha-radio-label">2주택 이상</span>
+          </label>
+        </div>
+      </article>
+
+      <!-- 대출 조건 -->
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">대출 조건</p>
+            <h2 class="panel__title">금리 · 기간 · DSR 한도</h2>
+          </div>
+        </div>
+        <div class="iha-loan-fields">
+          <div class="iha-field">
+            <span class="iha-field__label">연 금리</span>
+            <div class="calc-slider-row">
+              <input type="range" id="ihaRateSlider" class="calc-slider"
+                min="2.0" max="8.0" step="0.1" value="4.0" />
+              <span id="ihaRateLabel" class="calc-slider-val">4.0%</span>
+            </div>
+          </div>
+          <div class="iha-field">
+            <span class="iha-field__label">대출 기간</span>
+            <select id="ihaTerm" class="iha-select">
+              <option value="10">10년</option>
+              <option value="20">20년</option>
+              <option value="30" selected>30년</option>
+              <option value="40">40년</option>
+            </select>
+          </div>
+          <div class="iha-field">
+            <span class="iha-field__label">DSR 한도</span>
+            <select id="ihaDsr" class="iha-select">
+              {DSR_OPTIONS.map((opt) => (
+                <option value={opt.value} selected={opt.value === 0.4}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </article>
+
+    </Fragment>
+
+    <!-- ② KPI 카드 -->
+    <section class="iha-section">
+      <div class="iha-section__head">
+        <p class="iha-section__eyebrow">계산 결과</p>
+        <h2>적정 매매가 요약</h2>
+        <p class="iha-section__sub" id="iha-result-sub">조건을 입력하면 바로 계산됩니다.</p>
+      </div>
+      <div class="iha-kpi-grid">
+        <article class="iha-kpi-card iha-kpi-card--primary">
+          <p>적정 매매가</p>
+          <strong id="iha-affordable-price">-</strong>
+          <span id="iha-affordable-price-note">DSR·LTV·보유현금 기준 추정</span>
+        </article>
+        <article class="iha-kpi-card">
+          <p>DSR 기준 최대 대출 가능액</p>
+          <strong id="iha-max-loan">-</strong>
+          <span id="iha-max-loan-note">스트레스 DSR 1.5%p 가산</span>
+        </article>
+        <article class="iha-kpi-card">
+          <p>연봉 대비 집값 배수 (PIR)</p>
+          <strong id="iha-pir">-</strong>
+          <span id="iha-pir-badge" class="iha-pir-badge">-</span>
+        </article>
+        <article class="iha-kpi-card">
+          <p>월 상환 부담률</p>
+          <strong id="iha-monthly-burden">-</strong>
+          <span id="iha-monthly-burden-note">월급 대비 월 상환액 비율</span>
+        </article>
+      </div>
+      <p class="iha-interpretation" id="iha-interpretation"></p>
+    </section>
+
+    <!-- ③ 지역 유형별 비교표 -->
+    <section class="iha-section">
+      <div class="iha-section__head">
+        <p class="iha-section__eyebrow">지역 비교</p>
+        <h2>지역 유형별 적정 매매가 비교</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="iha-region-table">
+          <thead>
+            <tr>
+              <th>지역 유형</th>
+              <th>적정 매매가</th>
+              <th>최대 대출</th>
+              <th>PIR</th>
+            </tr>
+          </thead>
+          <tbody id="iha-region-tbody">
+            <tr>
+              <td colspan="4" class="iha-empty-row">조건을 입력하면 비교표가 표시됩니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ④ 비용 상세 내역 -->
+    <section class="iha-section">
+      <div class="iha-section__head">
+        <p class="iha-section__eyebrow">비용 내역</p>
+        <h2>적정 매매가 기준 상세 내역</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="iha-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody id="iha-breakdown-tbody">
+            <tr>
+              <td colspan="3" class="iha-empty-row">조건을 입력하면 내역이 표시됩니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ⑤ 내집마련 자금 계산기 CTA -->
+    <section class="iha-section">
+      <div class="iha-cta-box">
+        <p class="iha-cta-box__text">이 매매가 기준으로 필요 현금과 월 상환액을 더 자세히 보고 싶다면?</p>
+        <a id="iha-cta-link" href={withBase("/tools/home-purchase-fund/")} class="iha-cta-box__link">
+          내집마련 자금 계산기에서 계산하기 →
+        </a>
+      </div>
+    </section>
+
+    <!-- ⑥ InfoNotice -->
+    <InfoNotice
+      title="안내"
+      lines={[
+        "이 계산기는 2026년 3월 기준 LTV·DSR·취득세·중개보수 정책을 바탕으로 한 모의계산입니다.",
+        "실제 대출 가능액은 신용평가, 기존 부채, 소득 증빙, 금융기관 정책에 따라 달라질 수 있습니다.",
+        "최종 대출 조건은 반드시 금융기관을 통해 확인하세요.",
+      ]}
+    />
+
+    <!-- ⑦ SeoContent -->
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="소득 대비 집값 부담 계산기를 보는 방법"
+        intro={[
+          "소득 대비 집값 부담 계산기는 연봉과 보유 현금을 입력하면 DSR(총부채원리금상환비율)과 LTV(주택담보대출비율) 기준으로 대출 가능액을 추정하고, 그 한도 안에서 살 수 있는 적정 매매가를 역산해주는 계산기입니다.",
+          "내집마련을 준비할 때 가장 먼저 막히는 질문은 \"내 연봉과 모은 돈으로 어디까지 살 수 있을까\"입니다. 이 계산기는 연소득의 일정 비율(DSR)을 한도로 한 대출 가능액과, 보유 현금에서 취득세·중개보수를 뺀 자기자본을 함께 고려해 적정 매매가를 계산합니다.",
+          "또한 적정 매매가가 연봉의 몇 배인지(PIR)와 월 상환액이 월급에서 차지하는 비율을 함께 보여줘, 단순히 \"대출이 얼마나 나오는가\"를 넘어 \"이 정도 집값이 내 소득 대비 무리한 수준인가\"까지 가늠할 수 있도록 설계했습니다.",
+          "계산 결과로 나온 적정 매매가를 기준으로 실제 필요한 현금과 부대비용을 더 자세히 보고 싶다면 내집마련 자금 계산기로 이어서 확인할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "연소득(세전), 보유 현금, 기존 대출 연간 원리금을 입력하면 DSR 한도 내 최대 대출 가능액이 계산됩니다.",
+          "지역 유형(투기과열+토허제 / 조정대상지역 / 비규제지역)과 주택 보유 수에 따라 LTV·취득세 기준이 자동 적용됩니다.",
+          "대출 금리·기간·DSR 한도(35%/40%/50%)를 조정하면 적정 매매가와 PIR이 즉시 갱신됩니다.",
+        ]}
+        criteria={[
+          "DSR 기본 한도는 40%이며, 스트레스 DSR 가산금리 1.5%p를 반영해 보수적으로 계산합니다.",
+          "LTV·정책상 대출 한도·취득세·중개보수 기준은 내집마련 자금 계산기와 동일한 2026년 3월 기준 정책 참고값을 사용합니다.",
+          "PIR(연봉 대비 집값 배수) 구간은 5배 미만(낮음), 5~8배(보통), 8~12배(높음), 12배 이상(매우 높음)으로 구분한 일반적 해석 기준입니다.",
+        ]}
+        faq={PAGE_FAQ}
+        related={relatedLinks}
+      />
+    </Fragment>
+
+  </SimpleToolShell>
+
+  <script id="ihaConfig" type="application/json" set:html={JSON.stringify({ PRESETS })}></script>
+  <script type="module" src={withBase("/scripts/income-home-affordability.js")}></script>
+</BaseLayout>

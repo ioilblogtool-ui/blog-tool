@@ -1,0 +1,384 @@
+// ── 소득 대비 집값 부담 계산기 페이지 스타일 (prefix: iha-) ─────────────────────
+
+.iha-section {
+  margin-bottom: 32px;
+}
+
+.iha-section__head {
+  margin-bottom: 14px;
+
+  h2 {
+    font-size: 17px;
+    font-weight: 500;
+    color: #1A1A18;
+    margin: 0;
+  }
+}
+
+.iha-section__eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: #0F6E56;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+}
+
+.iha-section__sub {
+  font-size: 12px;
+  color: #888780;
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+// ── 프리셋 ────────────────────────────────────────────────────────────────────
+.iha-presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.iha-preset-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #E0DFDB;
+  background: #FFFFFF;
+  font-size: 12px;
+  color: #5F5E5A;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: #0F6E56;
+    color: #0F6E56;
+  }
+
+  &.is-active {
+    background: #0F6E56;
+    border-color: #0F6E56;
+    color: #FFFFFF;
+    font-weight: 500;
+  }
+}
+
+// ── 가격 입력 행 ──────────────────────────────────────────────────────────────
+.iha-price-row {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.iha-price-direct {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.iha-num-input {
+  width: 100px;
+  padding: 5px 8px;
+  border: 1px solid #E0DFDB;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: right;
+  color: #1A1A18;
+
+  &:focus {
+    outline: none;
+    border-color: #0F6E56;
+  }
+}
+
+.iha-unit {
+  font-size: 12px;
+  color: #888780;
+}
+
+// ── 라디오 그룹 ───────────────────────────────────────────────────────────────
+.iha-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.iha-radio-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:has(input:checked) {
+    border-color: #0F6E56;
+    background: #F5FBF8;
+  }
+
+  &:hover {
+    border-color: #0F6E56;
+  }
+}
+
+.iha-radio-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A1A18;
+  flex: 1;
+}
+
+.iha-radio-hint {
+  font-size: 10px;
+  color: #888780;
+}
+
+// ── 대출 조건 입력 ────────────────────────────────────────────────────────────
+.iha-loan-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.iha-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.iha-field__label {
+  font-size: 12px;
+  color: #5F5E5A;
+  font-weight: 500;
+}
+
+.iha-select {
+  padding: 6px 10px;
+  border: 1px solid #E0DFDB;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1A1A18;
+  background: #FFFFFF;
+  width: fit-content;
+
+  &:focus {
+    outline: none;
+    border-color: #0F6E56;
+  }
+}
+
+// ── KPI 카드 그리드 ───────────────────────────────────────────────────────────
+.iha-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.iha-kpi-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 10px;
+    color: #B4B2A9;
+    line-height: 1.4;
+  }
+}
+
+.iha-kpi-card--primary {
+  background: #E1F5EE;
+
+  p {
+    color: #5F5E5A;
+  }
+
+  strong {
+    font-size: 18px;
+    color: #0F6E56;
+  }
+
+  span {
+    color: #1D9E75;
+  }
+}
+
+// ── PIR 부담 배지 ─────────────────────────────────────────────────────────────
+.iha-pir-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px !important;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.iha-pir-badge--positive {
+  background: #F6FFED;
+  color: #389E0D !important;
+}
+
+.iha-pir-badge--neutral {
+  background: #F7F6F4;
+  color: #5F5E5A !important;
+}
+
+.iha-pir-badge--warning {
+  background: #FFF7E6;
+  color: #D46B08 !important;
+}
+
+.iha-pir-badge--negative {
+  background: #FFF1F0;
+  color: #CF1322 !important;
+}
+
+// ── 결과 해석 문구 ────────────────────────────────────────────────────────────
+.iha-interpretation {
+  margin: 14px 0 0;
+  padding: 14px 16px;
+  background: #F7F6F4;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #5F5E5A;
+  line-height: 1.7;
+}
+
+// ── 지역 유형별 비교표 ────────────────────────────────────────────────────────
+.iha-region-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #888780;
+    border-bottom: 1px solid #E0DFDB;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 10px;
+    border-bottom: 1px solid #F0EFED;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.iha-region-table__row--active {
+  td {
+    background: #F5FBF8;
+    font-weight: 500;
+    color: #0F6E56;
+  }
+}
+
+// ── 상세 내역 테이블 ──────────────────────────────────────────────────────────
+.iha-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #888780;
+    border-bottom: 1px solid #E0DFDB;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 10px;
+    border-bottom: 1px solid #F0EFED;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.iha-row--total {
+  td {
+    background: #F5FBF8;
+    font-weight: 500;
+    color: #0F6E56;
+  }
+}
+
+.iha-empty-row {
+  text-align: center;
+  color: #B4B2A9;
+  padding: 20px;
+  font-size: 12px;
+}
+
+// ── 내집마련 자금 계산기 CTA ──────────────────────────────────────────────────
+.iha-cta-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px;
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  background: #F7F6F4;
+}
+
+.iha-cta-box__text {
+  font-size: 13px;
+  color: #5F5E5A;
+  margin: 0;
+  flex: 1;
+  min-width: 200px;
+}
+
+.iha-cta-box__link {
+  font-size: 13px;
+  color: #FFFFFF;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  background: #0F6E56;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #0B5544;
+  }
+}
