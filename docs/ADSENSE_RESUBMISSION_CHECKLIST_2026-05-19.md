@@ -121,18 +121,18 @@ rg -n "Privacy|Collection|About|준비 중|링크 준비|TODO|FIXME|인터랙티
 
 | 우선순위 | URL | 유형 | 상태 | 필수 보강 | 메모 |
 |---:|---|---|---|---|---|
-| 1 | `/` | 홈 허브 | `대기` | 운영 기준 요약, 대표 경로, 신뢰 링크 | 첫 인상 |
-| 2 | `/tools/` | 계산기 허브 | `대기` | 카테고리 설명, 선택 가이드, 중복 문구 정리 | 단순 목록 위험 |
-| 3 | `/reports/` | 리포트 허브 | `대기` | 주제별 큐레이션, 고유 설명, 반복 CTA 정리 | 리포트 신뢰 |
-| 4 | `/about/` | 신뢰 페이지 | `대기` | 운영자/검수/데이터 기준 | Phase 1과 중복 관리 |
-| 5 | `/tools/national-pension-calculator/` | 정책형 계산기 | `대기` | 기준일, 결과 해석, 예시, FAQ | 검색 수요 큼 |
-| 6 | `/tools/parental-leave/` | 정책형 계산기 | `대기` | 제도 조건, 예시, FAQ | 육아휴직 핵심 |
-| 7 | `/tools/parental-leave-pay/` | 정책형 계산기 | `대기` | 상한/하한, 산식, 예시 | 정책 설명 필요 |
-| 8 | `/tools/salary/` | 급여형 계산기 | `대기` | 공제 기준, 실수령 해석, 예시 | 대표 계산기 |
-| 9 | `/tools/formula-cost/` | 육아비 계산기 | `대기` | 월령별 기준, 예시, FAQ | 분유 리포트와 연결 |
-| 10 | `/tools/diaper-cost/` | 육아비 계산기 | `대기` | 사용량 가정, 브랜드 차이, 예시 | 육아 카테고리 강화 |
-| 11 | `/reports/baby-cost-guide-first-year/` | 육아 리포트 | `대기` | 출처/기준일, 내부 링크 강화 | 대표 육아 리포트 |
-| 12 | `/reports/baby-formula-brand-cost-comparison-2026/` | 육아 리포트 | `검수필요` | 미완성 문구 제거, 카드/본문 계층 정리, 링크 검수 | 2026-05-19 디자인 보강 진행 |
+| 1 | `/` | 홈 허브 | `완료` | 운영 기준 요약, 대표 경로, 신뢰 링크 | 12개 섹션(소개/추천/비교/여정/기준/FAQ/이용안내) 이미 구성됨 |
+| 2 | `/tools/` | 계산기 허브 | `완료` | 카테고리 설명, 선택 가이드, 중복 문구 정리 | 주제별 가이드, 결과 해석 기준, FAQ, 운영기준 링크 섹션 확인 |
+| 3 | `/reports/` | 리포트 허브 | `완료` | 주제별 큐레이션, 고유 설명, 반복 CTA 정리 | 시리즈별(정치/급여/보너스/생활 등) 큐레이션 + 추천 섹션 확인 |
+| 4 | `/about/` | 신뢰 페이지 | `완료` | 운영자/검수/데이터 기준 | Phase 1에서 완료 (FAQ 10개 + JSON-LD) |
+| 5 | `/tools/national-pension-calculator/` | 정책형 계산기 | `완료` | 기준일, 결과 해석, 예시, FAQ | intro 2문단, 기준일·예시 2개, FAQ 5개, 관련링크 확인 |
+| 6 | `/tools/parental-leave/` | 정책형 계산기 | `완료` | 제도 조건, 예시, FAQ | intro 4문단, criteria 3, FAQ 3, 관련링크 3 확인 |
+| 7 | `/tools/parental-leave-pay/` | 정책형 계산기 | `완료` | 상한/하한, 산식, 예시 | intro 2문단, 구간별 상한 설명, FAQ 3, 관련링크 3 확인 |
+| 8 | `/tools/salary/` | 급여형 계산기 | `완료` | 공제 기준, 실수령 해석, 예시 | intro 2문단, criteria 3, FAQ 3, 관련링크 4 확인 |
+| 9 | `/tools/formula-cost/` | 육아비 계산기 | `완료` | 월령별 기준, 예시, FAQ | introTitle/criteria/FAQ/관련링크 데이터 기반 구성 확인 |
+| 10 | `/tools/diaper-cost/` | 육아비 계산기 | `완료` | 사용량 가정, 브랜드 차이, 예시 | introTitle/criteria/FAQ/관련링크 데이터 기반 구성 확인 |
+| 11 | `/reports/baby-cost-guide-first-year/` | 육아 리포트 | `완료` | 출처/기준일, 내부 링크 강화 | intro 3문단, FAQ 10개, 관련링크 6개 확인 |
+| 12 | `/reports/baby-formula-brand-cost-comparison-2026/` | 육아 리포트 | `완료` | 미완성 문구 제거, 카드/본문 계층 정리, 링크 검수 | "준비 중/TODO/확인 필요" 미완성 문구 검색 결과 없음, FAQ·관련링크 확인 |
 
 ### 대표 페이지 공통 완료 기준
 - [ ] 도입 2문단 이상
@@ -165,11 +165,11 @@ rg -n "Privacy|Collection|About|준비 중|링크 준비|TODO|FIXME|인터랙티
 
 재심사 요청 전 아래 항목은 모두 `완료`여야 한다.
 
-- [ ] Phase 0 기술/소유권 항목 완료
-- [ ] Phase 1 정책/신뢰 페이지 완료
-- [ ] Phase 2 미완성/저가치 신호 제거 완료
-- [ ] Phase 3 대표 페이지 최소 10개 보강 완료
-- [ ] `npm run build` 성공
+- [ ] Phase 0 기술/소유권 항목 완료 (T0-1, T0-3 AdSense/Search Console 콘솔 확인 남음)
+- [x] Phase 1 정책/신뢰 페이지 완료 (2026-06-10)
+- [ ] Phase 2 미완성/저가치 신호 제거 완료 (P2-4, P2-5, P2-6 대기)
+- [x] Phase 3 대표 페이지 최소 10개 보강 완료 (2026-06-10, 12개 점검)
+- [x] `npm run build` 성공 (214 page)
 - [ ] 프로덕션 주요 URL 200 확인
 - [ ] AdSense 계정에서 사이트 소유권 관련 경고 해소 확인
 
@@ -182,6 +182,7 @@ rg -n "Privacy|Collection|About|준비 중|링크 준비|TODO|FIXME|인터랙티
 | 2026-05-19 | Phase 0/2 1차 점검 | `검수필요` | AdSense 코드, `ads.txt`, robots, canonical 확인. sitemap 미배포 후보와 준비 중 문구 정리. AdSense/Search Console 콘솔 확인은 남음 |
 | 2026-05-19 | Phase 1 정책/신뢰 페이지 1차 정리 | `검수필요` | `/about/`, `/privacy/`, `/terms/`, `/disclaimer/`, `/contact/` 영어 노출 레이블 제거, 개인정보처리방침 기본 정보 보강 |
 | 2026-06-10 | Phase 1 완료 | `완료` | `/disclaimer/`, `/contact/`에 FAQ(JSON-LD)와 관련 페이지 섹션 추가. 5개 정책 페이지 모두 About/Terms 수준으로 통일. `npm run build` 성공(214 page) |
+| 2026-06-10 | Phase 3 점검 완료 | `완료` | 대표 페이지 12개 전수 점검: 홈/tools/reports 허브는 이미 다수 섹션(가이드·비교·FAQ·운영기준)으로 구성되어 있고, 정책형 계산기 6개와 육아 리포트 2개 모두 intro 2문단+/FAQ 3개+/관련링크 3개+ 충족 확인. 미완성 문구 검색 결과 없음 |
 
 ## 다음 작업
 
