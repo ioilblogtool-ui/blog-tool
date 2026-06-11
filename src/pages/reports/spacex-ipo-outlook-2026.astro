@@ -1,0 +1,310 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SPX_META,
+  SPX_KPI,
+  SPX_PROFILE,
+  SPX_VALUATION_TIMELINE,
+  SPX_SHAREHOLDERS,
+  SPX_REVENUE_MIX,
+  SPX_IPO_OUTLOOK,
+  SPX_KOREA_ACCESS,
+  SPX_FAQ,
+  SPX_RELATED_LINKS,
+} from "../../data/spacexIpoOutlook";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SPX_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmtUsdB = (usd: number) => `$${(usd / 1_000_000_000).toFixed(usd >= 1_000_000_000 ? 0 : 1)}B`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SPX_META.title,
+    description: SPX_META.description,
+    dateModified: SPX_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SPX_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SPX_META.title, item: reportUrl },
+    ],
+  },
+];
+
+const maxValuation = Math.max(...SPX_VALUATION_TIMELINE.map((v) => v.valuationUsd));
+const confidenceClass: Record<string, string> = {
+  "낮음": "spx-confidence--low",
+  "중간": "spx-confidence--mid",
+  "참고": "spx-confidence--ref",
+};
+---
+
+<BaseLayout title={SPX_META.seoTitle} description={SPX_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page spx-page" data-report="spacex-ipo-outlook-2026">
+
+    <CalculatorHero
+      eyebrow="우주산업 · 비상장주식 리포트"
+      title={SPX_META.title}
+      description="세계에서 가장 가치 높은 비상장 기업, 스페이스X. 기업가치 추이와 주주 구성, 상장설을 둘러싼 루머, 그리고 한국 투자자가 실제로 접근 가능한 방법까지 정리합니다."
+      badges={["스페이스X", "IPO", "비상장주식", "Starlink", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[SPX_META.dataNote]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section spx-kpi-section">
+      <div class="spx-kpi-grid">
+        <article class="spx-kpi-card spx-kpi-card--main">
+          <span class="spx-kpi-label">설립</span>
+          <strong class="spx-kpi-value">{SPX_KPI.foundedYear}년</strong>
+          <small>일론 머스크 설립</small>
+        </article>
+        <article class="spx-kpi-card spx-kpi-card--main">
+          <span class="spx-kpi-label">최근 추정 기업가치</span>
+          <strong class="spx-kpi-value">{fmtUsdB(SPX_KPI.latestValuationUsd)}</strong>
+          <small>2025년 텐더오퍼 보도 기준 추정</small>
+        </article>
+        <article class="spx-kpi-card">
+          <span class="spx-kpi-label">머스크 지분율</span>
+          <strong class="spx-kpi-value">~{SPX_KPI.founderStakePct}%</strong>
+          <small>추정 · 의결권은 이보다 높을 것으로 추정</small>
+        </article>
+        <article class="spx-kpi-card">
+          <span class="spx-kpi-label">2024 추정 매출</span>
+          <strong class="spx-kpi-value">{fmtUsdB(SPX_KPI.estRevenue2024Usd)}</strong>
+          <small>Starlink + 발사 서비스 합산 추정</small>
+        </article>
+        <article class="spx-kpi-card">
+          <span class="spx-kpi-label">Starlink 가입자</span>
+          <strong class="spx-kpi-value">~{(SPX_KPI.starlinkSubscribers / 1_000_000).toFixed(0)}백만</strong>
+          <small>2025년 기준 추정</small>
+        </article>
+        <article class="spx-kpi-card">
+          <span class="spx-kpi-label">직원 수</span>
+          <strong class="spx-kpi-value">~{SPX_KPI.employeeCount.toLocaleString()}명</strong>
+          <small>추정</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 회사 프로필 -->
+    <section class="content-section spx-profile-section" aria-labelledby="spx-profile-title">
+      <div class="spx-section-heading">
+        <p>회사 프로필</p>
+        <h2 id="spx-profile-title">스페이스X는 어떤 회사인가</h2>
+        <span>발사체부터 위성 인터넷까지, 우주산업 전 영역을 아우르는 비상장 기업.</span>
+      </div>
+      <div class="spx-profile-box">
+        <div class="spx-profile-meta">
+          <div class="spx-profile-row"><span>정식 명칭</span><strong>{SPX_PROFILE.fullName}</strong></div>
+          <div class="spx-profile-row"><span>설립자</span><strong>{SPX_PROFILE.founder}</strong></div>
+          <div class="spx-profile-row"><span>설립</span><strong>{SPX_PROFILE.founded}</strong></div>
+          <div class="spx-profile-row"><span>본사</span><strong>{SPX_PROFILE.headquarters}</strong></div>
+          <div class="spx-profile-row"><span>경영진</span><strong>{SPX_PROFILE.ceo}</strong></div>
+          <div class="spx-profile-row"><span>상장 상태</span><strong>{SPX_PROFILE.status}</strong></div>
+        </div>
+        <div class="spx-profile-units">
+          <p class="spx-profile-sub">주요 사업부</p>
+          <div class="spx-unit-grid">
+            {SPX_PROFILE.businessUnits.map((u) => (
+              <div class="spx-unit-card">
+                <strong>{u.name}</strong>
+                <p>{u.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 밸류에이션 추이 -->
+    <section class="content-section spx-valuation-section" aria-labelledby="spx-valuation-title">
+      <div class="spx-section-heading">
+        <p>기업가치 추이</p>
+        <h2 id="spx-valuation-title">2002년 1억 달러 → 2025년 4,000억 달러 추정</h2>
+        <span>텐더오퍼·투자라운드 보도를 기준으로 한 추정 기업가치 변화입니다.</span>
+      </div>
+      <div class="spx-valuation-list">
+        {SPX_VALUATION_TIMELINE.map((v) => (
+          <div class="spx-valuation-row">
+            <div class="spx-valuation-meta">
+              <span class="spx-valuation-year">{v.year}</span>
+              <strong class="spx-valuation-label">{v.label}</strong>
+            </div>
+            <div class="spx-valuation-bar-track">
+              <div
+                class="spx-valuation-bar"
+                style={`width: ${Math.max((v.valuationUsd / maxValuation) * 100, 3)}%`}
+              />
+              <span class="spx-valuation-amount">{fmtUsdB(v.valuationUsd)}</span>
+            </div>
+            <p class="spx-valuation-note">{v.note}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 주주 구성 -->
+    <section class="content-section spx-shareholder-section" aria-labelledby="spx-shareholder-title">
+      <div class="spx-section-heading">
+        <p>주주 구성</p>
+        <h2 id="spx-shareholder-title">머스크 ~42% vs 기관투자자 ~48% (추정)</h2>
+        <span>차등의결권 구조로 인해 지분율과 실제 의결권은 다를 수 있습니다.</span>
+      </div>
+      <div class="spx-shareholder-list">
+        {SPX_SHAREHOLDERS.map((s) => (
+          <div class:list={["spx-shareholder-row", `spx-shareholder-row--${s.type}`]}>
+            <div class="spx-shareholder-meta">
+              <strong>{s.name}</strong>
+              <span class="spx-shareholder-pct">{s.sharePct}%</span>
+            </div>
+            <div class="spx-shareholder-bar-track">
+              <div class="spx-shareholder-bar" style={`width: ${s.sharePct}%`} />
+            </div>
+            <p class="spx-shareholder-note">{s.note}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 매출 구조 -->
+    <section class="content-section spx-revenue-section" aria-labelledby="spx-revenue-title">
+      <div class="spx-section-heading">
+        <p>매출 구조</p>
+        <h2 id="spx-revenue-title">Starlink, 발사 서비스 매출을 추월하다</h2>
+        <span>2024년 기준 추정 매출 비중입니다.</span>
+      </div>
+      <div class="spx-revenue-grid">
+        {SPX_REVENUE_MIX.map((r) => (
+          <article class="spx-revenue-card">
+            <div class="spx-revenue-header">
+              <strong>{r.segment}</strong>
+              <span class="spx-revenue-pct">{r.pct}%</span>
+            </div>
+            <div class="spx-revenue-bar-track">
+              <div class="spx-revenue-bar" style={`width: ${r.pct}%`} />
+            </div>
+            <p class="spx-revenue-amount">{r.amountLabel}</p>
+            <p class="spx-revenue-note">{r.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- IPO 전망 -->
+    <section class="content-section spx-ipo-section" aria-labelledby="spx-ipo-title">
+      <div class="spx-section-heading">
+        <p>IPO 전망 (추정·루머)</p>
+        <h2 id="spx-ipo-title">스페이스X는 언제 상장할까</h2>
+        <span>모두 공식 발표가 아닌 발언·전망·추정입니다.</span>
+      </div>
+      <div class="spx-ipo-list">
+        {SPX_IPO_OUTLOOK.map((item) => (
+          <article class="spx-ipo-card">
+            <div class="spx-ipo-header">
+              <span class="spx-ipo-date">{item.date}</span>
+              <span class:list={["spx-confidence-badge", confidenceClass[item.confidence]]}>
+                신뢰도: {item.confidence}
+              </span>
+            </div>
+            <strong class="spx-ipo-title-text">{item.title}</strong>
+            <p>{item.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 국내 투자자 접근 방법 -->
+    <section class="content-section spx-access-section" aria-labelledby="spx-access-title">
+      <div class="spx-section-heading">
+        <p>국내 투자자 접근 방법</p>
+        <h2 id="spx-access-title">한국에서 스페이스X에 투자하려면</h2>
+        <span>직접 투자는 사실상 어렵지만, 간접적인 노출 방법은 존재합니다.</span>
+      </div>
+      <div class="spx-access-list">
+        {SPX_KOREA_ACCESS.map((a) => (
+          <article class="spx-access-card">
+            <strong class="spx-access-title">{a.method}</strong>
+            <p class="spx-access-desc">{a.description}</p>
+            <div class="spx-access-cols">
+              <div class="spx-access-col spx-access-col--pros">
+                <p class="spx-access-col-label">장점</p>
+                <ul>{a.pros.map((p) => <li>{p}</li>)}</ul>
+              </div>
+              <div class="spx-access-col spx-access-col--cons">
+                <p class="spx-access-col-label">유의점</p>
+                <ul>{a.cons.map((c) => <li>{c}</li>)}</ul>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 리포트 -->
+    <section class="content-section spx-related-section" aria-labelledby="spx-related-title">
+      <div class="spx-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="spx-related-title">함께 보면 좋은 리포트</h2>
+      </div>
+      <div class="spx-related-grid">
+        {SPX_RELATED_LINKS.map((link) => (
+          <a class="spx-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="스페이스X 상장(IPO) 자주 묻는 질문"
+      intro={[
+        SPX_META.dataNote,
+        "스페이스X는 2002년 일론 머스크가 설립한 비상장 우주기업으로, 2025년 기준 약 4,000억 달러 안팎의 기업가치로 평가받는 것으로 보도됩니다.",
+      ]}
+      inputPoints={[
+        "스페이스X의 기업가치 추이와 주주 구성 추정치를 확인할 수 있습니다.",
+        "Starlink 분리 상장 등 IPO를 둘러싼 발언과 전망을 신뢰도와 함께 정리합니다.",
+        "한국 투자자가 실제로 활용 가능한 간접 투자 방법(ETF·펀드·관련주)을 비교합니다.",
+      ]}
+      criteria={[
+        "기업가치: 직원 대상 텐더오퍼 및 투자라운드 관련 언론 보도 기준 추정",
+        "주주 구성·매출 구조: 공개 인터뷰 및 보도 자료 기반 추정치",
+        "IPO 전망: 공식 발표 없음 — 발언·외부 전망을 신뢰도와 함께 표기",
+      ]}
+      faq={SPX_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={SPX_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

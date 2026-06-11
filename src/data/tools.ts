@@ -207,6 +207,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "couple-salary-rank-calculator",
+    title: "맞벌이 부부 가구소득 계산기",
+    description: "본인과 배우자가 다니는 대기업을 고르면 합산 연봉, 가구소득 전국 순위, 생활비 차감 후 잉여자금을 계산하는 페이지",
+    order: 2.5,
+    eyebrow: "맞벌이 가구소득",
+    category: "compare",
+    iframeReady: true,
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "예시 합산 연봉", value: "1억 7,500만" },
+      { label: "가구소득 위치", value: "전국 상위 10%대" }
+    ]
+  },
+  {
     slug: "diaper-cost",
     title: "아기 기저귀 값 계산기",
     description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 하기스·팸퍼스·보솜이 등 브랜드별 총비용을 비교하는 페이지",

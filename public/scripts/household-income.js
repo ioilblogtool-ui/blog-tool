@@ -1,5 +1,6 @@
 ﻿import { formatKRW, buildDefaultOptions, makeLabelPlugin } from "./chart-config.js";
 import { readParam, readBool, writeParams } from "./url-state.js";
+import { estimateEarnedTakeHome as estimateEarnedTakeHomeShared, estimateOtherTakeHome as estimateOtherTakeHomeShared } from "./income-estimate.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -90,33 +91,11 @@ function estimateEarnedTakeHome(annualAmount) {
   const deductionPreset = deductionPresetMap[deductionPresetSelect.value] || deductionPresets[1];
   const dependents = Math.max(0, toNumber(dependentsInput));
 
-  const monthlyGross = annualAmount / 12;
-  const nonTaxableMonthly = includeNonTaxable ? Math.min(200000, monthlyGross * 0.04) : 0;
-  const taxableMonthly = Math.max(0, monthlyGross - nonTaxableMonthly);
-  const pension = Math.min(taxableMonthly * 0.045, 280000);
-  const health = taxableMonthly * 0.03545;
-  const longTermCare = health * 0.1295;
-  const employment = taxableMonthly * 0.009;
-  const annualDeduction = deductionPreset.baseDeduction + (deductionPreset.dependentDeduction * dependents);
-  const annualTaxableApprox = Math.max(0, taxableMonthly * 12 - annualDeduction);
-
-  let incomeTaxRate = 0.06;
-  if (annualTaxableApprox >= 30000000 && annualTaxableApprox < 50000000) incomeTaxRate = 0.1;
-  else if (annualTaxableApprox >= 50000000 && annualTaxableApprox < 70000000) incomeTaxRate = 0.14;
-  else if (annualTaxableApprox >= 70000000 && annualTaxableApprox < 100000000) incomeTaxRate = 0.17;
-  else if (annualTaxableApprox >= 100000000 && annualTaxableApprox < 140000000) incomeTaxRate = 0.2;
-  else if (annualTaxableApprox >= 140000000) incomeTaxRate = 0.24;
-
-  const incomeTax = taxableMonthly * incomeTaxRate;
-  const localIncomeTax = incomeTax * 0.1;
-  const deductions = pension + health + longTermCare + employment + incomeTax + localIncomeTax;
-
-  return Math.max(0, (monthlyGross - deductions) * 12);
+  return estimateEarnedTakeHomeShared(annualAmount, { includeNonTaxable, dependents, deductionPreset });
 }
 
 function estimateOtherTakeHome(otherAnnualComp) {
-  if (otherAnnualComp <= 0) return 0;
-  return otherAnnualComp * (isChecked(includeNonTaxableToggle) ? 0.96 : 0.9);
+  return estimateOtherTakeHomeShared(otherAnnualComp, isChecked(includeNonTaxableToggle));
 }
 
 function getHouseholdBand(annualGross) {

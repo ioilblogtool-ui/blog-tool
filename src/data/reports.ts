@@ -743,4 +743,18 @@ export const reports: ReportMeta[] = [
     order: 51,
     badges: ["대출", "직장인", "금융", "2026"],
   },
+  {
+    slug: "spacex-ipo-outlook-2026",
+    title: "스페이스X 상장(IPO) 전망 정리 리포트",
+    description: "비상장 기업 스페이스X의 추정 기업가치 추이, 주주 구성, IPO 일정 전망과 한국 투자자가 실제로 접근 가능한 간접 투자 방법을 정리합니다.",
+    order: 52,
+    badges: ["스페이스X", "IPO", "비상장주식", "2026"],
+  },
+  {
+    slug: "us-major-ipo-outlook-2026",
+    title: "2026 미국 대형 IPO 전망 리포트",
+    description: "오픈AI, 앤트로픽, 스페이스X, 스트라이프, 데이터브릭스 등 미국 대형 비상장 기업의 추정 기업가치, 사업 개요, IPO 추진 현황을 비교합니다.",
+    order: 53,
+    badges: ["미국 증시", "기업공개", "비상장기업", "2026"],
+  },
 ];

@@ -1,0 +1,360 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CSR_COMPANY_OPTIONS,
+  CSR_FAQ,
+  CSR_RELATED_LINKS,
+  COUPLE_LIVING_COST_SCENARIOS,
+  INCOME_PERCENTILE_TABLE,
+  POPULAR_COMBOS,
+  CAT_LABEL,
+  averageHouseholdIncome,
+  householdSizeOptions,
+} from "../../data/coupleSalaryRankCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const companiesByCategory = Object.entries(CAT_LABEL).map(([cat, label]) => ({
+  cat,
+  label,
+  companies: CSR_COMPANY_OPTIONS.filter((c) => c.cat === cat),
+}));
+
+const coupleHouseholdMedianMonthly =
+  householdSizeOptions.find((item) => item.code === "2")?.medianMonthlyIncome ?? 4199292;
+
+const config = {
+  companies: CSR_COMPANY_OPTIONS.map((c) => ({ name: c.name, sal: c.sal, cat: c.cat, tier: c.tier })),
+  livingCostScenarios: COUPLE_LIVING_COST_SCENARIOS,
+  percentileTable: INCOME_PERCENTILE_TABLE,
+  combos: POPULAR_COMBOS,
+  catLabel: CAT_LABEL,
+  averageHouseholdIncome,
+  coupleHouseholdMedianMonthly,
+};
+---
+
+<BaseLayout
+  title="맞벌이 부부 가구소득 계산기 | 대기업 연봉으로 보는 우리집 순위 2026"
+  description="본인과 배우자가 다니는 대기업을 고르면 합산 연봉, 가구소득 전국 순위, 생활비 차감 후 잉여자금을 바로 계산합니다."
+  ogImage="/og/tools/couple-salary-rank-calculator.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "맞벌이 부부 가구소득 계산기",
+    "url": `${import.meta.env.SITE}/tools/couple-salary-rank-calculator/`,
+    "description": "본인과 배우자가 다니는 대기업을 고르면 합산 연봉, 가구소득 전국 순위, 생활비 차감 후 잉여자금을 계산하는 페이지",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="couple-salary-rank-calculator" pageClass="couple-salary-rank-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="재미로 보는 가구소득"
+        title="맞벌이 부부 가구소득 계산기"
+        description="본인과 배우자의 회사를 고르면 합산 연봉, 가구소득 전국 상위 %, 생활비를 뺀 월 잉여자금을 바로 보여줍니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetCsrBtn" copyId="copyCsrLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="csr-inputs">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">우리 부부 직장 선택</h2>
+            </div>
+            <p class="panel-heading__summary">기업을 선택하면 평균 연봉이 자동으로 채워집니다. 슬라이더로 직접 조정할 수 있습니다.</p>
+          </div>
+
+          <div class="form-cluster form-cluster--nested">
+            <div class="form-cluster__header">
+              <strong>본인</strong>
+              <span>다니는 회사를 선택하세요.</span>
+            </div>
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>본인 직장</span>
+                <select id="myCompanySelect">
+                  {companiesByCategory.map((group) => (
+                    <optgroup label={group.label}>
+                      {group.companies.map((c) => (
+                        <option value={c.name} data-sal={c.sal} selected={c.name === "SK텔레콤"}>
+                          {c.name} ({c.sal.toLocaleString("ko-KR")}만원)
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+              <label class="field field-span-full">
+                <span>본인 연봉(세전, 만원)</span>
+                <input id="mySalaryInput" type="number" value="8000" min="0" max="30000" step="100" />
+                <div class="calc-slider-row">
+                  <input type="range" id="mySalarySlider" class="calc-slider" min="3000" max="20000" step="100" value="8000" />
+                  <span id="mySalarySliderVal" class="calc-slider-val">8,000만원</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-cluster form-cluster--nested">
+            <div class="form-cluster__header">
+              <strong>배우자</strong>
+              <span>외벌이라면 "배우자 소득 없음"을 선택하세요.</span>
+            </div>
+            <div class="form-grid form-grid--compact">
+              <div class="field field-span-full csr-spouse-mode">
+                <span>배우자 소득</span>
+                <div class="csr-radio-row">
+                  <label class="csr-radio">
+                    <input type="radio" name="spouseMode" id="spouseModeCompany" value="COMPANY" checked />
+                    <span>맞벌이 (직장 선택)</span>
+                  </label>
+                  <label class="csr-radio">
+                    <input type="radio" name="spouseMode" id="spouseModeNone" value="NONE" />
+                    <span>외벌이 (배우자 소득 없음)</span>
+                  </label>
+                </div>
+              </div>
+              <label class="field field-span-full" id="spouseCompanyField">
+                <span>배우자 직장</span>
+                <select id="spouseCompanySelect">
+                  {companiesByCategory.map((group) => (
+                    <optgroup label={group.label}>
+                      {group.companies.map((c) => (
+                        <option value={c.name} data-sal={c.sal} selected={c.name === "현대자동차"}>
+                          {c.name} ({c.sal.toLocaleString("ko-KR")}만원)
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+              <label class="field field-span-full" id="spouseSalaryField">
+                <span>배우자 연봉(세전, 만원)</span>
+                <input id="spouseSalaryInput" type="number" value="9500" min="0" max="30000" step="100" />
+                <div class="calc-slider-row">
+                  <input type="range" id="spouseSalarySlider" class="calc-slider" min="3000" max="20000" step="100" value="9500" />
+                  <span id="spouseSalarySliderVal" class="calc-slider-val">9,500만원</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-cluster form-cluster--nested">
+            <div class="form-cluster__header">
+              <strong>생활비 시나리오</strong>
+              <span>2인 가구 평균 생활비를 기준으로 잉여자금을 계산합니다.</span>
+            </div>
+            <div class="csr-tab-row" id="livingCostTabs">
+              {COUPLE_LIVING_COST_SCENARIOS.map((s) => (
+                <button type="button" class="csr-tab" data-scenario={s.code} aria-pressed={s.code === "AVERAGE"}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
+            <p class="csr-tab-desc" id="livingCostDesc"></p>
+          </div>
+
+          <button id="calcCsrBtn" class="button button--primary" type="button">가구소득 계산하기</button>
+        </article>
+      </div>
+    </Fragment>
+
+    <article class="panel result-priority-panel" id="csr-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+          <h2 class="panel__title" id="resultHeadline">우리 부부 가구소득 핵심 카드</h2>
+        </div>
+      </div>
+      <div class="csr-kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p>가구소득 전국 위치</p>
+          <strong id="percentileSummary">-</strong>
+          <span id="percentileSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>부부 합산 연봉</p>
+          <strong id="householdAnnualSummary">-</strong>
+          <span id="householdAnnualSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>부부 합산 월 환산</p>
+          <strong id="householdMonthlySummary">-</strong>
+          <span id="householdMonthlySummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>합산 월 실수령 추정</p>
+          <strong id="takeHomeSummary">-</strong>
+          <span id="takeHomeSummaryNote">-</span>
+        </article>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#csr-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#csr-living-cost">생활비 차감 보기</a>
+      </div>
+    </article>
+
+    <section class="csr-section" id="csr-position">
+      <div class="csr-section__head">
+        <p class="csr-section__eyebrow">소득 위치</p>
+        <h2>중위·평균 가구소득과 비교</h2>
+        <p class="csr-section__sub">2인 가구 기준 중위소득, 2024 평균 가구소득(월 환산)과 우리 부부 소득을 비교합니다.</p>
+      </div>
+      <div class="csr-chart-wrap">
+        <canvas id="csr-position-chart"></canvas>
+      </div>
+    </section>
+
+    <section class="csr-section" id="csr-living-cost">
+      <div class="csr-section__head">
+        <p class="csr-section__eyebrow">생활비 차감</p>
+        <h2>생활비 빼면 한 달에 얼마 남을까</h2>
+        <p class="csr-section__sub">선택한 2인 가구 생활비 시나리오를 합산 월 실수령액에서 뺀 금액입니다.</p>
+      </div>
+      <div class="csr-surplus-card" id="surplusCard">
+        <div class="csr-surplus-row">
+          <span>합산 월 실수령 추정</span>
+          <strong id="surplusTakeHome">-</strong>
+        </div>
+        <div class="csr-surplus-row">
+          <span>생활비(<span id="surplusScenarioLabel">평균형</span>)</span>
+          <strong id="surplusLivingCost">-</strong>
+        </div>
+        <div class="csr-surplus-row csr-surplus-row--total">
+          <span>월 잉여자금</span>
+          <strong id="surplusAmount">-</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="csr-section">
+      <div class="csr-section__head">
+        <p class="csr-section__eyebrow">맞벌이 효과</p>
+        <h2>맞벌이 vs 외벌이 비교</h2>
+        <p class="csr-section__sub">배우자 소득을 0으로 가정했을 때와 비교해 가구소득 순위가 얼마나 달라지는지 확인합니다.</p>
+      </div>
+      <div class="csr-dual-grid">
+        <article class="comparison-card" id="dualCard">
+          <p>맞벌이(현재 입력)</p>
+          <strong id="dualPercentile">-</strong>
+          <span id="dualAnnual">-</span>
+        </article>
+        <article class="comparison-card" id="singleCard">
+          <p>외벌이 가정(본인 소득만)</p>
+          <strong id="singlePercentile">-</strong>
+          <span id="singleAnnual">-</span>
+        </article>
+        <article class="comparison-card is-positive" id="deltaCard">
+          <p>맞벌이로 상승한 순위</p>
+          <strong id="deltaPercentile">-</strong>
+          <span>배우자 소득 합산 효과</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="csr-section">
+      <div class="csr-section__head">
+        <p class="csr-section__eyebrow">인기 조합</p>
+        <h2>이 조합은 합산 연봉이 얼마일까</h2>
+        <p class="csr-section__sub">대표 대기업 조합을 클릭하면 위 입력값이 자동으로 바뀝니다.</p>
+      </div>
+      <div class="csr-combo-list" id="comboRankingList"></div>
+    </section>
+
+    <section class="csr-section">
+      <div class="csr-section__head">
+        <p class="csr-section__eyebrow">선택한 기업</p>
+        <h2>본인·배우자 기업 정보</h2>
+      </div>
+      <div class="csr-company-grid" id="companyInfoGrid"></div>
+    </section>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">계산 기준 요약</h2>
+        </div>
+      </div>
+      <div class="logic-grid">
+        <article class="logic-card">
+          <strong>합산 연봉 = 본인 연봉 + 배우자 연봉</strong>
+          <p>외벌이로 선택하면 배우자 연봉은 0으로 계산합니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>실수령 추정은 단순 추정</strong>
+          <p>4대보험·소득세를 단순화한 참고용 계산입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>전국 상위 %는 추정 구간</strong>
+          <p>통계청 가계금융복지조사를 참고한 가구소득 구간별 추정치입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>잉여자금 = 실수령 − 생활비</strong>
+          <p>생활비는 2인 가구 시나리오 기준 추정값입니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "기업 평균 연봉은 현직자 커뮤니티 기반 추정치이며 공식 자료가 아닙니다.",
+        "가구소득 전국 상위 %는 통계청 가계금융복지조사를 참고한 추정 구간입니다.",
+        "월 실수령 추정과 생활비 시나리오는 개인 상황에 따라 실제와 차이가 있을 수 있습니다.",
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="맞벌이 부부 가구소득 계산기 활용 가이드"
+        intro={[
+          "이 페이지는 본인과 배우자가 다니는 대기업을 선택하면 두 사람의 연봉을 합산해 가구 총소득, 월 환산 소득, 추정 실수령액을 계산하고, 그 가구소득이 전국에서 대략 어느 위치인지 보여주는 맞벌이 부부 가구소득 계산기입니다.",
+          "연봉 티어 계산기의 대기업 평균 연봉 데이터를 그대로 활용해 SK텔레콤, 현대자동차, 삼성전자, 네이버 같은 대표 기업 조합의 합산 연봉을 바로 확인할 수 있고, 인기 조합 랭킹에서 다른 조합과 비교해볼 수도 있습니다.",
+          "단순히 합산 연봉만 보여주는 것이 아니라 2인 가구 평균 생활비를 차감한 월 잉여자금, 그리고 외벌이와 맞벌이를 비교했을 때 가구소득 순위가 얼마나 달라지는지까지 함께 확인할 수 있어 맞벌이 여부에 따른 체감 차이를 가늠하는 데 참고할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "본인과 배우자가 다니는 회사를 선택하면 해당 기업의 평균 연봉이 자동으로 입력됩니다.",
+          "연봉은 슬라이더 또는 직접 입력으로 조정할 수 있습니다.",
+          "외벌이라면 배우자 소득을 '없음'으로 선택하면 본인 소득만으로 계산됩니다.",
+          "생활비 시나리오(절약형/평균형/여유형)를 선택하면 잉여자금이 함께 계산됩니다.",
+        ]}
+        criteria={[
+          "기업 평균 연봉은 연봉 티어 계산기와 동일한 현직자 커뮤니티 기반 추정 데이터를 사용합니다.",
+          "가구소득 전국 상위 %는 통계청 가계금융복지조사를 참고한 가구소득 구간별 추정 테이블에서 선형 보간으로 계산합니다.",
+          "예시: SK텔레콤(8,000만원) + 현대자동차(9,500만원) 합산 시 연 1억 7,500만원으로 전국 상위 10%대 구간에 해당합니다.",
+          "예시: 외벌이로 SK텔레콤(8,000만원)만 있을 경우 상위 30~40% 구간으로 낮아집니다.",
+          "월 실수령 추정은 4대보험·소득세를 단순화한 참고용 계산이며, 2인 가구 생활비는 절약형·평균형·여유형 추정 시나리오를 사용합니다.",
+        ]}
+        faq={CSR_FAQ.map((item) => ({ question: item.question, answer: item.answer }))}
+        related={CSR_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script id="csrConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/couple-salary-rank-calculator.js")}></script>
+</BaseLayout>

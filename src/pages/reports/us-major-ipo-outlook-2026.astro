@@ -1,0 +1,268 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  UIP_META,
+  UIP_KPI,
+  UIP_COMPANIES,
+  UIP_SECTOR_DISTRIBUTION,
+  UIP_KOREA_ACCESS,
+  UIP_FAQ,
+  UIP_RELATED_LINKS,
+} from "../../data/usMajorIpoOutlook";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${UIP_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmtUsdB = (usd: number) => `$${(usd / 1_000_000_000).toFixed(usd % 1_000_000_000 === 0 ? 0 : 1)}B`;
+
+const fmtUsdEok = (usd: number) => {
+  const eokTotal = Math.round(usd / 100_000_000);
+  const jo = Math.floor(eokTotal / 10_000);
+  const eok = eokTotal % 10_000;
+  if (jo > 0) {
+    return `약 ${jo.toLocaleString("ko-KR")}조 ${eok.toLocaleString("ko-KR")}억 달러`;
+  }
+  return `약 ${eok.toLocaleString("ko-KR")}억 달러`;
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: UIP_META.title,
+    description: UIP_META.description,
+    dateModified: UIP_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: UIP_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: UIP_META.title, item: reportUrl },
+    ],
+  },
+];
+
+const sortedCompanies = [...UIP_COMPANIES].sort((a, b) => b.valuationUsd - a.valuationUsd);
+const maxValuation = Math.max(...UIP_COMPANIES.map((c) => c.valuationUsd));
+const maxSectorCount = Math.max(...UIP_SECTOR_DISTRIBUTION.map((s) => s.count));
+const confidenceClass: Record<string, string> = {
+  "낮음": "uip-confidence--low",
+  "중간": "uip-confidence--mid",
+  "참고": "uip-confidence--ref",
+};
+---
+
+<BaseLayout title={UIP_META.seoTitle} description={UIP_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page uip-page" data-report="us-major-ipo-outlook-2026">
+
+    <CalculatorHero
+      eyebrow="미국 증시 · IPO 리포트"
+      title={UIP_META.title}
+      description="오픈AI, 앤트로픽, 스페이스X, 스트라이프, 데이터브릭스 등 미국 대형 비상장 기업의 추정 기업가치, 사업 개요, IPO 추진 현황을 한 화면에서 비교합니다."
+      badges={["미국 증시", "기업공개", "비상장기업", "기업가치 비교", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[UIP_META.dataNote]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section uip-kpi-section">
+      <div class="uip-kpi-grid">
+        <article class="uip-kpi-card uip-kpi-card--main">
+          <span class="uip-kpi-label">IPO 후보 기업</span>
+          <strong class="uip-kpi-value">{UIP_KPI.candidateCount}곳</strong>
+          <small>이 리포트에서 비교하는 기업 수</small>
+        </article>
+        <article class="uip-kpi-card uip-kpi-card--main">
+          <span class="uip-kpi-label">합산 추정 기업가치</span>
+          <strong class="uip-kpi-value">{fmtUsdEok(UIP_KPI.totalEstValuationUsd)}</strong>
+          <small>{UIP_KPI.candidateCount}개사 추정 밸류 합계</small>
+        </article>
+        <article class="uip-kpi-card">
+          <span class="uip-kpi-label">최대 추정 밸류</span>
+          <strong class="uip-kpi-value">{UIP_KPI.topCompanyName}</strong>
+          <small>{fmtUsdEok(UIP_KPI.topCompanyValuationUsd)} 추정</small>
+        </article>
+        <article class="uip-kpi-card">
+          <span class="uip-kpi-label">핀테크 비중</span>
+          <strong class="uip-kpi-value">{UIP_KPI.fintechSharePct}%</strong>
+          <small>{UIP_KPI.fintechCount}곳 / {UIP_KPI.candidateCount}곳</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 기업별 카드 -->
+    <section class="content-section uip-company-section" aria-labelledby="uip-company-title">
+      <div class="uip-section-heading">
+        <p>기업 비교</p>
+        <h2 id="uip-company-title">2026 IPO 후보로 거론되는 11개 기업</h2>
+        <span>추정 기업가치, 사업 개요, IPO 추진 현황을 한 번에 확인하세요.</span>
+      </div>
+      <div class="uip-company-grid">
+        {UIP_COMPANIES.map((c) => (
+          <article class="uip-company-card">
+            <div class="uip-company-header">
+              <div>
+                <strong class="uip-company-name">{c.nameKo} <span class="uip-company-name-en">({c.name})</span></strong>
+                <span class="uip-company-sector">{c.sector}</span>
+              </div>
+              <span class:list={["uip-confidence-badge", confidenceClass[c.confidence]]}>
+                신뢰도: {c.confidence}
+              </span>
+            </div>
+            <div class="uip-company-valuation">
+              <strong>{fmtUsdB(c.valuationUsd)}</strong>
+              <span>{c.valuationNote}</span>
+            </div>
+            <p class="uip-company-summary">{c.summary}</p>
+            <div class="uip-company-ipo">
+              <span class="uip-company-ipo-label">{c.ipoStatus}</span>
+              <p>{c.ipoDetail}</p>
+            </div>
+            <div class="uip-company-meta">
+              <span>설립 {c.founded}년</span>
+              <span>{c.hq}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 밸류에이션 비교 -->
+    <section class="content-section uip-valuation-section" aria-labelledby="uip-valuation-title">
+      <div class="uip-section-heading">
+        <p>기업가치 비교</p>
+        <h2 id="uip-valuation-title">추정 기업가치 순위</h2>
+        <span>최근 보도된 투자 라운드·텐더오퍼 기준 추정치를 큰 순서대로 정렬했습니다.</span>
+      </div>
+      <div class="uip-valuation-list">
+        {sortedCompanies.map((c) => (
+          <div class="uip-valuation-row">
+            <div class="uip-valuation-meta">
+              <strong class="uip-valuation-label">{c.nameKo} <span class="uip-valuation-label-en">({c.name})</span></strong>
+              <span class="uip-valuation-sector">{c.sector}</span>
+            </div>
+            <div class="uip-valuation-bar-track">
+              <div
+                class="uip-valuation-bar"
+                style={`width: ${Math.max((c.valuationUsd / maxValuation) * 100, 3)}%`}
+              />
+              <span class="uip-valuation-amount">{fmtUsdB(c.valuationUsd)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 섹터 분포 -->
+    <section class="content-section uip-sector-section" aria-labelledby="uip-sector-title">
+      <div class="uip-section-heading">
+        <p>섹터 분포</p>
+        <h2 id="uip-sector-title">핀테크 비중이 가장 높다</h2>
+        <span>11개 후보 기업의 산업군 분포입니다.</span>
+      </div>
+      <div class="uip-sector-list">
+        {UIP_SECTOR_DISTRIBUTION.map((s) => (
+          <div class="uip-sector-row">
+            <div class="uip-sector-meta">
+              <strong>{s.sector}</strong>
+              <span class="uip-sector-count">{s.count}곳</span>
+            </div>
+            <div class="uip-sector-bar-track">
+              <div class="uip-sector-bar" style={`width: ${(s.count / maxSectorCount) * 100}%`} />
+            </div>
+            <p class="uip-sector-companies">{s.companies}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 한국 투자자 접근 방법 -->
+    <section class="content-section uip-access-section" aria-labelledby="uip-access-title">
+      <div class="uip-section-heading">
+        <p>한국 투자자 관점</p>
+        <h2 id="uip-access-title">상장 전후, 어떻게 접근할 수 있을까</h2>
+        <span>비상장 단계에서는 직접 투자가 사실상 어렵지만, 상장 이후 활용 가능한 방법은 있습니다.</span>
+      </div>
+      <div class="uip-access-list">
+        {UIP_KOREA_ACCESS.map((a) => (
+          <article class="uip-access-card">
+            <strong class="uip-access-title">{a.method}</strong>
+            <p class="uip-access-desc">{a.description}</p>
+            <div class="uip-access-cols">
+              <div class="uip-access-col uip-access-col--pros">
+                <p class="uip-access-col-label">장점</p>
+                <ul>{a.pros.map((p) => <li>{p}</li>)}</ul>
+              </div>
+              <div class="uip-access-col uip-access-col--cons">
+                <p class="uip-access-col-label">유의점</p>
+                <ul>{a.cons.map((c) => <li>{c}</li>)}</ul>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 리포트 -->
+    <section class="content-section uip-related-section" aria-labelledby="uip-related-title">
+      <div class="uip-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="uip-related-title">함께 보면 좋은 리포트</h2>
+      </div>
+      <div class="uip-related-grid">
+        {UIP_RELATED_LINKS.map((link) => (
+          <a class="uip-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 미국 대형 IPO 전망 자주 묻는 질문"
+      intro={[
+        UIP_META.dataNote,
+        "Stripe, Databricks, Klarna 등 미국 대형 비상장 기업들은 매년 IPO 후보로 거론되지만, 실제 상장 시점과 여부는 시장 상황에 따라 계속 변동됩니다.",
+      ]}
+      inputPoints={[
+        "11개 미국 대형 비상장 기업의 추정 기업가치와 사업 개요를 비교할 수 있습니다.",
+        "각 기업의 IPO 추진 현황을 신뢰도(낮음·중간·참고)와 함께 정리합니다.",
+        "한국 투자자가 상장 전후로 활용할 수 있는 접근 방법을 안내합니다.",
+      ]}
+      criteria={[
+        "기업가치: 투자 라운드, 직원 대상 텐더오퍼 등 언론 보도 기준 추정",
+        "IPO 추진 현황: 공식 발표가 아닌 보도·발언을 신뢰도와 함께 표기",
+        "특정 종목에 대한 매수·매도 추천이 아닌 정보 제공 목적의 리포트입니다.",
+      ]}
+      faq={UIP_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={UIP_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

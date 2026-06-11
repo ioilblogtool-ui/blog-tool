@@ -1,0 +1,594 @@
+// SpaceX IPO Outlook Report
+// Dark space theme — black / white / blue accent
+
+$spx-dark: #0b0f1a;
+$spx-blue: #2563eb;
+$spx-light: #eff6ff;
+$spx-border: #bfdbfe;
+$spx-card-bg: #f5f8ff;
+
+$text-heading: #111928;
+$text-body: #374151;
+$text-muted: #6b7280;
+$border-color: #e5e7eb;
+$bg-white: #fff;
+$bg-surface: #f9fafb;
+
+$green: #16a34a;
+$green-bg: #f0fdf4;
+$green-border: #bbf7d0;
+$yellow: #ca8a04;
+$yellow-bg: #fefce8;
+$red: #dc2626;
+$red-bg: #fef2f2;
+$gray: #6b7280;
+$gray-bg: #f3f4f6;
+
+.spx-page {
+  // Section heading
+  .spx-section-heading {
+    margin-bottom: 1.75rem;
+    text-align: center;
+
+    p {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: $spx-light;
+      color: $spx-blue;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 700;
+      color: $text-heading;
+      margin: 0 0 0.5rem;
+    }
+
+    span {
+      display: block;
+      font-size: 0.875rem;
+      color: $text-muted;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  }
+
+  // KPI
+  .spx-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .spx-kpi-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+
+    &--main {
+      background: $spx-light;
+      border-color: $spx-border;
+    }
+  }
+
+  .spx-kpi-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $text-muted;
+    margin-bottom: 0.4rem;
+  }
+
+  .spx-kpi-value {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+    color: $text-heading;
+
+    .spx-kpi-card--main & {
+      color: $spx-blue;
+    }
+  }
+
+  .spx-kpi-card small {
+    font-size: 0.72rem;
+    line-height: 1.4;
+    color: $text-muted;
+  }
+
+  // Profile
+  .spx-profile-box {
+    background: $spx-dark;
+    border-radius: 16px;
+    padding: 2rem;
+    color: #e5e7eb;
+  }
+
+  .spx-profile-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .spx-profile-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    align-items: baseline;
+
+    span {
+      font-size: 0.72rem;
+      color: #93c5fd;
+      min-width: 70px;
+      flex-shrink: 0;
+    }
+
+    strong {
+      font-size: 0.85rem;
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+  }
+
+  .spx-profile-sub {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
+  }
+
+  .spx-unit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .spx-unit-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    border-radius: 8px;
+    padding: 0.875rem;
+
+    strong {
+      display: block;
+      font-size: 0.85rem;
+      color: #93c5fd;
+      margin-bottom: 0.35rem;
+    }
+
+    p {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      line-height: 1.55;
+      margin: 0;
+    }
+  }
+
+  // Valuation timeline (bar rows)
+  .spx-valuation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+  }
+
+  .spx-valuation-row {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .spx-valuation-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .spx-valuation-year {
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: $spx-light;
+    color: $spx-blue;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .spx-valuation-label {
+    font-size: 0.92rem;
+    color: $text-heading;
+  }
+
+  .spx-valuation-bar-track {
+    position: relative;
+    background: $bg-surface;
+    border-radius: 6px;
+    height: 1.6rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .spx-valuation-bar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: linear-gradient(90deg, $spx-blue, #60a5fa);
+    border-radius: 6px;
+  }
+
+  .spx-valuation-amount {
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: $text-heading;
+  }
+
+  .spx-valuation-note {
+    font-size: 0.78rem;
+    color: $text-muted;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  // Shareholders
+  .spx-shareholder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+  }
+
+  .spx-shareholder-row {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+
+    &--founder .spx-shareholder-bar {
+      background: linear-gradient(90deg, $spx-blue, #60a5fa);
+    }
+
+    &--institution .spx-shareholder-bar {
+      background: linear-gradient(90deg, $green, #86efac);
+    }
+
+    &--employee .spx-shareholder-bar {
+      background: linear-gradient(90deg, $yellow, #fde68a);
+    }
+  }
+
+  .spx-shareholder-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+
+    strong {
+      font-size: 0.92rem;
+      color: $text-heading;
+    }
+  }
+
+  .spx-shareholder-pct {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: $spx-blue;
+  }
+
+  .spx-shareholder-bar-track {
+    background: $bg-surface;
+    border-radius: 6px;
+    height: 0.6rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .spx-shareholder-bar {
+    height: 100%;
+    border-radius: 6px;
+  }
+
+  .spx-shareholder-note {
+    font-size: 0.78rem;
+    color: $text-muted;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  // Revenue mix
+  .spx-revenue-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .spx-revenue-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .spx-revenue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.6rem;
+
+    strong {
+      font-size: 0.9rem;
+      color: $text-heading;
+    }
+  }
+
+  .spx-revenue-pct {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $spx-blue;
+  }
+
+  .spx-revenue-bar-track {
+    background: $bg-surface;
+    border-radius: 6px;
+    height: 0.6rem;
+    overflow: hidden;
+    margin-bottom: 0.6rem;
+  }
+
+  .spx-revenue-bar {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, $spx-blue, #60a5fa);
+  }
+
+  .spx-revenue-amount {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $text-heading;
+    margin: 0 0 0.4rem;
+  }
+
+  .spx-revenue-note {
+    font-size: 0.78rem;
+    color: $text-muted;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  // IPO outlook cards
+  .spx-ipo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .spx-ipo-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+
+    p {
+      font-size: 0.82rem;
+      color: $text-body;
+      line-height: 1.65;
+      margin: 0;
+    }
+  }
+
+  .spx-ipo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .spx-ipo-date {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $spx-blue;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .spx-confidence-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 99px;
+    white-space: nowrap;
+
+    &.spx-confidence--low {
+      background: $gray-bg;
+      color: $gray;
+    }
+
+    &.spx-confidence--mid {
+      background: $yellow-bg;
+      color: #854d0e;
+    }
+
+    &.spx-confidence--ref {
+      background: $spx-light;
+      color: $spx-blue;
+    }
+  }
+
+  .spx-ipo-title-text {
+    display: block;
+    font-size: 0.95rem;
+    color: $text-heading;
+    margin-bottom: 0.4rem;
+  }
+
+  // Korea access cards
+  .spx-access-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .spx-access-card {
+    background: $bg-white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .spx-access-title {
+    display: block;
+    font-size: 0.95rem;
+    color: $text-heading;
+    margin-bottom: 0.4rem;
+  }
+
+  .spx-access-desc {
+    font-size: 0.82rem;
+    color: $text-body;
+    line-height: 1.6;
+    margin: 0 0 0.85rem;
+  }
+
+  .spx-access-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .spx-access-col-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.4rem;
+  }
+
+  .spx-access-col--pros .spx-access-col-label {
+    color: $green;
+  }
+
+  .spx-access-col--cons .spx-access-col-label {
+    color: $red;
+  }
+
+  .spx-access-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    li {
+      font-size: 0.78rem;
+      color: $text-body;
+      line-height: 1.5;
+      padding-left: 1rem;
+      position: relative;
+
+      &::before {
+        position: absolute;
+        left: 0;
+      }
+    }
+  }
+
+  .spx-access-col--pros ul li::before {
+    content: "+";
+    color: $green;
+    font-weight: 800;
+  }
+
+  .spx-access-col--cons ul li::before {
+    content: "·";
+    color: $red;
+    font-weight: 800;
+  }
+
+  // Related
+  .spx-related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .spx-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    background: $spx-card-bg;
+    border: 1px solid $spx-border;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+      transform: translateY(-2px);
+    }
+
+    strong {
+      font-size: 0.9rem;
+      color: $text-heading;
+      font-weight: 700;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: $text-muted;
+      line-height: 1.5;
+    }
+  }
+}
