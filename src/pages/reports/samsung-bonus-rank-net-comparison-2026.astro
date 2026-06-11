@@ -1,0 +1,281 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SAMSUNG_BONUS_RANK_NET_META,
+  agreementCards,
+  faq,
+  heroKpis,
+  rankRows,
+  relatedLinks,
+  scenarioCards,
+  seoCriteria,
+  seoIntro,
+  sourceLinks,
+} from "../../data/samsungBonusRankNetComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteUrl = "https://bigyocalc.com";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: SAMSUNG_BONUS_RANK_NET_META.h1,
+      description: SAMSUNG_BONUS_RANK_NET_META.description,
+      inLanguage: "ko-KR",
+      dateModified: SAMSUNG_BONUS_RANK_NET_META.dateModified,
+      mainEntityOfPage: `${siteUrl}/reports/${SAMSUNG_BONUS_RANK_NET_META.slug}/`,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faq.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={SAMSUNG_BONUS_RANK_NET_META.title}
+  description={SAMSUNG_BONUS_RANK_NET_META.description}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sbrn-page" data-report="samsung-bonus-rank-net-comparison-2026">
+    <CalculatorHero
+      eyebrow={SAMSUNG_BONUS_RANK_NET_META.eyebrow}
+      title={SAMSUNG_BONUS_RANK_NET_META.h1}
+      description="2026년 삼성전자 노사 잠정합의안의 DS 특별경영성과급과 자사주 지급 구조까지 반영해 직급별 세전·세후 성과급을 비교합니다."
+    />
+
+    <InfoNotice
+      title="시뮬레이션 기준 안내"
+      lines={[
+        "이 페이지의 직급별 금액은 공식 직급별 지급표가 아니라 추천 연봉과 지급률 가정으로 만든 시뮬레이션입니다.",
+        "노사 잠정합의안은 영업이익 가정에 기존 OPI 1.5%와 DS 특별경영성과급 10.5%를 합산한 12%를 곱해 재원을 만들고, 12만명으로 나눈 뒤 연봉 가중치를 적용했습니다.",
+        "실제 지급액은 최종 합의, 사업부, 평가, 기준급, 자사주 지급 조건, 세금·공제 조건에 따라 달라질 수 있습니다.",
+      ]}
+    />
+
+    <section class="sbrn-hero-grid" aria-label="삼성전자 성과급 직급별 실수령액 핵심 요약">
+      <article class="sbrn-lead-panel">
+        <span class="sbrn-pill">2026 노사 잠정합의안 반영</span>
+        <h2>기존 OPI·TAI와 별도로, 협의안 재원을 직급별로 환산합니다</h2>
+        <p>
+          삼성전자 성과급 검색은 단순 지급률보다 “내 직급이면 통장에 얼마 남는지”에 가깝습니다.
+          이 리포트는 기존 DS·MX OPI 비교표와 함께, 2026년 노사 잠정합의안의 DS 특별경영성과급 재원을
+          환산 직원 수와 평균 보수 대비 연봉 가중치로 나눠 세후 체감액을 보여줍니다.
+        </p>
+        <div class="sbrn-actions">
+          <a class="button button--primary" href={withBase("/tools/samsung-bonus/?mode=union")}>협의안 모드로 계산</a>
+          <a class="button button--secondary" href={withBase("/tools/bonus-after-tax-calculator/?company=samsung")}>성과급 세후 계산기</a>
+        </div>
+      </article>
+      <div class="sbrn-kpi-grid">
+        {heroKpis.map((item) => (
+          <article class="sbrn-kpi-card">
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+            <p>{item.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sbrn-section" id="agreement">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">노사 잠정합의안</p>
+        <h2>2026 삼성전자 성과급 협의안 핵심</h2>
+        <p>보도된 잠정합의안 기준을 계산 가능한 항목으로 분해했습니다. 연봉의 12%가 아니라 영업이익 연동 재원을 나눠 보는 참고값입니다.</p>
+      </div>
+      <div class="sbrn-agreement-grid">
+        {agreementCards.map((item) => (
+          <article class="sbrn-agreement-card">
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+            <p>{item.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sbrn-section" id="agreement-table">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">협의안 직급별 환산</p>
+        <h2>노사 잠정합의안 재원 기준 직급별 세후 추정</h2>
+        <p>영업이익 가정 × 12% ÷ 12만명으로 1인 기준선을 만들고, 평균 보수 대비 추천 연봉 가중치를 적용했습니다.</p>
+      </div>
+      <div class="sbrn-table-wrap">
+        <table class="sbrn-table sbrn-table--compact">
+          <thead>
+            <tr>
+              <th>직급</th>
+              <th>추천 연봉</th>
+              <th>연봉 가중치</th>
+              <th>협의안 세전 환산</th>
+              <th>협의안 세후 추정</th>
+              <th>참고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rankRows.map((row) => (
+              <tr>
+                <th>{row.rank}</th>
+                <td>{row.salaryText}</td>
+                <td>{row.agreementWeightText}</td>
+                <td>{row.agreementGrossText}</td>
+                <td><strong>{row.agreementNetText}</strong></td>
+                <td>자사주 지급안 단순 환산</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="sbrn-caution">
+        자사주 지급안은 현금 성과급과 체감 방식이 다릅니다. 지급 시점 주가, 매각 가능 시점, 보호예수 조건에 따라 실제 체감액이 달라질 수 있습니다.
+      </p>
+    </section>
+
+    <section class="content-section sbrn-section" id="rank-table">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">기존 성과급 비교</p>
+        <h2>삼성전자 직급별 OPI·TAI 실수령액 예시</h2>
+        <p>DS 반도체 기준은 OPI 47%와 TAI 1개월분을 합산한 뒤 세후 72%로 환산했습니다.</p>
+      </div>
+      <div class="sbrn-table-wrap">
+        <table class="sbrn-table">
+          <thead>
+            <tr>
+              <th>직급</th>
+              <th>추천 연봉</th>
+              <th>DS 세전 성과급</th>
+              <th>DS 세후 추정</th>
+              <th>MX 세후 추정</th>
+              <th>지원조직 세후 추정</th>
+              <th>월 환산 체감</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rankRows.map((row) => (
+              <tr>
+                <th>{row.rank}</th>
+                <td>{row.salaryText}</td>
+                <td>{row.dsGrossText}</td>
+                <td><strong>{row.dsNetText}</strong></td>
+                <td>{row.mxNetText}</td>
+                <td>{row.supportNetText}</td>
+                <td>{row.monthlyNetText}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="sbrn-caution">
+        월 환산 체감은 성과급을 12개월로 나눈 참고값입니다. 실제로는 일시 지급, 자사주 지급, 보호예수, 원천징수 방식에 따라 체감 시점이 달라질 수 있습니다.
+      </p>
+    </section>
+
+    <section class="content-section sbrn-section" id="division-scenario">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">사업부별 차이</p>
+        <h2>과장 추천 연봉 기준 DS·MX·지원조직 비교</h2>
+        <p>같은 직급이라도 사업부 지급률이 바뀌면 세전 성과급과 세후 실수령액이 같이 달라집니다.</p>
+      </div>
+      <div class="sbrn-scenario-grid">
+        {scenarioCards.map((card) => (
+          <article class="sbrn-scenario-card">
+            <span>{card.note}</span>
+            <h3>{card.label}</h3>
+            <dl>
+              <div>
+                <dt>OPI</dt>
+                <dd>{card.opiText}</dd>
+              </div>
+              <div>
+                <dt>TAI</dt>
+                <dd>{card.taiText}</dd>
+              </div>
+              <div>
+                <dt>세전 합계</dt>
+                <dd>{card.grossText}</dd>
+              </div>
+              <div>
+                <dt>세후 추정</dt>
+                <dd>{card.netText}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sbrn-section" id="how-to-read">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">해석 방법</p>
+        <h2>직급별 금액보다 중요한 것은 지급률과 세후 체감입니다</h2>
+      </div>
+      <div class="sbrn-guide-grid">
+        <article>
+          <strong>1. 협의안과 기존 OPI를 분리합니다</strong>
+          <p>2026 노사 잠정합의안은 기존 OPI·TAI와 별도 성격의 DS 특별경영성과급을 포함합니다. 같은 성과급 검색어라도 표를 나눠 봐야 합니다.</p>
+        </article>
+        <article>
+          <strong>2. 자사주 지급은 현금과 다릅니다</strong>
+          <p>자사주 지급안은 지급 시점 주가와 매각 제한에 따라 체감 가치가 달라질 수 있습니다. 이 페이지는 세후 규모를 현금 가치처럼 단순 환산했습니다.</p>
+        </article>
+        <article>
+          <strong>3. 세전보다 세후 금액을 봅니다</strong>
+          <p>성과급은 근로소득으로 합산되어 원천징수됩니다. 세전 성과급이 커질수록 통장 입금액과의 차이도 커질 수 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section sbrn-section" id="references">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">참고 링크</p>
+        <h2>공식 자료와 함께 확인하기</h2>
+      </div>
+      <div class="sbrn-reference-grid">
+        {sourceLinks.map((item) => (
+          <a href={item.url} target="_blank" rel="noreferrer" class="sbrn-reference-link">
+            <strong>{item.title}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <CompareCta
+      variant="bonus"
+      title="협의안 금액을 봤다면 내 조건으로 다시 계산해보세요"
+      description="삼성전자 성과급 계산기에서 사업부, 직급, 연봉, OPI·TAI 조건과 잠정합의안 모드를 직접 바꾸면 더 현실적인 세전·세후 흐름을 볼 수 있습니다."
+      links={[
+        { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
+        { href: "/tools/bonus-after-tax-calculator/?company=samsung", label: "성과급 세후 계산기" },
+      ]}
+    />
+
+    <SeoContent
+      introTitle="삼성전자 성과급 직급별 실수령액 비교 기준"
+      intro={seoIntro}
+      criteria={seoCriteria}
+      faq={faq}
+      related={relatedLinks}
+    />
+  </main>
+</BaseLayout>

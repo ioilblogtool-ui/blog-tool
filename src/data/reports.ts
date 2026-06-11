@@ -50,6 +50,13 @@ export const reports: ReportMeta[] = [
     badges: ["삼성전자", "DS", "성과급"],
   },
   {
+    slug: "samsung-bonus-rank-net-comparison-2026",
+    title: "삼성전자 성과급 직급별 실수령액 비교 2026",
+    description: "삼성전자 사원·대리·과장·차장·부장 추천 연봉을 기준으로 DS·MX·지원조직 성과급 세전·세후 실수령액을 비교합니다.",
+    order: 3.56,
+    badges: ["삼성전자", "직급별", "실수령액"],
+  },
+  {
     slug: "insurance-salary-bonus-comparison-2026",
     title: "국내 TOP 보험사 평균 연봉·성과급 비교 리포트 2026",
     description: "삼성화재, 삼성생명, 메리츠화재, 현대해상, DB손해보험, KB손해보험 등 주요 보험사의 평균 연봉, 신입 초봉, 성과급, 총보상을 함께 비교하는 인터랙티브 리포트입니다.",

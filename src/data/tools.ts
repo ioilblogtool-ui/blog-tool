@@ -216,8 +216,8 @@ export const tools: ToolMeta[] = [
     iframeReady: true,
     badges: ["신규", "추천"],
     previewStats: [
-      { label: "예시 합산 연봉", value: "1억 7,500만" },
-      { label: "가구소득 위치", value: "전국 상위 10%대" }
+      { label: "예시 합산 연봉", value: "2억 8,500만" },
+      { label: "가구소득 위치", value: "전국 상위 1%대" }
     ]
   },
   {

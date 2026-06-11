@@ -15,6 +15,7 @@ export type TeacherStep = {
 export type SchoolLevel = {
   id: "elementary" | "middle" | "high" | "special" | "fixed_term";
   name: string;
+  seoHeading: string;
   entryStep: number;
   entryStepBasis: string;
   qualificationNote: string;
@@ -74,7 +75,7 @@ export type TeacherFAQ = {
 export const TS_META = {
   title: "초등교사·중학교 교사·고등학교 교사 월급표 2026 | 호봉별 연봉·실수령액",
   description:
-    "2026년 초등교사·중학교 교사·고등학교 교사 월급표를 호봉별로 정리했습니다. 9호봉 신규 교사부터 40호봉까지 기본급, 수당, 예상 세후 실수령액과 기간제교사 차이를 비교합니다.",
+    "2026년 초등학교·중학교·고등학교 선생님 월급표를 호봉별로 정리했습니다. 9호봉 신규 교사부터 40호봉까지 기본급, 수당, 예상 세후 실수령액과 기간제교사 차이를 비교합니다.",
 } as const;
 
 export const TS_HERO_STATS = {
@@ -139,6 +140,7 @@ export const SCHOOL_LEVELS: SchoolLevel[] = [
   {
     id: "elementary",
     name: "초등교사",
+    seoHeading: "초등학교 교사 연봉",
     entryStep: 9,
     entryStepBasis: "교육대학교 4년 졸업 기준",
     qualificationNote: "초등 정교사 2급 → 시도교육청 임용고시",
@@ -152,6 +154,7 @@ export const SCHOOL_LEVELS: SchoolLevel[] = [
   {
     id: "middle",
     name: "중학교 교사",
+    seoHeading: "중학교 교사 월급",
     entryStep: 9,
     entryStepBasis: "사범대 4년 기준 (비사범계 교직이수는 8호봉)",
     qualificationNote: "중등 정교사 2급(표시과목) → 임용고시",
@@ -165,6 +168,7 @@ export const SCHOOL_LEVELS: SchoolLevel[] = [
   {
     id: "high",
     name: "고등학교 교사",
+    seoHeading: "고등학교 교사 월급",
     entryStep: 9,
     entryStepBasis: "사범대 4년 기준",
     qualificationNote: "중등 정교사 2급(표시과목) → 임용고시",
@@ -178,6 +182,7 @@ export const SCHOOL_LEVELS: SchoolLevel[] = [
   {
     id: "special",
     name: "특수교사",
+    seoHeading: "특수교사 연봉",
     entryStep: 10,
     entryStepBasis: "특수교육 관련학과 졸업 (+1호봉 가산)",
     qualificationNote: "특수 정교사 2급 → 임용고시",
@@ -191,6 +196,7 @@ export const SCHOOL_LEVELS: SchoolLevel[] = [
   {
     id: "fixed_term",
     name: "기간제교사",
+    seoHeading: "기간제교사 월급",
     entryStep: 8,
     entryStepBasis: "경력 없음 기준 (경력 인정 시 호봉 조정)",
     qualificationNote: "정교사 자격증(2급 이상) 보유",
@@ -317,5 +323,9 @@ export const TEACHER_FAQ: TeacherFAQ[] = [
   {
     q: "사립학교 교사와 공립학교 교사 연봉은 많이 다른가요?",
     a: "봉급표 자체는 공립·사립 동일 기준을 원칙으로 합니다. 다만 일부 사립은 학교 자체 수당을 추가 지급하기도 하며, 연금은 공립(공무원연금)과 사립(사학연금)이 구분됩니다. 안정성은 공립이 일반적으로 높다고 봅니다.",
+  },
+  {
+    q: "1급 정교사(1정)가 되면 월급이 오르나요?",
+    a: "1정 자격 자체로 추가되는 수당은 없습니다. 호봉은 1정·2정 여부와 무관하게 매년 근무 경력에 따라 자동으로 승급됩니다. 다만 1정 자격연수는 보통 교사 임용 후 3년차 전후로 이수하며, 보직교사(부장)나 수석교사 임용 자격 요건에 포함되는 경우가 있어 장기적인 보직·승진 경로와 연결됩니다.",
   },
 ];

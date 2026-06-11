@@ -33,11 +33,43 @@ export const CSR_META = {
   subtitle:
     "본인과 배우자가 다니는 대기업을 고르면 합산 연봉, 가구소득 전국 순위, 생활비 차감 후 잉여자금을 바로 보여줍니다.",
   methodology:
-    "기업 평균 연봉은 현직자 커뮤니티·블라인드·잡플래닛 기반 추정치(salary-tier 데이터 재사용)이며, 가구소득 상위 %는 통계청 가계금융복지조사를 참고한 추정 구간입니다.",
+    "인기 조합에 자주 등장하는 주요 대기업은 각 사 사업보고서(2024년 기준, DART 공시) 1인당 평균급여액을 사용하며, 그 외 기업은 연봉 티어 계산기(salary-tier)의 현직자 커뮤니티 기반 추정치를 재사용합니다. 가구소득 상위 %는 통계청 가계금융복지조사를 참고한 추정 구간입니다.",
   caution:
     "실제 가구소득, 세금, 생활비는 개인 상황에 따라 달라질 수 있는 참고용 추정입니다.",
   updatedAt: "2026년 6월 기준",
 };
+
+// 인기 조합에 등장하는 주요 기업의 DART 공시 평균연봉(2024년 기준 1인당 평균급여액, 만원)
+// 출처: 각 사 2024년 사업보고서. salary-tier의 "영끌 연봉" 추정치 대신 적용.
+const CSR_DART_AVG_SALARY: Record<string, number> = {
+  "SK텔레콤": 16100,
+  "현대자동차": 12400,
+  "SK하이닉스": 11700,
+  "삼성전자 DS": 12800,
+  "삼성전자 DX(MX)": 12800,
+  "네이버": 12900,
+  "카카오": 10200,
+  "KB국민은행": 11900,
+  "LG에너지솔루션": 11800,
+  "LG화학": 10600,
+  "삼성SDS": 13400,
+  "포스코": 14700,
+  "포스코인터내셔널": 13700,
+  "현대모비스": 12300,
+  "기아": 12700,
+  "LG유플러스": 10900,
+  "KT": 11000,
+  "삼성바이오로직스": 10700,
+  "셀트리온": 10300,
+  "현대건설": 10900,
+  "GS건설": 9300,
+};
+
+const CSR_COMPANY_OPTIONS_RAW = SALARY_TIER_DATA.map((c) =>
+  CSR_DART_AVG_SALARY[c.name] !== undefined
+    ? { ...c, sal: CSR_DART_AVG_SALARY[c.name] }
+    : c
+);
 
 // 2인 가구 생활비 시나리오 (참고: single-household-living-cost-2026의 1인 가구 시나리오를 2인 가구 비율로 환산한 추정값)
 export const COUPLE_LIVING_COST_SCENARIOS: CoupleLivingCostScenario[] = [
@@ -96,7 +128,7 @@ export const POPULAR_COMBOS: PopularCombo[] = [
 export const CSR_FAQ = [
   {
     question: "이 계산기에서 사용하는 기업 평균 연봉은 어디서 가져온 데이터인가요?",
-    answer: "연봉 티어 계산기(salary-tier)에서 사용하는 현직자 커뮤니티·블라인드·잡플래닛 기반 추정 데이터를 그대로 사용합니다. 공식 공시 자료가 아닌 참고용 추정치입니다.",
+    answer: "인기 조합에 자주 등장하는 주요 대기업(SK텔레콤, 삼성전자, 현대자동차, 네이버 등)은 각 사 2024년 사업보고서에 공시된 1인당 평균급여액(DART 전자공시)을 사용합니다. 그 외 기업은 연봉 티어 계산기(salary-tier)의 현직자 커뮤니티·블라인드·잡플래닛 기반 추정치를 그대로 사용합니다.",
   },
   {
     question: "가구소득 상위 %는 어떻게 계산하나요?",
@@ -123,8 +155,9 @@ export const CSR_RELATED_LINKS = [
   { href: "/tools/fire-calculator/", label: "FIRE 은퇴 계산기" },
 ];
 
+export const CSR_COMPANY_OPTIONS = CSR_COMPANY_OPTIONS_RAW;
+
 export {
-  SALARY_TIER_DATA as CSR_COMPANY_OPTIONS,
   OVERALL_AVG,
   CAT_LABEL,
   TIER_META,
