@@ -1,0 +1,297 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  KFLS_META,
+  KFLS_PLAYERS,
+  KFLS_FAQ,
+  KFLS_RELATED_LINKS,
+} from "../../data/koreaFootballLegendsSalaryComparison2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${KFLS_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const formatMan = (value: number) => {
+  if (value >= 10000) {
+    const eok = value / 10000;
+    return `${eok >= 100 ? Math.round(eok).toLocaleString() : eok.toFixed(1)}억`;
+  }
+  return `${Math.round(value).toLocaleString()}만원`;
+};
+const formatRange = (min: number, max: number) =>
+  min === max ? `약 ${formatMan(min)}` : `약 ${formatMan(min)} ~ ${formatMan(max)}`;
+
+const getStartYear = (label: string) => {
+  const match = label.match(/\d{4}/);
+  return match ? Number(match[0]) : 2026;
+};
+
+const currentPlayers = KFLS_PLAYERS.filter((p) => p.era === "current");
+const legendPlayers = KFLS_PLAYERS.filter((p) => p.era === "legend");
+const featuredPlayers = KFLS_PLAYERS.filter((p) => p.isFeatured);
+const generationPlayers = [...KFLS_PLAYERS].sort((a, b) => getStartYear(a.peakPeriodLabel) - getStartYear(b.peakPeriodLabel));
+const maxPresentValue = Math.max(...KFLS_PLAYERS.map((p) => p.presentValueManMax));
+
+const reportData = {
+  players: KFLS_PLAYERS,
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: KFLS_META.title,
+    description: KFLS_META.description,
+    dateModified: KFLS_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: KFLS_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: KFLS_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={KFLS_META.seoTitle} description={KFLS_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page kfls-page" data-report="korea-football-legends-salary-comparison-2026">
+    <CalculatorHero
+      eyebrow="월드컵·스포츠 연봉 리포트"
+      title={KFLS_META.title}
+      description="손흥민, 김민재, 이강인의 추정 연봉을 박지성, 차범근, 이영표, 안정환, 이천수, 기성용 등 역대 레전드의 전성기 연봉, 현재가치 환산과 비교합니다."
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        KFLS_META.dataNote,
+        "이 리포트는 선수 간 우열을 가리기 위한 자료가 아닙니다. 시대, 리그 수준, 환율, 보수 공개 관행의 차이를 감안해 참고용으로 봐주세요.",
+        "손흥민·김민재·이강인 연봉은 2026 대한민국 월드컵 대표팀 연봉 순위 리포트와 동일한 출처 기준을 사용했습니다.",
+      ]}
+    />
+
+    <section class="content-section kfls-toggle-section" aria-labelledby="kfls-toggle-title">
+      <div class="kfls-section-heading">
+        <p>보기 기준</p>
+        <h2 id="kfls-toggle-title">전성기 연봉으로 볼까요, 현재가치로 환산해서 볼까요</h2>
+        <span>현재가치 환산은 소비자물가지수를 참고한 단순 환산이며 실제 구매력과 차이가 있을 수 있습니다.</span>
+      </div>
+      <div class="kfls-toggle-group" role="group" aria-label="비교 모드 선택">
+        <button type="button" class="kfls-toggle-btn is-active" data-mode-btn="peak">전성기 연봉 기준</button>
+        <button type="button" class="kfls-toggle-btn" data-mode-btn="present">현재가치 환산 기준</button>
+      </div>
+    </section>
+
+    <section class="content-section kfls-group-section" aria-labelledby="kfls-current-title">
+      <div class="kfls-section-heading">
+        <p>현재 대표팀 핵심 3인</p>
+        <h2 id="kfls-current-title">손흥민·김민재·이강인 추정 연봉</h2>
+        <span>2026 대한민국 월드컵 대표팀 연봉 순위 리포트와 동일한 출처 기준입니다.</span>
+      </div>
+      <div class="kfls-card-grid">
+        {currentPlayers.map((player) => (
+          <article class="kfls-player-card kfls-player-card--current" data-player-card={player.id}>
+            <div class="kfls-player-card__top">
+              <div>
+                <strong>{player.nameKo}</strong>
+                <span>{player.peakClub} · {player.position}</span>
+              </div>
+              <em class:list={["kfls-badge", `kfls-badge--${player.sourceBadge.replace(/\s/g, "-")}`]}>
+                {player.sourceBadge}
+              </em>
+            </div>
+            <div class="kfls-player-card__money">
+              <span>추정 연봉</span>
+              <strong data-player-value={player.id}>{formatRange(player.annualSalaryManMin, player.annualSalaryManMax)}</strong>
+            </div>
+            <p class="kfls-player-note">{player.careerSummary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section kfls-group-section" aria-labelledby="kfls-legend-title">
+      <div class="kfls-section-heading">
+        <p>역대 레전드 6인</p>
+        <h2 id="kfls-legend-title">박지성·차범근·이영표·안정환·이천수·기성용 전성기 추정 연봉</h2>
+        <span>각 선수의 전성기 기준 추정 연봉이며, 보기 기준을 바꾸면 현재가치 환산값으로 전환됩니다.</span>
+      </div>
+      <div class="kfls-card-grid">
+        {legendPlayers.map((player) => (
+          <article class="kfls-player-card kfls-player-card--legend" data-player-card={player.id}>
+            <div class="kfls-player-card__top">
+              <div>
+                <strong>{player.nameKo}</strong>
+                <span>{player.peakClub} · {player.peakPeriodLabel}</span>
+              </div>
+              <em class:list={["kfls-badge", `kfls-badge--${player.sourceBadge.replace(/\s/g, "-")}`]}>
+                {player.sourceBadge}
+              </em>
+            </div>
+            <div class="kfls-player-card__money">
+              <span data-player-label={player.id}>전성기 추정 연봉</span>
+              <strong data-player-value={player.id}>{formatRange(player.annualSalaryManMin, player.annualSalaryManMax)}</strong>
+              <small data-player-secondary={player.id}>현재가치 환산 {formatRange(player.presentValueManMin, player.presentValueManMax)}</small>
+            </div>
+            <p class="kfls-player-note">{player.careerSummary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section kfls-detail-section" aria-labelledby="kfls-detail-title">
+      <div class="kfls-section-heading">
+        <p>선수 상세 보기</p>
+        <h2 id="kfls-detail-title">선수를 선택해 커리어와 연봉을 자세히 보기</h2>
+        <span>현재 3인과 역대 레전드 6인, 총 9명을 비교할 수 있습니다.</span>
+      </div>
+      <div class="kfls-tab-list" role="tablist" aria-label="선수 선택">
+        {KFLS_PLAYERS.map((player, index) => (
+          <button
+            type="button"
+            class:list={["kfls-tab-btn", index === 0 && "is-active", player.era === "current" ? "kfls-tab-btn--current" : "kfls-tab-btn--legend"]}
+            role="tab"
+            data-player-tab={player.id}
+          >
+            {player.nameKo}
+          </button>
+        ))}
+      </div>
+      {KFLS_PLAYERS.map((player, index) => (
+        <article class:list={["kfls-detail-card", index === 0 && "is-active"]} data-player-detail={player.id}>
+          <div class="kfls-detail-card__head">
+            <div>
+              <strong>{player.nameKo}</strong>
+              <span>{player.nameEn} · {player.position} · {player.peakClub} ({player.peakLeague})</span>
+            </div>
+            <em class:list={["kfls-badge", `kfls-badge--${player.sourceBadge.replace(/\s/g, "-")}`]}>
+              {player.sourceBadge}
+            </em>
+          </div>
+          <div class="kfls-detail-card__money">
+            <div>
+              <span>{player.era === "current" ? "추정 연봉" : "전성기 추정 연봉"}</span>
+              <strong data-detail-value={player.id}>{formatRange(player.annualSalaryManMin, player.annualSalaryManMax)}</strong>
+              <small>{player.peakPeriodLabel}</small>
+            </div>
+            <div>
+              <span>현재가치 환산</span>
+              <strong data-detail-present={player.id}>{formatRange(player.presentValueManMin, player.presentValueManMax)}</strong>
+              <small>소비자물가지수 참고 단순 환산</small>
+            </div>
+          </div>
+          <ul class="kfls-detail-card__highlights">
+            {player.highlights.map((item) => <li>{item}</li>)}
+          </ul>
+          <p class="kfls-player-note">{player.note}</p>
+          <p class="kfls-source-label">출처: {player.sourceLabel}{player.sourceUrl && (
+            <a href={player.sourceUrl} target="_blank" rel="noopener noreferrer">원문 보기</a>
+          )}</p>
+        </article>
+      ))}
+    </section>
+
+    <section class="content-section kfls-generation-section" aria-labelledby="kfls-generation-title">
+      <div class="kfls-section-heading">
+        <p>세대별 흐름</p>
+        <h2 id="kfls-generation-title">1980년대부터 2026년까지, 한국 축구선수 연봉은 어떻게 변했나</h2>
+        <span>전성기 시작 연도 순으로 정렬했으며, 막대는 현재가치 환산 기준 상한값입니다.</span>
+      </div>
+      <div class="kfls-generation-list">
+        {generationPlayers.map((player) => (
+          <div class="kfls-generation-row">
+            <div>
+              <strong>{player.nameKo}</strong>
+              <span>{player.peakPeriodLabel}</span>
+            </div>
+            <div class="kfls-generation-track">
+              <span style={`width:${Math.max((player.presentValueManMax / maxPresentValue) * 100, 6)}%`}></span>
+            </div>
+            <small>{formatMan(player.presentValueManMax)}</small>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section kfls-limit-section" aria-labelledby="kfls-limit-title">
+      <div class="kfls-section-heading">
+        <p>읽는 법</p>
+        <h2 id="kfls-limit-title">이 숫자를 공식 연봉이나 우열 비교로 읽으면 안 됩니다</h2>
+      </div>
+      <div class="kfls-limit-grid">
+        <article>
+          <strong>전성기 기준 추정</strong>
+          <p>은퇴 선수의 연봉은 커리어 전체가 아니라 전성기 시점의 추정 연봉입니다.</p>
+        </article>
+        <article>
+          <strong>현재가치 환산의 한계</strong>
+          <p>소비자물가지수 기준 단순 환산이며, 당시 환율, 세율, 리그 보수 구조 차이는 반영하지 않습니다.</p>
+        </article>
+        <article>
+          <strong>출처 등급 분리</strong>
+          <p>1980~90년대 데이터는 출처가 희소해 확인 필요로 표시했습니다. 보도 기준, 추정, 확인 필요를 구분해 읽어주세요.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section kfls-related-section" aria-labelledby="kfls-related-title">
+      <div class="kfls-section-heading">
+        <p>같이 보기</p>
+        <h2 id="kfls-related-title">스포츠와 연봉 리포트 더 보기</h2>
+      </div>
+      <div class="kfls-related-grid">
+        {KFLS_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)}>{link.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="손흥민·김민재·이강인과 역대 레전드 연봉을 비교할 때 주의할 점"
+      intro={[
+        "월드컵 대표팀 핵심 선수인 손흥민, 김민재, 이강인의 연봉에 대한 관심은 자연스럽게 \"그렇다면 박지성, 차범근 같은 역대 레전드는 전성기에 얼마나 받았을까\"라는 질문으로 이어집니다. 이 리포트는 현재 대표팀 3인과 한국 축구 역대 레전드 6인의 전성기 추정 연봉을 한 화면에서 비교합니다.",
+        "다만 1980년대와 2020년대의 연봉을 그대로 비교하는 것은 의미가 크지 않습니다. 같은 금액이라도 시대별 화폐 가치, 환율, 리그 보수 구조가 전혀 다르기 때문입니다. 그래서 이 페이지는 전성기 연봉과 함께 소비자물가지수를 참고한 현재가치 환산값을 함께 제시하고, 두 기준을 토글로 전환해 볼 수 있게 구성했습니다.",
+        "차범근, 이천수처럼 1980~2000년대 활동 선수의 연봉은 당시 보도 자체가 희소합니다. 이런 경우 출처가 약한 값을 무리하게 단정하지 않고, 가능한 범위로 넓게 추정한 뒤 확인 필요 배지를 붙였습니다. 반면 손흥민, 김민재, 이강인처럼 비교적 최근 보도가 있는 선수는 보도 기준 또는 추정 배지로 표시했습니다.",
+        "이 리포트는 선수 간 우열을 가리거나 \"누가 더 잘 벌었다\"를 판단하기 위한 자료가 아닙니다. 손흥민·김민재·이강인 연봉은 2026 대한민국 월드컵 대표팀 연봉 순위 리포트와 동일한 출처 기준을 사용했으며, 세금, 보너스, 광고 수입, 이적료는 모두 제외한 세전 단순 환산입니다.",
+      ]}
+      inputPoints={[
+        "현재 대표팀 핵심 3인과 역대 레전드 6인의 추정 연봉을 한 화면에서 비교할 수 있습니다.",
+        "전성기 연봉 기준과 현재가치 환산 기준을 토글로 전환할 수 있습니다.",
+        "선수를 선택하면 커리어 하이라이트와 출처를 함께 확인할 수 있습니다.",
+      ]}
+      criteria={[
+        "연봉은 세전 단순 환산이며 실제 실수령액이나 공식 계약 금액이 아닙니다.",
+        "현재가치 환산은 소비자물가지수를 참고한 단순 환산이며 실제 구매력과 다를 수 있습니다.",
+        "1980~90년대 데이터는 출처가 희소해 확인 필요 배지로 분리했습니다.",
+      ]}
+      faq={KFLS_FAQ}
+      related={KFLS_RELATED_LINKS}
+    />
+
+    <script type="application/json" id="kfls-data" set:html={JSON.stringify(reportData)} />
+    <script src={withBase("/scripts/korea-football-legends-salary-comparison-2026.js")} defer></script>
+  </main>
+</BaseLayout>

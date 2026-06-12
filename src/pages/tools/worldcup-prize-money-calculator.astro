@@ -1,0 +1,294 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  STAGE_ORDER,
+  FIFA_PRIZE_TABLE,
+  KFA_BASE_BONUS_M,
+  KFA_WIN_BONUS_M,
+  KFA_DRAW_BONUS_M,
+  KFA_STAGE_BONUS_M,
+  SQUAD_SIZE,
+  OTHER_INCOME_TAX_RATE,
+  SON_HEUNGMIN_SALARY_USD,
+  DEFAULT_EXCHANGE_RATE,
+  WPM_FAQ,
+  WPM_RELATED_LINKS,
+} from "../../data/worldcupPrizeMoneyCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  stages: STAGE_ORDER,
+  fifaPrizeTable: FIFA_PRIZE_TABLE,
+  kfaBaseBonusM: KFA_BASE_BONUS_M,
+  kfaWinBonusM: KFA_WIN_BONUS_M,
+  kfaDrawBonusM: KFA_DRAW_BONUS_M,
+  kfaStageBonusM: KFA_STAGE_BONUS_M,
+  squadSize: SQUAD_SIZE,
+  otherIncomeTaxRate: OTHER_INCOME_TAX_RATE,
+  sonSalaryUsd: SON_HEUNGMIN_SALARY_USD,
+  defaultExchangeRate: DEFAULT_EXCHANGE_RATE,
+};
+---
+
+<BaseLayout
+  title="월드컵 포상금 계산기 | 16강·8강·우승 시 대표팀 포상금 얼마? 2026"
+  description="대표팀 진출 단계와 조별리그 전적을 고르면 FIFA 협회 상금, 선수단 포상금 1인당·총액, 세후 추정액을 바로 계산합니다."
+  ogImage="/og/tools/worldcup-prize-money-calculator.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "월드컵 포상금 계산기",
+    "url": `${import.meta.env.SITE}/tools/worldcup-prize-money-calculator/`,
+    "description": "대표팀 진출 단계와 조별리그 전적을 고르면 FIFA 협회 상금, 선수단 포상금 1인당·총액, 세후 추정액을 계산하는 페이지",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="worldcup-prize-money-calculator" pageClass="worldcup-prize-money-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="2026 월드컵 포상금"
+        title="월드컵 포상금 계산기"
+        description="대표팀 성적 단계를 고르면 FIFA 협회 상금과 선수단 포상금을 바로 보여줍니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetWpmBtn" copyId="copyWpmLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="wpm-inputs">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">대표팀 성적 선택</h2>
+            </div>
+            <p class="panel-heading__summary">진출 단계와 조별리그 전적을 선택하면 포상금이 자동으로 계산됩니다.</p>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field field-span-full">
+              <span>최종 진출 단계</span>
+              <select id="finalStageSelect">
+                {STAGE_ORDER.map((s) => (
+                  <option value={s.code} selected={s.code === "ROUND16"}>{s.label}</option>
+                ))}
+              </select>
+            </label>
+
+            <label class="field">
+              <span>조별리그 승리 수</span>
+              <select id="groupWinsSelect">
+                {[0, 1, 2, 3].map((n) => (
+                  <option value={n} selected={n === 1}>{n}승</option>
+                ))}
+              </select>
+            </label>
+
+            <label class="field">
+              <span>조별리그 무승부 수</span>
+              <select id="groupDrawsSelect">
+                {[0, 1, 2, 3].map((n) => (
+                  <option value={n} selected={n === 0}>{n}무</option>
+                ))}
+              </select>
+            </label>
+
+            <label class="field field-span-full">
+              <span>환율(원/달러)</span>
+              <input id="exchangeRateInput" type="number" value={DEFAULT_EXCHANGE_RATE} min="1200" max="1500" step="5" />
+              <div class="calc-slider-row">
+                <input type="range" id="exchangeRateSlider" class="calc-slider" min="1200" max="1500" step="5" value={DEFAULT_EXCHANGE_RATE} />
+                <span id="exchangeRateSliderVal" class="calc-slider-val">{DEFAULT_EXCHANGE_RATE.toLocaleString("ko-KR")}원</span>
+              </div>
+            </label>
+          </div>
+
+          <button id="calcWpmBtn" class="button button--primary" type="button">포상금 계산하기</button>
+        </article>
+      </div>
+    </Fragment>
+
+    <article class="panel result-priority-panel" id="wpm-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+          <h2 class="panel__title" id="resultHeadline">대표팀 포상금 핵심 카드</h2>
+        </div>
+      </div>
+      <div class="wpm-kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p>선수 1인당 포상금</p>
+          <strong id="perPlayerSummary">-</strong>
+          <span id="perPlayerSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>FIFA 협회 상금</p>
+          <strong id="fifaPrizeSummary">-</strong>
+          <span id="fifaPrizeSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>선수단 총액 ({SQUAD_SIZE}인)</p>
+          <strong id="squadTotalSummary">-</strong>
+          <span id="squadTotalSummaryNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>세후 추정 1인당</p>
+          <strong id="afterTaxSummary">-</strong>
+          <span id="afterTaxSummaryNote">-</span>
+        </article>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#wpm-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#wpm-breakdown">포상금 구성 보기</a>
+      </div>
+    </article>
+
+    <section class="wpm-section" id="wpm-chart">
+      <div class="wpm-section__head">
+        <p class="wpm-section__eyebrow">단계별 비교</p>
+        <h2>단계가 올라갈수록 포상금은 얼마나 늘어날까</h2>
+        <p class="wpm-section__sub">조별리그 탈락부터 우승까지, 선수 1인당 포상금 누적액을 비교합니다.</p>
+      </div>
+      <div class="wpm-chart-wrap">
+        <canvas id="wpm-stage-chart"></canvas>
+      </div>
+    </section>
+
+    <section class="wpm-section" id="wpm-breakdown">
+      <div class="wpm-section__head">
+        <p class="wpm-section__eyebrow">포상금 구성</p>
+        <h2>1인당 포상금은 어떻게 계산될까</h2>
+        <p class="wpm-section__sub">기본 포상금, 경기 승/무 보너스, 단계 진출 보너스를 더해 계산합니다.</p>
+      </div>
+      <div class="wpm-breakdown-grid">
+        <article class="wpm-breakdown-card">
+          <p>기본 포상금</p>
+          <strong id="breakdownBase">-</strong>
+          <span>전 선수 공통 지급</span>
+        </article>
+        <article class="wpm-breakdown-card">
+          <p>경기 승/무 보너스</p>
+          <strong id="breakdownMatch">-</strong>
+          <span id="breakdownMatchNote">-</span>
+        </article>
+        <article class="wpm-breakdown-card">
+          <p>단계 진출 보너스</p>
+          <strong id="breakdownStage">-</strong>
+          <span id="breakdownStageNote">-</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="wpm-section">
+      <div class="wpm-section__head">
+        <p class="wpm-section__eyebrow">연봉 비교</p>
+        <h2>손흥민 연봉과 비교하면?</h2>
+        <p class="wpm-section__sub">손흥민의 추정 연봉·일급과 이번 포상금을 비교합니다.</p>
+      </div>
+      <div class="wpm-dual-grid">
+        <article class="comparison-card" id="sonAnnualCard">
+          <p>손흥민 연봉 대비</p>
+          <strong id="sonAnnualPct">-</strong>
+          <span id="sonAnnualNote">-</span>
+        </article>
+        <article class="comparison-card" id="sonDailyCard">
+          <p>손흥민 일급 대비</p>
+          <strong id="sonDailyRatio">-</strong>
+          <span id="sonDailyNote">-</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="wpm-section">
+      <div class="wpm-section__head">
+        <p class="wpm-section__eyebrow">단계별 표</p>
+        <h2>단계별 포상금 한눈에 보기</h2>
+        <p class="wpm-section__sub">현재 선택한 단계는 강조 표시됩니다.</p>
+      </div>
+      <div class="wpm-stage-table" id="wpmStageTable"></div>
+    </section>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">계산 기준 요약</h2>
+        </div>
+      </div>
+      <div class="logic-grid">
+        <article class="logic-card">
+          <strong>FIFA 협회 상금 = 단계별 공식 발표 금액</strong>
+          <p>2026 월드컵 총 상금 약 8.71억 달러 기준입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>1인당 포상금 = 기본 + 경기 보너스 + 단계 보너스</strong>
+          <p>기본 2,000만원, 승리 3,000만원, 무승부 1,000만원입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>4강 이상은 추정치</strong>
+          <p>16강·8강 증가 패턴을 적용한 참고용 추정입니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>세후 추정 = 1인당 포상금 × (1 − 22%)</strong>
+          <p>기타소득세 단순 가정에 따른 참고용 계산입니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "FIFA 협회 상금은 2026 월드컵 공식 발표(총 상금 약 8.71억 달러) 기준이며, 단계별 금액은 보도 자료 기준 참고값입니다.",
+        "선수단 포상금은 2022 카타르 월드컵 기준(16강 1인당 1억원, 8강 시 2억원)을 참고했고, 4강 이상 단계는 공식 미발표로 단계별 증가 패턴을 적용한 추정치입니다.",
+        "세후 추정액은 포상금을 기타소득(22% 원천징수)으로 가정한 단순 계산이며 실제 과세 방식과 다를 수 있습니다.",
+        "선수단 26인 균등 배분 가정이며, 실제로는 코칭스태프 포함 배분, 출전 기여도별 차등 등 다양한 변수가 있습니다.",
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="월드컵 포상금 계산기 활용 가이드"
+        intro={[
+          "이 페이지는 대한민국 대표팀의 월드컵 최종 진출 단계(조별리그 탈락~우승)와 조별리그 전적을 선택하면, FIFA가 각국 축구협회에 지급하는 협회 상금과 대한축구협회(KFA)가 선수단에 지급하는 포상금을 동시에 보여주는 월드컵 포상금 계산기입니다.",
+          "FIFA 협회 상금은 2026 월드컵 공식 발표 기준(총 상금 약 8.71억 달러)을 사용하고, 선수단 포상금은 2022 카타르 월드컵에서 발표된 기준(16강 1인당 1억원, 8강 2억원)을 참고해 단계별로 계산합니다. 4강 이상은 공식 발표가 없어 증가 패턴을 적용한 추정치입니다.",
+          "단순히 포상금 금액만 보여주는 것이 아니라 선수단 26인 기준 총액, 세후 추정액, 그리고 손흥민의 추정 연봉·일급과 비교한 수치까지 함께 확인할 수 있어 월드컵 성적에 따른 포상금 규모를 체감하는 데 참고할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "최종 진출 단계(조별리그 탈락~우승)를 선택하면 FIFA 협회 상금과 선수단 포상금이 자동으로 계산됩니다.",
+          "조별리그 승/무승부 수를 선택하면 경기 보너스가 함께 반영됩니다.",
+          "환율을 조정하면 FIFA 협회 상금의 원화 환산액과 손흥민 비교 카드가 함께 바뀝니다.",
+        ]}
+        criteria={[
+          "FIFA 협회 상금은 2026 월드컵 공식 발표(우승 5,000만 달러, 준우승 3,300만 달러, 8강 1,900만 달러, 16강 1,750만 달러, 조별리그 900만 달러 등) 기준입니다.",
+          "선수단 포상금은 기본 포상금 2,000만원 + 경기 승리 시 3,000만원/무승부 시 1,000만원 + 단계 진출 보너스(16강 1억원, 8강 2억원)를 더한 값이며, 4강·준우승·우승은 추정치입니다.",
+          "예시: 16강 진출 + 1승 0무일 경우 1인당 포상금은 기본 2,000만원 + 승리 보너스 3,000만원 + 16강 보너스 1억원 = 1억 5,000만원입니다.",
+          "세후 추정액은 1인당 포상금에서 기타소득세 22%를 단순 차감한 값입니다.",
+        ]}
+        faq={WPM_FAQ.map((item) => ({ question: item.question, answer: item.answer }))}
+        related={WPM_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script id="wpmConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/worldcup-prize-money-calculator.js")}></script>
+</BaseLayout>

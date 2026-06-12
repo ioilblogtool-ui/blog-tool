@@ -1,0 +1,298 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  WCSST_FAQ,
+  WCSST_META,
+  WCSST_RELATED_LINKS,
+  WCSST_TEAMS,
+} from "../../data/worldcupSquadSalaryTotalComparison2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${WCSST_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const rankedTeams = [...WCSST_TEAMS]
+  .sort((a, b) => b.estimatedTotalBillion - a.estimatedTotalBillion)
+  .map((team, index) => ({ ...team, rank: index + 1 }));
+const korea = rankedTeams.find((team) => team.id === "korea")!;
+const brazil = rankedTeams.find((team) => team.id === "brazil")!;
+const france = rankedTeams.find((team) => team.id === "france")!;
+const england = rankedTeams.find((team) => team.id === "england")!;
+const japan = rankedTeams.find((team) => team.id === "japan")!;
+const maxTotal = Math.max(...rankedTeams.map((team) => team.estimatedTotalBillion));
+const koreaShareOfBrazil = Math.round((korea.estimatedTotalBillion / brazil.estimatedTotalBillion) * 100);
+const sonShare = Math.round((korea.topPlayerSalaryBillion / korea.estimatedTotalBillion) * 100);
+const confederationLabels: Record<string, string> = {
+  AFC: "아시아",
+  UEFA: "유럽",
+  CONMEBOL: "남미",
+  CONCACAF: "북중미",
+  CAF: "아프리카",
+  OFC: "오세아니아",
+};
+const comparisonTeams = [england, france, brazil, japan];
+const formatBillion = (value: number) => `${value.toLocaleString("ko-KR")}억`;
+const compareText = (value: number) => {
+  const diff = value - korea.estimatedTotalBillion;
+  if (diff === 0) return "한국과 동일";
+  return diff > 0 ? `한국보다 ${formatBillion(diff)} 높음` : `한국보다 ${formatBillion(Math.abs(diff))} 낮음`;
+};
+
+const reportData = {
+  teams: WCSST_TEAMS,
+  defaultMode: "estimatedTotalBillion",
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: WCSST_META.title,
+    description: WCSST_META.seoDescription,
+    dateModified: WCSST_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: WCSST_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: WCSST_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={WCSST_META.seoTitle} description={WCSST_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page wcsst-page" data-report={WCSST_META.slug}>
+    <CalculatorHero
+      eyebrow="월드컵·스포츠 연봉 리포트"
+      title="한국 대표팀 연봉 총액은 월드컵 몇 위일까?"
+      description="2026 월드컵 본선 주요국 스쿼드의 클럽 연봉 추정 합계를 원화 억 단위로 맞춰 한국과 브라질, 프랑스, 잉글랜드, 일본의 격차를 한눈에 비교합니다."
+    />
+
+    <InfoNotice
+      title="데이터 해석 안내"
+      lines={[
+        "2026 월드컵은 48개국 체제입니다. 이 페이지는 검색 수요가 큰 주요국부터 비교하고, 본선 진출국과 최종 명단이 확정될 때 확장하는 구조입니다.",
+        WCSST_META.dataNote,
+        "순위는 전력 순위가 아니라 클럽 연봉 시장 기준의 참고 지표입니다.",
+      ]}
+    />
+
+    <section class="content-section wcsst-kpis" aria-label="한국 대표팀 연봉 총액 요약">
+      <article class="wcsst-kpi wcsst-kpi--primary">
+        <span>한국 추정 순위</span>
+        <strong>{korea.rank}위</strong>
+        <small>주요 {rankedTeams.length}개국 비교 기준</small>
+      </article>
+      <article class="wcsst-kpi">
+        <span>한국 총액</span>
+        <strong>{formatBillion(korea.estimatedTotalBillion)}</strong>
+        <small>확인 합계 {formatBillion(korea.confirmedTotalBillion)} + 보정</small>
+      </article>
+      <article class="wcsst-kpi">
+        <span>브라질 대비</span>
+        <strong>{koreaShareOfBrazil}%</strong>
+        <small>{compareText(brazil.estimatedTotalBillion)}</small>
+      </article>
+      <article class="wcsst-kpi">
+        <span>손흥민 비중</span>
+        <strong>{sonShare}%</strong>
+        <small>한국 총액 내 최고 연봉 선수 기준</small>
+      </article>
+    </section>
+
+    <section class="content-section wcsst-controls" aria-labelledby="wcsst-controls-title">
+      <div class="wcsst-section-heading">
+        <p>순위 필터</p>
+        <h2 id="wcsst-controls-title">추정 총액과 확인 합계를 번갈아 보기</h2>
+        <span>확인된 선수만 합산하면 커버리지가 높은 팀이 유리합니다. 그래서 기본값은 최종 명단 26인 보정 추정 총액입니다.</span>
+      </div>
+      <div class="wcsst-control-grid">
+        <label>
+          <span>랭킹 기준</span>
+          <select data-wcsst-mode>
+            <option value="estimatedTotalBillion">추정 보정 합계</option>
+            <option value="confirmedTotalBillion">확인 합계</option>
+          </select>
+        </label>
+        <label>
+          <span>권역</span>
+          <select data-wcsst-confederation>
+            <option value="all">전체</option>
+            <option value="AFC">아시아</option>
+            <option value="UEFA">유럽</option>
+            <option value="CONMEBOL">남미</option>
+            <option value="CONCACAF">북중미</option>
+            <option value="CAF">아프리카</option>
+          </select>
+        </label>
+        <label>
+          <span>보기</span>
+          <select data-wcsst-featured>
+            <option value="all">전체 국가</option>
+            <option value="featured">관심 국가만</option>
+          </select>
+        </label>
+      </div>
+      <p class="wcsst-control-status" data-wcsst-status aria-live="polite">전체 국가를 추정 보정 합계 기준으로 표시 중입니다.</p>
+    </section>
+
+    <section class="content-section wcsst-ranking" aria-labelledby="wcsst-ranking-title">
+      <div class="wcsst-section-heading">
+        <p>대표팀 연봉 총액 순위</p>
+        <h2 id="wcsst-ranking-title">한국은 유럽·남미 강팀과 어느 정도 차이일까?</h2>
+        <span>막대 길이는 현재 선택한 랭킹 기준에서 가장 높은 팀을 100으로 둔 상대값입니다.</span>
+      </div>
+
+      <div class="wcsst-table-wrap">
+        <table class="wcsst-table">
+          <caption>2026 월드컵 주요국 대표팀 연봉 총액 추정 순위</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>국가</th>
+              <th>추정 총액</th>
+              <th>확인 합계</th>
+              <th>한국 대비</th>
+              <th>상위 선수</th>
+              <th>커버리지</th>
+            </tr>
+          </thead>
+          <tbody data-wcsst-body>
+            {rankedTeams.map((team) => (
+              <tr
+                data-wcsst-row={team.id}
+                data-confederation={team.confederation}
+                data-featured={team.isFeatured ? "true" : "false"}
+              >
+                <td><strong data-rank>{team.rank}</strong></td>
+                <td>
+                  <div class="wcsst-team-cell">
+                    <span>{team.flag}</span>
+                    <div>
+                      <strong>{team.nameKo}</strong>
+                      <small>{team.nameEn} · {confederationLabels[team.confederation]}</small>
+                    </div>
+                  </div>
+                  <div class="wcsst-bar" aria-hidden="true">
+                    <span style={`width: ${(team.estimatedTotalBillion / maxTotal) * 100}%`}></span>
+                  </div>
+                </td>
+                <td data-value="estimated">{formatBillion(team.estimatedTotalBillion)}</td>
+                <td data-value="confirmed">{formatBillion(team.confirmedTotalBillion)}</td>
+                <td>{compareText(team.estimatedTotalBillion)}</td>
+                <td>
+                  <strong>{team.topPlayerKo}</strong>
+                  <small>{team.topPlayerClub} · {formatBillion(team.topPlayerSalaryBillion)}</small>
+                </td>
+                <td>
+                  <span class:list={["wcsst-badge", `wcsst-badge--${team.coverageBadge}`]}>{team.coverageBadge}</span>
+                  <small>{team.sourceBadge}</small>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section wcsst-compare" aria-labelledby="wcsst-compare-title">
+      <div class="wcsst-section-heading">
+        <p>한국과 직접 비교</p>
+        <h2 id="wcsst-compare-title">“한국이 몇 위냐”를 클릭하게 만드는 핵심 격차</h2>
+        <span>상위권 팀과는 총액 격차가 크지만, 아시아권에서는 일본과 바로 비교되는 구도가 검색 수요에 맞습니다.</span>
+      </div>
+      <div class="wcsst-compare-grid">
+        {comparisonTeams.map((team) => {
+          const multiple = team.estimatedTotalBillion / korea.estimatedTotalBillion;
+          return (
+            <article class="wcsst-compare-card">
+              <span>{team.flag} {team.nameKo}</span>
+              <strong>{multiple.toFixed(multiple >= 3 ? 1 : 2)}배</strong>
+              <p>{formatBillion(team.estimatedTotalBillion)}로 한국보다 {formatBillion(team.estimatedTotalBillion - korea.estimatedTotalBillion)} 높게 잡힙니다.</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="content-section wcsst-method" aria-labelledby="wcsst-method-title">
+      <div class="wcsst-section-heading">
+        <p>산정 기준</p>
+        <h2 id="wcsst-method-title">공식 급여가 아니라 시장 연봉을 비교합니다</h2>
+        <span>대표팀 수당이나 월드컵 보너스는 국가마다 공개 방식이 달라 제외했습니다.</span>
+      </div>
+      <div class="wcsst-method-grid">
+        <article>
+          <strong>확인 합계</strong>
+          <p>연봉 보도 또는 공개 데이터가 있는 선수만 합산한 금액입니다. 커버리지가 낮은 팀은 과소 집계될 수 있습니다.</p>
+        </article>
+        <article>
+          <strong>추정 보정 합계</strong>
+          <p>최종 26인 명단을 가정해 미확인 선수 구간을 보수적으로 보정한 금액입니다. 이 페이지의 기본 랭킹 기준입니다.</p>
+        </article>
+        <article>
+          <strong>커버리지</strong>
+          <p>선수별 데이터가 얼마나 촘촘한지 표시합니다. 낮음 배지는 순위보다 방향성만 보는 것이 좋습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section wcsst-notes" aria-labelledby="wcsst-notes-title">
+      <h2 id="wcsst-notes-title">업데이트 메모</h2>
+      <ul>
+        <li>본선 진출국 확정, 최종 26인 명단 발표, 주요 선수 이적 및 계약 보도 발생 시 금액이 바뀔 수 있습니다.</li>
+        <li>검색 제목은 32개국보다 “48개국 주요국 순위” 또는 “주요 32개국 추정 순위”가 사실관계상 안전합니다.</li>
+        <li>한국 단독 선수별 연봉은 별도 리포트로 연결해 체류 시간을 늘리는 구조가 좋습니다.</li>
+      </ul>
+    </section>
+
+    <SeoContent
+      introTitle="월드컵 대표팀 연봉 총액 비교를 보는 방법"
+      intro={[
+        "이 리포트는 국가대표팀이 선수에게 지급하는 수당을 비교하는 페이지가 아닙니다. 각 선수가 소속 클럽에서 받는 것으로 알려진 연봉 또는 추정 보수를 합산해 국가별 스쿼드의 시장 규모를 비교합니다.",
+        "한국은 손흥민, 김민재, 이강인처럼 상단을 끌어올리는 해외파가 있지만 잉글랜드, 프랑스, 브라질처럼 명단 전체가 유럽 빅리그 고연봉 선수로 채워지는 팀과는 격차가 큽니다.",
+        "반대로 일본, 멕시코, 모로코처럼 총액권이 가까운 팀과 비교하면 한국 대표팀의 선수층과 해외파 저변을 더 현실적으로 볼 수 있습니다.",
+        "2026 월드컵은 48개국 체제이므로 최종 확장판에서는 전체 본선 진출국을 추가하고, 현재 페이지는 주요 검색 수요 국가 중심의 선공개판으로 운영하는 것이 적합합니다.",
+      ]}
+      inputPoints={[
+        "한국 대표팀이 주요국 중 몇 위권인지 빠르게 확인할 수 있습니다.",
+        "브라질·프랑스·잉글랜드와 한국의 총액 격차를 억 단위로 비교할 수 있습니다.",
+        "추정 보정 합계와 확인 합계를 바꿔 보며 데이터 신뢰도를 함께 판단할 수 있습니다.",
+      ]}
+      criteria={[
+        "금액은 원화 억 단위이며, 환율과 보도 기준 변화에 따라 업데이트될 수 있습니다.",
+        "대표팀 수당, 월드컵 상금, 광고 수입, 세금, 에이전트 수수료는 제외했습니다.",
+        "순위는 전력 평가가 아니라 클럽 연봉 시장에서 평가된 선수 보수의 합산값입니다.",
+        "최종 명단이 확정되기 전까지는 후보군 기반 추정이므로 커버리지 배지를 함께 확인해야 합니다.",
+      ]}
+      faq={WCSST_FAQ}
+      related={WCSST_RELATED_LINKS}
+    />
+
+    <script type="application/json" id="wcsst-data" set:html={JSON.stringify(reportData)} />
+    <script src={withBase("scripts/worldcup-squad-salary-total-comparison-2026.js")} defer></script>
+  </main>
+</BaseLayout>

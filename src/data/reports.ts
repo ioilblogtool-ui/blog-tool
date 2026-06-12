@@ -569,6 +569,27 @@ export const reports: ReportMeta[] = [
     badges: ["KBO", "구단별 연봉", "스포츠", "2026"],
   },
   {
+    slug: "korea-worldcup-squad-salary-2026",
+    title: "2026 대한민국 월드컵 대표팀 연봉 순위",
+    description: "손흥민, 김민재, 이강인 등 대한민국 월드컵 대표팀 주요 선수의 보도 기준 추정 연봉을 원화, 월급, 일급, 경기 90분 기준으로 환산합니다.",
+    order: 37.115,
+    badges: ["월드컵", "국가대표", "연봉", "2026"],
+  },
+  {
+    slug: "worldcup-squad-salary-total-comparison-2026",
+    title: "2026 월드컵 대표팀 연봉 총액 순위 — 한국은 몇 위?",
+    description: "한국 대표팀 스쿼드 추정 연봉 총액을 브라질, 프랑스, 잉글랜드, 아르헨티나 등 주요 월드컵 강팀과 비교합니다.",
+    order: 37.116,
+    badges: ["월드컵", "국가별 연봉", "스포츠", "2026"],
+  },
+  {
+    slug: "korea-football-legends-salary-comparison-2026",
+    title: "손흥민·김민재·이강인 연봉 vs 역대 레전드 연봉 비교",
+    description: "손흥민, 김민재, 이강인의 추정 연봉을 박지성, 차범근, 이영표, 안정환, 이천수, 기성용 등 역대 레전드의 전성기 연봉·현재가치 환산과 비교합니다.",
+    order: 37.117,
+    badges: ["월드컵", "레전드", "연봉", "2026"],
+  },
+  {
     slug: "national-assembly-wealth-2026",
     title: "국회의원 재산 순위 2026 — TOP 30 완전 분석",
     description: "공직자윤리위원회 2026년 정기 공시 기준 국회의원 재산 TOP 30 순위, 정당별 평균, 직업 배경별 비교, 재산 구성(부동산·주식·예금)을 완전 분석합니다.",

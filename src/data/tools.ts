@@ -1464,6 +1464,20 @@ export const tools: ToolMeta[] = [
       { label: "5가지 방법 비교", value: "수수료 한눈에" },
     ],
   },
+  {
+    slug: "worldcup-prize-money-calculator",
+    title: "월드컵 포상금 계산기",
+    description: "대표팀 진출 단계와 조별리그 전적을 고르면 FIFA 협회 상금, 선수단 1인당·총액 포상금, 세후 추정액을 계산합니다.",
+    order: 25.6,
+    eyebrow: "월드컵 포상금",
+    category: "스포츠",
+    iframeReady: true,
+    badges: ["신규", "월드컵"],
+    previewStats: [
+      { label: "16강 1인당", value: "1.5억" },
+      { label: "우승 1인당", value: "6.5억" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)
