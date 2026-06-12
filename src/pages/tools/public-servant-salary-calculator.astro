@@ -1,0 +1,287 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PSC_ALLOWANCES,
+  PSC_DEFAULT_INPUT,
+  PSC_FAQ,
+  PSC_GRADES,
+  PSC_META,
+  PSC_PRESETS,
+  PSC_RELATED_LINKS,
+} from "../../data/publicServantSalaryCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  grades: PSC_GRADES,
+  allowances: PSC_ALLOWANCES,
+  defaultInput: PSC_DEFAULT_INPUT,
+  presets: PSC_PRESETS,
+};
+
+const faqSchema = PSC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={PSC_META.seoTitle}
+  description={PSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: PSC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: PSC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/public-servant-salary-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="public-servant-salary-calculator" pageClass="psc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="공무원 연봉"
+        title="공무원 호봉 실수령액 계산기"
+        description="직급(9·8·7급), 호봉, 가족수당 조건을 입력하면 2026년 공무원보수규정 기준 월급과 세후 실수령액, 연봉을 바로 계산합니다."
+        badges={["2026 봉급표", "9급·8급·7급", "실수령 추정"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          PSC_META.dataNote,
+          "정근수당가산금은 호봉을 근속연수의 근사치로 사용해 5년·10년·15년 이상 기준으로 자동 적용됩니다.",
+          "명절휴가비(설·추석 연 2회, 기본급 60%)와 정근수당(근속연수별 5~50%, 연 2회)은 연봉 계산에 포함되어 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="pscResetBtn" copyId="pscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">자주 찾는 케이스</h2>
+          </div>
+          <p class="panel-heading__summary">대표 케이스를 먼저 선택한 뒤 직급·호봉·가족수당 조건을 조정하세요.</p>
+        </div>
+        <div class="psc-preset-grid">
+          {PSC_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`psc-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">직급·호봉·가족수당 입력</h2>
+          </div>
+          <p class="panel-heading__summary">9급·8급·7급은 직급보조비와 봉급표가 다릅니다.</p>
+        </div>
+
+        <div class="psc-grade-tabs" role="group" aria-label="직급 선택">
+          {PSC_GRADES.map((grade) => (
+            <button type="button" class="psc-grade-btn" data-psc-grade={grade.id}>
+              {grade.label}
+            </button>
+          ))}
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>호봉</span>
+            <input data-psc="step" data-type="number" type="number" min="1" max="30" class="input-number" />
+            <small>1~30호봉</small>
+          </label>
+
+          <label class="field">
+            <span>호봉 슬라이더</span>
+            <input data-psc="stepRange" type="range" min="1" max="30" step="1" class="psc-range" />
+          </label>
+        </div>
+
+        <div class="psc-check-list">
+          <label class="check-field">
+            <input data-psc="hasSpouse" type="checkbox" />
+            <span>배우자 (가족수당 월 4만원)</span>
+          </label>
+
+          <label class="field psc-child-field">
+            <span>자녀 수 (1인당 월 2만원)</span>
+            <input data-psc="childCount" data-type="number" type="number" min="0" max="4" class="input-number" />
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="psc-summary-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">호봉별 월급·실수령액</h2>
+        </div>
+        <p class="panel-heading__summary" id="pscSummaryText">직급·호봉·가족수당 조건에 따른 월급·연봉을 계산합니다.</p>
+      </div>
+
+      <div class="psc-result-grid" aria-live="polite">
+        <article class="psc-result-card psc-result-card--main">
+          <span>월 실수령 (추정)</span>
+          <strong id="pscMonthlyNet">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="psc-result-card">
+          <span>월 기본급</span>
+          <strong id="pscMonthlyBase">-</strong>
+        </article>
+        <article class="psc-result-card">
+          <span>월 수당 합계</span>
+          <strong id="pscAllowanceSum">-</strong>
+        </article>
+        <article class="psc-result-card">
+          <span>연봉 (세전, 수당 포함)</span>
+          <strong id="pscAnnualGross">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="psc-result-card">
+          <span>연봉 실수령 (추정)</span>
+          <strong id="pscAnnualNet">-</strong>
+          <small>추정</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">분해</p>
+          <h2 class="panel__title">월 고정 수당 항목</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 조건에 따라 적용되는 수당만 표시됩니다.</p>
+      </div>
+
+      <div class="psc-table-wrap">
+        <table class="psc-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>적용 조건</th>
+            </tr>
+          </thead>
+          <tbody id="pscAllowanceRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">연간 지급</p>
+          <h2 class="panel__title">명절휴가비·정근수당</h2>
+        </div>
+        <p class="panel-heading__summary">연 2회 지급되는 항목으로, 연봉 계산에 포함되어 있습니다.</p>
+      </div>
+
+      <div class="psc-table-wrap">
+        <table class="psc-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>연간 합계</th>
+              <th>적용 조건</th>
+            </tr>
+          </thead>
+          <tbody id="pscAnnualRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">호봉표</p>
+          <h2 class="panel__title">내 호봉 주변 비교</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 <strong id="pscGradeLabel">9</strong>급 <strong id="pscStepLabel">1</strong>호봉을 기준으로 ±3개 호봉을 비교합니다.</p>
+      </div>
+      <div class="psc-table-wrap">
+        <table class="psc-table">
+          <thead>
+            <tr>
+              <th>호봉</th>
+              <th>월 기본급</th>
+              <th>월 실수령 (1인 가구 추정)</th>
+            </tr>
+          </thead>
+          <tbody id="pscNearbyRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <CompareCta
+      variant="hub"
+      title="내 공무원 연봉이 전체 직장인 중 어느 위치인지 궁금하다면"
+      description="계산된 연봉을 연봉 티어 계산기에 넣어보면 전체 직장인 분포에서 상위 몇 %인지 바로 확인할 수 있습니다."
+      links={[
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/public-servant-salary-2026/", label: "공무원 9급 연봉 가이드 2026" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="공무원 호봉 실수령액, 어떻게 계산될까?"
+        intro={[
+          "공무원 월급은 직급별 호봉표에 따른 기본급에 직급보조비·정액급식비 같은 고정 수당과, 가족수당·정근수당가산금 같은 개인 조건별 수당을 더해 계산합니다.",
+          "9급·8급·7급은 직급보조비와 봉급표가 각각 다르며, 같은 호봉이라도 직급에 따라 기본급과 실수령액이 달라집니다.",
+          "이 계산기는 직급·호봉·가족수당 조건을 입력하면 월 실수령액과 연봉(명절휴가비·정근수당 포함)을 추정해 보여줍니다. 실제 지급액은 근속연수, 부양가족 등록 여부, 기관별 수당에 따라 달라질 수 있습니다.",
+        ]}
+        inputPoints={[
+          "직급(9급·8급·7급)을 선택하면 해당 직급의 봉급표와 직급보조비가 자동 반영됩니다.",
+          "호봉(1~30)을 입력하거나 슬라이더로 선택하면 해당 호봉의 기본급이 자동 반영됩니다.",
+          "배우자·자녀 수를 입력하면 가족수당이 월 수당 합계와 실수령액에 즉시 반영됩니다.",
+          "호봉 6 이상부터는 정근수당가산금(월 5만원~), 11 이상은 10만원, 16 이상은 15만원이 자동 적용됩니다.",
+        ]}
+        criteria={[
+          "기본급은 인사혁신처 2026년 공무원보수규정 별표 3 기준입니다 (8급·7급은 추정).",
+          "세후 실수령액은 미혼·부양가족 없음 기준 추정치에 가족수당을 더한 값입니다.",
+          "연봉은 기본급 12개월 + 수당 12개월 + 명절휴가비(기본급×0.6×2회) + 정근수당(기본급×근속비례×2회)을 합산한 추정치입니다.",
+          "정근수당 비율은 근속연수×5%(최대 50%)로 근사 계산하며, 호봉을 근속연수의 근사치로 사용합니다.",
+        ]}
+        faq={PSC_FAQ}
+        related={PSC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="pscConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/public-servant-salary-calculator.js")}></script>
+</BaseLayout>

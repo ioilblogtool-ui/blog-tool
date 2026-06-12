@@ -165,6 +165,34 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "teacher-salary-calculator",
+    title: "교사 호봉 실수령액 계산기",
+    description: "호봉, 담임·보직 여부를 입력하면 2026년 교원 봉급표 기준 월급과 세후 실수령액, 연봉을 계산하는 페이지",
+    order: 1.6,
+    eyebrow: "교사 연봉",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "교사", "호봉"],
+    previewStats: [
+      { label: "9호봉 실수령", value: "약 270만" },
+      { label: "기준", value: "2026 봉급표" }
+    ]
+  },
+  {
+    slug: "public-servant-salary-calculator",
+    title: "공무원 호봉 실수령액 계산기",
+    description: "9급·8급·7급 직급과 호봉, 가족수당을 입력하면 2026년 공무원보수규정 기준 월급과 세후 실수령액, 연봉을 계산하는 페이지",
+    order: 1.65,
+    eyebrow: "공무원 연봉",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "공무원", "호봉"],
+    previewStats: [
+      { label: "9급 1호봉 실수령", value: "약 206만" },
+      { label: "기준", value: "2026 봉급표" }
+    ]
+  },
+  {
     slug: "bonus-after-tax-calculator",
     title: "성과급 세후 실수령액 계산기",
     description: "성과급 총액과 연봉을 입력해 소득세, 지방소득세, 4대보험을 뺀 통장 입금액을 간이 추정하는 계산기",

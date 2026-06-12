@@ -1,0 +1,263 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  TSC_ALLOWANCES,
+  TSC_DEFAULT_INPUT,
+  TSC_FAQ,
+  TSC_META,
+  TSC_PRESETS,
+  TSC_RELATED_LINKS,
+  TSC_STEPS,
+} from "../../data/teacherSalaryCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  steps: TSC_STEPS,
+  allowances: TSC_ALLOWANCES,
+  defaultInput: TSC_DEFAULT_INPUT,
+  presets: TSC_PRESETS,
+};
+
+const faqSchema = TSC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={TSC_META.seoTitle}
+  description={TSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: TSC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: TSC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/teacher-salary-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="teacher-salary-calculator" pageClass="tsc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="교사 연봉"
+        title="교사 호봉 실수령액 계산기"
+        description="내 호봉, 담임·보직 여부를 입력하면 2026년 교원 봉급표 기준 월급과 세후 실수령액, 연봉을 바로 계산합니다."
+        badges={["2026 봉급표", "호봉별", "실수령 추정"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          TSC_META.dataNote,
+          "초·중·고 교사는 동일한 호봉표를 사용하며, 차이는 담임·보직 수당에서 발생합니다.",
+          "명절휴가비(설·추석 연 2회, 본봉의 60%)는 연봉 계산에 포함되어 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="tscResetBtn" copyId="tscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">자주 찾는 케이스</h2>
+          </div>
+          <p class="panel-heading__summary">대표 케이스를 먼저 선택한 뒤 호봉·수당 조건을 조정하세요.</p>
+        </div>
+        <div class="tsc-preset-grid">
+          {TSC_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`tsc-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">호봉과 수당 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">초·중·고 모두 같은 호봉표를 사용합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>호봉</span>
+            <input data-tsc="step" data-type="number" type="number" min="1" max="40" class="input-number" />
+            <small>1~40호봉, 신입(교대·사범대)은 보통 9호봉</small>
+          </label>
+
+          <label class="field">
+            <span>호봉 슬라이더</span>
+            <input data-tsc="stepRange" type="range" min="1" max="40" step="1" class="tsc-range" />
+          </label>
+        </div>
+
+        <div class="tsc-check-list">
+          <label class="check-field">
+            <input data-tsc="classTeacher" type="checkbox" />
+            <span>담임 수당 (월 20만원)</span>
+          </label>
+          <label class="check-field">
+            <input data-tsc="position" type="checkbox" />
+            <span>보직 수당 - 부장 등 (월 15만원)</span>
+          </label>
+          <label class="check-field">
+            <input data-tsc="specialEducation" type="checkbox" />
+            <span>특수교사 수당 (월 12만원)</span>
+          </label>
+          <label class="check-field">
+            <input data-tsc="careerUnder5" type="checkbox" />
+            <span>경력 5년 미만 (교원연구비 월 7만원)</span>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="tsc-summary-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">호봉별 월급·실수령액</h2>
+        </div>
+        <p class="panel-heading__summary" id="tscSummaryText">호봉과 수당 조건에 따른 월급·연봉을 계산합니다.</p>
+      </div>
+
+      <div class="tsc-result-grid" aria-live="polite">
+        <article class="tsc-result-card tsc-result-card--main">
+          <span>월 실수령 (추정)</span>
+          <strong id="tscMonthlyNet">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="tsc-result-card">
+          <span>월 기본급</span>
+          <strong id="tscMonthlyBase">-</strong>
+        </article>
+        <article class="tsc-result-card">
+          <span>월 수당 합계</span>
+          <strong id="tscAllowanceSum">-</strong>
+        </article>
+        <article class="tsc-result-card">
+          <span>연봉 (세전, 수당 포함)</span>
+          <strong id="tscAnnualGross">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="tsc-result-card">
+          <span>연봉 실수령 (추정)</span>
+          <strong id="tscAnnualNet">-</strong>
+          <small>추정</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">분해</p>
+          <h2 class="panel__title">수당 항목별 월 지급액</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 조건에 따라 적용되는 수당만 표시됩니다.</p>
+      </div>
+
+      <div class="tsc-table-wrap">
+        <table class="tsc-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>적용 조건</th>
+            </tr>
+          </thead>
+          <tbody id="tscAllowanceRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">호봉표</p>
+          <h2 class="panel__title">내 호봉 주변 비교</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 호봉(<strong id="tscStepLabel">9</strong>호봉)을 기준으로 ±3개 호봉을 비교합니다.</p>
+      </div>
+      <div class="tsc-table-wrap">
+        <table class="tsc-table">
+          <thead>
+            <tr>
+              <th>호봉</th>
+              <th>월 기본급</th>
+              <th>세전 연봉</th>
+              <th>월 실수령 (기본급 기준 추정)</th>
+            </tr>
+          </thead>
+          <tbody id="tscNearbyRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <CompareCta
+      variant="hub"
+      title="내 교사 연봉이 전체 직장인 중 어느 위치인지 궁금하다면"
+      description="계산된 연봉을 연봉 티어 계산기에 넣어보면 전체 직장인 분포에서 상위 몇 %인지 바로 확인할 수 있습니다."
+      links={[
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/teacher-salary-2026/", label: "교사 월급표 2026 리포트" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="교사 호봉 실수령액, 어떻게 계산될까?"
+        intro={[
+          "교사 월급은 호봉별 기본급에 교직수당·정액급식비·교원연구비 같은 고정 수당과, 담임·보직·특수교사 수당 같은 역할별 수당을 더해 계산합니다.",
+          "초·중·고 교사는 모두 동일한 단일 봉급표를 적용받기 때문에, 같은 호봉이면 기본급은 완전히 같습니다. 실수령액 차이는 담임 여부와 보직 수당에서 발생합니다.",
+          "이 계산기는 호봉과 수당 조건을 입력하면 월 실수령액과 연봉(명절휴가비 포함)을 추정해 보여줍니다. 실제 지급액은 개인 공제 조건과 학교별 사정에 따라 달라질 수 있습니다.",
+        ]}
+        inputPoints={[
+          "호봉(1~40)을 입력하거나 슬라이더로 선택하면 해당 호봉의 기본급이 자동 반영됩니다.",
+          "담임·보직·특수교사 수당 여부를 체크하면 월 수당 합계와 실수령액이 즉시 갱신됩니다.",
+          "경력 5년 미만 체크 시 교원연구비가 7만원으로, 5년 이상이면 6만원으로 적용됩니다.",
+        ]}
+        criteria={[
+          "기본급은 인사혁신처 2026년 교원 봉급표 기준입니다.",
+          "세후 실수령액은 미혼·부양가족 없음 기준 추정치입니다.",
+          "연봉은 기본급 12개월 + 수당 12개월 + 명절휴가비(본봉×0.6×2회)를 합산한 추정치입니다.",
+          "기간제교사는 공무원연금 미적용 등 별도 차이가 있어 참고용으로만 활용하세요.",
+        ]}
+        faq={TSC_FAQ}
+        related={TSC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="tscConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/teacher-salary-calculator.js")}></script>
+</BaseLayout>
