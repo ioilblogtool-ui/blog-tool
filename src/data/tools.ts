@@ -207,6 +207,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "nurse-salary-calculator",
+    title: "간호사 연차별 연봉·실수령 계산기",
+    description: "병원 유형(빅5·대학병원·종합병원·중소병원·보건소·요양병원)과 연차, 나이트 근무 횟수를 입력하면 2026년 기준 연봉과 월 실수령액 범위를 추정하는 페이지",
+    order: 1.67,
+    eyebrow: "간호사 연봉",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "간호사", "연봉"],
+    previewStats: [
+      { label: "종합병원 신입 연봉", value: "약 3,800~5,200만" },
+      { label: "기준", value: "2026 추정" }
+    ]
+  },
+  {
     slug: "bonus-after-tax-calculator",
     title: "성과급 세후 실수령액 계산기",
     description: "성과급 총액과 연봉을 입력해 소득세, 지방소득세, 4대보험을 뺀 통장 입금액을 간이 추정하는 계산기",

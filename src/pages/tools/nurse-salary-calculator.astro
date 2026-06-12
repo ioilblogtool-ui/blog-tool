@@ -1,0 +1,240 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  NSC_DEFAULT_INPUT,
+  NSC_FAQ,
+  NSC_HOSPITAL_TYPES,
+  NSC_META,
+  NSC_NIGHT_SHIFT_OPTIONS,
+  NSC_PRESETS,
+  NSC_RELATED_LINKS,
+  NSC_YEAR_OPTIONS,
+} from "../../data/nurseSalaryCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  hospitalTypes: NSC_HOSPITAL_TYPES,
+  yearOptions: NSC_YEAR_OPTIONS,
+  nightShiftOptions: NSC_NIGHT_SHIFT_OPTIONS,
+  defaultInput: NSC_DEFAULT_INPUT,
+  presets: NSC_PRESETS,
+};
+
+const faqSchema = NSC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={NSC_META.seoTitle}
+  description={NSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: NSC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: NSC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/nurse-salary-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="nurse-salary-calculator" pageClass="nsc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="간호사 연봉"
+        title="간호사 연차별 연봉·실수령 계산기"
+        description="병원 유형과 연차, 나이트 근무 횟수를 입력하면 2026년 기준 연봉과 월 실수령액 범위를 추정합니다."
+        badges={["2026 추정", "병원 유형별", "나이트수당 반영"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          NSC_META.dataNote,
+          "연봉·실수령액은 모두 범위(최소~최대)로 표시되며, 나이트 근무 횟수에 따라 추정 수당이 추가됩니다.",
+          "같은 연차라도 병원 규모·부서·성과급 구조에 따라 실제 금액은 달라질 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="nscResetBtn" copyId="nscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">자주 찾는 케이스</h2>
+          </div>
+          <p class="panel-heading__summary">대표 케이스를 먼저 선택한 뒤 병원 유형·연차·나이트 조건을 조정하세요.</p>
+        </div>
+        <div class="nsc-preset-grid">
+          {NSC_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`nsc-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">병원 유형·연차·나이트 입력</h2>
+          </div>
+          <p class="panel-heading__summary">병원 유형을 선택하면 해당 유형의 연봉 곡선이 반영됩니다.</p>
+        </div>
+
+        <div class="nsc-hospital-grid" role="group" aria-label="병원 유형 선택">
+          {NSC_HOSPITAL_TYPES.map((type) => (
+            <button type="button" class="nsc-hospital-btn" data-hospital-type={type.id}>
+              <strong>{type.shortName}</strong>
+              <span>{type.badge}</span>
+            </button>
+          ))}
+        </div>
+
+        <label class="field">
+          <span>연차</span>
+          <select data-nsc="year" class="input-number">
+            {NSC_YEAR_OPTIONS.map((option) => (
+              <option value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="field">
+          <span>나이트 근무 횟수 (월 기준)</span>
+          <select data-nsc="nightShiftId" class="input-number">
+            {NSC_NIGHT_SHIFT_OPTIONS.map((option) => (
+              <option value={option.id}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+      </article>
+    </Fragment>
+
+    <section class="nsc-summary-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">병원 유형·연차별 연봉·실수령</h2>
+        </div>
+        <p class="panel-heading__summary" id="nscSummaryText">병원 유형·연차·나이트 조건에 따른 연봉·월 실수령을 추정합니다.</p>
+      </div>
+
+      <div class="nsc-result-grid" aria-live="polite">
+        <article class="nsc-result-card nsc-result-card--main">
+          <span>월 실수령 (추정)</span>
+          <strong id="nscMonthlyNet">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="nsc-result-card nsc-result-card--main">
+          <span>연봉 (세전, 추정)</span>
+          <strong id="nscAnnualGross">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="nsc-result-card">
+          <span>나이트 추정 수당</span>
+          <strong id="nscNightExtra">-</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">평가</p>
+          <h2 class="panel__title">워라밸·성장성·이직 위험</h2>
+        </div>
+        <p class="panel-heading__summary"><strong id="nscHospitalLabel">종합병원</strong> 기준 비교계산소 편집 평가입니다.</p>
+      </div>
+      <div class="nsc-score-list" id="nscScoreList"></div>
+      <div class="nsc-allowance-notes" id="nscAllowanceNotes"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">병원 유형 비교</p>
+          <h2 class="panel__title">같은 연차, 병원 유형별 비교</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 <strong id="nscYearLabel">신입</strong> 연차를 기준으로 병원 유형별 연봉·실수령 범위를 비교합니다.</p>
+      </div>
+      <div class="nsc-table-wrap">
+        <table class="nsc-table">
+          <thead>
+            <tr>
+              <th>병원 유형</th>
+              <th>연봉 (세전, 추정)</th>
+              <th>월 실수령 (추정)</th>
+            </tr>
+          </thead>
+          <tbody id="nscCompareRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <CompareCta
+      variant="hub"
+      title="내 간호사 연봉이 전체 직장인 중 어느 위치인지 궁금하다면"
+      description="계산된 연봉을 연봉 티어 계산기에 넣어보면 전체 직장인 분포에서 상위 몇 %인지 바로 확인할 수 있습니다."
+      links={[
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/nurse-salary-2026/", label: "간호사 연봉 비교 리포트" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="간호사 연봉·실수령, 병원 유형마다 왜 다를까?"
+        intro={[
+          "간호사 연봉은 공무원처럼 단일 봉급표로 정리되지 않습니다. 병원 규모, 지역, 부서, 나이트 근무 빈도, 성과급 구조에 따라 같은 연차에서도 체감 연봉이 크게 달라집니다.",
+          "이 계산기는 빅5 상급종합병원, 수도권 대학병원, 종합병원, 중소·일반병원, 보건소·공공기관, 요양·재활병원 6개 유형의 범위형 데이터를 기반으로 연봉과 월 실수령액을 추정합니다.",
+          "나이트 근무 횟수를 선택하면 추정 추가 수당이 반영되며, 같은 연차의 병원 유형별 비교표를 통해 이직·전과를 고민할 때 참고할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "병원 유형을 선택하면 해당 유형의 연봉·실수령 곡선이 반영됩니다.",
+          "연차를 선택하면 신입부터 20년차까지 8개 구간 중 가장 가까운 데이터가 표시됩니다.",
+          "나이트 근무 횟수를 선택하면 추정 추가 수당이 연봉·월 실수령에 합산됩니다.",
+          "비교표에서 같은 연차의 다른 병원 유형과 연봉·실수령을 한눈에 비교할 수 있습니다.",
+        ]}
+        criteria={[
+          "연봉·실수령액은 채용공고·병원 공시·협회 자료·현직자 제보를 종합한 범위형 추정치입니다.",
+          "나이트 수당은 월 4회 이하 10~20만원, 5~8회 20~30만원, 9회 이상 30~40만원을 추정 추가합니다.",
+          "워라밸·성장성·이직 위험 평가는 비교계산소 편집 기준입니다.",
+          "보건소·공공기관형은 병원형과 급여 구조가 다를 수 있어 별도 카테고리로 구분합니다.",
+        ]}
+        faq={NSC_FAQ}
+        related={NSC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="nscConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/nurse-salary-calculator.js")}></script>
+</BaseLayout>
