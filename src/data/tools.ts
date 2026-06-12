@@ -193,6 +193,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "police-firefighter-salary-calculator",
+    title: "경찰·소방 호봉 실수령액 계산기",
+    description: "경찰·소방 계급과 호봉, 가족수당, 교대근무 여부를 입력하면 2026년 공무원보수규정 기준 월급과 세후 실수령액, 연봉을 계산하는 페이지",
+    order: 1.66,
+    eyebrow: "경찰·소방 연봉",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "경찰", "소방", "호봉"],
+    previewStats: [
+      { label: "순경 1호봉 실수령", value: "약 240만" },
+      { label: "기준", value: "2026 봉급표" }
+    ]
+  },
+  {
     slug: "bonus-after-tax-calculator",
     title: "성과급 세후 실수령액 계산기",
     description: "성과급 총액과 연봉을 입력해 소득세, 지방소득세, 4대보험을 뺀 통장 입금액을 간이 추정하는 계산기",

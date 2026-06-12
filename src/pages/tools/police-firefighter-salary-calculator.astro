@@ -1,0 +1,311 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PF_ALLOWANCES,
+  PF_DEFAULT_INPUT,
+  PF_FAQ,
+  PF_JOB_GRADE_SUPPORT,
+  PF_META,
+  PF_PRESETS,
+  PF_RANKS,
+  PF_RELATED_LINKS,
+  PF_SHIFT_PATTERNS,
+} from "../../data/policeFirefighterSalaryCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  ranks: PF_RANKS,
+  allowances: PF_ALLOWANCES,
+  jobGradeSupport: PF_JOB_GRADE_SUPPORT,
+  shiftPatterns: PF_SHIFT_PATTERNS,
+  defaultInput: PF_DEFAULT_INPUT,
+  presets: PF_PRESETS,
+};
+
+const faqSchema = PF_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={PF_META.seoTitle}
+  description={PF_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: PF_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: PF_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/police-firefighter-salary-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="police-firefighter-salary-calculator" pageClass="pf-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="경찰·소방 연봉"
+        title="경찰·소방 호봉 실수령액 계산기"
+        description="경찰·소방 계급과 호봉, 가족수당, 교대근무 여부를 입력하면 2026년 공무원보수규정 기준 월급과 세후 실수령액, 연봉을 바로 계산합니다."
+        badges={["2026 봉급표", "경찰·소방 공통", "실수령 추정"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          PF_META.dataNote,
+          "경찰·소방 기본급은 동일한 봉급표(별표 10)를 사용하며, 차이는 소방의 교대근무수당에서 발생합니다.",
+          "명절휴가비(설·추석 연 2회, 기본급 60%)와 정근수당(근속연수별 5~50%, 연 2회)은 연봉 계산에 포함되어 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="pfResetBtn" copyId="pfCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">자주 찾는 케이스</h2>
+          </div>
+          <p class="panel-heading__summary">대표 케이스를 먼저 선택한 뒤 직군·계급·호봉 조건을 조정하세요.</p>
+        </div>
+        <div class="pf-preset-grid">
+          {PF_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`pf-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">직군·계급·호봉 입력</h2>
+          </div>
+          <p class="panel-heading__summary">경찰·소방은 같은 봉급표를 사용하며 계급 명칭만 다릅니다.</p>
+        </div>
+
+        <div class="pf-org-tabs" role="group" aria-label="직군 선택">
+          <button type="button" class="pf-org-btn" data-pf-org="police">경찰</button>
+          <button type="button" class="pf-org-btn" data-pf-org="fire">소방</button>
+        </div>
+
+        <label class="field">
+          <span>계급</span>
+          <select data-pf="rankId" class="input-number">
+            {PF_RANKS.map((rank) => (
+              <option value={rank.id} data-police-label={rank.policeLabel} data-fire-label={rank.fireLabel}>
+                {rank.policeLabel} / {rank.fireLabel} ({rank.equiv} 상당)
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>호봉</span>
+            <input data-pf="step" data-type="number" type="number" min="1" max="32" class="input-number" />
+            <small id="pfStepHint">1~32호봉</small>
+          </label>
+
+          <label class="field">
+            <span>호봉 슬라이더</span>
+            <input data-pf="stepRange" type="range" min="1" max="32" step="1" class="pf-range" />
+          </label>
+        </div>
+
+        <div class="pf-check-list">
+          <label class="check-field">
+            <input data-pf="hasSpouse" type="checkbox" />
+            <span>배우자 (가족수당 월 4만원)</span>
+          </label>
+
+          <label class="field pf-child-field">
+            <span>자녀 수 (1인당 월 2만원)</span>
+            <input data-pf="childCount" data-type="number" type="number" min="0" max="4" class="input-number" />
+          </label>
+        </div>
+
+        <div class="pf-shift-field" id="pfShiftField">
+          <label class="field">
+            <span>소방 교대근무 형태</span>
+            <select data-pf="shiftPatternId" class="input-number">
+              {PF_SHIFT_PATTERNS.map((pattern) => (
+                <option value={pattern.id}>{pattern.label}</option>
+              ))}
+            </select>
+            <small id="pfShiftHint">교대수당 추정치가 월 수당 합계에 반영됩니다.</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="pf-summary-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">계급·호봉별 월급·실수령액</h2>
+        </div>
+        <p class="panel-heading__summary" id="pfSummaryText">직군·계급·호봉 조건에 따른 월급·연봉을 계산합니다.</p>
+      </div>
+
+      <div class="pf-result-grid" aria-live="polite">
+        <article class="pf-result-card pf-result-card--main">
+          <span>월 실수령 (추정)</span>
+          <strong id="pfMonthlyNet">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="pf-result-card">
+          <span>월 기본급</span>
+          <strong id="pfMonthlyBase">-</strong>
+        </article>
+        <article class="pf-result-card">
+          <span>월 수당 합계</span>
+          <strong id="pfAllowanceSum">-</strong>
+        </article>
+        <article class="pf-result-card">
+          <span>연봉 (세전, 수당 포함)</span>
+          <strong id="pfAnnualGross">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="pf-result-card">
+          <span>연봉 실수령 (추정)</span>
+          <strong id="pfAnnualNet">-</strong>
+          <small>추정</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">분해</p>
+          <h2 class="panel__title">월 수당 항목</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 조건에 따라 적용되는 수당만 표시됩니다.</p>
+      </div>
+
+      <div class="pf-table-wrap">
+        <table class="pf-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>적용 조건</th>
+            </tr>
+          </thead>
+          <tbody id="pfAllowanceRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">연간 지급</p>
+          <h2 class="panel__title">명절휴가비·정근수당</h2>
+        </div>
+        <p class="panel-heading__summary">연 2회 지급되는 항목으로, 연봉 계산에 포함되어 있습니다.</p>
+      </div>
+
+      <div class="pf-table-wrap">
+        <table class="pf-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>연간 합계</th>
+              <th>적용 조건</th>
+            </tr>
+          </thead>
+          <tbody id="pfAnnualRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">호봉표</p>
+          <h2 class="panel__title">내 호봉 주변 비교</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 <strong id="pfRankLabel">순경</strong> <strong id="pfStepLabel">1</strong>호봉을 기준으로 ±3개 호봉을 비교합니다.</p>
+      </div>
+      <div class="pf-table-wrap">
+        <table class="pf-table">
+          <thead>
+            <tr>
+              <th>호봉</th>
+              <th>월 기본급</th>
+              <th>월 실수령 (추정)</th>
+            </tr>
+          </thead>
+          <tbody id="pfNearbyRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <CompareCta
+      variant="hub"
+      title="내 경찰·소방 연봉이 전체 직장인 중 어느 위치인지 궁금하다면"
+      description="계산된 연봉을 연봉 티어 계산기에 넣어보면 전체 직장인 분포에서 상위 몇 %인지 바로 확인할 수 있습니다."
+      links={[
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/police-salary-2026/", label: "경찰 월급표 2026 리포트" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="경찰·소방 호봉 실수령액, 어떻게 계산될까?"
+        intro={[
+          "경찰과 소방은 동일한 공무원보수규정 별표 10 봉급표를 적용받습니다. 같은 계급 상당·호봉이면 기본급은 완전히 같으며, 직급보조비도 상당 직급(9~1급, 차관급) 기준으로 동일합니다.",
+          "실수령액 차이는 주로 소방의 교대근무수당(야간·시간외 수당 포함)에서 발생합니다. 3교대는 약 45만원, 2교대는 약 32.5만원이 월 수당에 추가되는 것으로 추정합니다.",
+          "이 계산기는 직군·계급·호봉·가족수당·교대근무 조건을 입력하면 월 실수령액과 연봉(명절휴가비·정근수당 포함)을 추정해 보여줍니다. 실제 지급액은 근무지, 출동 빈도, 부양가족 등록 여부에 따라 달라질 수 있습니다.",
+        ]}
+        inputPoints={[
+          "직군(경찰/소방)을 선택하면 계급 명칭이 자동으로 바뀝니다. 기본급·직급보조비는 동일합니다.",
+          "계급을 선택하면 해당 계급의 봉급표와 직급보조비, 호봉 범위가 자동 반영됩니다.",
+          "배우자·자녀 수를 입력하면 가족수당이 월 수당 합계와 실수령액에 즉시 반영됩니다.",
+          "소방을 선택하면 교대근무 형태(3교대/2교대/행정직)에 따라 교대수당 추정치가 추가됩니다.",
+        ]}
+        criteria={[
+          "기본급은 공무원보수규정 별표 10(2026.1.2 개정) 기준으로 경찰·소방 공통입니다.",
+          "직급보조비는 계급 상당 직급(9~1급, 차관급) 기준 추정치입니다.",
+          "세후 실수령액은 총지급액 구간별 공제율 추정치를 적용한 값입니다.",
+          "연봉은 기본급 12개월 + 수당 12개월 + 명절휴가비(기본급×0.6×2회) + 정근수당(기본급×근속비례×2회)을 합산한 추정치입니다.",
+        ]}
+        faq={PF_FAQ}
+        related={PF_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="pfConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/police-firefighter-salary-calculator.js")}></script>
+</BaseLayout>
