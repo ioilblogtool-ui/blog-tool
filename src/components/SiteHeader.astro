@@ -1,8 +1,37 @@
 ---
+import { tools, MOBILE_POPULAR_SLUGS } from "../data/tools";
+import { reports } from "../data/reports";
+
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+// tools.ts의 category 값은 내부 분류용 영문 코드("support", "calculator" 등)와
+// 표시용 한글 라벨("투자·재테크" 등)이 혼재되어 있어, 한글 라벨만 검색 결과 배지로 노출한다.
+const isDisplayCategory = (value: string) => /[가-힣]/.test(value);
+
+const searchIndex = [
+  ...tools.map((t) => ({
+    type: "tool" as const,
+    title: t.title,
+    description: t.description,
+    category: t.category && isDisplayCategory(t.category) ? t.category : "",
+    href: withBase(`/tools/${t.slug}/`),
+  })),
+  ...reports.map((r) => ({
+    type: "report" as const,
+    title: r.title,
+    description: r.description,
+    category: "",
+    href: withBase(`/reports/${r.slug}/`),
+  })),
+];
+const searchIndexJson = JSON.stringify(searchIndex).replace(/<\/script/gi, "<\\/script");
+
+const popularTools = MOBILE_POPULAR_SLUGS
+  .map((slug) => tools.find((t) => t.slug === slug))
+  .filter((t): t is NonNullable<typeof t> => Boolean(t));
 ---
 
 <header class="site-header">
@@ -162,11 +191,51 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
     </button>
   </div>
 
-  <div class="site-header__mobile-menu" id="mobile-menu" aria-hidden="true">
+  <div class="site-header__mobile-menu" id="mobile-menu" aria-hidden="true" data-ad-layout="no-ad">
     <div class="site-header__mobile-inner">
-      <div class="site-header__mobile-section">
-        <p class="site-header__mobile-label">계산기</p>
+      <div class="site-header__mobile-search" role="search">
+        <input
+          type="search"
+          id="mobile-search-input"
+          class="site-header__mobile-search-input"
+          placeholder="계산기·리포트 검색 (예: 연봉, 보유세)"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="site-header__mobile-search-results" id="mobile-search-results" aria-live="polite" hidden>
+        <div class="site-header__mobile-section" id="mobile-search-tools" hidden>
+          <p class="site-header__mobile-label">계산기</p>
+          <div class="site-header__mobile-links"></div>
+        </div>
+        <div class="site-header__mobile-section" id="mobile-search-reports" hidden>
+          <p class="site-header__mobile-label">리포트</p>
+          <div class="site-header__mobile-links"></div>
+        </div>
+        <p class="site-header__mobile-empty" id="mobile-search-empty" hidden>검색 결과가 없습니다.</p>
+        <a class="site-header__mobile-cta" id="mobile-search-all" data-base-href={withBase("/tools/")} href={withBase("/tools/")}>
+          전체 계산기 보기 →
+        </a>
+      </div>
+
+      <div class="site-header__mobile-default" id="mobile-menu-default">
+
+      <div class="site-header__mobile-section site-header__mobile-section--popular">
+        <p class="site-header__mobile-label">인기 계산기</p>
         <div class="site-header__mobile-links">
+          {popularTools.map((tool) => (
+            <a href={withBase(`/tools/${tool.slug}/`)}>
+              <span>{tool.title}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="site-header__mobile-accordion">
+        <button class="site-header__mobile-label site-header__mobile-accordion-btn" aria-expanded="true" aria-controls="mobile-acc-tools">
+          계산기 <span class="site-header__mobile-accordion-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="site-header__mobile-links" id="mobile-acc-tools">
           <a href={withBase("/tools/salary-tier/")}>
             <span>연봉 티어 계산기</span>
             <span class="site-header__mobile-badge">신규</span>
@@ -242,9 +311,11 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </div>
       </div>
 
-      <div class="site-header__mobile-section">
-        <p class="site-header__mobile-label">리포트</p>
-        <div class="site-header__mobile-links">
+      <div class="site-header__mobile-accordion">
+        <button class="site-header__mobile-label site-header__mobile-accordion-btn" aria-expanded="false" aria-controls="mobile-acc-reports">
+          리포트 <span class="site-header__mobile-accordion-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="site-header__mobile-links" id="mobile-acc-reports" hidden>
           <a href={withBase("/reports/new-employee-salary-2026/")}>
             <span>2026 신입사원 초봉 비교</span>
             <span class="site-header__mobile-cat">연봉·초봉</span>
@@ -296,9 +367,11 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </div>
       </div>
 
-      <div class="site-header__mobile-section">
-        <p class="site-header__mobile-label">비교표</p>
-        <div class="site-header__mobile-links">
+      <div class="site-header__mobile-accordion">
+        <button class="site-header__mobile-label site-header__mobile-accordion-btn" aria-expanded="false" aria-controls="mobile-acc-compare">
+          비교표 <span class="site-header__mobile-accordion-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="site-header__mobile-links" id="mobile-acc-compare" hidden>
           <a href={withBase("/compare/")}>
             <span>비교표 전체 보기</span>
             <span class="site-header__mobile-badge">신규</span>
@@ -322,9 +395,11 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
         </div>
       </div>
 
-      <div class="site-header__mobile-section">
-        <p class="site-header__mobile-label">사이트</p>
-        <div class="site-header__mobile-links">
+      <div class="site-header__mobile-accordion">
+        <button class="site-header__mobile-label site-header__mobile-accordion-btn" aria-expanded="false" aria-controls="mobile-acc-site">
+          사이트 <span class="site-header__mobile-accordion-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="site-header__mobile-links" id="mobile-acc-site" hidden>
           <a href={withBase("/about/")}><span>소개</span></a>
           <a href={withBase("/tools/")}><span>전체 계산기</span></a>
           <a href={withBase("/contact/")}><span>문의</span></a>
@@ -332,9 +407,12 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       </div>
 
       <a class="site-header__mobile-cta" href={withBase("/tools/")}>전체 계산기 보기 →</a>
+      </div>
     </div>
   </div>
 </header>
+
+<script type="application/json" id="mobile-search-data" set:html={searchIndexJson} />
 
 <div class="site-header__overlay" id="menu-overlay" aria-hidden="true"></div>
 
@@ -350,20 +428,73 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
   const mobileMenu = document.querySelector('.site-header__mobile-menu')
   const overlay = document.getElementById('menu-overlay')
 
-  hamburger?.addEventListener('click', () => {
-    const isOpen = hamburger.classList.toggle('is-open')
-    hamburger.setAttribute('aria-expanded', String(isOpen))
-    mobileMenu?.classList.toggle('is-open', isOpen)
-    mobileMenu?.setAttribute('aria-hidden', String(!isOpen))
-    overlay?.classList.toggle('is-open', isOpen)
-  })
+  const mobileSearchInput = document.getElementById('mobile-search-input')
 
-  overlay?.addEventListener('click', () => {
+  function resetMobileSearch() {
+    if (mobileSearchInput instanceof HTMLInputElement) mobileSearchInput.value = ''
+    document.getElementById('mobile-search-results')?.setAttribute('hidden', '')
+    document.getElementById('mobile-menu-default')?.removeAttribute('hidden')
+  }
+
+  function openMobileMenu() {
+    hamburger?.classList.add('is-open')
+    hamburger?.setAttribute('aria-expanded', 'true')
+    mobileMenu?.classList.add('is-open')
+    mobileMenu?.setAttribute('aria-hidden', 'false')
+    overlay?.classList.add('is-open')
+    document.body.style.overflow = 'hidden'
+    if (mobileSearchInput instanceof HTMLInputElement) mobileSearchInput.focus()
+  }
+
+  function closeMobileMenu() {
     hamburger?.classList.remove('is-open')
     hamburger?.setAttribute('aria-expanded', 'false')
     mobileMenu?.classList.remove('is-open')
     mobileMenu?.setAttribute('aria-hidden', 'true')
     overlay?.classList.remove('is-open')
+    document.body.style.overflow = ''
+    resetMobileSearch()
+    if (hamburger instanceof HTMLElement) hamburger.focus()
+  }
+
+  hamburger?.addEventListener('click', () => {
+    const isOpen = hamburger.classList.contains('is-open')
+    if (isOpen) closeMobileMenu()
+    else openMobileMenu()
+  })
+
+  overlay?.addEventListener('click', () => {
+    closeMobileMenu()
+  })
+
+  // ESC 키로 메뉴 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return
+    if (!mobileMenu?.classList.contains('is-open')) return
+    closeMobileMenu()
+  })
+
+  // 메뉴 열림 상태에서 포커스 트랩 (Tab/Shift+Tab이 메뉴 내부에서만 순환)
+  mobileMenu?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return
+    if (!mobileMenu.classList.contains('is-open')) return
+
+    const focusable = Array.from(
+      mobileMenu.querySelectorAll('a, button, input, [tabindex]:not([tabindex="-1"])')
+    ).filter((el) => !el.hasAttribute('hidden') && el.offsetParent !== null)
+
+    if (focusable.length === 0) return
+
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
   })
 
   document.querySelectorAll('.site-nav__btn').forEach(btn => {
@@ -371,5 +502,96 @@ const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
       const expanded = btn.getAttribute('aria-expanded') === 'true'
       btn.setAttribute('aria-expanded', String(!expanded))
     })
+  })
+
+  // 모바일 메뉴 아코디언
+  document.querySelectorAll('.site-header__mobile-accordion-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true'
+      const panelId = btn.getAttribute('aria-controls')
+      const panel = panelId ? document.getElementById(panelId) : null
+      btn.setAttribute('aria-expanded', String(!expanded))
+      if (expanded) panel?.setAttribute('hidden', '')
+      else panel?.removeAttribute('hidden')
+    })
+  })
+
+  // 모바일 메뉴 검색
+  const searchDataEl = document.getElementById('mobile-search-data')
+  const searchIndex = searchDataEl?.textContent ? JSON.parse(searchDataEl.textContent) : []
+
+  const resultsEl = document.getElementById('mobile-search-results')
+  const defaultEl = document.getElementById('mobile-menu-default')
+  const toolsSection = document.getElementById('mobile-search-tools')
+  const reportsSection = document.getElementById('mobile-search-reports')
+  const emptyEl = document.getElementById('mobile-search-empty')
+  const allLink = document.getElementById('mobile-search-all')
+
+  const MAX_RESULTS = 6
+
+  function renderGroup(sectionEl, items) {
+    if (!sectionEl) return
+    const linksEl = sectionEl.querySelector('.site-header__mobile-links')
+    if (!linksEl) return
+    linksEl.innerHTML = ''
+    items.slice(0, MAX_RESULTS).forEach((item) => {
+      const a = document.createElement('a')
+      a.href = item.href
+      const titleSpan = document.createElement('span')
+      titleSpan.textContent = item.title
+      a.appendChild(titleSpan)
+      if (item.category) {
+        const catSpan = document.createElement('span')
+        catSpan.className = 'site-header__mobile-cat'
+        catSpan.textContent = item.category
+        a.appendChild(catSpan)
+      }
+      linksEl.appendChild(a)
+    })
+    if (items.length === 0) sectionEl.setAttribute('hidden', '')
+    else sectionEl.removeAttribute('hidden')
+  }
+
+  function runSearch(query) {
+    const q = query.trim().toLowerCase()
+
+    if (!q) {
+      resultsEl?.setAttribute('hidden', '')
+      defaultEl?.removeAttribute('hidden')
+      return
+    }
+
+    defaultEl?.setAttribute('hidden', '')
+    resultsEl?.removeAttribute('hidden')
+
+    const matches = searchIndex.filter((item) =>
+      item.title.toLowerCase().includes(q) || item.description.toLowerCase().includes(q)
+    )
+    const toolMatches = matches.filter((m) => m.type === 'tool')
+    const reportMatches = matches.filter((m) => m.type === 'report')
+
+    renderGroup(toolsSection, toolMatches)
+    renderGroup(reportsSection, reportMatches)
+
+    if (emptyEl) {
+      if (matches.length > 0) emptyEl.setAttribute('hidden', '')
+      else emptyEl.removeAttribute('hidden')
+    }
+
+    if (allLink instanceof HTMLAnchorElement) {
+      const baseHref = allLink.dataset.baseHref || allLink.getAttribute('href') || ''
+      allLink.href = matches.length > 0
+        ? `${baseHref}?q=${encodeURIComponent(query.trim())}`
+        : baseHref
+    }
+  }
+
+  let searchDebounce
+  mobileSearchInput?.addEventListener('input', (e) => {
+    clearTimeout(searchDebounce)
+    const target = e.target
+    if (!(target instanceof HTMLInputElement)) return
+    const value = target.value
+    searchDebounce = setTimeout(() => runSearch(value), 150)
   })
 </script>

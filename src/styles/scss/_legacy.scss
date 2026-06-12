@@ -27,6 +27,14 @@
   --radius-sm: 12px;
 }
 
+// AdSense(Auto Ads 등)가 계산기 입력 영역/모바일 메뉴 내부에 광고를 끼워넣는 것을 방지
+[data-ad-layout="no-ad"] {
+  > .adsbygoogle,
+  > ins.adsbygoogle {
+    display: none !important;
+  }
+}
+
 * { box-sizing: border-box; }
 html {
   font-family: "Pretendard", "Noto Sans KR", sans-serif;
@@ -406,6 +414,76 @@ code { font-family: "JetBrains Mono", monospace; }
     color: #7c3aed;
     background: #ede9fe;
   }
+}
+
+.site-header__mobile-search {
+  padding-bottom: 12px;
+
+  &-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid #E5E5E3;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #2C2C2A;
+
+    &:focus {
+      outline: none;
+      border-color: #1a56db;
+    }
+  }
+}
+
+.site-header__mobile-search-results {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header__mobile-empty {
+  padding: 16px 0;
+  text-align: center;
+  font-size: 13px;
+  color: #B4B2A9;
+}
+
+.site-header__mobile-accordion {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #F0EFED;
+
+  &:last-of-type {
+    border-bottom: none;
+    margin-bottom: 12px;
+  }
+}
+
+.site-header__mobile-accordion-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.site-header__mobile-accordion-icon {
+  display: inline-block;
+  font-size: 10px;
+  color: #B4B2A9;
+  transition: transform 0.15s ease;
+}
+
+.site-header__mobile-accordion-btn[aria-expanded="true"] .site-header__mobile-accordion-icon {
+  transform: rotate(180deg);
+}
+
+.site-header__mobile-section--popular {
+  border-bottom: 1px solid #F0EFED;
 }
 
 .site-header__mobile-cta {

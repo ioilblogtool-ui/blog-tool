@@ -1368,5 +1368,15 @@ export const tools: ToolMeta[] = [
   },
 ];
 
+// 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)
+export const MOBILE_POPULAR_SLUGS: string[] = [
+  "salary-tier",
+  "household-income",
+  "samsung-bonus",
+  "sk-hynix-bonus",
+  "single-parental-leave-total",
+  "fire-calculator",
+];
+
 
 
