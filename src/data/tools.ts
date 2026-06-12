@@ -1213,6 +1213,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "postnatal-care-income-eligibility",
+    title: "산후도우미 지원금 소득기준 계산기",
+    description: "가구원 수와 건강보험료를 입력해 2026년 산모·신생아 건강관리 지원사업의 기준중위소득 150% 해당 여부와 예외지원 확인 포인트를 계산합니다.",
+    order: 27.36,
+    eyebrow: "산후도우미 소득기준",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규", "출산", "소득기준"],
+    previewStats: [
+      { label: "판정 기준", value: "150%", context: "기준중위소득" },
+      { label: "입력", value: "건보료", context: "맞벌이 합산 가능" },
+    ],
+  },
+  {
     slug: "stock-breakeven-calculator",
     title: "주식 손익분기점 계산기",
     description: "매수가, 수량, 수수료, 증권거래세를 반영해 실제 본전 매도가와 목표 수익률 매도가를 즉시 계산합니다. 현재 주가 입력 시 지금 내 손익도 확인할 수 있습니다.",
