@@ -1,0 +1,267 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  DSC_ALLOWANCES,
+  DSC_DEFAULT_INPUT,
+  DSC_FAQ,
+  DSC_PRESETS,
+  DSC_RELATED_LINKS,
+  DSC_RESIDENT_STEPS,
+  DSC_SPECIALTIES,
+  DSC_TRAINEE_STAGES,
+  DSC_WORK_TYPES,
+  DSC_META,
+} from "../../data/doctorSalaryCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  workTypes: DSC_WORK_TYPES,
+  traineeStages: DSC_TRAINEE_STAGES,
+  residentSteps: DSC_RESIDENT_STEPS,
+  specialties: DSC_SPECIALTIES,
+  allowances: DSC_ALLOWANCES,
+  defaultInput: DSC_DEFAULT_INPUT,
+  presets: DSC_PRESETS,
+};
+
+const faqSchema = DSC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={DSC_META.seoTitle}
+  description={DSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: DSC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: DSC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/doctor-salary-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="doctor-salary-calculator" pageClass="dsc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="의사 연봉"
+        title="의사 연봉·실수령 계산기"
+        description="근무 형태(전공의·전임의·봉직의·교수·개원의)와 전공과를 선택하면 2026년 기준 연봉과 월 실수령액 범위를 추정합니다."
+        badges={["2026 추정", "전공별 비교", "수련단계별"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          DSC_META.dataNote,
+          "연봉·실수령액은 범위(최소~최대) 또는 단일 추정값으로 표시되며, 실제 금액은 병원·지역·성과급 구조에 따라 달라질 수 있습니다.",
+          "전공의·전임의는 수련단계별 급여(수당포함, 세전 추정)를, 봉직의·개원의·교수는 월 실수령(추정)을 기준으로 표시합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="dscResetBtn" copyId="dscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">자주 찾는 케이스</h2>
+          </div>
+          <p class="panel-heading__summary">대표 케이스를 먼저 선택한 뒤 근무 형태·전공과·수련단계를 조정하세요.</p>
+        </div>
+        <div class="dsc-preset-grid">
+          {DSC_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`dsc-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">근무 형태·전공과 입력</h2>
+          </div>
+          <p class="panel-heading__summary">근무 형태에 따라 전공과 또는 수련단계 선택이 활성화됩니다.</p>
+        </div>
+
+        <div class="dsc-worktype-grid" role="group" aria-label="근무 형태 선택">
+          {DSC_WORK_TYPES.map((type) => (
+            <button type="button" class="dsc-worktype-btn" data-work-type={type.id}>
+              <strong>{type.name}</strong>
+              <span>{type.badge}</span>
+            </button>
+          ))}
+        </div>
+
+        <label class="field is-hidden" id="dscStageField">
+          <span>수련 단계</span>
+          <select data-dsc="residentStage" class="input-number">
+            {DSC_TRAINEE_STAGES.map((step) => (
+              <option value={step.stage}>{step.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="field" id="dscSpecialtyField">
+          <span>전공과</span>
+          <select data-dsc="specialtyId" class="input-number">
+            {DSC_SPECIALTIES.map((row) => (
+              <option value={row.specialty}>{row.specialty}</option>
+            ))}
+          </select>
+        </label>
+      </article>
+    </Fragment>
+
+    <section class="dsc-summary-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title"><strong id="dscWorkTypeLabel">봉직의</strong> 연봉·실수령 추정</h2>
+        </div>
+        <p class="panel-heading__summary" id="dscSummaryText">근무 형태·전공과·수련단계에 따른 연봉·월 실수령을 추정합니다.</p>
+      </div>
+
+      <div class="dsc-result-grid" aria-live="polite">
+        <article class="dsc-result-card dsc-result-card--main">
+          <span id="dscMonthlyLabel">월 실수령 (추정)</span>
+          <strong id="dscMonthlyValue">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="dsc-result-card dsc-result-card--main">
+          <span>연봉 (세전, 추정)</span>
+          <strong id="dscAnnualValue">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="dsc-result-card">
+          <span>상세 구분</span>
+          <strong id="dscDetailLabel">-</strong>
+        </article>
+      </div>
+      <p class="dsc-detail-note" id="dscDetailNote"></p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">수당 구조</p>
+          <h2 class="panel__title">의사 수당 종류</h2>
+        </div>
+        <p class="panel-heading__summary">근무 형태·전공에 따라 적용 여부와 금액이 달라질 수 있습니다.</p>
+      </div>
+      <ul class="dsc-allowance-list" id="dscAllowanceNotes"></ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">전공과 비교</p>
+          <h2 class="panel__title">전공과별 봉직의·개원의 연봉</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 전공과를 기준으로 다른 전공과와 연봉 범위를 비교합니다.</p>
+      </div>
+      <div class="dsc-table-wrap">
+        <table class="dsc-table">
+          <thead>
+            <tr>
+              <th>전공과</th>
+              <th>봉직의 연봉 (추정)</th>
+              <th>개원의 연봉 (추정)</th>
+              <th>수요</th>
+            </tr>
+          </thead>
+          <tbody id="dscSpecialtyRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">수련 단계 비교</p>
+          <h2 class="panel__title">전공의·전임의 단계별 급여</h2>
+        </div>
+        <p class="panel-heading__summary">인턴부터 전임의(펠로우)까지 단계별 월급(수당포함)·연봉 추정치입니다.</p>
+      </div>
+      <div class="dsc-table-wrap">
+        <table class="dsc-table">
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>월 급여 (수당포함, 추정)</th>
+              <th>연봉 (추정)</th>
+            </tr>
+          </thead>
+          <tbody id="dscResidentRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <CompareCta
+      variant="hub"
+      title="내 연봉이 전체 직장인 중 어느 위치인지 궁금하다면"
+      description="계산된 연봉을 연봉 티어 계산기에 넣어보면 전체 직장인 분포에서 상위 몇 %인지 바로 확인할 수 있습니다."
+      links={[
+        { href: "/tools/salary-tier/", label: "연봉 티어 계산기" },
+        { href: "/reports/doctor-salary-2026/", label: "의사 연봉 비교 리포트" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="의사 연봉, 왜 근무 형태마다 이렇게 다를까?"
+        intro={[
+          "의사 연봉은 '평균 얼마'로 정리하기 어렵습니다. 전공의·전임의·봉직의·교수·개원의 등 근무 형태에 따라 급여 구조 자체가 다르고, 같은 봉직의·개원의라도 전공과에 따라 연봉이 2~3배 이상 차이 날 수 있습니다.",
+          "이 계산기는 수련 단계(인턴~전임의)별 급여, 전공과 10개의 봉직의·개원의 연봉 범위, 근무 형태별 연봉·실수령 범위를 기반으로 추정치를 보여줍니다.",
+          "전공의·전임의는 수련단계별 급여(수당포함, 세전 추정)를 기준으로, 봉직의·개원의·교수는 연봉 범위에서 추정한 월 실수령(추정)을 기준으로 표시합니다.",
+        ]}
+        inputPoints={[
+          "근무 형태(전공의·전임의·봉직의·교수·개원의)를 선택하면 해당 형태의 연봉 구조가 반영됩니다.",
+          "전공의를 선택하면 인턴부터 R4까지 수련단계를 선택할 수 있습니다.",
+          "봉직의·개원의를 선택하면 10개 전공과 중 하나를 선택해 전공과별 연봉 범위가 반영됩니다.",
+          "전공과 비교표와 수련단계 비교표에서 선택한 조건이 다른 항목과 비교되어 강조 표시됩니다.",
+        ]}
+        criteria={[
+          "연봉·실수령액은 보건복지부 의료인력 실태조사, 전공의 수련 규정, 병원 공시 급여, 개원의 실태조사를 종합한 추정치입니다.",
+          "봉직의 월 실수령은 연봉의 약 70%, 개원의는 약 65%를 적용한 추정치이며 실제 세후 금액은 소득·세액공제에 따라 달라집니다.",
+          "전공의·전임의 '월 급여'는 기본급+수당을 포함한 세전 추정치로, 실수령과는 차이가 있습니다.",
+          "개원 사례가 거의 없는 전공과(응급의학과 등)는 봉직의·전체 근무형태 범위를 기준으로 표시합니다.",
+        ]}
+        faq={DSC_FAQ}
+        related={DSC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="dscConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/doctor-salary-calculator.js")}></script>
+</BaseLayout>

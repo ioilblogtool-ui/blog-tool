@@ -221,6 +221,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "doctor-salary-calculator",
+    title: "의사 연봉·실수령 계산기",
+    description: "근무 형태(전공의·전임의·봉직의·교수·개원의)와 전공과, 수련단계를 입력하면 2026년 기준 연봉과 월 실수령액 범위를 추정하는 페이지",
+    order: 1.68,
+    eyebrow: "의사 연봉",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "의사", "연봉"],
+    previewStats: [
+      { label: "봉직의 연봉", value: "약 1.2억~3억" },
+      { label: "기준", value: "2026 추정" }
+    ]
+  },
+  {
     slug: "bonus-after-tax-calculator",
     title: "성과급 세후 실수령액 계산기",
     description: "성과급 총액과 연봉을 입력해 소득세, 지방소득세, 4대보험을 뺀 통장 입금액을 간이 추정하는 계산기",
