@@ -40,6 +40,7 @@
     compareNote: document.querySelector("[data-sbc-compare-note]"),
     resultTable: document.querySelector("[data-sbc-result-table]"),
     resultCards: document.querySelector("[data-sbc-result-cards]"),
+    companyEmpty: root.querySelector("[data-sbc-company-empty]"),
     resetBtn: document.getElementById("sbcResetBtn"),
     copyBtn: document.getElementById("sbcCopyLinkBtn"),
   };
@@ -154,12 +155,19 @@
       const multiple = root.querySelector(`[data-sbc-monthly-multiple="${company.id}"]`);
       const fixed = root.querySelector(`[data-sbc-fixed-amount="${company.id}"]`);
       if (toggle) toggle.checked = input.selected;
-      if (panel) panel.classList.toggle("is-disabled", !input.selected);
+      if (panel) panel.hidden = !input.selected;
       if (mode) mode.value = input.mode;
       if (percent) percent.value = String(input.salaryPercent);
       if (multiple) multiple.value = String(input.monthlyMultiple);
       if (fixed) fixed.value = formatInputNumber(input.fixedAmount);
+
+      root.querySelectorAll(`[data-sbc-field-group="${company.id}"]`).forEach((field) => {
+        field.hidden = field.dataset.sbcFieldMode !== input.mode;
+      });
     });
+
+    const selectedCount = companies.filter((company) => state.companies[company.id]?.selected).length;
+    if (els.companyEmpty) els.companyEmpty.hidden = selectedCount > 0;
   }
 
   function renderResults() {

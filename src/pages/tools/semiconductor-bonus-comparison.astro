@@ -148,8 +148,9 @@ const faqSchema = SBC_FAQS.map((item) => ({
               <p class="panel-heading__eyebrow">회사별 가정</p>
               <h2 class="panel__title">성과급 방식 입력</h2>
             </div>
-            <p class="panel-heading__summary">기본값은 예시입니다. 실제 비교가 필요하면 회사별 지급 기준에 맞게 수정하세요.</p>
+            <p class="panel-heading__summary">기본값은 예시입니다. 실제 비교가 필요하면 회사별 지급 기준에 맞게 수정하세요. 위에서 선택한 회사만 입력 패널이 표시됩니다.</p>
           </div>
+          <p class="sbc-company-empty" data-sbc-company-empty hidden>비교할 회사를 위에서 1개 이상 선택해주세요.</p>
           <div class="sbc-company-panel-list">
             {SEMICONDUCTOR_BONUS_COMPANIES.map((company) => (
               <section class="sbc-company-panel" data-sbc-company-panel={company.id}>
@@ -171,15 +172,15 @@ const faqSchema = SBC_FAQS.map((item) => ({
                       <option value="fixedAmount" selected={company.defaultMode === "fixedAmount"}>고정 금액</option>
                     </select>
                   </label>
-                  <label class="field" for={`sbcPercent-${company.id}`}>
+                  <label class="field" for={`sbcPercent-${company.id}`} data-sbc-field-group={company.id} data-sbc-field-mode="salaryPercent">
                     <span>성과급률 (%)</span>
                     <input id={`sbcPercent-${company.id}`} data-sbc-salary-percent={company.id} type="number" min="0" max="300" step="0.1" value={company.defaultSalaryPercent} />
                   </label>
-                  <label class="field" for={`sbcMultiple-${company.id}`}>
+                  <label class="field" for={`sbcMultiple-${company.id}`} data-sbc-field-group={company.id} data-sbc-field-mode="monthlyMultiple">
                     <span>월급 개월 수</span>
                     <input id={`sbcMultiple-${company.id}`} data-sbc-monthly-multiple={company.id} type="number" min="0" max="60" step="0.1" value={company.defaultMonthlyMultiple} />
                   </label>
-                  <label class="field" for={`sbcFixed-${company.id}`}>
+                  <label class="field" for={`sbcFixed-${company.id}`} data-sbc-field-group={company.id} data-sbc-field-mode="fixedAmount">
                     <span>고정 성과급</span>
                     <input id={`sbcFixed-${company.id}`} data-sbc-fixed-amount={company.id} type="text" inputmode="numeric" value={company.defaultFixedAmount.toLocaleString("ko-KR")} />
                   </label>
