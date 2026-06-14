@@ -1,0 +1,273 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  BIGTECH_COMPANIES,
+  COMP_TIER_ORDER,
+  COMP_TIER_META,
+  EXCHANGE_RATE_KRW,
+  usdToKrw,
+  UBC_META,
+  UBC_FAQ,
+  UBC_RELATED_LINKS,
+  UBG_TOOL_HREF,
+} from "../../data/usBigTechSalaryByLevel";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${UBC_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const formatUsd = (value: number) => `$${value.toLocaleString("en-US")}`;
+const formatKrwMan = (value: number) => `${Math.round(usdToKrw(value) / 10_000).toLocaleString("ko-KR")}만원`;
+
+const getLevel = (company: (typeof BIGTECH_COMPANIES)[number], tier: string) =>
+  company.levels.find((l) => l.tier === tier)!;
+
+// KPI: 시니어 레벨 기준 최고/최저 회사
+const seniorLevels = BIGTECH_COMPANIES.map((c) => ({ company: c, level: getLevel(c, "senior") }));
+const highestSenior = seniorLevels.reduce((a, b) => (b.level.totalUsd > a.level.totalUsd ? b : a));
+const lowestSenior = seniorLevels.reduce((a, b) => (b.level.totalUsd < a.level.totalUsd ? b : a));
+const principalLevels = BIGTECH_COMPANIES.map((c) => ({ company: c, level: getLevel(c, "principal") }));
+const highestPrincipal = principalLevels.reduce((a, b) => (b.level.totalUsd > a.level.totalUsd ? b : a));
+const avgSeniorStockRatio = Math.round(
+  (seniorLevels.reduce((sum, s) => sum + s.level.stockUsd / s.level.totalUsd, 0) / seniorLevels.length) * 100
+);
+
+const reportData = {
+  exchangeRate: EXCHANGE_RATE_KRW,
+  tierOrder: COMP_TIER_ORDER,
+  tierMeta: COMP_TIER_META,
+  companies: BIGTECH_COMPANIES.map((c) => ({
+    id: c.id,
+    name: c.name,
+    levels: c.levels.map((l) => ({
+      tier: l.tier,
+      levelLabel: l.levelLabel,
+      baseUsd: l.baseUsd,
+      stockUsd: l.stockUsd,
+      bonusUsd: l.bonusUsd,
+      totalUsd: l.totalUsd,
+    })),
+  })),
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: UBC_META.title,
+    description: UBC_META.description,
+    dateModified: UBC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: UBC_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: UBC_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={UBC_META.seoTitle} description={UBC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ubc-page" data-report={UBC_META.slug}>
+    <CalculatorHero
+      eyebrow="미국 빅테크 연봉 비교 리포트"
+      title={UBC_META.title}
+      description="엔비디아, 애플, 아마존, 마이크로소프트, 테슬라, 오라클의 엔트리부터 프린시플까지 직급별 연봉을 levels.fyi 데이터 기준으로 한 화면에서 비교합니다."
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        UBC_META.dataNote,
+        "회사마다 levels.fyi 표본 수와 보상 구조(Base 중심 vs Stock 중심)가 달라 단순 총보상 비교만으로 우열을 판단하기 어렵습니다.",
+        "각 회사의 세부 데이터와 추정 방식은 회사별 리포트 페이지에서 확인할 수 있습니다.",
+      ]}
+    />
+
+    <section class="content-section ubc-kpi-section" aria-labelledby="ubc-kpi-title">
+      <div class="ubc-section-heading">
+        <p class="ubc-section-heading__eyebrow">한눈에 보기</p>
+        <h2 id="ubc-kpi-title">6개사 비교, 핵심만 먼저 보면</h2>
+      </div>
+      <div class="ubc-kpi-grid">
+        <div class="ubc-kpi-card">
+          <span>시니어 레벨 최고 총보상</span>
+          <strong>{highestSenior.company.name}</strong>
+          <small>{formatUsd(highestSenior.level.totalUsd)} · 약 {formatKrwMan(highestSenior.level.totalUsd)}</small>
+        </div>
+        <div class="ubc-kpi-card">
+          <span>시니어 레벨 최저 총보상</span>
+          <strong>{lowestSenior.company.name}</strong>
+          <small>{formatUsd(lowestSenior.level.totalUsd)} · 약 {formatKrwMan(lowestSenior.level.totalUsd)}</small>
+        </div>
+        <div class="ubc-kpi-card">
+          <span>프린시플 레벨 최고 총보상</span>
+          <strong>{highestPrincipal.company.name}</strong>
+          <small>{formatUsd(highestPrincipal.level.totalUsd)} · 약 {formatKrwMan(highestPrincipal.level.totalUsd)}</small>
+        </div>
+        <div class="ubc-kpi-card">
+          <span>시니어 레벨 평균 Stock 비중</span>
+          <strong>약 {avgSeniorStockRatio}%</strong>
+          <small>6개사 평균 (단순 산술)</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section ubc-tier-section" aria-labelledby="ubc-tier-title">
+      <div class="ubc-section-heading">
+        <p class="ubc-section-heading__eyebrow">레벨별 비교</p>
+        <h2 id="ubc-tier-title">같은 레벨 구간, 6개사는 얼마나 차이 날까</h2>
+        <span>레벨 탭을 눌러 엔트리부터 프린시플까지 비교해보세요. (단위: 만원)</span>
+      </div>
+      <div class="ubc-tab-list" role="tablist" aria-label="레벨 선택">
+        {COMP_TIER_ORDER.map((tier, index) => (
+          <button
+            type="button"
+            class:list={["ubc-tab-btn", tier === "senior" && "is-active"]}
+            role="tab"
+            data-tier-tab={tier}
+          >
+            {COMP_TIER_META[tier].shortLabel}
+          </button>
+        ))}
+      </div>
+      <div class="ubc-chart-wrap">
+        <canvas id="ubcTierChart" aria-label="레벨별 6개사 총보상 비교 막대 그래프" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="content-section ubc-stock-section" aria-labelledby="ubc-stock-title">
+      <div class="ubc-section-heading">
+        <p class="ubc-section-heading__eyebrow">보상 구조 비교</p>
+        <h2 id="ubc-stock-title">시니어 레벨, Stock 비중은 회사마다 얼마나 다를까</h2>
+        <span>같은 시니어 레벨이라도 Base와 Stock의 비율이 회사마다 크게 다릅니다.</span>
+      </div>
+      <div class="ubc-chart-wrap">
+        <canvas id="ubcStockChart" aria-label="시니어 레벨 Base, Stock, Bonus 비중 비교 막대 그래프" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="content-section ubc-table-section" aria-labelledby="ubc-table-title">
+      <div class="ubc-section-heading">
+        <p class="ubc-section-heading__eyebrow">전체 데이터</p>
+        <h2 id="ubc-table-title">회사별 레벨 전체 데이터 보기</h2>
+        <span>환율 1달러 = {EXCHANGE_RATE_KRW.toLocaleString()}원 기준 원화 환산 금액입니다.</span>
+      </div>
+      <div class="ubc-accordion-list">
+        {BIGTECH_COMPANIES.map((company, index) => (
+          <details class="ubc-accordion" open={index === 0}>
+            <summary>{company.name} ({company.nameEn})</summary>
+            <div class="ubc-table-wrap">
+              <table class="ubc-table">
+                <thead>
+                  <tr>
+                    <th scope="col">레벨</th>
+                    <th scope="col">직무 예시</th>
+                    <th scope="col">Base</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Bonus</th>
+                    <th scope="col">총보상 (USD)</th>
+                    <th scope="col">총보상 (원화)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {company.levels.map((level) => (
+                    <tr>
+                      <td>
+                        <strong>{level.levelLabel}</strong>
+                        <span>{COMP_TIER_META[level.tier].label}</span>
+                      </td>
+                      <td>{level.roleExample}</td>
+                      <td>{formatUsd(level.baseUsd)}</td>
+                      <td>{formatUsd(level.stockUsd)}</td>
+                      <td>{formatUsd(level.bonusUsd)}</td>
+                      <td><strong>{formatUsd(level.totalUsd)}</strong></td>
+                      <td><strong>{formatKrwMan(level.totalUsd)}</strong></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ubc-report-section" aria-labelledby="ubc-report-title">
+      <div class="ubc-section-heading">
+        <p class="ubc-section-heading__eyebrow">더 알아보기</p>
+        <h2 id="ubc-report-title">회사별 상세 리포트 보기</h2>
+      </div>
+      <div class="ubc-report-grid">
+        {BIGTECH_COMPANIES.map((company) => (
+          <a class="ubc-report-card" href={withBase(company.detailHref)}>
+            <strong>{company.name}</strong>
+            <span>{company.nameEn} 연봉 레벨별 정리 2026</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ubc-cta-section" aria-labelledby="ubc-cta-title">
+      <div class="ubc-section-heading">
+        <p class="ubc-section-heading__eyebrow">다음 단계</p>
+        <h2 id="ubc-cta-title">내 레벨, 내 환율로 직접 계산해보기</h2>
+      </div>
+      <a class="ubc-cta-card" href={withBase(UBG_TOOL_HREF)}>
+        <strong>미국 빅테크 연봉 계산기</strong>
+        <span>회사·레벨·환율을 선택해 원화 총보상, 월 환산액, 보상 구성을 계산해보세요.</span>
+      </a>
+    </section>
+
+    <SeoContent
+      introTitle="미국 빅테크 연봉, 6개사를 한 화면에서 비교하면"
+      intro={[
+        "엔비디아, 애플, 아마존, 마이크로소프트, 테슬라, 오라클은 모두 \"미국 빅테크\"로 묶이지만, 직급별 연봉 수준과 보상 구조는 회사마다 크게 다릅니다. 이 리포트는 levels.fyi에 공개된 데이터를 기준으로 엔트리부터 프린시플까지 5단계 레벨의 총보상을 6개사 동일 기준으로 비교합니다.",
+        "특히 같은 총보상이라도 Base와 Stock(RSU)의 비율은 회사마다 매우 다릅니다. 엔비디아와 아마존처럼 Stock 비중이 큰 회사는 주가 변동에 따라 총보상이 크게 출렁일 수 있고, 마이크로소프트와 오라클처럼 Base 비중이 높은 회사는 상대적으로 안정적입니다.",
+        "이 리포트의 수치는 levels.fyi 사용자 제출 데이터를 기반으로 한 참고용 추정치이며, 공식 연봉 자료가 아닙니다. 회사별 표본 수와 시점 차이로 인해 실제와 다를 수 있으니, 더 자세한 데이터는 각 회사별 리포트 페이지를 참고하세요.",
+        "회사 규모로 보면 아마존이 약 156만명으로 임직원 수가 가장 많고, 엔비디아는 약 3만 6천명으로 가장 적습니다. 매출 기준으로는 아마존이 약 6,380억 달러로 6개사 중 가장 크고, 엔비디아는 약 1,305억 달러 수준이지만 AI 가속기 수요 폭증으로 최근 2년간 매출과 주가가 가장 빠르게 성장한 회사입니다.",
+        "순이익률로 보면 엔비디아(약 729억 달러)와 마이크로소프트(약 880억 달러)가 매출 대비 높은 이익률을 보이는 반면, 아마존과 테슬라는 매출 규모는 크지만 이익률은 상대적으로 낮습니다. 이런 회사별 재무 체력 차이는 스톡(RSU) 보상의 안정성과도 연결됩니다.",
+        "이 리포트는 연봉 협상이나 이직을 준비할 때 참고용 벤치마크로 활용할 수 있습니다. 다만 levels.fyi 데이터는 미국 본사 기준이 많아 시애틀, 오스틴 등 지역별 오피스나 원격 근무 직군은 총보상이 다를 수 있다는 점을 감안해야 합니다.",
+      ]}
+      inputPoints={[
+        "레벨 탭(엔트리~프린시플)을 눌러 같은 레벨 구간에서 6개사의 총보상을 비교할 수 있습니다.",
+        "시니어 레벨 기준 Base/Stock/Bonus 구성 비교로 회사별 보상 구조 차이를 확인할 수 있습니다.",
+        "회사별 아코디언을 열면 전체 레벨의 상세 데이터를 표로 확인할 수 있습니다.",
+      ]}
+      criteria={[
+        `levels.fyi 2025년 하반기~2026년 상반기 데이터를 기준으로 했으며, 1달러 = ${EXCHANGE_RATE_KRW.toLocaleString()}원으로 환산했습니다.`,
+        "공식 연봉 자료가 아닌 levels.fyi 사용자 제출 데이터 기반 추정치이며, 실제 오퍼와 다를 수 있습니다.",
+        "회사별 세부 추정 방식과 주의사항은 각 회사별 리포트 페이지에 명시되어 있습니다.",
+      ]}
+      faq={UBC_FAQ}
+      related={UBC_RELATED_LINKS}
+    />
+
+    <script type="application/json" id="ubc-data" set:html={JSON.stringify(reportData)} />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script type="module" src={withBase("/scripts/us-bigtech-salary-comparison-2026.js")}></script>
+  </main>
+</BaseLayout>

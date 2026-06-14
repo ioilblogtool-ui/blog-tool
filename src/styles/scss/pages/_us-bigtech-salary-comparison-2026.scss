@@ -1,0 +1,245 @@
+.ubc-page {
+  .ubc-section-heading {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin: 0;
+      color: #0f172a;
+      font-size: clamp(1.35rem, 2vw, 1.85rem);
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    span {
+      margin: 0;
+      color: #64748b;
+      line-height: 1.65;
+    }
+  }
+
+  .ubc-section-heading__eyebrow {
+    margin: 0;
+    color: #1a56db;
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+
+  .ubc-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .ubc-kpi-card {
+    display: grid;
+    gap: 8px;
+    min-height: 132px;
+    padding: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 8px;
+    background: #fff;
+
+    span,
+    small {
+      color: #64748b;
+      font-size: 0.84rem;
+    }
+
+    strong {
+      align-self: end;
+      color: #0f172a;
+      font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+  }
+
+  .ubc-tab-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .ubc-tab-btn {
+    padding: 8px 16px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    border-radius: 999px;
+    background: #fff;
+    color: #475569;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: rgba(26, 86, 219, 0.35);
+      color: #1a56db;
+    }
+
+    &.is-active {
+      border-color: #1a56db;
+      background: #1a56db;
+      color: #fff;
+    }
+  }
+
+  .ubc-chart-wrap {
+    position: relative;
+    height: 360px;
+    padding: 16px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .ubc-accordion-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .ubc-accordion {
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+
+    summary {
+      padding: 14px 18px;
+      color: #0f172a;
+      font-weight: 900;
+      cursor: pointer;
+      list-style: none;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &::after {
+        content: "+";
+        float: right;
+        color: #94a3b8;
+        font-weight: 700;
+      }
+    }
+
+    &[open] summary::after {
+      content: "−";
+    }
+  }
+
+  .ubc-table-wrap {
+    overflow-x: auto;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .ubc-table {
+    width: 100%;
+    min-width: 920px;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 13px 12px;
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-weight: 900;
+    }
+
+    td strong {
+      display: block;
+      color: #0f172a;
+    }
+
+    td span {
+      display: block;
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 0.76rem;
+    }
+  }
+
+  .ubc-report-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .ubc-report-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px 18px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 8px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+
+    strong {
+      color: #0f172a;
+      font-size: 1rem;
+    }
+
+    span {
+      color: #64748b;
+      font-size: 0.86rem;
+    }
+  }
+
+  .ubc-cta-card {
+    display: grid;
+    gap: 8px;
+    padding: 20px;
+    border: 1px solid rgba(26, 86, 219, 0.4);
+    border-radius: 8px;
+    background: linear-gradient(180deg, #ffffff 0%, #eff4ff 100%);
+    color: inherit;
+    text-decoration: none;
+
+    strong {
+      color: #1a56db;
+      font-size: 1.05rem;
+    }
+
+    span {
+      color: #64748b;
+      line-height: 1.6;
+    }
+  }
+}
+
+@media (max-width: 1020px) {
+  .ubc-page {
+    .ubc-kpi-grid,
+    .ubc-report-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .ubc-page {
+    .ubc-kpi-grid,
+    .ubc-report-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ubc-chart-wrap {
+      height: 320px;
+    }
+
+    .ubc-table {
+      min-width: 760px;
+    }
+  }
+}

@@ -1465,6 +1465,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "us-bigtech-salary-by-level-calculator",
+    title: "미국 빅테크 연봉 계산기",
+    description: "엔비디아, 애플, 아마존, 마이크로소프트, 테슬라, 오라클의 직급(레벨)별 연봉을 levels.fyi 기준으로 원화로 환산합니다.",
+    order: 25.7,
+    eyebrow: "미국 빅테크 연봉",
+    category: "compare",
+    iframeReady: true,
+    badges: ["신규", "빅테크 연봉"],
+    previewStats: [
+      { label: "애플 ICT4 총보상", value: "약 4.7억" },
+      { label: "엔비디아 IC5 총보상", value: "약 7.8억" },
+    ],
+  },
+  {
     slug: "worldcup-prize-money-calculator",
     title: "월드컵 포상금 계산기",
     description: "대표팀 진출 단계와 조별리그 전적을 고르면 FIFA 협회 상금, 선수단 1인당·총액 포상금, 세후 추정액을 계산합니다.",

@@ -1,0 +1,271 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  BIGTECH_COMPANIES,
+  COMP_TIER_ORDER,
+  COMP_TIER_META,
+  EXCHANGE_RATE_KRW,
+  EXCHANGE_RATE_RANGE,
+  UBG_META,
+  UBG_FAQ,
+  UBG_RELATED_LINKS,
+} from "../../data/usBigTechSalaryByLevel";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  companies: BIGTECH_COMPANIES.map((c) => ({
+    id: c.id,
+    name: c.name,
+    nameEn: c.nameEn,
+    levels: c.levels.map((l) => ({
+      tier: l.tier,
+      levelLabel: l.levelLabel,
+      roleExample: l.roleExample,
+      yearsExperience: l.yearsExperience,
+      baseUsd: l.baseUsd,
+      stockUsd: l.stockUsd,
+      bonusUsd: l.bonusUsd,
+      totalUsd: l.totalUsd,
+      badge: l.badge,
+    })),
+    detailHref: c.detailHref,
+  })),
+  tierOrder: COMP_TIER_ORDER,
+  tierMeta: COMP_TIER_META,
+  exchangeRate: EXCHANGE_RATE_KRW,
+  exchangeRange: EXCHANGE_RATE_RANGE,
+};
+
+const faqSchema = UBG_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+---
+
+<BaseLayout
+  title={UBG_META.seoTitle}
+  description={UBG_META.seoDescription}
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: UBG_META.title,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "All",
+      description: UBG_META.description,
+      url: `${siteBase}/tools/us-bigtech-salary-by-level-calculator/`,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="us-bigtech-salary-by-level-calculator" pageClass="ubg-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="미국 빅테크 연봉 계산기"
+        title={UBG_META.title}
+        description="엔비디아, 애플, 아마존, 마이크로소프트, 테슬라, 오라클의 직급(레벨)을 선택하면 levels.fyi 기준 총보상을 원화로 환산해 보여줍니다. 환율을 직접 조정해 차이를 확인해보세요."
+      />
+      <InfoNotice
+        title="데이터 기준 안내"
+        lines={[
+          "levels.fyi에 공개된 2025년 하반기~2026년 상반기 데이터를 기준으로 한 참고용 추정치이며, 공식 연봉 자료가 아닙니다.",
+          `기본 환율은 1달러 = ${EXCHANGE_RATE_KRW.toLocaleString()}원이며, 슬라이더로 ${EXCHANGE_RATE_RANGE.min.toLocaleString()}~${EXCHANGE_RATE_RANGE.max.toLocaleString()}원 사이에서 조정할 수 있습니다.`,
+          `데이터 갱신: ${UBG_META.updatedAt}`,
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="ubgResetBtn" copyId="ubgCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel ubg-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">회사와 레벨, 환율 선택</h2>
+          </div>
+          <p class="panel-heading__summary">회사를 바꾸면 레벨 목록도 그 회사의 레벨 체계로 바뀝니다.</p>
+        </div>
+
+        <div class="ubg-field">
+          <label for="ubgCompany">회사</label>
+          <select id="ubgCompany" data-select="company">
+            {BIGTECH_COMPANIES.map((c) => (
+              <option value={c.id}>{c.name} ({c.nameEn})</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="ubg-field">
+          <label for="ubgTier">레벨</label>
+          <select id="ubgTier" data-select="tier"></select>
+          <p class="ubg-field__hint" id="ubgTierHint"></p>
+        </div>
+
+        <div class="ubg-field">
+          <label for="ubgFxRate">환율 (1달러 = <span id="ubgFxRateValue">{EXCHANGE_RATE_KRW.toLocaleString()}</span>원)</label>
+          <input
+            type="range"
+            id="ubgFxRate"
+            data-slider="fxRate"
+            min={EXCHANGE_RATE_RANGE.min}
+            max={EXCHANGE_RATE_RANGE.max}
+            step={EXCHANGE_RATE_RANGE.step}
+            value={EXCHANGE_RATE_KRW}
+          />
+          <div class="ubg-slider-range">
+            <span>{EXCHANGE_RATE_RANGE.min.toLocaleString()}원</span>
+            <span>{EXCHANGE_RATE_RANGE.max.toLocaleString()}원</span>
+          </div>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="ubg-section">
+      <div class="ubg-section__head">
+        <p class="ubg-section__eyebrow">계산 결과</p>
+        <h2 id="ubgResultTitle">선택한 레벨의 총보상</h2>
+        <p class="ubg-section__sub" id="ubgResultSubcopy"></p>
+      </div>
+
+      <div class="ubg-kpi-grid">
+        <article class="ubg-kpi-card ubg-kpi-card--main">
+          <p>총보상 (연, USD)</p>
+          <strong id="ubgTotalUsd">$0</strong>
+          <span id="ubgBadge"></span>
+        </article>
+        <article class="ubg-kpi-card">
+          <p>총보상 (연, 원화)</p>
+          <strong id="ubgTotalKrw">0원</strong>
+          <span>선택한 환율 기준</span>
+        </article>
+        <article class="ubg-kpi-card">
+          <p>월 환산 (원화)</p>
+          <strong id="ubgMonthlyKrw">0원</strong>
+          <span>연봉 ÷ 12</span>
+        </article>
+        <article class="ubg-kpi-card">
+          <p>Stock 비중</p>
+          <strong id="ubgStockRatio">0%</strong>
+          <span>총보상 중 RSU/스톡 비율</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="ubg-section">
+      <article class="panel ubg-chart-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">보상 구성</p>
+            <h2 class="panel__title">Base · Stock · Bonus 비중</h2>
+          </div>
+          <p class="panel-heading__summary">선택한 회사·레벨의 총보상이 어떤 항목으로 구성되는지 보여줍니다.</p>
+        </div>
+        <div class="ubg-chart-wrap ubg-chart-wrap--donut">
+          <canvas id="ubgDonutChart" aria-label="Base, Stock, Bonus 비중 도넛 차트" role="img"></canvas>
+        </div>
+        <ul class="ubg-legend" id="ubgDonutLegend"></ul>
+      </article>
+    </section>
+
+    <section class="ubg-section">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">환율별 비교</p>
+            <h2 class="panel__title">환율이 달라지면 원화 총보상은 얼마나 변할까</h2>
+          </div>
+          <p class="panel-heading__summary">현재 선택한 레벨의 총보상(USD)을 환율별로 환산한 표입니다.</p>
+        </div>
+        <div class="ubg-table-wrap">
+          <table class="ubg-table" id="ubgFxTable">
+            <thead>
+              <tr><th>환율 (원/달러)</th><th>총보상 (원화)</th><th>월 환산 (원화)</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="ubg-section">
+      <article class="panel ubg-chart-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">회사별 비교</p>
+            <h2 class="panel__title" id="ubgCrossTitle">같은 레벨 구간, 6개사는 얼마나 차이 날까</h2>
+          </div>
+          <p class="panel-heading__summary">선택한 레벨(엔트리~프린시플 구간 기준)의 총보상을 6개사 기준으로 비교합니다.</p>
+        </div>
+        <div class="ubg-chart-wrap ubg-chart-wrap--bar">
+          <canvas id="ubgCrossChart" aria-label="회사별 총보상 비교 막대 그래프" role="img"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="ubg-section">
+      <div class="ubg-section__head">
+        <p class="ubg-section__eyebrow">더 알아보기</p>
+        <h2>선택한 회사의 상세 리포트 보기</h2>
+      </div>
+      <div class="ubg-related-grid" id="ubgRelatedGrid">
+        {BIGTECH_COMPANIES.map((c) => (
+          <a class="ubg-related-card" href={withBase(c.detailHref)} data-company-link={c.id} hidden>
+            <strong>{c.name} 연봉 레벨별 정리 2026</strong>
+            <span>{c.nameEn}의 직급별 Base·Stock·Bonus 상세를 확인하세요.</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="미국 빅테크 연봉, 직급별로 원화로 보면 얼마일까"
+        intro={[
+          "엔비디아, 애플, 아마존, 마이크로소프트, 테슬라, 오라클 같은 미국 빅테크 기업의 연봉은 채용 정보 사이트 levels.fyi를 통해 직급(레벨)별로 공개되어 있습니다. 하지만 달러 기준 숫자만 보면 실제로 한국 돈으로 얼마인지, 같은 레벨이라도 회사마다 얼마나 차이가 나는지 감이 잘 오지 않습니다.",
+          "이 계산기는 6개 회사의 엔트리~프린시플 5단계 레벨별 총보상(Base+Stock+Bonus)을 원화로 환산해 보여줍니다. 환율 슬라이더로 1,200원부터 1,600원까지 직접 조정하면서 총보상, 월 환산액, 환율별 비교표가 즉시 다시 계산됩니다.",
+          "또한 Base·Stock·Bonus 비중을 도넛 차트로 보여줘 같은 총보상이라도 회사마다 보상 구조가 얼마나 다른지 확인할 수 있고, 같은 레벨 구간을 기준으로 6개사를 비교하는 막대 그래프도 함께 제공합니다.",
+          "예를 들어 시니어 레벨(5~8년차) 기준 총보상은 아마존이 약 40만 7천 달러로 가장 높고, 테슬라는 약 20만 7천 달러로 가장 낮습니다. 환율 1,400원 기준으로 환산하면 같은 연차라도 회사 선택에 따라 원화로 약 2억 8천만원 이상 차이가 날 수 있습니다.",
+          "스톡(RSU) 비중도 회사마다 크게 다릅니다. 엔비디아와 아마존은 시니어 레벨 총보상의 약 45~52%가 스톡으로 구성되어 주가 변동에 따라 체감 연봉이 출렁일 수 있는 반면, 마이크로소프트와 오라클은 스톡 비중이 28~32% 수준으로 상대적으로 안정적입니다.",
+          "6개 회사는 설립 시기도 다양합니다. 마이크로소프트(1975년)와 애플(1976년)은 설립 50년에 가까운 기업이고, 아마존(1994년)·엔비디아(1993년)은 30년 차, 테슬라(2003년)는 가장 신생 기업이지만 빅테크 수준의 보상 체계를 갖추고 있습니다. 회사별 임직원 수, 매출, 순이익 등 기업 규모 정보는 각 회사별 리포트 페이지에서 확인할 수 있습니다.",
+        ]}
+        inputPoints={[
+          "회사를 선택하면 그 회사의 레벨 체계(예: 애플 ICT2~ICT6, 아마존 L4~L7+)로 레벨 목록이 바뀝니다.",
+          "환율 슬라이더를 움직이면 총보상, 월 환산액, 환율별 비교표가 모두 즉시 갱신됩니다.",
+          "회사별 상세 데이터를 보고 싶다면 페이지 하단의 회사별 리포트 링크를 이용하세요.",
+        ]}
+        criteria={[
+          "levels.fyi 2025년 하반기~2026년 상반기 데이터를 기준으로 한 참고용 추정치입니다.",
+          `기본 환율은 1달러 = ${EXCHANGE_RATE_KRW.toLocaleString()}원이며, 직접 조정할 수 있습니다.`,
+          "공식 연봉 자료가 아니므로 실제 오퍼 협상에는 참고용으로만 활용하세요.",
+        ]}
+        faq={UBG_FAQ}
+        related={UBG_RELATED_LINKS}
+      />
+      <script type="application/json" id="ubgConfig" set:html={JSON.stringify(config)}></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+      <script type="module" src={withBase("/scripts/us-bigtech-salary-by-level-calculator.js")}></script>
+    </Fragment>
+  </SimpleToolShell>
+</BaseLayout>

@@ -1,0 +1,308 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  BIGTECH_COMPANIES,
+  COMP_TIER_META,
+  EXCHANGE_RATE_KRW,
+  usdToKrw,
+  buildCompanyReportMeta,
+  buildCompanyReportFaq,
+  buildCompanyReportRelatedLinks,
+  UBG_TOOL_HREF,
+  UBC_HUB_HREF,
+} from "../../data/usBigTechSalaryByLevel";
+
+const COMPANY_ID = "oracle" as const;
+const company = BIGTECH_COMPANIES.find((c) => c.id === COMPANY_ID)!;
+const META = buildCompanyReportMeta(company);
+const FAQ = buildCompanyReportFaq(company);
+const RELATED_LINKS = buildCompanyReportRelatedLinks(company);
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const formatUsd = (value: number) => `$${value.toLocaleString("en-US")}`;
+const formatKrwMan = (value: number) => `${Math.round(usdToKrw(value) / 10_000).toLocaleString("ko-KR")}만원`;
+
+const entryLevel = company.levels[0];
+const principalLevel = company.levels[company.levels.length - 1];
+const seniorLevel = company.levels.find((l) => l.tier === "senior")!;
+const multiple = (principalLevel.totalUsd / entryLevel.totalUsd).toFixed(1);
+const stockRatio = Math.round((seniorLevel.stockUsd / seniorLevel.totalUsd) * 100);
+
+const otherCompanies = BIGTECH_COMPANIES.filter((c) => c.id !== company.id);
+
+const reportData = {
+  companyId: company.id,
+  companyName: company.name,
+  exchangeRate: EXCHANGE_RATE_KRW,
+  levels: company.levels.map((level) => ({
+    tier: level.tier,
+    levelLabel: level.levelLabel,
+    baseUsd: level.baseUsd,
+    stockUsd: level.stockUsd,
+    bonusUsd: level.bonusUsd,
+  })),
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: META.title,
+    description: META.description,
+    dateModified: META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={META.seoTitle} description={META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ubr-page" data-report={META.slug} data-company={company.id}>
+    <CalculatorHero
+      eyebrow="미국 빅테크 연봉 리포트"
+      title={META.title}
+      description={`${company.name}(${company.nameEn})의 ${entryLevel.levelLabel}부터 ${principalLevel.levelLabel}까지, 직급별 연봉을 Base·Stock·Bonus로 나눠 levels.fyi 데이터 기준으로 정리하고 원화로 환산했습니다.`}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        META.dataNote,
+        company.caution,
+        "이 페이지의 수치는 공식 연봉 자료가 아닌 levels.fyi 사용자 제출 데이터 기반 참고용 추정치입니다.",
+      ]}
+    />
+
+    <section class="content-section ubr-kpi-section" aria-labelledby="ubr-kpi-title">
+      <div class="ubr-section-heading">
+        <p class="ubr-section-heading__eyebrow">한눈에 보기</p>
+        <h2 id="ubr-kpi-title">{company.name} 연봉, 레벨별로 얼마나 차이 날까</h2>
+        <span>{company.industrySummary}</span>
+      </div>
+      <div class="ubr-kpi-grid">
+        <div class="ubr-kpi-card">
+          <span>{entryLevel.levelLabel} 총보상 (엔트리)</span>
+          <strong>{formatUsd(entryLevel.totalUsd)}</strong>
+          <small>약 {formatKrwMan(entryLevel.totalUsd)}</small>
+        </div>
+        <div class="ubr-kpi-card">
+          <span>{principalLevel.levelLabel} 총보상 (프린시플)</span>
+          <strong>{formatUsd(principalLevel.totalUsd)}</strong>
+          <small>약 {formatKrwMan(principalLevel.totalUsd)}</small>
+        </div>
+        <div class="ubr-kpi-card">
+          <span>엔트리 → 프린시플 격차</span>
+          <strong>약 {multiple}배</strong>
+          <small>총보상 기준 (USD)</small>
+        </div>
+        <div class="ubr-kpi-card">
+          <span>{seniorLevel.levelLabel} 스톡 비중</span>
+          <strong>약 {stockRatio}%</strong>
+          <small>총보상 중 Stock(RSU) 비율</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section ubr-profile-section" aria-labelledby="ubr-profile-title">
+      <div class="ubr-section-heading">
+        <p class="ubr-section-heading__eyebrow">회사 정보</p>
+        <h2 id="ubr-profile-title">{company.name}, 어떤 회사인가</h2>
+        <span>{company.profile.growthNote}</span>
+      </div>
+      <div class="ubr-profile-grid">
+        <div class="ubr-profile-card">
+          <span>설립</span>
+          <strong>{company.profile.founded}</strong>
+        </div>
+        <div class="ubr-profile-card">
+          <span>임직원 수</span>
+          <strong>{company.profile.employees}</strong>
+          <small>{company.profile.employeesAsOf}</small>
+        </div>
+        <div class="ubr-profile-card">
+          <span>연간 매출</span>
+          <strong>{company.profile.revenue}</strong>
+          <small>{company.profile.financialsAsOf}</small>
+        </div>
+        <div class="ubr-profile-card">
+          <span>순이익</span>
+          <strong>{company.profile.netIncome}</strong>
+          <small>{company.profile.financialsAsOf}</small>
+        </div>
+        <div class="ubr-profile-card">
+          <span>최고 보상 임원</span>
+          <strong>{company.profile.topPay}</strong>
+          <small>{company.profile.topPayAsOf}</small>
+        </div>
+      </div>
+      <p class="ubr-profile-note">위 수치는 각 회사의 공개 연차보고서·위임장(Proxy Statement) 기준 참고용 자료이며, 최신 발표 시점에 따라 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="content-section ubr-table-section" aria-labelledby="ubr-table-title">
+      <div class="ubr-section-heading">
+        <p class="ubr-section-heading__eyebrow">레벨별 비교</p>
+        <h2 id="ubr-table-title">{company.name} 직급별 연봉 구성 (Base · Stock · Bonus)</h2>
+        <span>환율 1달러 = {EXCHANGE_RATE_KRW.toLocaleString()}원 기준 원화 환산 금액입니다.</span>
+      </div>
+      <div class="ubr-table-wrap">
+        <table class="ubr-table">
+          <caption>{company.name} 레벨별 Base/Stock/Bonus 및 총보상 (단위: USD, 원화 환산은 만원)</caption>
+          <thead>
+            <tr>
+              <th scope="col">레벨</th>
+              <th scope="col">직무 예시</th>
+              <th scope="col">경력</th>
+              <th scope="col">Base</th>
+              <th scope="col">Stock</th>
+              <th scope="col">Bonus</th>
+              <th scope="col">총보상 (USD)</th>
+              <th scope="col">총보상 (원화)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {company.levels.map((level) => (
+              <tr>
+                <td>
+                  <strong>{level.levelLabel}</strong>
+                  <span>{COMP_TIER_META[level.tier].label}</span>
+                </td>
+                <td>{level.roleExample}</td>
+                <td>{level.yearsExperience}</td>
+                <td>{formatUsd(level.baseUsd)}</td>
+                <td>{formatUsd(level.stockUsd)}</td>
+                <td>{formatUsd(level.bonusUsd)}</td>
+                <td><strong>{formatUsd(level.totalUsd)}</strong></td>
+                <td>
+                  <strong>{formatKrwMan(level.totalUsd)}</strong>
+                  <small>{level.badge}</small>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section ubr-chart-section" aria-labelledby="ubr-chart-title">
+      <div class="ubr-section-heading">
+        <p class="ubr-section-heading__eyebrow">시각화</p>
+        <h2 id="ubr-chart-title">레벨이 올라갈수록 어떤 항목이 커질까</h2>
+        <span>막대는 Base, Stock, Bonus를 누적해 보여줍니다. (단위: 만원)</span>
+      </div>
+      <div class="ubr-chart-wrap">
+        <canvas id="ubrStackChart" aria-label={`${company.name} 레벨별 Base, Stock, Bonus 누적 막대 그래프`} role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="content-section ubr-structure-section" aria-labelledby="ubr-structure-title">
+      <div class="ubr-section-heading">
+        <p class="ubr-section-heading__eyebrow">구조 이해하기</p>
+        <h2 id="ubr-structure-title">{company.name} 보상 구조, 이렇게 읽으세요</h2>
+      </div>
+      <div class="ubr-structure-grid">
+        <article>
+          <strong>Base (기본급)</strong>
+          <p>매월 고정적으로 받는 기본 연봉입니다. {company.id === "microsoft" || company.id === "oracle" ? `${company.name}은 다른 빅테크 대비 Base 비중이 높은 편입니다.` : "레벨이 올라가도 Base의 증가폭은 Stock보다 작은 편입니다."}</p>
+        </article>
+        <article>
+          <strong>Stock (주식 보상)</strong>
+          <p>{company.stockNote}</p>
+        </article>
+        <article>
+          <strong>Bonus (보너스)</strong>
+          <p>사인온 보너스나 연간 성과 보너스입니다. 회사·레벨에 따라 총보상 대비 비중이 매우 작을 수 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section ubr-cta-section" aria-labelledby="ubr-cta-title">
+      <div class="ubr-section-heading">
+        <p class="ubr-section-heading__eyebrow">다음 단계</p>
+        <h2 id="ubr-cta-title">직접 환율을 바꿔서 계산해보기</h2>
+      </div>
+      <div class="ubr-cta-grid">
+        <a class="ubr-cta-card ubr-cta-card--primary" href={withBase(`${UBG_TOOL_HREF}?company=${company.id}`)}>
+          <strong>미국 빅테크 연봉 계산기</strong>
+          <span>{company.name} 레벨과 환율을 직접 선택해 원화 총보상을 계산해보세요.</span>
+        </a>
+        <a class="ubr-cta-card" href={withBase(UBC_HUB_HREF)}>
+          <strong>6개사 연봉 비교 리포트</strong>
+          <span>엔비디아, 애플, 아마존, 마이크로소프트, 테슬라, 오라클을 같은 레벨 구간으로 비교합니다.</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="content-section ubr-related-section" aria-labelledby="ubr-related-title">
+      <div class="ubr-section-heading">
+        <p class="ubr-section-heading__eyebrow">같이 보기</p>
+        <h2 id="ubr-related-title">다른 빅테크 연봉도 확인해보세요</h2>
+      </div>
+      <div class="ubr-related-grid">
+        {otherCompanies.map((c) => (
+          <a class="ubr-related-card" href={withBase(c.detailHref)}>
+            <strong>{c.name}</strong>
+            <span>{c.nameEn} 연봉 레벨별 정리 2026</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle={`${company.name} 연봉을 레벨별로 비교할 때 알아야 할 것`}
+      intro={[
+        `${company.name}(${company.nameEn}) 입사를 준비하거나 이직을 고민할 때 가장 궁금한 것은 "내 레벨에서 실제로 얼마를 받을 수 있는가"입니다. 이 리포트는 levels.fyi에 공개된 ${company.name}의 ${entryLevel.levelLabel}부터 ${principalLevel.levelLabel}까지 직급별 총보상을 Base, Stock, Bonus로 나눠 정리했습니다.`,
+        `${company.industrySummary} 같은 총보상이라도 Base와 Stock의 비율에 따라 실제 체감은 크게 달라질 수 있습니다. ${company.stockNote}`,
+        `${company.caution}`,
+        "원화 환산 금액은 참고용이며, 실제 오퍼는 지역, 직무, 평가, 입사 시점 주가, 협상 결과에 따라 표시된 수치와 크게 다를 수 있습니다. 다른 환율을 적용하고 싶다면 미국 빅테크 연봉 계산기를 이용해보세요.",
+        `${company.name}은 ${company.profile.founded}에 설립된 회사로, ${company.profile.employeesAsOf} 기준 전 세계 임직원 수는 약 ${company.profile.employees}, 연간 매출은 ${company.profile.revenue}, 순이익은 약 ${company.profile.netIncome} 수준입니다. ${company.profile.growthNote}`,
+        `회사 규모와 최근 성장세를 함께 고려하면 ${company.name}의 레벨별 연봉 수치를 더 입체적으로 이해할 수 있습니다. 최고 보상 수준을 보여주는 ${company.profile.topPay}(${company.profile.topPayAsOf})은 임원급 보상으로, 일반 엔지니어 레벨과는 별도 기준이라는 점에 유의하세요.`,
+      ]}
+      inputPoints={[
+        `${company.name}의 ${entryLevel.levelLabel}~${principalLevel.levelLabel} 레벨별 Base/Stock/Bonus 구성을 한 표에서 확인할 수 있습니다.`,
+        "막대 그래프로 레벨이 올라갈수록 어떤 보상 항목이 커지는지 한눈에 볼 수 있습니다.",
+        "계산기로 이동해 환율을 직접 조정하고 원화 총보상을 다시 계산할 수 있습니다.",
+      ]}
+      criteria={[
+        `${company.sourceNote}.`,
+        `1달러 = ${EXCHANGE_RATE_KRW.toLocaleString()}원 기준으로 원화 환산했습니다.`,
+        "공식 연봉 자료가 아닌 levels.fyi 사용자 제출 데이터 기반 추정치이며, 실제 오퍼와 다를 수 있습니다.",
+      ]}
+      faq={FAQ}
+      related={RELATED_LINKS}
+    />
+
+    <script type="application/json" id="ubr-data" set:html={JSON.stringify(reportData)} />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script type="module" src={withBase("/scripts/us-bigtech-salary-report.js")}></script>
+  </main>
+</BaseLayout>
