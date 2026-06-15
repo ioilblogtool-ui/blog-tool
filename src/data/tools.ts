@@ -1381,6 +1381,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "telecom-bonus-comparison",
+    title: "통신 3사 성과급 비교 계산기",
+    description: "KT·SK텔레콤·LG유플러스 통신 3사의 성과급(PS)을 같은 연봉 기준으로 비교하고, 회사별 지급률을 직접 조정해 세전·세후 예상액과 차이를 계산하는 페이지",
+    order: 27.7,
+    eyebrow: "Telecom 3사 Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교 대상", value: "3사", context: "KT·SKT·LG유플러스" },
+      { label: "산출 항목", value: "PS", context: "세전·세후" }
+    ]
+  },
+  {
     slug: "stock-breakeven-calculator",
     title: "주식 손익분기점 계산기",
     description: "매수가, 수량, 수수료, 증권거래세를 반영해 실제 본전 매도가와 목표 수익률 매도가를 즉시 계산합니다. 현재 주가 입력 시 지금 내 손익도 확인할 수 있습니다.",

@@ -1,0 +1,347 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  TELECOM_COMPANIES,
+  TELECOM_BONUS_FAQ,
+  TELECOM_RELATED_LINKS,
+  TELECOM_COMPANY_PROFILES,
+  TELECOM_PROFILE_NOTE,
+} from "../../data/telecomBonusComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = { companies: TELECOM_COMPANIES };
+
+const faqSchema = TELECOM_BONUS_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title="KT·SKT·LG유플러스 성과급 비교 계산기 2026"
+  description="KT, SK텔레콤, LG유플러스 통신 3사의 성과급(PS)을 같은 연봉 기준으로 비교해보세요. 회사별 지급률을 직접 조정해 세전·세후 예상액과 차이를 한 화면에서 확인할 수 있습니다."
+  ogImage="/og/tools/telecom-bonus-comparison.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "통신 3사 성과급 비교 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: "KT·SK텔레콤·LG유플러스 성과급을 사용자 입력 기준으로 비교하는 시뮬레이션 계산기",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/telecom-bonus-comparison/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="telecom-bonus-comparison" pageClass="tbc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="성과급 비교"
+        title="통신 3사 성과급 비교 계산기 2026"
+        description="KT, SK텔레콤, LG유플러스 통신 3사의 성과급(PS)을 같은 연봉과 지급률 기준으로 비교해보세요. 세전·세후 예상액, 월평균 환산, 성과급 포함 총보상을 한 화면에서 확인할 수 있습니다."
+      />
+      <div class="tbc-badges" aria-label="계산 기준 배지">
+        <span>추정</span>
+        <span>시뮬레이션</span>
+        <span>사용자 입력 기준</span>
+      </div>
+      <InfoNotice
+        title="계산 전 안내"
+        lines={[
+          "이 계산기는 사용자가 입력한 연봉과 성과급률을 기준으로 한 비교용 시뮬레이션입니다.",
+          "실제 지급액은 회사, 사업부, 직급, 평가, 노사 합의 결과, 세금 및 공제 방식에 따라 달라질 수 있습니다.",
+          "통신 3사의 PS(이익배분)는 매년 실적과 노사 합의에 따라 연도별 변동이 큰 항목으로, 회사별 기본 지급률은 입력 편의를 위한 추정값입니다.",
+          "이 계산기는 특정 통신사에 대한 투자 권유 또는 평가를 목적으로 하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="tbcResetBtn" copyId="tbcCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="tbc-calculator" data-tbc-calculator>
+        <article class="panel tbc-input-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">기준 입력</p>
+              <h2 class="panel__title">같은 조건으로 맞추기</h2>
+            </div>
+            <p class="panel-heading__summary">연봉과 월 기본급을 먼저 맞춘 뒤 회사별 성과급 방식을 조정하세요.</p>
+          </div>
+
+          <div class="form-grid">
+            <label class="field" for="tbcAnnualSalary">
+              <span>기준 연봉</span>
+              <input id="tbcAnnualSalary" data-tbc-annual-salary type="text" inputmode="numeric" value="100,000,000" />
+              <small>통신 3사 평균 연봉(추정) 기준이며, 성과급 포함 전 연봉입니다.</small>
+            </label>
+            <label class="field" for="tbcMonthlySalary">
+              <span>월 기본급</span>
+              <input id="tbcMonthlySalary" data-tbc-monthly-salary type="text" inputmode="numeric" value="8,333,333" />
+              <small data-tbc-monthly-hint>연봉을 바꾸면 자동 갱신됩니다.</small>
+            </label>
+            <button class="button button--secondary tbc-reset-monthly" type="button" data-tbc-reset-monthly>
+              연봉 기준으로 다시 계산
+            </button>
+            <label class="field" for="tbcTaxMode">
+              <span>세후 계산 방식</span>
+              <select id="tbcTaxMode" data-tbc-tax-mode>
+                <option value="simple" selected>간편 추정 (22%)</option>
+                <option value="manual">직접 세율 입력</option>
+              </select>
+            </label>
+            <label class="field" for="tbcManualTaxRate">
+              <span>직접 공제율</span>
+              <input id="tbcManualTaxRate" data-tbc-manual-tax-rate type="number" min="0" max="60" step="0.1" value="22" />
+              <small>직접 세율 입력 모드에서 사용합니다.</small>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel tbc-company-inputs">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">회사별 가정</p>
+              <h2 class="panel__title">성과급 방식 입력</h2>
+            </div>
+            <p class="panel-heading__summary">기본값은 추정 시뮬레이션 값입니다. 실제 비교가 필요하면 알고 있는 지급 기준으로 수정하세요.</p>
+          </div>
+          <div class="tbc-company-panel-list">
+            {TELECOM_COMPANIES.map((company) => (
+              <section class="tbc-company-panel" data-tbc-company-panel={company.id}>
+                <div class="tbc-company-panel__head">
+                  <div>
+                    <strong>{company.name}</strong>
+                    <span>{company.structureSummary}</span>
+                  </div>
+                  <div class="tbc-company-panel__badges">
+                    {company.badges.map((badge) => <span>{badge}</span>)}
+                  </div>
+                </div>
+                <div class="tbc-company-panel__inputs">
+                  <label class="field" for={`tbcMode-${company.id}`}>
+                    <span>성과급 방식</span>
+                    <select id={`tbcMode-${company.id}`} data-tbc-mode={company.id}>
+                      <option value="salaryPercent" selected={company.defaultMode === "salaryPercent"}>연봉 대비 %</option>
+                      <option value="monthlyMultiple" selected={company.defaultMode === "monthlyMultiple"}>월급 n개월</option>
+                      <option value="fixedAmount" selected={company.defaultMode === "fixedAmount"}>고정 금액</option>
+                    </select>
+                  </label>
+                  <label class="field" for={`tbcPercent-${company.id}`} data-tbc-field-group={company.id} data-tbc-field-mode="salaryPercent">
+                    <span>성과급률 (%)</span>
+                    <input id={`tbcPercent-${company.id}`} data-tbc-salary-percent={company.id} type="number" min="0" max="100" step="0.5" value={company.defaultSalaryPercent} />
+                  </label>
+                  <label class="field" for={`tbcMultiple-${company.id}`} data-tbc-field-group={company.id} data-tbc-field-mode="monthlyMultiple">
+                    <span>월급 개월 수</span>
+                    <input id={`tbcMultiple-${company.id}`} data-tbc-monthly-multiple={company.id} type="number" min="0" max="12" step="0.1" value={company.defaultMonthlyMultiple} />
+                  </label>
+                  <label class="field" for={`tbcFixed-${company.id}`} data-tbc-field-group={company.id} data-tbc-field-mode="fixedAmount">
+                    <span>고정 성과급</span>
+                    <input id={`tbcFixed-${company.id}`} data-tbc-fixed-amount={company.id} type="text" inputmode="numeric" value={company.defaultFixedAmount.toLocaleString("ko-KR")} />
+                  </label>
+                </div>
+                <p class="tbc-company-panel__caution">{company.caution}</p>
+              </section>
+            ))}
+          </div>
+        </article>
+      </section>
+    </Fragment>
+
+    <section class="tbc-results">
+      <div class="tbc-section-head">
+        <p class="tbc-section-head__eyebrow">핵심 결과</p>
+        <h2>통신 3사 성과급 비교</h2>
+        <p>입력값을 바꾸면 결과가 바로 갱신됩니다. 모든 금액은 사용자 입력 기준 시뮬레이션입니다.</p>
+      </div>
+      <div class="tbc-kpi-grid">
+        <article class="tbc-kpi-card">
+          <span>최고 예상 세후 성과급</span>
+          <strong data-tbc-best-net>-</strong>
+          <small data-tbc-best-net-company>-</small>
+        </article>
+        <article class="tbc-kpi-card">
+          <span>3사 간 최대 차이 (세전)</span>
+          <strong data-tbc-max-gap>-</strong>
+          <small>3사 비교 기준</small>
+        </article>
+        <article class="tbc-kpi-card">
+          <span>월평균 차이</span>
+          <strong data-tbc-monthly-gap>-</strong>
+          <small>12개월 환산</small>
+        </article>
+        <article class="tbc-kpi-card">
+          <span>성과급 포함 최고 총보상</span>
+          <strong data-tbc-best-total>-</strong>
+          <small data-tbc-best-total-company>-</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="tbc-result-section">
+      <div class="tbc-section-head">
+        <p class="tbc-section-head__eyebrow">회사별 표</p>
+        <h2>세전·세후·월평균 환산</h2>
+      </div>
+      <div class="tbc-table-wrap">
+        <table class="tbc-result-table">
+          <caption>통신 3사 성과급 비교 결과 표</caption>
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>입력 기준</th>
+              <th>세전 성과급</th>
+              <th>예상 세후</th>
+              <th>월평균 환산</th>
+              <th>총보상 (세전)</th>
+            </tr>
+          </thead>
+          <tbody data-tbc-result-table></tbody>
+        </table>
+      </div>
+      <p class="tbc-footnote">예상 세후 금액은 간편 공제율(또는 직접 입력한 공제율)을 적용한 추정값입니다. 실제 통장 입금액은 지급월 급여, 부양가족, 비과세 항목, 4대보험, 연말정산 결과에 따라 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="tbc-chart-section">
+      <div class="tbc-section-head">
+        <p class="tbc-section-head__eyebrow">시각화</p>
+        <h2>3사 세전·세후 성과급 비교</h2>
+      </div>
+      <div class="tbc-chart-wrap">
+        <canvas id="tbcCompareChart" aria-label="통신 3사 성과급 비교 차트" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="tbc-guide">
+      <div class="tbc-section-head">
+        <p class="tbc-section-head__eyebrow">회사별 해설</p>
+        <h2>통신 3사 PS(이익배분) 구조 한눈에 보기</h2>
+      </div>
+      <div class="tbc-guide-grid">
+        {TELECOM_COMPANIES.map((company) => (
+          <article class="tbc-guide-card">
+            <div class="tbc-guide-card__head">
+              <strong>{company.name}</strong>
+              <div class="tbc-guide-card__badges">
+                {company.badges.map((badge) => <span>{badge}</span>)}
+              </div>
+            </div>
+            <p>{company.structureSummary}</p>
+            <p>{company.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="tbc-profile-section">
+      <div class="tbc-section-head">
+        <p class="tbc-section-head__eyebrow">기업 현황 (참고)</p>
+        <h2>통신 3사 평균연봉·실적 비교</h2>
+        <p>2024년 사업보고서 및 2025년 실적 발표를 기준으로 한 참고 정보입니다.</p>
+      </div>
+      <div class="tbc-table-wrap">
+        <table class="tbc-result-table tbc-profile-table">
+          <caption>통신 3사 기업 현황 비교 표</caption>
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>평균연봉</th>
+              <th>근속연수</th>
+              <th>직원수</th>
+              <th>매출 (2025)</th>
+              <th>영업이익 (2025)</th>
+              <th>최근 성과급</th>
+            </tr>
+          </thead>
+          <tbody>
+            {TELECOM_COMPANIES.map((company) => {
+              const profile = TELECOM_COMPANY_PROFILES.find((item) => item.id === company.id);
+              if (!profile) return null;
+              return (
+                <tr>
+                  <td class="cell-label"><strong>{company.name}</strong></td>
+                  <td>{profile.averageSalary}</td>
+                  <td>{profile.tenureYears}</td>
+                  <td>{profile.employeeCount}</td>
+                  <td>{profile.revenue}</td>
+                  <td>{profile.operatingProfit}</td>
+                  <td>{profile.recentBonus}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="tbc-footnote">{TELECOM_PROFILE_NOTE}</p>
+    </section>
+
+    <section class="tbc-related">
+      <div class="tbc-section-head">
+        <p class="tbc-section-head__eyebrow">다음 단계</p>
+        <h2>함께 보면 좋은 계산기</h2>
+      </div>
+      <div class="tbc-related-grid">
+        {TELECOM_RELATED_LINKS.map((link) => (
+          <a class="tbc-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="통신 3사(KT·SKT·LG유플러스) 성과급 비교 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 KT, SK텔레콤, LG유플러스 통신 3사의 성과급(PS)을 같은 연봉·월 기본급 기준으로 동시에 비교할 수 있는 시뮬레이션 도구입니다.",
+          "통신 3사는 매년 실적 발표 이후 성과급(PS) 지급률이 뉴스로 다뤄지는 경우가 많으며, 'KT 성과급', 'SKT 성과급', 'LG유플러스 성과급' 등의 검색 수요가 꾸준히 발생합니다.",
+          "기준 연봉을 입력하면 월 기본급이 자동으로 계산되며, 회사별로 성과급 입력 방식(연봉 대비 %, 월급 n개월, 고정 금액)을 선택해 각자의 조건에 맞게 조정할 수 있습니다.",
+          "KT는 그룹 경영 실적과 평가 결과에 따른 PS 구조, SK텔레콤은 SK그룹 평가 기준에 따른 PS·격려금 구조, LG유플러스는 LG그룹 공통 성과급 기준에 따른 구조로 알려져 있습니다. 다만 통신업은 연도별 실적 변동에 따라 지급률 차이가 큰 편으로 알려져 있어, 이 계산기의 기본 지급률은 참고용 추정값입니다.",
+          "세후 추정값은 간편 공제율(22%) 또는 직접 입력한 세율을 적용한 참고값이며, 정확한 세후 금액은 성과급 세후 실수령액 계산기를 통해 다시 확인하는 것을 권장합니다.",
+        ]}
+        inputPoints={[
+          "기준 연봉을 입력하면 월 기본급이 자동으로 계산되며, 직접 수정도 가능합니다.",
+          "KT·SKT·LG유플러스 3사 각각 성과급 입력 방식을 연봉 대비 %, 월급 개월 수, 고정 금액 중에서 선택할 수 있습니다.",
+          "세율은 간편 추정(22%) 또는 직접 입력 중 선택할 수 있습니다.",
+          "입력값을 바꾸면 KPI 카드, 결과 표, 비교 차트가 실시간으로 갱신됩니다.",
+        ]}
+        criteria={[
+          "연간 성과급(세전) = 기준액 × 입력값 (모드별로 연봉, 월급, 고정 금액 중 하나를 기준액으로 사용)",
+          "회사별 기본 성과급률은 보도·업계 추정 기반 시뮬레이션 값으로 공식 지급률이 아닙니다.",
+          "세후 추정은 간편 공제율(22%) 또는 사용자가 입력한 세율을 적용한 참고값입니다.",
+          "통신 3사의 PS는 연도별 실적과 노사 합의에 따라 변동성이 큰 항목으로, 특정 연도의 지급률을 보장하지 않습니다.",
+        ]}
+        faq={TELECOM_BONUS_FAQ}
+        related={[
+          { href: "/reports/corporate-bonus-comparison-2026/", label: "2026 대기업 성과급 비교 리포트" },
+          { href: "/tools/finance-bonus-comparison/", label: "금융권 성과급 비교" },
+          { href: "/tools/semiconductor-bonus-comparison/", label: "반도체 성과급 비교" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="tbcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/telecom-bonus-comparison.js")}></script>
+</BaseLayout>
