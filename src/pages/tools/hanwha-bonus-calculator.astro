@@ -1,0 +1,446 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  HANWHA_COMPANIES,
+  HANWHA_SIMPLE_TAX_RATE,
+  HANWHA_SCENARIO_RATES,
+  HANWHA_BONUS_FAQ,
+  HANWHA_RELATED_LINKS,
+} from "../../data/hanwhaBonusCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  HANWHA_COMPANIES,
+  HANWHA_SIMPLE_TAX_RATE,
+  HANWHA_SCENARIO_RATES,
+};
+---
+
+<BaseLayout
+  title="한화오션·한화에어로스페이스 성과급 계산기｜세전·세후 계산"
+  description="한화오션·한화에어로스페이스 중 선택해 연봉과 성과급 지급률·월급 배수·직접 입력 금액으로 세전·세후 예상 성과급을 계산하고 10~30% 시나리오별로 비교해보세요."
+  ogImage="/og/tools/hanwha-bonus-calculator.png"
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="hanwha-bonus-calculator" pageClass="hanwha-bonus-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="Hanwha Group Compensation"
+        title="한화오션·한화에어로스페이스 성과급 계산기"
+        description="조선·방산 두 회사 중 선택해 연봉과 성과급 지급률을 입력하면 세전·세후 예상 성과급을 바로 확인할 수 있습니다. 10~30% 시나리오별 비교도 함께 제공합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetHanwhaBonusBtn" copyId="copyHanwhaBonusLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="hanwha-bonus-inputs">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">계열사 선택</p>
+              <h2 class="panel__title">한화오션 / 한화에어로스페이스</h2>
+            </div>
+          </div>
+
+          <div class="hbc-tabs" role="tablist" aria-label="계열사 선택">
+            {HANWHA_COMPANIES.map((c, idx) => (
+              <button
+                class="hbc-tab"
+                role="tab"
+                type="button"
+                data-company={c.code}
+                aria-selected={idx === 0 ? "true" : "false"}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <p class="hbc-company-desc" id="hbcCompanyDesc"></p>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">연봉 입력</h2>
+            </div>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field field-span-full">
+              <span>연봉 (세전)</span>
+              <input id="hbcAnnualSalaryInput" type="number" value={HANWHA_COMPANIES[0].defaultAnnualSalary} step="1000000" />
+              <div class="calc-slider-row">
+                <input type="range" id="hbcAnnualSalarySlider" class="calc-slider"
+                  min="30000000" max="150000000" step="1000000" value={HANWHA_COMPANIES[0].defaultAnnualSalary} />
+                <span id="hbcAnnualSalarySliderVal" class="calc-slider-val">6,000만원</span>
+              </div>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">성과급 입력 방식</p>
+              <h2 class="panel__title">지급률 또는 금액 선택</h2>
+            </div>
+          </div>
+
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input id="hbcModeSalaryPercent" name="hbcMode" type="radio" value="salaryPercent" checked />
+              <span>연봉 × 지급률(%)</span>
+            </label>
+            <label class="mode-chip">
+              <input id="hbcModeMonthlyMultiple" name="hbcMode" type="radio" value="monthlyMultiple" />
+              <span>월급 × 배수</span>
+            </label>
+            <label class="mode-chip">
+              <input id="hbcModeFixedAmount" name="hbcMode" type="radio" value="fixedAmount" />
+              <span>직접 금액 입력</span>
+            </label>
+          </div>
+
+          <div id="hbcSalaryPercentBlock" style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>성과급 지급률 (%)</span>
+                <input id="hbcSalaryPercentInput" type="number" value={HANWHA_COMPANIES[0].defaultSalaryPercent} min="0" max="60" step="1" />
+                <div class="calc-slider-row">
+                  <input type="range" id="hbcSalaryPercentSlider" class="calc-slider" min="0" max="60" step="1" value={HANWHA_COMPANIES[0].defaultSalaryPercent} />
+                  <span id="hbcSalaryPercentSliderVal" class="calc-slider-val">15%</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div id="hbcMonthlyMultipleBlock" hidden style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>월급 대비 배수</span>
+                <input id="hbcMonthlyMultipleInput" type="number" value={HANWHA_COMPANIES[0].defaultMonthlyMultiple} min="0" max="10" step="0.1" />
+                <div class="calc-slider-row">
+                  <input type="range" id="hbcMonthlyMultipleSlider" class="calc-slider" min="0" max="10" step="0.1" value={HANWHA_COMPANIES[0].defaultMonthlyMultiple} />
+                  <span id="hbcMonthlyMultipleSliderVal" class="calc-slider-val">1.5배</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div id="hbcFixedAmountBlock" hidden style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>성과급 금액 (세전)</span>
+                <input id="hbcFixedAmountInput" type="number" value="0" min="0" step="100000" />
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">세금 계산 방식</p>
+              <h2 class="panel__title">세후 추정 방식 선택</h2>
+            </div>
+          </div>
+
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input id="hbcTaxModeSimple" name="hbcTaxMode" type="radio" value="simple" checked />
+              <span>간이 세율 (22%)</span>
+            </label>
+            <label class="mode-chip">
+              <input id="hbcTaxModeManual" name="hbcTaxMode" type="radio" value="manual" />
+              <span>직접 입력</span>
+            </label>
+          </div>
+
+          <div id="hbcManualTaxBlock" hidden style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>적용 세율 (%)</span>
+                <input id="hbcManualTaxInput" type="number" value="22" min="0" max="50" step="1" />
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <button id="calcHanwhaBonusBtn" class="button button--primary" type="button">성과급 계산하기</button>
+      </div>
+    </Fragment>
+
+    <!-- 결과 우선 패널 -->
+    <article class="panel result-priority-panel" id="hanwha-bonus-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+          <h2 class="panel__title">내 예상 성과급</h2>
+        </div>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#hanwha-bonus-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#hanwha-bonus-details">세부 내역 보기</a>
+      </div>
+    </article>
+
+    <!-- KPI 핵심 카드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="hbc-section__eyebrow section-header__eyebrow">내 계산 결과</p>
+        <h2 id="hbcResultHeadline">한화오션 성과급 계산 결과</h2>
+        <p id="hbcResultSubcopy">연봉 기준 시뮬레이션</p>
+      </div>
+      <div class="kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p>연간 성과급 (세전)</p>
+          <strong id="hbcTotalGross">-</strong>
+          <span id="hbcTotalGrossNote">시뮬레이션</span>
+        </article>
+        <article class="kpi-card">
+          <p>연간 성과급 (세후 추정)</p>
+          <strong id="hbcTotalNet">-</strong>
+          <span id="hbcTotalNetNote">참고값</span>
+        </article>
+        <article class="kpi-card">
+          <p>월급 대비</p>
+          <strong id="hbcMonthlyRatio">-</strong>
+          <span id="hbcMonthlyRatioNote">개월치</span>
+        </article>
+        <article class="kpi-card">
+          <p>연봉 대비 비율</p>
+          <strong id="hbcAnnualRatio">-</strong>
+          <span id="hbcAnnualRatioNote">참고값</span>
+        </article>
+      </div>
+
+      <div class="hbc-next-step" aria-label="계산 결과 다음 단계">
+        <p class="hbc-next-step__eyebrow">지금 바로 이어서</p>
+        <div class="hbc-next-step__actions">
+          <a id="hbcAfterTaxCta" class="button button--primary"
+            href={withBase("/tools/bonus-after-tax-calculator/?company=hanwhaOcean")}>
+            세후 실수령 계산하기 →
+          </a>
+          <a id="hbcDcaCta" class="button button--secondary"
+            href={withBase("/tools/dca-investment-calculator/?m=300000&p=10&a=SP500,NASDAQ100,QQQ&fx=1&div=1")}>
+            이 금액 투자하면? →
+          </a>
+        </div>
+        <p class="hbc-next-step__note" id="hbcNextStepNote">성과급 세전 금액을 기준으로 다음 계산기에 자동 반영합니다.</p>
+      </div>
+    </section>
+
+    <!-- 성과급 구조 설명 -->
+    <section class="content-section" id="hanwha-bonus-details">
+      <div class="section-header section-header--compact">
+        <p class="hbc-section__eyebrow section-header__eyebrow">성과급 구조</p>
+        <h2 id="hbcStructureTitle">한화오션 성과급이란?</h2>
+      </div>
+      <div class="hbc-logic-grid">
+        <article class="hbc-logic-card">
+          <strong>사업 부문 설명</strong>
+          <p id="hbcCompanyFullDesc">{HANWHA_COMPANIES[0].description}</p>
+        </article>
+        <article class="hbc-logic-card">
+          <strong>실제 금액은 달라질 수 있어요</strong>
+          <p id="hbcCaution">{HANWHA_COMPANIES[0].caution}</p>
+        </article>
+        <article class="hbc-logic-card">
+          <strong>최근 산업 동향 (참고)</strong>
+          <p id="hbcIndustryNote">{HANWHA_COMPANIES[0].industryNote}</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 기업 데이터 & 역대 성과급 사례 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="hbc-section__eyebrow section-header__eyebrow">기업 데이터</p>
+        <h2>계열사별 평균연봉·매출·영업이익 &amp; 역대 성과급 사례</h2>
+        <p>선택한 계열사의 공개 데이터와 과거 성과급 지급 사례를 확인해보세요. 사례를 클릭하면 해당 배수가 입력값에 적용됩니다.</p>
+      </div>
+      {HANWHA_COMPANIES.map((c) => (
+        <div class="hbc-company-fact-block" data-company={c.code} hidden>
+          <div class="kpi-grid">
+            {c.companyFacts.map((fact) => (
+              <article class="kpi-card">
+                <p>{fact.label}</p>
+                <strong>{fact.value}</strong>
+              </article>
+            ))}
+          </div>
+          <p class="hbc-fact-source">
+            {c.factsAsOf} · {c.factsSource.href ? (
+              <a href={c.factsSource.href} target="_blank" rel="noopener noreferrer">{c.factsSource.label}</a>
+            ) : (
+              <span>{c.factsSource.label}</span>
+            )}
+          </p>
+
+          {c.historicalPresets.length > 0 && (
+            <div class="hbc-preset-list">
+              <p class="hbc-preset-list__title">역대 성과급 사례</p>
+              {c.historicalPresets.map((preset) => (
+                <button type="button" class="hbc-preset-btn" data-value={preset.value}>
+                  <strong>{preset.label} · 기본급 {preset.value}배</strong>
+                  <span>{preset.description}</span>
+                  <span class="hbc-preset-btn__source">
+                    {preset.source.href ? (
+                      <a href={preset.source.href} target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">{preset.source.label}</a>
+                    ) : (
+                      <span>{preset.source.label}</span>
+                    )} · {preset.sourceDate}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </section>
+
+    <!-- 지급률 시나리오 비교 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="hbc-section__eyebrow section-header__eyebrow">시나리오 비교</p>
+        <h2>지급률 10~30% 시나리오별 예상 성과급</h2>
+        <p>현재 입력한 연봉을 기준으로 지급률별 세전·세후 예상 금액을 비교합니다.</p>
+      </div>
+      <div class="hbc-scenario-chart-wrap">
+        <canvas id="hanwha-scenario-chart"></canvas>
+      </div>
+      <div class="table-wrap" style="overflow-x:auto;">
+        <table class="result-table hbc-rank-table">
+          <thead>
+            <tr>
+              <th>지급률</th>
+              <th>연간 성과급 (세전)</th>
+              <th>세후 추정</th>
+              <th>월급 대비</th>
+            </tr>
+          </thead>
+          <tbody id="hbcScenarioTableBody">
+          </tbody>
+        </table>
+      </div>
+      <div class="hbc-inline-cta">
+        <a class="button button--primary" href="#hanwha-bonus-inputs">내 조건으로 다시 계산하기</a>
+      </div>
+    </section>
+
+    <!-- 계산 기준 요약 -->
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">계산 기준 요약</h2>
+        </div>
+      </div>
+      <div class="hbc-logic-grid">
+        <article class="hbc-logic-card">
+          <strong>연간 성과급 = 기준액 × 입력값</strong>
+          <p>입력 방식에 따라 연봉×지급률, 월급×배수, 또는 직접 입력 금액으로 산정합니다.</p>
+        </article>
+        <article class="hbc-logic-card">
+          <strong>세후는 참고값</strong>
+          <p>간이 세율(22%) 또는 직접 입력한 세율을 적용한 단순화 계산입니다.</p>
+        </article>
+        <article class="hbc-logic-card">
+          <strong>지급률은 추정값</strong>
+          <p>보도 및 업계 추정 기반 시뮬레이션이며 실제 실적 평가에 따라 달라질 수 있습니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "이 계산기의 계열사별 기본 지급률은 보도·업계 추정 기반이며, 실제 지급률은 각 회사 내부 실적 평가에 따라 달라집니다.",
+        "세후 추정값은 개인 과세표준·공제 조건에 따라 실제 수령액과 다를 수 있습니다.",
+        "조선업 수주 호황, 방산 수출 확대 등 산업 동향은 일반 참고 정보로만 제공되며 성과급 지급률을 보장하지 않습니다.",
+        "이 계산기는 투자 권유 또는 입사를 권장하지 않습니다.",
+      ]}
+    />
+
+    <!-- 관련 계산기 그리드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="hbc-section__eyebrow section-header__eyebrow">관련 계산기</p>
+        <h2>다른 대기업 성과급 계산기</h2>
+        <p>한화 결과를 다른 대기업과 나란히 비교해보세요.</p>
+      </div>
+      <CompareCta
+        variant="bonus"
+        title="한화 성과급을 다른 대기업과 비교해보세요"
+        description="한화오션·한화에어로스페이스 성과급 계산 결과를 본 뒤 원전·반도체 성과급과 같은 기준으로 이어서 비교할 수 있습니다."
+        links={[
+          { href: "/compare/bonus/", label: "성과급 비교표 보기" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "세후 실수령 계산" },
+        ]}
+      />
+      <div class="hbc-related-grid">
+        {HANWHA_RELATED_LINKS.map((item) => (
+          <a href={withBase(item.href)} class="hbc-related-link">
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="한화오션·한화에어로스페이스 성과급 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 한화오션(조선)과 한화에어로스페이스(방산) 두 계열사 중 하나를 선택해 연봉을 기준으로 성과급 지급률 또는 월급 배수, 직접 입력 금액을 적용해 세전·세후 예상 성과급을 시뮬레이션합니다.",
+          "한화오션은 기본값 연봉 6,000만원·지급률 15%, 한화에어로스페이스는 기본값 연봉 6,500만원·지급률 20%로 설정되어 있으며, 두 값 모두 보도 및 업계 추정 기반 시뮬레이션 수치입니다. 탭을 전환하면 해당 회사의 기본값으로 입력값이 초기화됩니다.",
+          "한화오션은 LNG운반선·해양플랜트 등 조선 부문 수주 실적, 한화에어로스페이스는 K9 자주포 등 방산 수출 실적에 따라 성과급 규모가 달라질 수 있는 것으로 알려져 있습니다. 최근 조선업 수주 호황과 방산 수출 확대가 보도되고 있으나, 이 계산기는 해당 동향을 수치에 직접 반영하지 않으며 일반 참고 정보로만 제공합니다.",
+          "지급률 10~30% 시나리오별 비교 표를 통해 동일 연봉 기준으로 지급률이 달라질 때 세전·세후 성과급이 어떻게 변하는지 한눈에 확인할 수 있습니다.",
+          "모든 수치는 보도 및 업계 추정 기반 시뮬레이션이며, 실제 지급률과 세후 금액은 각 회사의 실적 평가 결과와 개인의 과세 조건에 따라 달라질 수 있습니다."
+        ]}
+        inputPoints={[
+          "한화오션 또는 한화에어로스페이스 탭을 선택하면 해당 회사의 기본값으로 초기화됩니다.",
+          "연봉을 입력하면 슬라이더로 빠르게 조정할 수 있습니다.",
+          "성과급 입력 방식을 연봉×지급률, 월급×배수, 직접 금액 입력 중에서 선택할 수 있습니다.",
+          "세후 추정은 간이 세율(22%) 또는 직접 입력한 세율 중에서 선택할 수 있습니다.",
+          "지급률 10~30% 시나리오별 예상 성과급을 표와 차트로 함께 확인할 수 있습니다."
+        ]}
+        criteria={[
+          "연간 성과급은 기준액(연봉 또는 월급)에 입력값(지급률·배수)을 곱하거나, 직접 입력한 금액을 그대로 사용합니다.",
+          "한화오션 기본 지급률 15%, 한화에어로스페이스 기본 지급률 20%는 보도 및 업계 추정 기반이며 실제 실적 평가와 다를 수 있습니다.",
+          "세후 추정은 간이 세율 22% 또는 직접 입력한 세율을 적용한 참고값입니다.",
+          "지급률 10~30% 시나리오는 현재 입력한 연봉을 기준으로 산출한 추정값입니다."
+        ]}
+        faq={HANWHA_BONUS_FAQ}
+        related={[
+          { href: "/tools/doosan-enerbility-bonus-calculator/", label: "두산에너빌리티 성과급 계산기" },
+          { href: "/reports/corporate-bonus-comparison-2026/", label: "2026 대기업 성과급 완전 비교" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+          { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
+          { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="hanwhaBonusConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/hanwha-bonus-calculator.js")}></script>
+</BaseLayout>

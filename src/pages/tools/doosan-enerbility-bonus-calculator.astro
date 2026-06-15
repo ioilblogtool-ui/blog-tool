@@ -1,0 +1,401 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  DOOSAN_BONUS_DEFAULTS,
+  DOOSAN_SIMPLE_TAX_RATE,
+  DOOSAN_SCENARIO_RATES,
+  DOOSAN_BONUS_FAQ,
+  DOOSAN_RELATED_LINKS,
+  DOOSAN_COMPANY_FACTS,
+  DOOSAN_FACTS_AS_OF,
+  DOOSAN_FACTS_SOURCE,
+} from "../../data/doosanEnerbilityBonusCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  DOOSAN_BONUS_DEFAULTS,
+  DOOSAN_SIMPLE_TAX_RATE,
+  DOOSAN_SCENARIO_RATES,
+};
+---
+
+<BaseLayout
+  title="두산에너빌리티 성과급 계산기｜PS 지급률·세전·세후 계산"
+  description="두산에너빌리티 연봉과 성과급(PS) 지급률을 입력해 세전·세후 예상 성과급을 계산하고, 10~30% 시나리오별 예상 금액을 한 번에 확인해보세요."
+  ogImage="/og/tools/doosan-enerbility-bonus-calculator.png"
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="doosan-enerbility-bonus-calculator" pageClass="doosan-bonus-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="Doosan Enerbility Compensation"
+        title="두산에너빌리티 성과급 계산기"
+        description="연봉과 성과급(PS) 지급률을 입력하면 세전·세후 예상 성과급을 바로 확인할 수 있습니다. 10~30% 시나리오별 비교도 함께 제공합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetDoosanBonusBtn" copyId="copyDoosanBonusLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="doosan-bonus-inputs">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">연봉 입력</h2>
+            </div>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field field-span-full">
+              <span>연봉 (세전)</span>
+              <input id="dbcAnnualSalaryInput" type="number" value={DOOSAN_BONUS_DEFAULTS.defaultAnnualSalary} step="1000000" />
+              <div class="calc-slider-row">
+                <input type="range" id="dbcAnnualSalarySlider" class="calc-slider"
+                  min="30000000" max="150000000" step="1000000" value={DOOSAN_BONUS_DEFAULTS.defaultAnnualSalary} />
+                <span id="dbcAnnualSalarySliderVal" class="calc-slider-val">6,500만원</span>
+              </div>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">성과급 입력 방식</p>
+              <h2 class="panel__title">지급률 또는 금액 선택</h2>
+            </div>
+          </div>
+
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input id="dbcModeSalaryPercent" name="dbcMode" type="radio" value="salaryPercent" checked />
+              <span>연봉 × 지급률(%)</span>
+            </label>
+            <label class="mode-chip">
+              <input id="dbcModeMonthlyMultiple" name="dbcMode" type="radio" value="monthlyMultiple" />
+              <span>월급 × 배수</span>
+            </label>
+            <label class="mode-chip">
+              <input id="dbcModeFixedAmount" name="dbcMode" type="radio" value="fixedAmount" />
+              <span>직접 금액 입력</span>
+            </label>
+          </div>
+
+          <div id="dbcSalaryPercentBlock" style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>성과급(PS) 지급률 (%)</span>
+                <input id="dbcSalaryPercentInput" type="number" value={DOOSAN_BONUS_DEFAULTS.defaultSalaryPercent} min="0" max="60" step="1" />
+                <div class="calc-slider-row">
+                  <input type="range" id="dbcSalaryPercentSlider" class="calc-slider" min="0" max="60" step="1" value={DOOSAN_BONUS_DEFAULTS.defaultSalaryPercent} />
+                  <span id="dbcSalaryPercentSliderVal" class="calc-slider-val">15%</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div id="dbcMonthlyMultipleBlock" hidden style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>월급 대비 배수</span>
+                <input id="dbcMonthlyMultipleInput" type="number" value={DOOSAN_BONUS_DEFAULTS.defaultMonthlyMultiple} min="0" max="6" step="0.1" />
+                <div class="calc-slider-row">
+                  <input type="range" id="dbcMonthlyMultipleSlider" class="calc-slider" min="0" max="6" step="0.1" value={DOOSAN_BONUS_DEFAULTS.defaultMonthlyMultiple} />
+                  <span id="dbcMonthlyMultipleSliderVal" class="calc-slider-val">1.5배</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div id="dbcFixedAmountBlock" hidden style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>성과급 금액 (세전)</span>
+                <input id="dbcFixedAmountInput" type="number" value="0" min="0" step="100000" />
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">세금 계산 방식</p>
+              <h2 class="panel__title">세후 추정 방식 선택</h2>
+            </div>
+          </div>
+
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input id="dbcTaxModeSimple" name="dbcTaxMode" type="radio" value="simple" checked />
+              <span>간이 세율 (22%)</span>
+            </label>
+            <label class="mode-chip">
+              <input id="dbcTaxModeManual" name="dbcTaxMode" type="radio" value="manual" />
+              <span>직접 입력</span>
+            </label>
+          </div>
+
+          <div id="dbcManualTaxBlock" hidden style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>적용 세율 (%)</span>
+                <input id="dbcManualTaxInput" type="number" value="22" min="0" max="50" step="1" />
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <button id="calcDoosanBonusBtn" class="button button--primary" type="button">성과급 계산하기</button>
+      </div>
+    </Fragment>
+
+    <!-- 결과 우선 패널 -->
+    <article class="panel result-priority-panel" id="doosan-bonus-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+          <h2 class="panel__title">내 예상 성과급</h2>
+        </div>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#doosan-bonus-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#doosan-bonus-details">세부 내역 보기</a>
+      </div>
+    </article>
+
+    <!-- KPI 핵심 카드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="dbc-section__eyebrow section-header__eyebrow">내 계산 결과</p>
+        <h2 id="dbcResultHeadline">두산에너빌리티 성과급 계산 결과</h2>
+        <p id="dbcResultSubcopy">연봉 기준 시뮬레이션</p>
+      </div>
+      <div class="kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p>연간 성과급 (세전)</p>
+          <strong id="dbcTotalGross">-</strong>
+          <span id="dbcTotalGrossNote">시뮬레이션</span>
+        </article>
+        <article class="kpi-card">
+          <p>연간 성과급 (세후 추정)</p>
+          <strong id="dbcTotalNet">-</strong>
+          <span id="dbcTotalNetNote">참고값</span>
+        </article>
+        <article class="kpi-card">
+          <p>월급 대비</p>
+          <strong id="dbcMonthlyRatio">-</strong>
+          <span id="dbcMonthlyRatioNote">개월치</span>
+        </article>
+        <article class="kpi-card">
+          <p>연봉 대비 비율</p>
+          <strong id="dbcAnnualRatio">-</strong>
+          <span id="dbcAnnualRatioNote">참고값</span>
+        </article>
+      </div>
+
+      <div class="dbc-next-step" aria-label="계산 결과 다음 단계">
+        <p class="dbc-next-step__eyebrow">지금 바로 이어서</p>
+        <div class="dbc-next-step__actions">
+          <a id="dbcAfterTaxCta" class="button button--primary"
+            href={withBase("/tools/bonus-after-tax-calculator/?company=doosan-enerbility")}>
+            세후 실수령 계산하기 →
+          </a>
+          <a id="dbcDcaCta" class="button button--secondary"
+            href={withBase("/tools/dca-investment-calculator/?m=300000&p=10&a=SP500,NASDAQ100,QQQ&fx=1&div=1")}>
+            이 금액 투자하면? →
+          </a>
+        </div>
+        <p class="dbc-next-step__note" id="dbcNextStepNote">성과급 세전 금액을 기준으로 다음 계산기에 자동 반영합니다.</p>
+      </div>
+    </section>
+
+    <!-- 성과급 구조 설명 -->
+    <section class="content-section" id="doosan-bonus-details">
+      <div class="section-header section-header--compact">
+        <p class="dbc-section__eyebrow section-header__eyebrow">성과급 구조</p>
+        <h2>두산에너빌리티 성과급(PS)이란?</h2>
+      </div>
+      <div class="dbc-logic-grid">
+        <article class="dbc-logic-card">
+          <strong>이익배분제(PS) 구조</strong>
+          <p>{DOOSAN_BONUS_DEFAULTS.structureSummary}</p>
+        </article>
+        <article class="dbc-logic-card">
+          <strong>실제 금액은 달라질 수 있어요</strong>
+          <p>{DOOSAN_BONUS_DEFAULTS.caution}</p>
+        </article>
+        <article class="dbc-logic-card">
+          <strong>최근 산업 동향 (참고)</strong>
+          <p>{DOOSAN_BONUS_DEFAULTS.industryNote}</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 기업 데이터 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="dbc-section__eyebrow section-header__eyebrow">기업 데이터</p>
+        <h2>두산에너빌리티 평균연봉·임직원수·매출·영업이익</h2>
+      </div>
+      <div class="kpi-grid">
+        {DOOSAN_COMPANY_FACTS.map((fact) => (
+          <article class="kpi-card">
+            <p>{fact.label}</p>
+            <strong>{fact.value}</strong>
+          </article>
+        ))}
+      </div>
+      <p class="dbc-fact-source">
+        {DOOSAN_FACTS_AS_OF} · {DOOSAN_FACTS_SOURCE.href ? (
+          <a href={DOOSAN_FACTS_SOURCE.href} target="_blank" rel="noopener noreferrer">{DOOSAN_FACTS_SOURCE.label}</a>
+        ) : (
+          <span>{DOOSAN_FACTS_SOURCE.label}</span>
+        )}
+      </p>
+    </section>
+
+    <!-- 지급률 시나리오 비교 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="dbc-section__eyebrow section-header__eyebrow">시나리오 비교</p>
+        <h2>지급률 10~30% 시나리오별 예상 성과급</h2>
+        <p>현재 입력한 연봉을 기준으로 지급률별 세전·세후 예상 금액을 비교합니다.</p>
+      </div>
+      <div class="dbc-scenario-chart-wrap">
+        <canvas id="doosan-scenario-chart"></canvas>
+      </div>
+      <div class="table-wrap" style="overflow-x:auto;">
+        <table class="result-table dbc-rank-table">
+          <thead>
+            <tr>
+              <th>지급률</th>
+              <th>연간 성과급 (세전)</th>
+              <th>세후 추정</th>
+              <th>월급 대비</th>
+            </tr>
+          </thead>
+          <tbody id="dbcScenarioTableBody">
+          </tbody>
+        </table>
+      </div>
+      <div class="dbc-inline-cta">
+        <a class="button button--primary" href="#doosan-bonus-inputs">내 조건으로 다시 계산하기</a>
+      </div>
+    </section>
+
+    <!-- 계산 기준 요약 -->
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">계산 기준 요약</h2>
+        </div>
+      </div>
+      <div class="dbc-logic-grid">
+        <article class="dbc-logic-card">
+          <strong>연간 성과급 = 기준액 × 입력값</strong>
+          <p>입력 방식에 따라 연봉×지급률, 월급×배수, 또는 직접 입력 금액으로 산정합니다.</p>
+        </article>
+        <article class="dbc-logic-card">
+          <strong>세후는 참고값</strong>
+          <p>간이 세율(22%) 또는 직접 입력한 세율을 적용한 단순화 계산입니다.</p>
+        </article>
+        <article class="dbc-logic-card">
+          <strong>지급률은 추정값</strong>
+          <p>보도 및 업계 추정 기반 시뮬레이션이며 실제 실적 평가에 따라 달라질 수 있습니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "이 계산기의 성과급 지급률 기본값(15%)은 보도·업계 추정 기반이며, 실제 지급률은 두산에너빌리티 내부 실적 평가에 따라 달라집니다.",
+        "세후 추정값은 개인 과세표준·공제 조건에 따라 실제 수령액과 다를 수 있습니다.",
+        "원전(SMR) 등 산업 동향은 일반 참고 정보로만 제공되며 성과급 지급률을 보장하지 않습니다.",
+        "이 계산기는 투자 권유 또는 입사를 권장하지 않습니다.",
+      ]}
+    />
+
+    <!-- 관련 계산기 그리드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="dbc-section__eyebrow section-header__eyebrow">관련 계산기</p>
+        <h2>다른 대기업 성과급 계산기</h2>
+        <p>두산에너빌리티 결과를 다른 대기업과 나란히 비교해보세요.</p>
+      </div>
+      <CompareCta
+        variant="bonus"
+        title="두산에너빌리티 성과급을 다른 대기업과 비교해보세요"
+        description="두산에너빌리티 성과급 계산 결과를 본 뒤 조선·방산·반도체 성과급과 같은 기준으로 이어서 비교할 수 있습니다."
+        links={[
+          { href: "/compare/bonus/", label: "성과급 비교표 보기" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "세후 실수령 계산" },
+        ]}
+      />
+      <div class="dbc-related-grid">
+        {DOOSAN_RELATED_LINKS.map((item) => (
+          <a href={withBase(item.href)} class="dbc-related-link">
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="두산에너빌리티 성과급 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 두산에너빌리티 임직원의 연봉을 기준으로 성과급(PS) 지급률 또는 월급 배수, 직접 입력 금액을 적용해 세전·세후 예상 성과급을 시뮬레이션합니다.",
+          "기본값은 연봉 6,500만원, 지급률 15%로 설정되어 있으며, 보도 및 업계 추정 기반 시뮬레이션 수치입니다. 직접 입력 모드로 전환하면 원하는 지급률·배수·금액을 자유롭게 조정할 수 있습니다.",
+          "두산에너빌리티는 원전·발전·에너지 설비, 건설 등 여러 사업 부문으로 구성되어 있으며, 최근 원전(SMR) 관련 수주 확대가 보도되고 있습니다. 다만 이 계산기는 해당 동향을 수치에 직접 반영하지 않으며 일반 참고 정보로만 제공합니다.",
+          "지급률 10~30% 시나리오별 비교 표를 통해 동일 연봉 기준으로 지급률이 달라질 때 세전·세후 성과급이 어떻게 변하는지 한눈에 확인할 수 있습니다.",
+          "모든 수치는 보도 및 업계 추정 기반 시뮬레이션이며, 실제 지급률과 세후 금액은 회사의 실적 평가 결과와 개인의 과세 조건에 따라 달라질 수 있습니다."
+        ]}
+        inputPoints={[
+          "연봉을 입력하면 슬라이더로 빠르게 조정할 수 있습니다.",
+          "성과급 입력 방식을 연봉×지급률, 월급×배수, 직접 금액 입력 중에서 선택할 수 있습니다.",
+          "세후 추정은 간이 세율(22%) 또는 직접 입력한 세율 중에서 선택할 수 있습니다.",
+          "지급률 10~30% 시나리오별 예상 성과급을 표와 차트로 함께 확인할 수 있습니다.",
+          "계산 결과는 성과급 세후 실수령 계산기와 투자 계산기로 바로 이어서 확인할 수 있습니다."
+        ]}
+        criteria={[
+          "연간 성과급은 기준액(연봉 또는 월급)에 입력값(지급률·배수)을 곱하거나, 직접 입력한 금액을 그대로 사용합니다.",
+          "기본 지급률 15%는 보도 및 업계 추정 기반이며 실제 실적 평가와 다를 수 있습니다.",
+          "세후 추정은 간이 세율 22% 또는 직접 입력한 세율을 적용한 참고값입니다.",
+          "지급률 10~30% 시나리오는 현재 입력한 연봉을 기준으로 산출한 추정값입니다."
+        ]}
+        faq={DOOSAN_BONUS_FAQ}
+        related={[
+          { href: "/tools/hanwha-bonus-calculator/", label: "한화오션·한화에어로스페이스 성과급 계산기" },
+          { href: "/reports/corporate-bonus-comparison-2026/", label: "2026 대기업 성과급 완전 비교" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+          { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
+          { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="doosanBonusConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/doosan-enerbility-bonus-calculator.js")}></script>
+</BaseLayout>

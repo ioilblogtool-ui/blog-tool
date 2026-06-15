@@ -1,0 +1,458 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  poscoCompanies,
+  poscoRankPresets,
+  poscoScenarioOptions,
+  poscoComparisonItems,
+  poscoBonusTerms,
+  POSCO_NEXT_CALCULATOR,
+  POSCO_RELATED_CALCULATORS,
+  POSCO_BONUS_FAQ,
+} from "../../data/poscoBonusCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  poscoCompanies,
+  poscoRankPresets,
+  poscoScenarioOptions,
+  poscoComparisonItems,
+};
+---
+
+<BaseLayout
+  title="포스코 성과급 계산기｜계열사별 PI·PS 세전·세후 계산"
+  description="포스코·포스코퓨처엠·포스코인터내셔널·포스코이앤씨 계열사를 선택해 PI·PS 지급률과 월 기본급으로 세전·세후 성과급을 계산하고 삼성전자·LG전자 등과 비교해보세요."
+  ogImage="/og/tools/posco-bonus-calculator.png"
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="posco-bonus-calculator" pageClass="posco-bonus-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="POSCO Group Compensation"
+        title="포스코 성과급 계산기"
+        description="계열사·직급·월 기본급을 입력하면 PI·PS 합산 성과급의 세전·세후 예상액을 바로 확인할 수 있습니다. 삼성전자·LG전자 등과도 비교해보세요."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetPoscoBonusBtn" copyId="copyPoscoBonusLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="posco-bonus-inputs">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 입력</p>
+              <h2 class="panel__title">계열사·직급·기본급 입력</h2>
+            </div>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field">
+              <span>계열사</span>
+              <select id="poscoCompanySelect">
+                {poscoCompanies.map((c) => (
+                  <option value={c.code}>{c.label} — {c.description}</option>
+                ))}
+              </select>
+            </label>
+
+            <label class="field">
+              <span>직급</span>
+              <select id="poscoRankSelect">
+                {poscoRankPresets.map((r) => (
+                  <option value={r.code}>{r.label}</option>
+                ))}
+              </select>
+            </label>
+
+            <label class="field field-span-full">
+              <span>월 기본급</span>
+              <input id="poscoMonthlyBaseInput" type="number" value="4300000" />
+              <small id="poscoMonthlyBaseHint">직급 선택 시 예시값이 자동 입력됩니다. 직접 수정 가능합니다.</small>
+              <div class="calc-slider-row">
+                <input type="range" id="poscoMonthlyBaseSlider" class="calc-slider"
+                  min="2000000" max="12000000" step="100000" value="4300000" />
+                <span id="poscoMonthlyBaseSliderVal" class="calc-slider-val">430만원</span>
+              </div>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">PI·PS 지급률 설정</p>
+              <h2 class="panel__title">추정값 또는 직접 입력</h2>
+            </div>
+          </div>
+
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input id="poscoRateModeEstimate" name="poscoRateMode" type="radio" value="ESTIMATE" checked />
+              <span>추정값 사용</span>
+            </label>
+            <label class="mode-chip">
+              <input id="poscoRateModeCustom" name="poscoRateMode" type="radio" value="CUSTOM" />
+              <span>직접 입력</span>
+            </label>
+          </div>
+          <small id="poscoRateModeHint" style="display:block;margin-top:6px;color:#888780;font-size:11px;">추정값은 보도·업계 추정 기반 시뮬레이션이며 실제 지급률과 다를 수 있습니다.</small>
+
+          <div id="poscoScenarioBlock" style="margin-top:12px;">
+            <div class="toggle-grid">
+              {poscoScenarioOptions.map((s) => (
+                <label class={`mode-chip${s.code === "AGGRESSIVE" ? " mode-chip--highlight" : ""}`}>
+                  <input name="poscoScenario" type="radio" value={s.code} checked={s.code === "BASE"} />
+                  <span>{s.label}</span>
+                </label>
+              ))}
+            </div>
+            <small id="poscoScenarioHint" style="display:block;margin-top:6px;color:#888780;font-size:11px;"></small>
+          </div>
+
+          <div id="poscoCustomRateBlock" hidden style="margin-top:12px;">
+            <div class="form-grid form-grid--compact">
+              <label class="field field-span-full">
+                <span>PI+PS 합산 지급률 (%)</span>
+                <input id="poscoCustomRateInput" type="number" value="20" min="0" max="800" step="5" />
+                <div class="calc-slider-row">
+                  <input type="range" id="poscoCustomRateSlider" class="calc-slider" min="0" max="800" step="5" value="20" />
+                  <span id="poscoCustomRateSliderVal" class="calc-slider-val">20%</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <button id="calcPoscoBonusBtn" class="button button--primary" type="button">성과급 계산하기</button>
+      </div>
+    </Fragment>
+
+    <!-- 결과 우선 패널 -->
+    <article class="panel result-priority-panel" id="posco-bonus-results">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과 먼저 보기</p>
+          <h2 class="panel__title">내 예상 성과급</h2>
+        </div>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#posco-bonus-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#posco-bonus-details">세부 내역 보기</a>
+      </div>
+    </article>
+
+    <!-- KPI 핵심 카드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="pbc-section__eyebrow section-header__eyebrow">내 계산 결과</p>
+        <h2 id="poscoResultHeadline">포스코 성과급 계산 결과</h2>
+        <p id="poscoResultSubcopy">계열사·직급 기준 시뮬레이션</p>
+      </div>
+      <div class="kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p>연간 PI+PS 합계 (세전)</p>
+          <strong id="poscoTotalGross">-</strong>
+          <span id="poscoTotalGrossNote">시뮬레이션</span>
+        </article>
+        <article class="kpi-card">
+          <p>연간 PI+PS 합계 (세후 추정)</p>
+          <strong id="poscoTotalNet">-</strong>
+          <span id="poscoTotalNetNote">참고값</span>
+        </article>
+        <article class="kpi-card">
+          <p>월 기본급 대비</p>
+          <strong id="poscoMonthlyRatio">-</strong>
+          <span id="poscoMonthlyRatioNote">개월치</span>
+        </article>
+        <article class="kpi-card">
+          <p>연봉 대비 비율</p>
+          <strong id="poscoAnnualRatio">-</strong>
+          <span id="poscoAnnualRatioNote">참고값</span>
+        </article>
+      </div>
+
+      <div class="pbc-next-step" aria-label="계산 결과 다음 단계">
+        <p class="pbc-next-step__eyebrow">지금 바로 이어서</p>
+        <div class="pbc-next-step__actions">
+          <a id="poscoAfterTaxCta" class="button button--primary"
+            href={withBase("/tools/bonus-after-tax-calculator/?company=posco")}>
+            세후 실수령 계산하기 →
+          </a>
+          <a id="poscoDcaCta" class="button button--secondary"
+            href={withBase("/tools/dca-investment-calculator/?m=300000&p=10&a=SP500,NASDAQ100,QQQ&fx=1&div=1")}>
+            이 금액 투자하면? →
+          </a>
+        </div>
+        <p class="pbc-next-step__note" id="poscoNextStepNote">성과급 세전 금액을 기준으로 다음 계산기에 자동 반영합니다.</p>
+      </div>
+    </section>
+
+    <!-- PI·PS 구조 설명 -->
+    <section class="content-section" id="posco-bonus-details">
+      <div class="section-header section-header--compact">
+        <p class="pbc-section__eyebrow section-header__eyebrow">PI·PS 구조</p>
+        <h2>포스코 성과급 PI·PS란?</h2>
+      </div>
+      <div class="pbc-logic-grid">
+        {poscoBonusTerms.map((term) => (
+          <article class="pbc-logic-card">
+            <strong>{term.term}</strong>
+            <p>{term.meaning}</p>
+            <span class="pbc-logic-card__meta">지급 시기: {term.payoutPeriod}</span>
+            <span class="pbc-logic-card__caution">{term.caution}</span>
+          </article>
+        ))}
+        <article class="pbc-logic-card">
+          <strong>기본급 기준인 이유</strong>
+          <p>PI·PS는 연봉 총액이 아니라 월 기본급 기준으로 지급률을 곱해 산정합니다. 각종 수당은 제외됩니다.</p>
+        </article>
+        <article class="pbc-logic-card">
+          <strong>계열사마다 지급률이 다른 이유</strong>
+          <p>포스코그룹은 지주사 체제로 계열사별 독립 실적 평가를 받기 때문에 PI·PS 지급률이 계열사마다 달라질 수 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 계열사별 PI+PS 비교 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="pbc-section__eyebrow section-header__eyebrow">계열사별 비교</p>
+        <h2>포스코·포스코퓨처엠·포스코인터내셔널·포스코이앤씨 PI+PS 범위</h2>
+        <p>보수·기준·낙관 시나리오 기준 추정값입니다.</p>
+      </div>
+      <div class="pbc-company-chart-wrap">
+        <canvas id="posco-company-chart"></canvas>
+      </div>
+      <div class="pbc-company-grid">
+        {poscoCompanies.map((c) => (
+          <article class="pbc-company-card" data-code={c.code}>
+            <p class="pbc-company-card__label">{c.label}</p>
+            <strong class="pbc-company-card__full">{c.fullName}</strong>
+            <span class="pbc-company-card__desc">{c.description}</span>
+            <p class="pbc-company-card__trend">{c.trend}</p>
+            <span class="estimate-badge">{c.badge}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 계열사별 기업 데이터 & 역대 성과급 사례 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="pbc-section__eyebrow section-header__eyebrow">기업 데이터</p>
+        <h2>계열사별 평균연봉·매출·영업이익 &amp; 역대 성과급 사례</h2>
+        <p>선택한 계열사의 공개 데이터와 과거 성과급 지급 사례를 확인해보세요. 사례를 클릭하면 해당 지급률이 입력값에 적용됩니다.</p>
+      </div>
+      {poscoCompanies.map((c) => (
+        <div class="pbc-company-fact-block" data-code={c.code} hidden>
+          <div class="kpi-grid">
+            {c.companyFacts.map((fact) => (
+              <article class="kpi-card">
+                <p>{fact.label}</p>
+                <strong>{fact.value}</strong>
+              </article>
+            ))}
+          </div>
+          <p class="pbc-fact-source">
+            {c.factsAsOf} · {c.factsSource.href ? (
+              <a href={c.factsSource.href} target="_blank" rel="noopener noreferrer">{c.factsSource.label}</a>
+            ) : (
+              <span>{c.factsSource.label}</span>
+            )}
+          </p>
+
+          {c.historicalPresets.length > 0 && (
+            <div class="pbc-preset-list">
+              <p class="pbc-preset-list__title">역대 성과급 사례</p>
+              {c.historicalPresets.map((preset) => (
+                <button type="button" class="pbc-preset-btn" data-rate={preset.rate}>
+                  <strong>{preset.label} · {preset.rate}%</strong>
+                  <span>{preset.description}</span>
+                  <span class="pbc-preset-btn__source">
+                    {preset.source.href ? (
+                      <a href={preset.source.href} target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">{preset.source.label}</a>
+                    ) : (
+                      <span>{preset.source.label}</span>
+                    )} · {preset.sourceDate}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </section>
+
+    <!-- 직급별 예상 성과급 표 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="pbc-section__eyebrow section-header__eyebrow">직급별 예시</p>
+        <h2>직급별 예상 성과급 (현재 계열사·시나리오 기준)</h2>
+      </div>
+      <div class="table-wrap" style="overflow-x:auto;">
+        <table class="result-table pbc-rank-table">
+          <thead>
+            <tr>
+              <th>직급</th>
+              <th>월 기본급</th>
+              <th>연간 PI+PS (세전)</th>
+              <th>세후 추정</th>
+              <th>월급 대비</th>
+            </tr>
+          </thead>
+          <tbody id="poscoRankTableBody">
+          </tbody>
+        </table>
+      </div>
+      <div class="pbc-inline-cta">
+        <a class="button button--primary" href="#posco-bonus-inputs">내 직급·기본급으로 다시 계산하기</a>
+      </div>
+    </section>
+
+    <!-- 타 대기업 비교 바 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="pbc-section__eyebrow section-header__eyebrow">대기업 비교</p>
+        <h2>삼성전자·SK하이닉스·LG전자·현대차와 성과급 비교</h2>
+        <p>동일 월 기본급 기준 추정 시뮬레이션입니다. 각 회사의 계산 방식이 달라 직접 비교는 참고 용도로만 활용하세요.</p>
+      </div>
+      <div class="pbc-compare-chart-wrap">
+        <canvas id="posco-compare-chart"></canvas>
+      </div>
+      <div class="pbc-compare-cta">
+        <a class="button button--secondary" href={withBase("/tools/bonus-simulator/")}>
+          대기업 성과급 한 번에 비교하기 →
+        </a>
+      </div>
+    </section>
+
+    <!-- 계산 기준 요약 -->
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">계산 기준 요약</h2>
+        </div>
+      </div>
+      <div class="pbc-logic-grid">
+        <article class="pbc-logic-card">
+          <strong>연간 PI+PS = 월 기본급 × 지급률(%)</strong>
+          <p>월 기본급에 PI+PS 합산 지급률을 곱해 산정합니다.</p>
+        </article>
+        <article class="pbc-logic-card">
+          <strong>세후는 참고값</strong>
+          <p>개인 과세표준과 공제 조건에 따라 실제 세후 금액은 달라집니다.</p>
+        </article>
+        <article class="pbc-logic-card">
+          <strong>계열사별 지급률은 추정값</strong>
+          <p>보도 및 업계 추정 기반 시뮬레이션이며 실제 실적 평가에 따라 달라질 수 있습니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "계열사별 PI·PS 지급률 기본값은 보도·업계 추정 기반이며, 실제 지급률은 포스코그룹 내부 실적 평가에 따라 달라집니다.",
+        "직급별 월 기본급은 참고 예시값이며 본인 기본급을 직접 입력해 사용하세요.",
+        "세후 추정값은 개인 과세표준·공제 조건에 따라 실제 수령액과 다를 수 있습니다.",
+        "이 계산기는 투자 권유 또는 특정 계열사 입사를 권장하지 않습니다.",
+      ]}
+    />
+
+    <!-- 다음 계산기 CTA 카드 -->
+    <section class="content-section">
+      <div class="panel pbc-next-card">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{POSCO_NEXT_CALCULATOR.label}</p>
+            <h2 class="panel__title">성과급 세후 실수령액 계산기</h2>
+          </div>
+          <p class="panel-heading__summary">{POSCO_NEXT_CALCULATOR.desc}</p>
+        </div>
+        <a href={withBase(POSCO_NEXT_CALCULATOR.href)} class="button button--secondary">세후 실수령 계산하기 →</a>
+      </div>
+    </section>
+
+    <!-- 관련 계산기 그리드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="pbc-section__eyebrow section-header__eyebrow">관련 계산기</p>
+        <h2>다른 대기업 성과급 계산기</h2>
+        <p>포스코 결과를 다른 대기업과 나란히 비교해보세요.</p>
+      </div>
+      <CompareCta
+        variant="bonus"
+        title="포스코 성과급을 다른 대기업과 비교해보세요"
+        description="포스코 성과급 계산 결과를 본 뒤 반도체, 자동차, 전자 성과급과 같은 기준으로 이어서 비교할 수 있습니다."
+        links={[
+          { href: "/compare/bonus/", label: "성과급 비교표 보기" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "세후 실수령 계산" },
+        ]}
+      />
+      <div class="pbc-related-grid">
+        {POSCO_RELATED_CALCULATORS.map((item) => (
+          <a href={withBase(item.href)} class="pbc-related-link">
+            <strong>{item.label}</strong>
+            <span>{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="포스코 성과급 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 포스코·포스코퓨처엠·포스코인터내셔널·포스코이앤씨 4개 계열사의 PI·PS 지급률 추정값을 기반으로 월 기본급 대비 세전·세후 성과급을 시뮬레이션합니다.",
+          "계열사를 선택하면 해당 계열사의 보수·기준·낙관 시나리오가 자동 반영됩니다. 직접 입력 모드로 전환하면 PI+PS 합산 지급률을 자유롭게 조정할 수 있습니다.",
+          "포스코그룹은 지주사 체제로 운영되어 계열사별로 사업 영역과 실적이 크게 다릅니다. 철강 본원 사업인 포스코, 이차전지소재 사업인 포스코퓨처엠, 에너지·식량 트레이딩의 포스코인터내셔널, 건설업인 포스코이앤씨는 각각 다른 PI·PS 지급률을 보일 수 있습니다.",
+          "직급별 예상 성과급 표를 통해 사원부터 부장까지 직급별로 PI+PS 합계가 어떻게 달라지는지 한눈에 비교할 수 있으며, 삼성전자·SK하이닉스·LG전자·현대자동차와의 비교 차트도 함께 제공합니다.",
+          "모든 수치는 보도 및 업계 추정 기반 시뮬레이션이며, 실제 지급률과 세후 금액은 회사의 실적 평가 결과와 개인의 과세 조건에 따라 달라질 수 있습니다."
+        ]}
+        inputPoints={[
+          "계열사 선택 후 직급을 고르면 월 기본급 예시값이 자동 입력됩니다.",
+          "추정값 모드에서는 보수·기준·낙관 시나리오 중 하나를 선택해 PI+PS 범위를 확인할 수 있습니다.",
+          "직접 입력 모드에서는 PI+PS 합산 지급률을 슬라이더로 직접 조정합니다.",
+          "삼성전자·SK하이닉스·LG전자·현대차와 동일 월 기본급 기준 비교 차트를 함께 확인할 수 있습니다.",
+          "계산 결과는 성과급 세후 실수령 계산기와 투자 계산기로 바로 이어서 확인할 수 있습니다."
+        ]}
+        criteria={[
+          "PI+PS는 월 기본급에 합산 지급률(%)을 곱해 산정하며 각종 수당은 포함하지 않습니다.",
+          "계열사별 PI+PS 기본 시나리오는 보도 및 업계 추정 기반이며 실제 실적 평가와 다를 수 있습니다.",
+          "세후 추정은 근로소득 합산 과세 기준 단순화 누진세율을 적용한 참고값입니다.",
+          "타사 비교 시뮬레이션은 각 사의 공개 기준율을 동일 월 기본급에 적용한 추정값입니다."
+        ]}
+        faq={POSCO_BONUS_FAQ}
+        related={[
+          { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
+          { href: "/reports/corporate-bonus-comparison-2026/", label: "2026 대기업 성과급 완전 비교" },
+          { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+          { href: "/tools/samsung-bonus/", label: "삼성전자 성과급 계산기" },
+          { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
+          { href: "/tools/lg-bonus/", label: "LG전자 성과급 계산기" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="poscoBonusConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/posco-bonus-calculator.js")}></script>
+</BaseLayout>

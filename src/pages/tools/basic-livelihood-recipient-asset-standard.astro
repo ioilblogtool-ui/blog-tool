@@ -1,0 +1,277 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  BLAS_CAR_TYPE_LABELS,
+  BLAS_CONFIG,
+  BLAS_FAQ,
+  BLAS_HOUSING_LABELS,
+  BLAS_META,
+  BLAS_PRESETS,
+  BLAS_REGION_LABELS,
+  BLAS_RELATED_LINKS,
+  BLAS_SEO_CONTENT,
+} from "../../data/basicLivelihoodRecipientAssetStandard";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${BLAS_META.slug}/`;
+const eok = (value: number) => `${(value / 100000000).toFixed(value >= 100000000 ? 1 : 2)}억 원`;
+---
+
+<BaseLayout
+  title={BLAS_META.seoTitle}
+  description={BLAS_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: BLAS_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: BLAS_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: BLAS_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={BLAS_META.slug} pageClass="blas-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="기초생활 재산 기준"
+        title="기초생활수급자 재산 기준 계산기"
+        description="전세보증금, 예금, 부채, 자동차가 기초생활수급자 소득인정액에 어떻게 반영되는지 간이 계산하고 확인 필요 항목을 정리합니다."
+        badges={["재산 기준", "소득인정액", "자동차 확인", "2026"]}
+      />
+      <InfoNotice
+        title="재산 기준 안내"
+        lines={[
+          BLAS_META.dataNote,
+          "재산이 있다고 무조건 제외되는 것은 아니며, 지역별 기본재산액과 재산 종류를 함께 봅니다.",
+          "자동차와 부채는 실제 조사에서 인정 여부가 달라질 수 있어 확인 필요 항목으로 표시합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="blasResetBtn" copyId="blasCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel blas-quick-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본재산액</p>
+            <h2 class="panel__title">지역별 차감 기준</h2>
+          </div>
+          <p class="panel-heading__summary">MVP 계산은 기존 복지 계산기의 지역별 기본재산액 기준을 사용합니다.</p>
+        </div>
+        <div class="blas-deduction-list">
+          {Object.entries(BLAS_CONFIG.assetDeductions).map(([region, value]) => (
+            <p><span>{BLAS_REGION_LABELS[region as keyof typeof BLAS_REGION_LABELS]}</span><strong>{eok(value)}</strong></p>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">재산 상황 선택</h2>
+          </div>
+        </div>
+        <div class="blas-preset-grid">
+          {BLAS_PRESETS.map((preset) => (
+            <button type="button" class="blas-preset-btn" data-blas-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel blas-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">재산 정보</h2>
+          </div>
+        </div>
+
+        <section class="blas-input-section" aria-labelledby="blas-household-title">
+          <h3 id="blas-household-title">가구·지역</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>가구원 수</span>
+              <select data-blas="householdSize">
+                {BLAS_CONFIG.thresholds.map((item) => <option value={item.householdSize}>{item.householdSize}인</option>)}
+              </select>
+            </label>
+            <label class="field">
+              <span>거주 지역</span>
+              <select data-blas="region">
+                {Object.entries(BLAS_REGION_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
+              </select>
+            </label>
+            <label class="field">
+              <span>주거 형태</span>
+              <select data-blas="housingType">
+                {Object.entries(BLAS_HOUSING_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="blas-input-section" aria-labelledby="blas-asset-title">
+          <h3 id="blas-asset-title">재산</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>전세보증금/주택가액</span>
+              <input data-blas="housingAsset" type="text" inputmode="numeric" class="input-number" value="50,000,000" />
+            </label>
+            <label class="field">
+              <span>일반 부동산·토지</span>
+              <input data-blas="generalAsset" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>예금·적금·주식</span>
+              <input data-blas="financialAsset" type="text" inputmode="numeric" class="input-number" value="10,000,000" />
+            </label>
+            <label class="field">
+              <span>보험 해지환급금</span>
+              <input data-blas="insuranceRefundAsset" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>인정 가능 부채</span>
+              <input data-blas="debt" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+          </div>
+        </section>
+
+        <section class="blas-input-section" aria-labelledby="blas-car-title">
+          <h3 id="blas-car-title">자동차</h3>
+          <div class="form-grid">
+            <label class="checkbox-option">
+              <input type="checkbox" data-blas="hasCar" />
+              <span>자동차가 있습니다</span>
+            </label>
+            <label class="field">
+              <span>차량가액</span>
+              <input data-blas="carValue" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>차량 용도</span>
+              <select data-blas="carType">
+                {Object.entries(BLAS_CAR_TYPE_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="blas-input-section" aria-labelledby="blas-income-title">
+          <h3 id="blas-income-title">월 소득</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>월 근로·사업소득</span>
+              <input data-blas="earnedIncome" type="text" inputmode="numeric" class="input-number" value="1,200,000" />
+            </label>
+            <label class="field">
+              <span>공적 이전소득</span>
+              <input data-blas="publicTransferIncome" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-blas="applyWorkDeduction" checked />
+              <span>근로·사업소득 30% 간이 공제 적용</span>
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="blas-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>재산 기준 영향</h2>
+        <p>기본재산액 차감 후 남는 재산과 월 소득환산액을 중심으로 보여줍니다.</p>
+      </div>
+      <div class="blas-kpi-grid">
+        <article class="blas-kpi blas-kpi--main"><span>재산 위험도</span><strong data-blas-result="risk">-</strong><small data-blas-result="riskSummary">확인 중</small></article>
+        <article class="blas-kpi"><span>기본재산액 차감 후</span><strong data-blas-result="assetAfterDeduction">-</strong><small>간이 계산</small></article>
+        <article class="blas-kpi"><span>재산 월 환산액</span><strong data-blas-result="assetMonthlyIncome">-</strong><small>소득인정액 반영</small></article>
+        <article class="blas-kpi"><span>전체 소득인정액</span><strong data-blas-result="incomeRecognized">-</strong><small data-blas-result="assetShare">재산 비중</small></article>
+      </div>
+      <p class="blas-summary" data-blas-summary></p>
+    </section>
+
+    <section class="blas-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">기본재산액</p>
+        <h2>내 재산이 기본재산액 안에 들어오나?</h2>
+      </div>
+      <div class="blas-meter" aria-hidden="true">
+        <span class="blas-meter__bar"><i data-blas-meter-fill></i></span>
+        <p data-blas-meter-copy></p>
+      </div>
+    </section>
+
+    <section class="blas-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">재산 분해</p>
+        <h2>항목별 반영 금액</h2>
+      </div>
+      <div class="blas-table-wrap">
+        <table class="blas-breakdown-table">
+          <caption>기초생활수급자 재산 기준 항목별 반영 금액</caption>
+          <thead><tr><th>항목</th><th>입력 금액</th><th>반영 금액</th><th>월 환산액</th><th>상태</th></tr></thead>
+          <tbody data-blas-breakdown-body></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="blas-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">확인 필요</p>
+        <h2>주민센터에서 다시 확인할 항목</h2>
+      </div>
+      <div class="blas-warning-grid" data-blas-warnings></div>
+      <div class="blas-action-grid">
+        <a href={withBase("/tools/livelihood-benefit-income-recognition/")}>생계급여 예상액 계산</a>
+        <a href={withBase("/tools/welfare-benefit-eligibility/")}>4대 급여 전체 가능성 보기</a>
+        <a href={withBase("/compare/welfare/")}>복지지원금 비교표 보기</a>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={BLAS_SEO_CONTENT.introTitle}
+        intro={BLAS_SEO_CONTENT.intro}
+        inputPoints={BLAS_SEO_CONTENT.inputPoints}
+        criteria={BLAS_SEO_CONTENT.criteria}
+        faq={BLAS_FAQ}
+        related={BLAS_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="blas-data" type="application/json" set:html={JSON.stringify(BLAS_CONFIG)} />
+  <script type="module" src={withBase("/scripts/basic-livelihood-recipient-asset-standard.js")}></script>
+</BaseLayout>

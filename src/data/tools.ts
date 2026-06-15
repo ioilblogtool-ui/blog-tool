@@ -625,6 +625,34 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "livelihood-benefit-income-recognition",
+    title: "생계급여 소득인정액 계산기 2026",
+    description: "가구원 수, 월소득, 재산을 입력해 2026년 생계급여 선정기준 대비 소득인정액과 예상 생계급여액을 간이 계산합니다.",
+    order: 11.71,
+    eyebrow: "생계급여 소득인정액",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "생계급여", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "예상 지급액" },
+      { label: "기준 비교", value: "중위 32%" }
+    ]
+  },
+  {
+    slug: "basic-livelihood-recipient-asset-standard",
+    title: "기초생활수급자 재산 기준 계산기 2026",
+    description: "전세보증금, 예금, 부채, 자동차를 입력해 기초생활수급자 재산 기준과 월 소득환산액 영향을 자가 점검합니다.",
+    order: 11.72,
+    eyebrow: "기초생활 재산 기준",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "재산 기준", "자가 점검"],
+    previewStats: [
+      { label: "핵심 결과", value: "재산 위험도" },
+      { label: "확인 항목", value: "자동차·부채" }
+    ]
+  },
+  {
     slug: "high-oil-support-payment-calculator",
     title: "고유가 피해지원금 계산기",
     description: "2026년 고유가 피해지원금 대상 유형과 거주 지역을 입력하면 1인당 지원액, 총 예상 수령액, 2차 신청 마감 체크리스트를 확인합니다.",
@@ -1309,6 +1337,48 @@ export const tools: ToolMeta[] = [
       { label: "판정 기준", value: "150%", context: "기준중위소득" },
       { label: "입력", value: "건보료", context: "맞벌이 합산 가능" },
     ],
+  },
+  {
+    slug: "posco-bonus-calculator",
+    title: "포스코 성과급 계산기",
+    description: "포스코·포스코퓨처엠·포스코인터내셔널·포스코이앤씨 계열사를 선택해 PI·PS 지급률과 월 기본급으로 세전·세후 성과급을 계산하고 삼성전자·LG전자 등과 비교하는 페이지",
+    order: 27.4,
+    eyebrow: "POSCO Group Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "계열사", value: "4개", context: "포스코그룹" },
+      { label: "산출 항목", value: "PI+PS", context: "세전·세후" }
+    ]
+  },
+  {
+    slug: "doosan-enerbility-bonus-calculator",
+    title: "두산에너빌리티 성과급 계산기",
+    description: "두산에너빌리티 연봉과 성과급(PS) 지급률·월급 배수·직접 입력 금액으로 세전·세후 성과급을 계산하고 10~30% 시나리오별 예상 금액을 비교하는 페이지",
+    order: 27.5,
+    eyebrow: "Doosan Enerbility Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "기본 지급률", value: "15%", context: "PS 기준" },
+      { label: "시나리오", value: "10~30%", context: "5단계 비교" }
+    ]
+  },
+  {
+    slug: "hanwha-bonus-calculator",
+    title: "한화오션·한화에어로스페이스 성과급 계산기",
+    description: "한화오션·한화에어로스페이스 중 선택해 연봉과 성과급 지급률·월급 배수·직접 입력 금액으로 세전·세후 성과급을 계산하고 10~30% 시나리오별 예상 금액을 비교하는 페이지",
+    order: 27.6,
+    eyebrow: "Hanwha Group Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "계열사", value: "2개", context: "조선·방산" },
+      { label: "시나리오", value: "10~30%", context: "5단계 비교" }
+    ]
   },
   {
     slug: "stock-breakeven-calculator",

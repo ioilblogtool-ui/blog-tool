@@ -1,0 +1,438 @@
+// ── 탭 ────────────────────────────────────────────────────────────────────────
+.hanwha-bonus-page .hbc-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hanwha-bonus-page .hbc-tab {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  background: #F7F6F4;
+  color: #5F5E5A;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.hanwha-bonus-page .hbc-tab[aria-selected="true"] {
+  border-color: #1A56DB;
+  background: #EBF5FF;
+  color: #1A56DB;
+}
+
+.hanwha-bonus-page .hbc-company-desc {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: #888780;
+  line-height: 1.5;
+}
+
+// ── 슬라이더 ──────────────────────────────────────────────────────────────────
+.hanwha-bonus-page .calc-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.hanwha-bonus-page .calc-slider {
+  flex: 1;
+  accent-color: #1A56DB;
+}
+
+.hanwha-bonus-page .calc-slider-val {
+  min-width: 5em;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A56DB;
+  text-align: right;
+  white-space: nowrap;
+}
+
+// ── 필드 ──────────────────────────────────────────────────────────────────────
+.hanwha-bonus-page .field-span-full {
+  grid-column: 1 / -1;
+}
+
+.hanwha-bonus-page .field-span-full > span:first-child {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5F5E5A;
+}
+
+.hanwha-bonus-page .field-span-full .toggle-grid {
+  margin-bottom: 0;
+}
+
+// ── 모드 칩 ───────────────────────────────────────────────────────────────────
+.hanwha-bonus-page .mode-chip {
+  display: flex;
+}
+
+.hanwha-bonus-page .mode-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hanwha-bonus-page .mode-chip span {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  background: #F7F6F4;
+  color: #5F5E5A;
+}
+
+.hanwha-bonus-page .mode-chip input:checked + span {
+  border-color: #3F83F8;
+  background: #EBF5FF;
+  color: #1A56DB;
+}
+
+// ── 그리드 공통 ───────────────────────────────────────────────────────────────
+.hanwha-bonus-page .toggle-grid,
+.hanwha-bonus-page .kpi-grid,
+.hanwha-bonus-page .hbc-logic-grid,
+.hanwha-bonus-page .hbc-related-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr;
+}
+
+.hanwha-bonus-page .toggle-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hanwha-bonus-page .form-grid--compact {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+
+// ── KPI 카드 ──────────────────────────────────────────────────────────────────
+.hanwha-bonus-page .kpi-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 9px;
+    color: #B4B2A9;
+  }
+}
+
+.hanwha-bonus-page .kpi-card--accent {
+  background: #EBF5FF;
+
+  p { color: #5F5E5A; }
+  strong { font-size: 20px; color: #1A56DB; }
+  span { color: #3F83F8; }
+}
+
+// ── 기업 데이터 & 역대 성과급 사례 ────────────────────────────────────────────
+.hanwha-bonus-page .hbc-company-fact-block[hidden] {
+  display: none;
+}
+
+.hanwha-bonus-page .hbc-fact-source {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: #888780;
+
+  a {
+    color: #1A56DB;
+    text-decoration: underline;
+  }
+}
+
+.hanwha-bonus-page .hbc-preset-list {
+  margin-top: 16px;
+}
+
+.hanwha-bonus-page .hbc-preset-list__title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #5F5E5A;
+  margin: 0 0 8px;
+}
+
+.hanwha-bonus-page .hbc-preset-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: #3F83F8;
+    background: #EBF5FF;
+  }
+
+  strong {
+    font-size: 12px;
+    font-weight: 500;
+    color: #1A1A18;
+  }
+
+  span {
+    font-size: 11px;
+    color: #888780;
+    line-height: 1.5;
+  }
+
+  .hbc-preset-btn__source {
+    font-size: 10px;
+    color: #B4B2A9;
+
+    a {
+      color: #1A56DB;
+      text-decoration: underline;
+    }
+  }
+}
+
+// ── 다음 단계 CTA ─────────────────────────────────────────────────────────────
+.hanwha-bonus-page .hbc-next-step {
+  border: 1px solid #DBEAFE;
+  border-radius: 10px;
+  background: #EFF6FF;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.hanwha-bonus-page .hbc-next-step__eyebrow {
+  font-size: 10px;
+  color: #3F83F8;
+  font-weight: 500;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hanwha-bonus-page .hbc-next-step__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.hanwha-bonus-page .hbc-next-step__note {
+  font-size: 11px;
+  color: #6B7280;
+  margin: 4px 0 0;
+}
+
+// ── 로직 카드 ─────────────────────────────────────────────────────────────────
+.hanwha-bonus-page .hbc-logic-card {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 12px 14px;
+
+  strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 11px;
+    color: #888780;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// ── 차트 래퍼 ─────────────────────────────────────────────────────────────────
+.hbc-scenario-chart-wrap {
+  position: relative;
+  height: 220px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+// ── 시나리오 표 ───────────────────────────────────────────────────────────────
+.hanwha-bonus-page .hbc-rank-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+
+  thead th {
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 500;
+    color: #888780;
+    border-bottom: 1px solid #E0DFDB;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px;
+    border-bottom: 1px solid #F0EFED;
+    color: #5F5E5A;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .cell-label {
+    strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1A1A18;
+    }
+  }
+
+  .cell-highlight {
+    font-weight: 500;
+    color: #1A56DB;
+  }
+}
+
+// ── 인라인 CTA ────────────────────────────────────────────────────────────────
+.hanwha-bonus-page .hbc-inline-cta {
+  margin-top: 16px;
+  text-align: center;
+}
+
+// ── 관련 계산기 그리드 ────────────────────────────────────────────────────────
+.hanwha-bonus-page .hbc-related-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  background: #FFFFFF;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: #3F83F8;
+    background: #EBF5FF;
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1A1A18;
+  }
+
+  span {
+    font-size: 11px;
+    color: #888780;
+  }
+}
+
+// ── 섹션 헤더 ─────────────────────────────────────────────────────────────────
+.hanwha-bonus-page .hbc-section__eyebrow {
+  font-size: 10px;
+  color: #1A56DB;
+  font-weight: 500;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// ── 반응형 ────────────────────────────────────────────────────────────────────
+@media (min-width: 560px) {
+  .hanwha-bonus-page .form-grid--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hanwha-bonus-page .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hanwha-bonus-page .hbc-logic-grid,
+  .hanwha-bonus-page .hbc-related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .hanwha-bonus-page .kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .hanwha-bonus-page .hbc-logic-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hanwha-bonus-page .hbc-related-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .hanwha-bonus-page .hbc-related-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 559px) {
+  .hanwha-bonus-page .toggle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hanwha-bonus-page .hbc-rank-table thead {
+    display: none;
+  }
+
+  .hanwha-bonus-page .hbc-rank-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #F0EFED;
+  }
+
+  .hanwha-bonus-page .hbc-rank-table tbody td {
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .hanwha-bonus-page .hbc-rank-table tbody td:first-child {
+    grid-column: 1 / -1;
+  }
+}
