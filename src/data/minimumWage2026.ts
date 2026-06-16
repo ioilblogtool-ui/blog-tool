@@ -91,6 +91,16 @@ export const MWC_PRESETS: MwcPreset[] = [
     hourlyWage: MINIMUM_WAGE_2026,
     includeWeeklyHoliday: false,
   },
+  {
+    id: "labor2027",
+    label: "2027 노동계 요구안 (시급 12,000원)",
+    weeklyHours: 40,
+    dailyHours: 8,
+    weeklyDays: 5,
+    hourlyMode: "manual",
+    hourlyWage: 12000,
+    includeWeeklyHoliday: true,
+  },
 ];
 
 export const MWC_RELATED_CALCULATORS: RelatedCalculator[] = [
