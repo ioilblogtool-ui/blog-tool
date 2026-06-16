@@ -1,0 +1,322 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PEBC_CONFIG,
+  PEBC_ENTRIES,
+  PEBC_EVALUATION_LABELS,
+  PEBC_FAQ,
+  PEBC_INDUSTRY_LABELS,
+  PEBC_META,
+  PEBC_PRIVATE_COMPARISON,
+  PEBC_RELATED_LINKS,
+  PEBC_SEO_CONTENT,
+  PEBC_STRUCTURE_POINTS,
+  PEBC_SUMMARY_CARDS,
+  PEBC_TYPE_LABELS,
+  formatPebcWon,
+} from "../../data/publicEnterpriseBonusComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/reports/${PEBC_META.slug}/`;
+const initialRows = [...PEBC_ENTRIES].sort((a, b) => b.defaultSalaryPercent - a.defaultSalaryPercent);
+const maxInitialBonus = Math.max(...initialRows.map((entry) => entry.defaultBaseSalary * (entry.defaultSalaryPercent / 100)));
+const confidenceBadge = "공시 확인 필요";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: PEBC_META.seoTitle,
+      description: PEBC_META.seoDescription,
+      inLanguage: "ko-KR",
+      dateModified: PEBC_META.updatedAt,
+      mainEntityOfPage: pageUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: PEBC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={PEBC_META.seoTitle} description={PEBC_META.seoDescription} ogImage="/og/og-home.png" jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page pebc-page" data-report={PEBC_META.slug}>
+    <CalculatorHero
+      eyebrow="공기업 성과급 비교"
+      title={PEBC_META.title}
+      description="한전·코레일·LH·건보공단 등 주요 공공기관의 성과급 구조와 입력 연봉 기준 추정 성과급을 비교합니다."
+      badges={["공기업", "성과급", "경영평가", "2026"]}
+    />
+
+    <InfoNotice
+      title="비교 전 확인"
+      lines={[
+        PEBC_META.dataNote,
+        "공기업 성과급은 경영평가 결과, 기관 내부 지급률, 직급, 근속, 직군에 따라 달라집니다.",
+        "공기업·준정부기관·기타공공기관이 함께 포함될 수 있으므로 기관 유형을 함께 확인하세요.",
+      ]}
+    />
+
+    <section class="content-section pebc-section pebc-summary-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>공기업 성과급은 금액보다 먼저 기준을 봐야 합니다</h2>
+        <p>아래 수치는 공식 개인 지급액이 아니라 공시 확인 전 입력 연봉 기준 시뮬레이션입니다.</p>
+      </div>
+      <div class="pebc-summary-grid">
+        {PEBC_SUMMARY_CARDS.map((card) => (
+          <article class="pebc-summary-card">
+            <span class="pebc-badge pebc-badge--check">{card.badge}</span>
+            <strong>{card.value}</strong>
+            <p class="pebc-summary-card__label">{card.label}</p>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section pebc-section pebc-control-section" id="simulator">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">시뮬레이션</p>
+        <h2>내 기준 연봉으로 공기업 성과급 추정하기</h2>
+        <p>기준 연봉과 보기 방식을 바꾸면 표와 차트가 바로 다시 계산됩니다.</p>
+      </div>
+      <div class="pebc-control-panel">
+        <label class="pebc-field">
+          <span>기준 연봉</span>
+          <input data-pebc="salary" type="text" inputmode="numeric" value="60,000,000" />
+        </label>
+
+        <fieldset class="pebc-segment">
+          <legend>보기 기준</legend>
+          <label><input type="radio" name="pebcViewMode" value="gross" checked /><span>세전</span></label>
+          <label><input type="radio" name="pebcViewMode" value="net" /><span>세후 추정</span></label>
+        </fieldset>
+
+        <label class="pebc-field">
+          <span>기관 유형</span>
+          <select data-pebc="typeFilter">
+            <option value="all">전체</option>
+            {Object.entries(PEBC_TYPE_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
+          </select>
+        </label>
+
+        <label class="pebc-field">
+          <span>업종</span>
+          <select data-pebc="industryFilter">
+            <option value="all">전체</option>
+            {Object.entries(PEBC_INDUSTRY_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
+          </select>
+        </label>
+
+        <label class="pebc-field">
+          <span>정렬</span>
+          <select data-pebc="sortBy">
+            <option value="grossBonus">세전 추정액순</option>
+            <option value="netBonus">세후 추정액순</option>
+            <option value="salaryPercent">성과급률순</option>
+            <option value="name">기관명순</option>
+          </select>
+        </label>
+
+        <div class="pebc-button-row">
+          <button type="button" id="pebcResetBtn">초기화</button>
+          <button type="button" id="pebcCopyBtn">링크 복사</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section pebc-section pebc-kpi-section" aria-live="polite">
+      <div class="pebc-kpi-grid">
+        <article class="pebc-kpi pebc-kpi--main">
+          <span>추정 1위 기관</span>
+          <strong data-pebc-result="topName">한수원</strong>
+          <small data-pebc-result="topBonus">세전 추정 540만 원</small>
+        </article>
+        <article class="pebc-kpi">
+          <span>비교 기관</span>
+          <strong data-pebc-result="count">{PEBC_ENTRIES.length}개</strong>
+          <small>필터 기준</small>
+        </article>
+        <article class="pebc-kpi">
+          <span>평균 성과급률</span>
+          <strong data-pebc-result="averagePercent">7.4%</strong>
+          <small data-pebc-result="averageBonus">세전 평균 444만 원</small>
+        </article>
+        <article class="pebc-kpi">
+          <span>최고·최저 차이</span>
+          <strong data-pebc-result="gap">180만 원</strong>
+          <small>입력 연봉 기준 추정</small>
+        </article>
+      </div>
+      <p class="pebc-dynamic-summary" data-pebc-summary>
+        기준 연봉 6,000만 원으로 단순 환산하면, 비교 대상 10개 기관의 성과급 추정 평균은 세전 약 444만 원입니다. 이 값은 개인별 실제 지급액이 아니라 입력 연봉 기준 추정입니다.
+      </p>
+    </section>
+
+    <section class="content-section pebc-section" id="chart">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">추정 순위</p>
+        <h2>기준 연봉 6,000만 원 환산 성과급 비교</h2>
+        <p>막대 차트는 현재 입력값 기준 추정액입니다. 정확한 개인 지급액으로 해석하면 안 됩니다.</p>
+      </div>
+      <div class="pebc-chart" data-pebc-chart>
+        {initialRows.map((entry) => {
+          const bonus = entry.defaultBaseSalary * (entry.defaultSalaryPercent / 100);
+          const width = Math.max((bonus / maxInitialBonus) * 100, 4);
+          return (
+            <article class="pebc-chart-row">
+              <div>
+                <strong>{entry.shortName}</strong>
+                <span>{PEBC_INDUSTRY_LABELS[entry.industry]} · {PEBC_TYPE_LABELS[entry.type]}</span>
+              </div>
+              <span class="pebc-chart-row__bar"><i style={`width:${width}%`}></i></span>
+              <em>{formatPebcWon(bonus)}</em>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="content-section pebc-section" id="table">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교표</p>
+        <h2>한전·코레일·LH·건보공단 성과급 한눈에 보기</h2>
+      </div>
+      <div class="pebc-table-wrap">
+        <table class="pebc-table">
+          <caption>공기업 성과급 비교 2026 입력 연봉 기준 추정표</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>기관</th>
+              <th>유형</th>
+              <th>업종</th>
+              <th>성과급률</th>
+              <th>세전 추정</th>
+              <th>세후 추정</th>
+              <th>경영평가 영향</th>
+              <th>데이터 성격</th>
+              <th>주의</th>
+            </tr>
+          </thead>
+          <tbody data-pebc-table-body>
+            {initialRows.map((entry, index) => {
+              const gross = entry.defaultBaseSalary * (entry.defaultSalaryPercent / 100);
+              const net = gross * (1 - PEBC_CONFIG.taxRate);
+              return (
+                <tr>
+                  <td>{index + 1}</td>
+                  <th><strong>{entry.shortName}</strong><small>{entry.name}</small></th>
+                  <td>{PEBC_TYPE_LABELS[entry.type]}</td>
+                  <td>{PEBC_INDUSTRY_LABELS[entry.industry]}</td>
+                  <td>{entry.defaultSalaryPercent.toFixed(1)}%</td>
+                  <td>{formatPebcWon(gross)}</td>
+                  <td>{formatPebcWon(net)}</td>
+                  <td>{PEBC_EVALUATION_LABELS[entry.evaluationSensitivity]}</td>
+                  <td><span class="pebc-badge pebc-badge--check">{confidenceBadge}</span></td>
+                  <td>{entry.caution}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section pebc-section" id="org-notes">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">기관별 메모</p>
+        <h2>주요 공공기관 성과급 해석 포인트</h2>
+      </div>
+      <div class="pebc-card-grid">
+        {PEBC_ENTRIES.map((entry) => (
+          <article class="pebc-org-card">
+            <div>
+              <span class="pebc-badge pebc-badge--check">{PEBC_TYPE_LABELS[entry.type]}</span>
+              <h3>{entry.shortName}</h3>
+            </div>
+            <p>{entry.summary}</p>
+            <small>{entry.caution}</small>
+            <p class="pebc-keywords">{entry.relatedKeywords.join(" · ")}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section pebc-section" id="structure">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">구조 이해</p>
+        <h2>공기업 성과급은 왜 단순 순위로 보기 어려울까</h2>
+      </div>
+      <div class="pebc-explain-grid">
+        {PEBC_STRUCTURE_POINTS.map((item) => (
+          <article>
+            <strong>{item.title}</strong>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section pebc-section" id="private-comparison">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">민간 대기업과 차이</p>
+        <h2>삼성·SK·현대차 성과급과 공기업 성과급은 비교 기준이 다릅니다</h2>
+      </div>
+      <div class="pebc-compare-grid">
+        {PEBC_PRIVATE_COMPARISON.map((group) => (
+          <article>
+            <h3>{group.label}</h3>
+            <ul>
+              {group.points.map((point) => <li>{point}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <CompareCta
+      eyebrow="다음 계산"
+      title="성과급 세후 실수령액과 민간 대기업 성과급도 이어서 비교해보세요"
+      description="공기업 성과급은 추정 구조를 이해하고, 실제 세후 체감액은 별도 계산기로 한 번 더 확인하는 것이 좋습니다."
+      variant="bonus"
+      links={[
+        { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 계산기", tone: "primary" },
+        { href: "/reports/corporate-bonus-comparison-2026/", label: "대기업 성과급 비교", tone: "secondary" },
+        { href: "/compare/bonus/", label: "성과급 계산기 모음", tone: "secondary" },
+      ]}
+    />
+
+    <SeoContent
+      introTitle={PEBC_SEO_CONTENT.introTitle}
+      intro={PEBC_SEO_CONTENT.intro}
+      inputPoints={PEBC_SEO_CONTENT.inputPoints}
+      criteria={PEBC_SEO_CONTENT.criteria}
+      faq={PEBC_FAQ}
+      related={PEBC_RELATED_LINKS}
+    />
+  </main>
+
+  <script id="pebc-data" type="application/json" set:html={JSON.stringify(PEBC_CONFIG)} />
+  <script type="module" src={withBase("/scripts/public-enterprise-bonus-comparison-2026.js")}></script>
+</BaseLayout>

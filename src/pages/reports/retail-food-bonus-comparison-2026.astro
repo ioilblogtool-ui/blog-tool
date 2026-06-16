@@ -1,0 +1,352 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  RFBC_CONFIG,
+  RFBC_CONFIDENCE_LABELS,
+  RFBC_ENTRIES,
+  RFBC_FAQ,
+  RFBC_INDUSTRY_LABELS,
+  RFBC_JOB_TYPE_LABELS,
+  RFBC_JOB_TYPES,
+  RFBC_MANUFACTURING_COMPARISON,
+  RFBC_META,
+  RFBC_RELATED_LINKS,
+  RFBC_SEO_CONTENT,
+  RFBC_STRUCTURE_POINTS,
+  RFBC_SUMMARY_CARDS,
+  formatRfbcWon,
+} from "../../data/retailFoodBonusComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/reports/${RFBC_META.slug}/`;
+const initialJobType = "office";
+const initialRows = [...RFBC_ENTRIES]
+  .map((entry) => {
+    const adjustment = entry.jobTypeAdjustments[initialJobType] ?? 1;
+    const adjustedPercent = entry.defaultSalaryPercent * adjustment;
+    const grossBonus = RFBC_CONFIG.baseSalary * (adjustedPercent / 100);
+    const netBonus = grossBonus * (1 - RFBC_CONFIG.taxRate);
+    return {
+      ...entry,
+      adjustment,
+      adjustedPercent,
+      grossBonus,
+      netBonus,
+      industryLabel: RFBC_INDUSTRY_LABELS[entry.industry],
+      jobTypeLabel: RFBC_JOB_TYPE_LABELS[initialJobType],
+      jobSupportLabel: entry.representativeJobTypes.includes(initialJobType) ? "대표 직군" : "참고 직군",
+      confidenceLabel: RFBC_CONFIDENCE_LABELS[entry.dataConfidence],
+    };
+  })
+  .sort((a, b) => b.grossBonus - a.grossBonus);
+const maxInitialBonus = Math.max(...initialRows.map((entry) => entry.grossBonus));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: RFBC_META.seoTitle,
+      description: RFBC_META.seoDescription,
+      inLanguage: "ko-KR",
+      dateModified: RFBC_META.updatedAt,
+      mainEntityOfPage: pageUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: RFBC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={RFBC_META.seoTitle} description={RFBC_META.seoDescription} ogImage="/og/og-home.png" jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page rfbc-page" data-report={RFBC_META.slug}>
+    <CalculatorHero
+      eyebrow="유통·식품 성과급 비교"
+      title={RFBC_META.title}
+      description="쿠팡, 이마트, CJ제일제당, CJ올리브영 등 주요 유통·식품 기업의 성과급 구조를 직군별 보정과 세후 추정액으로 비교합니다."
+      badges={["쿠팡", "이마트", "CJ", "유통·식품", "2026"]}
+    />
+
+    <InfoNotice
+      title="비교 전 확인"
+      lines={[
+        RFBC_META.dataNote,
+        "유통·식품 성과급은 회사별 공개 수준이 균일하지 않아 공식 지급액처럼 단정하면 안 됩니다.",
+        "매장·물류·생산 직군은 성과급보다 수당, 근무 형태, 평가 기간의 영향이 더 클 수 있습니다.",
+      ]}
+    />
+
+    <section class="content-section rfbc-section rfbc-summary-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 요약</p>
+        <h2>유통·식품 성과급은 회사명보다 직군을 먼저 나눠 봐야 합니다</h2>
+        <p>아래 수치는 공식 개인 지급액이 아니라 입력 연봉 기준 추정값입니다. 데이터 성격과 직군 구분을 함께 확인하세요.</p>
+      </div>
+      <div class="rfbc-summary-grid">
+        {RFBC_SUMMARY_CARDS.map((card) => (
+          <article class="rfbc-summary-card">
+            <span class="rfbc-badge rfbc-badge--simulation">{card.badge}</span>
+            <strong>{card.value}</strong>
+            <p class="rfbc-summary-card__label">{card.label}</p>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section rfbc-section rfbc-control-section" id="simulator">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">시뮬레이션</p>
+        <h2>내 연봉과 직군으로 유통·식품 성과급 추정하기</h2>
+        <p>기준 연봉, 직군, 보기 방식을 바꾸면 차트와 표가 즉시 다시 계산됩니다.</p>
+      </div>
+      <div class="rfbc-control-panel">
+        <label class="rfbc-field">
+          <span>기준 연봉</span>
+          <input data-rfbc="salary" type="text" inputmode="numeric" value="50,000,000" />
+        </label>
+
+        <label class="rfbc-field">
+          <span>직군</span>
+          <select data-rfbc="jobType">
+            {RFBC_JOB_TYPES.map((item) => <option value={item.value}>{item.label}</option>)}
+          </select>
+        </label>
+
+        <fieldset class="rfbc-segment">
+          <legend>보기 기준</legend>
+          <label><input type="radio" name="rfbcViewMode" value="gross" checked /><span>세전</span></label>
+          <label><input type="radio" name="rfbcViewMode" value="net" /><span>세후 추정</span></label>
+        </fieldset>
+
+        <label class="rfbc-field">
+          <span>업종</span>
+          <select data-rfbc="industryFilter">
+            <option value="all">전체</option>
+            {Object.entries(RFBC_INDUSTRY_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
+          </select>
+        </label>
+
+        <label class="rfbc-field">
+          <span>정렬</span>
+          <select data-rfbc="sortBy">
+            <option value="grossBonus">세전 추정액순</option>
+            <option value="netBonus">세후 추정액순</option>
+            <option value="adjustedPercent">보정 성과급률순</option>
+            <option value="name">기업명순</option>
+          </select>
+        </label>
+
+        <div class="rfbc-button-row">
+          <button type="button" id="rfbcResetBtn">초기화</button>
+          <button type="button" id="rfbcCopyBtn">링크 복사</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section rfbc-section rfbc-kpi-section" aria-live="polite">
+      <div class="rfbc-kpi-grid">
+        <article class="rfbc-kpi rfbc-kpi--main">
+          <span>추정 1위 기업</span>
+          <strong data-rfbc-result="topName">{initialRows[0].shortName}</strong>
+          <small data-rfbc-result="topBonus">세전 추정 {formatRfbcWon(initialRows[0].grossBonus)}</small>
+        </article>
+        <article class="rfbc-kpi">
+          <span>비교 기업</span>
+          <strong data-rfbc-result="count">{RFBC_ENTRIES.length}개</strong>
+          <small>필터 기준</small>
+        </article>
+        <article class="rfbc-kpi">
+          <span>평균 보정률</span>
+          <strong data-rfbc-result="averagePercent">6.5%</strong>
+          <small data-rfbc-result="averageBonus">세전 평균 325만원</small>
+        </article>
+        <article class="rfbc-kpi">
+          <span>직군 해석</span>
+          <strong data-rfbc-result="jobSupport">대표 직군 중심</strong>
+          <small data-rfbc-result="gap">최고·최저 차이 150만원</small>
+        </article>
+      </div>
+      <p class="rfbc-dynamic-summary" data-rfbc-summary>
+        기준 연봉 5,000만원, 본사 사무직 기준으로 비교하면 쿠팡의 추정 성과급이 가장 높게 표시됩니다. 이 값은 공식 지급액이 아니라 입력 연봉 기준 참고 추정값입니다.
+      </p>
+    </section>
+
+    <section class="content-section rfbc-section" id="chart">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">추정 순위</p>
+        <h2>기준 연봉 5,000만원 환산 성과급 비교</h2>
+        <p>막대 차트는 현재 입력값과 선택 직군을 반영한 추정액입니다. 실제 개인 지급액으로 해석하면 안 됩니다.</p>
+      </div>
+      <div class="rfbc-chart" data-rfbc-chart>
+        {initialRows.map((entry) => {
+          const width = Math.max((entry.grossBonus / maxInitialBonus) * 100, 4);
+          return (
+            <article class="rfbc-chart-row">
+              <div>
+                <strong>{entry.shortName}</strong>
+                <span>{entry.industryLabel} · {entry.jobTypeLabel} · {entry.jobSupportLabel}</span>
+              </div>
+              <span class="rfbc-chart-row__bar"><i style={`width:${width}%`}></i></span>
+              <em>{formatRfbcWon(entry.grossBonus)}</em>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="content-section rfbc-section" id="table">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교표</p>
+        <h2>쿠팡·이마트·CJ 성과급 구조 한눈에 보기</h2>
+      </div>
+      <div class="rfbc-table-wrap">
+        <table class="rfbc-table">
+          <caption>유통·식품 성과급 비교 2026 입력 연봉 기준 추정표</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>기업</th>
+              <th>업종</th>
+              <th>직군 적용</th>
+              <th>기본 성과급률</th>
+              <th>보정 성과급률</th>
+              <th>세전 추정</th>
+              <th>세후 추정</th>
+              <th>데이터 성격</th>
+              <th>핵심 변수</th>
+              <th>주의</th>
+            </tr>
+          </thead>
+          <tbody data-rfbc-table-body>
+            {initialRows.map((entry, index) => (
+              <tr>
+                <td>{index + 1}</td>
+                <th><strong>{entry.shortName}</strong><small>{entry.name}</small></th>
+                <td>{entry.industryLabel}</td>
+                <td>{entry.jobTypeLabel} · {entry.jobSupportLabel}</td>
+                <td>{entry.defaultSalaryPercent.toFixed(1)}%</td>
+                <td>{entry.adjustedPercent.toFixed(1)}%</td>
+                <td>{formatRfbcWon(entry.grossBonus)}</td>
+                <td>{formatRfbcWon(entry.netBonus)}</td>
+                <td><span class="rfbc-badge rfbc-badge--check">{entry.confidenceLabel}</span></td>
+                <td>{entry.structureNote}</td>
+                <td>{entry.caution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section rfbc-section" id="company-notes">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">기업별 메모</p>
+        <h2>주요 유통·식품 기업 성과급 해석 포인트</h2>
+      </div>
+      <div class="rfbc-card-grid">
+        {RFBC_ENTRIES.map((entry) => (
+          <article class="rfbc-company-card">
+            <div>
+              <span class="rfbc-badge rfbc-badge--simulation">{RFBC_INDUSTRY_LABELS[entry.industry]}</span>
+              <h3>{entry.shortName}</h3>
+            </div>
+            <p>{entry.summary}</p>
+            <small>{entry.caution}</small>
+            <p class="rfbc-keywords">{entry.relatedKeywords.join(" · ")}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section rfbc-section" id="job-types">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">직군별 차이</p>
+        <h2>본사·테크·물류·매장·생산은 같은 성과급률로 보면 안 됩니다</h2>
+      </div>
+      <div class="rfbc-job-grid">
+        {RFBC_JOB_TYPES.map((item) => (
+          <article>
+            <strong>{item.label}</strong>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section rfbc-section" id="manufacturing-comparison">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">제조 대기업과 차이</p>
+        <h2>유통·식품 성과급은 삼성·현대차식 성과급 콘텐츠와 다르게 설계해야 합니다</h2>
+      </div>
+      <div class="rfbc-compare-grid">
+        {RFBC_MANUFACTURING_COMPARISON.map((group) => (
+          <article>
+            <h3>{group.label}</h3>
+            <ul>
+              {group.points.map((point) => <li>{point}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section rfbc-section" id="structure">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">구조 이해</p>
+        <h2>검색 노출은 회사명, 만족도는 해석 구조에서 갈립니다</h2>
+      </div>
+      <div class="rfbc-explain-grid">
+        {RFBC_STRUCTURE_POINTS.map((item) => (
+          <article>
+            <strong>{item.title}</strong>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <CompareCta
+      eyebrow="다음 계산"
+      title="성과급 세후 실수령액과 대기업 성과급 비교도 이어서 확인해보세요"
+      description="유통·식품 기업의 참고 성과급을 확인한 뒤에는 실제 세후 체감액과 제조 대기업 성과급 구조를 함께 보는 것이 좋습니다."
+      variant="bonus"
+      links={[
+        { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 계산기", tone: "primary" },
+        { href: "/reports/corporate-bonus-comparison-2026/", label: "대기업 성과급 비교", tone: "secondary" },
+        { href: "/compare/bonus/", label: "성과급 계산기 모음", tone: "secondary" },
+      ]}
+    />
+
+    <SeoContent
+      introTitle={RFBC_SEO_CONTENT.introTitle}
+      intro={RFBC_SEO_CONTENT.intro}
+      inputPoints={RFBC_SEO_CONTENT.inputPoints}
+      criteria={RFBC_SEO_CONTENT.criteria}
+      faq={RFBC_FAQ}
+      related={RFBC_RELATED_LINKS}
+    />
+  </main>
+
+  <script id="rfbc-data" type="application/json" set:html={JSON.stringify(RFBC_CONFIG)} />
+  <script type="module" src={withBase("/scripts/retail-food-bonus-comparison-2026.js")}></script>
+</BaseLayout>

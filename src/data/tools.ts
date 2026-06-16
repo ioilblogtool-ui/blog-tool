@@ -1381,6 +1381,48 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "it-bigtech-bonus-comparison",
+    title: "국내 빅테크 5사 성과급 비교 계산기",
+    description: "카카오·네이버·토스·라인플러스·쿠팡의 성과급을 같은 연봉 기준으로 비교합니다. 회사별 지급률을 직접 조정해 세전·세후 예상액과 차이를 확인하세요.",
+    order: 27.8,
+    eyebrow: "빅테크 5사 Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교 대상", value: "5사", context: "카카오·네이버·토스·라인·쿠팡" },
+      { label: "산출 항목", value: "PS", context: "세전·세후" }
+    ]
+  },
+  {
+    slug: "game-industry-bonus-comparison",
+    title: "게임업계 4사 성과급 비교 계산기",
+    description: "넥슨·넷마블·엔씨소프트·크래프톤의 성과급을 같은 연봉 기준으로 비교합니다. 회사별 지급률을 직접 조정해 세전·세후 예상액을 확인하고 신작 흥행 의존도 특성도 함께 안내합니다.",
+    order: 27.85,
+    eyebrow: "게임업계 4사 Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교 대상", value: "4사", context: "넥슨·넷마블·엔씨·크래프톤" },
+      { label: "변동성", value: "신작 연동", context: "흥행에 따라 0~수백%" },
+    ]
+  },
+  {
+    slug: "airline-bonus-comparison",
+    title: "항공사 5사 성과급 비교 계산기",
+    description: "대한항공·아시아나·제주항공·티웨이·진에어의 성과급을 같은 연봉 기준으로 비교합니다. 직군(조종사·승무원·일반직) 선택 후 회사별 지급률을 조정해 세전·세후 예상액을 확인하세요.",
+    order: 27.9,
+    eyebrow: "항공사 5사 Tool",
+    category: "simulator",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교 대상", value: "5사", context: "대한항공·아시아나·LCC 3사" },
+      { label: "직군 선택", value: "3직군", context: "조종사·승무원·일반직" }
+    ]
+  },
+  {
     slug: "telecom-bonus-comparison",
     title: "통신 3사 성과급 비교 계산기",
     description: "KT·SK텔레콤·LG유플러스 통신 3사의 성과급(PS)을 같은 연봉 기준으로 비교하고, 회사별 지급률을 직접 조정해 세전·세후 예상액과 차이를 계산하는 페이지",

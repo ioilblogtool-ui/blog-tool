@@ -36,6 +36,27 @@ export const reports: ReportMeta[] = [
     badges: ["성과급", "삼성전자", "SK하이닉스", "현대차"],
   },
   {
+    slug: "corporate-bonus-ranking-top10-2026",
+    title: "2026 대기업 성과급 순위 TOP 10 | 성과급 많이 주는 회사",
+    description: "SK하이닉스·삼성전자·크래프톤 등 25개사 성과급률을 노사협의 확정·실적 기반으로 비교한 순위입니다. 성과급 많이 주는 회사는 어디일까요?",
+    order: 3.51,
+    badges: ["성과급 순위", "SK하이닉스", "삼성전자", "2026"],
+  },
+  {
+    slug: "public-enterprise-bonus-comparison-2026",
+    title: "공기업 성과급 비교 2026｜한전·코레일·LH는 얼마나 받을까",
+    description: "한전, 코레일, LH, 건보공단 등 주요 공공기관의 성과급 구조와 입력 연봉 기준 추정 성과급을 비교하는 리포트입니다.",
+    order: 3.53,
+    badges: ["공기업", "성과급", "공공기관", "2026"],
+  },
+  {
+    slug: "retail-food-bonus-comparison-2026",
+    title: "유통·식품 성과급 비교 2026｜쿠팡·이마트·CJ는 얼마나 받을까",
+    description: "쿠팡, 이마트, CJ제일제당, CJ올리브영 등 주요 유통·식품 기업의 성과급 구조와 입력 연봉 기준 추정 성과급을 비교하는 리포트입니다.",
+    order: 3.54,
+    badges: ["유통", "식품", "성과급", "쿠팡", "CJ"],
+  },
+  {
     slug: "sk-hynix-bonus-2027",
     title: "하이닉스 2027 성과급 전망 | SK하이닉스 PS·PI 시나리오",
     description: "SK하이닉스 PS·PI 구조를 기준으로 2027 성과급 전망을 영업이익별 시나리오와 직급별 예상 금액으로 정리합니다.",

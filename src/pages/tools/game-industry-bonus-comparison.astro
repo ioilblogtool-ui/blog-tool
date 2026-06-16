@@ -1,0 +1,345 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  GAME_COMPANIES,
+  GAME_BONUS_FAQ,
+  GAME_RELATED_LINKS,
+  GAME_COMPANY_PROFILES,
+  GAME_PROFILE_NOTE,
+} from "../../data/gameIndustryBonusComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = { companies: GAME_COMPANIES };
+
+const faqSchema = GAME_BONUS_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title="게임업계 4사 성과급 비교 계산기 2026 (넥슨·넷마블·엔씨소프트·크래프톤)"
+  description="넥슨, 넷마블, 엔씨소프트, 크래프톤의 성과급을 같은 연봉 기준으로 비교해보세요. 회사별 지급률을 직접 조정해 세전·세후 예상액과 차이를 확인하고, 신작 흥행에 따른 변동성 특성도 함께 안내합니다."
+  ogImage="/og/tools/game-industry-bonus-comparison.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "게임업계 4사 성과급 비교 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: "넥슨·넷마블·엔씨소프트·크래프톤 성과급을 사용자 입력 기준으로 비교하는 시뮬레이션 계산기",
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/game-industry-bonus-comparison/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="game-industry-bonus-comparison" pageClass="gbc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="게임업계 4사 성과급 비교"
+        title="게임업계 4사 성과급 비교 계산기 2026"
+        description="넥슨, 넷마블, 엔씨소프트, 크래프톤의 성과급(현금 보너스)을 같은 연봉 기준으로 비교해보세요. 회사별 지급률을 직접 조정해 세전·세후 예상액과 차이를 확인하고, 신작 흥행에 따른 변동성 특성도 함께 안내합니다."
+      />
+      <div class="gbc-badges" aria-label="계산 기준 배지">
+        <span>추정</span>
+        <span>시뮬레이션</span>
+        <span>사용자 입력 기준</span>
+      </div>
+      <InfoNotice
+        title="계산 전 안내"
+        lines={[
+          "이 계산기는 사용자가 입력한 연봉과 성과급률을 기준으로 한 비교용 시뮬레이션입니다.",
+          "게임업계 성과급은 신작 흥행 여부에 따라 0%~수백%까지 변동 폭이 매우 크므로, 기본값은 참고용 추정값입니다.",
+          "실제 지급액은 직군(개발/기획/아트), 직급, 소속 스튜디오, 개인 평가, 연도별 실적에 따라 크게 달라질 수 있습니다.",
+          "이 계산기는 특정 회사에 대한 투자 권유 또는 평가를 목적으로 하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="gbcResetBtn" copyId="gbcCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="gbc-calculator" data-gbc-calculator>
+        <article class="panel gbc-input-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">기준 입력</p>
+              <h2 class="panel__title">같은 조건으로 맞추기</h2>
+            </div>
+            <p class="panel-heading__summary">연봉과 월 기본급을 먼저 맞춘 뒤 회사별 성과급 방식을 조정하세요.</p>
+          </div>
+
+          <div class="form-grid">
+            <label class="field" for="gbcAnnualSalary">
+              <span>기준 연봉</span>
+              <input id="gbcAnnualSalary" data-gbc-annual-salary type="text" inputmode="numeric" value="80,000,000" />
+              <small>게임업계 평균 연봉(추정) 기준이며, 성과급 포함 전 연봉입니다.</small>
+            </label>
+            <label class="field" for="gbcMonthlySalary">
+              <span>월 기본급</span>
+              <input id="gbcMonthlySalary" data-gbc-monthly-salary type="text" inputmode="numeric" value="6,666,667" />
+              <small data-gbc-monthly-hint>연봉을 바꾸면 자동 갱신됩니다.</small>
+            </label>
+            <button class="button button--secondary" type="button" data-gbc-reset-monthly>
+              연봉 기준으로 다시 계산
+            </button>
+            <label class="field" for="gbcTaxMode">
+              <span>세후 계산 방식</span>
+              <select id="gbcTaxMode" data-gbc-tax-mode>
+                <option value="simple" selected>간편 추정 (22%)</option>
+                <option value="manual">직접 세율 입력</option>
+              </select>
+            </label>
+            <label class="field" for="gbcManualTaxRate">
+              <span>직접 공제율 (%)</span>
+              <input id="gbcManualTaxRate" data-gbc-manual-tax-rate type="number" min="0" max="60" step="0.1" value="22" />
+              <small>직접 세율 입력 모드에서 사용합니다.</small>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel gbc-company-inputs">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">회사별 가정</p>
+              <h2 class="panel__title">성과급 방식 입력</h2>
+            </div>
+            <p class="panel-heading__summary">기본값은 추정 시뮬레이션 값입니다. 알고 있는 지급 기준으로 직접 수정하세요.</p>
+          </div>
+          <div class="gbc-company-panel-list">
+            {GAME_COMPANIES.map((company) => (
+              <section class="gbc-company-panel" data-gbc-company-panel={company.id}>
+                <div class="gbc-company-panel__head">
+                  <div>
+                    <strong>{company.name}</strong>
+                    <span>{company.structureSummary}</span>
+                  </div>
+                  <div class="gbc-company-panel__badges">
+                    {company.badges.map((badge) => <span>{badge}</span>)}
+                  </div>
+                </div>
+                <div class="gbc-company-panel__inputs">
+                  <label class="field" for={`gbcMode-${company.id}`}>
+                    <span>성과급 방식</span>
+                    <select id={`gbcMode-${company.id}`} data-gbc-mode={company.id}>
+                      <option value="salaryPercent" selected={company.defaultMode === "salaryPercent"}>연봉 대비 %</option>
+                      <option value="monthlyMultiple" selected={company.defaultMode === "monthlyMultiple"}>월급 n개월</option>
+                      <option value="fixedAmount" selected={company.defaultMode === "fixedAmount"}>고정 금액</option>
+                    </select>
+                  </label>
+                  <label class="field" for={`gbcPercent-${company.id}`} data-gbc-field-group={company.id} data-gbc-field-mode="salaryPercent">
+                    <span>성과급률 (%)</span>
+                    <input id={`gbcPercent-${company.id}`} data-gbc-salary-percent={company.id} type="number" min="0" max="300" step="0.5" value={company.defaultSalaryPercent} />
+                  </label>
+                  <label class="field" for={`gbcMultiple-${company.id}`} data-gbc-field-group={company.id} data-gbc-field-mode="monthlyMultiple">
+                    <span>월급 개월 수</span>
+                    <input id={`gbcMultiple-${company.id}`} data-gbc-monthly-multiple={company.id} type="number" min="0" max="36" step="0.1" value={company.defaultMonthlyMultiple} />
+                  </label>
+                  <label class="field" for={`gbcFixed-${company.id}`} data-gbc-field-group={company.id} data-gbc-field-mode="fixedAmount">
+                    <span>고정 성과급</span>
+                    <input id={`gbcFixed-${company.id}`} data-gbc-fixed-amount={company.id} type="text" inputmode="numeric" value="0" />
+                  </label>
+                </div>
+                <p class="gbc-company-panel__caution">{company.caution}</p>
+              </section>
+            ))}
+          </div>
+        </article>
+      </section>
+    </Fragment>
+
+    <section class="gbc-results">
+      <div class="gbc-section-head">
+        <p class="gbc-section-head__eyebrow">핵심 결과</p>
+        <h2>게임업계 4사 성과급 비교</h2>
+        <p>입력값을 바꾸면 결과가 바로 갱신됩니다. 모든 금액은 사용자 입력 기준 시뮬레이션입니다.</p>
+      </div>
+      <div class="gbc-kpi-grid">
+        <article class="gbc-kpi-card">
+          <span>최고 예상 세후 성과급</span>
+          <strong data-gbc-best-net>-</strong>
+          <small data-gbc-best-net-company>-</small>
+        </article>
+        <article class="gbc-kpi-card">
+          <span>4사 간 최대 차이 (세전)</span>
+          <strong data-gbc-max-gap>-</strong>
+          <small>4사 비교 기준</small>
+        </article>
+        <article class="gbc-kpi-card">
+          <span>월평균 차이</span>
+          <strong data-gbc-monthly-gap>-</strong>
+          <small>12개월 환산</small>
+        </article>
+        <article class="gbc-kpi-card">
+          <span>성과급 포함 최고 총보상</span>
+          <strong data-gbc-best-total>-</strong>
+          <small data-gbc-best-total-company>-</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="gbc-result-section">
+      <div class="gbc-section-head">
+        <p class="gbc-section-head__eyebrow">회사별 표</p>
+        <h2>세전·세후·월평균 환산</h2>
+      </div>
+      <div class="gbc-table-wrap">
+        <table class="gbc-result-table">
+          <caption>게임업계 4사 성과급 비교 결과 표</caption>
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>입력 기준</th>
+              <th>세전 성과급</th>
+              <th>예상 세후</th>
+              <th>월평균 환산</th>
+              <th>총보상 (세전)</th>
+            </tr>
+          </thead>
+          <tbody data-gbc-result-table></tbody>
+        </table>
+      </div>
+      <p class="gbc-footnote">예상 세후 금액은 간편 공제율(또는 직접 입력한 공제율)을 적용한 추정값입니다. 실제 통장 입금액은 지급월 급여, 부양가족, 비과세 항목, 4대보험, 연말정산 결과에 따라 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="gbc-chart-section">
+      <div class="gbc-section-head">
+        <p class="gbc-section-head__eyebrow">시각화</p>
+        <h2>4사 세전·세후 성과급 비교</h2>
+      </div>
+      <div class="gbc-chart-wrap">
+        <canvas id="gbcCompareChart" aria-label="게임업계 4사 성과급 비교 차트" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="gbc-volatility-section">
+      <div class="gbc-section-head">
+        <p class="gbc-section-head__eyebrow">변동성 안내</p>
+        <h2>회사별 성과급 변동성 특성</h2>
+        <p>아래 내용은 업계 추정 기반 정성 안내입니다. 신작 출시 결과에 따라 실제와 다를 수 있습니다.</p>
+      </div>
+      <div class="gbc-volatility-grid">
+        {GAME_COMPANIES.map((company) => (
+          <article class="gbc-volatility-card">
+            <div class="gbc-volatility-card__head">
+              <strong>{company.name}</strong>
+              <div class="gbc-volatility-card__badges">
+                {company.badges.map((badge) => <span>{badge}</span>)}
+              </div>
+            </div>
+            <p>{company.volatilityNote}</p>
+            <p class="gbc-volatility-card__caution">{company.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="gbc-profile-section">
+      <div class="gbc-section-head">
+        <p class="gbc-section-head__eyebrow">기업 현황 (참고)</p>
+        <h2>게임업계 4사 평균연봉·규모 비교</h2>
+        <p>업계 추정 및 공개 정보 기반 참고 자료입니다.</p>
+      </div>
+      <div class="gbc-table-wrap">
+        <table class="gbc-result-table gbc-profile-table">
+          <caption>게임업계 4사 기업 현황 비교 표</caption>
+          <thead>
+            <tr>
+              <th>회사</th>
+              <th>평균연봉 (추정)</th>
+              <th>직원수 (추정)</th>
+              <th>매출 (2024)</th>
+              <th>최근 성과급</th>
+            </tr>
+          </thead>
+          <tbody>
+            {GAME_COMPANIES.map((company) => {
+              const profile = GAME_COMPANY_PROFILES.find((p) => p.id === company.id);
+              if (!profile) return null;
+              return (
+                <tr>
+                  <td class="cell-label"><strong>{company.name}</strong></td>
+                  <td>{profile.averageSalary}</td>
+                  <td>{profile.employeeCount}</td>
+                  <td>{profile.revenue}</td>
+                  <td>{profile.recentBonus}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="gbc-footnote">{GAME_PROFILE_NOTE}</p>
+    </section>
+
+    <section class="gbc-related">
+      <div class="gbc-section-head">
+        <p class="gbc-section-head__eyebrow">다음 단계</p>
+        <h2>함께 보면 좋은 계산기</h2>
+      </div>
+      <div class="gbc-related-grid">
+        {GAME_RELATED_LINKS.map((link) => (
+          <a class="gbc-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="게임업계 4사 성과급 비교 계산기 활용 가이드"
+        intro={[
+          "이 계산기는 넥슨, 넷마블, 엔씨소프트, 크래프톤 등 국내 주요 게임업계 4사의 성과급(현금 보너스)을 같은 연봉 기준으로 동시에 비교할 수 있는 시뮬레이션 도구입니다.",
+          "게임업계 성과급은 신작 출시 성과와 기존 IP 매출 추세에 크게 의존해 변동 폭이 매우 큰 것이 특징입니다. 신작이 대흥행하면 수백% 성과급이 지급된 사례도 있는 반면, 실적이 부진한 연도에는 성과급이 지급되지 않을 수도 있습니다.",
+          "넥슨은 던전앤파이터 등 기존 IP 매출 안정성이 상대적으로 높은 편으로, 크래프톤은 PUBG 글로벌 매출에 연동된 구조로 업계 내 상대적으로 높은 수준의 성과급이 언급되기도 합니다. 넷마블과 엔씨소프트는 신작 흥행 여부에 따른 연도별 변동이 큰 편으로 알려져 있습니다.",
+          "기준 연봉을 입력하면 월 기본급이 자동으로 계산되며, 회사별로 성과급 입력 방식(연봉 대비 %, 월급 n개월, 고정 금액)을 선택해 원하는 조건으로 비교할 수 있습니다. 게임업계 극단적 케이스를 반영해 성과급률 최대 300%, 월급 배수 최대 36개월까지 입력이 가능합니다.",
+          "모든 기본 성과급률은 보도·업계 추정 기반 시뮬레이션 값으로 공식 지급률이 아닙니다. 회사별 변동성 특성 섹션에서 각 사의 신작 의존도와 안정성 특성을 정성적으로 안내합니다.",
+        ]}
+        inputPoints={[
+          "기준 연봉을 입력하면 월 기본급이 자동으로 계산되며, 직접 수정도 가능합니다.",
+          "4사 각각 성과급 입력 방식을 연봉 대비 %, 월급 개월 수, 고정 금액 중에서 선택할 수 있습니다.",
+          "성과급률은 최대 300%, 월급 배수는 최대 36개월까지 입력 가능합니다.",
+          "세율은 간편 추정(22%) 또는 직접 입력 중 선택할 수 있습니다.",
+          "입력값을 바꾸면 KPI 카드, 결과 표, 비교 차트가 실시간으로 갱신됩니다.",
+        ]}
+        criteria={[
+          "연간 성과급(세전) = 기준액 × 입력값 (모드별로 연봉, 월급, 고정 금액 중 하나를 기준으로 사용)",
+          "회사별 기본 성과급률은 보도·업계 추정 기반 시뮬레이션 값으로 공식 지급률이 아닙니다.",
+          "세후 추정은 간편 공제율(22%) 또는 사용자가 입력한 세율을 적용한 참고값입니다.",
+          "게임업계 특성상 신작 흥행에 따라 실제 성과급은 기본값과 크게 다를 수 있습니다.",
+        ]}
+        faq={GAME_BONUS_FAQ}
+        related={[
+          { href: "/tools/it-bigtech-bonus-comparison/",  label: "국내 빅테크 성과급 비교" },
+          { href: "/tools/it-platform-bonus-comparison/", label: "IT 플랫폼 성과급 비교" },
+          { href: "/reports/it-salary-top10/",            label: "국내 IT 연봉 TOP10" },
+          { href: "/tools/bonus-after-tax-calculator/",   label: "성과급 세후 실수령액 계산기" },
+          { href: "/tools/bonus-simulator/",              label: "대기업 성과급 시뮬레이터" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="gbcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/game-industry-bonus-comparison.js")}></script>
+</BaseLayout>
