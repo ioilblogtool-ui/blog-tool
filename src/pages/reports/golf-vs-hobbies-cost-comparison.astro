@@ -1,0 +1,194 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import {
+  HOBBY_LIST_SORTED, GHC_KPI, SCORE_LABELS, GHC_FAQ, GHC_META,
+} from "../../data/golfVsHobbiesCost2026";
+
+const config = { hobbies: HOBBY_LIST_SORTED };
+
+const faqSchema = GHC_FAQ.map(item => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+function fw(v: number) { return Math.round(v / 10_000) + '만원'; }
+---
+
+<BaseLayout
+  title={GHC_META.title}
+  description={GHC_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqSchema,
+  }}
+>
+  <SiteHeader />
+  <main class="container page-shell report-page ghc-page">
+    <CalculatorHero
+      title={GHC_META.title}
+      description={GHC_META.description}
+      badges={["골프", "취미 비교", "10종", "2026"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준"
+      lines={[
+        "전국 평균 기준 참고용 추정치입니다. 지역·수준·빈도에 따라 편차가 큽니다.",
+        "초기 비용은 중간급 장비 기준이며, 10년 총비용은 물가 상승 미반영입니다.",
+      ]}
+    />
+
+    <div class="ghc-kpi-grid">
+      <div class="ghc-kpi-card">
+        <span>최저 비용 취미</span>
+        <strong>{GHC_KPI.cheapest.emoji} {GHC_KPI.cheapest.name}</strong>
+        <small>월 {fw(GHC_KPI.cheapest.monthlyAvg)}</small>
+      </div>
+      <div class="ghc-kpi-card">
+        <span>최고 비용 취미</span>
+        <strong>{GHC_KPI.mostExpensive.emoji} {GHC_KPI.mostExpensive.name}</strong>
+        <small>월 {fw(GHC_KPI.mostExpensive.monthlyAvg)}</small>
+      </div>
+      <div class="ghc-kpi-card ghc-kpi-card--golf">
+        <span>골프 비용 순위</span>
+        <strong>{GHC_KPI.golfRank}위</strong>
+        <small>비교 {GHC_KPI.totalCount}종 중</small>
+      </div>
+      <div class="ghc-kpi-card">
+        <span>골프 월 평균</span>
+        <strong>40만원</strong>
+        <small>최저 20만 ~ 최고 80만원</small>
+      </div>
+    </div>
+
+    <div class="ghc-chart-section">
+      <div class="ghc-tab-row">
+        <button class="ghc-tab is-active" data-ghc-tab="monthly">월 비용</button>
+        <button class="ghc-tab" data-ghc-tab="fiveYear">5년 총비용</button>
+        <button class="ghc-tab" data-ghc-tab="tenYear">10년 총비용</button>
+      </div>
+      <div class="ghc-chart-wrap">
+        <canvas id="ghcBarChart"></canvas>
+      </div>
+    </div>
+
+    <div class="ghc-table-section">
+      <h2>취미별 상세 비교</h2>
+      <div class="ghc-table-wrap">
+        <table class="ghc-table">
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>취미</th>
+              <th>월 비용</th>
+              <th>초기 비용</th>
+              <th>5년 총비용</th>
+              <th class="ghc-col-social">인맥</th>
+              <th class="ghc-col-health">건강</th>
+              <th class="ghc-col-entry">진입</th>
+            </tr>
+          </thead>
+          <tbody>
+            {HOBBY_LIST_SORTED.map((h, i) => (
+              <tr class:list={[{ "ghc-row--golf": h.isGolf }]}>
+                <td class="ghc-col-rank">{i + 1}</td>
+                <td class="ghc-col-name">
+                  <span class="ghc-hobby-emoji">{h.emoji}</span>
+                  {h.name}
+                  {h.isGolf && <span class="ghc-badge-golf">골프</span>}
+                </td>
+                <td>
+                  <span class="ghc-cost-avg">{fw(h.monthlyAvg)}</span>
+                  <small class="ghc-cost-range">{fw(h.monthlyMin)}~{fw(h.monthlyMax)}</small>
+                </td>
+                <td>{fw(h.initialCost)}</td>
+                <td>{fw(h.fiveYearTotal)}</td>
+                <td class="ghc-col-social ghc-score">{SCORE_LABELS[h.socialScore]}</td>
+                <td class="ghc-col-health ghc-score">{SCORE_LABELS[h.healthScore]}</td>
+                <td class="ghc-col-entry">
+                  <span class:list={["ghc-entry-badge", `ghc-entry--${h.entryBarrier === "낮음" ? "low" : h.entryBarrier === "보통" ? "mid" : "high"}`]}>
+                    {h.entryBarrier}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ghc-cards-section">
+      <h2>취미별 특징 한눈에 보기</h2>
+      <div class="ghc-cards-grid">
+        {HOBBY_LIST_SORTED.map(h => (
+          <div class:list={["ghc-card", { "ghc-card--golf": h.isGolf }]}>
+            <div class="ghc-card-header">
+              <span class="ghc-card-emoji">{h.emoji}</span>
+              <strong>{h.name}</strong>
+              <span class="ghc-card-season">{h.peakSeason}</span>
+            </div>
+            <div class="ghc-card-cost">
+              <span>월 평균</span>
+              <strong>{fw(h.monthlyAvg)}</strong>
+            </div>
+            <div class="ghc-card-cost">
+              <span>10년 총비용</span>
+              <strong>{fw(h.tenYearTotal)}</strong>
+            </div>
+            <p class="ghc-card-highlight">{h.highlight}</p>
+            <div class="ghc-card-scores">
+              <span>인맥 {SCORE_LABELS[h.socialScore]}</span>
+              <span>건강 {SCORE_LABELS[h.healthScore]}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="ghc-golf-merit-section">
+      <h2>⛳ 골프가 비싸도 선택받는 이유</h2>
+      <div class="ghc-merit-grid">
+        <div class="ghc-merit-card">
+          <strong>비즈니스 네트워킹</strong>
+          <p>국내 CEO·임원급의 80% 이상이 골프를 즐기는 것으로 알려져 있습니다. 비즈니스 골프 문화로 인해 인맥 형성과 계약 기회가 많습니다.</p>
+        </div>
+        <div class="ghc-merit-card">
+          <strong>야외 활동 + 걷기</strong>
+          <p>18홀 라운딩 시 약 8~10km를 걷습니다. 자연 속에서 즐기는 유산소 운동으로 심폐 건강과 스트레스 해소에 효과적입니다.</p>
+        </div>
+        <div class="ghc-merit-card">
+          <strong>전국 500+ 골프장</strong>
+          <p>국내 골프장 수는 지속 증가 중으로, 지방 골프장의 경우 주중 10만원대 이하 라운딩도 가능합니다. 접근성이 계속 좋아지고 있습니다.</p>
+        </div>
+        <div class="ghc-merit-card">
+          <strong>평생 즐길 수 있는 스포츠</strong>
+          <p>80대에도 즐기는 사람이 많습니다. 체력 부담이 다른 스포츠에 비해 낮고, 나이가 들수록 더 깊이 즐길 수 있는 전략적 스포츠입니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <CompareCta links={[
+      { href: "/tools/golf-monthly-cost-calculator/", label: "내 골프 월 유지비 계산하기", tone: "primary" },
+      { href: "/tools/golf-membership-vs-public/", label: "회원권 vs 퍼블릭 손익 비교", tone: "secondary" },
+    ]} />
+
+    <SeoContent
+      introTitle="골프, 정말 가장 비싼 취미일까요?"
+      intro={[
+        "골프의 월 평균 유지비는 10가지 주요 취미 중 가장 높은 수준이지만, 단순 비용만으로 취미를 선택하는 사람은 없습니다.",
+        "비즈니스 네트워킹, 야외 활동, 전략적 재미라는 골프만의 가치를 고려하면 비용 대비 만족도는 개인마다 다릅니다.",
+      ]}
+      faq={GHC_FAQ}
+    />
+  </main>
+</BaseLayout>
+
+<script id="ghcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/golf-vs-hobbies-cost-comparison.js" defer></script>

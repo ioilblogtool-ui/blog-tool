@@ -1618,6 +1618,42 @@ export const tools: ToolMeta[] = [
       { label: "우승 1인당", value: "6.5억" },
     ],
   },
+  {
+    slug: "golf-monthly-cost-calculator",
+    title: "골프 월 유지비 계산기",
+    description: "라운딩·연습장·장비·의류 비용을 모두 합산해 실제 골프 월 유지비를 계산하고 항목별 비중을 확인하세요.",
+    order: 61.1,
+    eyebrow: "골프 유지비",
+    category: "스포츠·레저",
+    badges: ["골프", "유지비", "라운딩", "2026"],
+  },
+  {
+    slug: "golf-membership-vs-public",
+    title: "골프 회원권 vs 퍼블릭 손익 비교",
+    description: "회원권 매입가·관리비·회원 그린피와 퍼블릭 그린피를 비교해 손익분기점과 N년 절감액을 계산합니다.",
+    order: 61.2,
+    eyebrow: "골프 회원권 손익",
+    category: "스포츠·레저",
+    badges: ["골프", "회원권", "손익", "2026"],
+  },
+  {
+    slug: "pet-monthly-cost-calculator",
+    title: "강아지·고양이 월 양육비 계산기",
+    description: "강아지·고양이 사료, 병원비, 미용, 간식 등 항목별 월 양육비를 계산하고 연간·10년 누적 비용을 확인하세요.",
+    order: 60.2,
+    eyebrow: "반려동물 양육비",
+    category: "반려동물",
+    badges: ["강아지", "고양이", "월 양육비", "2026"],
+  },
+  {
+    slug: "pet-insurance-calculator",
+    title: "펫보험 vs 비보험 손익 계산기",
+    description: "월 보험료, 보장 범위, 예상 병원비를 입력하면 펫보험 가입 시 손익분기점과 N년 후 절감액을 계산해드립니다.",
+    order: 60.3,
+    eyebrow: "펫보험 손익",
+    category: "반려동물",
+    badges: ["펫보험", "손익분기", "반려동물", "2026"],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

@@ -1,0 +1,180 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { PET_COST_ITEMS, PMC_FAQ, PMC_RELATED_LINKS, PMC_META } from "../../data/petMonthlyCost2026";
+
+const required = PET_COST_ITEMS.filter(i => i.required);
+const optional = PET_COST_ITEMS.filter(i => !i.required);
+const config = { items: PET_COST_ITEMS };
+
+const faqSchema = PMC_FAQ.map(item => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={PMC_META.title}
+  description={PMC_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqSchema,
+  }}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId="pet-monthly-cost-calculator" pageClass="pmc-page">
+    <CalculatorHero
+      slot="hero"
+      title={PMC_META.title}
+      description={PMC_META.description}
+      badges={["강아지", "고양이", "월 양육비", "2026"]}
+    />
+
+    <div slot="aside">
+      <div class="pmc-pet-tabs" role="tablist">
+        <button class="pmc-pet-tab is-active" data-pmc-pet="dog">🐶 강아지</button>
+        <button class="pmc-pet-tab" data-pmc-pet="cat">🐱 고양이</button>
+      </div>
+
+      <div class="pmc-section-label">기본 항목</div>
+      {required.map(item => (
+        <label class="pmc-field">
+          <div class="pmc-field-header">
+            <span class="pmc-field-label">{item.label}</span>
+            <span class="pmc-field-unit">{item.unit}</span>
+          </div>
+          <input
+            type="range"
+            class="pmc-slider"
+            data-pmc-item={item.id}
+            min={item.min}
+            max={item.max}
+            step={item.step}
+            value={item.defaultDog}
+            data-default-dog={item.defaultDog}
+            data-default-cat={item.defaultCat}
+          />
+          <div class="pmc-field-row">
+            <span class="pmc-hint">{item.hint}</span>
+            <input
+              type="text"
+              class="pmc-number"
+              data-pmc-num={item.id}
+              inputmode="numeric"
+              value={item.defaultDog.toLocaleString()}
+            />
+            <span class="pmc-unit-label">원</span>
+          </div>
+        </label>
+      ))}
+
+      <button class="pmc-toggle-optional" data-pmc-toggle="optional">+ 선택 항목 추가</button>
+      <div class="pmc-optional-wrap" hidden>
+        <div class="pmc-section-label">선택 항목</div>
+        {optional.map(item => (
+          <label class="pmc-field">
+            <div class="pmc-field-header">
+              <span class="pmc-field-label">{item.label}</span>
+              <span class="pmc-field-unit">{item.unit}</span>
+            </div>
+            <input
+              type="range"
+              class="pmc-slider"
+              data-pmc-item={item.id}
+              min={item.min}
+              max={item.max}
+              step={item.step}
+              value={0}
+              data-default-dog={item.defaultDog}
+              data-default-cat={item.defaultCat}
+            />
+            <div class="pmc-field-row">
+              <span class="pmc-hint">{item.hint}</span>
+              <input
+                type="text"
+                class="pmc-number"
+                data-pmc-num={item.id}
+                inputmode="numeric"
+                value="0"
+              />
+              <span class="pmc-unit-label">원</span>
+            </div>
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <div>
+      <InfoNotice
+        title="참고 안내"
+        lines={[
+          "소형견·성묘 기준 평균 데이터입니다. 품종·크기·건강 상태에 따라 실제 비용은 크게 달라집니다.",
+          "병원비는 연간 총액을 12개월로 나눈 월 평균값으로 입력하세요.",
+        ]}
+      />
+
+      <div class="pmc-kpi-grid">
+        <div class="pmc-kpi-card pmc-kpi-card--primary">
+          <span class="pmc-kpi-label">월 총 양육비</span>
+          <strong class="pmc-kpi-value" data-pmc-result="monthly">—</strong>
+        </div>
+        <div class="pmc-kpi-card">
+          <span class="pmc-kpi-label">연간 총 비용</span>
+          <strong class="pmc-kpi-value" data-pmc-result="annual">—</strong>
+        </div>
+        <div class="pmc-kpi-card">
+          <span class="pmc-kpi-label">10년 누적 비용</span>
+          <strong class="pmc-kpi-value" data-pmc-result="ten-year">—</strong>
+        </div>
+        <div class="pmc-kpi-card">
+          <span class="pmc-kpi-label">하루 평균 비용</span>
+          <strong class="pmc-kpi-value" data-pmc-result="daily">—</strong>
+        </div>
+      </div>
+
+      <div class="pmc-chart-section">
+        <h3 class="pmc-chart-title">항목별 지출 비율</h3>
+        <div class="pmc-chart-wrap">
+          <canvas id="pmcDonutChart"></canvas>
+        </div>
+      </div>
+
+      <div class="pmc-insight-box">
+        <p data-pmc-result="insight-coffee"></p>
+        <p data-pmc-result="insight-daily"></p>
+      </div>
+
+      <div class="pmc-related-section">
+        <h3>함께 확인하면 좋은 계산기</h3>
+        <div class="pmc-related-grid">
+          {PMC_RELATED_LINKS.map(link => (
+            <a href={link.href} class="pmc-related-card">
+              <span class="pmc-related-label">{link.label}</span>
+              <span class="pmc-related-desc">{link.description}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <SeoContent
+        introTitle="반려동물 양육비, 미리 알고 준비하세요"
+        intro={[
+          "반려동물과 함께하는 삶은 큰 행복이지만, 입양 전 장기적인 비용 계획이 반드시 필요합니다.",
+          "강아지와 고양이의 월 양육비는 사료·병원·미용·용품 등을 합산하면 평균 15~25만원에 달하며, 10년이면 2,000~3,000만원이 넘습니다.",
+          "대형견이나 특별한 의료 관리가 필요한 품종은 월 50만원 이상이 드는 경우도 있습니다.",
+          "이 계산기로 내 반려동물의 실제 월 지출을 항목별로 파악하고, 현실적인 예산을 수립해보세요.",
+        ]}
+        faq={PMC_FAQ}
+      />
+    </div>
+  </SimpleToolShell>
+</BaseLayout>
+
+<script id="pmcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/pet-monthly-cost-calculator.js" defer></script>

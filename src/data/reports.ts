@@ -855,4 +855,18 @@ export const reports: ReportMeta[] = [
     order: 54.6,
     badges: ["빅테크 연봉", "비교", "levels.fyi", "2026"],
   },
+  {
+    slug: "pet-breed-10year-cost-comparison",
+    title: "품종별 반려동물 10년 총비용 비교 2026",
+    description: "말티즈·골든리트리버·렉돌 등 강아지 8종·고양이 6종의 월 양육비와 10년 총비용을 비교합니다. 입양 전 꼭 확인하세요.",
+    order: 60.1,
+    badges: ["강아지", "고양이", "반려동물", "2026"],
+  },
+  {
+    slug: "golf-vs-hobbies-cost-comparison",
+    title: "골프 vs 취미 비용 비교 2026 — 10종 월 유지비 랭킹",
+    description: "골프·테니스·스키·헬스·낚시 등 10가지 취미의 월 유지비와 10년 총비용을 비교합니다.",
+    order: 61.3,
+    badges: ["골프", "취미 비교", "10종", "2026"],
+  },
 ];

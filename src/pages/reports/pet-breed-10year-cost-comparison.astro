@@ -1,0 +1,140 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import {
+  BREED_COST_ENTRIES,
+  DOGS,
+  CATS,
+  PBC_FAQ,
+  PBC_META,
+  calc10Year,
+} from "../../data/petBreed10YearCost2026";
+
+const config = { entries: BREED_COST_ENTRIES };
+
+const faqSchema = PBC_FAQ.map(item => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+function fw(v: number) { return Math.round(v / 10_000).toLocaleString() + "만원"; }
+---
+
+<BaseLayout
+  title={PBC_META.title}
+  description={PBC_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqSchema,
+  }}
+>
+  <SiteHeader />
+  <main class="container page-shell report-page pbc-page">
+    <CalculatorHero
+      title={PBC_META.title}
+      description="강아지 8종·고양이 6종의 월 양육비와 10년 총비용을 비교합니다. 입양 전 꼭 확인하세요."
+      badges={["강아지", "고양이", "14종 비교", "분양가 포함"]}
+    />
+
+    <InfoNotice
+      title="비교 전 확인"
+      lines={[
+        "소형견·성묘 기준 평균 데이터입니다. 품종별 편차가 크므로 참고용으로만 활용하세요.",
+        "스코티시폴드 등 일부 품종은 유전질환 위험을 별도로 표기했습니다.",
+        "분양가는 지역·혈통·브리더에 따라 차이가 크며, 입양 시 0원도 가능합니다.",
+      ]}
+    />
+
+    <section class="content-section">
+      <div class="pbc-kpi-grid">
+        <div class="pbc-kpi-card">
+          <span>비교 품종 수</span>
+          <strong>{BREED_COST_ENTRIES.length}종</strong>
+        </div>
+        <div class="pbc-kpi-card">
+          <span>최저 10년 비용</span>
+          <strong>코리안숏헤어 약 {fw(calc10Year(BREED_COST_ENTRIES.find(e => e.id === "korean-shorthair")!))}</strong>
+        </div>
+        <div class="pbc-kpi-card">
+          <span>최고 10년 비용</span>
+          <strong>골든리트리버 약 {fw(calc10Year(BREED_COST_ENTRIES.find(e => e.id === "golden-retriever")!))}</strong>
+        </div>
+        <div class="pbc-kpi-card">
+          <span>강아지 평균</span>
+          <strong>약 {fw(DOGS.reduce((s, e) => s + calc10Year(e), 0) / DOGS.length)}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section pbc-chart-section">
+      <div class="pbc-controls">
+        <div class="pbc-pet-tabs" role="tablist">
+          <button class="pbc-tab is-active" data-pbc-tab="dog">🐶 강아지</button>
+          <button class="pbc-tab" data-pbc-tab="cat">🐱 고양이</button>
+        </div>
+        <label class="pbc-price-toggle">
+          <input type="checkbox" data-pbc-include-price />
+          <span>분양가 포함</span>
+        </label>
+      </div>
+      <div class="pbc-chart-wrap">
+        <canvas id="pbcBarChart"></canvas>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="pbc-cards-grid" id="pbcCardsGrid">
+        {BREED_COST_ENTRIES.map(entry => (
+          <article class="pbc-breed-card" data-pbc-type={entry.petType}>
+            <div class="pbc-breed-header">
+              <span class="pbc-breed-emoji">{entry.emoji}</span>
+              <div>
+                <strong class="pbc-breed-name">{entry.name}</strong>
+                <span class="pbc-breed-size">{entry.size} · 평균 수명 {entry.avgLifespan}년</span>
+              </div>
+            </div>
+            <div class="pbc-breed-cost">
+              <span class="pbc-breed-monthly">월 {fw(entry.monthlyCostMin)}~{fw(entry.monthlyCostMax)}</span>
+              <span class="pbc-breed-10y">10년 약 {fw(calc10Year(entry))}</span>
+            </div>
+            <div class="pbc-breed-badges">
+              <span class={`pbc-risk-badge pbc-risk--${entry.medicalRisk}`}>의료위험 {entry.medicalRisk}</span>
+              <span class={`pbc-groom-badge pbc-groom--${entry.groomingLevel}`}>미용 {entry.groomingLevel}</span>
+            </div>
+            <ul class="pbc-breed-chars">
+              {entry.characteristics.map(c => <li>{c}</li>)}
+            </ul>
+            <p class="pbc-breed-note">{entry.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <CompareCta
+      links={[
+        { href: "/tools/pet-monthly-cost-calculator/", label: "월 양육비 계산기", tone: "primary" },
+        { href: "/tools/pet-insurance-calculator/", label: "펫보험 손익 계산기", tone: "secondary" },
+      ]}
+    />
+
+    <SeoContent
+      introTitle="품종별 양육비, 입양 전에 꼭 확인하세요"
+      intro={[
+        "반려동물 입양은 평균 10~15년간 함께하는 큰 결정입니다. 품종에 따라 월 양육비는 14만원에서 50만원까지 크게 차이납니다.",
+        "소형견은 미용비가 주요 비용이고, 대형견은 사료비와 의료비가 월등히 높습니다. 고양이는 전반적으로 강아지보다 비용이 낮지만 모래 비용과 품종별 유전질환 위험을 고려해야 합니다.",
+        "스코티시폴드처럼 유전질환 위험이 높은 품종은 의료비 예산을 넉넉히 준비해야 합니다.",
+        "10년 총비용에는 예상치 못한 수술비나 노령기 의료비 증가가 포함되지 않았으므로, 실제 비용은 더 높을 수 있습니다.",
+      ]}
+      faq={PBC_FAQ}
+    />
+  </main>
+</BaseLayout>
+
+<script id="pbcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/pet-breed-10year-cost-comparison.js" defer></script>

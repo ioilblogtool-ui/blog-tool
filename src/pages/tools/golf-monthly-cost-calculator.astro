@@ -1,0 +1,292 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { GMC_DEFAULTS, GMC_FAQ, GMC_META } from "../../data/golfMonthlyCost2026";
+
+const config = { defaults: GMC_DEFAULTS };
+
+const faqSchema = GMC_FAQ.map(item => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={GMC_META.title}
+  description={GMC_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqSchema,
+  }}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId="golf-monthly-cost-calculator" pageClass="gmc-page">
+    <CalculatorHero
+      slot="hero"
+      title={GMC_META.title}
+      description={GMC_META.description}
+      badges={["골프", "유지비", "라운딩", "2026"]}
+    />
+
+    <div slot="aside">
+      <!-- 라운딩 섹션 -->
+      <div class="gmc-section">
+        <div class="gmc-section-header" data-gmc-toggle="rounding">
+          <span>⛳ 라운딩</span>
+          <span class="gmc-section-arrow">▾</span>
+        </div>
+        <div class="gmc-section-body" data-gmc-body="rounding">
+          <label class="gmc-field">
+            <span>월 라운딩 횟수</span>
+            <input data-gmc="roundingCount" type="range" min="0" max="12" step="1" value="2" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="roundingCount" type="text" inputmode="numeric" value="2" />
+              <span>회/월</span>
+            </div>
+          </label>
+          <label class="gmc-field">
+            <span>1회 그린피</span>
+            <input data-gmc="greenFee" type="range" min="50000" max="500000" step="10000" value="150000" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="greenFee" type="text" inputmode="numeric" value="150,000" />
+              <span>원</span>
+            </div>
+          </label>
+          <div class="gmc-toggle-row">
+            <label class="gmc-toggle-label">
+              <input data-gmc-bool="hasCaddy" type="checkbox" checked />
+              캐디피 포함 (30,000원/인)
+            </label>
+            <label class="gmc-toggle-label">
+              <input data-gmc-bool="hasCart" type="checkbox" checked />
+              카트비 포함 (15,000원/인)
+            </label>
+          </div>
+          <label class="gmc-field">
+            <span>식사·음료 (1회)</span>
+            <input data-gmc="mealCost" type="range" min="0" max="100000" step="5000" value="30000" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="mealCost" type="text" inputmode="numeric" value="30,000" />
+              <span>원</span>
+            </div>
+          </label>
+          <label class="gmc-field">
+            <span>교통비 (1회)</span>
+            <input data-gmc="transportPerRound" type="range" min="0" max="100000" step="5000" value="20000" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="transportPerRound" type="text" inputmode="numeric" value="20,000" />
+              <span>원</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- 연습장 섹션 -->
+      <div class="gmc-section">
+        <div class="gmc-section-header" data-gmc-toggle="practice">
+          <span>🏌️ 연습장</span>
+          <span class="gmc-section-arrow">▾</span>
+        </div>
+        <div class="gmc-section-body" data-gmc-body="practice">
+          <div class="gmc-radio-group">
+            <label><input type="radio" name="practiceType" value="monthly" checked /> 월정액</label>
+            <label><input type="radio" name="practiceType" value="session" /> 횟수권</label>
+            <label><input type="radio" name="practiceType" value="none" /> 안 감</label>
+          </div>
+          <div data-gmc-show="practiceType-monthly">
+            <label class="gmc-field">
+              <span>월정액</span>
+              <input data-gmc="practiceMonthly" type="range" min="50000" max="500000" step="10000" value="150000" />
+              <div class="gmc-field-row">
+                <input data-gmc-num="practiceMonthly" type="text" inputmode="numeric" value="150,000" />
+                <span>원/월</span>
+              </div>
+            </label>
+          </div>
+          <div data-gmc-show="practiceType-session" style="display:none">
+            <label class="gmc-field">
+              <span>월 이용 횟수</span>
+              <input data-gmc="practiceSessionCount" type="range" min="1" max="30" step="1" value="8" />
+              <div class="gmc-field-row">
+                <input data-gmc-num="practiceSessionCount" type="text" inputmode="numeric" value="8" />
+                <span>회</span>
+              </div>
+            </label>
+            <label class="gmc-field">
+              <span>1회 단가</span>
+              <input data-gmc="practiceSessionPrice" type="range" min="5000" max="30000" step="1000" value="10000" />
+              <div class="gmc-field-row">
+                <input data-gmc-num="practiceSessionPrice" type="text" inputmode="numeric" value="10,000" />
+                <span>원</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 장비 섹션 -->
+      <div class="gmc-section">
+        <div class="gmc-section-header" data-gmc-toggle="equip">
+          <span>🛠️ 장비·소모품</span>
+          <span class="gmc-section-arrow">▾</span>
+        </div>
+        <div class="gmc-section-body" data-gmc-body="equip">
+          <label class="gmc-field">
+            <span>클럽 세트 구매가</span>
+            <input data-gmc="clubPrice" type="range" min="300000" max="5000000" step="100000" value="1500000" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="clubPrice" type="text" inputmode="numeric" value="1,500,000" />
+              <span>원</span>
+            </div>
+          </label>
+          <label class="gmc-field">
+            <span>예상 사용 기간</span>
+            <input data-gmc="clubYears" type="range" min="1" max="10" step="1" value="5" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="clubYears" type="text" inputmode="numeric" value="5" />
+              <span>년</span>
+            </div>
+          </label>
+          <label class="gmc-field">
+            <span>소모품 (볼·티 등)</span>
+            <input data-gmc="consumables" type="range" min="0" max="100000" step="5000" value="30000" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="consumables" type="text" inputmode="numeric" value="30,000" />
+              <span>원/월</span>
+            </div>
+          </label>
+          <label class="gmc-field">
+            <span>골프화 (연간)</span>
+            <input data-gmc="shoesAnnual" type="range" min="0" max="500000" step="50000" value="200000" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="shoesAnnual" type="text" inputmode="numeric" value="200,000" />
+              <span>원/년</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- 의류·기타 섹션 -->
+      <div class="gmc-section">
+        <div class="gmc-section-header" data-gmc-toggle="other">
+          <span>📦 의류·기타</span>
+          <span class="gmc-section-arrow">▾</span>
+        </div>
+        <div class="gmc-section-body" data-gmc-body="other">
+          <label class="gmc-field">
+            <span>골프웨어 (연간)</span>
+            <input data-gmc="apparelAnnual" type="range" min="0" max="1000000" step="50000" value="300000" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="apparelAnnual" type="text" inputmode="numeric" value="300,000" />
+              <span>원/년</span>
+            </div>
+          </label>
+          <label class="gmc-field">
+            <span>스크린골프 (월 횟수)</span>
+            <input data-gmc="screenCount" type="range" min="0" max="20" step="1" value="2" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="screenCount" type="text" inputmode="numeric" value="2" />
+              <span>회/월</span>
+            </div>
+          </label>
+          <label class="gmc-field">
+            <span>스크린골프 1회 단가</span>
+            <input data-gmc="screenPrice" type="range" min="5000" max="50000" step="1000" value="20000" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="screenPrice" type="text" inputmode="numeric" value="20,000" />
+              <span>원</span>
+            </div>
+          </label>
+          <label class="gmc-field">
+            <span>골프 보험료 (월)</span>
+            <input data-gmc="insurance" type="range" min="0" max="50000" step="1000" value="0" />
+            <div class="gmc-field-row">
+              <input data-gmc-num="insurance" type="text" inputmode="numeric" value="0" />
+              <span>원/월</span>
+            </div>
+            <span class="gmc-hint">0원 = 미가입</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          "지역·시즌·골프장 등급에 따라 실제 비용 차이가 큽니다.",
+          "장비 감가상각은 구매가를 사용 기간으로 균등 배분한 참고값입니다.",
+        ]}
+      />
+
+      <div class="gmc-kpi-grid">
+        <div class="gmc-kpi-card gmc-kpi-card--primary">
+          <span>월 총 유지비</span>
+          <strong data-gmc-result="totalMonthly">—</strong>
+        </div>
+        <div class="gmc-kpi-card">
+          <span>연간 총 유지비</span>
+          <strong data-gmc-result="totalAnnual">—</strong>
+        </div>
+        <div class="gmc-kpi-card">
+          <span>라운딩 비중</span>
+          <strong data-gmc-result="roundingRatio">—</strong>
+        </div>
+        <div class="gmc-kpi-card">
+          <span>1회 라운딩 실질 단가</span>
+          <strong data-gmc-result="costPerRound">—</strong>
+        </div>
+      </div>
+
+      <div class="gmc-chart-section">
+        <h3>항목별 비용 비중</h3>
+        <div class="gmc-chart-wrap">
+          <canvas id="gmcDonutChart"></canvas>
+        </div>
+      </div>
+
+      <div class="gmc-table-section">
+        <h3>항목 상세</h3>
+        <table class="gmc-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>월 비용</th>
+              <th>연간 비용</th>
+              <th>비중</th>
+            </tr>
+          </thead>
+          <tbody id="gmcTableBody"></tbody>
+          <tfoot>
+            <tr class="gmc-table-total">
+              <td>합계</td>
+              <td data-gmc-result="totalMonthlyFoot">—</td>
+              <td data-gmc-result="totalAnnualFoot">—</td>
+              <td>100%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="gmc-compare-box" data-gmc-result="compareText"></div>
+
+      <SeoContent
+        introTitle="골프 유지비, 얼마나 드나요?"
+        intro={[
+          "골프는 '비싼 취미'의 대명사이지만, 실제 월 유지비는 이용 방식에 따라 30만원부터 150만원 이상까지 크게 차이가 납니다.",
+          "라운딩 횟수, 골프장 선택, 연습 빈도, 장비 투자 수준을 직접 입력해 내 상황에 맞는 실제 유지비를 확인해보세요.",
+        ]}
+        faq={GMC_FAQ}
+      />
+    </div>
+  </SimpleToolShell>
+</BaseLayout>
+
+<script id="gmcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/golf-monthly-cost-calculator.js" defer></script>

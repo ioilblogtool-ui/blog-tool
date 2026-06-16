@@ -1,0 +1,191 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { PIC_PRESETS, PIC_DEFAULTS, PIC_FAQ, PIC_META } from "../../data/petInsuranceCalculator2026";
+
+const config = { defaults: PIC_DEFAULTS, presets: PIC_PRESETS };
+
+const faqSchema = PIC_FAQ.map(item => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={PIC_META.title}
+  description={PIC_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqSchema,
+  }}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId="pet-insurance-calculator" pageClass="pic-page">
+    <CalculatorHero
+      slot="hero"
+      title={PIC_META.title}
+      description={PIC_META.description}
+      badges={["펫보험", "손익분기", "반려동물", "2026"]}
+    />
+
+    <div slot="aside">
+      <label class="pic-field">
+        <span>보험 상품 유형</span>
+        <select data-pic-preset class="pic-select">
+          <option value="custom">직접 입력</option>
+          {PIC_PRESETS.map(p => <option value={p.id}>{p.label}</option>)}
+        </select>
+      </label>
+
+      <div class="pic-section-label">보험 설정</div>
+
+      <label class="pic-field">
+        <span>월 보험료</span>
+        <input data-pic="monthlyPremium" type="range" min="10000" max="100000" step="5000" value="30000" />
+        <div class="pic-field-row">
+          <input data-pic-num="monthlyPremium" type="text" inputmode="numeric" value="30,000" />
+          <span>원/월</span>
+        </div>
+      </label>
+
+      <label class="pic-field">
+        <span>연간 보장 한도</span>
+        <input data-pic="coverageLimit" type="range" min="500000" max="10000000" step="500000" value="3000000" />
+        <div class="pic-field-row">
+          <input data-pic-num="coverageLimit" type="text" inputmode="numeric" value="3,000,000" />
+          <span>원</span>
+        </div>
+      </label>
+
+      <label class="pic-field">
+        <span>보장 비율</span>
+        <input data-pic="coverageRatePct" type="range" min="50" max="100" step="10" value="80" />
+        <div class="pic-field-row">
+          <input data-pic-num="coverageRatePct" type="text" inputmode="numeric" value="80" />
+          <span>%</span>
+        </div>
+      </label>
+
+      <div class="pic-section-label">예상 병원비</div>
+
+      <label class="pic-field">
+        <span>연간 일반 병원비</span>
+        <input data-pic="annualRoutine" type="range" min="0" max="2000000" step="50000" value="300000" />
+        <div class="pic-field-row">
+          <input data-pic-num="annualRoutine" type="text" inputmode="numeric" value="300,000" />
+          <span>원</span>
+        </div>
+        <span class="pic-hint">예방접종·정기검진·일반 진료 연합산</span>
+      </label>
+
+      <label class="pic-field">
+        <span>응급·수술 발생 확률</span>
+        <input data-pic="emergencyProbPct" type="range" min="0" max="50" step="5" value="15" />
+        <div class="pic-field-row">
+          <input data-pic-num="emergencyProbPct" type="text" inputmode="numeric" value="15" />
+          <span>%/년</span>
+        </div>
+        <span class="pic-hint">노령·유전질환 품종은 20~30%로 설정</span>
+      </label>
+
+      <label class="pic-field">
+        <span>응급 발생 시 예상 비용</span>
+        <input data-pic="emergencyCost" type="range" min="200000" max="5000000" step="100000" value="1500000" />
+        <div class="pic-field-row">
+          <input data-pic-num="emergencyCost" type="text" inputmode="numeric" value="1,500,000" />
+          <span>원</span>
+        </div>
+      </label>
+
+      <label class="pic-field">
+        <span>비교 기간</span>
+        <input data-pic="analysisYears" type="range" min="1" max="15" step="1" value="10" />
+        <div class="pic-field-row">
+          <input data-pic-num="analysisYears" type="text" inputmode="numeric" value="10" />
+          <span>년</span>
+        </div>
+      </label>
+    </div>
+
+    <div>
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          "이 계산기는 응급 발생 확률을 기반으로 한 기대값 시뮬레이션입니다.",
+          "실제 보험료·약관 조건은 보험사별로 다르므로 가입 전 반드시 확인하세요.",
+          "특정 보험 상품 추천이 아닙니다.",
+        ]}
+      />
+
+      <div class="pic-kpi-grid">
+        <div class="pic-kpi-card pic-kpi-card--primary">
+          <span>손익분기점</span>
+          <strong data-pic-result="breakEven">—</strong>
+          <small data-pic-result="breakEvenLabel"></small>
+        </div>
+        <div class="pic-kpi-card">
+          <span>보험 가입 시 연간 지출</span>
+          <strong data-pic-result="insuranceAnnual">—</strong>
+        </div>
+        <div class="pic-kpi-card">
+          <span>비보험 시 연간 지출(기대)</span>
+          <strong data-pic-result="noInsuranceAnnual">—</strong>
+        </div>
+        <div class="pic-kpi-card">
+          <span data-pic-result="savingLabel">N년 절감액</span>
+          <strong data-pic-result="saving">—</strong>
+        </div>
+      </div>
+
+      <div class="pic-chart-section">
+        <h3>누적 비용 비교</h3>
+        <div class="pic-chart-wrap">
+          <canvas id="picLineChart"></canvas>
+        </div>
+        <p class="pic-chart-caption">보험 가입(파랑) vs 비보험(주황) 누적 비용 — 교차점 = 손익분기점</p>
+      </div>
+
+      <div class="pic-conclusion" data-pic-result="conclusion"></div>
+
+      <div class="pic-scenario-section">
+        <h3>시나리오별 비교</h3>
+        <div class="pic-scenario-grid">
+          <div class="pic-scenario-card pic-scenario-card--good">
+            <strong>건강한 경우</strong>
+            <span>응급 발생 확률 0%</span>
+            <p data-pic-result="scenarioGood">—</p>
+          </div>
+          <div class="pic-scenario-card pic-scenario-card--avg">
+            <strong>평균적인 경우</strong>
+            <span>입력값 그대로</span>
+            <p data-pic-result="scenarioAvg">—</p>
+          </div>
+          <div class="pic-scenario-card pic-scenario-card--bad">
+            <strong>큰 수술 발생</strong>
+            <span>수술비 300만원 1회</span>
+            <p data-pic-result="scenarioBad">—</p>
+          </div>
+        </div>
+      </div>
+
+      <SeoContent
+        introTitle="펫보험, 가입해야 할까요?"
+        intro={[
+          "펫보험은 반려동물의 예상치 못한 의료비를 대비하는 보험입니다. 최근 펫보험 가입률이 빠르게 증가하고 있지만, 아직 1~2% 수준에 불과합니다.",
+          "건강한 반려동물이라면 단기적으로 비보험이 유리할 수 있지만, 수술 한 번으로 200~500만원이 발생하는 고위험 상황에 대비해 보험의 '안전망' 역할을 고려해야 합니다.",
+          "이 계산기로 내 반려동물의 응급 발생 확률과 예상 병원비를 입력해 보험 유·불리를 직접 확인해보세요.",
+        ]}
+        faq={PIC_FAQ}
+      />
+    </div>
+  </SimpleToolShell>
+</BaseLayout>
+
+<script id="picConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/pet-insurance-calculator.js" defer></script>
