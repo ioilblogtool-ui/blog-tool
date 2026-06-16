@@ -69,13 +69,13 @@ export const WELFARE_COMPARE_QUICK_LINKS: WelfareCompareItem[] = [
   },
   {
     id: "quick-postnatal-cost",
-    title: "산후·육아 비용 비교",
-    description: "산후도우미, 임신·출산 비용, 육아휴직 급여를 함께 확인합니다.",
-    href: "/tools/postnatal-care-cost/",
+    title: "산후도우미 지원금 소득기준 확인",
+    description: "가구원 수와 건강보험료로 산후도우미 정부지원 가능성을 먼저 판정합니다.",
+    href: "/tools/postnatal-care-income-eligibility/",
     type: "calculator",
-    criteria: ["산후도우미", "본인부담금", "지원금"],
-    badges: [{ label: "비용", tone: "family" }],
-    ctaLabel: "비용 계산",
+    criteria: ["건보료", "중위소득 150%", "예외지원"],
+    badges: [{ label: "산후도우미", tone: "family" }, { label: "신규", tone: "new" }],
+    ctaLabel: "소득기준 확인",
     priority: 4,
   },
 ];
@@ -195,6 +195,17 @@ export const WELFARE_COMPARE_FAMILY_ITEMS: WelfareCompareItem[] = [
     priority: 6,
   },
   {
+    id: "postnatal-care-income-eligibility",
+    title: "산후도우미 지원금 소득기준 계산기",
+    description: "가구원 수와 건강보험료를 입력해 기준중위소득 150% 해당 여부와 예외지원 확인 포인트를 계산합니다.",
+    href: "/tools/postnatal-care-income-eligibility/",
+    type: "calculator",
+    criteria: ["건강보험료", "150% 기준", "맞벌이"],
+    badges: [{ label: "신규", tone: "new" }, { label: "소득기준", tone: "family" }],
+    ctaLabel: "소득기준 확인",
+    priority: 6.5,
+  },
+  {
     id: "pregnancy-birth-cost",
     title: "임신·출산 비용 계산기",
     description: "임신부터 출산 전후까지 들어가는 비용 흐름을 확인합니다.",
@@ -229,6 +240,28 @@ export const WELFARE_COMPARE_BENEFIT_ITEMS: WelfareCompareItem[] = [
     badges: [{ label: "자격 확인", tone: "official" }, { label: "계산기", tone: "default" }],
     ctaLabel: "자격 계산",
     priority: 1,
+  },
+  {
+    id: "livelihood-benefit-income-recognition",
+    title: "생계급여 소득인정액 계산기",
+    description: "가구원 수, 월소득, 재산을 입력해 생계급여 선정기준 대비 소득인정액과 예상 급여액을 확인합니다.",
+    href: "/tools/livelihood-benefit-income-recognition/",
+    type: "calculator",
+    criteria: ["소득인정액", "생계급여", "선정기준"],
+    badges: [{ label: "신규", tone: "new" }, { label: "복지급여", tone: "official" }],
+    ctaLabel: "소득인정액 계산",
+    priority: 1.5,
+  },
+  {
+    id: "basic-livelihood-recipient-asset-standard",
+    title: "기초생활수급자 재산 기준 계산기",
+    description: "전세보증금, 예금, 부채, 자동차를 입력해 재산의 월 소득환산액 영향을 점검합니다.",
+    href: "/tools/basic-livelihood-recipient-asset-standard/",
+    type: "calculator",
+    criteria: ["재산 기준", "소득환산액", "자동차"],
+    badges: [{ label: "신규", tone: "new" }, { label: "재산 기준", tone: "official" }],
+    ctaLabel: "재산 기준 확인",
+    priority: 1.6,
   },
   {
     id: "government-welfare-benefits",
@@ -303,6 +336,17 @@ export const WELFARE_COMPARE_REPORT_ITEMS: WelfareCompareItem[] = [
     priority: 2,
   },
   {
+    id: "postnatal-care-income-link",
+    title: "산후도우미 지원금 소득기준 먼저 확인",
+    description: "산후도우미 비용 계산 전, 우리 가구가 정부지원 대상인지 건강보험료 기준으로 먼저 확인합니다.",
+    href: "/tools/postnatal-care-income-eligibility/",
+    type: "calculator",
+    criteria: ["건보료", "가구원 수", "지원 대상"],
+    badges: [{ label: "산후도우미", tone: "family" }, { label: "계산기", tone: "default" }],
+    ctaLabel: "소득기준 계산",
+    priority: 2.5,
+  },
+  {
     id: "pregnancy-checkup-report",
     title: "2026 임신 주수별 검사 비용 정리",
     description: "임신 검사 비용과 준비 시점을 리포트로 정리합니다.",
@@ -341,7 +385,7 @@ export const WELFARE_COMPARE_FLOW: WelfareCompareFlowStep[] = [
   },
   {
     title: "조건 확인",
-    description: "나이, 소득, 가구원 수, 거주지, 신청 기간처럼 지원금별 핵심 조건을 확인합니다.",
+    description: "나이, 소득, 가구원 수, 거주지, 건강보험료, 신청 기간처럼 지원금별 핵심 조건을 확인합니다.",
   },
   {
     title: "예상 금액 계산",
@@ -356,15 +400,15 @@ export const WELFARE_COMPARE_FLOW: WelfareCompareFlowStep[] = [
 export const WELFARE_COMPARE_SEO_INTRO = [
   "지원금 비교표는 청년, 출산·육아, 복지급여, 주거 지원처럼 조건이 다른 지원금 콘텐츠를 상황별로 묶은 허브입니다. 청년미래적금, 청년도약계좌, 복지급여, 출산지원금, 육아휴직 급여처럼 검색 의도가 다른 주제를 한 화면에서 빠르게 고를 수 있게 구성했습니다.",
   "청년 지원금은 나이·소득 기준이 핵심입니다. 청년도약계좌는 만 19~34세, 연 소득 7,500만 원 이하가 기본 조건이며 정부기여금 포함 5년 만기 시 최대 5,000만 원 형성이 가능합니다. 청년미래적금은 가입 조건과 납입 한도를 함께 확인해야 이중 혜택 여부를 알 수 있습니다.",
-  "출산·육아 지원금은 2024년 이후 대폭 확대됐습니다. 첫째 출생 시 부모급여 월 100만 원, 둘째부터 월 150만 원, 아동수당 월 10만 원이 지급됩니다. 산후조리원 비용 지원, 육아휴직 급여 상한 인상도 적용돼 실수령 총액이 과거보다 크게 늘었습니다.",
-  "지원금은 나이, 소득, 가구원 수, 거주지, 신청 기간, 중복 수급 조건에 따라 받을 수 있는지와 금액이 달라집니다. 특히 복지급여는 중위소득 기준으로 수급 가능성이 결정되므로 본인 소득·재산 기준을 먼저 확인하는 것이 중요합니다.",
+  "출산·육아 지원금은 출산지원금, 부모급여, 아동수당, 육아휴직 급여뿐 아니라 산후도우미 정부지원 여부까지 함께 봐야 합니다. 산후도우미 지원은 가구원 수와 건강보험료, 맞벌이 여부에 따라 소득기준 판정이 달라질 수 있으므로 비용 계산 전에 소득기준을 먼저 확인하는 흐름이 좋습니다.",
+  "지원금은 나이, 소득, 가구원 수, 거주지, 건강보험료, 재산, 신청 기간, 중복 수급 조건에 따라 받을 수 있는지와 금액이 달라집니다. 특히 복지급여는 중위소득 기준과 소득인정액, 재산의 소득환산액이 함께 작동하므로 소득·재산 기준을 나눠 확인하는 것이 중요합니다.",
   "이 페이지의 비교표와 계산 결과는 공개 공고와 계산 모델을 바탕으로 정리한 참고용 콘텐츠입니다. 실제 신청 가능 여부와 지급액은 정부 공고, 지자체 안내, 금융기관 상품설명서, 개인별 심사 결과를 기준으로 확인해야 합니다.",
 ];
 
 export const WELFARE_COMPARE_SEO_CRITERIA = [
   "청년 지원금은 청년미래적금, 청년도약계좌, 일반 적금의 만기, 납입액, 정부기여금, 비과세 여부를 함께 봅니다.",
-  "출산·육아 지원금은 출산지원금, 부모급여, 아동수당, 육아휴직 급여, 산후도우미 비용을 같은 흐름에서 확인합니다.",
-  "복지급여는 가구원 수, 소득, 재산, 중위소득 기준을 입력해 가능성을 간이 확인하되 실제 심사 결과가 우선입니다.",
+  "출산·육아 지원금은 출산지원금, 부모급여, 아동수당, 육아휴직 급여, 산후도우미 소득기준, 산후도우미 비용을 같은 흐름에서 확인합니다.",
+  "복지급여는 가구원 수, 소득, 재산, 중위소득 기준, 소득인정액, 재산의 월 소득환산액을 입력해 가능성을 간이 확인하되 실제 심사 결과가 우선입니다.",
   "주거·정책금융 지원은 지원금과 대출 조건이 함께 움직일 수 있어 별도 계산기와 리포트로 이어서 확인합니다.",
 ];
 

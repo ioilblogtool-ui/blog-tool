@@ -30,8 +30,9 @@ const typeLabel: Record<WelfareCompareItem["type"], string> = {
 const related = [
   { href: "/compare/", label: "비교표 전체 보기" },
   { href: "/tools/youth-savings-maturity-calculator/", label: "청년 적금 만기 수령액 계산기" },
+  { href: "/tools/postnatal-care-income-eligibility/", label: "산후도우미 소득기준 계산기" },
   { href: "/tools/welfare-benefit-eligibility/", label: "복지급여 수급 자격 계산기" },
-  { href: "/tools/birth-support-total/", label: "출산~2세 지원금 계산기" },
+  { href: "/tools/livelihood-benefit-income-recognition/", label: "생계급여 소득인정액 계산기" },
 ];
 
 const situationCards = [
@@ -44,17 +45,17 @@ const situationCards = [
   },
   {
     label: "출산·육아",
-    title: "출산지원금과 육아휴직 급여",
-    description: "출산 직후부터 2세까지 지원금, 육아휴직 급여, 산후도우미 비용을 같은 흐름에서 봅니다.",
-    primary: { href: "/tools/birth-support-total/", label: "출산지원금 계산" },
-    secondary: { href: "/tools/parental-leave-pay/", label: "육아휴직 급여" },
+    title: "출산지원금과 산후도우미 지원",
+    description: "출산 직후 지원금, 육아휴직 급여, 산후도우미 소득기준과 본인부담금을 같은 흐름에서 봅니다.",
+    primary: { href: "/tools/postnatal-care-income-eligibility/", label: "산후도우미 소득기준" },
+    secondary: { href: "/tools/birth-support-total/", label: "출산지원금 계산" },
   },
   {
     label: "복지",
-    title: "복지급여 자격과 공식 공고",
-    description: "가구원 수, 소득, 자산 기준으로 복지급여 가능성을 먼저 점검하고 공식 지원금 리포트로 이어갑니다.",
-    primary: { href: "/tools/welfare-benefit-eligibility/", label: "자격 확인" },
-    secondary: { href: "/reports/2026-government-welfare-benefits/", label: "지원금 리포트" },
+    title: "복지급여 자격과 소득인정액",
+    description: "가구원 수, 소득, 재산 기준으로 복지급여 가능성을 점검하고 생계급여 소득인정액까지 이어서 확인합니다.",
+    primary: { href: "/tools/livelihood-benefit-income-recognition/", label: "소득인정액 계산" },
+    secondary: { href: "/tools/basic-livelihood-recipient-asset-standard/", label: "재산 기준 확인" },
   },
   {
     label: "주거",
@@ -72,6 +73,7 @@ const youthActionLinks = [
 ];
 
 const familyActionLinks = [
+  { href: "/tools/postnatal-care-income-eligibility/", label: "산후도우미 소득기준" },
   { href: "/tools/birth-support-total/", label: "출산~2세 지원금" },
   { href: "/tools/parental-leave-pay/", label: "육아휴직 급여" },
   { href: "/tools/postnatal-care-cost/", label: "산후도우미 비용" },
@@ -79,6 +81,8 @@ const familyActionLinks = [
 
 const benefitActionLinks = [
   { href: "/tools/welfare-benefit-eligibility/", label: "복지급여 자격" },
+  { href: "/tools/livelihood-benefit-income-recognition/", label: "생계급여 소득인정액" },
+  { href: "/tools/basic-livelihood-recipient-asset-standard/", label: "재산 기준 계산" },
   { href: "/reports/2026-government-welfare-benefits/", label: "정부 지원금 리포트" },
 ];
 
@@ -170,7 +174,7 @@ const jsonLd = {
 
 <BaseLayout
   title="지원금 비교표｜청년미래적금·청년도약계좌·복지급여·출산지원금 계산기"
-  description="청년미래적금, 청년도약계좌, 복지급여, 출산지원금, 육아휴직 급여, 산후도우미 비용까지 지원금 계산기와 리포트를 한눈에 비교하세요."
+  description="청년미래적금, 청년도약계좌, 복지급여, 생계급여 소득인정액, 기초생활수급자 재산 기준, 출산지원금, 산후도우미 소득기준과 비용까지 지원금 계산기와 리포트를 한눈에 비교하세요."
   jsonLd={jsonLd}
 >
   <SiteHeader />
@@ -178,13 +182,14 @@ const jsonLd = {
     <CalculatorHero
       eyebrow="지원금 비교표"
       title="지원금 비교표"
-      description="청년미래적금, 청년도약계좌, 복지급여, 출산지원금, 육아휴직 급여처럼 조건이 다른 지원금을 상황별로 비교하고 관련 계산기와 리포트로 바로 이동하세요."
+      description="청년미래적금, 청년도약계좌, 복지급여, 생계급여, 출산지원금, 산후도우미 지원처럼 조건이 다른 지원금을 상황별로 비교하고 관련 계산기와 리포트로 바로 이동하세요."
     />
 
     <div class="compare-welfare-hero-actions" aria-label="지원금 비교 빠른 실행">
       <a class="compare-welfare-primary" href={withBase("/tools/youth-savings-maturity-calculator/")}>청년 적금 만기 계산</a>
+      <a href={withBase("/tools/postnatal-care-income-eligibility/")}>산후도우미 소득기준</a>
       <a href={withBase("/tools/welfare-benefit-eligibility/")}>복지급여 자격 확인</a>
-      <a href={withBase("/tools/birth-support-total/")}>출산지원금 계산</a>
+      <a href={withBase("/tools/livelihood-benefit-income-recognition/")}>생계급여 소득인정액</a>
     </div>
 
     <InfoNotice
@@ -192,7 +197,7 @@ const jsonLd = {
       lines={[
         "지원금 비교표는 공개 공고와 계산 모델을 바탕으로 정리한 참고용 콘텐츠입니다.",
         "실제 신청 가능 여부와 지급액은 정부 공고, 지자체 안내, 금융기관 상품설명서, 개인별 심사 결과를 기준으로 확인해야 합니다.",
-        "청년·출산·복지 지원금은 나이, 소득, 거주지, 신청 기간, 중복 수급 조건에 따라 결과가 달라질 수 있습니다.",
+        "청년·출산·복지 지원금은 나이, 소득, 재산, 건강보험료, 거주지, 신청 기간, 중복 수급 조건에 따라 결과가 달라질 수 있습니다.",
       ]}
     />
 
@@ -221,7 +226,7 @@ const jsonLd = {
       <div class="compare-welfare-section__head">
         <p>빠른 선택</p>
         <h2>내 상황에 맞는 지원금 계산기로 바로 이동</h2>
-        <span>청년 자산형성, 복지급여, 출산·육아, 산후 비용 중 지금 확인해야 하는 항목을 먼저 선택하세요.</span>
+        <span>청년 자산형성, 산후도우미 소득기준, 복지급여, 출산·육아 중 지금 확인해야 하는 항목을 먼저 선택하세요.</span>
       </div>
       <div class="compare-welfare-grid compare-welfare-grid--quick">
         {WELFARE_COMPARE_QUICK_LINKS.map((item) => (
@@ -274,7 +279,7 @@ const jsonLd = {
       <div class="compare-welfare-section__head">
         <p>출산·육아 지원금</p>
         <h2>받는 지원금과 나가는 비용을 같은 흐름에서 확인</h2>
-        <span>출산·육아 지원금은 지원금, 휴직 급여, 산후도우미 비용, 임신·출산 비용을 함께 봐야 실제 가계 부담을 판단할 수 있습니다.</span>
+        <span>출산·육아 지원금은 지원금, 휴직 급여, 산후도우미 소득기준, 산후도우미 비용, 임신·출산 비용을 함께 봐야 실제 가계 부담을 판단할 수 있습니다.</span>
       </div>
       <div class="compare-welfare-section-actions" aria-label="출산 육아 지원금 바로가기">
         {familyActionLinks.map((link, index) => (
@@ -312,7 +317,7 @@ const jsonLd = {
       <div class="compare-welfare-section__head">
         <p>복지급여·정부지원금</p>
         <h2>복지급여는 계산기와 공식 공고를 함께 확인</h2>
-        <span>복지급여는 개인 상황별 조건이 강하므로 계산기 결과를 참고하고, 최종 판단은 공식 심사 결과를 기준으로 해야 합니다.</span>
+        <span>복지급여는 개인 상황별 조건이 강하므로 자격 가능성, 소득인정액, 재산 기준을 나눠 확인하고 최종 판단은 공식 심사 결과를 기준으로 해야 합니다.</span>
       </div>
       <div class="compare-welfare-section-actions" aria-label="복지급여 바로가기">
         {benefitActionLinks.map((link, index) => (

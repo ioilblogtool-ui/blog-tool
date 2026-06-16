@@ -28,9 +28,10 @@ const typeLabel: Record<BonusCompareItem["type"], string> = {
 
 const related = [
   { href: "/compare/", label: "비교표 전체 보기" },
+  { href: "/reports/corporate-bonus-ranking-top10-2026/", label: "대기업 성과급 순위 TOP 10" },
   { href: "/tools/bonus-simulator/", label: "대기업 성과급 시뮬레이터" },
   { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
-  { href: "/tools/semiconductor-bonus-comparison/", label: "반도체 성과급 비교" },
+  { href: "/reports/retail-food-bonus-comparison-2026/", label: "유통·식품 성과급 비교" },
 ];
 
 const getCompanyPreset = (id: string) => {
@@ -125,7 +126,7 @@ const jsonLd = {
 
 <BaseLayout
   title="성과급 비교표｜삼성전자·SK하이닉스·현대차·LG전자 성과급 계산기"
-  description="대기업 성과급 계산기와 업종별 성과급 비교표를 모았습니다. 삼성전자, SK하이닉스, 현대차, LG전자, 반도체, 자동차, 정유사, 금융권, 조선업 성과급을 세전·세후 기준으로 비교해보세요."
+  description="대기업 성과급 계산기와 업종별 성과급 비교표를 모았습니다. 삼성전자, SK하이닉스, 현대차, LG전자, 반도체, 자동차, 정유사, 금융권, 조선업, 빅테크, 항공, 통신, 공기업, 유통·식품 성과급을 세전·세후 기준으로 비교해보세요."
   jsonLd={jsonLd}
 >
   <SiteHeader />
@@ -133,11 +134,12 @@ const jsonLd = {
     <CalculatorHero
       eyebrow="성과급 비교표"
       title="성과급 비교표"
-      description="삼성전자, SK하이닉스, 현대차, LG전자처럼 많이 찾는 회사별 성과급 계산기와 반도체·자동차·정유사·금융권·조선업 업종별 성과급 비교를 한 화면에서 확인하세요."
+      description="삼성전자, SK하이닉스, 현대차, LG전자처럼 많이 찾는 회사별 계산기부터 반도체·자동차·금융권·조선업·빅테크·게임·항공·통신·공기업·유통식품 성과급 비교까지 한 화면에서 확인하세요."
     />
 
     <div class="compare-bonus-hero-actions" aria-label="성과급 비교 빠른 실행">
       <a class="compare-bonus-primary" href={withBase("/tools/bonus-simulator/")}>대기업 성과급 계산하기</a>
+      <a href={withBase("/reports/corporate-bonus-ranking-top10-2026/")}>성과급 순위 TOP 10</a>
       <a href={withBase("/tools/bonus-after-tax-calculator/")}>세후 실수령액 계산하기</a>
       <a href={withBase("/tools/semiconductor-bonus-comparison/")}>반도체 성과급 비교</a>
     </div>
@@ -202,8 +204,8 @@ const jsonLd = {
     <section class="compare-bonus-section" id="industry">
       <div class="compare-bonus-section__head">
         <p>업종별 비교</p>
-        <h2>반도체부터 조선업까지 성과급을 같은 기준으로 비교</h2>
-        <span>회사별 계산기가 없더라도 업종별 비교 계산기를 먼저 보면 성과급 구조를 빠르게 파악할 수 있습니다.</span>
+        <h2>반도체부터 항공·통신까지 성과급을 같은 기준으로 비교</h2>
+        <span>회사별 계산기가 없더라도 업종별 비교 계산기와 리포트를 먼저 보면 성과급 구조를 빠르게 파악할 수 있습니다.</span>
       </div>
       <div class="compare-bonus-table-wrap">
         <table class="compare-bonus-table">
@@ -320,7 +322,7 @@ const jsonLd = {
     <section class="compare-bonus-section" id="reports">
       <div class="compare-bonus-section__head">
         <p>관련 리포트</p>
-        <h2>성과급 구조와 시장 흐름을 더 자세히 보기</h2>
+        <h2>성과급 순위와 공기업·유통식품 확장 리포트 보기</h2>
       </div>
       <div class="compare-bonus-grid compare-bonus-grid--reports">
         {BONUS_COMPARE_REPORT_ITEMS.map((item) => (

@@ -40,6 +40,8 @@ const related = [
   { href: "/reports/", label: "전체 리포트" },
   { href: "/tools/semiconductor-bonus-comparison/", label: "반도체 성과급 비교" },
   { href: "/tools/youth-savings-maturity-calculator/", label: "청년 적금 만기 계산기" },
+  { href: "/tools/postnatal-care-income-eligibility/", label: "산후도우미 소득기준" },
+  { href: "/tools/four-insurance-calculator/", label: "4대보험 계산기" },
 ];
 
 const compareIntentCards = [
@@ -64,10 +66,43 @@ const compareIntentCards = [
     primary: { href: "#realEstate", label: "주거 비교 보기" },
     secondary: { href: "/tools/jeonse-vs-wolse-calculator/", label: "전월세 계산" },
   },
+  {
+    label: "육아비용",
+    title: "출산·산후관리·분유·기저귀 비용을 이어서 확인",
+    description: "지원 대상 확인부터 실제 본인부담금과 월 육아비까지 출산 이후 지출 흐름에 맞춰 비교합니다.",
+    primary: { href: "#parenting", label: "육아비 비교" },
+    secondary: { href: "/tools/postnatal-care-cost/", label: "산후도우미 비용" },
+  },
+  {
+    label: "세금",
+    title: "4대보험·건보료·연말정산·부동산세를 빠르게 비교",
+    description: "월급 공제, 환급금, 보유세처럼 검색 수요가 반복되는 생활 세금 계산기를 한곳에 묶었습니다.",
+    primary: { href: "#tax", label: "세금 비교" },
+    secondary: { href: "/tools/four-insurance-calculator/", label: "4대보험 계산" },
+  },
+  {
+    label: "스포츠·AI",
+    title: "연봉 랭킹과 AI 구독료처럼 트렌드형 비교도 함께 보기",
+    description: "KBO, K리그, 월드컵 대표팀 연봉과 AI 구독료·학습비·부업 비용 콘텐츠를 바로 찾을 수 있습니다.",
+    primary: { href: "#sports", label: "스포츠 비교" },
+    secondary: { href: "#ai", label: "AI 비교" },
+  },
 ];
 
 const featuredActionLinks: Record<string, { href: string; label: string }[]> = {
+  "corporate-bonus-ranking": [
+    { href: "/compare/bonus/", label: "성과급 허브" },
+    { href: "/tools/bonus-after-tax-calculator/", label: "세후 계산" },
+  ],
   "semiconductor-bonus": [
+    { href: "/compare/bonus/", label: "성과급 허브" },
+    { href: "/tools/bonus-after-tax-calculator/", label: "세후 계산" },
+  ],
+  "public-enterprise-bonus": [
+    { href: "/compare/bonus/", label: "성과급 허브" },
+    { href: "/reports/corporate-bonus-comparison-2026/", label: "대기업 비교" },
+  ],
+  "retail-food-bonus": [
     { href: "/compare/bonus/", label: "성과급 허브" },
     { href: "/tools/bonus-after-tax-calculator/", label: "세후 계산" },
   ],
@@ -78,6 +113,22 @@ const featuredActionLinks: Record<string, { href: string; label: string }[]> = {
   "youth-savings-maturity": [
     { href: "/compare/welfare/", label: "지원금 허브" },
     { href: "/reports/youth-savings-comparison-2026/", label: "제도 비교" },
+  ],
+  "postnatal-care-income": [
+    { href: "/compare/welfare/", label: "지원금 허브" },
+    { href: "/tools/postnatal-care-cost/", label: "비용 계산" },
+  ],
+  "four-insurance": [
+    { href: "#tax", label: "세금·보험료" },
+    { href: "/tools/salary/", label: "연봉 계산" },
+  ],
+  "kbo-salary": [
+    { href: "#sports", label: "스포츠 비교" },
+    { href: "/reports/kbo-salary-comparison-2026/", label: "KBO 리포트" },
+  ],
+  "ai-subscription": [
+    { href: "#ai", label: "AI 비교" },
+    { href: "/tools/ai-stack-cost-calculator/", label: "AI 스택 비용" },
   ],
   "jeonse-vs-wolse": [
     { href: "#realEstate", label: "주거 비교" },
@@ -106,7 +157,7 @@ const jsonLd = {
       url: pageUrl,
       name: "비교표 | 비교계산소",
       description:
-        "연봉, 성과급, 청년지원금, 출산지원금, 부동산, 대출, ETF, 적금을 같은 기준으로 비교하고 관련 계산기로 이어지는 비교 허브입니다.",
+        "연봉, 성과급, 지원금, 부동산, 투자, 육아비, 세금, 스포츠 연봉, AI 구독료를 같은 기준으로 비교하고 관련 계산기로 이어지는 비교 허브입니다.",
       inLanguage: "ko-KR",
       isPartOf: {
         "@type": "WebSite",
@@ -161,8 +212,8 @@ const jsonLd = {
 ---
 
 <BaseLayout
-  title="비교표｜연봉·성과급·지원금·부동산·투자 한눈에 비교"
-  description="비교계산소의 비교표 모음입니다. 연봉, 성과급, 청년지원금, 출산지원금, 부동산, 대출, ETF, 적금까지 같은 기준으로 비교하고 관련 계산기로 바로 확인하세요."
+  title="비교표｜성과급·지원금·육아비·세금·스포츠·AI 한눈에 비교"
+  description="비교계산소의 비교표 모음입니다. 연봉, 성과급, 지원금, 부동산, 투자, 육아비, 세금, 스포츠 연봉, AI 구독료까지 같은 기준으로 비교하고 관련 계산기로 바로 확인하세요."
   jsonLd={jsonLd}
 >
   <SiteHeader />
@@ -170,7 +221,7 @@ const jsonLd = {
     <CalculatorHero
       eyebrow="비교표 허브"
       title="비교표"
-      description="연봉, 성과급, 지원금, 부동산, 투자 상품을 같은 기준으로 비교합니다. 계산기와 리포트를 오가기 전에 먼저 큰 차이를 확인하세요."
+      description="연봉, 성과급, 지원금, 부동산, 투자, 육아비, 세금, 스포츠 연봉, AI 구독료를 같은 기준으로 비교합니다. 계산기와 리포트를 오가기 전에 먼저 큰 차이를 확인하세요."
     />
 
     <InfoNotice
@@ -186,7 +237,7 @@ const jsonLd = {
       <div class="compare-section__head">
         <p>빠른 선택</p>
         <h2>오늘 비교하려는 주제부터 고르세요</h2>
-        <span>검색에서 바로 들어온 사용자가 성과급, 지원금, 주거 비용 중 필요한 비교표와 계산기로 바로 이동할 수 있게 묶었습니다.</span>
+        <span>검색에서 바로 들어온 사용자가 성과급, 지원금, 주거 비용, 육아비, 세금, 스포츠·AI 비교 중 필요한 계산기와 리포트로 바로 이동할 수 있게 묶었습니다.</span>
       </div>
       <div class="compare-intent-grid">
         {compareIntentCards.map((item) => (
