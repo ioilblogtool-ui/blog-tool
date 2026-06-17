@@ -1,0 +1,182 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import { EVI_DEFAULTS, EVI_META, EVI_FAQ, EVI_SUBSIDIES, EVI_REGION_LABELS } from "../../data/evVsIce10YearCost";
+
+const config = { defaults: EVI_DEFAULTS, subsidies: EVI_SUBSIDIES };
+const regions = Object.entries(EVI_REGION_LABELS);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: EVI_META.title,
+  description: EVI_META.description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${EVI_META.slug}/`,
+};
+---
+
+<BaseLayout title={EVI_META.title} description={EVI_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={EVI_META.slug} pageClass="evi-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="전기차 vs 내연기관 10년 비교"
+        title="전기차, 10년 타면 진짜 더 저렴할까?"
+        description="보조금·충전비·연료비·배터리 교체까지 모두 반영해 10년 총비용과 손익분기점을 계산합니다."
+      />
+      <InfoNotice title="추정 계산 안내" lines={[EVI_META.caution, `업데이트 기준: ${EVI_META.updatedAt}`]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="eviResetBtn" copyId="eviCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <script id="eviConfig" type="application/json" set:html={JSON.stringify(config)} />
+
+      <section class="evi-section">
+        <h3>공통 조건</h3>
+        <div class="evi-field">
+          <label>연간 주행거리</label>
+          <div class="evi-input-row"><input data-evi="annualKm" type="number" min="3000" max="100000" step="1000" /><span>km</span></div>
+        </div>
+        <div class="evi-field">
+          <label>보유 기간</label>
+          <div class="evi-input-row"><input data-evi="holdYears" type="number" min="3" max="15" step="1" /><span>년</span></div>
+        </div>
+      </section>
+
+      <section class="evi-section">
+        <h3>지역 선택 (보조금 자동 반영)</h3>
+        <div class="evi-region-grid">
+          {regions.map(([key, label]) => (
+            <button class={`evi-region-btn${key === EVI_DEFAULTS.region ? ' is-active' : ''}`} data-region={key}>{label}</button>
+          ))}
+        </div>
+        <p class="evi-subsidy-display">국가 보조금: <strong id="eviNationalSubsidy">{EVI_SUBSIDIES[EVI_DEFAULTS.region].national}</strong>만원 + 지자체: <strong id="eviLocalSubsidy">{EVI_SUBSIDIES[EVI_DEFAULTS.region].local}</strong>만원</p>
+      </section>
+
+      <section class="evi-section">
+        <h3>전기차 조건</h3>
+        <div class="evi-field">
+          <label>차량 가격</label>
+          <div class="evi-input-row"><input data-evi="evPrice" type="number" min="2000" max="20000" step="100" /><span>만원</span></div>
+        </div>
+        <div class="evi-field">
+          <label>배터리 용량</label>
+          <div class="evi-input-row"><input data-evi="evBattery" type="number" min="20" max="150" step="1" /><span>kWh</span></div>
+        </div>
+        <div class="evi-field">
+          <label>가정충전 비율</label>
+          <div class="evi-input-row"><input data-evi="homeChargePct" type="number" min="0" max="100" step="10" /><span>%</span></div>
+        </div>
+        <div class="evi-field">
+          <label>가정충전 단가</label>
+          <div class="evi-input-row"><input data-evi="homeChargeRate" type="number" min="50" max="300" step="10" /><span>원/kWh</span></div>
+        </div>
+        <div class="evi-field">
+          <label>공공충전 단가</label>
+          <div class="evi-input-row"><input data-evi="publicChargeRate" type="number" min="100" max="600" step="10" /><span>원/kWh</span></div>
+        </div>
+        <div class="evi-field">
+          <label>연간 보험료</label>
+          <div class="evi-input-row"><input data-evi="evInsuranceAnnual" type="number" min="30" max="500" step="10" /><span>만원</span></div>
+        </div>
+        <label class="evi-toggle-label">
+          <input type="checkbox" data-evi-bool="includeBatteryReplace" />
+          배터리 교체 비용 포함 (10년차 +1,000만원)
+        </label>
+      </section>
+
+      <section class="evi-section">
+        <h3>내연기관 조건</h3>
+        <div class="evi-field">
+          <label>차량 가격</label>
+          <div class="evi-input-row"><input data-evi="icePrice" type="number" min="500" max="15000" step="100" /><span>만원</span></div>
+        </div>
+        <div class="evi-field">
+          <label>연비</label>
+          <div class="evi-input-row"><input data-evi="iceFuelEff" type="number" min="4" max="30" step="0.5" /><span>km/L</span></div>
+        </div>
+        <div class="evi-field">
+          <label>연료 단가</label>
+          <div class="evi-input-row"><input data-evi="iceFuelPrice" type="number" min="1000" max="3000" step="50" /><span>원/L</span></div>
+        </div>
+        <div class="evi-field">
+          <label>연간 소모품비</label>
+          <div class="evi-input-row"><input data-evi="iceMaintenanceAnnual" type="number" min="10" max="300" step="10" /><span>만원</span></div>
+        </div>
+        <div class="evi-field">
+          <label>연간 보험료</label>
+          <div class="evi-input-row"><input data-evi="iceInsuranceAnnual" type="number" min="30" max="500" step="10" /><span>만원</span></div>
+        </div>
+      </section>
+    </Fragment>
+
+    <!-- 결과 영역 -->
+    <div class="evi-kpi-grid">
+      <div class="evi-kpi-card evi-kpi-card--ev">
+        <span class="evi-kpi__label">전기차 총비용</span>
+        <span class="evi-kpi__value" id="eviEvTotal">—</span>
+        <span class="evi-kpi__sub" id="eviEvSub">보조금 차감 후</span>
+      </div>
+      <div class="evi-kpi-card evi-kpi-card--ice">
+        <span class="evi-kpi__label">내연기관 총비용</span>
+        <span class="evi-kpi__value" id="eviIceTotal">—</span>
+        <span class="evi-kpi__sub" id="eviIceSub"></span>
+      </div>
+      <div class="evi-kpi-card evi-kpi-card--diff">
+        <span class="evi-kpi__label">차액</span>
+        <span class="evi-kpi__value" id="eviDiff">—</span>
+        <span class="evi-kpi__sub" id="eviDiffSub"></span>
+      </div>
+      <div class="evi-kpi-card">
+        <span class="evi-kpi__label">손익분기점</span>
+        <span class="evi-kpi__value" id="eviBreakEven">—</span>
+        <span class="evi-kpi__sub">전기차가 더 유리해지는 시점</span>
+      </div>
+    </div>
+
+    <div class="evi-breakeven-label" id="eviBreakevenLabel"></div>
+
+    <div class="evi-chart-wrap">
+      <canvas id="eviChart"></canvas>
+    </div>
+
+    <h3 class="evi-table-title">비용 항목별 상세</h3>
+    <div class="evi-table-wrap">
+      <table class="evi-table">
+        <thead>
+          <tr><th>항목</th><th>전기차</th><th>내연기관</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>구매가 (보조금 차감)</td><td id="eviEvPriceRow">—</td><td id="eviIcePriceRow">—</td></tr>
+          <tr><td>취득세 (7%)</td><td id="eviEvTaxRow">—</td><td id="eviIceTaxRow">—</td></tr>
+          <tr><td>충전비 / 연료비</td><td id="eviEvFuelRow">—</td><td id="eviIceFuelRow">—</td></tr>
+          <tr><td>보험료</td><td id="eviEvInsRow">—</td><td id="eviIceInsRow">—</td></tr>
+          <tr><td>유지·소모품비</td><td id="eviEvMaintRow">—</td><td id="eviIceMaintRow">—</td></tr>
+          <tr id="eviEvBatteryRow" style="display:none"><td>배터리 교체</td><td id="eviEvBatteryCost">—</td><td>—</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td>합계</td><td id="eviEvTotalRow">—</td><td id="eviIceTotalRow">—</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </SimpleToolShell>
+
+  <SeoContent
+    slot="after"
+    title="전기차 vs 내연기관 10년 유지비 완전 비교 가이드"
+    summary="전기차는 구매가가 높지만 보조금과 낮은 충전비로 장기 보유 시 경제적입니다. 10년 총비용 기준으로 손익분기점을 확인하세요."
+    faqs={EVI_FAQ}
+  />
+</BaseLayout>
+
+<script src="/scripts/ev-vs-ice-10year-cost.js" defer></script>

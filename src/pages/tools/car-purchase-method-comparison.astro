@@ -1,0 +1,189 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import { CPM_DEFAULTS, CPM_META, CPM_FAQ } from "../../data/carPurchaseMethodComparison";
+
+const config = { defaults: CPM_DEFAULTS };
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: CPM_META.title,
+  description: CPM_META.description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${CPM_META.slug}/`,
+};
+---
+
+<BaseLayout title={CPM_META.title} description={CPM_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={CPM_META.slug} pageClass="cpm-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="자동차 구매 방법 비교"
+        title="리스 vs 할부 vs 현금, 내 조건엔 뭐가 제일 유리할까?"
+        description="차량가격·금리·보유기간을 입력하면 3가지 구매 방식의 총비용을 한번에 비교합니다."
+      />
+      <InfoNotice title="추정 계산 안내" lines={[CPM_META.caution, `업데이트 기준: ${CPM_META.updatedAt}`]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="cpmResetBtn" copyId="cpmCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <script id="cpmConfig" type="application/json" set:html={JSON.stringify(config)} />
+
+      <section class="cpm-section">
+        <h3>공통 조건</h3>
+        <div class="cpm-field">
+          <label>차량 가격</label>
+          <div class="cpm-input-row"><input data-cpm="carPrice" type="number" min="500" max="20000" step="100" /><span>만원</span></div>
+        </div>
+        <div class="cpm-field">
+          <label>보유 기간</label>
+          <div class="cpm-input-row"><input data-cpm="holdYears" type="number" min="1" max="10" step="1" /><span>년</span></div>
+        </div>
+        <div class="cpm-field">
+          <label>구매자 유형</label>
+          <select data-cpm="buyerType" class="cpm-select">
+            <option value="employee">직장인</option>
+            <option value="business">사업자 / 프리랜서</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="cpm-section cpm-section--collapsible" data-cpm-section="lease">
+        <h3 class="cpm-section__toggle">리스 조건 <span class="cpm-chevron">▼</span></h3>
+        <div class="cpm-section__body">
+          <div class="cpm-field">
+            <label>보증금 비율</label>
+            <div class="cpm-input-row"><input data-cpm="leaseDepositPct" type="number" min="0" max="50" step="5" /><span>%</span></div>
+          </div>
+          <div class="cpm-field">
+            <label>월 리스료</label>
+            <div class="cpm-input-row"><input data-cpm="leaseMonthly" type="number" min="10" max="500" step="5" /><span>만원</span></div>
+          </div>
+          <div class="cpm-field">
+            <label>리스 기간</label>
+            <div class="cpm-input-row"><input data-cpm="leaseTerm" type="number" min="12" max="60" step="12" /><span>개월</span></div>
+          </div>
+          <div class="cpm-field">
+            <label>잔존가치</label>
+            <div class="cpm-input-row"><input data-cpm="leaseResidual" type="number" min="0" max="60" step="5" /><span>%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cpm-section cpm-section--collapsible" data-cpm-section="inst">
+        <h3 class="cpm-section__toggle">할부 조건 <span class="cpm-chevron">▼</span></h3>
+        <div class="cpm-section__body">
+          <div class="cpm-field">
+            <label>선납금 비율</label>
+            <div class="cpm-input-row"><input data-cpm="instDownPct" type="number" min="0" max="80" step="5" /><span>%</span></div>
+          </div>
+          <div class="cpm-field">
+            <label>할부 기간</label>
+            <div class="cpm-input-row"><input data-cpm="instTerm" type="number" min="12" max="84" step="12" /><span>개월</span></div>
+          </div>
+          <div class="cpm-field">
+            <label>할부 금리</label>
+            <div class="cpm-input-row"><input data-cpm="instRate" type="number" min="0" max="20" step="0.1" /><span>%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cpm-section cpm-section--collapsible" data-cpm-section="cash">
+        <h3 class="cpm-section__toggle">현금 조건 <span class="cpm-chevron">▼</span></h3>
+        <div class="cpm-section__body">
+          <div class="cpm-field">
+            <label>기회비용 금리</label>
+            <div class="cpm-input-row"><input data-cpm="cashOppRate" type="number" min="0" max="20" step="0.5" /><span>%</span></div>
+          </div>
+          <p class="cpm-hint">현금 대신 예금·투자 시 기대수익률</p>
+        </div>
+      </section>
+    </Fragment>
+
+    <!-- 결과 영역 -->
+    <div class="cpm-compare-grid">
+      <div class="cpm-compare-card" id="cpmLeaseCard">
+        <div class="cpm-compare__badge">리스</div>
+        <div class="cpm-compare__total" id="cpmLeaseTotal">—</div>
+        <div class="cpm-compare__sub" id="cpmLeaseSub">보증금 + 리스료</div>
+      </div>
+      <div class="cpm-compare-card" id="cpmInstCard">
+        <div class="cpm-compare__badge">할부</div>
+        <div class="cpm-compare__total" id="cpmInstTotal">—</div>
+        <div class="cpm-compare__sub" id="cpmInstSub">원금 + 이자</div>
+      </div>
+      <div class="cpm-compare-card" id="cpmCashCard">
+        <div class="cpm-compare__badge">현금</div>
+        <div class="cpm-compare__total" id="cpmCashTotal">—</div>
+        <div class="cpm-compare__sub" id="cpmCashSub">차량가 + 기회비용</div>
+      </div>
+    </div>
+    <div class="cpm-winner" id="cpmWinner"></div>
+
+    <div id="cpmBusinessNote" class="cpm-business-note" style="display:none">
+      <strong>사업자 절세 효과 포함</strong>
+      <span id="cpmBusinessNoteText"></span>
+    </div>
+
+    <div class="cpm-chart-wrap">
+      <canvas id="cpmChart"></canvas>
+    </div>
+
+    <h3 class="cpm-table-title">비용 항목별 상세</h3>
+    <div class="cpm-table-wrap">
+      <table class="cpm-table">
+        <thead>
+          <tr><th>항목</th><th>리스</th><th>할부</th><th>현금</th></tr>
+        </thead>
+        <tbody id="cpmTableBody"></tbody>
+        <tfoot>
+          <tr><td>합계</td><td id="cpmLeaseTotalRow">—</td><td id="cpmInstTotalRow">—</td><td id="cpmCashTotalRow">—</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="cpm-guide-grid">
+      <div class="cpm-guide-card">
+        <strong>현금이 유리한 경우</strong>
+        <ul>
+          <li>목돈이 있고 5년 이상 장기 보유</li>
+          <li>투자 수익률이 4% 미만</li>
+        </ul>
+      </div>
+      <div class="cpm-guide-card">
+        <strong>리스가 유리한 경우</strong>
+        <ul>
+          <li>사업자 — 리스료 전액 경비처리</li>
+          <li>3년 단기 후 신차 교체 패턴</li>
+        </ul>
+      </div>
+      <div class="cpm-guide-card">
+        <strong>할부가 유리한 경우</strong>
+        <ul>
+          <li>목돈 없이 소유권 취득 원할 때</li>
+          <li>금리 4% 미만 특판 할부 이용 시</li>
+        </ul>
+      </div>
+    </div>
+  </SimpleToolShell>
+
+  <SeoContent
+    slot="after"
+    title="자동차 리스 vs 할부 vs 현금 구매 완전 비교 가이드"
+    summary="자동차 구매 방법은 단순 월 납입금 비교가 아닌 총비용·소유권·절세 효과를 함께 따져야 합니다."
+    faqs={CPM_FAQ}
+  />
+</BaseLayout>
+
+<script src="/scripts/car-purchase-method-comparison.js" defer></script>

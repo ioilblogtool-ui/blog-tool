@@ -1,0 +1,152 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import { NUC_DEFAULTS, NUC_META, NUC_FAQ, NUC_PRESETS } from "../../data/newVsUsedCar5YearCost";
+
+const config = { defaults: NUC_DEFAULTS, presets: NUC_PRESETS };
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: NUC_META.title,
+  description: NUC_META.description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${NUC_META.slug}/`,
+};
+---
+
+<BaseLayout title={NUC_META.title} description={NUC_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={NUC_META.slug} pageClass="nuc-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="자동차 구매 비교"
+        title="신차 vs 중고차, 5년 동안 실제로 어떤 게 더 싸?"
+        description="구매가·보험·유지비·감가를 모두 반영한 5년 총보유비용을 비교합니다."
+      />
+      <InfoNotice title="추정 계산 안내" lines={[NUC_META.caution, `업데이트 기준: ${NUC_META.updatedAt}`]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="nucResetBtn" copyId="nucCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <script id="nucConfig" type="application/json" set:html={JSON.stringify(config)} />
+
+      <div class="nuc-presets">
+        <button class="nuc-preset-btn is-active" data-preset="small">소형차 (아반떼급)</button>
+        <button class="nuc-preset-btn" data-preset="mid">준중형 (K5급)</button>
+        <button class="nuc-preset-btn" data-preset="suv">SUV (투싼급)</button>
+      </div>
+
+      <section class="nuc-section">
+        <h3>신차 조건</h3>
+        <div class="nuc-field">
+          <label>차량 가격</label>
+          <div class="nuc-input-row"><input data-nuc="newPrice" type="number" min="500" max="20000" step="100" /><span>만원</span></div>
+        </div>
+        <div class="nuc-field">
+          <label>첫해 보험료</label>
+          <div class="nuc-input-row"><input data-nuc="newInsurance" type="number" min="30" max="500" step="10" /><span>만원/년</span></div>
+        </div>
+        <div class="nuc-field">
+          <label>월 유지비</label>
+          <div class="nuc-input-row"><input data-nuc="newMonthly" type="number" min="5" max="200" step="1" /><span>만원/월</span></div>
+        </div>
+        <div class="nuc-field">
+          <label>5년 후 잔존가치</label>
+          <div class="nuc-input-row"><input data-nuc="newResidual" type="number" min="0" max="80" step="1" /><span>%</span></div>
+        </div>
+      </section>
+
+      <section class="nuc-section">
+        <h3>중고차 조건</h3>
+        <div class="nuc-field">
+          <label>차량 가격</label>
+          <div class="nuc-input-row"><input data-nuc="usedPrice" type="number" min="200" max="15000" step="100" /><span>만원</span></div>
+        </div>
+        <div class="nuc-field">
+          <label>현재 연식</label>
+          <div class="nuc-input-row"><input data-nuc="usedAge" type="number" min="1" max="15" step="1" /><span>년</span></div>
+        </div>
+        <div class="nuc-field">
+          <label>첫해 보험료</label>
+          <div class="nuc-input-row"><input data-nuc="usedInsurance" type="number" min="30" max="500" step="10" /><span>만원/년</span></div>
+        </div>
+        <div class="nuc-field">
+          <label>월 유지비</label>
+          <div class="nuc-input-row"><input data-nuc="usedMonthly" type="number" min="5" max="200" step="1" /><span>만원/월</span></div>
+        </div>
+        <div class="nuc-field">
+          <label>5년 후 잔존가치</label>
+          <div class="nuc-input-row"><input data-nuc="usedResidual" type="number" min="0" max="80" step="1" /><span>%</span></div>
+        </div>
+      </section>
+    </Fragment>
+
+    <!-- 결과 영역 -->
+    <div class="nuc-kpi-grid">
+      <div class="nuc-kpi-card nuc-kpi-card--new">
+        <span class="nuc-kpi__label">신차 5년 총비용</span>
+        <span class="nuc-kpi__value" id="nucNewTotal">—</span>
+        <span class="nuc-kpi__sub" id="nucNewSub"></span>
+      </div>
+      <div class="nuc-kpi-card nuc-kpi-card--used">
+        <span class="nuc-kpi__label">중고차 5년 총비용</span>
+        <span class="nuc-kpi__value" id="nucUsedTotal">—</span>
+        <span class="nuc-kpi__sub" id="nucUsedSub"></span>
+      </div>
+      <div class="nuc-kpi-card nuc-kpi-card--diff">
+        <span class="nuc-kpi__label">차액</span>
+        <span class="nuc-kpi__value" id="nucDiff">—</span>
+        <span class="nuc-kpi__sub" id="nucDiffSub"></span>
+      </div>
+      <div class="nuc-kpi-card">
+        <span class="nuc-kpi__label">손익분기점</span>
+        <span class="nuc-kpi__value" id="nucBreakEven">—</span>
+        <span class="nuc-kpi__sub">신차가 더 유리해지는 시점</span>
+      </div>
+    </div>
+
+    <div id="nucConclusion" class="nuc-conclusion"></div>
+
+    <div class="nuc-chart-wrap">
+      <canvas id="nucChart"></canvas>
+    </div>
+
+    <h3 class="nuc-table-title">비용 항목별 상세</h3>
+    <div class="nuc-table-wrap">
+      <table class="nuc-table">
+        <thead>
+          <tr><th>항목</th><th>신차</th><th>중고차</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>구매가</td><td id="nucNewPriceRow">—</td><td id="nucUsedPriceRow">—</td></tr>
+          <tr><td>취득세 (7%)</td><td id="nucNewTaxRow">—</td><td id="nucUsedTaxRow">—</td></tr>
+          <tr><td>5년 보험료</td><td id="nucNewInsRow">—</td><td id="nucUsedInsRow">—</td></tr>
+          <tr><td>5년 유지비</td><td id="nucNewMaintRow">—</td><td id="nucUsedMaintRow">—</td></tr>
+          <tr><td>감가 손실</td><td id="nucNewDeprRow">—</td><td id="nucUsedDeprRow">—</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td>합계</td><td id="nucNewTotalRow">—</td><td id="nucUsedTotalRow">—</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </SimpleToolShell>
+
+  <SeoContent
+    slot="after"
+    title="신차 vs 중고차 5년 총비용 비교 가이드"
+    summary="단순 구매가 비교가 아닌 5년 총보유비용(TCO) 기준으로 신차와 중고차를 비교해야 합니다."
+    faqs={NUC_FAQ}
+  />
+</BaseLayout>
+
+<script src="/scripts/new-vs-used-car-5year-cost.js" defer></script>
