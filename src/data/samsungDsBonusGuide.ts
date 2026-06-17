@@ -41,10 +41,10 @@ const numberFormatter = new Intl.NumberFormat("ko-KR");
 
 export const SAMSUNG_DS_BONUS_GUIDE_META = {
   slug: "samsung-ds-bonus-calculation-guide",
-  title: "삼성전자 DS 성과급 계산 기준 | TAI·OPI 차이와 지급 방식",
+  title: "삼성전자 DS 성과급 얼마? TAI·OPI 계산법 완전 정리 2026",
   description:
-    "삼성전자 DS 성과급 계산 기준을 TAI·OPI 차이, DS·DX·MX 사업부별 지급 구조, 연봉 대비 성과급 비율, 협의안·복지 변화 FAQ로 정리합니다.",
-  h1: "삼성전자 DS 성과급 계산 기준",
+    "DS부문 연봉 5000만원이면 TAI·OPI 합산 실수령은 얼마일까. 사업부별 지급률·세후 금액 계산법, DX·MX 비교까지 한번에 정리했습니다.",
+  h1: "삼성전자 DS 성과급 TAI·OPI 계산 기준",
   eyebrow: "삼성전자 성과급 기준",
   dateModified: "2026-05-24",
 };
