@@ -169,14 +169,54 @@ const jsonLd = {
         </tfoot>
       </table>
     </div>
-  </SimpleToolShell>
 
-  <SeoContent
-    slot="after"
-    title="전기차 vs 내연기관 10년 유지비 완전 비교 가이드"
-    summary="전기차는 구매가가 높지만 보조금과 낮은 충전비로 장기 보유 시 경제적입니다. 10년 총비용 기준으로 손익분기점을 확인하세요."
-    faqs={EVI_FAQ}
-  />
+    <!-- 관련 계산기 CTA -->
+    <section class="evi-related-section">
+      <p class="evi-related__eyebrow">자동차 관련 계산기</p>
+      <h2 class="evi-related__title">이어서 확인하면 좋은 계산기</h2>
+      <div class="evi-related-grid">
+        <a href="/tools/ev-vs-ice-cost-calculator/" class="evi-related-card">
+          <strong>전기차 연간 유지비 빠른 비교</strong>
+          <span>연간 충전비·유지비 기준 간단 비교</span>
+        </a>
+        <a href="/tools/new-vs-used-car-5year-cost/" class="evi-related-card">
+          <strong>신차 vs 중고차 5년 총비용</strong>
+          <span>구매가·보험·감가 포함 5년 총비용 비교</span>
+        </a>
+        <a href="/tools/car-purchase-method-comparison/" class="evi-related-card">
+          <strong>리스 vs 할부 vs 현금 비교</strong>
+          <span>어떤 방법으로 사야 총비용이 가장 적을까?</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SEO 콘텐츠 -->
+    <SeoContent
+      introTitle="전기차, 10년 기준으로 따져봐야 합니다"
+      intro={[
+        "전기차는 구매가가 내연기관 대비 1,000~2,000만원 높지만, 정부·지자체 보조금(최대 1,150만원)과 낮은 충전비(가정충전 기준 연료비의 1/4 수준)로 장기 보유 시 역전됩니다. 단, 공공충전만 사용하거나 배터리 교체가 필요한 경우 경제성이 줄어듭니다.",
+        "손익분기점은 가정충전 위주라면 5~7년, 공공충전 위주라면 8~12년이 일반적입니다. 본인의 충전 환경과 주행거리를 입력해 정확한 손익분기점을 확인하세요.",
+      ]}
+      inputPoints={[
+        "지역 선택 — 지자체 보조금이 서울 200만원 vs 광주 500만원으로 최대 2.5배 차이",
+        "충전 패턴 — 가정충전 비율이 높을수록 전기차 유리 (가정 120원 vs 공공 300원/kWh)",
+        "배터리 교체 포함 여부 — 10년 이상 보유 시 1,000만원 추가 비용 시나리오 반영",
+        "연간 주행거리 — 주행거리가 많을수록 연료비 절감 효과 커져 전기차 유리",
+      ]}
+      criteria={[
+        "전기차 실구매가: 차량가 - (국가 보조금 + 지자체 보조금)",
+        "연간 충전비: (연간주행거리 ÷ 전비 6km/kWh) × 가중평균 충전단가",
+        "내연기관 연료비: 연간주행거리 ÷ 연비 × 연료단가",
+        "손익분기점: 전기차 누적비용이 내연기관 누적비용 이하가 되는 연도",
+      ]}
+      faq={EVI_FAQ}
+      related={[
+        { href: "/tools/ev-vs-ice-cost-calculator/", label: "전기차 vs 내연기관 연간 유지비 비교" },
+        { href: "/tools/new-vs-used-car-5year-cost/", label: "신차 vs 중고차 5년 총비용 계산기" },
+        { href: "/tools/car-purchase-method-comparison/", label: "리스 vs 할부 vs 현금 비교 계산기" },
+      ]}
+    />
+  </SimpleToolShell>
 </BaseLayout>
 
 <script src="/scripts/ev-vs-ice-10year-cost.js" defer></script>

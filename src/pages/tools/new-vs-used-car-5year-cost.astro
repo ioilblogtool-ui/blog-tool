@@ -139,14 +139,53 @@ const jsonLd = {
         </tfoot>
       </table>
     </div>
-  </SimpleToolShell>
 
-  <SeoContent
-    slot="after"
-    title="신차 vs 중고차 5년 총비용 비교 가이드"
-    summary="단순 구매가 비교가 아닌 5년 총보유비용(TCO) 기준으로 신차와 중고차를 비교해야 합니다."
-    faqs={NUC_FAQ}
-  />
+    <!-- 관련 계산기 CTA -->
+    <section class="nuc-related-section">
+      <p class="nuc-related__eyebrow">자동차 관련 계산기</p>
+      <h2 class="nuc-related__title">이어서 확인하면 좋은 계산기</h2>
+      <div class="nuc-related-grid">
+        <a href="/tools/car-purchase-method-comparison/" class="nuc-related-card">
+          <strong>리스 vs 할부 vs 현금 비교</strong>
+          <span>어떤 방법으로 사야 총비용이 가장 적을까?</span>
+        </a>
+        <a href="/tools/ev-vs-ice-10year-cost/" class="nuc-related-card">
+          <strong>전기차 vs 내연기관 10년 유지비</strong>
+          <span>보조금 포함 10년 총비용과 손익분기점 계산</span>
+        </a>
+        <a href="/tools/ev-vs-ice-cost-calculator/" class="nuc-related-card">
+          <strong>전기차 연간 유지비 비교</strong>
+          <span>연간 충전비·유지비 기준 빠른 비교</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SEO 콘텐츠 -->
+    <SeoContent
+      introTitle="신차 vs 중고차, 단순 가격만 보면 안 됩니다"
+      intro={[
+        "자동차 구매 시 많은 사람이 '신차 가격 vs 중고차 가격'만 비교합니다. 하지만 실제 5년 보유 비용은 구매가 외에도 취득세(7%), 보험료, 월 유지비, 감가(잔존가치 하락)까지 포함해야 합니다.",
+        "3년식 중고차는 구매가가 신차 대비 40~50% 낮지만, 유지비와 보험료가 더 높고 추가 감가도 크기 때문에 5년 총비용 기준으로는 생각보다 차이가 적을 수 있습니다. 차종과 이용 조건에 따라 신차가 유리한 경우도 있습니다.",
+      ]}
+      inputPoints={[
+        "차량 구매가와 연식 — 중고차는 3년식 기준이 일반적",
+        "첫해 보험료 — 신차 대비 중고차는 10~30% 낮음",
+        "월 유지비 — 연식이 오래될수록 소모품 교체 빈도 증가",
+        "잔존가치 — 5년 후 중고차 시세 예상치 (신차 40%, 중고차 25% 기준)",
+      ]}
+      criteria={[
+        "취득세: 승용차 7%, 경차 4% 기준으로 자동 계산",
+        "감가: 구매가 × (1 - 잔존가치%) 로 계산 (선형 분산)",
+        "보험료: 5년 합산 기준, 연도별 변동은 미반영",
+        "유지비: 주유·주차·소모품 월 평균 합산 기준",
+      ]}
+      faq={NUC_FAQ}
+      related={[
+        { href: "/tools/car-purchase-method-comparison/", label: "리스 vs 할부 vs 현금 비교 계산기" },
+        { href: "/tools/ev-vs-ice-10year-cost/", label: "전기차 vs 내연기관 10년 유지비 계산기" },
+      ]}
+    />
+  </SimpleToolShell>
 </BaseLayout>
 
 <script src="/scripts/new-vs-used-car-5year-cost.js" defer></script>

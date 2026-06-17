@@ -176,14 +176,54 @@ const jsonLd = {
         </ul>
       </div>
     </div>
-  </SimpleToolShell>
 
-  <SeoContent
-    slot="after"
-    title="자동차 리스 vs 할부 vs 현금 구매 완전 비교 가이드"
-    summary="자동차 구매 방법은 단순 월 납입금 비교가 아닌 총비용·소유권·절세 효과를 함께 따져야 합니다."
-    faqs={CPM_FAQ}
-  />
+    <!-- 관련 계산기 CTA -->
+    <section class="cpm-related-section">
+      <p class="cpm-related__eyebrow">자동차 관련 계산기</p>
+      <h2 class="cpm-related__title">이어서 확인하면 좋은 계산기</h2>
+      <div class="cpm-related-grid">
+        <a href="/tools/new-vs-used-car-5year-cost/" class="cpm-related-card">
+          <strong>신차 vs 중고차 5년 총비용</strong>
+          <span>구매가·보험·유지비·감가 포함 5년 총비용 비교</span>
+        </a>
+        <a href="/tools/ev-vs-ice-10year-cost/" class="cpm-related-card">
+          <strong>전기차 vs 내연기관 10년 유지비</strong>
+          <span>보조금 포함 10년 총비용과 손익분기점 계산</span>
+        </a>
+        <a href="/tools/ev-vs-ice-cost-calculator/" class="cpm-related-card">
+          <strong>전기차 연간 유지비 비교</strong>
+          <span>연간 충전비·유지비 기준 빠른 비교</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SEO 콘텐츠 -->
+    <SeoContent
+      introTitle="자동차 구매 방법, 월 납입금만 보면 안 됩니다"
+      intro={[
+        "리스·할부·현금 구매를 비교할 때 많은 사람이 월 납입금만 봅니다. 하지만 진짜 비교 기준은 '보유 기간 총비용'입니다. 리스는 월 부담이 적어 보이지만 소유권이 없고, 장기로 보면 할부나 현금보다 총비용이 높을 수 있습니다.",
+        "특히 사업자(개인사업자·법인)라면 리스료 전액을 경비처리할 수 있어 실질 부담이 크게 줄어듭니다. 직장인과 사업자의 최적 구매 방법은 다릅니다. 본인 상황에 맞는 입력값으로 직접 비교해보세요.",
+      ]}
+      inputPoints={[
+        "차량 가격과 보유 기간 — 단기(3년) vs 장기(5년 이상) 전략이 달라집니다",
+        "구매자 유형 — 직장인은 할부·현금, 사업자는 리스가 유리한 경우 많음",
+        "리스 조건 — 보증금 비율·월 리스료·잔존가치에 따라 총비용 크게 달라짐",
+        "할부 금리 — 0% 특판 할부 시 현금보다 유리할 수 있음",
+        "기회비용 금리 — 현금 구매 시 해당 금액을 투자했을 때의 기대수익률",
+      ]}
+      criteria={[
+        "리스 총비용: 보증금 + 월 리스료 × 기간 (사업자 절세 효과 차감)",
+        "할부 총비용: 차량가 + 이자 합계 (원리금균등상환 방식)",
+        "현금 총비용: 차량가 + 기회비용 (연 수익률 × 보유 기간)",
+        "사업자 절세: 실효세율 25% 기준으로 절세 효과 반영",
+      ]}
+      faq={CPM_FAQ}
+      related={[
+        { href: "/tools/new-vs-used-car-5year-cost/", label: "신차 vs 중고차 5년 총비용 계산기" },
+        { href: "/tools/ev-vs-ice-10year-cost/", label: "전기차 vs 내연기관 10년 유지비 계산기" },
+      ]}
+    />
+  </SimpleToolShell>
 </BaseLayout>
 
 <script src="/scripts/car-purchase-method-comparison.js" defer></script>
