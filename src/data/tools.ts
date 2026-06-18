@@ -1678,6 +1678,19 @@ export const tools: ToolMeta[] = [
     badges: ["전기차", "내연기관", "10년비용", "보조금", "2026"],
   },
   {
+    slug: "car-insurance-premium",
+    title: "자동차 보험료 계산기",
+    description: "예상 보험료 계산 + 블랙박스·마일리지·영유아 자녀 할인 체크 + 주요 보험사 비교",
+    order: 70.4,
+    eyebrow: "자동차 보험료",
+    category: "자동차",
+    badges: ["NEW", "할인체크", "보험사비교"],
+    previewStats: [
+      { label: "최대 할인", value: "최대 65%" },
+      { label: "비교 보험사", value: "7개사" },
+    ],
+  },
+  {
     slug: "pet-monthly-cost-calculator",
     title: "강아지·고양이 월 양육비 계산기",
     description: "강아지·고양이 사료, 병원비, 미용, 간식 등 항목별 월 양육비를 계산하고 연간·10년 누적 비용을 확인하세요.",

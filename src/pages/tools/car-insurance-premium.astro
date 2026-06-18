@@ -1,0 +1,318 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CIP_BASE_PREMIUM, CIP_AGE_FACTOR, CIP_CAREER_FACTOR, CIP_ACCIDENT_FACTOR,
+  CIP_PRICE_FACTOR, CIP_AGE_CAR_FACTOR, CIP_DRIVER_FACTOR, CIP_COVERAGE_FACTOR,
+  CIP_DISCOUNTS, CIP_INSURERS, CIP_DEFAULTS, CIP_META, CIP_FAQ,
+} from "../../data/carInsurancePremium";
+
+const config = {
+  basePremium: CIP_BASE_PREMIUM,
+  ageFactor: CIP_AGE_FACTOR,
+  careerFactor: CIP_CAREER_FACTOR,
+  accidentFactor: CIP_ACCIDENT_FACTOR,
+  priceFactor: CIP_PRICE_FACTOR,
+  carAgeFactor: CIP_AGE_CAR_FACTOR,
+  driverFactor: CIP_DRIVER_FACTOR,
+  coverageFactor: CIP_COVERAGE_FACTOR,
+  discounts: CIP_DISCOUNTS,
+  insurers: CIP_INSURERS,
+  defaults: CIP_DEFAULTS,
+};
+
+const familyDiscounts = CIP_DISCOUNTS.filter(d => d.category === 'family');
+const deviceDiscounts = CIP_DISCOUNTS.filter(d => d.category === 'device');
+const mileageDiscounts = CIP_DISCOUNTS.filter(d => d.category === 'mileage');
+const habitDiscounts = CIP_DISCOUNTS.filter(d => d.category === 'habit');
+const contractDiscounts = CIP_DISCOUNTS.filter(d => d.category === 'contract');
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: CIP_META.title,
+  description: CIP_META.description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${CIP_META.slug}/`,
+};
+---
+
+<BaseLayout title={CIP_META.title} description={CIP_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={CIP_META.slug} pageClass="cip-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="자동차 보험료"
+        title="내 보험료, 이 할인 다 받고 있어?"
+        description="차량·운전자 정보를 입력하고 놓치기 쉬운 할인 항목을 체크하면 예상 절약 금액을 바로 확인합니다."
+      />
+      <InfoNotice title="추정 계산 안내" lines={[CIP_META.caution, `업데이트 기준: ${CIP_META.updatedAt}`]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="cipResetBtn" copyId="cipCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <script id="cipConfig" type="application/json" set:html={JSON.stringify(config)} />
+
+      <section class="cip-section">
+        <h3>차량 정보</h3>
+        <div class="cip-field">
+          <label>차량 가격대</label>
+          <select data-cip="carPrice" class="cip-select">
+            <option value="1000">1,000만원 미만</option>
+            <option value="2000">1,000~2,000만원</option>
+            <option value="3000" selected>2,000~3,000만원</option>
+            <option value="4000">3,000~4,000만원</option>
+            <option value="5000">4,000~5,000만원</option>
+            <option value="6000">5,000~6,000만원</option>
+            <option value="8000">6,000만원 이상</option>
+          </select>
+        </div>
+        <div class="cip-field">
+          <label>차량 연식</label>
+          <select data-cip="carAge" class="cip-select">
+            <option value="new">신차</option>
+            <option value="1-3" selected>1~3년</option>
+            <option value="4-6">4~6년</option>
+            <option value="7-10">7~10년</option>
+            <option value="11+">11년 이상</option>
+          </select>
+        </div>
+        <div class="cip-field">
+          <label>담보 범위</label>
+          <select data-cip="coverage" class="cip-select">
+            <option value="full" selected>자차 포함 (종합)</option>
+            <option value="basic">대인+대물만</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="cip-section">
+        <h3>운전자 정보</h3>
+        <div class="cip-field">
+          <label>운전자 나이</label>
+          <div class="cip-input-row">
+            <input data-cip="driverAge" type="number" min="18" max="80" step="1" value="35" />
+            <span>세</span>
+          </div>
+        </div>
+        <div class="cip-field">
+          <label>운전 경력</label>
+          <select data-cip="career" class="cip-select">
+            <option value="0-1">1년 미만</option>
+            <option value="2-3">2~3년</option>
+            <option value="4-5">4~5년</option>
+            <option value="6-9">6~9년</option>
+            <option value="10+" selected>10년 이상</option>
+          </select>
+        </div>
+        <div class="cip-field">
+          <label>전년도 사고 이력</label>
+          <select data-cip="accident" class="cip-select">
+            <option value="none" selected>무사고</option>
+            <option value="one">1건</option>
+            <option value="two">2건 이상</option>
+          </select>
+        </div>
+        <div class="cip-field">
+          <label>운전자 범위</label>
+          <select data-cip="driverScope" class="cip-select">
+            <option value="self">본인만</option>
+            <option value="couple" selected>부부</option>
+            <option value="family">가족</option>
+            <option value="anyone">누구나</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="cip-section">
+        <h3>할인 항목 체크</h3>
+
+        <!-- 가족·자녀 할인 (상단 강조) -->
+        <div class="cip-discount-group cip-discount-group--family">
+          <p class="cip-discount-group__title">👶 가족·자녀 할인 — 놓치기 쉬운 항목!</p>
+          {familyDiscounts.map(d => (
+            <label class="cip-discount-item">
+              <input type="checkbox" data-cip-disc={d.id} />
+              <span class="cip-discount-item__text">{d.icon} {d.label}<br /><span style="font-size:0.74rem;color:#6b7280;">{d.desc}</span></span>
+              <span class="cip-discount-item__rate">-{Math.round(d.rate * 100)}%</span>
+            </label>
+          ))}
+        </div>
+
+        <!-- 기기·장치 -->
+        <div class="cip-discount-group">
+          <p class="cip-discount-group__title">📷 기기·장치 할인</p>
+          {deviceDiscounts.map(d => (
+            <label class="cip-discount-item">
+              <input type="checkbox" data-cip-disc={d.id} />
+              <span class="cip-discount-item__text">{d.icon} {d.label}<br /><span style="font-size:0.74rem;color:#6b7280;">{d.desc}</span></span>
+              <span class="cip-discount-item__rate">-{Math.round(d.rate * 100)}%</span>
+            </label>
+          ))}
+        </div>
+
+        <!-- 마일리지 -->
+        <div class="cip-discount-group">
+          <p class="cip-discount-group__title">🚗 마일리지 할인 (택 1)</p>
+          {mileageDiscounts.map(d => (
+            <label class="cip-discount-item">
+              <input type="checkbox" data-cip-disc={d.id} />
+              <span class="cip-discount-item__text">{d.icon} {d.label}<br /><span style="font-size:0.74rem;color:#6b7280;">{d.desc}</span></span>
+              <span class="cip-discount-item__rate">-{Math.round(d.rate * 100)}%</span>
+            </label>
+          ))}
+        </div>
+
+        <!-- 운전 습관 -->
+        <div class="cip-discount-group">
+          <p class="cip-discount-group__title">🌙 운전 습관 할인</p>
+          {habitDiscounts.map(d => (
+            <label class="cip-discount-item">
+              <input type="checkbox" data-cip-disc={d.id} />
+              <span class="cip-discount-item__text">{d.icon} {d.label}<br /><span style="font-size:0.74rem;color:#6b7280;">{d.desc}</span></span>
+              <span class="cip-discount-item__rate">-{Math.round(d.rate * 100)}%</span>
+            </label>
+          ))}
+        </div>
+
+        <!-- 계약 방식 -->
+        <div class="cip-discount-group">
+          <p class="cip-discount-group__title">💻 계약 방식 할인</p>
+          {contractDiscounts.map(d => (
+            <label class="cip-discount-item">
+              <input type="checkbox" data-cip-disc={d.id} />
+              <span class="cip-discount-item__text">{d.icon} {d.label}<br /><span style="font-size:0.74rem;color:#6b7280;">{d.desc}</span></span>
+              <span class="cip-discount-item__rate">-{Math.round(d.rate * 100)}%</span>
+            </label>
+          ))}
+        </div>
+      </section>
+    </Fragment>
+
+    <!-- 결과 -->
+    <div class="cip-kpi-grid">
+      <div class="cip-kpi-card cip-kpi-card--before">
+        <span class="cip-kpi__label">할인 전 예상 보험료</span>
+        <span class="cip-kpi__value" id="cipBeforeVal">—</span>
+        <span class="cip-kpi__sub">연간 기준</span>
+      </div>
+      <div class="cip-kpi-card cip-kpi-card--rate">
+        <span class="cip-kpi__label">적용 할인율</span>
+        <span class="cip-kpi__value" id="cipRateVal">—</span>
+        <span class="cip-kpi__sub">최대 65% 한도</span>
+      </div>
+      <div class="cip-kpi-card cip-kpi-card--after">
+        <span class="cip-kpi__label">할인 후 예상 보험료</span>
+        <span class="cip-kpi__value" id="cipAfterVal">—</span>
+        <span class="cip-kpi__sub" id="cipAfterSub"></span>
+      </div>
+    </div>
+
+    <div class="cip-saving-banner is-hidden" id="cipSavingBanner"></div>
+
+    <!-- 적용된 할인 항목 -->
+    <div class="cip-applied-section">
+      <h3 class="cip-applied-title">적용된 할인 항목</h3>
+      <div id="cipAppliedList">
+        <p class="cip-no-discount">왼쪽 체크리스트에서 해당 항목을 선택하세요.</p>
+      </div>
+    </div>
+
+    <!-- 보험사 추천 -->
+    <div class="cip-recommend-section">
+      <p class="cip-section-title">내 조건에 맞는 보험사 추천</p>
+      <p class="cip-section-sub">선택한 할인 항목 기반으로 자동 산출됩니다</p>
+      <div class="cip-recommend-grid" id="cipRecommendGrid"></div>
+
+      <p class="cip-section-title" style="margin-top:1.5rem;">전체 보험사 비교</p>
+      <div class="cip-insurer-table-wrap">
+        <table class="cip-insurer-table">
+          <thead>
+            <tr>
+              <th>보험사</th>
+              <th>점유율</th>
+              <th>자녀할인</th>
+              <th>마일리지</th>
+              <th>다이렉트</th>
+              <th>강점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CIP_INSURERS.map(ins => (
+              <tr>
+                <td>{ins.name}</td>
+                <td>{ins.share}%</td>
+                <td>{ins.childDiscount ? <span class="cip-check">✓</span> : <span class="cip-cross">—</span>}</td>
+                <td>{ins.mileageDiscount ? <span class="cip-check">✓</span> : <span class="cip-cross">—</span>}</td>
+                <td>{ins.directDiscount ? <span class="cip-check">✓</span> : <span class="cip-cross">—</span>}</td>
+                <td style="text-align:left;font-size:0.78rem;color:#4b5563;">{ins.strengths[0]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 관련 계산기 CTA -->
+    <section class="cip-related-section">
+      <p class="cip-related__eyebrow">자동차 관련 계산기</p>
+      <h2 class="cip-related__title">이어서 확인하면 좋은 계산기</h2>
+      <div class="cip-related-grid">
+        <a href="/tools/new-vs-used-car-5year-cost/" class="cip-related-card">
+          <strong>신차 vs 중고차 5년 총비용</strong>
+          <span>구매가·보험·감가 포함 5년 총비용 비교</span>
+        </a>
+        <a href="/tools/car-purchase-method-comparison/" class="cip-related-card">
+          <strong>리스 vs 할부 vs 현금 비교</strong>
+          <span>어떤 방법으로 사야 총비용이 가장 적을까?</span>
+        </a>
+        <a href="/tools/ev-vs-ice-10year-cost/" class="cip-related-card">
+          <strong>전기차 vs 내연기관 10년 비교</strong>
+          <span>보조금 포함 10년 총비용과 손익분기점</span>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="자동차 보험료, 같은 차도 가입 방법에 따라 수십만원 차이 납니다"
+      intro={[
+        "자동차 보험료는 차량·운전자 조건이 같아도 할인 항목 적용 여부에 따라 연간 20~40만원 이상 차이가 납니다. 실제로 블랙박스 할인(5%)·마일리지 할인(최대 30%)·다이렉트 가입(15%)을 모두 적용하면 절반 가까이 절약되는 경우도 있습니다. 문제는 이 할인들을 보험사가 먼저 안내해주지 않는다는 점입니다.",
+        "특히 놓치기 쉬운 것이 자녀 관련 할인입니다. 만 6세 이하 영유아 자녀가 있으면 삼성화재·DB손보·KB손보 등 주요 보험사에서 5~7% 할인을 받을 수 있습니다. 다자녀(2명 이상)라면 추가로 7~10% 할인이 붙어 합산 15% 이상 절약이 가능합니다. 출산 당해연도 할인(5%), 임산부 할인(4%)도 일부 보험사에서 제공하지만 스스로 체크하지 않으면 적용받지 못합니다.",
+        "마일리지 할인은 연간 주행거리가 적은 분에게 가장 효과가 큰 항목입니다. 연 5,000km 이하라면 최대 30%까지 할인되며, 10,000km 이하도 약 15% 할인됩니다. 마일리지 특약은 가입 시 선택하고 보험사 앱으로 주행거리를 인증해야 합니다. 현대해상 Hi-Car 앱이 인증 정확도가 높다는 평이 많습니다.",
+        "보험사별로 특화된 강점이 다릅니다. 긴급출동 서비스가 중요하다면 전국망 1위인 삼성화재, 빠른 보상이 우선이라면 메리츠화재, 자녀 할인 체계가 가장 잘 갖춰진 곳은 KB손해보험, 마일리지 할인 극대화는 현대해상이 강점입니다. 매년 동일 보험사를 쓰지 말고 갱신 전에 다이렉트 비교 견적을 받아보는 것이 좋습니다.",
+        "다이렉트(인터넷) 가입은 설계사 수수료가 없어 동일 조건에서 10~20% 저렴합니다. 블랙박스가 없다면 5~10만원짜리 제품 하나로 매년 수만원을 절약할 수 있어 ROI가 매우 높습니다. 왼쪽 체크리스트에서 본인에게 해당하는 항목을 모두 체크하고 실제 절약 가능 금액을 확인해보세요.",
+      ]}
+      inputPoints={[
+        "차량 가격대·연식 — 자차 보험료가 차량가와 연동되므로 연식이 오래될수록 보험료 낮아짐",
+        "운전자 나이·경력 — 20대 초반은 30~40대 대비 2배 이상 보험료 높음",
+        "사고 이력 — 사고 1건 시 약 30%, 2건 이상 시 약 65% 할증",
+        "할인 체크리스트 — 영유아 자녀·블랙박스·마일리지·다이렉트 항목 반드시 확인",
+      ]}
+      criteria={[
+        "보험료 추정: 차량가·연식·운전자 나이·경력·사고이력·운전자 범위 6개 요소 복합 계산",
+        "할인 상한: 모든 할인 합산 최대 65% 캡 적용",
+        "마일리지 할인: 5,000km 이하(30%)·10,000km 이하(15%) 중 높은 쪽만 적용",
+        "보험사 추천: 선택한 할인 항목 기반 점수 산출 후 상위 3개사 표시",
+        "실제 보험료는 차종·지역·보험사 심사에 따라 다름 — 추정 참고용",
+      ]}
+      faq={CIP_FAQ}
+      related={[
+        { href: "/tools/new-vs-used-car-5year-cost/", label: "신차 vs 중고차 5년 총비용 계산기" },
+        { href: "/tools/car-purchase-method-comparison/", label: "리스 vs 할부 vs 현금 비교 계산기" },
+        { href: "/tools/ev-vs-ice-10year-cost/", label: "전기차 vs 내연기관 10년 유지비 계산기" },
+      ]}
+    />
+  </SimpleToolShell>
+</BaseLayout>
+
+<script src="/scripts/car-insurance-premium.js" defer></script>
