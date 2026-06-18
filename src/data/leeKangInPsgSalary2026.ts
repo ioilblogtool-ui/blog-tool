@@ -120,7 +120,7 @@ export const LKIS_RELATED_PLAYER_SALARIES: RelatedPlayerSalary[] = [
     league: "MLS",
     annualSalaryKrw: 15400000000,
     sourceBadge: "보도 기준",
-    href: "/reports/korea-worldcup-squad-salary-2026/",
+    href: "/reports/son-heung-min-lafc-salary-net-worth-2026/",
     note: "MLS 보수 보도를 원화로 단순 환산한 값입니다.",
   },
   {
@@ -136,6 +136,11 @@ export const LKIS_RELATED_PLAYER_SALARIES: RelatedPlayerSalary[] = [
 ];
 
 export const LKIS_RELATED_LINKS: RelatedLink[] = [
+  {
+    href: "/reports/son-heung-min-lafc-salary-net-worth-2026/",
+    label: "손흥민 연봉 2026｜LAFC 주급·세후 실수령액·재산 추정",
+    description: "손흥민의 LAFC 보도 기준 연봉과 재산 추정 범위를 정리합니다.",
+  },
   {
     href: "/reports/korea-worldcup-squad-salary-2026/",
     label: "2026 대한민국 월드컵 대표팀 연봉 순위",

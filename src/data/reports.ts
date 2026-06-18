@@ -597,6 +597,13 @@ export const reports: ReportMeta[] = [
     badges: ["월드컵", "국가대표", "연봉", "2026"],
   },
   {
+    slug: "son-heung-min-lafc-salary-net-worth-2026",
+    title: "손흥민 연봉 2026｜LAFC 주급·세후 실수령액·재산 추정",
+    description: "손흥민의 2026년 LAFC 보도 기준 연봉을 월급, 주급, 세후 실수령액으로 환산하고 커리어 누적 연봉과 재산 추정 범위를 정리합니다.",
+    order: 37.1153,
+    badges: ["손흥민", "LAFC", "재산추정", "2026"],
+  },
+  {
     slug: "lee-kang-in-psg-salary-2026",
     title: "이강인 연봉 2026｜PSG 주급·세후 실수령액은 얼마일까",
     description: "이강인의 2026년 PSG 추정 연봉을 유로와 원화 기준으로 환산하고, 주급·월급·일급·세후 실수령액을 계산합니다.",

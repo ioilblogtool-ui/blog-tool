@@ -298,6 +298,7 @@ export const KFLS_FAQ: PageFaqItem[] = [
 ];
 
 export const KFLS_RELATED_LINKS = [
+  { href: "/reports/son-heung-min-lafc-salary-net-worth-2026/", label: "손흥민 연봉 2026｜LAFC 주급·세후 실수령액·재산 추정" },
   { href: "/reports/lee-kang-in-psg-salary-2026/", label: "이강인 연봉 2026｜PSG 주급·세후 실수령액" },
   { href: "/reports/korea-worldcup-squad-salary-2026/", label: "2026 대한민국 월드컵 대표팀 연봉 순위" },
   { href: "/reports/kleague-salary-comparison-2026/", label: "K리그1 구단 연봉 비교 2026" },

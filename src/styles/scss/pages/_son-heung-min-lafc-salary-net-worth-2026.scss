@@ -1,0 +1,423 @@
+.shms-page {
+  --shms-ink: #172033;
+  --shms-muted: #667085;
+  --shms-line: #d8e0ea;
+  --shms-soft: #f5f8fb;
+  --shms-blue: #2457d6;
+  --shms-gold: #a36500;
+  --shms-warn: #9a5b00;
+
+  .shms-section-heading {
+    display: grid;
+    gap: 6px;
+
+    p,
+    h2,
+    span {
+      margin: 0;
+    }
+
+    p {
+      color: var(--shms-blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    h2 {
+      color: var(--shms-ink);
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    span {
+      color: var(--shms-muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+  }
+
+  .shms-kpi-grid,
+  .shms-net-grid,
+  .shms-scenario-grid,
+  .shms-player-grid,
+  .shms-related-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .shms-kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .shms-kpi-card,
+  .shms-source-strip,
+  .shms-net-grid article,
+  .shms-scenario-card,
+  .shms-player-card,
+  .shms-related-card,
+  .shms-note-panel,
+  .shms-formula,
+  .shms-career-total,
+  .shms-timeline-item {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--shms-line);
+    border-radius: 8px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .shms-kpi-card {
+    span,
+    small {
+      color: var(--shms-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    strong {
+      color: var(--shms-ink);
+      font-size: clamp(22px, 4vw, 30px);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    &--primary {
+      border-color: #b9ccff;
+      background: #f6f9ff;
+    }
+
+    &--wealth {
+      border-color: #f0c36a;
+      background: #fffaf0;
+    }
+  }
+
+  .shms-source-strip {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+
+    p {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: var(--shms-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    strong {
+      color: var(--shms-ink);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    a {
+      color: var(--shms-blue);
+      font-weight: 850;
+    }
+  }
+
+  .shms-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--shms-line);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .shms-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--shms-line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--shms-soft);
+      color: var(--shms-ink);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    td {
+      color: var(--shms-muted);
+      line-height: 1.55;
+    }
+
+    td:first-child,
+    td:nth-child(2),
+    td:nth-child(3) {
+      color: var(--shms-ink);
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+  }
+
+  .shms-net-grid,
+  .shms-scenario-grid,
+  .shms-player-grid,
+  .shms-related-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .shms-net-grid article {
+    strong {
+      color: var(--shms-blue);
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    span {
+      color: var(--shms-ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    p {
+      margin: 0;
+      color: var(--shms-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  .shms-career-total {
+    border-color: #c7d6ff;
+    background: #f6f9ff;
+
+    span,
+    p {
+      margin: 0;
+      color: var(--shms-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    strong {
+      color: var(--shms-blue);
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+  }
+
+  .shms-timeline {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .shms-timeline-item {
+    grid-template-columns: minmax(90px, 120px) minmax(0, 1fr) minmax(160px, auto);
+    align-items: center;
+
+    span,
+    p {
+      margin: 0;
+      color: var(--shms-muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    h3 {
+      margin: 0;
+      color: var(--shms-ink);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    strong {
+      color: var(--shms-ink);
+      font-size: 15px;
+      line-height: 1.35;
+      text-align: right;
+    }
+
+    p {
+      grid-column: 2 / -1;
+    }
+  }
+
+  .shms-scenario-card {
+    span {
+      width: fit-content;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #fff4df;
+      color: var(--shms-warn);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    h3,
+    ul {
+      margin: 0;
+    }
+
+    h3 {
+      color: var(--shms-ink);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    strong {
+      color: var(--shms-gold);
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    ul {
+      padding-left: 18px;
+      color: var(--shms-muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    &--base {
+      border-color: #f0c36a;
+      background: #fffaf0;
+    }
+  }
+
+  .shms-note-panel,
+  .shms-formula {
+    strong,
+    p {
+      margin: 0;
+    }
+
+    strong {
+      color: var(--shms-ink);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    p {
+      color: var(--shms-muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+  }
+
+  .shms-player-card,
+  .shms-related-card {
+    transition: border-color 0.16s, background 0.16s, transform 0.16s;
+
+    &:hover {
+      border-color: var(--shms-blue);
+      background: #f7faff;
+      transform: translateY(-1px);
+    }
+  }
+
+  .shms-player-card {
+    strong {
+      color: var(--shms-ink);
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    small,
+    p {
+      margin: 0;
+      color: var(--shms-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    em {
+      color: var(--shms-blue);
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+  }
+
+  .shms-badge {
+    width: fit-content;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #fff4df;
+    color: var(--shms-warn);
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  .shms-badge--보도-기준 {
+    background: #eaf1ff;
+    color: var(--shms-blue);
+  }
+
+  .shms-badge--추정,
+  .shms-badge--확인-필요 {
+    background: #fff4df;
+    color: var(--shms-warn);
+  }
+
+  .shms-related-card {
+    strong,
+    p {
+      margin: 0;
+    }
+
+    strong {
+      color: var(--shms-ink);
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    p {
+      color: var(--shms-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .shms-kpi-grid,
+    .shms-net-grid,
+    .shms-scenario-grid,
+    .shms-player-grid,
+    .shms-related-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .shms-kpi-card strong {
+      font-size: 24px;
+    }
+
+    .shms-source-strip,
+    .shms-timeline-item {
+      grid-template-columns: 1fr;
+    }
+
+    .shms-timeline-item {
+      strong {
+        text-align: left;
+      }
+
+      p {
+        grid-column: auto;
+      }
+    }
+  }
+}

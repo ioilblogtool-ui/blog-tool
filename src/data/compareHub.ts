@@ -113,7 +113,7 @@ export const COMPARE_CATEGORIES: CompareCategory[] = [
     title: "스포츠 연봉 비교",
     description: "KBO, K리그, 월드컵 대표팀 연봉과 포상금을 팀·선수·국가 기준으로 비교합니다.",
     criteria: ["연봉", "구단", "선수", "포상금"],
-    featuredItemIds: ["lee-kang-in-salary", "kbo-salary", "worldcup-squad-total", "kleague-salary"],
+    featuredItemIds: ["son-heung-min-lafc-salary-net-worth", "lee-kang-in-salary", "worldcup-squad-total", "kleague-salary"],
   },
   {
     id: "ai",
@@ -653,6 +653,19 @@ export const COMPARE_ITEMS: CompareItem[] = [
     stats: [{ label: "결과", value: "취득세" }, { label: "기준", value: "주택 수" }],
     ctaLabel: "취득세 계산",
     priority: 5,
+  },
+  {
+    id: "son-heung-min-lafc-salary-net-worth",
+    title: "손흥민 연봉·재산 추정 2026",
+    description: "LAFC 보도 기준 연봉을 주급·월급·세후 실수령액으로 환산하고 커리어 누적 연봉과 재산 추정 범위를 정리합니다.",
+    href: "/reports/son-heung-min-lafc-salary-net-worth-2026/",
+    type: "report",
+    categoryId: "sports",
+    criteria: ["LAFC", "주급", "세후", "재산 추정"],
+    badges: [{ label: "신규", tone: "new" }, { label: "보도 기준", tone: "estimate" }],
+    stats: [{ label: "연봉", value: "1,120만 USD" }, { label: "재산", value: "추정" }],
+    ctaLabel: "연봉 보기",
+    priority: 0.4,
   },
   {
     id: "lee-kang-in-salary",
