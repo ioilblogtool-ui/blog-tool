@@ -113,7 +113,7 @@ export const COMPARE_CATEGORIES: CompareCategory[] = [
     title: "스포츠 연봉 비교",
     description: "KBO, K리그, 월드컵 대표팀 연봉과 포상금을 팀·선수·국가 기준으로 비교합니다.",
     criteria: ["연봉", "구단", "선수", "포상금"],
-    featuredItemIds: ["kbo-salary", "kbo-salary-report", "kleague-salary", "worldcup-squad-total"],
+    featuredItemIds: ["lee-kang-in-salary", "kbo-salary", "worldcup-squad-total", "kleague-salary"],
   },
   {
     id: "ai",
@@ -653,6 +653,19 @@ export const COMPARE_ITEMS: CompareItem[] = [
     stats: [{ label: "결과", value: "취득세" }, { label: "기준", value: "주택 수" }],
     ctaLabel: "취득세 계산",
     priority: 5,
+  },
+  {
+    id: "lee-kang-in-salary",
+    title: "이강인 연봉 2026",
+    description: "PSG 추정 연봉을 원화, 주급, 월급, 일급, 세후 실수령액으로 환산합니다.",
+    href: "/reports/lee-kang-in-psg-salary-2026/",
+    type: "report",
+    categoryId: "sports",
+    criteria: ["PSG", "주급", "세후 추정"],
+    badges: [{ label: "신규", tone: "new" }, { label: "추정", tone: "estimate" }],
+    stats: [{ label: "기준", value: "400만 EUR" }, { label: "환산", value: "세후" }],
+    ctaLabel: "연봉 보기",
+    priority: 0.5,
   },
   {
     id: "kbo-salary",

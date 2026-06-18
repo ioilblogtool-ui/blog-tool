@@ -597,6 +597,13 @@ export const reports: ReportMeta[] = [
     badges: ["월드컵", "국가대표", "연봉", "2026"],
   },
   {
+    slug: "lee-kang-in-psg-salary-2026",
+    title: "이강인 연봉 2026｜PSG 주급·세후 실수령액은 얼마일까",
+    description: "이강인의 2026년 PSG 추정 연봉을 유로와 원화 기준으로 환산하고, 주급·월급·일급·세후 실수령액을 계산합니다.",
+    order: 37.1155,
+    badges: ["이강인", "PSG", "주급", "2026"],
+  },
+  {
     slug: "worldcup-squad-salary-total-comparison-2026",
     title: "2026 월드컵 대표팀 연봉 총액 순위 — 한국은 몇 위?",
     description: "한국 대표팀 스쿼드 추정 연봉 총액을 브라질, 프랑스, 잉글랜드, 아르헨티나 등 주요 월드컵 강팀과 비교합니다.",

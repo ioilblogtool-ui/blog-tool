@@ -264,6 +264,7 @@ export const KWSS_FAQ: PageFaqItem[] = [
 ];
 
 export const KWSS_RELATED_LINKS = [
+  { href: "/reports/lee-kang-in-psg-salary-2026/", label: "이강인 연봉 2026｜PSG 주급·세후 실수령액" },
   { href: "/reports/korea-football-legends-salary-comparison-2026/", label: "손흥민·김민재·이강인 연봉 vs 역대 레전드 연봉 비교" },
   { href: "/reports/kbo-salary-comparison-2026/", label: "KBO 10구단 연봉 비교 2026" },
   { href: "/reports/kleague-salary-comparison-2026/", label: "K리그1 구단 연봉 비교 2026" },

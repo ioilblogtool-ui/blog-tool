@@ -1,0 +1,250 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  LKIS_META,
+  LKIS_PLAYER,
+  LKIS_EXCHANGE_RATE,
+  LKIS_NET_RATE_RANGE,
+  LKIS_RELATED_PLAYER_SALARIES,
+  LKIS_RELATED_LINKS,
+  LKIS_SEO_INTRO,
+  LKIS_SEO_CRITERIA,
+  LKIS_FAQ,
+  calcSalaryBreakdown,
+  formatKrw,
+  formatKrwRange,
+} from "../../data/leeKangInPsgSalary2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${LKIS_META.slug}/`;
+const breakdown = calcSalaryBreakdown(
+  LKIS_PLAYER.annualSalaryEur,
+  LKIS_EXCHANGE_RATE.krwRate,
+  LKIS_NET_RATE_RANGE.low,
+  LKIS_NET_RATE_RANGE.high,
+);
+
+const byId = Object.fromEntries(breakdown.map((item) => [item.id, item]));
+const annual = byId.annual;
+const monthly = byId.monthly;
+const weekly = byId.weekly;
+const daily = byId.daily;
+const ninety = byId.ninety;
+
+const badgeClass = (label: string) => label.replace(/\s/g, "-");
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: LKIS_META.title,
+    description: LKIS_META.seoDescription,
+    dateModified: LKIS_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: LKIS_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: LKIS_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={LKIS_META.seoTitle} description={LKIS_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page lkis-page" data-report="lee-kang-in-psg-salary-2026">
+    <CalculatorHero
+      eyebrow="스포츠 연봉 리포트"
+      title={LKIS_META.title}
+      description={LKIS_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        LKIS_META.dataNote,
+        "세후 실수령액은 프랑스 고소득자 세금과 사회부담금을 단순화한 55~60% 범위 시뮬레이션입니다.",
+        "90분 환산 금액은 실제 경기 수당이 아니라 연봉을 시간 단위로 나눈 체감용 계산입니다.",
+      ]}
+    />
+
+    <section class="content-section lkis-summary" aria-labelledby="lkis-summary-title">
+      <div class="lkis-section-heading">
+        <p>한눈에 보기</p>
+        <h2 id="lkis-summary-title">이강인 PSG 추정 연봉을 원화로 바꾸면</h2>
+        <span>
+          {LKIS_EXCHANGE_RATE.label} 환율 {LKIS_EXCHANGE_RATE.krwRate.toLocaleString()}원 기준입니다. 모든 금액은 공식 확정값이 아닌 추정·시뮬레이션입니다.
+        </span>
+      </div>
+
+      <div class="lkis-kpi-grid">
+        <article class="lkis-kpi-card lkis-kpi-card--primary">
+          <span>추정 세전 연봉</span>
+          <strong>{formatKrw(annual.grossKrw)}</strong>
+          <small>{LKIS_PLAYER.annualSalaryEur.toLocaleString()} EUR · {LKIS_PLAYER.sourceBadge}</small>
+        </article>
+        <article class="lkis-kpi-card">
+          <span>추정 세후 연봉</span>
+          <strong>{formatKrwRange(annual.netLowKrw, annual.netHighKrw)}</strong>
+          <small>{LKIS_NET_RATE_RANGE.label}</small>
+        </article>
+        <article class="lkis-kpi-card">
+          <span>주급 환산</span>
+          <strong>{formatKrw(weekly.grossKrw)}</strong>
+          <small>세전 단순 환산</small>
+        </article>
+        <article class="lkis-kpi-card">
+          <span>월급 환산</span>
+          <strong>{formatKrw(monthly.grossKrw)}</strong>
+          <small>세전 단순 환산</small>
+        </article>
+      </div>
+
+      <div class="lkis-source-strip">
+        <span class={`lkis-badge lkis-badge--${badgeClass(LKIS_PLAYER.sourceBadge)}`}>{LKIS_PLAYER.sourceBadge}</span>
+        <strong>{LKIS_PLAYER.club} · {LKIS_PLAYER.position}</strong>
+        <p>{LKIS_PLAYER.contractPeriodLabel}. {LKIS_PLAYER.dataNote}</p>
+      </div>
+    </section>
+
+    <section class="content-section lkis-breakdown" aria-labelledby="lkis-breakdown-title">
+      <div class="lkis-section-heading">
+        <p>주급·월급·일급</p>
+        <h2 id="lkis-breakdown-title">연봉을 체감 단위로 나누면</h2>
+        <span>연봉, 월급, 주급, 일급, 시간급, 90분 환산을 같은 기준으로 계산했습니다.</span>
+      </div>
+
+      <div class="lkis-table-wrap">
+        <table class="lkis-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>세전 환산</th>
+              <th>세후 추정</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            {breakdown.map((item) => (
+              <tr>
+                <td>{item.label}</td>
+                <td>{formatKrw(item.grossKrw)}</td>
+                <td>{formatKrwRange(item.netLowKrw, item.netHighKrw)}</td>
+                <td>{item.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section lkis-net" aria-labelledby="lkis-net-title">
+      <div class="lkis-section-heading">
+        <p>세후 실수령액</p>
+        <h2 id="lkis-net-title">세후 금액은 왜 범위로 봐야 할까</h2>
+        <span>{LKIS_NET_RATE_RANGE.description}</span>
+      </div>
+      <div class="lkis-net-grid">
+        <article>
+          <strong>{formatKrwRange(annual.netLowKrw, annual.netHighKrw)}</strong>
+          <span>연간 세후 추정</span>
+          <p>고소득자 누진세, 사회부담금, 계약 구조를 단순화한 범위입니다.</p>
+        </article>
+        <article>
+          <strong>{formatKrwRange(monthly.netLowKrw, monthly.netHighKrw)}</strong>
+          <span>월 실수령액 추정</span>
+          <p>실제 지급 월, 보너스, 초상권 계약이 분리되면 월별 체감액은 달라질 수 있습니다.</p>
+        </article>
+        <article>
+          <strong>{formatKrwRange(ninety.netLowKrw, ninety.netHighKrw)}</strong>
+          <span>90분 환산 세후 추정</span>
+          <p>경기 수당이 아니라 연봉을 시간 단위로 쪼갠 흥미용 지표입니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section lkis-compare" aria-labelledby="lkis-compare-title">
+      <div class="lkis-section-heading">
+        <p>대표팀 연봉 비교</p>
+        <h2 id="lkis-compare-title">손흥민·김민재와 비교하면</h2>
+        <span>기존 대한민국 월드컵 대표팀 연봉 순위 리포트와 같은 기준으로 비교했습니다.</span>
+      </div>
+
+      <div class="lkis-player-grid">
+        {LKIS_RELATED_PLAYER_SALARIES.map((player) => (
+          <a class="lkis-player-card" href={withBase(player.href)}>
+            <span class={`lkis-badge lkis-badge--${badgeClass(player.sourceBadge)}`}>{player.sourceBadge}</span>
+            <strong>{player.nameKo}</strong>
+            <small>{player.club} · {player.league}</small>
+            <em>{formatKrw(player.annualSalaryKrw)}</em>
+            <p>{player.note}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section lkis-context" aria-labelledby="lkis-context-title">
+      <div class="lkis-section-heading">
+        <p>계약 맥락</p>
+        <h2 id="lkis-context-title">PSG 계약과 다음 연봉 변수</h2>
+      </div>
+      <div class="lkis-context-grid">
+        <article>
+          <h3>계약 기간</h3>
+          <p>{LKIS_PLAYER.contractPeriodLabel}. 공개적으로 확인되는 급여는 제한적이어서 연봉은 추정값으로만 봐야 합니다.</p>
+        </article>
+        <article>
+          <h3>포지션과 역할</h3>
+          <p>공격형 미드필더와 윙어를 오가는 멀티 포지션 자원입니다. 포지션과 출전 시간은 다음 계약의 중요한 변수입니다.</p>
+        </article>
+        <article>
+          <h3>상승 변수</h3>
+          <p>월드컵 활약, PSG 내 출전 시간, 챔피언스리그 기여도, 이적 또는 재계약 조건이 연봉 상승 변수입니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section lkis-related" aria-labelledby="lkis-related-title">
+      <div class="lkis-section-heading">
+        <p>다음 콘텐츠</p>
+        <h2 id="lkis-related-title">축구 연봉 콘텐츠 이어서 보기</h2>
+      </div>
+      <div class="lkis-related-grid">
+        {LKIS_RELATED_LINKS.map((link) => (
+          <a class="lkis-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="이강인 연봉을 볼 때 확인해야 할 기준"
+      intro={LKIS_SEO_INTRO}
+      criteria={LKIS_SEO_CRITERIA}
+      faq={LKIS_FAQ}
+      related={LKIS_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>
