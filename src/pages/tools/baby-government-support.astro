@@ -1,0 +1,220 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  BGS_AGE_OPTIONS,
+  BGS_LOCAL_SUBSIDY,
+  BGS_SEO,
+  BGS_FAQ,
+  BGS_PARENTAL_BENEFIT,
+  BGS_CHILD_ALLOWANCE,
+  BGS_FIRST_MEETING,
+  BGS_DAYCARE_SUBSIDY,
+  BGS_KINDERGARTEN_SUBSIDY,
+  BGS_HOME_CARE_ALLOWANCE,
+  BGS_PREGNANCY_MEDICAL,
+  BGS_TIMELINE,
+  BGS_TIMELINE_LABELS,
+} from "../../data/babyGovernmentSupport";
+
+const title = "육아 정부지원금 계산기 2026 | 부모급여·아동수당·보육료 월 합계 계산";
+const description = "자녀 수·나이·지역 입력하면 부모급여·아동수당·보육료·출산장려금까지 월별 지원금 총합 바로 계산. 지자체별 출산장려금 자동 반영.";
+const slug = "baby-government-support";
+
+const config = {
+  localSubsidy: BGS_LOCAL_SUBSIDY,
+  ageOptions: BGS_AGE_OPTIONS,
+  parentalBenefit: BGS_PARENTAL_BENEFIT,
+  childAllowance: BGS_CHILD_ALLOWANCE,
+  firstMeeting: BGS_FIRST_MEETING,
+  daycareSubsidy: BGS_DAYCARE_SUBSIDY,
+  kindergartenSubsidy: BGS_KINDERGARTEN_SUBSIDY,
+  homeCare: BGS_HOME_CARE_ALLOWANCE,
+  pregnancyMedical: BGS_PREGNANCY_MEDICAL,
+  timeline: BGS_TIMELINE,
+  timelineLabels: BGS_TIMELINE_LABELS,
+};
+
+const regions = Object.keys(BGS_LOCAL_SUBSIDY);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: title,
+  description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${slug}/`,
+};
+---
+
+<BaseLayout {title} {description} {jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={slug} pageClass="bgs-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="육아 지원금"
+        title="아이 정보만 입력하면, 받을 수 있는 지원금 전부 계산"
+        description="부모급여·아동수당·보육료·첫만남이용권·지자체 출산장려금까지 한번에 합산합니다."
+      />
+      <InfoNotice
+        title="안내"
+        lines={["2026년 기준 정부 지원 제도를 반영했습니다. 지자체 출산장려금은 광역시도 기준이며 시·군·구에서 추가 지원하는 경우도 있습니다.", "실제 수령액은 신청 시기·가구 상황에 따라 다를 수 있습니다."]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="bgsResetBtn" copyId="bgsCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <script id="bgsConfig" type="application/json" set:html={JSON.stringify(config)} />
+
+      <section class="bgs-section">
+        <label class="bgs-label">자녀 수</label>
+        <div class="bgs-child-count-btns">
+          {[1, 2, 3, 4].map(n => (
+            <button class={`bgs-count-btn${n === 1 ? ' is-active' : ''}`} data-count={n} type="button">
+              {n === 4 ? '4명+' : `${n}명`}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section id="bgsChildrenInputs" class="bgs-section">
+        <!-- JS가 동적으로 렌더링 -->
+      </section>
+
+      <section class="bgs-section">
+        <label class="bgs-label" for="bgsRegion">거주 지역</label>
+        <select id="bgsRegion" class="bgs-select">
+          {regions.map(r => <option value={r}>{r}</option>)}
+        </select>
+      </section>
+
+      <section class="bgs-section">
+        <label class="bgs-label">보육 형태</label>
+        <div class="bgs-care-btns">
+          <button class="bgs-care-btn is-active" data-care="home" type="button">가정양육</button>
+          <button class="bgs-care-btn" data-care="daycare" type="button">어린이집</button>
+          <button class="bgs-care-btn" data-care="kindergarten" type="button">유치원</button>
+        </div>
+        <p class="bgs-care-note">※ 0~1세 어린이집 이용 시 부모급여 대신 보육료 지원 적용</p>
+      </section>
+
+      <section class="bgs-section">
+        <label class="bgs-label" for="bgsIncome">소득 구간</label>
+        <select id="bgsIncome" class="bgs-select">
+          <option value="low">중위소득 150% 이하</option>
+          <option value="high">중위소득 150% 초과</option>
+        </select>
+        <p class="bgs-care-note">※ 산모·신생아 건강관리 서비스 조건 판별에만 사용</p>
+      </section>
+    </Fragment>
+
+    <!-- default slot: 결과 영역 -->
+    <div class="bgs-kpi-grid">
+      <div class="bgs-kpi-card bgs-kpi-card--primary">
+        <span class="bgs-kpi-label">이번 달 지원금 합계</span>
+        <span id="bgsMonthlyTotal" class="bgs-kpi-value">—</span>
+      </div>
+      <div class="bgs-kpi-card">
+        <span class="bgs-kpi-label">연간 지원금 합계</span>
+        <span id="bgsYearlyTotal" class="bgs-kpi-value">—</span>
+      </div>
+      <div class="bgs-kpi-card">
+        <span class="bgs-kpi-label">출생 후 1회성 지원금</span>
+        <span id="bgsOneTimeTotal" class="bgs-kpi-value">—</span>
+      </div>
+    </div>
+
+    <div class="bgs-result-block">
+      <h3 class="bgs-result-title">월별 지원금 상세</h3>
+      <div class="bgs-table-wrap">
+        <table class="bgs-table">
+          <thead>
+            <tr>
+              <th>지원금 항목</th>
+              <th class="bgs-num">월 지급액</th>
+              <th class="bgs-num">연 지급액</th>
+              <th>지급 방식</th>
+            </tr>
+          </thead>
+          <tbody id="bgsMonthlyBody"></tbody>
+          <tfoot>
+            <tr class="bgs-table-total">
+              <td>합계</td>
+              <td id="bgsTableMonthSum" class="bgs-num">—</td>
+              <td id="bgsTableYearSum" class="bgs-num">—</td>
+              <td>—</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="bgs-result-block">
+      <h3 class="bgs-result-title">출생 후 1회성 지원금</h3>
+      <div class="bgs-table-wrap">
+        <table class="bgs-table">
+          <thead>
+            <tr>
+              <th>지원금 항목</th>
+              <th class="bgs-num">금액</th>
+              <th>지급 방식</th>
+            </tr>
+          </thead>
+          <tbody id="bgsOneTimeBody"></tbody>
+          <tfoot>
+            <tr class="bgs-table-total">
+              <td>합계</td>
+              <td id="bgsOneTimeSum" class="bgs-num">—</td>
+              <td>—</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="bgs-result-block">
+      <h3 class="bgs-result-title">자녀 성장에 따른 월 지원금 변화</h3>
+      <p class="bgs-chart-note">첫째 자녀 기준 · 선택한 보육 형태 적용</p>
+      <div class="bgs-chart-wrap">
+        <canvas id="bgsTimelineChart"></canvas>
+      </div>
+    </div>
+
+    <div id="bgsMultiChildBenefits" class="bgs-result-block bgs-multi-block is-hidden">
+      <h3 class="bgs-result-title">다자녀 추가 혜택 (3자녀 이상)</h3>
+      <ul class="bgs-benefit-list">
+        <li>공공시설(박물관·수영장 등) 이용료 50% 할인</li>
+        <li>전기요금 월 최대 16,000원 할인</li>
+        <li>국가장학금 우선 지원 (대학생 자녀)</li>
+        <li>7인승 이상 차량 취득세 면제</li>
+        <li>지자체별 추가 출산장려금 별도 제공</li>
+      </ul>
+    </div>
+
+    <SeoContent
+      introTitle={BGS_SEO.introTitle}
+      intro={BGS_SEO.intro}
+      inputPoints={BGS_SEO.inputPoints}
+      criteria={BGS_SEO.criteria}
+      faq={BGS_FAQ}
+      related={[
+        { href: '/tools/birth-support-money/', label: '지자체 출산장려금 상세 계산기' },
+        { href: '/tools/parental-leave-pay/', label: '육아휴직 급여 계산기' },
+        { href: '/tools/baby-cost-guide-first-year/', label: '육아 첫해 비용 가이드' },
+        { href: '/tools/breastfeeding-vs-formula-cost/', label: '모유 vs 분유 비용 비교' },
+      ]}
+    />
+  </SimpleToolShell>
+</BaseLayout>
+
+<script src="/scripts/baby-government-support.js" defer></script>

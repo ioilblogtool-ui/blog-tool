@@ -1691,6 +1691,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "baby-government-support",
+    title: "육아 정부지원금 계산기",
+    description: "부모급여·아동수당·보육료·출산장려금 월 합계 계산. 자녀 수·나이·지역 입력하면 받을 수 있는 지원금 전부 계산.",
+    order: 55.5,
+    eyebrow: "육아 지원금",
+    category: "육아·출산",
+    badges: ["NEW", "2026", "통합계산"],
+    previewStats: [
+      { label: "0세 부모급여", value: "월 100만원" },
+      { label: "아동수당", value: "월 10만원" },
+      { label: "첫만남이용권", value: "200만원~" },
+    ],
+  },
+  {
     slug: "pet-monthly-cost-calculator",
     title: "강아지·고양이 월 양육비 계산기",
     description: "강아지·고양이 사료, 병원비, 미용, 간식 등 항목별 월 양육비를 계산하고 연간·10년 누적 비용을 확인하세요.",
