@@ -347,6 +347,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "minimum-wage-2027",
+    title: "2027 최저임금 계산기",
+    description: "2027년 최저임금 시급으로 세후 월급 계산. OECD 국가별 순위와 빅맥으로 보는 구매력 비교 포함.",
+    order: 4.1,
+    eyebrow: "최저임금",
+    category: "calculator",
+    iframeReady: false,
+    badges: ["NEW", "2027", "글로벌비교"],
+    previewStats: [
+      { label: "2027 시급", value: "발표예정" },
+      { label: "OECD 순위", value: "PPP 15위" }
+    ]
+  },
+  {
     slug: "minimum-wage-2026",
     title: "2026 최저임금 계산기",
     description: "2026년 최저임금 기준으로 시급·주급·월급·연봉을 환산하고 주휴수당, 4대보험 공제 후 세후 실수령, 최저임금 미달 여부를 확인하는 계산기",

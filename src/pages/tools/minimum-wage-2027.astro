@@ -1,0 +1,230 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  MW27_CURRENT, MW27_HISTORY, MW27_GLOBAL, MW27_ITEMS, MW27_DEFAULTS,
+  MW27_META, MW27_FAQ,
+} from "../../data/minimumWage2027";
+
+const config = {
+  current: MW27_CURRENT,
+  history: MW27_HISTORY,
+  global: MW27_GLOBAL,
+  items: MW27_ITEMS,
+  defaults: MW27_DEFAULTS,
+};
+
+const itemEntries = Object.entries(MW27_ITEMS);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: MW27_META.title,
+  description: MW27_META.description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: `https://bigyocalc.com/tools/${MW27_META.slug}/`,
+};
+---
+
+<BaseLayout title={MW27_META.title} description={MW27_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={MW27_META.slug} pageClass="mw27-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="2027 최저임금"
+        title="내 시급, 세계에서 얼마짜리?"
+        description="2027년 최저임금으로 세후 월급을 계산하고, OECD 국가별 순위와 빅맥으로 보는 구매력을 비교합니다."
+      />
+      {!MW27_CURRENT.announced && (
+        <div class="mw27-announce-banner">
+          <span class="mw27-announce-banner__icon">📢</span>
+          <span>2027년 최저임금은 2026년 7월 발표 예정입니다. 현재 2026년 시급(10,030원)으로 계산 중이며, 발표 즉시 반영됩니다.</span>
+        </div>
+      )}
+      <InfoNotice title="추정 계산 안내" lines={[MW27_META.caution, `업데이트 기준: ${MW27_META.updatedAt}`]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="mw27ResetBtn" copyId="mw27CopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <script id="mw27Config" type="application/json" set:html={JSON.stringify(config)} />
+
+      <section class="mw27-section">
+        <h3>시급 설정</h3>
+        <div class="mw27-field">
+          <label>시급</label>
+          <div class="mw27-input-row">
+            <input data-mw27="hourly" type="number" min="9000" max="30000" step="10" />
+            <span>원</span>
+          </div>
+        </div>
+        <div class="mw27-field">
+          <label>하루 근무시간</label>
+          <div class="mw27-input-row">
+            <input data-mw27="hoursPerDay" type="number" min="1" max="12" step="0.5" />
+            <span>시간</span>
+          </div>
+        </div>
+        <div class="mw27-field">
+          <label>주 근무일수</label>
+          <div class="mw27-input-row">
+            <input data-mw27="daysPerWeek" type="number" min="1" max="7" step="1" />
+            <span>일</span>
+          </div>
+        </div>
+        <label class="mw27-toggle-label">
+          <input type="checkbox" data-mw27-bool="includeWeeklyHoliday" />
+          주휴수당 포함 (주 15시간 이상 근무 시)
+        </label>
+      </section>
+
+      <section class="mw27-section">
+        <h3>글로벌 비교 설정</h3>
+        <p style="font-size:0.78rem;color:#6b7280;margin:0 0 0.5rem;">비교 기준</p>
+        <div class="mw27-mode-tabs">
+          <button class="mw27-mode-tab is-active" data-mode="ppp">PPP 구매력 기준</button>
+          <button class="mw27-mode-tab" data-mode="usd">달러 환산 기준</button>
+        </div>
+        <p style="font-size:0.78rem;color:#6b7280;margin:0 0 0.5rem;">비교 품목</p>
+        <div class="mw27-item-btns">
+          {itemEntries.map(([key, item]) => (
+            <button
+              class={`mw27-item-btn${key === MW27_DEFAULTS.compareItem ? ' is-active' : ''}`}
+              data-item={key}
+            >
+              {item.icon} {item.label}
+            </button>
+          ))}
+        </div>
+      </section>
+    </Fragment>
+
+    <!-- KPI 카드 -->
+    <div class="mw27-kpi-grid">
+      <div class="mw27-kpi-card mw27-kpi-card--gross">
+        <span class="mw27-kpi__label">세전 월급</span>
+        <span class="mw27-kpi__value" id="mw27GrossVal">—</span>
+        <span class="mw27-kpi__sub">주휴수당 포함</span>
+      </div>
+      <div class="mw27-kpi-card mw27-kpi-card--net">
+        <span class="mw27-kpi__label">세후 실수령</span>
+        <span class="mw27-kpi__value" id="mw27NetVal">—</span>
+        <span class="mw27-kpi__sub">4대보험 + 소득세 공제</span>
+      </div>
+      <div class="mw27-kpi-card mw27-kpi-card--annual">
+        <span class="mw27-kpi__label">연봉 환산</span>
+        <span class="mw27-kpi__value" id="mw27AnnualVal">—</span>
+        <span class="mw27-kpi__sub">세후 × 12개월</span>
+      </div>
+    </div>
+
+    <div class="mw27-raise-badge" id="mw27RaiseBadge" style="display:none"></div>
+
+    <!-- 세후 공제 내역 -->
+    <div class="mw27-net-breakdown">
+      <h4>세후 공제 내역</h4>
+      <table>
+        <tbody>
+          <tr><td>세전 월급</td><td id="mw27GrossRow">—</td></tr>
+          <tr><td>4대보험 (약 9.4%)</td><td id="mw27InsRow">—</td></tr>
+          <tr><td>소득세 + 지방소득세</td><td id="mw27TaxRow">—</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td>세후 실수령</td><td id="mw27NetRow">—</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- 글로벌 순위 -->
+    <div class="mw27-global-section">
+      <p class="mw27-section-title">한국 최저임금, OECD에서 몇 위?</p>
+      <p class="mw27-section-sub" id="mw27KoreaRank"></p>
+      <div class="mw27-chart-wrap">
+        <canvas id="mw27GlobalChart"></canvas>
+      </div>
+      <p class="mw27-korea-note">
+        <span>■ 파란색</span>이 한국 | PPP 기준은 물가를 반영한 실질 구매력 비교
+      </p>
+    </div>
+
+    <!-- 빅맥 구매력 -->
+    <div class="mw27-global-section">
+      <p class="mw27-section-title" id="mw27PurchaseTitle">1시간 일하면 🍔 빅맥 몇 개 살 수 있나?</p>
+      <p class="mw27-section-sub" id="mw27KoreaPower"></p>
+      <div class="mw27-chart-wrap">
+        <canvas id="mw27PurchaseChart"></canvas>
+      </div>
+    </div>
+
+    <!-- 인상 히스토리 -->
+    <div class="mw27-global-section">
+      <p class="mw27-section-title">최저임금 인상 추이 (2020~2027)</p>
+      <p class="mw27-section-sub">2027년은 발표 전 추정값 (빨간 점)</p>
+      <div class="mw27-history-chart-wrap">
+        <canvas id="mw27HistoryChart"></canvas>
+      </div>
+    </div>
+
+    <!-- 관련 계산기 CTA -->
+    <section class="evi-related-section">
+      <p class="evi-related__eyebrow">급여 관련 계산기</p>
+      <h2 class="evi-related__title">이어서 확인하면 좋은 계산기</h2>
+      <div class="evi-related-grid">
+        <a href="/tools/minimum-wage-2026/" class="evi-related-card">
+          <strong>2026 최저임금 계산기</strong>
+          <span>시급·월급·연봉 세후 실수령 계산</span>
+        </a>
+        <a href="/tools/salary/" class="evi-related-card">
+          <strong>연봉 실수령액 계산기</strong>
+          <span>연봉 입력 → 세후 월 실수령액 계산</span>
+        </a>
+        <a href="/tools/overtime-pay-calculator/" class="evi-related-card">
+          <strong>야간·연장수당 계산기</strong>
+          <span>시간외 수당 정확하게 계산</span>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2027 최저임금, 숫자 하나가 아닙니다"
+      intro={[
+        "매년 7~8월, 최저임금위원회가 다음 해 최저임금을 결정합니다. 2026년 최저임금은 시간당 10,030원으로 2025년과 동일하게 동결되었습니다. 2027년 최저임금은 2026년 7월 중 발표되며, 발표 즉시 이 계산기에 반영됩니다. 최저임금이 1% 오를 때마다 주 40시간 근로자의 월급은 약 4만원 이상 달라집니다.",
+        "그런데 '시급 10,030원'이라는 숫자만으로는 한국 노동자의 실질 생활 수준을 가늠하기 어렵습니다. 같은 10달러라도 뉴욕에서는 커피 한 잔이지만, 서울에서는 두 잔을 살 수 있기 때문입니다. 이를 구매력 평가(PPP)라고 하며, PPP 기준으로 환산하면 한국 최저임금의 실질 가치는 단순 달러 환산보다 훨씬 높아집니다.",
+        "OECD 기준 달러 환산 시 한국은 20위권이지만, PPP 기준으로는 14~15위 수준입니다. 일본(시급 약 1,055엔, PPP 환산 약 8.9달러)보다 실질 구매력이 높으며, 스페인·폴란드와 비슷한 수준입니다. 호주(PPP 12.1달러)·영국(PPP 11.8달러)과는 아직 격차가 있습니다.",
+        "빅맥 지수로 보면 더 직관적입니다. 한국에서 1시간 최저임금으로 빅맥을 약 1.4개 살 수 있습니다. 반면 호주는 2.1개, 영국은 2.6개를 살 수 있습니다. 이 차이는 단순 임금 격차가 아니라 물가·생산성·사회보장 수준의 종합적인 결과입니다.",
+        "주휴수당도 꼭 확인하세요. 주 15시간 이상 근무 시 유급 주휴일이 주어지기 때문에 실질 시급은 명목 시급보다 약 20% 높아집니다. 주 5일 8시간 기준으로 계산하면 월 소정근로시간은 약 209시간이 아닌 209시간이 됩니다. 아래 계산기에서 내 근무 조건을 입력해 실제 세후 월급을 확인하세요.",
+      ]}
+      inputPoints={[
+        "시급 — 2027년 발표 전까지 2026년 10,030원 적용",
+        "근무시간·주 근무일 — 파트타임·단시간 근로자도 정확히 계산",
+        "주휴수당 포함 여부 — 주 15시간 이상 근무 시 월급 약 20% 차이",
+        "비교 기준 — PPP vs 달러 환산에 따라 국가 순위 달라짐",
+        "비교 품목 — 빅맥·아메리카노·지하철·도시락으로 구매력 직관화",
+      ]}
+      criteria={[
+        "세전 월급: 시급 × 월 소정근로시간 (주휴수당 포함 시 약 209시간 기준)",
+        "4대보험 공제: 국민연금 4.5% + 건강보험 3.545% + 장기요양 0.459% + 고용보험 0.9%",
+        "소득세: 근로소득 간이세액표 기준 (지방소득세 10% 포함)",
+        "PPP 환산: OECD 구매력 평가 기준 (달러 환산과 별도)",
+        "빅맥 구매력: 시급 ÷ 해당국 빅맥 가격 (이코노미스트 빅맥지수 기준)",
+      ]}
+      faq={MW27_FAQ}
+      related={[
+        { href: "/tools/minimum-wage-2026/", label: "2026 최저임금 계산기" },
+        { href: "/tools/salary/", label: "연봉 실수령액 계산기" },
+        { href: "/tools/overtime-pay-calculator/", label: "야간·연장수당 계산기" },
+      ]}
+    />
+  </SimpleToolShell>
+</BaseLayout>
+
+<script src="/scripts/minimum-wage-2027.js" defer></script>
