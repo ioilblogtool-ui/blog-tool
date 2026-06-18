@@ -1,9 +1,10 @@
 export const MW27_CURRENT = {
   year: 2027,
-  hourly: 10030,       // 7월 발표 후 이 값 교체
+  hourly: 12000,       // 노동계 요구안 (확정 후 교체)
   prevHourly: 10030,   // 2026 시급
   announced: false,    // 발표 후 true로 변경
   announcedDate: "",
+  laborRequest: 12000, // 노동계 요구안
 };
 
 export const MW27_HISTORY = [
