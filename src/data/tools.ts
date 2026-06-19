@@ -70,6 +70,19 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "internet-tv-cancellation-penalty",
+    title: "인터넷 TV 약정 해지 위약금 계산기",
+    description: "약정기간, 사용개월, 월요금, 할인액, 사은품으로 예상 위약금과 통신사 갈아타기 손익분기점을 계산합니다.",
+    order: 0,
+    eyebrow: "통신비 위약금",
+    category: "생활·유틸리티",
+    badges: ["신규", "통신비", "위약금"],
+    previewStats: [
+      { label: "결과", value: "예상 위약금" },
+      { label: "판정", value: "손익분기점" },
+    ],
+  },
+  {
     slug: "dividend-target-calculator",
     title: "배당금 목표 투자금 계산기",
     description: "월 배당금 목표 입력 → CONY·YMAX·SCHD 등 ETF별 필요 투자금 자동 계산. 세전·세후 구분, 위험도 비교.",
@@ -793,7 +806,7 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "apartment-interior-cost-calculator",
-    title: "구축 아파트 인테리어 비용 계산기 2026 | 24평 올수리 견적 바로 계산",
+    title: "인테리어 비용 계산기 2026 | 평수별 올수리 견적 바로 계산",
     description: "평수와 시공 항목(샷시·도배·마루·욕실·주방)을 선택하면 최소·보통·고급 3구간 인테리어 견적을 즉시 계산합니다. 2026년 시세 기준.",
     order: 14.61,
     eyebrow: "인테리어 견적 계산",
@@ -1633,6 +1646,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "mvno-switching-savings-calculator",
+    title: "알뜰폰 갈아타기 절약 계산기 2026",
+    description: "현재 통신 요금과 알뜰폰 요금을 입력하면 2년 누적 절약액, 월 절감액, 위약금 회수 기간을 바로 계산합니다.",
+    order: 70.1,
+    eyebrow: "통신비 절약",
+    category: "생활·유틸리티",
+    iframeReady: true,
+    badges: ["신규"],
+    previewStats: [
+      { label: "2년 절약", value: "96만원" },
+      { label: "월 절감", value: "4만원" },
+    ],
+  },
+  {
     slug: "worldcup-prize-money-calculator",
     title: "월드컵 포상금 계산기",
     description: "대표팀 진출 단계와 조별리그 전적을 고르면 FIFA 협회 상금, 선수단 1인당·총액 포상금, 세후 추정액을 계산합니다.",
@@ -1748,6 +1775,19 @@ export const tools: ToolMeta[] = [
     eyebrow: "펫보험 손익",
     category: "반려동물",
     badges: ["펫보험", "손익분기", "반려동물", "2026"],
+  },
+  {
+    slug: "moving-cost-calculator",
+    title: "포장이사 비용 계산기",
+    description: "평수·거리·사다리차·손없는날 조건으로 24평·34평 포장이사 예상 견적 범위와 추가비 체크리스트를 계산합니다.",
+    order: 60.6,
+    eyebrow: "이사 견적",
+    category: "생활·유틸리티",
+    badges: ["NEW", "추정", "견적체크"],
+    previewStats: [
+      { label: "대표 조건", value: "24평·34평" },
+      { label: "추가비", value: "6항목" },
+    ],
   },
 ];
 
