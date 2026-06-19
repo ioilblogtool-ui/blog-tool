@@ -1,0 +1,371 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  ITCP_CONTRACT_MONTH_OPTIONS,
+  ITCP_DEFAULT_INPUT,
+  ITCP_FAQ,
+  ITCP_GIFT_RETURN_MODE_OPTIONS,
+  ITCP_META,
+  ITCP_PRESETS,
+  ITCP_PRODUCT_OPTIONS,
+  ITCP_RELATED_LINKS,
+  ITCP_SEO_CRITERIA,
+  ITCP_SEO_INTRO,
+  calculatePenalty,
+  calculateSwitchProfit,
+  formatKrw,
+  formatPercent,
+} from "../../data/internetTvCancellationPenalty";
+
+const initialPenalty = calculatePenalty(ITCP_DEFAULT_INPUT);
+const initialProfit = calculateSwitchProfit(ITCP_DEFAULT_INPUT);
+const config = {
+  defaults: ITCP_DEFAULT_INPUT,
+  presets: ITCP_PRESETS,
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: ITCP_META.title,
+    description: ITCP_META.description,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    url: `https://bigyocalc.com/tools/${ITCP_META.slug}/`,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: ITCP_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<BaseLayout title={ITCP_META.title} description={ITCP_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={ITCP_META.slug} pageClass="itcp-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="통신비 갈아타기"
+        title="인터넷 TV 약정 해지 위약금 계산기"
+        description="약정기간, 사용개월, 할인액, 사은품을 넣으면 예상 위약금과 통신사 갈아타기 손익분기점을 함께 계산합니다."
+      />
+      <InfoNotice
+        title="예상 계산 안내"
+        lines={[ITCP_META.caution, `업데이트 기준: ${ITCP_META.updatedAt}`]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="itcpResetBtn" copyId="itcpCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <script id="itcpConfig" type="application/json" set:html={JSON.stringify(config)} />
+
+      <section class="itcp-panel">
+        <h3>빠른 예시</h3>
+        <div class="itcp-preset-grid">
+          {ITCP_PRESETS.map((preset) => (
+            <button class="itcp-preset" type="button" data-itcp-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section class="itcp-panel">
+        <h3>현재 약정</h3>
+
+        <div class="itcp-field">
+          <label>상품 구성</label>
+          <div class="itcp-segment" role="group" aria-label="상품 구성">
+            {ITCP_PRODUCT_OPTIONS.map((option) => (
+              <button
+                type="button"
+                class:list={["itcp-segment__button", option.value === ITCP_DEFAULT_INPUT.productType && "is-active"]}
+                data-itcp-product={option.value}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="itcp-field">
+          <label>약정기간</label>
+          <div class="itcp-segment" role="group" aria-label="약정기간">
+            {ITCP_CONTRACT_MONTH_OPTIONS.map((option) => (
+              <button
+                type="button"
+                class:list={["itcp-segment__button", option.value === ITCP_DEFAULT_INPUT.contractMonths && "is-active"]}
+                data-itcp-contract={option.value}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="itcp-field">
+          <label for="itcpUsedMonths">사용개월</label>
+          <div class="itcp-range-row">
+            <input
+              id="itcpUsedMonths"
+              type="range"
+              min="0"
+              max={ITCP_DEFAULT_INPUT.contractMonths}
+              step="1"
+              value={ITCP_DEFAULT_INPUT.usedMonths}
+              data-itcp-input="usedMonths"
+            />
+            <div class="itcp-input-row itcp-input-row--short">
+              <input type="number" min="0" max={ITCP_DEFAULT_INPUT.contractMonths} step="1" value={ITCP_DEFAULT_INPUT.usedMonths} data-itcp-input="usedMonths" />
+              <span>개월</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="itcp-field-grid">
+          <label class="itcp-field">
+            <span>현재 월요금</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" step="1000" value={ITCP_DEFAULT_INPUT.monthlyFee} data-itcp-input="monthlyFee" />
+              <span>원</span>
+            </div>
+          </label>
+          <label class="itcp-field">
+            <span>월 약정할인</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" step="1000" value={ITCP_DEFAULT_INPUT.monthlyDiscount} data-itcp-input="monthlyDiscount" />
+              <span>원</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="itcp-field-grid">
+          <label class="itcp-field">
+            <span>월 장비할인</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" step="500" value={ITCP_DEFAULT_INPUT.deviceDiscount} data-itcp-input="deviceDiscount" />
+              <span>원</span>
+            </div>
+          </label>
+          <label class="itcp-field">
+            <span>면제 설치비</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" step="1000" value={ITCP_DEFAULT_INPUT.installFeeReturn} data-itcp-input="installFeeReturn" />
+              <span>원</span>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <section class="itcp-panel">
+        <h3>사은품·장비 조건</h3>
+        <label class="itcp-field">
+          <span>가입 사은품</span>
+          <div class="itcp-input-row">
+            <input type="number" min="0" step="10000" value={ITCP_DEFAULT_INPUT.signupGift} data-itcp-input="signupGift" />
+            <span>원</span>
+          </div>
+        </label>
+        <div class="itcp-field-grid">
+          <label class="itcp-field">
+            <span>유지 기준</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" max="60" step="1" value={ITCP_DEFAULT_INPUT.giftReturnThresholdMonths} data-itcp-input="giftReturnThresholdMonths" />
+              <span>개월</span>
+            </div>
+          </label>
+          <label class="itcp-field">
+            <span>반환 방식</span>
+            <select data-itcp-input="giftReturnMode">
+              {ITCP_GIFT_RETURN_MODE_OPTIONS.map((option) => (
+                <option value={option.value} selected={option.value === ITCP_DEFAULT_INPUT.giftReturnMode}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <label class="itcp-field">
+          <span>장비 미반납 비용</span>
+          <div class="itcp-input-row">
+            <input type="number" min="0" step="1000" value={ITCP_DEFAULT_INPUT.deviceNonReturnFee} data-itcp-input="deviceNonReturnFee" />
+            <span>원</span>
+          </div>
+        </label>
+      </section>
+
+      <section class="itcp-panel">
+        <h3>갈아타기 조건</h3>
+        <div class="itcp-field-grid">
+          <label class="itcp-field">
+            <span>새 월요금</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" step="1000" value={ITCP_DEFAULT_INPUT.newMonthlyFee} data-itcp-input="newMonthlyFee" />
+              <span>원</span>
+            </div>
+          </label>
+          <label class="itcp-field">
+            <span>신규 사은품</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" step="10000" value={ITCP_DEFAULT_INPUT.newSignupGift} data-itcp-input="newSignupGift" />
+              <span>원</span>
+            </div>
+          </label>
+        </div>
+        <div class="itcp-field-grid">
+          <label class="itcp-field">
+            <span>신규 설치비</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" step="1000" value={ITCP_DEFAULT_INPUT.newInstallFee} data-itcp-input="newInstallFee" />
+              <span>원</span>
+            </div>
+          </label>
+          <label class="itcp-field">
+            <span>결합할인 손실</span>
+            <div class="itcp-input-row">
+              <input type="number" min="0" step="1000" value={ITCP_DEFAULT_INPUT.bundleDiscountLossMonthly} data-itcp-input="bundleDiscountLossMonthly" />
+              <span>원/월</span>
+            </div>
+          </label>
+        </div>
+        <label class="itcp-field">
+          <span>포기하는 재약정 혜택</span>
+          <div class="itcp-input-row">
+            <input type="number" min="0" step="10000" value={ITCP_DEFAULT_INPUT.forfeitedRetentionBenefit} data-itcp-input="forfeitedRetentionBenefit" />
+            <span>원</span>
+          </div>
+        </label>
+      </section>
+    </Fragment>
+
+    <section class="itcp-result" data-itcp-status={initialProfit.status}>
+      <div class="itcp-status-pill" data-itcp-output="statusLabel">재확인 필요</div>
+      <h2 data-itcp-output="headline">{initialProfit.headline}</h2>
+      <p data-itcp-output="advice">{initialProfit.advice}</p>
+    </section>
+
+    <section class="itcp-kpi-grid" aria-label="계산 결과 요약">
+      <div class="itcp-kpi-card itcp-kpi-card--danger">
+        <span>예상 위약금</span>
+        <strong data-itcp-output="totalPenalty">{formatKrw(initialPenalty.totalPenalty)}</strong>
+        <small>공식 청구액 아님</small>
+      </div>
+      <div class="itcp-kpi-card itcp-kpi-card--profit">
+        <span>갈아타기 순손익</span>
+        <strong data-itcp-output="totalSwitchProfit">{formatKrw(initialProfit.totalSwitchProfit)}</strong>
+        <small>남은 약정기간 기준</small>
+      </div>
+      <div class="itcp-kpi-card">
+        <span>손익분기점</span>
+        <strong data-itcp-output="breakEvenMonths">{initialProfit.breakEvenMonths === null ? "회수 어려움" : `${initialProfit.breakEvenMonths}개월`}</strong>
+        <small>월 절감액 기준</small>
+      </div>
+      <div class="itcp-kpi-card">
+        <span>사은품 반환</span>
+        <strong data-itcp-output="giftReturn">{formatKrw(initialPenalty.giftReturn)}</strong>
+        <small>유지 조건 반영</small>
+      </div>
+    </section>
+
+    <section class="itcp-detail-card">
+      <div class="itcp-section-heading">
+        <p>위약금 구성</p>
+        <h3>어떤 항목 때문에 위약금이 커지는지 확인하세요</h3>
+      </div>
+      <div class="itcp-breakdown" data-itcp-breakdown>
+        {initialPenalty.breakdown.map((item) => (
+          <article class="itcp-breakdown-card">
+            <span>{item.label}</span>
+            <strong>{formatKrw(item.amount)}</strong>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+      <div class="itcp-bar" data-itcp-bar aria-label="위약금 구성 비중">
+        {initialPenalty.breakdown.map((item) => (
+          <span
+            class={`itcp-bar__segment itcp-bar__segment--${item.id}`}
+            style={`width:${initialPenalty.totalPenalty > 0 ? Math.max(4, Math.round((item.amount / initialPenalty.totalPenalty) * 100)) : 0}%`}
+            title={`${item.label} ${formatKrw(item.amount)}`}
+          />
+        ))}
+      </div>
+    </section>
+
+    <section class="itcp-metric-grid">
+      <article>
+        <span>남은 약정</span>
+        <strong data-itcp-output="remainingMonths">{initialPenalty.remainingMonths}개월</strong>
+      </article>
+      <article>
+        <span>반환 비율</span>
+        <strong data-itcp-output="returnRate">{formatPercent(initialPenalty.returnRate)}</strong>
+      </article>
+      <article>
+        <span>월 절감액</span>
+        <strong data-itcp-output="monthlySaving">{formatKrw(initialProfit.monthlySaving)}</strong>
+      </article>
+      <article>
+        <span>즉시 순손익</span>
+        <strong data-itcp-output="immediateNetProfit">{formatKrw(initialProfit.immediateNetProfit)}</strong>
+      </article>
+    </section>
+
+    <section class="itcp-guide-grid">
+      <article>
+        <h3>갈아타기 전 체크 순서</h3>
+        <ol>
+          <li>현재 통신사 앱이나 고객센터에서 해지 예상 위약금을 먼저 확인합니다.</li>
+          <li>가입 당시 받은 사은품의 유지 조건 개월 수를 확인합니다.</li>
+          <li>새 통신사의 월요금, 신규 설치비, 사은품을 같은 기준으로 넣습니다.</li>
+          <li>휴대폰 결합할인이 끊기는 경우 월 손실액을 반드시 반영합니다.</li>
+        </ol>
+      </article>
+      <article>
+        <h3>결과 해석 기준</h3>
+        <ul>
+          <li>순손익이 10만원 이상이면 갈아타기 후보로 볼 수 있습니다.</li>
+          <li>손익분기점이 남은 약정보다 길면 기다리는 편이 유리할 수 있습니다.</li>
+          <li>가입 1년 전후는 사은품 반환 조건 때문에 결과가 크게 흔들립니다.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="itcp-related">
+      <div class="itcp-section-heading">
+        <p>같이 보면 좋은 계산기</p>
+        <h3>통신비와 고정비를 함께 줄여보세요</h3>
+      </div>
+      <div class="itcp-related-grid">
+        {ITCP_RELATED_LINKS.map((link) => (
+          <a href={link.href}>
+            <strong>{link.title}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent introTitle="인터넷 TV 약정 해지 위약금 계산 기준" intro={ITCP_SEO_INTRO} criteria={ITCP_SEO_CRITERIA} faq={ITCP_FAQ} />
+  </SimpleToolShell>
+
+  <script src="/scripts/internet-tv-cancellation-penalty.js" defer></script>
+</BaseLayout>
