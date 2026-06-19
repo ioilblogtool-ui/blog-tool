@@ -328,6 +328,17 @@ Google은 계산기 UI만 있고 설명 텍스트가 부족하면 "low value too
 - 단락당 150자 이상, 총 600자 이상 기준 적용
 - 보완한 페이지 13개: wedding-budget, diaper-cost, formula-cost, parental-leave, six-plus-six, dividend-monthly-income, travel-expense-split, ai-subscription-cost, household-income, single-parental-leave-total, birth-support-total, birth-support-money, home-purchase-fund
 
+**2차 반려 및 대응 (2026-06-19)**  
+- 동일 사유로 재반려. 5월 24일 이후 신규 추가된 페이지들이 기준 미적용 상태로 누적된 것이 원인.
+- 점검 대상: 최근 추가된 tools 페이지 전체에서 intro 단락 수/길이 미달 6건 발견 및 보강
+  - dental-treatment-cost-calculator (3단락 → 4단락)
+  - car-accident-insurance-vs-cash-calculator (3단락 → 4단락)
+  - medical-expense-claim-worth-calculator (2단락 → 4단락)
+  - mvno-switching-savings-calculator (3단락, 기능설명형 1단락 → 4단락 재작성)
+  - moving-cost-calculator (4단락이나 단락당 60~90자로 미달 → 150자 이상 재작성)
+  - internet-tv-cancellation-penalty (2단락 → 4단락)
+- **재발 방지**: 새 계산기 페이지를 만들 때마다 이 체크를 빠뜨리면 반려가 반복됨. 새 tools 페이지 배포 직전 `CONTENT_GUIDE.md` Section 3 체크리스트를 반드시 적용할 것.
+
 **향후 적용 기준**  
 → `CONTENT_GUIDE.md` Section 3 "SeoContent 콘텐츠 품질 기준" 참고  
 → 새 페이지 작성 시 intro 4단락 + FAQ 5개가 완료되지 않으면 배포하지 않음
