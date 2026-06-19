@@ -1,0 +1,254 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  STOCKS,
+  SUMMARY,
+  HIGHLIGHTS,
+  FAQ_ITEMS,
+  REPORT_META,
+} from "../../data/semiconductorStocksH12026";
+
+const countryLabel: Record<string, string> = { US: '미국', KR: '한국', TW: '대만', JP: '일본' };
+const countryClass: Record<string, string> = { US: 'sshi-country-us', KR: 'sshi-country-kr', TW: 'sshi-country-tw', JP: 'sshi-country-jp' };
+const flagMap: Record<string, string> = { US: '🇺🇸', KR: '🇰🇷', TW: '🇹🇼', JP: '🇯🇵' };
+
+function ytdClass(ytd: number) {
+  if (ytd >= 100) return 'sshi-ytd-high';
+  if (ytd >= 50)  return 'sshi-ytd-mid';
+  return 'sshi-ytd-low';
+}
+
+function fmtPrice(row: typeof STOCKS[0]) {
+  const symbols: Record<string, string> = { USD: '$', KRW: '₩', TWD: 'NT$', JPY: '¥' };
+  const s = symbols[row.currency];
+  if (row.currency === 'KRW') return `${s}${row.close.toLocaleString('ko-KR')}`;
+  if (row.currency === 'JPY') return `${s}${row.close.toLocaleString('ja-JP')}`;
+  if (row.currency === 'TWD') return `${s}${row.close.toLocaleString()}`;
+  return `${s}${row.close.toFixed(2)}`;
+}
+
+const sectorOrder = ['메모리', '설계', '장비', '파운드리', '아날로그'];
+const sectorAvgs = sectorOrder.map(s => SUMMARY.sectorAvg[s as keyof typeof SUMMARY.sectorAvg] ?? 0);
+
+const chartData = {
+  labels: STOCKS.map(s => `${s.name} (${s.ticker})`),
+  ytds:   STOCKS.map(s => s.ytd),
+  colors: STOCKS.map(s => ({ US: '#3b82f6', KR: '#ef4444', TW: '#10b981', JP: '#f59e0b' }[s.country])),
+  sectorLabels: sectorOrder,
+  sectorAvgs,
+};
+
+const faqItems = FAQ_ITEMS.map(f => ({ question: f.q, answer: f.a }));
+const seoIntro = [
+  '반도체 주식은 2026년 상반기 전 산업군 중 가장 가파른 상승세를 기록했습니다. AI 인프라 투자 급증이 GPU·HBM·장비 수요를 동반 견인하며, 섹터 전반에 걸쳐 100% 이상 상승 종목이 속출했습니다.',
+  '미국 종목 중에서는 낸드 플래시 전문 샌디스크(SNDK)가 820%로 압도적 1위를 차지했고, HBM3E를 양산한 마이크론(MU)이 297%, 데이터센터 AI 커스텀칩 수혜주 마벨(MRVL)이 265%로 뒤를 이었습니다.',
+  '한국 종목에서는 SK하이닉스가 HBM3E 엔비디아 독점 공급을 기반으로 209% 상승하며 코스피 랠리를 주도했습니다. 일본의 도쿄일렉트론은 257% 급등하며 아시아 장비주 강세를 이끌었고, 대만 미디어텍도 AI PC·스마트폰 AP 수요로 228% 상승했습니다.',
+  '반면 엔비디아(+13%)와 삼성전자(+11%)는 이미 높아진 기저와 HBM4 공급 지연 이슈로 상대적으로 수익률이 낮았습니다. 그러나 엔비디아의 시가총액은 약 5,100조원으로 전 세계 1위를 유지하고 있습니다.',
+];
+---
+
+<BaseLayout title={REPORT_META.title} description={REPORT_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sshi-page">
+    <CalculatorHero
+      eyebrow="반도체 주식 리포트"
+      title="반도체 주식 2026 상반기 수익률"
+      description="미국·한국·대만·일본 21종목 수익률 랭킹 — 어디가 제일 올랐나"
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        REPORT_META.source,
+        REPORT_META.estimateNote,
+        REPORT_META.caution,
+      ]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">Summary</p>
+        <h2>2026 상반기 반도체 섹터 핵심 수치</h2>
+      </div>
+      <div class="sshi-kpi-grid">
+        <article class="sshi-kpi-card">
+          <p class="sshi-kpi-label">상반기 최고 수익률</p>
+          <p class="sshi-kpi-value">+{SUMMARY.topYtd}%</p>
+          <p class="sshi-kpi-sub">{SUMMARY.topStock}</p>
+        </article>
+        <article class="sshi-kpi-card">
+          <p class="sshi-kpi-label">메모리 섹터 평균 YTD</p>
+          <p class="sshi-kpi-value">+{SUMMARY.sectorAvg.메모리}%</p>
+          <p class="sshi-kpi-sub">SNDK·MU·SK하이닉스 평균</p>
+        </article>
+        <article class="sshi-kpi-card">
+          <p class="sshi-kpi-label">코스피 YTD (참고)</p>
+          <p class="sshi-kpi-value">+{SUMMARY.kospiYtd}%</p>
+          <p class="sshi-kpi-sub">반도체 주도 지수 상승</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 수익률 가로 바 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수익률 랭킹</p>
+        <h2>21종목 YTD 수익률 — 연초 대비 얼마나 올랐나</h2>
+        <p>국가별 색상: <span style="color:#3b82f6">■ 미국</span> &nbsp;<span style="color:#ef4444">■ 한국</span> &nbsp;<span style="color:#10b981">■ 대만</span> &nbsp;<span style="color:#f59e0b">■ 일본</span></p>
+      </div>
+      <article class="sshi-chart-panel">
+        <div class="sshi-bar-wrap">
+          <canvas id="sshiBarChart" aria-label="반도체 주식 2026 상반기 수익률 차트"></canvas>
+        </div>
+        <p class="sshi-chart-note">기준일: {REPORT_META.updatedAt} / (*) 연초가 추정치 포함</p>
+      </article>
+    </section>
+
+    <!-- 섹터별 평균 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">섹터 분석</p>
+        <h2>섹터별 평균 수익률 — 메모리가 압도적 1위</h2>
+      </div>
+      <div class="sshi-sector-grid">
+        {sectorOrder.map((sector) => (
+          <article class="sshi-sector-card">
+            <p class="sshi-sector-name">{sector}</p>
+            <p class="sshi-sector-avg">+{SUMMARY.sectorAvg[sector as keyof typeof SUMMARY.sectorAvg]}%</p>
+            <p class="sshi-sector-sub">섹터 평균 YTD</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 핵심 종목 해설 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 종목</p>
+        <h2>왜 이 종목이 올랐나 — 상위 5종목 해설</h2>
+      </div>
+      <div class="sshi-highlights">
+        {HIGHLIGHTS.map((h) => (
+          <article class="sshi-highlight-card">
+            <div class="sshi-hc-header">
+              <span>{flagMap[h.country]}</span>
+              <span class="sshi-hc-name">{h.name}</span>
+              <span class="sshi-hc-ticker">{h.ticker}</span>
+            </div>
+            <p class="sshi-hc-ytd">+{h.ytd}% YTD</p>
+            <p class="sshi-hc-body">{h.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 전체 순위표 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">전체 순위</p>
+        <h2>21종목 수익률 전체 순위표</h2>
+      </div>
+      <div class="sshi-table-wrap">
+        <table class="sshi-rank-table">
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>종목</th>
+              <th>국가</th>
+              <th>섹터</th>
+              <th>현재가</th>
+              <th>수익률</th>
+              <th>상승 배경</th>
+            </tr>
+          </thead>
+          <tbody>
+            {STOCKS.map((s) => (
+              <tr>
+                <td class="sshi-rank-num">{s.rank}</td>
+                <td class="sshi-name-cell">
+                  <span class="sshi-stock-name">{s.name}</span>
+                  <span class="sshi-stock-ticker">{s.ticker}{s.isEstimate ? <span class="sshi-estimate-mark"> *</span> : ''}</span>
+                </td>
+                <td>
+                  <span class={`sshi-country-badge ${countryClass[s.country]}`}>
+                    {flagMap[s.country]} {countryLabel[s.country]}
+                  </span>
+                </td>
+                <td><span class="sshi-sector-badge">{s.sector}</span></td>
+                <td class="sshi-price-cell">{fmtPrice(s)}</td>
+                <td class={ytdClass(s.ytd)}>+{s.ytd}%</td>
+                <td style="white-space:normal;min-width:180px;font-size:0.8rem;color:#6b7280">{s.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem;color:#9ca3af;margin-bottom:2rem">(*) 연초가 YTD 역산 추정치 포함 종목 — 실제값과 ±2% 오차 가능</p>
+    </section>
+
+    <SeoContent
+      introTitle="2026 상반기 반도체 주식 — 왜 이렇게 올랐나"
+      intro={seoIntro}
+      faq={faqItems}
+    />
+  </main>
+</BaseLayout>
+
+<script id="sshiChartData" type="application/json" set:html={JSON.stringify(chartData)} />
+<script>
+  function loadChartJs(cb: () => void) {
+    if ((window as any).Chart) return cb();
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  loadChartJs(() => {
+    const raw = document.getElementById('sshiChartData')?.textContent ?? '{}';
+    const data = JSON.parse(raw);
+
+    const ctx = (document.getElementById('sshiBarChart') as HTMLCanvasElement)?.getContext('2d');
+    if (!ctx) return;
+
+    new (window as any).Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          data: data.ytds,
+          backgroundColor: data.colors,
+          borderRadius: 4,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx: any) => ` +${ctx.parsed.x}% YTD`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { callback: (v: any) => `+${v}%` },
+            grid: { color: '#f3f4f6' },
+          },
+          y: {
+            ticks: { font: { size: 11 } },
+          },
+        },
+      },
+    });
+  });
+</script>

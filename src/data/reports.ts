@@ -247,6 +247,13 @@ export const reports: ReportMeta[] = [
     badges: ["ETF", "월배당", "투자", "2026"],
   },
   {
+    slug: "semiconductor-stocks-h1-2026",
+    title: "반도체 주식 2026 상반기 수익률 | 미국·한국·대만 21종목 랭킹",
+    description: "엔비디아·SK하이닉스·TSMC 등 반도체 주식 21종목의 2026년 상반기 수익률을 국가·섹터별로 비교. 어디가 제일 올랐는지 바로 확인하세요.",
+    order: 17.5,
+    badges: ["NEW", "2026상반기", "수익률랭킹", "미국·한국·대만"],
+  },
+  {
     slug: "semiconductor-etf-2026",
     title: "미국·한국 반도체 ETF 비교 2026 — SOXX, SMH, TIGER, RISE, ACE 구성 종목 총정리",
     description: "SOXX, SMH, TIGER 반도체, RISE AI반도체TOP10, ACE AI반도체TOP3+ 등 10종 ETF의 구성 종목, 운용사, 장단점을 한눈에 비교합니다.",
