@@ -85,6 +85,7 @@ export const LBIRC_FAQ = [
 ];
 
 export const LBIRC_RELATED_LINKS = [
+  { href: "/tools/housing-benefit-income-recognition/", label: "주거급여 계산기" },
   { href: "/tools/welfare-benefit-eligibility/", label: "기초생활수급자 자격 계산기" },
   { href: "/tools/basic-livelihood-recipient-asset-standard/", label: "기초생활수급자 재산 기준 계산기" },
   { href: "/compare/welfare/", label: "복지지원금 비교표" },

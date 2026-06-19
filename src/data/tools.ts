@@ -666,6 +666,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "housing-benefit-income-recognition",
+    title: "주거급여 계산기 2026",
+    description: "가구원 수, 월소득, 재산, 거주 형태를 입력하면 주거급여 선정기준 통과 여부와 예상 기준임대료·수선비용을 바로 계산합니다.",
+    order: 11.72,
+    eyebrow: "주거급여 계산",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "주거급여", "기준임대료", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "기준임대료·수선비" },
+      { label: "기준 비교", value: "중위 48%" }
+    ]
+  },
+  {
     slug: "basic-livelihood-recipient-asset-standard",
     title: "기초생활수급자 재산 기준 계산기 2026",
     description: "전세보증금, 예금, 부채, 자동차를 입력해 기초생활수급자 재산 기준과 월 소득환산액 영향을 자가 점검합니다.",
