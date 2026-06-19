@@ -1,0 +1,239 @@
+.ashi-page {
+  .ashi-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+  }
+
+  .ashi-kpi-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+
+    .ashi-kpi-label { font-size: 0.8rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .ashi-kpi-value { font-size: 1.75rem; font-weight: 700; line-height: 1.2; }
+    .ashi-kpi-value--red  { color: #ef4444; }
+    .ashi-kpi-value--blue { color: #1a56db; }
+    .ashi-kpi-sub { font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem; }
+  }
+
+  .ashi-chart-panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+
+    h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; color: #111827; }
+    .ashi-chart-note { font-size: 0.75rem; color: #9ca3af; margin-top: 0.75rem; }
+  }
+
+  .ashi-bar-wrap {
+    position: relative;
+    height: 500px;
+    @media (max-width: 640px) { height: 580px; }
+  }
+
+  // 하드웨어 vs 소프트웨어 대비 카드
+  .ashi-vs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+  }
+
+  .ashi-vs-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+
+    .ashi-vs-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+
+      .ashi-vs-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.25rem;
+      }
+      .ashi-vs-badge--up   { background: #eff6ff; color: #1d4ed8; }
+      .ashi-vs-badge--down { background: #fef2f2; color: #dc2626; }
+
+      .ashi-vs-title { font-weight: 700; font-size: 0.95rem; }
+    }
+
+    .ashi-vs-avg {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .ashi-vs-avg--up   { color: #1a56db; }
+    .ashi-vs-avg--down { color: #ef4444; }
+
+    .ashi-vs-items { list-style: none; padding: 0; margin: 0; }
+    .ashi-vs-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #f3f4f6;
+      color: #374151;
+      &:last-child { border-bottom: none; }
+
+      .ashi-vs-ytd {
+        font-weight: 700;
+        &.up   { color: #1a56db; }
+        &.down { color: #ef4444; }
+      }
+    }
+  }
+
+  // 이유 카드 4개
+  .ashi-reason-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+  }
+
+  .ashi-reason-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+
+    .ashi-reason-icon  { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .ashi-reason-title { font-size: 0.95rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem; }
+    .ashi-reason-body  { font-size: 0.85rem; color: #374151; line-height: 1.65; }
+  }
+
+  // 핵심 종목 해설
+  .ashi-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .ashi-highlight-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+
+    .ashi-hc-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .ashi-hc-name   { font-weight: 700; font-size: 1rem; color: #111827; }
+    .ashi-hc-ticker { font-size: 0.75rem; color: #9ca3af; }
+
+    .ashi-hc-ytd {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.5rem;
+
+      &.down { background: #fef2f2; color: #ef4444; }
+      &.up   { background: #eff6ff; color: #1d4ed8; }
+    }
+
+    .ashi-hc-body { font-size: 0.85rem; color: #374151; line-height: 1.65; }
+  }
+
+  // 전체 순위표
+  .ashi-table-wrap {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .ashi-rank-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+
+    th {
+      background: #f9fafb;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      font-weight: 600;
+      white-space: nowrap;
+      color: #374151;
+    }
+
+    td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid #f3f4f6;
+      white-space: nowrap;
+      color: #111827;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f9fafb; }
+
+    .ashi-group-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.25rem;
+    }
+    .ashi-group-software { background: #fef2f2; color: #dc2626; }
+    .ashi-group-infra    { background: #eff6ff; color: #1d4ed8; }
+
+    .ashi-ytd-down { color: #ef4444; font-weight: 700; }
+    .ashi-ytd-up   { color: #1a56db; font-weight: 700; }
+
+    .ashi-name-cell {
+      .ashi-stock-name   { font-weight: 600; display: block; }
+      .ashi-stock-ticker { font-size: 0.75rem; color: #9ca3af; }
+    }
+  }
+
+  // 내부링크 배너
+  .ashi-related-banner {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+
+    .ashi-related-text {
+      font-size: 0.9rem;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    .ashi-related-link {
+      font-size: 0.85rem;
+      color: #1d4ed8;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+  }
+}

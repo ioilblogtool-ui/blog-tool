@@ -1,0 +1,300 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  STOCKS,
+  HARDWARE_REF,
+  SUMMARY,
+  REASONS,
+  HIGHLIGHTS,
+  FAQ_ITEMS,
+  REPORT_META,
+} from "../../data/aiStocksH12026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+function ytdClass(ytd: number) {
+  return ytd >= 0 ? 'ashi-ytd-up' : 'ashi-ytd-down';
+}
+function ytdBadgeClass(ytd: number) {
+  return ytd >= 0 ? 'up' : 'down';
+}
+function ytdSign(ytd: number) {
+  return ytd >= 0 ? `+${ytd}%` : `${ytd}%`;
+}
+
+const softwareStocks = STOCKS.filter(s => s.group === 'software');
+const infraStocks    = STOCKS.filter(s => s.group === 'infra');
+
+// 차트용: 소프트웨어 → 인프라 순, 하드웨어 참조 별도 라벨
+const chartStocks = [...STOCKS].sort((a, b) => a.ytd - b.ytd);
+const chartData = {
+  labels: chartStocks.map(s => `${s.name} (${s.ticker})`),
+  ytds:   chartStocks.map(s => s.ytd),
+  colors: chartStocks.map(s =>
+    s.group === 'software' ? '#ef4444'
+    : s.group === 'infra'  ? '#3b82f6'
+    : '#10b981'
+  ),
+  // 하드웨어 비교 참조값 (별도 라벨)
+  hwLabels: HARDWARE_REF.map(h => `${h.name} (${h.ticker})`),
+  hwYtds:   HARDWARE_REF.map(h => h.ytd),
+};
+
+const faqItems = FAQ_ITEMS.map(f => ({ question: f.q, answer: f.a }));
+const seoIntro = [
+  '2026년 상반기 주식 시장에서 가장 충격적인 역설이 나타났습니다. "AI 주식"이라는 같은 이름표를 달았음에도 반도체(하드웨어)는 수백 % 폭등하고, AI 소프트웨어(SaaS)는 –20~44% 폭락하는 극단적 양극화가 펼쳐졌습니다. 어도비(ADBE) –44%, 세일즈포스(CRM) –43%, 서비스나우(NOW) –38%, 마이크로소프트(MSFT) –22%로 쟁쟁한 빅테크들이 일제히 하락했습니다.',
+  '반면 같은 기간 AI 하드웨어 종목들은 샌디스크(SNDK) +820%, 마이크론(MU) +297%, SK하이닉스 +209%를 기록했습니다. AI 소프트웨어 평균 –25%와 AI 하드웨어 평균 +335%의 격차는 무려 360%p에 달합니다. "AI에 투자했다"는 말 하나로 결과가 천양지차였던 것입니다.',
+  '소프트웨어가 하락한 첫 번째 이유는 AI가 SaaS를 잠식했기 때문입니다. Midjourney·Stable Diffusion이 어도비 포토샵을 위협하고, AI 에이전트가 세일즈포스 CRM 기능을 대체하며, Microsoft Copilot이 기존 생산성 소프트웨어 시장을 내부에서 뒤흔들었습니다. "AI 덕분에 성장하는" 기업이 아니라 "AI에 의해 위협받는" 기업이 된 것입니다.',
+  '두 번째 이유는 설비투자 비용 폭증입니다. 마이크로소프트·메타·구글의 2026년 AI 설비투자 합계는 $1조를 넘어섰습니다. 비용이 매출보다 빠르게 증가하면서 이익이 감소했고, 주가 하락으로 이어졌습니다. 세 번째로 2023~2025년 AI 기대감으로 P/E 200~300배까지 치솟았던 소프트웨어 주가의 밸류에이션 현실화가 진행됐습니다.',
+  '유일하게 살아남은 것은 알파벳(구글, +18%)입니다. Gemini AI를 검색 광고에 직접 연동해 AI 투자가 광고 수익 증가로 즉시 이어지는 구조를 만들었기 때문입니다. 아마존(+6%)과 스노우플레이크(+6%)도 AWS AI 클라우드와 데이터 파이프라인 수요로 소폭 상승했습니다. 공통점은 "AI가 핵심 비즈니스를 직접 강화"하는 구조였다는 점입니다.',
+  '2026년 상반기 AI 투자의 교훈은 "AI 테마"가 아닌 "AI 수익화 구조"를 보는 것입니다. AI 인프라(GPU·메모리·데이터센터)는 수요가 즉각 실적으로 연결됐지만, AI 소프트웨어는 비용이 먼저 나가고 수익은 2027년 이후를 기다려야 하는 상황입니다. 하반기에는 AI 소프트웨어 밸류에이션이 충분히 낮아진 만큼, 실적이 회복되는 종목부터 반등을 노려볼 수 있다는 전망도 있습니다.',
+];
+---
+
+<BaseLayout title={REPORT_META.title} description={REPORT_META.description}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ashi-page">
+    <CalculatorHero
+      eyebrow="AI 주식 리포트"
+      title="AI 주식 2026 상반기 수익률"
+      description="소프트웨어 –44% vs 하드웨어 +820% — 같은 AI인데 왜 정반대로 갔나"
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[REPORT_META.source, REPORT_META.caution]}
+    />
+
+    <!-- KPI -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">Summary</p>
+        <h2>2026 상반기 AI 주식 핵심 수치 — 격차가 360%p</h2>
+      </div>
+      <div class="ashi-kpi-grid">
+        <article class="ashi-kpi-card">
+          <p class="ashi-kpi-label">AI 소프트웨어 평균 YTD</p>
+          <p class="ashi-kpi-value ashi-kpi-value--red">{SUMMARY.softwareAvgYtd}%</p>
+          <p class="ashi-kpi-sub">팰런티어·어도비·MS 등 10종목</p>
+        </article>
+        <article class="ashi-kpi-card">
+          <p class="ashi-kpi-label">AI 인프라·플랫폼 평균 YTD</p>
+          <p class="ashi-kpi-value ashi-kpi-value--blue">+{SUMMARY.infraAvgYtd}%</p>
+          <p class="ashi-kpi-sub">구글·아마존·스노우플레이크</p>
+        </article>
+        <article class="ashi-kpi-card">
+          <p class="ashi-kpi-label">AI 하드웨어 대비 격차</p>
+          <p class="ashi-kpi-value ashi-kpi-value--blue">+{SUMMARY.hardwareAvgYtd}%</p>
+          <p class="ashi-kpi-sub">반도체 종목 평균 (하드웨어 기준)</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 하드웨어 vs 소프트웨어 대비 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">극단적 양극화</p>
+        <h2>같은 "AI 주식" — 하드웨어는 폭등, 소프트웨어는 폭락</h2>
+      </div>
+      <div class="ashi-vs-grid">
+        <article class="ashi-vs-card">
+          <div class="ashi-vs-header">
+            <span class="ashi-vs-badge ashi-vs-badge--down">AI 소프트웨어</span>
+            <span class="ashi-vs-title">평균 –25%</span>
+          </div>
+          <p class="ashi-vs-avg ashi-vs-avg--down">–25%</p>
+          <ul class="ashi-vs-items">
+            {softwareStocks.map(s => (
+              <li class="ashi-vs-item">
+                <span>{s.name} ({s.ticker})</span>
+                <span class="ashi-vs-ytd down">{ytdSign(s.ytd)}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+        <article class="ashi-vs-card">
+          <div class="ashi-vs-header">
+            <span class="ashi-vs-badge ashi-vs-badge--up">AI 하드웨어 (반도체)</span>
+            <span class="ashi-vs-title">평균 +335%</span>
+          </div>
+          <p class="ashi-vs-avg ashi-vs-avg--up">+335%</p>
+          <ul class="ashi-vs-items">
+            {HARDWARE_REF.map(h => (
+              <li class="ashi-vs-item">
+                <span>{h.name} ({h.ticker})</span>
+                <span class="ashi-vs-ytd up">+{h.ytd}%</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- 수익률 바 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수익률 랭킹</p>
+        <h2>13종목 YTD 수익률 — 빨강(소프트웨어) vs 파랑(인프라)</h2>
+      </div>
+      <article class="ashi-chart-panel">
+        <div class="ashi-bar-wrap">
+          <canvas id="ashiBarChart" aria-label="AI 주식 2026 상반기 수익률 차트"></canvas>
+        </div>
+        <p class="ashi-chart-note">기준일: {REPORT_META.updatedAt} | 출처: finviz.com</p>
+      </article>
+    </section>
+
+    <!-- AI 소프트웨어 폭락 이유 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">원인 분석</p>
+        <h2>AI 소프트웨어는 왜 폭락했나 — 4가지 이유</h2>
+      </div>
+      <div class="ashi-reason-grid">
+        {REASONS.map(r => (
+          <article class="ashi-reason-card">
+            <p class="ashi-reason-icon">{r.icon}</p>
+            <p class="ashi-reason-title">{r.title}</p>
+            <p class="ashi-reason-body">{r.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 핵심 종목 해설 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">종목 해설</p>
+        <h2>왜 올랐나·왜 떨어졌나 — 주요 5종목 상세</h2>
+      </div>
+      <div class="ashi-highlights">
+        {HIGHLIGHTS.map(h => (
+          <article class="ashi-highlight-card">
+            <div class="ashi-hc-header">
+              <span class="ashi-hc-name">{h.name}</span>
+              <span class="ashi-hc-ticker">{h.ticker}</span>
+            </div>
+            <p class={`ashi-hc-ytd ${ytdBadgeClass(h.ytd)}`}>{ytdSign(h.ytd)} YTD</p>
+            <p class="ashi-hc-body">{h.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 전체 순위표 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">전체 순위</p>
+        <h2>AI 주식 13종목 수익률 전체 순위표</h2>
+      </div>
+      <div class="ashi-table-wrap">
+        <table class="ashi-rank-table">
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>종목</th>
+              <th>구분</th>
+              <th>현재가</th>
+              <th>YTD 수익률</th>
+              <th>주요 배경</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...STOCKS].sort((a, b) => b.ytd - a.ytd).map((s, i) => (
+              <tr>
+                <td style="font-weight:700;color:#6b7280">{i + 1}</td>
+                <td class="ashi-name-cell">
+                  <span class="ashi-stock-name">{s.name}</span>
+                  <span class="ashi-stock-ticker">{s.ticker}</span>
+                </td>
+                <td>
+                  <span class={`ashi-group-badge ${s.group === 'software' ? 'ashi-group-software' : 'ashi-group-infra'}`}>
+                    {s.group === 'software' ? 'AI 소프트웨어' : 'AI 인프라'}
+                  </span>
+                </td>
+                <td style="font-variant-numeric:tabular-nums">${s.close.toFixed(2)}</td>
+                <td class={ytdClass(s.ytd)}>{ytdSign(s.ytd)}</td>
+                <td style="white-space:normal;min-width:180px;font-size:0.8rem;color:#6b7280">{s.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 반도체 리포트 내부링크 -->
+    <div class="ashi-related-banner">
+      <p class="ashi-related-text">🔗 AI 하드웨어(반도체) 수익률이 궁금하다면?</p>
+      <a class="ashi-related-link" href={withBase('reports/semiconductor-stocks-h1-2026/')}>
+        반도체 주식 2026 상반기 수익률 리포트 →
+      </a>
+    </div>
+
+    <SeoContent
+      introTitle="2026 상반기 AI 주식 — 하드웨어 폭등·소프트웨어 폭락의 진실"
+      intro={seoIntro}
+      faq={faqItems}
+    />
+  </main>
+</BaseLayout>
+
+<script id="ashiChartData" type="application/json" set:html={JSON.stringify(chartData)} />
+<script>
+  function loadChartJs(cb: () => void) {
+    if ((window as any).Chart) return cb();
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  loadChartJs(() => {
+    const raw = document.getElementById('ashiChartData')?.textContent ?? '{}';
+    const data = JSON.parse(raw);
+    const ctx = (document.getElementById('ashiBarChart') as HTMLCanvasElement)?.getContext('2d');
+    if (!ctx) return;
+
+    new (window as any).Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          data: data.ytds,
+          backgroundColor: data.colors,
+          borderRadius: 4,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx: any) => {
+                const v = ctx.parsed.x;
+                return ` ${v >= 0 ? '+' : ''}${v}% YTD`;
+              },
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { callback: (v: any) => `${v >= 0 ? '+' : ''}${v}%` },
+            grid: { color: '#f3f4f6' },
+          },
+          y: { ticks: { font: { size: 11 } } },
+        },
+      },
+    });
+  });
+</script>
