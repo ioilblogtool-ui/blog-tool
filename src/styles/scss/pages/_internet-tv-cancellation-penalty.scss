@@ -1,0 +1,462 @@
+.itcp-page {
+  --itcp-ink: #172033;
+  --itcp-muted: #667085;
+  --itcp-line: #dce3ee;
+  --itcp-soft: #f6f8fb;
+  --itcp-blue: #2563eb;
+  --itcp-green: #138a5b;
+  --itcp-red: #c2410c;
+  --itcp-amber: #b7791f;
+
+  color: var(--itcp-ink);
+
+  .itcp-panel,
+  .itcp-result,
+  .itcp-detail-card,
+  .itcp-guide-grid > article,
+  .itcp-related {
+    border: 1px solid var(--itcp-line);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(20, 31, 55, 0.06);
+  }
+
+  .itcp-panel {
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    h3 {
+      margin: 0 0 0.85rem;
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+  }
+
+  .itcp-preset-grid {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .itcp-preset {
+    display: grid;
+    gap: 0.2rem;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--itcp-line);
+    border-radius: 8px;
+    background: var(--itcp-soft);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    strong {
+      font-size: 0.9rem;
+    }
+
+    span {
+      color: var(--itcp-muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    &:hover {
+      border-color: rgba(37, 99, 235, 0.55);
+      background: #eef4ff;
+    }
+  }
+
+  .itcp-field {
+    display: grid;
+    gap: 0.4rem;
+    margin-bottom: 0.8rem;
+
+    label,
+    > span {
+      color: #344054;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--itcp-line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--itcp-ink);
+      font: inherit;
+      outline: none;
+    }
+
+    input[type="number"],
+    select {
+      min-height: 42px;
+      padding: 0 0.7rem;
+    }
+
+    input[type="range"] {
+      accent-color: var(--itcp-blue);
+    }
+  }
+
+  .itcp-field-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+
+  .itcp-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: 42px;
+    border: 1px solid var(--itcp-line);
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+
+    input {
+      border: 0;
+      border-radius: 0;
+    }
+
+    span {
+      padding: 0 0.7rem;
+      color: var(--itcp-muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+  }
+
+  .itcp-input-row--short {
+    max-width: 118px;
+  }
+
+  .itcp-range-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 118px;
+    gap: 0.65rem;
+    align-items: center;
+  }
+
+  .itcp-segment {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .itcp-segment__button {
+    min-height: 40px;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid var(--itcp-line);
+    border-radius: 8px;
+    background: #fff;
+    color: #344054;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.25;
+    cursor: pointer;
+
+    &.is-active {
+      border-color: var(--itcp-blue);
+      background: #eaf1ff;
+      color: #174ea6;
+    }
+  }
+
+  .itcp-result {
+    display: grid;
+    gap: 0.65rem;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border-left: 6px solid var(--itcp-blue);
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.28rem, 2.2vw, 1.85rem);
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--itcp-muted);
+      line-height: 1.6;
+    }
+
+    &[data-itcp-status="goodToSwitch"] {
+      border-left-color: var(--itcp-green);
+    }
+
+    &[data-itcp-status="likelyLoss"] {
+      border-left-color: var(--itcp-red);
+    }
+
+    &[data-itcp-status="contractEnded"] {
+      border-left-color: #475467;
+    }
+  }
+
+  .itcp-status-pill {
+    width: fit-content;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    background: #eef4ff;
+    color: #174ea6;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .itcp-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .itcp-kpi-card,
+  .itcp-metric-grid article {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--itcp-line);
+    border-radius: 8px;
+    background: var(--itcp-soft);
+
+    span {
+      color: var(--itcp-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    strong {
+      color: var(--itcp-ink);
+      font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    small {
+      color: #7a8494;
+      font-size: 0.74rem;
+      line-height: 1.35;
+    }
+  }
+
+  .itcp-kpi-card--danger strong {
+    color: var(--itcp-red);
+  }
+
+  .itcp-kpi-card--profit strong {
+    color: var(--itcp-green);
+  }
+
+  .itcp-detail-card,
+  .itcp-related {
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .itcp-section-heading {
+    display: grid;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+
+    p {
+      margin: 0;
+      color: var(--itcp-blue);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.12rem;
+      line-height: 1.35;
+    }
+  }
+
+  .itcp-breakdown {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .itcp-breakdown-card {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+    padding: 0.8rem;
+    border: 1px solid var(--itcp-line);
+    border-radius: 8px;
+    background: #fff;
+
+    span {
+      color: var(--itcp-muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    strong {
+      font-size: 1rem;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 0;
+      color: var(--itcp-muted);
+      font-size: 0.75rem;
+      line-height: 1.45;
+    }
+  }
+
+  .itcp-bar {
+    display: flex;
+    height: 14px;
+    margin-top: 1rem;
+    border-radius: 999px;
+    background: #eef2f7;
+    overflow: hidden;
+  }
+
+  .itcp-bar__segment {
+    min-width: 4px;
+  }
+
+  .itcp-bar__segment--contractDiscountReturn {
+    background: var(--itcp-blue);
+  }
+
+  .itcp-bar__segment--deviceDiscountReturn {
+    background: #12b76a;
+  }
+
+  .itcp-bar__segment--giftReturn {
+    background: var(--itcp-amber);
+  }
+
+  .itcp-bar__segment--installFeeReturn {
+    background: #7c3aed;
+  }
+
+  .itcp-bar__segment--deviceNonReturnFee {
+    background: var(--itcp-red);
+  }
+
+  .itcp-bar__empty {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    color: var(--itcp-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .itcp-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .itcp-guide-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+
+    article {
+      padding: 1.15rem;
+    }
+
+    h3 {
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+    }
+
+    ol,
+    ul {
+      display: grid;
+      gap: 0.45rem;
+      margin: 0;
+      padding-left: 1.2rem;
+      color: var(--itcp-muted);
+      line-height: 1.6;
+    }
+  }
+
+  .itcp-related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+
+    a {
+      display: grid;
+      gap: 0.35rem;
+      min-width: 0;
+      padding: 0.9rem;
+      border: 1px solid var(--itcp-line);
+      border-radius: 8px;
+      background: var(--itcp-soft);
+      color: inherit;
+      text-decoration: none;
+
+      strong {
+        line-height: 1.3;
+      }
+
+      span {
+        color: var(--itcp-muted);
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      &:hover {
+        border-color: rgba(37, 99, 235, 0.5);
+        background: #eef4ff;
+      }
+    }
+  }
+}
+
+@media (max-width: 980px) {
+  .itcp-page {
+    .itcp-kpi-grid,
+    .itcp-breakdown,
+    .itcp-metric-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .itcp-related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .itcp-page {
+    .itcp-field-grid,
+    .itcp-guide-grid,
+    .itcp-kpi-grid,
+    .itcp-breakdown,
+    .itcp-metric-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .itcp-segment {
+      grid-template-columns: 1fr;
+    }
+
+    .itcp-range-row {
+      grid-template-columns: 1fr;
+    }
+
+    .itcp-input-row--short {
+      max-width: none;
+    }
+  }
+}
