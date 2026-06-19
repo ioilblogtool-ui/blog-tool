@@ -266,7 +266,7 @@ export const candidates: CandidateRecord[] = [
     netAssets: 50000,
     dataSource: '중앙선관위 재산 신고',
     declaredDate: '2026-05-15',
-    note: '후보 미확정 — 업데이트 예정',
+    note: '후보 비교 범위에서 제외',
   },
   {
     id: 'gwangju-dp',

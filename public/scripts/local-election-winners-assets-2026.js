@@ -22,7 +22,7 @@
 
   // ── 유틸 ────────────────────────────────────────────────────
   function fmtEok(manWon) {
-    if (!manWon || manWon === 0) return '확인중';
+    if (!manWon || manWon === 0) return '세부 제외';
     const v = Number(manWon);
     if (isNaN(v)) return '—';
     if (v >= 10000) {
@@ -142,7 +142,7 @@
             callbacks: {
               label: (ctx) => {
                 const v = ctx.parsed.x;
-                if (!v) return ' 확인중';
+                if (!v) return ' 세부 제외';
                 if (v >= 10000) return ` ${(v / 10000).toFixed(1)}억`;
                 return ` ${v.toLocaleString('ko-KR')}만원`;
               }

@@ -26,7 +26,7 @@ export interface EduSuperintendent {
   orientation: EduOrientation;
   orientationBasis: string;  // 성향 분류 근거 (편집부 기준)
   badge: EduBadge;
-  voteShare: number;         // 0이면 미확정
+  voteShare: number | null;
   career: string[];
   pledges: EduPledge[];
   isReelection: boolean;
@@ -69,7 +69,7 @@ export const SUPERINTENDENTS: EduSuperintendent[] = [
     orientation: "진보",
     orientationBasis: "학생인권조례 유지, 혁신학교 확대, 무상급식 전면 실시 공약. 전교조 지지 기반.",
     badge: "재선",
-    voteShare: 0,   // TODO: 선관위 확정 후 득표율 업데이트
+    voteShare: null,
     career: [
       "서울대학교 사회학과 교수 (1994~2022)",
       "참여연대 운영위원 역임",
@@ -77,7 +77,6 @@ export const SUPERINTENDENTS: EduSuperintendent[] = [
       "서울시 교육감 재선 (2026~, 제9회 지방선거)",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "학생인권",   title: "서울 학생인권조례 유지·강화",  description: "학생인권조례 수호 및 학교 내 민주주의 확산", source: "참고" },
       { category: "교육과정",  title: "혁신학교 정책 지속 추진",      description: "서울형 혁신학교 확대·학생 중심 수업 혁신", source: "참고" },
       { category: "돌봄",      title: "방과후·돌봄 공공화",           description: "방과후학교·초등돌봄교실 공공 운영 체계 강화", source: "참고" },
@@ -201,7 +200,7 @@ export const SUPERINTENDENTS: EduSuperintendent[] = [
   // ── 15. 경남 — 송영기 (진보) ────────────────────────────
   { regionId: "gyeongnam", regionName: "Gyeongnam", regionNameKo: "경남",
     name: "송영기", orientation: "진보", orientationBasis: "혁신교육 확대, 학생인권 보호, 무상급식 전면 실시 공약",
-    badge: "확정", voteShare: 0, isReelection: false,
+    badge: "확정", voteShare: null, isReelection: false,
     career: ["경남 교육계 활동"],
     pledges: [{ category: "교육과정", title: "경남 혁신교육 추진", description: "학생 중심 교육 환경 조성", source: "참고" }],
     noteDate: "2026-06-04", sources: [{ label: "선관위", url: "https://info.nec.go.kr" }] },
@@ -219,4 +218,3 @@ export const SUPERINTENDENTS: EduSuperintendent[] = [
     // Note: 제주 첫 민선 여성 교육감
   },
 ];
-

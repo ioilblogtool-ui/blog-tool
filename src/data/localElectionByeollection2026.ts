@@ -23,7 +23,7 @@ export interface IssueHighlight {
 export interface ByeCandidate {
   name: string;
   party: Party;
-  voteShare: number;
+  voteShare: number | null;
   badge: ResultBadge;
 }
 
@@ -160,7 +160,7 @@ export const BYE_DISTRICTS: ByeDistrict[] = [
     districtName: "경기 안산갑",
     region: "수도권",
     byeReason: "고영인 의원 사직",
-    elected: { name: "김남국", party: "더불어민주당", voteShare: 0, badge: "확정" },
+    elected: { name: "김남국", party: "더불어민주당", voteShare: null, badge: "확정" },
     runner: null,
     career: [
       "국회의원 경기 안산시단원구갑 (2020~2024)",
@@ -200,7 +200,7 @@ export const BYE_DISTRICTS: ByeDistrict[] = [
     districtName: "인천 연수갑",
     region: "수도권",
     byeReason: "박찬대 의원 인천시장 출마 사직",
-    elected: { name: "송영길", party: "더불어민주당", voteShare: 0, badge: "확정" },
+    elected: { name: "송영길", party: "더불어민주당", voteShare: null, badge: "확정" },
     runner: null,
     career: [
       "더불어민주당 대표 (2021~2022)",
@@ -326,7 +326,7 @@ export const BYE_DISTRICTS: ByeDistrict[] = [
     districtName: "전북 군산·김제·부안갑",
     region: "전라권",
     byeReason: "이원택 의원 전북도지사 출마 사직",
-    elected: { name: "김의겸", party: "더불어민주당", voteShare: 0, badge: "확정" },
+    elected: { name: "김의겸", party: "더불어민주당", voteShare: null, badge: "확정" },
     runner: null,
     career: [
       "국회의원 전북 군산시 (2022~2024)",
@@ -402,7 +402,7 @@ export const BYE_DISTRICTS: ByeDistrict[] = [
     districtName: "제주 서귀포시",
     region: "강원·제주",
     byeReason: "위성곤 의원 제주도지사 출마 사직",
-    elected: { name: "김성범", party: "더불어민주당", voteShare: 0, badge: "확정" },
+    elected: { name: "김성범", party: "더불어민주당", voteShare: null, badge: "확정" },
     runner: null,
     career: ["더불어민주당 제주 서귀포 정치 활동"],
     pledges: [

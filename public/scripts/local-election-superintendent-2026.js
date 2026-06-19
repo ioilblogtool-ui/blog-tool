@@ -99,8 +99,8 @@
   function onHover(e) {
     var data = getEduData(e.currentTarget.dataset.regionId);
     if (!data || !state.tooltipEl) return;
-    var name = data.name === "TODO" ? "확정대기" : data.name;
-    var orient = data.orientation !== "확정대기" ? data.orientation : "확인 중";
+    var name = data.name || "공개 확인 범위 제외";
+    var orient = data.orientation !== "확정대기" ? data.orientation : "공개 확인 범위 제외";
     state.tooltipEl.innerHTML =
       '<span class="edu-tooltip__name">' + name + "</span>" +
       '<span class="edu-tooltip__region">' + data.regionNameKo + "</span>" +
@@ -155,9 +155,9 @@
 
   function renderPanel(data) {
     var isPending = data.badge === "확정대기";
-    var name      = isPending ? "확인 중" : data.name;
+    var name      = data.name || "공개 확인 범위 제외";
     var oClass    = getOrientationClass(data.orientation);
-    var orientText = isPending ? "확정대기" : data.orientation;
+    var orientText = isPending ? "공개 확인 범위 제외" : data.orientation;
     var reelectionHtml = data.isReelection ? '<span class="edu-panel__reelect">재선</span>' : "";
 
     var careerHtml = data.career.map(function (c) { return "<li>" + c + "</li>"; }).join("");

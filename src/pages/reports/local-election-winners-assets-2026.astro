@@ -127,7 +127,7 @@ const jsonLd = {
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">핵심 수치</p>
         <h2 id="lewa-kpi-heading">당선자 재산 핵심 지표</h2>
-        <p>공개 확인된 당선자 기준. 미확인 항목은 업데이트 예정.</p>
+        <p>공개 확인된 당선자 기준으로 집계합니다. 세부 항목은 공개 범위만 반영합니다.</p>
       </div>
       <div class="lewa-kpi-grid">
         <article class="lewa-kpi-card lewa-kpi-card--accent">
@@ -136,7 +136,7 @@ const jsonLd = {
             {richest ? `${richest.name} ${fmtManwon(richest.totalAsset)}` : "집계중"}
           </strong>
           <small class="lewa-kpi-sub">
-            {richest ? `${richest.position} · ${richest.party}` : "재산공개 확인 후 업데이트"}
+            {richest ? `${richest.position} · ${richest.party}` : "공개 기준 집계 제외"}
           </small>
         </article>
         <article class="lewa-kpi-card">
@@ -145,7 +145,7 @@ const jsonLd = {
             {poorest ? `${poorest.name} ${fmtManwon(poorest.totalAsset)}` : "집계중"}
           </strong>
           <small class="lewa-kpi-sub">
-            {poorest ? `${poorest.position} · ${poorest.party}` : "재산공개 확인 후 업데이트"}
+            {poorest ? `${poorest.position} · ${poorest.party}` : "공개 기준 집계 제외"}
           </small>
         </article>
         <article class="lewa-kpi-card lewa-kpi-card--warn">
@@ -154,7 +154,7 @@ const jsonLd = {
             {avgAsset > 0 ? fmtManwon(avgAsset) : "집계중"}
           </strong>
           <small class="lewa-kpi-sub">
-            {openWinners.length > 0 ? `${openWinners.length}명 공개 기준` : "재산공개 확인 후 집계"}
+            {openWinners.length > 0 ? `${openWinners.length}명 공개 기준` : "공개 기준 집계 제외"}
           </small>
         </article>
         <article class="lewa-kpi-card lewa-kpi-card--muted">
@@ -163,7 +163,7 @@ const jsonLd = {
             {avgRealEstateRatio !== null ? `${avgRealEstateRatio}%` : "집계중"}
           </strong>
           <small class="lewa-kpi-sub">
-            {realEstateWinners.length > 0 ? `${realEstateWinners.length}명 세부공개 기준` : "세부항목 확인 후 집계"}
+            {realEstateWinners.length > 0 ? `${realEstateWinners.length}명 세부공개 기준` : "세부 항목 제외"}
           </small>
         </article>
       </div>
@@ -173,7 +173,7 @@ const jsonLd = {
     <section class="content-section" id="ranking-table" aria-labelledby="lewa-ranking-heading">
       <div class="section-header section-header--compact">
         <h2 id="lewa-ranking-heading">시도지사 당선자 재산 순위</h2>
-        <p>행을 클릭하면 해당 당선자 카드로 이동합니다. 재산이 확인되지 않은 항목은 '확인중'으로 표시됩니다.</p>
+        <p>행을 클릭하면 해당 당선자 카드로 이동합니다. 세부 자산 항목은 공개 확인 범위만 표시합니다.</p>
       </div>
       <div id="lewaSortTabs" class="lewa-sort-tabs" aria-label="정렬 선택">
         <button type="button" class="is-active" data-lewa-sort="assetsDesc">재산 높은 순</button>
@@ -182,7 +182,7 @@ const jsonLd = {
       </div>
       <div class="lewa-table-wrap">
         <table class="lewa-ranking-table">
-          <caption>2026 시도지사 당선자 재산 순위표 — 선관위 재산공개 기준 (확인중 포함)</caption>
+          <caption>2026 시도지사 당선자 재산 순위표 — 선관위 후보자 재산신고 공개 기준</caption>
           <thead>
             <tr>
               <th>순위</th>
@@ -234,7 +234,7 @@ const jsonLd = {
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">당선자별 재산</p>
         <h2 id="lewa-cards-heading">16명 당선자 재산 상세 카드</h2>
-        <p>각 카드의 금액은 선관위 재산공개 자료 확인 후 업데이트됩니다. 현재 확인중 항목은 공식 자료 취합 후 수정됩니다.</p>
+        <p>각 카드의 금액은 선관위 후보자 재산신고 공개자료 기준입니다. 세부 항목은 공개 확인 범위만 반영합니다.</p>
       </div>
       <div class="lewa-cards-grid">
         {winners.map((w) => (
@@ -288,7 +288,7 @@ const jsonLd = {
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">정당별 비교</p>
         <h2 id="lewa-party-heading">민주당 vs 국힘 당선자 평균 재산</h2>
-        <p>재산공개가 확인된 당선자 기준으로 집계합니다. 확인중 항목 업데이트 시 수치가 변경됩니다.</p>
+        <p>재산공개가 확인된 당선자 기준으로 집계합니다. 세부 제외 항목은 평균 계산에서 제외합니다.</p>
       </div>
       <div class="lewa-party-chart">
         <canvas id="lewaPartyChart" role="img" aria-label="정당별 당선자 평균 재산 가로 막대 차트"></canvas>
@@ -296,13 +296,13 @@ const jsonLd = {
       <div class="lewa-party-stats">
         <div class="lewa-party-stat-card lewa-party-stat-card--dp">
           <p class="lewa-party-stat-label">더불어민주당 평균 ({dpWinners.length}명)</p>
-          <strong id="lewaDpAvg">{dpAvg > 0 ? fmtManwon(dpAvg) : "집계중"}</strong>
-          <small id="lewaDpCount">{dpOpenCount > 0 ? `${dpOpenCount}명 공개 기준` : "재산공개 확인 후 집계"}</small>
+          <strong id="lewaDpAvg">{dpAvg > 0 ? fmtManwon(dpAvg) : "집계 제외"}</strong>
+          <small id="lewaDpCount">{dpOpenCount > 0 ? `${dpOpenCount}명 공개 기준` : "공개 기준 집계 제외"}</small>
         </div>
         <div class="lewa-party-stat-card lewa-party-stat-card--ppp">
           <p class="lewa-party-stat-label">국민의힘 평균 ({pppWinners.length}명)</p>
-          <strong id="lewaPppAvg">{pppAvg > 0 ? fmtManwon(pppAvg) : "집계중"}</strong>
-          <small id="lewaPppCount">{pppOpenCount > 0 ? `${pppOpenCount}명 공개 기준` : "재산공개 확인 후 집계"}</small>
+          <strong id="lewaPppAvg">{pppAvg > 0 ? fmtManwon(pppAvg) : "집계 제외"}</strong>
+          <small id="lewaPppCount">{pppOpenCount > 0 ? `${pppOpenCount}명 공개 기준` : "공개 기준 집계 제외"}</small>
         </div>
       </div>
     </section>
@@ -345,11 +345,11 @@ const jsonLd = {
       intro={[
         "2026 지방선거 시도지사 당선자 16명의 재산 공개 내역을 한 페이지에서 비교할 수 있습니다. 오세훈 서울시장 재산, 추미애 경기도지사 재산신고, 전재수 부산시장 재산, 박찬대 인천시장 재산, 정원오 전 성동구청장과의 비교 등 관련 키워드 검색 수요가 급증하고 있습니다.",
         "시도지사 당선자 재산신고액은 중앙선거관리위원회 후보자 재산공개 자료를 기반으로 합니다. 재산신고에는 본인 외 배우자와 직계존비속 재산이 포함되며, 부동산 신고액은 현재 시세가 아닌 신고 기준 금액입니다.",
-        "2026 지방선거는 더불어민주당이 12개 광역단체를, 국민의힘이 4개 광역단체를 차지하는 결과를 냈습니다. 정당별 당선자 평균 재산 비교는 선관위 재산공개 자료 취합 후 업데이트됩니다.",
+        "2026 지방선거는 더불어민주당이 12개 광역단체를, 국민의힘이 4개 광역단체를 차지하는 결과를 냈습니다. 정당별 당선자 평균 재산 비교는 공개 확인된 총재산 항목만 기준으로 계산합니다.",
       ]}
       criteria={[
         "재산 수치는 선관위 후보자 재산신고 공개 자료를 기준으로 합니다.",
-        "확인중으로 표시된 항목은 선관위 원문 확인 후 업데이트됩니다.",
+        "세부 제외 항목은 평균과 비중 계산에서 제외합니다.",
         "부동산 신고액은 현재 아파트 시세·실거래가·호가와 다를 수 있습니다.",
         "순자산과 비중은 이해를 돕기 위한 단순 계산값이며 공식 선관위 수치가 아닙니다.",
       ]}

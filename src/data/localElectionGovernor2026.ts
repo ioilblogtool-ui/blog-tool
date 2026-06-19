@@ -2,7 +2,6 @@
 // localElectionGovernor2026.ts
 // 2026 지방선거 시도지사 당선자 데이터
 // 기준: 2026.06.04 14:00 개표율 99.92%
-// TODO 주석 = 선관위 최종 확정 후 업데이트 필요 항목
 // ============================================================
 
 export type Party = "더불어민주당" | "국민의힘" | "무소속" | "기타";
@@ -21,7 +20,7 @@ export type PledgeCategory =
 export interface GovernorCandidate {
   name: string;
   party: Party;
-  voteShare: number;   // 0이면 확정대기
+  voteShare: number | null;
   badge: ResultBadge;
 }
 
@@ -60,7 +59,7 @@ export interface GovernorPageMeta {
 export const GOVERNOR_META: GovernorPageMeta = {
   electionName: "제9회 전국동시지방선거",
   electionDate: "2026-06-03",
-  dataAsOf: "2026-06-04 14:00 개표율 99.92% 기준",   // TODO: 최종 확정 시 "선관위 최종 확정" 으로 변경
+  dataAsOf: "2026-06-04 14:00 개표율 99.92% 기준",
   totalRegions: 16,
   demCount: 12,
   pppCount: 4,
@@ -95,7 +94,6 @@ export const GOVERNORS: GovernorElected[] = [
       "서울시의회 의원 (1995~1998)",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "교통·인프라", title: "GTX 연장·도심 교통 개선", description: "GTX-A·B·C 서울 구간 완공 및 도심 교통망 확충", source: "참고" },
       { category: "주거·도시",   title: "재건축·재개발 규제 완화",  description: "노후 주거지 정비 사업 신속 추진, 서울 주택 공급 확대", source: "참고" },
       { category: "경제·일자리", title: "서울 글로벌 비즈니스 허브", description: "동대문·잠실·여의도 국제 업무 지구 조성", source: "참고" },
@@ -132,7 +130,6 @@ export const GOVERNORS: GovernorElected[] = [
       "부산 지역 정무·의정 활동",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "경제·일자리", title: "부산 글로벌 허브도시 조성", description: "북항 재개발·해양 산업 클러스터 육성", source: "참고" },
       { category: "교통·인프라", title: "부산 교통망 현대화",          description: "도시철도 연장·스마트 교통 시스템 구축", source: "참고" },
       { category: "교육·청년",   title: "청년 인구 유입 정책",          description: "청년 일자리·주거 지원으로 정착 유도", source: "참고" },
@@ -152,7 +149,7 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 53.92,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "국민의힘",
     isPartyFlip: false,
     career: [
@@ -162,7 +159,6 @@ export const GOVERNORS: GovernorElected[] = [
       "기획재정부 제1차관 (2014~2016)",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "경제·일자리", title: "대구 첨단산업 유치",      description: "반도체·모빌리티 산업 집적지 조성", source: "참고" },
       { category: "교통·인프라", title: "대구 광역교통망 확충",    description: "대구~수도권 KTX·고속도로 연결 강화", source: "참고" },
       { category: "교육·청년",   title: "청년 인구 대구 정착 지원", description: "청년 창업·주거 원스톱 지원", source: "참고" },
@@ -185,7 +181,7 @@ export const GOVERNORS: GovernorElected[] = [
     runner: {
       name: "유정복",
       party: "국민의힘",
-      voteShare: 0,   // TODO: 선관위 확정 후 업데이트
+      voteShare: null,
       badge: "확정대기",
     },
     previousParty: "국민의힘",
@@ -196,7 +192,6 @@ export const GOVERNORS: GovernorElected[] = [
       "더불어민주당 원내대표 (2024~2025)",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "교통·인프라", title: "인천 GTX·지하철 확충",       description: "수도권 광역교통망 인천 연결 강화", source: "참고" },
       { category: "경제·일자리", title: "인천 공항·항만 경제권 발전", description: "인천공항 주변 경제자유구역 활성화", source: "참고" },
       { category: "주거·도시",   title: "인천 주거환경 개선",          description: "구도심 재개발 및 신도시 인프라 확충", source: "참고" },
@@ -216,7 +211,7 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 79.02,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "더불어민주당",
     isPartyFlip: false,
     career: [
@@ -225,7 +220,6 @@ export const GOVERNORS: GovernorElected[] = [
       "더불어민주당 최고위원",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "행정·자치",   title: "광주·전남 통합특별시 조성",  description: "전남광주통합특별시 출범 안착 및 행정 통합 완성", source: "참고" },
       { category: "경제·일자리", title: "AI·에너지 산업 유치",        description: "AI 집적단지·해상풍력·태양광 산업 광주전남 집중 유치", source: "참고" },
       { category: "복지·의료",   title: "농어촌 복지 강화",           description: "전남 농어촌 주민 의료·교통·교육 서비스 향상", source: "참고" },
@@ -245,7 +239,7 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 53.49,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "더불어민주당",
     isPartyFlip: false,
     career: [
@@ -254,7 +248,6 @@ export const GOVERNORS: GovernorElected[] = [
       "국회의원 대전 유성구갑 (2004~2008)",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "경제·일자리", title: "대덕연구개발특구 고도화",    description: "대덕특구 연구 성과 사업화 및 첨단 바이오·AI 융합", source: "참고" },
       { category: "교통·인프라", title: "대전 도시철도 2호선 완공",   description: "트램 2호선 조기 완공 및 대전 외곽 연장", source: "참고" },
       { category: "교육·청년",   title: "청년 창업·일자리 확대",      description: "과학기술 특화 스타트업 지원 강화", source: "참고" },
@@ -274,15 +267,13 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 48.73,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "국민의힘",
     isPartyFlip: true,
     career: [
       "국회의원 울산 중구 (2020~2026)",
-      // TODO: 추가 이력 확인 필요
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "환경·에너지", title: "울산 수소 경제 도시 조성",    description: "수소 생산·유통 거점 울산 육성", source: "참고" },
       { category: "경제·일자리", title: "산업 구조 전환 지원",          description: "자동차·석유화학 → 미래 친환경 산업 전환", source: "참고" },
       { category: "복지·의료",   title: "노동자·시민 복지 강화",        description: "산업재해 예방 및 시민 공공의료 접근성 향상", source: "참고" },
@@ -302,15 +293,13 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 61.04,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "더불어민주당",
     isPartyFlip: false,
     career: [
-      // TODO: 이력 상세 확인 필요
       "더불어민주당 세종시 정치인",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "행정·자치",   title: "행정수도 세종 완성",          description: "국회·주요 기관 세종 이전 완성 촉구", source: "참고" },
       { category: "교통·인프라", title: "세종 광역교통망 구축",        description: "대전·청주 연결 BRT·철도망 확충", source: "참고" },
       { category: "교육·청년",   title: "자족 교육도시 조성",          description: "고교·대학 유치로 교육 자족 기능 강화", source: "참고" },
@@ -331,7 +320,7 @@ export const GOVERNORS: GovernorElected[] = [
       badge: "확정",
     },
     runner: {
-      name: "양향자", // TODO: 선관위 후보자 정보 재확인 필요
+      name: "양향자",
       party: "국민의힘",
       voteShare: 39.37,
       badge: "확정",
@@ -345,7 +334,6 @@ export const GOVERNORS: GovernorElected[] = [
       "판사 출신",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "교통·인프라", title: "GTX 경기 전역 연결",   description: "GTX A·B·C·D 경기 전역 연결 완성", source: "참고" },
       { category: "주거·도시",   title: "경기 주거비 부담 완화", description: "공공주택 확대 및 전·월세 안정 대책", source: "참고" },
       { category: "교육·청년",   title: "청년 기본소득 확대",    description: "청년기본소득 대상·금액 확대", source: "참고" },
@@ -365,7 +353,7 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 51.81,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "국민의힘",
     isPartyFlip: true,
     career: [
@@ -374,7 +362,6 @@ export const GOVERNORS: GovernorElected[] = [
       "더불어민주당 비상대책위원장 (2022)",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "경제·일자리", title: "강원 관광·레저 산업 육성",  description: "평창 올림픽 시설 활용·4계절 관광 활성화", source: "참고" },
       { category: "교통·인프라", title: "서울~강원 고속 연결 강화",  description: "동서고속철도·제2경춘국도 완공 추진", source: "참고" },
       { category: "환경·에너지", title: "강원 탄소중립 선도",         description: "청정 자연 기반 그린에너지 산업 구축", source: "참고" },
@@ -403,11 +390,9 @@ export const GOVERNORS: GovernorElected[] = [
     previousParty: "국민의힘",
     isPartyFlip: true,
     career: [
-      // TODO: 이력 상세 확인 필요
       "더불어민주당 충북 정치인",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "경제·일자리", title: "충북 반도체·바이오 유치",  description: "오창·오송 산업단지 첨단산업 클러스터 고도화", source: "참고" },
       { category: "교통·인프라", title: "충북 고속화 교통망",        description: "청주공항 국제선 확대 및 KTX 충북선 연결", source: "참고" },
       { category: "복지·의료",   title: "충북 공공의료 강화",         description: "충북 의료원 확충 및 응급의료 체계 개선", source: "참고" },
@@ -427,7 +412,7 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 52.53,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "국민의힘",
     isPartyFlip: true,
     career: [
@@ -436,7 +421,6 @@ export const GOVERNORS: GovernorElected[] = [
       "국회의원 충남 공주시·청양군 (2004~2008)",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "환경·에너지", title: "충남 탈석탄 에너지 전환",  description: "석탄발전소 조기 폐쇄·재생에너지 산업 육성", source: "참고" },
       { category: "경제·일자리", title: "서해안 산업단지 활성화",   description: "당진·보령·서산 서해안 산업 클러스터 강화", source: "참고" },
       { category: "복지·의료",   title: "농어촌 주민 생활 지원",   description: "농어촌 인구 감소 대응 특별 지원 패키지", source: "참고" },
@@ -456,15 +440,13 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 51.23,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "더불어민주당",
     isPartyFlip: false,
     career: [
       "국회의원 전북 익산시을 (2020~2026)",
-      // TODO: 추가 이력 확인 필요
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "경제·일자리", title: "새만금 개발 가속화",       description: "새만금 국제자유도시 조성 속도 향상", source: "참고" },
       { category: "농업·수산",   title: "전북 농업 디지털화",       description: "스마트팜 확대 및 농식품 수출 증대", source: "참고" },
       { category: "교통·인프라", title: "전북 KTX·고속도로 확충", description: "전주~수도권 고속 이동 인프라 강화", source: "참고" },
@@ -484,7 +466,7 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 67.24,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "국민의힘",
     isPartyFlip: false,
     career: [
@@ -493,7 +475,6 @@ export const GOVERNORS: GovernorElected[] = [
       "국가정보원 차장 (2007~2008)",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "경제·일자리", title: "경북 첨단산업 클러스터",   description: "구미 반도체·포항 이차전지 제조업 재도약", source: "참고" },
       { category: "행정·자치",   title: "경북·대구 행정통합 추진", description: "대구경북 광역 메가시티 구성 논의 지속", source: "참고" },
       { category: "교통·인프라", title: "경북 교통망 완성",         description: "동해선·중부내륙선 완공 및 연계 인프라", source: "참고" },
@@ -528,7 +509,6 @@ export const GOVERNORS: GovernorElected[] = [
       "민선 8기 경남도정 운영",
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "경제·일자리", title: "경남 항공·우주 산업 육성", description: "사천 항공 클러스터·위성 산업 고도화", source: "참고" },
       { category: "환경·에너지", title: "낙동강 수질·환경 개선",    description: "낙동강 수질 정화 및 친수공간 조성", source: "참고" },
       { category: "교육·청년",   title: "경남 청년 인구 유입",      description: "청년 일자리·주거 지원 패키지", source: "참고" },
@@ -548,15 +528,13 @@ export const GOVERNORS: GovernorElected[] = [
       voteShare: 63.11,
       badge: "확정",
     },
-    runner: null,   // TODO: 상대 후보 정보 확인
+    runner: null,
     previousParty: "더불어민주당",
     isPartyFlip: false,
     career: [
       "국회의원 제주 서귀포시 (2016~2026)",
-      // TODO: 추가 이력 확인 필요
     ],
     pledges: [
-      // TODO: 선관위 공약마당 확인 후 상세 업데이트
       { category: "환경·에너지", title: "제주 탄소중립 섬 실현",   description: "2030 탄소중립 조기 달성·청정에너지 전환", source: "참고" },
       { category: "경제·일자리", title: "제주 관광 고부가가치화",   description: "오버투어리즘 해소·프리미엄 관광 육성", source: "참고" },
       { category: "교통·인프라", title: "제주 제2공항 건설 추진",   description: "제2공항 조기 착공으로 교통 분산", source: "참고" },

@@ -1,4 +1,4 @@
-export type CandidateAssetBadge = "공식" | "보도확인" | "부분공개" | "계산" | "업데이트필요";
+export type CandidateAssetBadge = "공식" | "보도확인" | "부분공개" | "계산" | "세부제외";
 export type ElectionType = "시·도지사" | "교육감" | "구·시·군의장" | "광역의원" | "기초의원" | "국회의원보궐";
 export type CandidateStatus = "등록" | "사퇴" | "등록무효" | "정정확인";
 export type AssetSortKey =
@@ -272,7 +272,7 @@ export const localElectionCandidateAssetsRanking2026: LocalElectionCandidateAsse
       value: "원자료 확인 필요",
       description: "부동산·예금·증권·채무 항목은 후보자별 공개자료에서 직접 확인해야 합니다.",
       tone: "caution",
-      badge: "업데이트필요",
+      badge: "세부제외",
     },
   ],
   candidates: localElectionCandidateAssets,

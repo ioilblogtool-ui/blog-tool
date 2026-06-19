@@ -29,8 +29,8 @@
   }
 
   function formatVote(voteShare, badge) {
-    if (voteShare > 0) return voteShare + "%";
-    return '<span class="gov-badge gov-badge--pending">확정대기</span>';
+    if (typeof voteShare === "number") return voteShare + "%";
+    return '<span class="gov-badge gov-badge--pending">공개 확인 범위 제외</span>';
   }
 
   function getPledgeCheckText(category) {
@@ -132,9 +132,9 @@
     var data = getGovData(regionId);
     if (!data || !state.tooltipEl) return;
 
-    var voteText = data.elected.voteShare > 0
+    var voteText = typeof data.elected.voteShare === "number"
       ? data.elected.voteShare + "%"
-      : "확정대기";
+      : "공개 확인 범위 제외";
 
     state.tooltipEl.innerHTML =
       '<span class="gov-tooltip__name">' + data.elected.name + "</span>" +
@@ -213,7 +213,7 @@
 
     // 득표 바
     var barHtml = "";
-    if (data.elected.voteShare > 0 && data.runner && data.runner.voteShare > 0) {
+    if (typeof data.elected.voteShare === "number" && data.runner && typeof data.runner.voteShare === "number") {
       var ePct = data.elected.voteShare;
       var rPct = data.runner.voteShare;
       var eClass = getPartyClass(data.elected.party);

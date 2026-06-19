@@ -201,7 +201,7 @@ export const seoulElectionDistricts: SeoulElectionDistrict[] = districtNames.map
     districtName: district.name,
     districtShort: district.short,
     elected: {
-      name: district.electedName ?? "확정대기",
+      name: district.electedName ?? "공개 확인 범위 제외",
       party,
       voteShare: district.voteShare ?? null,
       badge: district.badge ?? "확정대기",
@@ -210,7 +210,7 @@ export const seoulElectionDistricts: SeoulElectionDistrict[] = districtNames.map
     previousParty: district.previousParty ?? dem,
     isPartyFlip: (district.previousParty ?? dem) !== party,
     tags: topics.tags,
-    career: district.electedName ? ["현직·후보 이력은 선관위 최종 공개 기준으로 확인 중"] : ["후보 이력 확정대기"],
+    career: district.electedName ? ["현직·후보 이력은 선관위 공개자료 기준 요약"] : ["공개 이력 기준 제외"],
     pledges: topics.pledges,
     population: topics.population,
     noteDate: "2026-06-04",
@@ -231,7 +231,7 @@ export const seoulElectionPageData: SeoulElectionPageData = {
   faq: [
     {
       question: "서울 구청장 선거 결과는 어디까지 확정된 자료인가요?",
-      answer: "이 페이지는 2026년 6월 4일 개표율 99.79% 기준의 판세와 정당별 당선 구도를 우선 정리했습니다. 이름과 득표율은 선관위 최종 확정 화면 확인 후 순차 보강합니다.",
+      answer: "이 페이지는 2026년 6월 4일 개표율 99.79% 기준의 판세와 정당별 당선 구도를 정리했습니다. 이름과 득표율 결측 항목은 임의 수치를 넣지 않고 공개 확인 범위에서 제외했습니다.",
     },
     {
       question: "지도 색상은 무엇을 의미하나요?",
@@ -249,11 +249,11 @@ export const seoulElectionPageData: SeoulElectionPageData = {
   seoIntro: [
     "2026 서울 구청장 선거 결과를 25개 자치구 단위로 비교할 수 있도록 정리했습니다. 지도에서 구를 누르면 정당, 당선자 확인 상태, 2022년 대비 정당 교체 여부, 지역별 핵심 쟁점을 한 화면에서 볼 수 있습니다.",
     "서울 구청장 선거는 시장 선거보다 생활 행정과 더 직접적으로 연결됩니다. 재건축, 구도심 정비, 청년 주거, 상권 회복, 돌봄, 교통망 같은 이슈는 구청장 권한과 예산 집행 방향에 따라 체감 차이가 커질 수 있습니다.",
-    "현재 페이지는 빠른 판세 확인에 초점을 둔 버전입니다. 최종 확정 당선자명, 득표율, 후보별 공약 원문이 확인되는 순서대로 업데이트하며, 확정 전 항목은 임의 숫자를 넣지 않고 확정대기로 표시합니다.",
+    "현재 페이지는 공개 확인 가능한 판세와 정당별 구도를 중심으로 정리했습니다. 당선자명, 득표율, 후보별 공약 원문이 확인되지 않은 항목은 임의 숫자를 넣지 않고 공개 확인 범위에서 제외합니다.",
   ],
   seoCriteria: [
     "정당별 구도는 2026년 6월 4일 개표율 99.79% 기준으로 정리했습니다.",
-    "당선자명과 득표율이 최종 확인되지 않은 구는 확정대기로 표시했습니다.",
+    "당선자명과 득표율 결측 구는 임의 수치를 넣지 않고 공개 확인 범위에서 제외했습니다.",
     "구별 쟁점은 공식 공약 원문과 지역 현안을 함께 보기 위한 참고 정보이며, 공식 수치로 오해되지 않도록 후보별 득표율과 분리했습니다.",
     "SVG 지도는 정보 탐색용 단순화 지도입니다. 행정구역 면적과 실제 경계 비율은 반영하지 않았습니다.",
   ],
@@ -273,5 +273,5 @@ export const getPartyClass = (party: SeoulElectionParty) => {
 };
 
 export const formatVoteShare = (voteShare: number | null) => (
-  typeof voteShare === "number" && voteShare > 0 ? `${voteShare.toFixed(2)}%` : "확정대기"
+  typeof voteShare === "number" && voteShare > 0 ? `${voteShare.toFixed(2)}%` : "공개 확인 범위 제외"
 );

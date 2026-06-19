@@ -2,7 +2,7 @@ export type SemiconductorCompanySlug = "samsung-electronics" | "sk-hynix" | "mic
 export type SemiconductorBusinessType = "integrated" | "memory" | "foundry";
 export type ForecastCurrency = "KRW" | "USD" | "TWD";
 export type ForecastYear = 2026 | 2027 | 2028;
-export type ForecastBadge = "공식" | "컨센서스" | "시나리오" | "환산" | "추정" | "업데이트필요";
+export type ForecastBadge = "공식" | "컨센서스" | "시나리오" | "환산" | "추정" | "주의";
 export type ScenarioKey = "bear" | "base" | "bull";
 export type MetricKey = "revenue" | "operatingProfit" | "operatingMargin" | "revenueCagr" | "opCagr" | "forwardPer" | "evEbitda";
 
@@ -318,7 +318,7 @@ export const semiconductorStocksForecast2026_2028: SemiconductorStocksForecastDa
     { label: "2028E 영업이익률", value: "SK하이닉스 71.6%", description: "HBM과 DRAM 가격 강세가 유지된다는 시나리오 기준입니다.", badge: "시나리오", tone: "memory" },
     { label: "영업이익 CAGR", value: `${opCagrRanking[0].company.shortName} ${opCagrRanking[0].cagr.toFixed(1)}%`, description: "2026E~2028E 영업이익 증가율 기준입니다.", badge: "추정", tone: "growth" },
     { label: "파운드리 프리미엄", value: "TSMC", description: "AI GPU·ASIC 선단공정 수요와 높은 고객 락인이 핵심입니다.", badge: "컨센서스", tone: "foundry" },
-    { label: "주의할 변수", value: "2028 공급 증가", description: "메모리는 공급 확대 시 가격과 이익률 정상화가 빠르게 올 수 있습니다.", badge: "업데이트필요", tone: "caution" },
+    { label: "주의할 변수", value: "2028 공급 증가", description: "메모리는 공급 확대 시 가격과 이익률 정상화가 빠르게 올 수 있습니다.", badge: "주의", tone: "caution" },
   ],
   businessMatrix: businessModelMatrix,
   sources: semiconductorSources,

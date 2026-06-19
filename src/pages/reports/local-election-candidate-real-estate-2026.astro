@@ -124,7 +124,7 @@ const lcrePageData = {
         <h2>시·도지사 후보 부동산 신고액 순위</h2>
         <p>
           총재산 신고액 기준 추정 부동산 금액입니다. 아파트·토지·건물 세부 항목은
-          <span class="lcre-badge lcre-badge--update">업데이트 진행 중</span>입니다.
+          <span class="lcre-badge lcre-badge--update">공개 확인 범위만 반영</span>합니다.
         </p>
       </div>
 
@@ -192,13 +192,13 @@ const lcrePageData = {
                   <span class="lcre-badge lcre-badge--assessed">공시가</span>
                 </td>
                 <td class="lcre-amount lcre-amount--sub">
-                  {c.apartmentManwon !== undefined ? formatManwon(c.apartmentManwon) : <span class="lcre-badge lcre-badge--update">확인중</span>}
+                  {c.apartmentManwon !== undefined ? formatManwon(c.apartmentManwon) : <span class="lcre-badge lcre-badge--update">세부 제외</span>}
                 </td>
                 <td class="lcre-amount lcre-amount--sub">
-                  {c.landManwon !== undefined ? formatManwon(c.landManwon) : <span class="lcre-badge lcre-badge--update">확인중</span>}
+                  {c.landManwon !== undefined ? formatManwon(c.landManwon) : <span class="lcre-badge lcre-badge--update">세부 제외</span>}
                 </td>
                 <td class="lcre-amount lcre-amount--sub">
-                  {c.buildingManwon !== undefined ? formatManwon(c.buildingManwon) : <span class="lcre-badge lcre-badge--update">확인중</span>}
+                  {c.buildingManwon !== undefined ? formatManwon(c.buildingManwon) : <span class="lcre-badge lcre-badge--update">세부 제외</span>}
                 </td>
                 <td class="lcre-amount">{formatManwon(c.totalAssetsManwon)}</td>
                 <td>
@@ -244,15 +244,15 @@ const lcrePageData = {
               <div class="lcre-candidate-card__grid">
                 <div>
                   <span>아파트</span>
-                  <strong>{c.apartmentManwon !== undefined ? formatManwon(c.apartmentManwon) : "확인중"}</strong>
+                  <strong>{c.apartmentManwon !== undefined ? formatManwon(c.apartmentManwon) : "세부 제외"}</strong>
                 </div>
                 <div>
                   <span>토지</span>
-                  <strong>{c.landManwon !== undefined ? formatManwon(c.landManwon) : "확인중"}</strong>
+                  <strong>{c.landManwon !== undefined ? formatManwon(c.landManwon) : "세부 제외"}</strong>
                 </div>
                 <div>
                   <span>건물</span>
-                  <strong>{c.buildingManwon !== undefined ? formatManwon(c.buildingManwon) : "확인중"}</strong>
+                  <strong>{c.buildingManwon !== undefined ? formatManwon(c.buildingManwon) : "세부 제외"}</strong>
                 </div>
                 <div>
                   <span>총재산</span>
@@ -309,7 +309,7 @@ const lcrePageData = {
       </div>
       <p class="lcre-caution-note">
         ⚠ 부동산 신고액은 총재산 대비 추정값이며, 세부 항목이 확보되면 비중을 정확하게 계산할 수 있습니다.
-        현재 아파트·토지·건물 세부 항목은 선관위 원문 확인 진행 중입니다.
+        현재 아파트·토지·건물 세부 항목은 공개 확인 범위에서만 반영합니다.
       </p>
     </section>
 
@@ -318,7 +318,7 @@ const lcrePageData = {
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">유형별 분석</p>
         <h2>부동산 유형별 상위 후보</h2>
-        <p>아파트·토지·건물 항목은 선관위 원문 확인 후 업데이트됩니다.</p>
+        <p>아파트·토지·건물 항목은 공개 확인 범위에서만 제공합니다.</p>
       </div>
 
       <div class="lcre-type-tabs" role="tablist" aria-label="부동산 유형 선택">
@@ -336,7 +336,7 @@ const lcrePageData = {
       <!-- 아파트 -->
       <div class="lcre-type-panel" id="lcreTabApt" role="tabpanel">
         <div class="lcre-type-notice lcre-badge lcre-badge--update">
-          아파트 세부 항목은 선관위 원문 확인 후 업데이트됩니다
+          아파트 세부 항목은 공개 확인 범위에서 제외했습니다
         </div>
         {typeTopApartment.slice(0, 5).map((item) => (
           <div class="lcre-type-row">
@@ -347,7 +347,7 @@ const lcrePageData = {
             <div class="lcre-bar-track">
               <div class="lcre-bar-fill" style="width: 0%"></div>
             </div>
-            <span class="lcre-type-row__amount">확인중</span>
+            <span class="lcre-type-row__amount">세부 제외</span>
           </div>
         ))}
         <p class="lcre-chart-note">※ 공동주택은 공시가격 기준 신고액이며 실거래가와 다릅니다.</p>
@@ -356,7 +356,7 @@ const lcrePageData = {
       <!-- 토지 -->
       <div class="lcre-type-panel" id="lcreTabLand" role="tabpanel" hidden>
         <div class="lcre-type-notice lcre-badge lcre-badge--update">
-          토지 세부 항목은 선관위 원문 확인 후 업데이트됩니다
+          토지 세부 항목은 공개 확인 범위에서 제외했습니다
         </div>
         {typeTopLand.slice(0, 5).map((item) => (
           <div class="lcre-type-row">
@@ -367,7 +367,7 @@ const lcrePageData = {
             <div class="lcre-bar-track">
               <div class="lcre-bar-fill" style="width: 0%"></div>
             </div>
-            <span class="lcre-type-row__amount">확인중</span>
+            <span class="lcre-type-row__amount">세부 제외</span>
           </div>
         ))}
         <p class="lcre-chart-note">※ 토지는 공시지가 기준 신고액이며 실거래가와 다릅니다.</p>
@@ -376,7 +376,7 @@ const lcrePageData = {
       <!-- 건물·상가 -->
       <div class="lcre-type-panel" id="lcreTabBuilding" role="tabpanel" hidden>
         <div class="lcre-type-notice lcre-badge lcre-badge--update">
-          건물·상가 세부 항목은 선관위 원문 확인 후 업데이트됩니다
+          건물·상가 세부 항목은 공개 확인 범위에서 제외했습니다
         </div>
         {typeTopBuilding.slice(0, 5).map((item) => (
           <div class="lcre-type-row">
@@ -387,7 +387,7 @@ const lcrePageData = {
             <div class="lcre-bar-track">
               <div class="lcre-bar-fill" style="width: 0%"></div>
             </div>
-            <span class="lcre-type-row__amount">확인중</span>
+            <span class="lcre-type-row__amount">세부 제외</span>
           </div>
         ))}
         <p class="lcre-chart-note">※ 상업용 건물·상가도 공시가격 기준 신고액이며 시세와 다릅니다.</p>
@@ -452,11 +452,11 @@ const lcrePageData = {
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">다주택 현황</p>
         <h2>아파트·공동주택 2채 이상 신고 후보</h2>
-        <p>선관위 원문 확인 후 업데이트됩니다. 배우자·직계존비속 명의 포함 가능.</p>
+        <p>공개 확인 범위에서만 제공합니다. 배우자·직계존비속 명의 포함 가능.</p>
       </div>
 
       <div class="lcre-type-notice lcre-badge lcre-badge--update" style="margin-bottom: 16px;">
-        아파트·공동주택 세부 항목 원문 확인 진행 중 — 확인 완료 순으로 업데이트됩니다
+        아파트·공동주택 세부 항목은 공개 확인된 값만 반영합니다
       </div>
 
       <div class="lcre-multi-grid" id="lcreMultiGrid">
@@ -498,7 +498,7 @@ const lcrePageData = {
       </div>
 
       <div class="lcre-type-notice lcre-badge lcre-badge--update" style="margin-bottom: 14px;">
-        담보채무 세부 항목 원문 확인 진행 중 — 확인 완료 순으로 업데이트됩니다
+        담보채무 세부 항목은 공개 확인된 값만 반영합니다
       </div>
 
       <div class="lcre-table-wrap">
@@ -527,14 +527,14 @@ const lcrePageData = {
                 <td>{item.districtName}</td>
                 <td class="lcre-amount">{formatManwon(item.realEstateManwon)}</td>
                 <td class="lcre-amount">
-                  <span class="lcre-badge lcre-badge--update">확인중</span>
+                  <span class="lcre-badge lcre-badge--update">세부 제외</span>
                 </td>
                 <td class="lcre-amount">
                   <span class="lcre-calc-badge">계산</span>
-                  <span class="lcre-badge lcre-badge--update">확인중</span>
+                  <span class="lcre-badge lcre-badge--update">세부 제외</span>
                 </td>
                 <td class="lcre-amount">
-                  <span class="lcre-badge lcre-badge--update">확인중</span>
+                  <span class="lcre-badge lcre-badge--update">세부 제외</span>
                 </td>
               </tr>
             ))}

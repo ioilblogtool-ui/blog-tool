@@ -9,7 +9,7 @@ export type CandidateRealEstateBadge =
   | "부분공개"
   | "공시가기준"
   | "계산"
-  | "업데이트필요";
+  | "세부제외";
 
 export type ElectionType =
   | "시·도지사"
@@ -177,7 +177,7 @@ export function calcDebtRatio(c: CandidateRealEstateData): number | null {
 }
 
 export function formatManwon(value?: number | null): string {
-  if (value === undefined || value === null) return "확인 필요";
+  if (value === undefined || value === null) return "세부 제외";
   const sign = value < 0 ? "-" : "";
   const abs = Math.abs(value);
   if (abs >= 10_000) return `${sign}${(abs / 10_000).toFixed(1).replace(".0", "")}억`;
@@ -185,7 +185,7 @@ export function formatManwon(value?: number | null): string {
 }
 
 export function formatPercent(value?: number | null): string {
-  if (value === undefined || value === null) return "확인 필요";
+  if (value === undefined || value === null) return "세부 제외";
   return `${Math.round(value)}%`;
 }
 
@@ -202,7 +202,7 @@ export const LCRE_SOURCES: SourceInfo[] = [
     url: NEC_URL,
     asOf: "2026-05-31",
     badge: "공식",
-    note: "후보자별 부동산 세부 항목(아파트·토지·건물)은 선거통계시스템 원문에서 직접 확인이 필요합니다.",
+    note: "후보자별 부동산 세부 항목(아파트·토지·건물)은 공개 확인된 범위만 반영했습니다.",
   },
   {
     id: "nojam",
@@ -216,9 +216,9 @@ export const LCRE_SOURCES: SourceInfo[] = [
 ];
 
 // ─── 후보 부동산 데이터 ──────────────────────────────────────────────────────
-// 주의: 부동산 세부 항목(아파트·토지·건물)은 선관위 원문 확인이 필요합니다.
+// 주의: 부동산 세부 항목(아파트·토지·건물)은 공개 확인된 범위만 반영합니다.
 // 총재산 신고액은 localElectionCandidateAssetsRanking2026 기준이며
-// 부동산 세부 항목은 업데이트필요 / 부분공개 상태입니다.
+// 결측 세부 항목은 계산 대상에서 제외합니다.
 
 const candidatesRaw: CandidateRealEstateData[] = [
   {
@@ -241,13 +241,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     primaryRealEstateRegion: "서울특별시",
     matchRegion: true,
     isMultiUnit: undefined,
-    realEstateTags: ["부동산비중높음", "세부내역확인필요"],
+    realEstateTags: ["부동산비중높음", "세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료 / 보도 확인값",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 72.9억 중 부동산 추정액입니다. 아파트·토지·건물 세부항목은 선관위 원문 확인 필요.",
+    note: "총재산 약 72.9억 중 부동산 추정액입니다. 아파트·토지·건물 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "moon-sung-yu",
@@ -262,13 +262,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 599474,
     primaryRealEstateRegion: "제주특별자치도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 59.9억 중 부동산 추정액. 세부 항목은 선관위 원문 확인 필요.",
+    note: "총재산 약 59.9억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "cho-eung-cheon",
@@ -283,13 +283,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 564469,
     primaryRealEstateRegion: "경기도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 56.4억 중 부동산 추정액. 세부 항목은 선관위 원문 확인 필요.",
+    note: "총재산 약 56.4억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "park-hyung-joon",
@@ -304,13 +304,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 552992,
     primaryRealEstateRegion: "부산광역시",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 55.3억 중 부동산 추정액. 세부 항목은 선관위 원문 확인 필요.",
+    note: "총재산 약 55.3억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "yang-jung-moo",
@@ -325,13 +325,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 512875,
     primaryRealEstateRegion: "전북특별자치도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 51.3억 중 부동산 추정액. 세부 항목은 선관위 원문 확인 필요.",
+    note: "총재산 약 51.3억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "jung-i-han",
@@ -346,13 +346,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 497151,
     primaryRealEstateRegion: "부산광역시",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 49.7억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 49.7억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "chu-kyung-ho",
@@ -367,13 +367,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 471069,
     primaryRealEstateRegion: "대구광역시",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 47.1억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 47.1억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "kim-jin-tae",
@@ -388,13 +388,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 438656,
     primaryRealEstateRegion: "강원특별자치도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 43.9억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 43.9억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "yang-hyang-ja",
@@ -409,13 +409,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 405988,
     primaryRealEstateRegion: "경기도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 40.6억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 40.6억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "shin-yong-han",
@@ -430,13 +430,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 339874,
     primaryRealEstateRegion: "충청북도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 34억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 34억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "park-chan-dae",
@@ -451,13 +451,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 307610,
     primaryRealEstateRegion: "인천광역시",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 30.8억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 30.8억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "lee-jang-woo",
@@ -472,13 +472,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 285892,
     primaryRealEstateRegion: "대전광역시",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 28.6억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 28.6억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "chu-mi-ae",
@@ -493,13 +493,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 279641,
     primaryRealEstateRegion: "경기도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 28억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 28억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "kim-kwan-young",
@@ -514,13 +514,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 262370,
     primaryRealEstateRegion: "전북특별자치도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 26.2억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 26.2억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "kwon-young-guk",
@@ -535,13 +535,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 226597,
     primaryRealEstateRegion: "서울특별시",
     matchRegion: true,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 22.7억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 22.7억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "kim-doo-gyum",
@@ -556,13 +556,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 209264,
     primaryRealEstateRegion: "울산광역시",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 20.9억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 20.9억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "park-wan-soo",
@@ -577,13 +577,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 198774,
     primaryRealEstateRegion: "경상남도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 19.9억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 19.9억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "jung-won-oh",
@@ -598,13 +598,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 182389,
     primaryRealEstateRegion: "서울특별시",
     matchRegion: true,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료 / 보도 확인값",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 18.2억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 18.2억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "yoo-jeong-bok",
@@ -619,13 +619,13 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 184427,
     primaryRealEstateRegion: "인천광역시",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 18.4억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 18.4억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
   {
     id: "kim-kyung-soo",
@@ -640,17 +640,17 @@ const candidatesRaw: CandidateRealEstateData[] = [
     totalAssetsManwon: 183788,
     primaryRealEstateRegion: "경상남도",
     matchRegion: null,
-    realEstateTags: ["세부내역확인필요"],
+    realEstateTags: ["세부내역제외"],
     status: "등록",
-    badge: "업데이트필요",
+    badge: "세부제외",
     sourceLabel: "중앙선관위 공개자료",
     sourceUrl: NEC_URL,
     sourceDate: "2026-05-31",
-    note: "총재산 약 18.4억 중 부동산 추정액. 세부 항목 확인 필요.",
+    note: "총재산 약 18.4억 중 부동산 추정액. 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
 ];
 
-// ─── 유형별 TOP (부동산 세부 항목 미공개 → 업데이트필요 표시) ──────────────
+// ─── 유형별 TOP (부동산 세부 항목 결측값은 집계 제외) ──────────────
 
 export const LCRE_TYPE_TOP_APARTMENT: TypeTopItem[] = candidatesRaw.slice(0, 10).map((c, i) => ({
   rank: i + 1,
@@ -659,7 +659,7 @@ export const LCRE_TYPE_TOP_APARTMENT: TypeTopItem[] = candidatesRaw.slice(0, 10)
   districtName: c.districtName,
   amountManwon: 0,
   ratioInRealEstate: undefined,
-  badge: "업데이트필요" as CandidateRealEstateBadge,
+  badge: "세부제외" as CandidateRealEstateBadge,
 }));
 
 export const LCRE_TYPE_TOP_LAND: TypeTopItem[] = candidatesRaw.slice(0, 10).map((c, i) => ({
@@ -669,7 +669,7 @@ export const LCRE_TYPE_TOP_LAND: TypeTopItem[] = candidatesRaw.slice(0, 10).map(
   districtName: c.districtName,
   amountManwon: 0,
   ratioInRealEstate: undefined,
-  badge: "업데이트필요" as CandidateRealEstateBadge,
+  badge: "세부제외" as CandidateRealEstateBadge,
 }));
 
 export const LCRE_TYPE_TOP_BUILDING: TypeTopItem[] = candidatesRaw.slice(0, 10).map((c, i) => ({
@@ -679,7 +679,7 @@ export const LCRE_TYPE_TOP_BUILDING: TypeTopItem[] = candidatesRaw.slice(0, 10).
   districtName: c.districtName,
   amountManwon: 0,
   ratioInRealEstate: undefined,
-  badge: "업데이트필요" as CandidateRealEstateBadge,
+  badge: "세부제외" as CandidateRealEstateBadge,
 }));
 
 // ─── 출마 지역 vs 부동산 소재지 교차 ────────────────────────────────────────
@@ -699,7 +699,7 @@ export const LCRE_REGION_CROSS: RegionCrossItem[] = [
     partyName: "더불어민주당",
     electionType: "시·도지사",
     runningInSido: "서울특별시",
-    realEstateRegion: "확인 필요",
+    realEstateRegion: "세부 제외",
     matchRegion: null,
     realEstateManwon: 120000,
   },
@@ -717,7 +717,7 @@ export const LCRE_REGION_CROSS: RegionCrossItem[] = [
     partyName: "국민의힘",
     electionType: "시·도지사",
     runningInSido: "부산광역시",
-    realEstateRegion: "확인 필요",
+    realEstateRegion: "세부 제외",
     matchRegion: null,
     realEstateManwon: 390000,
   },
@@ -726,7 +726,7 @@ export const LCRE_REGION_CROSS: RegionCrossItem[] = [
     partyName: "국민의힘",
     electionType: "시·도지사",
     runningInSido: "대구광역시",
-    realEstateRegion: "확인 필요",
+    realEstateRegion: "세부 제외",
     matchRegion: null,
     realEstateManwon: 300000,
   },
@@ -735,7 +735,7 @@ export const LCRE_REGION_CROSS: RegionCrossItem[] = [
     partyName: "더불어민주당",
     electionType: "시·도지사",
     runningInSido: "경기도",
-    realEstateRegion: "확인 필요",
+    realEstateRegion: "세부 제외",
     matchRegion: null,
     realEstateManwon: 180000,
   },
@@ -744,7 +744,7 @@ export const LCRE_REGION_CROSS: RegionCrossItem[] = [
     partyName: "개혁신당",
     electionType: "시·도지사",
     runningInSido: "경기도",
-    realEstateRegion: "확인 필요",
+    realEstateRegion: "세부 제외",
     matchRegion: null,
     realEstateManwon: 400000,
   },
@@ -759,8 +759,8 @@ export const LCRE_MULTI_UNIT_CANDIDATES: MultiUnitCandidate[] = [
     districtName: "서울특별시장",
     unitCount: 0,
     apartmentManwon: 0,
-    badge: "업데이트필요",
-    note: "아파트 세부 항목은 선관위 원문 확인 후 업데이트 예정입니다.",
+    badge: "세부제외",
+    note: "아파트 세부 항목은 공개 확인 범위에서 제외했습니다.",
   },
 ];
 
@@ -775,7 +775,7 @@ export const LCRE_DEBT_RATIO_ITEMS: DebtRatioItem[] = [
     debtOnRealEstateManwon: 0,
     netRealEstateManwon: 580000,
     debtRatio: 0,
-    badge: "업데이트필요",
+    badge: "세부제외",
   },
 ];
 
@@ -824,39 +824,39 @@ export const localElectionCandidateRealEstate2026: LcreData = {
     eyebrow: "선거 데이터 리포트",
     updatedAt: "2026-05-31",
     electionDate: "2026-06-03",
-    dataBasis: "중앙선관위 후보자 공개자료 기반 — 부동산 세부 항목은 원문 확인 진행 중",
+    dataBasis: "중앙선관위 후보자 공개자료 기반 — 부동산 세부 항목은 공개 확인 범위만 반영",
     caution:
-      "부동산 신고액은 공시가격 기준이며 실거래가와 다를 수 있습니다. 후보자 본인 외 배우자·직계존비속 명의 부동산이 포함될 수 있습니다. 아파트·토지·건물 세부 항목은 선관위 원문 확인 후 업데이트 예정입니다.",
+      "부동산 신고액은 공시가격 기준이며 실거래가와 다를 수 있습니다. 후보자 본인 외 배우자·직계존비속 명의 부동산이 포함될 수 있습니다. 아파트·토지·건물 세부 항목은 공개 확인 범위만 반영했습니다.",
   },
   sources: LCRE_SOURCES,
   summaryCards: [
     {
       label: "부동산 신고액 1위",
       value: `${topByRealEstate[0].candidateName} · ${formatManwon(topByRealEstate[0].realEstateManwon)}`,
-      description: "시·도지사 후보 공개자료 기준 부동산 추정액 1위 (세부 항목 확인 중)",
+      description: "시·도지사 후보 공개자료 기준 부동산 추정액 1위 (세부 항목은 공개 확인 범위만 반영)",
       tone: "primary",
-      badge: "업데이트필요",
+      badge: "세부제외",
     },
     {
       label: "아파트 1위",
-      value: "확인 진행 중",
-      description: "아파트·공동주택 세부 항목은 선관위 원문 확인 후 업데이트합니다.",
+      value: "세부 제외",
+      description: "아파트·공동주택 세부 항목은 공개 확인 범위에서 제외했습니다.",
       tone: "muted",
-      badge: "업데이트필요",
+      badge: "세부제외",
     },
     {
       label: "토지 1위",
-      value: "확인 진행 중",
-      description: "토지 세부 항목은 선관위 원문 확인 후 업데이트합니다.",
+      value: "세부 제외",
+      description: "토지 세부 항목은 공개 확인 범위에서 제외했습니다.",
       tone: "muted",
-      badge: "업데이트필요",
+      badge: "세부제외",
     },
     {
       label: "부동산 비중 1위",
-      value: "확인 진행 중",
-      description: "총재산 대비 부동산 비중은 세부 항목 확인 후 계산합니다.",
+      value: "세부 제외",
+      description: "총재산 대비 부동산 비중은 공개 확인된 항목만 계산합니다.",
       tone: "caution",
-      badge: "업데이트필요",
+      badge: "세부제외",
     },
   ],
   candidates: topByRealEstate,
@@ -882,7 +882,7 @@ export const localElectionCandidateRealEstate2026: LcreData = {
     },
     {
       q: "다주택 후보는 어떻게 확인하나요?",
-      a: "선관위 신고자료에서 아파트·공동주택 항목이 2개 이상인 후보를 집계합니다. 세부 항목은 선관위 원문 확인 후 업데이트됩니다.",
+      a: "선관위 신고자료에서 아파트·공동주택 항목이 2개 이상인 후보를 집계합니다. 이 페이지는 공개 확인된 세부 항목만 반영합니다.",
     },
     {
       q: "담보대출(채무)이 있는 부동산은 어떻게 봐야 하나요?",
@@ -898,7 +898,7 @@ export const localElectionCandidateRealEstate2026: LcreData = {
     },
     {
       q: "이 페이지 데이터는 언제 업데이트되나요?",
-      a: "선관위 원문 자료 확인이 완료되는 순서대로 아파트·토지·건물 세부 항목을 업데이트합니다. 후보 사퇴·등록무효·자료 정정 시에도 반영됩니다.",
+      a: "공개자료의 기준일과 후보 사퇴·등록무효·자료 정정 여부가 바뀌면 같은 기준으로 반영합니다.",
     },
   ],
   seoIntro: [
@@ -909,7 +909,7 @@ export const localElectionCandidateRealEstate2026: LcreData = {
   ],
   seoCriteria: [
     "중앙선거관리위원회 선거통계시스템 공개자료를 1차 기준으로 삼았습니다.",
-    "부동산 세부 항목(아파트·토지·건물)은 원문 확인 진행 중이며 확인 완료 순으로 업데이트됩니다.",
+    "부동산 세부 항목(아파트·토지·건물)은 공개 확인된 범위만 반영하고 결측 항목은 계산에서 제외했습니다.",
     "부동산 신고액은 공시가격 기준이며 실거래가와 다를 수 있습니다.",
     "후보 사퇴·등록무효·자료 정정 발생 시 해당 후보 정보가 수정될 수 있습니다.",
   ],

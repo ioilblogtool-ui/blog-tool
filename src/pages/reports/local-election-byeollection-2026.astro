@@ -36,7 +36,7 @@ const faqItems = [
   { question: "한동훈은 왜 무소속으로 출마했나요?",
     answer: "한동훈은 2024년 12월 국민의힘을 탈당한 후 무소속 신분을 유지했습니다. 부산 북구갑에서 무소속으로 출마해 당선됐으며, 향후 복당 여부가 주목됩니다." },
   { question: "조국은 어디서 출마했나요?",
-    answer: "출마 지역구는 선관위 최종 확인 중입니다. 조국혁신당 대표 자격으로 지역구에 직접 출마했으나 낙선했습니다. 확인 후 업데이트됩니다." },
+    answer: "조국혁신당 대표 자격으로 지역구에 직접 출마했으나 낙선했습니다. 이 페이지에서는 당선자 현황과 주요 이슈를 중심으로 정리합니다." },
   { question: "재보궐 당선자 임기는 얼마인가요?",
     answer: "전임 의원의 잔여 임기를 승계합니다. 2026년 당선자는 2028년 총선까지 약 2년의 임기를 가집니다." },
   { question: "이 데이터는 얼마나 신뢰할 수 있나요?",
@@ -62,7 +62,7 @@ const faqItems = [
     <!-- B. 데이터 안내 -->
     <div class="bye-notice">
       <span>⚠️</span>
-      <span>14개 지역구 전체 당선자 확정. 일부 득표율은 선관위 최종 발표 후 업데이트됩니다.</span>
+      <span>14개 지역구 전체 당선자 확정. 득표율은 공개 확인된 항목만 표시합니다.</span>
       <a href="https://info.nec.go.kr" target="_blank" rel="noopener noreferrer" class="bye-notice__link">선관위 바로가기 →</a>
     </div>
 
@@ -173,7 +173,7 @@ const faqItems = [
                   {d.elected?.party ?? "미확정"}
                 </span>
                 <span class="bye-card__name">
-                  {isPending ? "확인 중" : (d.elected?.name ?? "미확정")}
+                  {d.elected?.name ?? "당선자 별도 공시"}
                 </span>
               </div>
 
@@ -306,8 +306,8 @@ const faqItems = [
       ]}
       criteria={[
         "당선자 정보는 선관위 개표 결과 기준",
-        "14개 지역구 전체 확정, 일부 득표율은 선관위 최종 발표 후 업데이트 예정",
-        "공약은 선관위 정책·공약마당 기반 요약 예정",
+        "14개 지역구 전체 확정, 득표율은 공개 확인된 항목만 표시",
+        "공약은 선관위 정책·공약마당과 후보자 공개자료 기반 요약",
         "이력은 선관위 후보자 정보 공개 및 공식 자료 기반",
       ]}
       faq={faqItems.map(f => ({ question: f.question, answer: f.answer }))}

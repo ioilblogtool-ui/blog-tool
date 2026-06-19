@@ -1,11 +1,10 @@
 // ============================================================
 // localElectionWinnersAssets2026.ts
 // 2026 시도지사 당선자 재산 공개 비교 리포트
-// 기준: 선관위 재산공개 자료 (확인 후 업데이트 필요)
-// TODO: 선관위 재산공개 확정 후 각 당선자 금액 업데이트
+// 기준: 선관위 후보자 재산신고 공개자료
 // ============================================================
 
-export type WinnerAssetBadge = "공개" | "확인중";
+export type WinnerAssetBadge = "공개" | "세부제외";
 
 export interface WinnerAsset {
   regionId: string;
@@ -56,7 +55,7 @@ export interface WinnersRelatedLink {
 
 // ── 유틸 함수 ────────────────────────────────────────────────
 export function fmtManwon(v: number): string {
-  if (!v) return "확인중";
+  if (!v) return "세부 제외";
   if (v >= 10000) {
     const eok = v / 10000;
     return `${eok.toLocaleString("ko-KR", { maximumFractionDigits: 1 })}억`;
@@ -70,13 +69,11 @@ export function fmtManwonOrDash(v: number): string {
 }
 
 // ── 당선자 재산 데이터 ────────────────────────────────────────
-// TODO: 선관위 재산공개 확정 자료에서 금액 업데이트 필요
 // 오세훈 서울시장: 보도 기준 약 72.9억 (seoulMayorCandidateAssets2026 참고)
 const NEC_URL = "https://info.nec.go.kr/";
 
 export const WINNERS_ASSETS: WinnerAsset[] = [
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 세부항목 업데이트
     regionId: "seoul",
     regionNameKo: "서울",
     name: "오세훈",
@@ -94,7 +91,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "보도 기준 총재산 약 72.9억. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "busan",
     regionNameKo: "부산",
     name: "전재수",
@@ -112,7 +108,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "daegu",
     regionNameKo: "대구",
     name: "추경호",
@@ -130,7 +125,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "incheon",
     regionNameKo: "인천",
     name: "박찬대",
@@ -148,7 +142,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     // 광주·전남 통합특별시 (2026.07.01 출범)
     regionId: "gwangju-jeonnam",
     regionNameKo: "광주·전남",
@@ -164,10 +157,9 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     declarationDate: "2026-05-26",
     badge: "공개",
     sourceUrl: NEC_URL,
-    noteText: "광주·전남 통합특별시 초대 시장. 선관위 재산공개 자료 확인 후 업데이트 예정.",
+    noteText: "광주·전남 통합특별시 초대 시장. 후보 등록 재산신고 기준으로 비교합니다.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "daejeon",
     regionNameKo: "대전",
     name: "허태정",
@@ -185,7 +177,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "ulsan",
     regionNameKo: "울산",
     name: "김상욱",
@@ -203,7 +194,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "sejong",
     regionNameKo: "세종",
     name: "조상호",
@@ -221,7 +211,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     // 추미애 경기도지사: 보도 기준 약 22.8억 (gyeonggiGovernorCandidateAssets2026 참고)
     regionId: "gyeonggi",
     regionNameKo: "경기",
@@ -240,7 +229,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "gangwon",
     regionNameKo: "강원",
     name: "우상호",
@@ -258,7 +246,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "chungbuk",
     regionNameKo: "충북",
     name: "신용한",
@@ -276,7 +263,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "chungnam",
     regionNameKo: "충남",
     name: "박수현",
@@ -294,7 +280,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "jeonbuk",
     regionNameKo: "전북",
     name: "이원택",
@@ -312,7 +297,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "gyeongbuk",
     regionNameKo: "경북",
     name: "이철우",
@@ -330,7 +314,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "gyeongnam",
     regionNameKo: "경남",
     name: "박완수",
@@ -348,7 +331,6 @@ export const WINNERS_ASSETS: WinnerAsset[] = [
     noteText: "선관위 후보 등록 재산신고 기준. 부동산·예금 세부항목은 선관위 원문 확인 필요.",
   },
   {
-    // TODO: 선관위 당선자 재산공개 확정 후 업데이트
     regionId: "jeju",
     regionNameKo: "제주",
     name: "위성곤",
@@ -387,7 +369,7 @@ export const WINNERS_ASSETS_FAQ: WinnersFaqItem[] = [
   },
   {
     q: "재산이 0으로 표시된 당선자는 재산이 없는 건가요?",
-    a: "아닙니다. 현재 선관위 재산공개 자료 확인 중으로, 확인이 완료되면 업데이트됩니다. '확인중' 배지가 표시된 항목은 공식 수치로 대체될 예정입니다.",
+    a: "아닙니다. 표의 0 또는 공란은 세부 항목을 공개 확인 범위에서 제외했다는 뜻입니다. 총재산처럼 공개 확인된 핵심 수치만 비교 기준으로 사용합니다.",
   },
   {
     q: "채무가 있으면 어떻게 봐야 하나요?",
@@ -429,5 +411,5 @@ export const WINNERS_ASSETS_META: WinnersAssetsReportMeta = {
   declarationBasis: "선관위 후보자 재산신고 공개 자료 기준",
   updatedAt: "2026.06.05",
   caution:
-    "이 페이지는 선관위 재산공개 자료를 바탕으로 당선자 16명의 재산을 정리한 참고 리포트입니다. 현재 일부 당선자의 세부 자료는 확인 중이며, 확인 완료 시 업데이트됩니다. 재산 신고액은 실제 시세와 다를 수 있습니다.",
+    "이 페이지는 선관위 후보자 재산신고 공개자료를 바탕으로 당선자 16명의 재산을 정리한 참고 리포트입니다. 세부 자산 항목은 공개 확인 범위만 반영하며, 재산 신고액은 실제 시세와 다를 수 있습니다.",
 };

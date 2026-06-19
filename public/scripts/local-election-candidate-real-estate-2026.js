@@ -80,17 +80,17 @@ function renderTable(list) {
         <td class="lcre-amount lcre-amount--sub">
           ${c.apartmentManwon !== undefined && c.apartmentManwon !== null
             ? formatManwon(c.apartmentManwon)
-            : '<span class="lcre-badge lcre-badge--update">확인중</span>'}
+            : '<span class="lcre-badge lcre-badge--update">세부 제외</span>'}
         </td>
         <td class="lcre-amount lcre-amount--sub">
           ${c.landManwon !== undefined && c.landManwon !== null
             ? formatManwon(c.landManwon)
-            : '<span class="lcre-badge lcre-badge--update">확인중</span>'}
+            : '<span class="lcre-badge lcre-badge--update">세부 제외</span>'}
         </td>
         <td class="lcre-amount lcre-amount--sub">
           ${c.buildingManwon !== undefined && c.buildingManwon !== null
             ? formatManwon(c.buildingManwon)
-            : '<span class="lcre-badge lcre-badge--update">확인중</span>'}
+            : '<span class="lcre-badge lcre-badge--update">세부 제외</span>'}
         </td>
         <td class="lcre-amount">${formatManwon(c.totalAssetsManwon)}</td>
         <td>
@@ -134,9 +134,9 @@ function renderCards(list) {
           <div class="lcre-bar-fill" style="width: ${barW}%"></div>
         </div>
         <div class="lcre-candidate-card__grid">
-          <div><span>아파트</span><strong>${c.apartmentManwon != null ? formatManwon(c.apartmentManwon) : "확인중"}</strong></div>
-          <div><span>토지</span><strong>${c.landManwon != null ? formatManwon(c.landManwon) : "확인중"}</strong></div>
-          <div><span>건물</span><strong>${c.buildingManwon != null ? formatManwon(c.buildingManwon) : "확인중"}</strong></div>
+          <div><span>아파트</span><strong>${c.apartmentManwon != null ? formatManwon(c.apartmentManwon) : "세부 제외"}</strong></div>
+          <div><span>토지</span><strong>${c.landManwon != null ? formatManwon(c.landManwon) : "세부 제외"}</strong></div>
+          <div><span>건물</span><strong>${c.buildingManwon != null ? formatManwon(c.buildingManwon) : "세부 제외"}</strong></div>
           <div><span>총재산</span><strong>${formatManwon(c.totalAssetsManwon)}</strong></div>
         </div>
         <div class="lcre-candidate-card__footer">
