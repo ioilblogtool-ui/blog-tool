@@ -1,0 +1,286 @@
+.cacc-page {
+  --cacc-ink: #172033;
+  --cacc-muted: #667085;
+  --cacc-line: #d8e0ea;
+  --cacc-soft: #f7f9fc;
+  --cacc-blue: #2563eb;
+  --cacc-green: #0f8a5f;
+  --cacc-gray: #6b7280;
+  color: var(--cacc-ink);
+}
+
+/* 프리셋 버튼 */
+.cacc-preset-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0;
+}
+
+.cacc-preset-btn {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--cacc-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--cacc-ink);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 120ms, background 120ms, color 120ms;
+}
+
+.cacc-preset-btn:hover,
+.cacc-preset-btn.is-active {
+  border-color: var(--cacc-blue);
+  background: #eff6ff;
+  color: var(--cacc-blue);
+}
+
+/* KPI 그리드 */
+.cacc-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.cacc-kpi-card {
+  min-height: 120px;
+  padding: 1rem;
+  border: 1px solid var(--cacc-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.cacc-kpi-card--verdict {
+  grid-column: 1 / -1;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cacc-kpi-card span,
+.cacc-kpi-card small {
+  display: block;
+  color: var(--cacc-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.cacc-kpi-card strong {
+  display: block;
+  margin: 0.5rem 0 0.3rem;
+  font-size: clamp(1.2rem, 1.6vw, 1.6rem);
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+/* 판단 배지 */
+.cacc-verdict-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cacc-verdict-label {
+  font-size: 0.84rem;
+  color: var(--cacc-muted);
+}
+
+.cacc-verdict-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 900;
+  width: fit-content;
+}
+
+.cacc-verdict-badge--insurance {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.cacc-verdict-badge--cash {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.cacc-verdict-badge--close {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cacc-verdict-desc {
+  font-size: 0.88rem;
+  color: var(--cacc-muted);
+  line-height: 1.5;
+}
+
+/* 비교 테이블 */
+.cacc-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--cacc-line);
+  border-radius: 8px;
+}
+
+.cacc-compare-table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+}
+
+.cacc-compare-table th,
+.cacc-compare-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--cacc-line);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cacc-compare-table th:first-child,
+.cacc-compare-table td:first-child {
+  text-align: left;
+}
+
+.cacc-compare-table thead th {
+  background: var(--cacc-soft);
+  color: var(--cacc-muted);
+  font-size: 0.85rem;
+}
+
+.cacc-compare-table tbody tr:last-child th,
+.cacc-compare-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.cacc-compare-table tr.is-total th,
+.cacc-compare-table tr.is-total td {
+  background: #f0f7ff;
+  font-weight: 900;
+}
+
+.cacc-compare-table .is-winner {
+  color: var(--cacc-blue);
+  font-weight: 900;
+}
+
+.cacc-compare-table .is-saving {
+  color: var(--cacc-green);
+  font-weight: 900;
+}
+
+/* 추가 고려사항 패널 */
+.cacc-notice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.cacc-notice-item {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--cacc-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.cacc-notice-item strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--cacc-blue);
+  margin-bottom: 0.35rem;
+}
+
+.cacc-notice-item p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--cacc-muted);
+  line-height: 1.6;
+}
+
+/* 할증률 가이드 */
+.cacc-guide-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--cacc-line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cacc-guide-table th,
+.cacc-guide-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--cacc-line);
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.cacc-guide-table thead th {
+  background: var(--cacc-soft);
+  color: var(--cacc-muted);
+  font-size: 0.82rem;
+}
+
+.cacc-guide-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.cacc-guide-table .rate-cell {
+  font-weight: 800;
+  color: var(--cacc-ink);
+}
+
+/* 슬라이더 행 */
+.cacc-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.cacc-slider-row input[type="range"] {
+  flex: 1;
+}
+
+.cacc-slider-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cacc-blue);
+  min-width: 4.5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .cacc-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cacc-kpi-card--verdict {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .cacc-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cacc-notice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cacc-preset-btn {
+    flex: 1 1 calc(50% - 0.25rem);
+  }
+}

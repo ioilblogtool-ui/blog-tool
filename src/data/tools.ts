@@ -1691,6 +1691,19 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "car-accident-insurance-vs-cash-calculator",
+    title: "자동차 사고 보험처리 vs 현금처리 계산기",
+    description: "수리비·자기부담금·할증률을 입력하면 보험처리와 현금처리 3년 총비용을 즉시 비교. 손익분기 수리비 자동 산출.",
+    order: 70.5,
+    eyebrow: "사고 대응",
+    category: "자동차",
+    badges: ["NEW"],
+    previewStats: [
+      { label: "비교 기준", value: "3년 총비용" },
+      { label: "판단 프리셋", value: "4종" },
+    ],
+  },
+  {
     slug: "baby-government-support",
     title: "육아 정부지원금 계산기",
     description: "부모급여·아동수당·보육료·출산장려금 월 합계 계산. 자녀 수·나이·지역 입력하면 받을 수 있는 지원금 전부 계산.",
