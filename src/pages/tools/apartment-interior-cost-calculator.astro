@@ -1,0 +1,433 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import TrustPanel from "../../components/TrustPanel.astro";
+import {
+  INTERIOR_ITEMS,
+  UNIT_PRICES,
+  AREA_MULTIPLIERS,
+  REFERENCE_BY_PYEONG,
+  AIC_FAQ,
+  AIC_RELATED_LINKS,
+  AIC_INTRO,
+} from "../../data/apartmentInteriorCost";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const slug = "apartment-interior-cost-calculator";
+const title = "구축 아파트 인테리어 비용 계산기 2026 | 24평 올수리 견적 바로 계산";
+const description =
+  "평수와 시공 항목(샷시·도배·마루·욕실·주방)을 선택하면 최소·보통·고급 3구간 인테리어 견적을 즉시 계산합니다. 2026년 시세 기준.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: title,
+      url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${slug}/`,
+      description,
+      applicationCategory: "HomeAndGarden",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: AIC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    },
+  ],
+};
+
+// 데이터를 JS에 넘기기 위한 직렬화
+const clientData = {
+  items: INTERIOR_ITEMS,
+  unitPrices: UNIT_PRICES,
+  areaMultipliers: AREA_MULTIPLIERS,
+};
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd} ogImage="/og/og-home.png">
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={slug} pageClass="aic-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        title="구축 아파트 인테리어 비용 계산기"
+        subtitle="평수와 시공 항목을 선택하면 최소·보통·고급 견적을 바로 계산합니다"
+        badges={["인테리어", "올수리", "견적", "2026"]}
+      />
+    </Fragment>
+
+    <!-- 입력 패널 -->
+    <Fragment slot="inputs">
+      <div class="aic-input-panel">
+
+        <!-- 평수 선택 -->
+        <div class="aic-pyeong-section">
+          <h3>아파트 평수</h3>
+          <div class="aic-pyeong-display">
+            <span class="aic-pyeong-value" id="aic-pyeong-display">24</span>
+            <span class="aic-pyeong-unit">평</span>
+            <span class="aic-sqm-label">(전용 약 <span id="aic-sqm-display">59</span>㎡)</span>
+          </div>
+          <input
+            id="aic-pyeong"
+            class="aic-pyeong-slider"
+            type="range"
+            min="10"
+            max="60"
+            value="24"
+            step="1"
+          />
+          <div class="aic-pyeong-range-labels">
+            <span>10평</span>
+            <span>60평</span>
+          </div>
+        </div>
+
+        <!-- 시공 항목 체크박스 -->
+        <div class="aic-items-section">
+          <h3>시공 항목 선택</h3>
+          <div class="aic-items-grid">
+            {INTERIOR_ITEMS.map((item) => (
+              <div class="aic-item-wrap">
+                <label class="aic-item-label">
+                  <input
+                    type="checkbox"
+                    class="aic-item-check"
+                    data-key={item.key}
+                    checked={["wallpaper", "floor", "lighting"].includes(item.key)}
+                  />
+                  <span class="aic-item-icon">{item.icon}</span>
+                  <span>{item.label}</span>
+                </label>
+                {item.hasSubOption && item.subOptions && (
+                  <div
+                    class={`aic-suboption${["wallpaper", "floor", "lighting"].includes(item.key) ? " is-visible" : ""}`}
+                    data-for={item.key}
+                  >
+                    <select class="aic-suboption-select" data-key={item.key}>
+                      {item.subOptions.map((opt) => (
+                        <option
+                          value={opt.value}
+                          selected={opt.value === item.defaultSubOption}
+                        >
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </Fragment>
+
+    <!-- 결과 영역 -->
+    <Fragment slot="results">
+      <div class="aic-result-section">
+
+        <!-- 빈 상태 -->
+        <div class="aic-no-selection" id="aic-empty-state">
+          시공 항목을 1개 이상 선택하면 견적이 표시됩니다
+        </div>
+
+        <!-- 3구간 카드 -->
+        <div class="aic-grade-cards" id="aic-grade-cards" style="display:none">
+          <div class="aic-grade-card aic-grade-min">
+            <span class="aic-grade-label">최소</span>
+            <span class="aic-grade-desc">저가 자재 기준</span>
+            <strong class="aic-grade-amount" id="aic-result-min">—</strong>
+            <span class="aic-per-pyeong">평당 <span id="aic-per-min">—</span></span>
+          </div>
+          <div class="aic-grade-card aic-grade-mid">
+            <span class="aic-grade-label">보통</span>
+            <span class="aic-grade-desc">중급 자재 기준</span>
+            <strong class="aic-grade-amount" id="aic-result-mid">—</strong>
+            <span class="aic-per-pyeong">평당 <span id="aic-per-mid">—</span></span>
+          </div>
+          <div class="aic-grade-card aic-grade-high">
+            <span class="aic-grade-label">고급</span>
+            <span class="aic-grade-desc">브랜드 자재 기준</span>
+            <strong class="aic-grade-amount" id="aic-result-high">—</strong>
+            <span class="aic-per-pyeong">평당 <span id="aic-per-high">—</span></span>
+          </div>
+        </div>
+
+        <!-- 항목별 분해 테이블 -->
+        <div class="aic-breakdown-section" id="aic-breakdown-section" style="display:none">
+          <h3>항목별 비용 분해</h3>
+          <div class="aic-breakdown-wrap">
+            <table class="aic-breakdown-table">
+              <thead>
+                <tr>
+                  <th style="text-align:left">항목</th>
+                  <th class="aic-col-min">최소</th>
+                  <th class="aic-col-mid">보통</th>
+                  <th class="aic-col-high">고급</th>
+                </tr>
+              </thead>
+              <tbody id="aic-breakdown-body"></tbody>
+              <tfoot>
+                <tr class="aic-total-row">
+                  <td>합계</td>
+                  <td class="aic-col-min" id="aic-total-min">—</td>
+                  <td class="aic-col-mid" id="aic-total-mid">—</td>
+                  <td class="aic-col-high" id="aic-total-high">—</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <InfoNotice
+          title="주의사항"
+          lines={["견적은 지역·자재·업체·시공 시기에 따라 20~40% 차이날 수 있습니다.", "본 계산기는 참고용 추정치입니다."]}
+        />
+
+        <ToolActionBar calculatorId={slug} />
+      </div>
+    </Fragment>
+  </SimpleToolShell>
+
+  <!-- 평수별 참고 비교표 -->
+  <section class="aic-page aic-reference-section" style="max-width:800px;margin:0 auto 40px;padding:0 20px">
+    <h3>평수별 올수리 비용 참고표</h3>
+    <p class="aic-reference-note">샷시·도배(실크)·강마루·욕실 2개·주방(싱크대+타일)·조명 기준 추정값입니다.</p>
+    <div class="aic-reference-wrap">
+      <table class="aic-reference-table">
+        <thead>
+          <tr>
+            <th>평수</th>
+            <th class="aic-ref-min">최소</th>
+            <th class="aic-ref-mid">보통</th>
+            <th class="aic-ref-high">고급</th>
+          </tr>
+        </thead>
+        <tbody>
+          {REFERENCE_BY_PYEONG.map((row) => (
+            <tr>
+              <td class="aic-ref-pyeong">{row.pyeong}평</td>
+              <td class="aic-ref-min">{(row.min / 10000).toLocaleString()}만 원</td>
+              <td class="aic-ref-mid">{(row.mid / 10000).toLocaleString()}만 원</td>
+              <td class="aic-ref-high">{(row.high / 10000).toLocaleString()}만 원</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <TrustPanel
+    items={[
+      { label: "데이터 기준", value: "오늘의집·집꾸미기 후기 집계, 한국소비자원 인테리어 실태조사" },
+      { label: "기준 연도", value: "2024~2026년 시공 사례 기반" },
+      { label: "주의사항", value: "지역·업체·자재에 따라 실제 견적 20~40% 차이 가능" },
+    ]}
+  />
+
+  <SeoContent
+    intro={AIC_INTRO}
+    faq={AIC_FAQ.map((f) => ({ question: f.q, answer: f.a }))}
+    relatedLinks={AIC_RELATED_LINKS.map((l) => ({ href: withBase(l.href), label: l.label }))}
+  />
+
+  <script define:vars={{ clientData }}>
+    (function () {
+      const UNIT_PRICES = clientData.unitPrices;
+      const AREA_MULTIPLIERS = clientData.areaMultipliers;
+      const ITEMS_META = clientData.items;
+
+      // 평수 → 계수 선형 보간
+      function getAreaMultiplier(pyeong) {
+        const t = AREA_MULTIPLIERS;
+        if (pyeong <= t[0].pyeong) return t[0].multiplier;
+        if (pyeong >= t[t.length - 1].pyeong) return t[t.length - 1].multiplier;
+        for (let i = 0; i < t.length - 1; i++) {
+          const a = t[i], b = t[i + 1];
+          if (pyeong >= a.pyeong && pyeong <= b.pyeong) {
+            const ratio = (pyeong - a.pyeong) / (b.pyeong - a.pyeong);
+            return a.multiplier + ratio * (b.multiplier - a.multiplier);
+          }
+        }
+        return 1;
+      }
+
+      function getUnitPrice(itemKey, subOption) {
+        const prices = UNIT_PRICES[itemKey];
+        if (!prices) return null;
+        const key = subOption && prices[subOption] ? subOption : "default";
+        return prices[key] || null;
+      }
+
+      function calcItem(itemKey, subOption, pyeong) {
+        const unit = getUnitPrice(itemKey, subOption);
+        if (!unit) return null;
+        const mult = getAreaMultiplier(pyeong);
+        return {
+          min:  Math.round(unit.min  * mult / 10000) * 10000,
+          mid:  Math.round(unit.mid  * mult / 10000) * 10000,
+          high: Math.round(unit.high * mult / 10000) * 10000,
+        };
+      }
+
+      function fmt(n) {
+        return (n / 10000).toLocaleString() + "만 원";
+      }
+
+      function recalculate() {
+        const pyeong = parseInt(document.getElementById("aic-pyeong").value);
+        const checked = [...document.querySelectorAll(".aic-item-check:checked")];
+        const selectedKeys = checked.map((el) => el.dataset.key);
+
+        const subOptions = {};
+        document.querySelectorAll(".aic-suboption-select").forEach((sel) => {
+          subOptions[sel.dataset.key] = sel.value;
+        });
+
+        const emptyState = document.getElementById("aic-empty-state");
+        const gradeCards = document.getElementById("aic-grade-cards");
+        const breakdownSection = document.getElementById("aic-breakdown-section");
+
+        if (selectedKeys.length === 0) {
+          emptyState.style.display = "";
+          gradeCards.style.display = "none";
+          breakdownSection.style.display = "none";
+          return;
+        }
+
+        emptyState.style.display = "none";
+        gradeCards.style.display = "";
+        breakdownSection.style.display = "";
+
+        let total = { min: 0, mid: 0, high: 0 };
+        const rows = [];
+
+        // 항목 순서 유지 (ITEMS_META 순서 기준)
+        ITEMS_META.forEach((meta) => {
+          if (!selectedKeys.includes(meta.key)) return;
+          const sub = subOptions[meta.key] || null;
+          const r = calcItem(meta.key, sub, pyeong);
+          if (!r) return;
+          total.min  += r.min;
+          total.mid  += r.mid;
+          total.high += r.high;
+
+          const subLabel = sub && meta.subOptions
+            ? meta.subOptions.find((o) => o.value === sub)?.label || ""
+            : "";
+          rows.push({ label: meta.label + (subLabel ? ` (${subLabel})` : ""), r });
+        });
+
+        // 카드 업데이트
+        document.getElementById("aic-result-min").textContent  = fmt(total.min);
+        document.getElementById("aic-result-mid").textContent  = fmt(total.mid);
+        document.getElementById("aic-result-high").textContent = fmt(total.high);
+        document.getElementById("aic-per-min").textContent  = fmt(Math.round(total.min  / pyeong / 10000) * 10000);
+        document.getElementById("aic-per-mid").textContent  = fmt(Math.round(total.mid  / pyeong / 10000) * 10000);
+        document.getElementById("aic-per-high").textContent = fmt(Math.round(total.high / pyeong / 10000) * 10000);
+
+        // 합계 행
+        document.getElementById("aic-total-min").textContent  = fmt(total.min);
+        document.getElementById("aic-total-mid").textContent  = fmt(total.mid);
+        document.getElementById("aic-total-high").textContent = fmt(total.high);
+
+        // 분해 테이블
+        const tbody = document.getElementById("aic-breakdown-body");
+        tbody.innerHTML = rows.map((row) => `
+          <tr>
+            <td>${row.label}</td>
+            <td class="aic-col-min">${fmt(row.r.min)}</td>
+            <td class="aic-col-mid">${fmt(row.r.mid)}</td>
+            <td class="aic-col-high">${fmt(row.r.high)}</td>
+          </tr>
+        `).join("");
+
+        updateShareUrl();
+      }
+
+      function toggleSubOption(key, show) {
+        const el = document.querySelector(`.aic-suboption[data-for="${key}"]`);
+        if (el) el.classList.toggle("is-visible", show);
+      }
+
+      function updateShareUrl() {
+        const pyeong = document.getElementById("aic-pyeong").value;
+        const selected = [...document.querySelectorAll(".aic-item-check:checked")]
+          .map((el) => el.dataset.key).join(",");
+        const subOptions = {};
+        document.querySelectorAll(".aic-suboption-select").forEach((sel) => {
+          subOptions[sel.dataset.key] = sel.value;
+        });
+        const params = new URLSearchParams({ pyeong, items: selected });
+        Object.entries(subOptions).forEach(([k, v]) => params.set(k, v));
+        const url = `${location.pathname}?${params.toString()}`;
+        history.replaceState(null, "", url);
+      }
+
+      function restoreFromUrl() {
+        const params = new URLSearchParams(location.search);
+        if (params.has("pyeong")) {
+          document.getElementById("aic-pyeong").value = params.get("pyeong");
+          updatePyeongDisplay(parseInt(params.get("pyeong")));
+        }
+        if (params.has("items") && params.get("items")) {
+          const keys = params.get("items").split(",");
+          document.querySelectorAll(".aic-item-check").forEach((cb) => {
+            const checked = keys.includes(cb.dataset.key);
+            cb.checked = checked;
+            toggleSubOption(cb.dataset.key, checked);
+          });
+        }
+        document.querySelectorAll(".aic-suboption-select").forEach((sel) => {
+          if (params.has(sel.dataset.key)) sel.value = params.get(sel.dataset.key);
+        });
+      }
+
+      function updatePyeongDisplay(pyeong) {
+        document.getElementById("aic-pyeong-display").textContent = pyeong;
+        // 전용면적 환산: 평 × 3.3 × 0.75 (공급 → 전용 약 75%)
+        const sqm = Math.round(pyeong * 3.3 * 0.75);
+        document.getElementById("aic-sqm-display").textContent = sqm;
+      }
+
+      // 이벤트 바인딩
+      document.getElementById("aic-pyeong").addEventListener("input", (e) => {
+        const v = parseInt(e.target.value);
+        updatePyeongDisplay(v);
+        recalculate();
+      });
+
+      document.querySelectorAll(".aic-item-check").forEach((cb) => {
+        cb.addEventListener("change", (e) => {
+          toggleSubOption(e.target.dataset.key, e.target.checked);
+          recalculate();
+        });
+      });
+
+      document.querySelectorAll(".aic-suboption-select").forEach((sel) => {
+        sel.addEventListener("change", recalculate);
+      });
+
+      restoreFromUrl();
+      recalculate();
+    })();
+  </script>
+</BaseLayout>

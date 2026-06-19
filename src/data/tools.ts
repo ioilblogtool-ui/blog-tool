@@ -792,6 +792,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "apartment-interior-cost-calculator",
+    title: "구축 아파트 인테리어 비용 계산기 2026 | 24평 올수리 견적 바로 계산",
+    description: "평수와 시공 항목(샷시·도배·마루·욕실·주방)을 선택하면 최소·보통·고급 3구간 인테리어 견적을 즉시 계산합니다. 2026년 시세 기준.",
+    order: 14.61,
+    eyebrow: "인테리어 견적 계산",
+    category: "realestate",
+    iframeReady: false,
+    badges: ["신규", "인테리어", "올수리", "2026"],
+    previewStats: [
+      { label: "시공 항목", value: "10종", context: "샷시·마루·욕실 등" },
+      { label: "견적 구간", value: "3단계", context: "최소·보통·고급" },
+    ],
+  },
+  {
     slug: "apartment-holding-tax",
     title: "아파트 보유세 계산기",
     description: "공시가격과 주택 수, 1세대 1주택 여부를 입력해 재산세·지방교육세·종합부동산세·농어촌특별세를 합산 추정합니다.",

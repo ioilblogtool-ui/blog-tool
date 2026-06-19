@@ -1,0 +1,343 @@
+// Apartment Interior Cost Calculator — prefix: aic-
+
+$aic-green: #1a6b3a;
+$aic-green-light: #e8f5ee;
+$aic-blue: #1a56db;
+$aic-blue-light: #eff6ff;
+$aic-gold: #b45309;
+$aic-gold-light: #fef9c3;
+$aic-border: #e5e7eb;
+$aic-text: #1f2937;
+$aic-text-sub: #6b7280;
+$aic-bg-soft: #f9fafb;
+
+.aic-page {
+  .aic-input-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  // 평수 슬라이더
+  .aic-pyeong-section {
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: $aic-text;
+      margin: 0 0 12px;
+    }
+  }
+
+  .aic-pyeong-display {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 12px;
+
+    .aic-pyeong-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: $aic-blue;
+      line-height: 1;
+    }
+
+    .aic-pyeong-unit {
+      font-size: 1rem;
+      color: $aic-text-sub;
+    }
+
+    .aic-sqm-label {
+      font-size: 0.85rem;
+      color: $aic-text-sub;
+      margin-left: 4px;
+    }
+  }
+
+  .aic-pyeong-slider {
+    width: 100%;
+    accent-color: $aic-blue;
+    height: 6px;
+    cursor: pointer;
+  }
+
+  .aic-pyeong-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: $aic-text-sub;
+    margin-top: 4px;
+  }
+
+  // 시공 항목 체크박스 그리드
+  .aic-items-section {
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: $aic-text;
+      margin: 0 0 12px;
+    }
+  }
+
+  .aic-items-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .aic-item-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .aic-item-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 12px;
+    border: 1.5px solid $aic-border;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 0.9rem;
+    color: $aic-text;
+    user-select: none;
+
+    &:has(input:checked) {
+      border-color: $aic-blue;
+      background: $aic-blue-light;
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: $aic-blue;
+      flex-shrink: 0;
+    }
+
+    .aic-item-icon {
+      font-size: 1.1rem;
+    }
+  }
+
+  .aic-suboption {
+    display: none;
+    padding: 6px 10px;
+    background: $aic-bg-soft;
+    border: 1px solid $aic-border;
+    border-radius: 6px;
+
+    &.is-visible {
+      display: block;
+    }
+
+    select {
+      width: 100%;
+      font-size: 0.85rem;
+      padding: 4px 6px;
+      border: 1px solid $aic-border;
+      border-radius: 4px;
+      background: #fff;
+      color: $aic-text;
+      cursor: pointer;
+    }
+  }
+
+  // 결과 — 3구간 카드
+  .aic-result-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .aic-no-selection {
+    text-align: center;
+    padding: 40px 20px;
+    color: $aic-text-sub;
+    font-size: 0.95rem;
+    background: $aic-bg-soft;
+    border-radius: 12px;
+    border: 1.5px dashed $aic-border;
+  }
+
+  .aic-grade-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .aic-grade-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.aic-grade-min {
+      background: $aic-green-light;
+      border: 2px solid $aic-green;
+
+      .aic-grade-label { color: $aic-green; }
+      .aic-grade-amount { color: $aic-green; }
+    }
+
+    &.aic-grade-mid {
+      background: $aic-blue-light;
+      border: 2px solid $aic-blue;
+      transform: scale(1.03);
+      box-shadow: 0 4px 16px rgba(26, 86, 219, 0.15);
+
+      @media (max-width: 600px) { transform: none; }
+
+      .aic-grade-label { color: $aic-blue; }
+      .aic-grade-amount { color: $aic-blue; }
+    }
+
+    &.aic-grade-high {
+      background: $aic-gold-light;
+      border: 2px solid $aic-gold;
+
+      .aic-grade-label { color: $aic-gold; }
+      .aic-grade-amount { color: $aic-gold; }
+    }
+  }
+
+  .aic-grade-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .aic-grade-desc {
+    font-size: 0.75rem;
+    color: $aic-text-sub;
+  }
+
+  .aic-grade-amount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 6px 0 2px;
+  }
+
+  .aic-per-pyeong {
+    font-size: 0.78rem;
+    color: $aic-text-sub;
+  }
+
+  // 항목별 분해 테이블
+  .aic-breakdown-section {
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: $aic-text;
+      margin: 0 0 10px;
+    }
+  }
+
+  .aic-breakdown-wrap {
+    overflow-x: auto;
+  }
+
+  .aic-breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th {
+      background: $aic-bg-soft;
+      font-weight: 600;
+      color: $aic-text;
+      padding: 10px 12px;
+      border-bottom: 2px solid $aic-border;
+      text-align: right;
+      white-space: nowrap;
+
+      &:first-child { text-align: left; }
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid $aic-border;
+      text-align: right;
+      color: $aic-text;
+      white-space: nowrap;
+
+      &:first-child { text-align: left; color: $aic-text; }
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr.aic-total-row td {
+      font-weight: 700;
+      background: $aic-bg-soft;
+      border-top: 2px solid $aic-border;
+    }
+
+    .aic-col-min  { color: $aic-green; font-weight: 600; }
+    .aic-col-mid  { color: $aic-blue;  font-weight: 700; }
+    .aic-col-high { color: $aic-gold;  font-weight: 600; }
+  }
+
+  // 평수별 참고 비교표
+  .aic-reference-section {
+    margin-top: 12px;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: $aic-text;
+      margin: 0 0 6px;
+    }
+
+    p.aic-reference-note {
+      font-size: 0.8rem;
+      color: $aic-text-sub;
+      margin: 0 0 12px;
+    }
+  }
+
+  .aic-reference-wrap {
+    overflow-x: auto;
+  }
+
+  .aic-reference-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th {
+      background: $aic-bg-soft;
+      font-weight: 600;
+      color: $aic-text;
+      padding: 10px 12px;
+      border-bottom: 2px solid $aic-border;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid $aic-border;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .aic-ref-pyeong { font-weight: 700; color: $aic-text; }
+    .aic-ref-min    { color: $aic-green; }
+    .aic-ref-mid    { color: $aic-blue; font-weight: 600; }
+    .aic-ref-high   { color: $aic-gold; }
+  }
+}
