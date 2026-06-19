@@ -1,0 +1,273 @@
+.dtc-page {
+  --dtc-blue: #1a56db;
+  --dtc-green: #057a55;
+  --dtc-red: #e02424;
+  --dtc-yellow: #d97706;
+  --dtc-muted: #6b7280;
+  --dtc-border: #e5e7eb;
+  --dtc-bg: #f9fafb;
+  --dtc-card-bg: #ffffff;
+
+  // 치료 탭
+  .dtc-tab-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .dtc-tab-btn {
+    padding: 0.4rem 0.85rem;
+    border: 1.5px solid var(--dtc-border);
+    border-radius: 20px;
+    background: var(--dtc-card-bg);
+    color: #374151;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      border-color: var(--dtc-blue);
+      color: var(--dtc-blue);
+    }
+
+    &.is-active {
+      background: var(--dtc-blue);
+      border-color: var(--dtc-blue);
+      color: #fff;
+    }
+  }
+
+  // 입력 영역
+  .dtc-option-row,
+  .dtc-count-row,
+  .dtc-price-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    select,
+    input[type="number"] {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1.5px solid var(--dtc-border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: var(--dtc-card-bg);
+      color: #111827;
+      transition: border-color 0.15s;
+
+      &:focus {
+        outline: none;
+        border-color: var(--dtc-blue);
+      }
+    }
+  }
+
+  .dtc-count-row { display: none; }
+  .dtc-count-row.is-visible { display: flex; }
+
+  // 보험 배너
+  .dtc-insurance-banner {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    background: #eff6ff;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: #1d4ed8;
+    margin-bottom: 1rem;
+
+    &.is-visible { display: flex; }
+
+    .dtc-banner-icon { font-size: 1rem; flex-shrink: 0; }
+  }
+
+  // KPI 카드
+  .dtc-kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .dtc-kpi-card {
+    background: var(--dtc-card-bg);
+    border: 1.5px solid var(--dtc-border);
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &--verdict {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+      background: var(--dtc-bg);
+    }
+  }
+
+  .dtc-kpi-label {
+    font-size: 0.78rem;
+    color: var(--dtc-muted);
+    font-weight: 500;
+  }
+
+  .dtc-kpi-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+  }
+
+  .dtc-kpi-sub {
+    font-size: 0.75rem;
+    color: var(--dtc-muted);
+  }
+
+  // 판정 배지
+  .dtc-verdict-body {
+    flex: 1;
+  }
+
+  .dtc-verdict-badge {
+    display: inline-block;
+    padding: 0.3rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+
+    &--low    { background: #dcfce7; color: #15803d; }
+    &--normal { background: #dbeafe; color: #1d4ed8; }
+    &--high   { background: #fee2e2; color: #b91c1c; }
+    &--empty  { background: #f3f4f6; color: #6b7280; }
+  }
+
+  .dtc-verdict-msg {
+    font-size: 0.82rem;
+    color: var(--dtc-muted);
+    margin-top: 0.2rem;
+  }
+
+  // 게이지 바
+  .dtc-gauge-wrap {
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  .dtc-gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--dtc-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .dtc-gauge-track {
+    position: relative;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #bbf7d0 0%, #bfdbfe 40%, #fecaca 100%);
+  }
+
+  .dtc-gauge-marker {
+    position: absolute;
+    top: -3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #111827;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    transform: translateX(-50%);
+    transition: left 0.25s;
+  }
+
+  // 참고 범위 표
+  .dtc-range-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+
+  .dtc-range-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+
+    th, td {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--dtc-border);
+      text-align: center;
+    }
+
+    th {
+      background: var(--dtc-bg);
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .dtc-row--selected {
+      background: #eff6ff;
+      font-weight: 600;
+    }
+
+    .dtc-col-low  { color: var(--dtc-green); }
+    .dtc-col-avg  { color: var(--dtc-blue); }
+    .dtc-col-high { color: var(--dtc-red); }
+  }
+
+  // 보험 테이블
+  .dtc-ins-table-wrap {
+    overflow-x: auto;
+    margin-top: 0.5rem;
+  }
+
+  .dtc-ins-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+
+    th, td {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--dtc-border);
+    }
+
+    th {
+      background: var(--dtc-bg);
+      font-weight: 600;
+      text-align: left;
+    }
+  }
+
+  // 안내 노티스
+  .dtc-notice {
+    background: #fffbeb;
+    border: 1.5px solid #fde68a;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: #92400e;
+    margin-top: 0.75rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 720px) {
+    .dtc-kpi-grid {
+      grid-template-columns: 1fr;
+    }
+    .dtc-kpi-card--verdict {
+      grid-column: 1;
+    }
+  }
+}
