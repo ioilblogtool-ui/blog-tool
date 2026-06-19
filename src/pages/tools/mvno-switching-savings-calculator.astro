@@ -1,0 +1,368 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  MVSS_DEFAULT,
+  MVSS_PRESETS,
+  MVSS_CHECKLIST,
+  MVSS_FAQ,
+  MVSS_RELATED_LINKS,
+} from "../../data/mvnoSwitchingSavingsCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaults: MVSS_DEFAULT,
+  presets: MVSS_PRESETS,
+};
+
+const importanceLabelMap: Record<string, string> = {
+  high: "중요",
+  medium: "보통",
+  low: "참고",
+};
+---
+
+<BaseLayout
+  title="알뜰폰 갈아타기 절약 계산기 2026 | 월·1년·2년 통신비 절감액 계산"
+  description="현재 요금제와 알뜰폰 예상 요금 입력하면 월·1년·2년 절감액 즉시 계산. 가족결합·선택약정 해지 시 손익분기점까지 한눈에 비교."
+  ogImage="/og/tools/mvno-switching-savings-calculator.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "알뜰폰 갈아타기 절약 계산기",
+    "url": `${import.meta.env.SITE}/tools/mvno-switching-savings-calculator/`,
+    "description": "현재 요금제와 알뜰폰 예상 요금을 입력하면 월·1년·2년 절감액과 위약금 손익분기점을 계산하는 페이지",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="mvno-switching-savings-calculator" pageClass="mvno-switching-savings-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="통신비 절약"
+        title="알뜰폰 갈아타기 절약 계산기"
+        description="현재 요금제와 알뜰폰 예상 요금을 입력하면 월·1년·2년 절감액과 위약금 회수 기간을 바로 계산합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetMvssBtn" copyId="copyMvssLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack">
+        <!-- 현재 요금제 입력 -->
+        <article class="panel mvss-input-group" id="mvss-inputs">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">현재 통신비</p>
+              <h2 class="panel__title">이통3사 요금제</h2>
+            </div>
+            <p class="panel-heading__summary">할인 항목을 포함해 입력하면 실제 납부액 기준으로 비교합니다.</p>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field field-span-full">
+              <span>현재 기본료</span>
+              <input id="baseFeeInput" type="number" value={MVSS_DEFAULT.baseFee} min="10000" max="150000" step="1000" />
+              <div class="calc-slider-row">
+                <input type="range" id="baseFeeSlider" class="calc-slider" min="10000" max="150000" step="1000" value={MVSS_DEFAULT.baseFee} />
+                <span id="baseFeeSliderVal" class="calc-slider-val">{MVSS_DEFAULT.baseFee.toLocaleString("ko-KR")}원</span>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>가족결합 할인</span>
+              <input id="familyDiscountInput" type="number" value={MVSS_DEFAULT.familyDiscount} min="0" max="30000" step="1000" placeholder="0" />
+            </label>
+
+            <label class="field">
+              <span>선택약정 할인</span>
+              <input id="contractDiscountInput" type="number" value={MVSS_DEFAULT.contractDiscount} min="0" max="20000" step="1000" placeholder="0" />
+            </label>
+
+            <label class="field field-span-full">
+              <span>잔여 위약금</span>
+              <input id="earlyTermFeeInput" type="number" value={MVSS_DEFAULT.earlyTermFee} min="0" max="300000" step="1000" placeholder="0 (없으면 0)" />
+            </label>
+          </div>
+
+          <div class="mvss-realtime-label">
+            현재 실납부액: <strong id="currentMonthlyLabel">-</strong>
+          </div>
+        </article>
+
+        <!-- 알뜰폰 요금 입력 -->
+        <article class="panel mvss-input-group">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">비교 대상</p>
+              <h2 class="panel__title">알뜰폰 예상 요금</h2>
+            </div>
+          </div>
+
+          <div class="form-grid form-grid--compact">
+            <label class="field field-span-full">
+              <span>알뜰폰 월 요금</span>
+              <input id="mvnoFeeInput" type="number" value={MVSS_DEFAULT.mvnoFee} min="5000" max="80000" step="1000" />
+              <div class="calc-slider-row">
+                <input type="range" id="mvnoFeeSlider" class="calc-slider" min="5000" max="80000" step="1000" value={MVSS_DEFAULT.mvnoFee} />
+                <span id="mvnoFeeSliderVal" class="calc-slider-val">{MVSS_DEFAULT.mvnoFee.toLocaleString("ko-KR")}원</span>
+              </div>
+            </label>
+
+            <div class="field field-span-full mvss-toggle-row">
+              <span class="mvss-toggle-label">가족결합 상실 여부</span>
+              <button type="button" id="familyLostToggle" class="mvss-toggle" aria-pressed="false">OFF</button>
+            </div>
+
+            <div class="field field-span-full mvss-toggle-target" id="familyLossField" hidden>
+              <label class="field">
+                <span>가족결합 상실 추가 부담 (월)</span>
+                <input id="familyLossAmountInput" type="number" value={MVSS_DEFAULT.familyLossAmount} min="0" max="30000" step="1000" placeholder="0" />
+              </label>
+            </div>
+          </div>
+
+          <div class="mvss-realtime-label">
+            알뜰폰 실질 비용: <strong id="mvnoMonthlyLabel">-</strong>
+          </div>
+        </article>
+
+        <!-- 비교 기간 탭 -->
+        <div class="mvss-period-tabs">
+          <span class="mvss-period-tabs__label">비교 기간</span>
+          <div class="mvss-period-tabs__row">
+            {[12, 24, 36].map((p) => (
+              <button
+                type="button"
+                class="mvss-period-btn"
+                data-period={p}
+                aria-pressed={p === MVSS_DEFAULT.period ? "true" : "false"}
+              >
+                {p}개월
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button id="calcMvssBtn" class="button button--primary" type="button">절약 금액 계산하기</button>
+      </div>
+    </Fragment>
+
+    <!-- 결과 우선 panel -->
+    <article class="panel result-priority-panel" id="mvss-results">
+      <div class="mvss-warning-banner" id="mvssWarningBanner" hidden>
+        <strong>현재 요금제가 더 유리합니다.</strong> 알뜰폰 요금 또는 할인 조건을 다시 확인해 보세요.
+      </div>
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">절약 핵심 결과</p>
+          <h2 class="panel__title" id="mvssResultHeadline">통신비 절감액</h2>
+        </div>
+      </div>
+      <div class="mvss-kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <p id="kpiPeriodLabel">2년 절감액</p>
+          <strong id="kpiPeriodSaving">-</strong>
+          <span id="kpiPeriodNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>월 절감액</p>
+          <strong id="kpiMonthlySaving">-</strong>
+          <span id="kpiMonthlyNote">현재 실납부 기준</span>
+        </article>
+        <article class="kpi-card">
+          <p>1년 절감액</p>
+          <strong id="kpi1yearSaving">-</strong>
+          <span id="kpi1yearNote">-</span>
+        </article>
+        <article class="kpi-card">
+          <p>위약금 회수 기간</p>
+          <strong id="kpiBreakEven">-</strong>
+          <span id="kpiBreakEvenNote">-</span>
+        </article>
+      </div>
+      <div class="result-priority-panel__actions">
+        <a class="button button--secondary" href="#mvss-inputs">조건 다시 입력</a>
+        <a class="button button--ghost" href="#mvss-chart">절감 그래프 보기</a>
+      </div>
+    </article>
+
+    <!-- 누적 절감액 그래프 -->
+    <section class="mvss-section" id="mvss-chart">
+      <div class="mvss-section__head">
+        <p class="mvss-section__eyebrow">누적 절감</p>
+        <h2>갈아타면 시간이 지날수록 이만큼 쌓입니다</h2>
+        <p class="mvss-section__sub">월별 누적 절감액. 위약금이 있으면 회수 시점이 그래프에 표시됩니다.</p>
+      </div>
+      <div class="mvss-chart-wrap">
+        <canvas id="mvss-line-chart"></canvas>
+      </div>
+      <p class="mvss-chart-note" id="mvssChartNote"></p>
+    </section>
+
+    <!-- 현재 vs 알뜰폰 비교 카드 -->
+    <section class="mvss-section">
+      <div class="mvss-section__head">
+        <p class="mvss-section__eyebrow">요금 비교</p>
+        <h2>현재 요금제와 알뜰폰 실납부 차이</h2>
+        <p class="mvss-section__sub">가족결합·선택약정 할인을 모두 반영한 실제 납부 기준 비교입니다.</p>
+      </div>
+      <div class="mvss-compare-grid">
+        <article class="mvss-compare-card mvss-compare-card--current">
+          <p class="mvss-compare-card__title">현재 이통3사 요금제</p>
+          <div class="mvss-compare-rows" id="compareCurrentRows"></div>
+          <div class="mvss-compare-total">
+            <span>실납부액</span>
+            <strong id="compareCurrentTotal">-</strong>
+          </div>
+        </article>
+        <article class="mvss-compare-card mvss-compare-card--mvno">
+          <p class="mvss-compare-card__title">알뜰폰</p>
+          <div class="mvss-compare-rows" id="compareMvnoRows"></div>
+          <div class="mvss-compare-total">
+            <span>실질 비용</span>
+            <strong id="compareMvnoTotal">-</strong>
+          </div>
+        </article>
+      </div>
+      <div class="mvss-compare-diff" id="mvssCompareDiff"></div>
+    </section>
+
+    <!-- 알뜰폰 예시 요금제 -->
+    <section class="mvss-section" id="mvss-presets">
+      <div class="mvss-section__head">
+        <p class="mvss-section__eyebrow">요금제 예시</p>
+        <h2>어떤 알뜰폰 요금제가 나한테 맞을까?</h2>
+        <p class="mvss-section__sub">버튼을 클릭하면 알뜰폰 요금이 자동으로 입력됩니다.</p>
+      </div>
+      <div class="mvss-preset-grid">
+        {MVSS_PRESETS.map((preset) => (
+          <button
+            type="button"
+            class="mvss-preset-btn"
+            data-fee={preset.fee}
+            data-id={preset.id}
+          >
+            <span class="mvss-preset-btn__label">{preset.label}</span>
+            <span class="mvss-preset-btn__fee">{preset.fee.toLocaleString("ko-KR")}원</span>
+            <span class="mvss-preset-btn__data">{preset.dataDesc}</span>
+            <span class="mvss-preset-btn__note">{preset.note}</span>
+          </button>
+        ))}
+      </div>
+      <p class="mvss-preset-note">2026년 6월 기준 공개 요금제 예시입니다. 실제 요금은 통신사·프로모션에 따라 다릅니다.</p>
+    </section>
+
+    <!-- 알뜰폰 단점 체크리스트 -->
+    <section class="mvss-section">
+      <div class="mvss-section__head">
+        <p class="mvss-section__eyebrow">갈아타기 전 확인</p>
+        <h2>이 항목들이 괜찮으면 갈아타도 됩니다</h2>
+        <p class="mvss-section__sub">알뜰폰의 실제 단점을 확인하고 자신의 상황과 비교해 보세요.</p>
+      </div>
+      <div class="mvss-checklist">
+        {MVSS_CHECKLIST.map((item) => (
+          <article class={`mvss-checklist-item mvss-checklist-item--${item.importance}`}>
+            <div class="mvss-checklist-item__head">
+              <strong>{item.title}</strong>
+              <span class="mvss-badge mvss-badge--importance">{importanceLabelMap[item.importance]}</span>
+            </div>
+            <p class="mvss-checklist-item__detail">{item.detail}</p>
+            <p class="mvss-checklist-item__conclusion">{item.conclusion}</p>
+          </article>
+        ))}
+      </div>
+      <article class="mvss-conclusion-card">
+        <strong>💡 이런 분께 알뜰폰 전환을 추천합니다</strong>
+        <ul>
+          <li>가족결합 할인이 월 5,000원 이하이거나 가족 모두 전환 예정</li>
+          <li>단말기 약정 또는 선택약정이 이미 끝났거나 위약금이 3개월 절감액 이내</li>
+          <li>5G보다 LTE 속도로 충분하고, 멤버십 혜택을 잘 쓰지 않음</li>
+          <li>앱·온라인 처리에 익숙하고, 고객센터 전화 상담이 자주 필요하지 않음</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- 계산 기준 요약 -->
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 기준</p>
+          <h2 class="panel__title">이 계산기가 사용하는 공식</h2>
+        </div>
+      </div>
+      <div class="logic-grid">
+        <article class="logic-card">
+          <strong>현재 실납부액 = 기본료 − 가족결합 할인 − 선택약정 할인</strong>
+          <p>이통3사에 실제로 내는 금액을 기준으로 비교합니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>알뜰폰 실질 비용 = 알뜰폰 요금 + 가족결합 상실 추가 부담</strong>
+          <p>가족결합이 해지되면 가족 전체의 추가 부담을 함께 반영합니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>누적 절감액 = 월 절감액 × 개월 − 위약금</strong>
+          <p>위약금이 있으면 차감 후 실질 누적액을 표시합니다.</p>
+        </article>
+        <article class="logic-card">
+          <strong>손익분기 = 위약금 ÷ 월 절감액</strong>
+          <p>이 개월 수 이후부터 실질 절약이 시작됩니다.</p>
+        </article>
+      </div>
+    </article>
+
+    <InfoNotice
+      title="안내"
+      lines={[
+        "실제 위약금·해지 조건은 현재 계약서와 해당 통신사 고객센터(114)에서 확인하세요.",
+        "알뜰폰 요금 예시는 2026년 6월 기준 공개 요금제를 참고한 것으로, 프로모션 종료·변경에 따라 달라질 수 있습니다.",
+        "가족결합 상실 여부 및 금액은 현재 계약 조건에 따라 다릅니다. 가족 구성원 모두가 알뜰폰으로 전환하면 상실 추가 부담이 없을 수 있습니다.",
+        "이 계산기는 참고용 추정 계산입니다. 정확한 절약액은 실제 개통 후 확인하시기 바랍니다.",
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="알뜰폰 갈아타기 절약 계산기 활용 가이드"
+        intro={[
+          "이 페이지는 이통3사(SKT·KT·LGU+) 요금제에서 알뜰폰으로 갈아탈 때 얼마나 절약되는지 계산해 주는 통신비 절약 계산기입니다. 현재 기본료와 가족결합 할인, 선택약정 할인을 입력하면 실납부액 기준으로 알뜰폰과 비교하고, 월·1년·2년 누적 절감액을 즉시 확인할 수 있습니다.",
+          "가족결합 할인이 있는 경우 알뜰폰으로 전환하면 결합 혜택이 사라지는 점이 가장 큰 걸림돌입니다. 이 계산기는 가족결합 상실 추가 부담까지 입력값에 반영하므로, 단순 요금 비교가 아닌 실질 손익을 기준으로 판단할 수 있습니다.",
+          "잔여 위약금이 있다면 위약금 손익분기점(몇 개월 만에 위약금 회수?)도 자동으로 계산됩니다. 월별 누적 절감액 그래프로 갈아타기 최적 시점을 시각적으로 확인해 보세요.",
+        ]}
+        inputPoints={[
+          "현재 기본료, 가족결합 할인, 선택약정 할인을 입력하면 이통3사 실납부액을 자동으로 계산합니다.",
+          "가족결합 상실 토글을 ON으로 바꾸면 결합 해지 시 추가 부담을 포함해 알뜰폰 실질 비용을 계산합니다.",
+          "비교 기간(12/24/36개월) 탭을 선택하면 누적 절감액과 그래프 범위가 함께 바뀝니다.",
+        ]}
+        criteria={[
+          "현재 실납부액 = 기본료 − 가족결합 할인 − 선택약정 할인으로 계산합니다.",
+          "알뜰폰 실질 비용 = 알뜰폰 월 요금 + (가족결합 상실 시 추가 부담)으로 계산합니다.",
+          "누적 절감액 = 월 절감액 × 기간(개월) − 잔여 위약금으로 계산합니다. 음수 구간은 아직 위약금 미회수 상태입니다.",
+          "알뜰폰 요금제 예시는 2026년 6월 기준 공개 요금제를 참고한 추정값이며, 실제 요금은 통신사·프로모션에 따라 다를 수 있습니다.",
+        ]}
+        faq={MVSS_FAQ.map((item) => ({ question: item.question, answer: item.answer }))}
+        related={MVSS_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script id="mvssConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/mvno-switching-savings-calculator.js")}></script>
+</BaseLayout>

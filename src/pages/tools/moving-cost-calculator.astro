@@ -1,0 +1,274 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import {
+  MCC_BASE_BANDS,
+  MCC_CHECKLIST,
+  MCC_DEFAULTS,
+  MCC_DISTANCE_PRESETS,
+  MCC_FAQ,
+  MCC_FLOOR_OPTIONS,
+  MCC_LADDER_OPTIONS,
+  MCC_META,
+  MCC_PYEONG_PRESETS,
+  MCC_REGION_OPTIONS,
+  MCC_RELATED_LINKS,
+  MCC_TYPE_OPTIONS,
+  MCC_VOLUME_OPTIONS,
+} from "../../data/movingCostCalculator";
+
+const config = {
+  baseBands: MCC_BASE_BANDS,
+  checklist: MCC_CHECKLIST,
+  defaults: MCC_DEFAULTS,
+  floorOptions: MCC_FLOOR_OPTIONS,
+  ladderOptions: MCC_LADDER_OPTIONS,
+  regionOptions: MCC_REGION_OPTIONS,
+  typeOptions: MCC_TYPE_OPTIONS,
+  volumeOptions: MCC_VOLUME_OPTIONS,
+};
+
+const faqSchema = MCC_FAQ.map(item => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={MCC_META.title}
+  description={MCC_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqSchema,
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={MCC_META.slug} pageClass="mcc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="이사 견적"
+        title="포장이사 비용 계산기"
+        description="평수·거리·사다리차·손없는날 조건을 넣고 24평·34평 이사 견적 기준선을 확인하세요."
+        badges={["포장이사", "24평", "34평", "추정"]}
+      />
+      <InfoNotice title="추정 계산 안내" lines={[MCC_META.caution, `업데이트 기준: ${MCC_META.updatedAt}`]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="mccResetBtn" copyId="mccCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="mcc-section">
+        <h2 class="mcc-section-title">이사 조건</h2>
+
+        <label class="mcc-field">
+          <span class="mcc-label">주거 평수</span>
+          <div class="mcc-preset-grid">
+            {MCC_PYEONG_PRESETS.map((preset) => (
+              <button
+                type="button"
+                class:list={["mcc-preset", preset.value === MCC_DEFAULTS.pyeong && "is-active"]}
+                data-mcc-pyeong={preset.value}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          <div class="mcc-input-row">
+            <input data-mcc="pyeong" type="number" min="1" max="99" value={MCC_DEFAULTS.pyeong} />
+            <span>평</span>
+          </div>
+        </label>
+
+        <label class="mcc-field">
+          <span class="mcc-label">이동 거리</span>
+          <div class="mcc-preset-grid mcc-preset-grid--distance">
+            {MCC_DISTANCE_PRESETS.map((preset) => (
+              <button
+                type="button"
+                class:list={["mcc-preset", preset.value === MCC_DEFAULTS.distanceKm && "is-active"]}
+                data-mcc-distance={preset.value}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          <input data-mcc="distanceKm" class="mcc-range" type="range" min="1" max="200" step="1" value={MCC_DEFAULTS.distanceKm} />
+          <div class="mcc-input-row">
+            <input data-mcc-num="distanceKm" type="text" inputmode="numeric" value={MCC_DEFAULTS.distanceKm.toLocaleString()} />
+            <span>km</span>
+          </div>
+        </label>
+
+        <label class="mcc-field">
+          <span class="mcc-label">이사 방식</span>
+          <select data-mcc="type" class="mcc-select">
+            {MCC_TYPE_OPTIONS.map((option) => (
+              <option value={option.value} selected={option.value === MCC_DEFAULTS.type}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="mcc-field">
+          <span class="mcc-label">사다리차</span>
+          <select data-mcc="ladder" class="mcc-select">
+            {MCC_LADDER_OPTIONS.map((option) => (
+              <option value={option.value} selected={option.value === MCC_DEFAULTS.ladder}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="mcc-field">
+          <span class="mcc-label">층수 조건</span>
+          <select data-mcc="floor" class="mcc-select">
+            {MCC_FLOOR_OPTIONS.map((option) => (
+              <option value={option.value} selected={option.value === MCC_DEFAULTS.floor}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="mcc-field">
+          <span class="mcc-label">짐 양</span>
+          <select data-mcc="volume" class="mcc-select">
+            {MCC_VOLUME_OPTIONS.map((option) => (
+              <option value={option.value} selected={option.value === MCC_DEFAULTS.volume}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="mcc-field">
+          <span class="mcc-label">지역</span>
+          <select data-mcc="region" class="mcc-select">
+            {MCC_REGION_OPTIONS.map((option) => (
+              <option value={option.value} selected={option.value === MCC_DEFAULTS.region}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="mcc-toggle">
+          <input data-mcc-bool="peak" type="checkbox" checked={MCC_DEFAULTS.peak} />
+          <span>손없는날·주말·월말 이사</span>
+        </label>
+      </section>
+    </Fragment>
+
+    <section class="mcc-result-head">
+      <div class="mcc-kpi-grid">
+        <div class="mcc-kpi-card mcc-kpi-card--primary">
+          <span>예상 견적 범위</span>
+          <strong data-mcc-result="range">—</strong>
+          <small>추정</small>
+        </div>
+        <div class="mcc-kpi-card">
+          <span>기준 견적</span>
+          <strong data-mcc-result="midpoint">—</strong>
+        </div>
+        <div class="mcc-kpi-card">
+          <span>추가비 예상</span>
+          <strong data-mcc-result="extra">—</strong>
+        </div>
+        <div class="mcc-kpi-card">
+          <span>견적 판단</span>
+          <strong data-mcc-result="grade">—</strong>
+        </div>
+      </div>
+
+      <div class="mcc-summary" data-mcc-result="summary"></div>
+      <p class="mcc-band-note" data-mcc-result="bandNote"></p>
+    </section>
+
+    <section class="mcc-breakdown-section">
+      <h2>비용 구성</h2>
+      <div class="mcc-breakdown-bars" id="mccBreakdownBars"></div>
+      <div class="mcc-table-wrap">
+        <table class="mcc-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>예상 범위</th>
+              <th>기준</th>
+            </tr>
+          </thead>
+          <tbody id="mccBreakdownTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mcc-checklist-section">
+      <h2>추가비 체크리스트</h2>
+      <div class="mcc-risk-banner" data-mcc-result="riskText">견적 전 해당되는 추가비 항목을 체크해 보세요.</div>
+      <div class="mcc-checklist">
+        {MCC_CHECKLIST.map((item) => (
+          <label class="mcc-check-item">
+            <input type="checkbox" data-mcc-check={item.id} />
+            <span>
+              <strong>{item.label}</strong>
+              <small>{item.risk} · {item.description}</small>
+            </span>
+          </label>
+        ))}
+      </div>
+    </section>
+
+    <section class="mcc-guide-section">
+      <h2>24평·34평 기준</h2>
+      <div class="mcc-guide-grid">
+        <article class="mcc-guide-card">
+          <h3>24평 포장이사</h3>
+          <p>2~4인 가구에서 가장 많이 찾는 구간입니다. 같은 지역·평일·짐 보통이면 하단에 가까울 수 있고, 아이 짐과 계절 가전이 많으면 상단으로 올라갑니다.</p>
+        </article>
+        <article class="mcc-guide-card">
+          <h3>34평 포장이사</h3>
+          <p>작업 인원과 차량 톤수가 커져 24평보다 상승 폭이 큽니다. 양쪽 사다리차, 손없는날, 장거리 조건이 겹치면 200만원대 이상도 가능합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="mcc-compare-section">
+      <h2>이사 방식별 차이</h2>
+      <div class="mcc-compare-grid">
+        {MCC_TYPE_OPTIONS.map((option) => (
+          <article class="mcc-compare-card">
+            <strong>{option.label}</strong>
+            <p>{option.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mcc-related-section">
+      <h2>함께 확인하면 좋은 계산기</h2>
+      <div class="mcc-related-grid">
+        {MCC_RELATED_LINKS.map((link) => (
+          <a href={link.href} class="mcc-related-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="포장이사 견적, 어떤 기준으로 봐야 할까요?"
+      intro={[
+        "포장이사 비용은 평수만으로 정해지지 않습니다. 같은 24평이라도 짐 양, 사다리차 사용, 이동 거리, 날짜에 따라 견적 차이가 큽니다.",
+        "견적을 비교할 때는 총액만 보지 말고 사다리차, 에어컨 이전 설치, 폐기물 처리, 입주청소가 포함인지 분리해서 확인해야 합니다.",
+        "손없는날, 주말, 월말처럼 수요가 몰리는 날짜에는 같은 조건이라도 일반 평일보다 높은 견적이 나올 수 있습니다.",
+        "이 계산기는 방문 견적 전 대략적인 기준선을 잡는 도구입니다. 너무 낮은 견적은 추가비 조건을, 너무 높은 견적은 포함 항목을 확인하는 기준으로 활용하세요.",
+      ]}
+      faq={MCC_FAQ}
+    />
+  </SimpleToolShell>
+</BaseLayout>
+
+<script id="mccConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/moving-cost-calculator.js" defer></script>

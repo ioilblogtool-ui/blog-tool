@@ -1,0 +1,248 @@
+.dwc-page {
+  // 순번 슬라이더 영역
+  .dwc-rank-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .dwc-rank-slider {
+    flex: 1;
+    accent-color: var(--color-primary, #1a56db);
+  }
+
+  .dwc-rank-badge {
+    min-width: 3rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-primary, #1a56db);
+    background: var(--color-primary-light, #eff2ff);
+    border-radius: 0.5rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  // 버튼 그룹 (월령 / 시급성)
+  .dwc-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .dwc-btn {
+    padding: 0.45rem 0.9rem;
+    border-radius: 0.5rem;
+    border: 1.5px solid var(--color-border, #e0e0e0);
+    background: var(--color-surface, #fff);
+    font-size: 0.84rem;
+    cursor: pointer;
+    color: var(--color-text, #1a1a1a);
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+    &:hover {
+      border-color: var(--color-primary, #1a56db);
+    }
+
+    &--active {
+      border-color: var(--color-primary, #1a56db);
+      background: var(--color-primary, #1a56db);
+      color: #fff;
+    }
+  }
+
+  // 토글 행
+  .dwc-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--color-border, #f0f0f0);
+
+    &:last-child { border-bottom: none; }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    input[type="checkbox"] {
+      width: 2.2rem;
+      height: 1.2rem;
+      accent-color: var(--color-primary, #1a56db);
+      cursor: pointer;
+    }
+  }
+
+  // 결과 카드
+  .dwc-result-card {
+    border: 2.5px solid var(--color-border, #e0e0e0);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface, #fff);
+    display: grid;
+    gap: 0.5rem;
+
+    &--high     { border-color: #12b76a; background: #f0fdf4; }
+    &--medium   { border-color: #f79009; background: #fffbeb; }
+    &--low      { border-color: #f97316; background: #fff7ed; }
+    &--very-low { border-color: #ef4444; background: #fef2f2; }
+  }
+
+  .dwc-result-score {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-primary, #1a56db);
+    line-height: 1;
+  }
+
+  .dwc-result-level {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-text, #1a1a1a);
+  }
+
+  .dwc-result-prob {
+    font-size: 0.9rem;
+    color: var(--color-text-muted, #667085);
+  }
+
+  // 체크리스트
+  .dwc-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .dwc-check-item {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 0.5rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--color-border, #f0f0f0);
+
+    &:last-child { border-bottom: none; }
+
+    &--unmet .dwc-check-label { color: var(--color-text-muted, #667085); }
+  }
+
+  .dwc-check-icon {
+    grid-row: 1 / 3;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .dwc-check-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .dwc-check-impact {
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #667085);
+    line-height: 1.4;
+  }
+
+  // 전화 멘트 박스
+  .dwc-phone-box {
+    background: var(--color-bg, #f8f9fa);
+    border: 1.5px solid var(--color-border, #e0e0e0);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .dwc-phone-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+
+    strong {
+      font-size: 0.9rem;
+    }
+  }
+
+  .dwc-copy-btn {
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.4rem;
+    border: 1.5px solid var(--color-primary, #1a56db);
+    background: transparent;
+    color: var(--color-primary, #1a56db);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: var(--color-primary, #1a56db);
+      color: #fff;
+    }
+  }
+
+  .dwc-phone-ment {
+    font-size: 0.88rem;
+    line-height: 1.8;
+    white-space: pre-line;
+    color: var(--color-text, #1a1a1a);
+    margin: 0;
+  }
+
+  .dwc-phone-meta {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.25rem;
+
+    li {
+      font-size: 0.82rem;
+      color: var(--color-text-muted, #667085);
+      display: flex;
+      gap: 0.4rem;
+    }
+  }
+
+  // 꿀팁 카드
+  .dwc-tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .dwc-tip-card {
+    border: 1.5px solid var(--color-border, #e0e0e0);
+    border-radius: 0.65rem;
+    padding: 0.9rem 1rem;
+    background: var(--color-surface, #fff);
+
+    strong {
+      display: block;
+      font-size: 0.88rem;
+      margin-bottom: 0.35rem;
+      color: var(--color-primary, #1a56db);
+    }
+
+    p {
+      font-size: 0.83rem;
+      line-height: 1.6;
+      color: var(--color-text-muted, #667085);
+      margin: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .dwc-tips-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .dwc-btn {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.7rem;
+    }
+  }
+}

@@ -1,0 +1,398 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  MECC_GENERATIONS,
+  MECC_DEFAULT,
+  MECC_FAQ,
+  MECC_RELATED_LINKS,
+  MECC_EXCLUDED_ITEMS,
+  MECC_CLAIM_STEPS,
+  MECC_META,
+  NON_CLAIM_DISCOUNT_PERIOD_MONTHS,
+  NHI_COVERED_RATE,
+} from "../../data/medicalExpenseClaimCalculator";
+
+const config = {
+  generations: MECC_GENERATIONS,
+  nhiRate: NHI_COVERED_RATE,
+  nonClaimPeriod: NON_CLAIM_DISCOUNT_PERIOD_MONTHS,
+  defaults: MECC_DEFAULT,
+};
+
+const faqItems = MECC_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+const relatedLinks = MECC_RELATED_LINKS;
+---
+
+<BaseLayout
+  title={MECC_META.title}
+  description={MECC_META.description}
+  ogImage="/og/tools/medical-expense-claim-worth-calculator.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "병원비 실손 청구 계산기",
+    "url": `${import.meta.env.SITE}/tools/medical-expense-claim-worth-calculator/`,
+    "description": MECC_META.description,
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="medical-expense-claim-worth-calculator"
+    pageClass="medical-expense-claim-page"
+    resultFirst={true}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="실손 청구 실익"
+        title="병원비 실손 청구 계산기"
+        description="진료비·비급여·약제비를 입력하면 예상 환급액과 청구 실익을 바로 계산합니다."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetMeccBtn" copyId="copyMeccLinkBtn" />
+    </Fragment>
+
+    <!-- ─── 입력 패널 ─── -->
+    <Fragment slot="aside">
+      <div class="stack">
+
+        <!-- Panel 1: 진료 정보 -->
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">진료 정보</p>
+              <h2 class="panel__title">병원비 입력</h2>
+            </div>
+          </div>
+
+          <!-- 통원 / 입원 탭 -->
+          <div class="mecc-visit-tabs" role="group" aria-label="진료 유형">
+            <button class="mecc-visit-btn" data-visit="outpatient" aria-pressed="true">통원</button>
+            <button class="mecc-visit-btn" data-visit="inpatient" aria-pressed="false">입원</button>
+          </div>
+
+          <div class="form-grid form-grid--compact" style="margin-top:12px">
+            <label class="field field-span-full">
+              <span>급여 진료비</span>
+              <div class="input-with-unit">
+                <input type="number" id="coveredFeeInput" value={MECC_DEFAULT.coveredFee} min="0" step="1000" />
+                <span>원</span>
+              </div>
+              <p class="field__hint">급여 항목(건강보험 적용 진료비)</p>
+            </label>
+            <label class="field">
+              <span>비급여 진료비</span>
+              <div class="input-with-unit">
+                <input type="number" id="nonCoveredFeeInput" value={MECC_DEFAULT.nonCoveredFee} min="0" step="1000" />
+                <span>원</span>
+              </div>
+            </label>
+            <label class="field">
+              <span>약제비</span>
+              <div class="input-with-unit">
+                <input type="number" id="medicineFeeInput" value={MECC_DEFAULT.medicineFee} min="0" step="1000" />
+                <span>원</span>
+              </div>
+            </label>
+          </div>
+        </article>
+
+        <!-- Panel 2: 실손 상품 정보 -->
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">실손 상품</p>
+              <h2 class="panel__title">가입 세대 선택</h2>
+            </div>
+          </div>
+
+          <div class="mecc-gen-tabs" role="group" aria-label="가입 세대">
+            {MECC_GENERATIONS.map((g) => (
+              <button
+                class="mecc-gen-btn"
+                data-gen={g.id}
+                aria-pressed={g.id === MECC_DEFAULT.generation ? "true" : "false"}
+              >
+                {g.label.split(" ")[0]}
+              </button>
+            ))}
+          </div>
+
+          <p class="mecc-gen-note" id="meccGenNote"></p>
+
+          <div class="form-grid form-grid--compact" style="margin-top:12px">
+            <label class="field">
+              <span>급여 자기부담률</span>
+              <div class="input-with-unit">
+                <input type="number" id="coveredCoPayRateInput" value="20" min="0" max="100" step="1" />
+                <span>%</span>
+              </div>
+            </label>
+            <label class="field">
+              <span>비급여 자기부담률</span>
+              <div class="input-with-unit">
+                <input type="number" id="nonCoveredCoPayRateInput" value="30" min="0" max="100" step="1" />
+                <span>%</span>
+              </div>
+            </label>
+          </div>
+        </article>
+
+        <!-- Panel 3: 무청구 할인 (선택) -->
+        <article class="panel">
+          <div class="mecc-toggle-row">
+            <span class="mecc-toggle-label">무청구 할인 특약 있음</span>
+            <button class="mecc-toggle" id="discountToggle" aria-pressed="false">OFF</button>
+          </div>
+          <div class="mecc-toggle-target" id="discountFields" hidden>
+            <div class="form-grid form-grid--compact" style="margin-top:12px">
+              <label class="field">
+                <span>현재 월 보험료</span>
+                <div class="input-with-unit">
+                  <input type="number" id="monthlyPremiumInput" value={MECC_DEFAULT.monthlyPremium} min="0" step="1000" />
+                  <span>원</span>
+                </div>
+              </label>
+              <label class="field">
+                <span>무청구 할인율</span>
+                <div class="input-with-unit">
+                  <input type="number" id="discountRateInput" value="10" min="1" max="30" step="1" />
+                  <span>%</span>
+                </div>
+              </label>
+              <label class="field field-span-full">
+                <span>현재 무청구 경과 기간</span>
+                <div class="input-with-unit">
+                  <input type="number" id="monthsElapsedInput" value="0" min="0" max="36" step="1" />
+                  <span>개월</span>
+                </div>
+                <p class="field__hint">0~35개월: 할인 미달성 / 36개월: 이미 할인 적용 중</p>
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <!-- 계산 버튼 -->
+        <div class="action-row">
+          <button class="btn btn--primary btn--full" id="calcMeccBtn">계산하기</button>
+        </div>
+
+      </div>
+    </Fragment>
+
+    <!-- ─── 결과 패널 ─── -->
+    <Fragment slot="default">
+
+      <!-- KPI 카드 -->
+      <div class="result-priority-panel">
+        <div class="mecc-kpi-grid">
+          <div class="kpi-card kpi-card--accent">
+            <p>예상 환급액</p>
+            <strong id="kpiRefund">-</strong>
+            <span id="kpiRefundSub">계산 전</span>
+          </div>
+          <div class="kpi-card">
+            <p>자기부담금</p>
+            <strong id="kpiSelfPay">-</strong>
+            <span>실제 본인 부담</span>
+          </div>
+          <div class="kpi-card" id="kpiWorthCard" hidden>
+            <p>청구 실익</p>
+            <strong id="kpiWorth">-</strong>
+            <span id="kpiWorthSub"></span>
+          </div>
+          <div class="kpi-card mecc-verdict-card" id="kpiVerdictCard">
+            <p>판정</p>
+            <strong id="kpiVerdict">-</strong>
+            <span id="kpiVerdictSub">계산 전</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 청구 항목 내역 -->
+      <section class="mecc-section">
+        <div class="mecc-section__head">
+          <p class="mecc-section__eyebrow">청구 내역</p>
+          <h2>항목별 환급액</h2>
+        </div>
+        <div class="mecc-breakdown-grid">
+          <div class="mecc-breakdown-card" id="breakdownCovered">
+            <p class="mecc-breakdown-card__label">급여 항목</p>
+            <div class="mecc-breakdown-card__rows" id="breakdownCoveredRows">
+              <div class="mecc-breakdown-row"><span>환자 부담</span><span>-</span></div>
+              <div class="mecc-breakdown-row"><span>자기부담 공제</span><span>-</span></div>
+            </div>
+            <div class="mecc-breakdown-card__total">
+              <span>환급액</span><strong id="coveredRefundAmt">-</strong>
+            </div>
+          </div>
+          <div class="mecc-breakdown-card" id="breakdownNonCovered">
+            <p class="mecc-breakdown-card__label">비급여 항목</p>
+            <div class="mecc-breakdown-card__rows">
+              <div class="mecc-breakdown-row"><span>비급여 진료비</span><span id="nonCoveredFeeDisp">-</span></div>
+              <div class="mecc-breakdown-row"><span>자기부담 공제</span><span id="nonCoveredCoPayDisp">-</span></div>
+            </div>
+            <div class="mecc-breakdown-card__total">
+              <span>환급액</span><strong id="nonCoveredRefundAmt">-</strong>
+            </div>
+          </div>
+          <div class="mecc-breakdown-card" id="breakdownMedicine">
+            <p class="mecc-breakdown-card__label">약제비</p>
+            <div class="mecc-breakdown-card__rows">
+              <div class="mecc-breakdown-row"><span>약제비</span><span id="medicineFeeDisp">-</span></div>
+              <div class="mecc-breakdown-row"><span>공제금액</span><span id="medicineDeductibleDisp">-</span></div>
+            </div>
+            <div class="mecc-breakdown-card__total">
+              <span>환급액</span><strong id="medicineRefundAmt">-</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 무청구 할인 손실 비교 -->
+      <section class="mecc-section" id="discountCompareSection" hidden>
+        <div class="mecc-section__head">
+          <p class="mecc-section__eyebrow">청구 실익 분석</p>
+          <h2>무청구 할인 손실 비교</h2>
+        </div>
+        <div class="mecc-discount-compare">
+          <div class="mecc-discount-row">
+            <span>예상 환급액</span>
+            <strong class="mecc-diff-positive" id="dcTotalRefund">-</strong>
+          </div>
+          <div class="mecc-discount-row mecc-discount-row--sub">
+            <span>무청구 할인 상실액 (손실)</span>
+            <strong class="mecc-diff-negative" id="dcDiscountLoss">-</strong>
+          </div>
+          <div class="mecc-discount-divider"></div>
+          <div class="mecc-discount-row mecc-discount-row--total">
+            <span>순 청구 실익</span>
+            <strong id="dcClaimWorth">-</strong>
+          </div>
+          <div class="mecc-discount-verdict" id="dcVerdict"></div>
+        </div>
+      </section>
+
+      <!-- 가입 세대 정보 카드 -->
+      <section class="mecc-section">
+        <div class="mecc-section__head">
+          <p class="mecc-section__eyebrow">가입 정보</p>
+          <h2>현재 세대 자기부담 기준</h2>
+        </div>
+        <div class="mecc-gen-info-card" id="meccGenInfoCard">
+          <div class="mecc-gen-info-grid">
+            <div class="mecc-gen-info-item">
+              <p>급여 자기부담률</p><strong id="genInfoCoveredCoPayRate">-</strong>
+            </div>
+            <div class="mecc-gen-info-item">
+              <p>비급여 자기부담률</p><strong id="genInfoNonCoveredCoPayRate">-</strong>
+            </div>
+            <div class="mecc-gen-info-item">
+              <p>통원 공제금액</p><strong id="genInfoOutpatientDeductible">-</strong>
+            </div>
+            <div class="mecc-gen-info-item">
+              <p>약제비 공제금액</p><strong id="genInfoMedicineDeductible">-</strong>
+            </div>
+          </div>
+          <p class="mecc-gen-info-note" id="genInfoNote"></p>
+        </div>
+      </section>
+
+      <!-- 청구 불가 항목 안내 -->
+      <section class="mecc-section">
+        <div class="mecc-section__head">
+          <p class="mecc-section__eyebrow">청구 제외 항목</p>
+          <h2>실손보험 지급 제외 항목</h2>
+        </div>
+        <div class="mecc-excluded-list">
+          {MECC_EXCLUDED_ITEMS.map((item) => (
+            <div class="mecc-excluded-item">
+              <span class="mecc-excluded-icon">✕</span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 청구 절차 가이드 -->
+      <section class="mecc-section">
+        <details class="mecc-steps-details">
+          <summary class="mecc-steps-summary">실손 청구 절차 안내</summary>
+          <ol class="mecc-steps">
+            {MECC_CLAIM_STEPS.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+        </details>
+      </section>
+
+      <!-- 계산 기준 로직 -->
+      <section class="mecc-section">
+        <div class="mecc-section__head">
+          <p class="mecc-section__eyebrow">계산 기준</p>
+          <h2>계산 방식 안내</h2>
+        </div>
+        <div class="logic-grid">
+          <div class="logic-card">
+            <strong>급여 환급</strong>
+            <p>급여 진료비 × (1-공단부담률) → 통원공제 적용 후 → (1-자기부담률)</p>
+          </div>
+          <div class="logic-card">
+            <strong>비급여 환급</strong>
+            <p>비급여 진료비 × (1-비급여 자기부담률)</p>
+          </div>
+          <div class="logic-card">
+            <strong>약제비 환급</strong>
+            <p>약제비 - 약제비 공제금액 (세대별 5천~8천원)</p>
+          </div>
+          <div class="logic-card">
+            <strong>무청구 할인 손실</strong>
+            <p>월 보험료 × 할인율 × 잔여 무청구 기간(개월)</p>
+          </div>
+        </div>
+      </section>
+
+      <InfoNotice
+        title="이 계산기는 참고용입니다"
+        lines={[MECC_META.caution]}
+      />
+
+    </Fragment>
+
+    <!-- ─── SEO 슬롯 ─── -->
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="실손보험 청구 실익, 계산하고 결정하세요"
+        intro={[
+          "실손보험(실비보험)은 병원에서 발생한 진료비 중 건강보험이 적용되지 않거나 본인이 부담한 금액의 일부를 보상해주는 보험입니다. 가입 세대(1~4세대)에 따라 자기부담률과 공제금액이 다르며, 이 계산기는 세대별 기준을 자동으로 적용해 예상 환급액을 즉시 계산합니다.",
+          "단순 환급액 계산을 넘어, 무청구 할인 특약이 있는 경우 '청구 실익'을 비교합니다. 소액 청구 시 3년 무청구 할인 혜택을 잃는 손실이 환급액보다 클 수 있어, 청구 전 반드시 실익을 따져보는 것이 중요합니다.",
+        ]}
+        criteria={[
+          "급여 진료비: 공단부담률(통원 70%·입원 80%) 제외 후 자기부담률 적용",
+          "비급여 진료비: 세대별 비급여 자기부담률 적용 후 환급",
+          "약제비: 세대별 공제금액(5천~8천원) 차감 후 환급",
+          "무청구 할인 손실: 월 보험료 × 할인율 × 잔여 무청구 기간",
+          "청구 실익 = 예상 환급액 - 무청구 할인 상실액",
+        ]}
+        faq={faqItems}
+        related={relatedLinks.map((l) => ({ href: l.href, label: l.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="meccConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script src="/scripts/medical-expense-claim-worth-calculator.js" type="module" />
+</BaseLayout>

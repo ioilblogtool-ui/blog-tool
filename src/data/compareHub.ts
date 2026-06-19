@@ -8,7 +8,8 @@ export type CompareCategoryId =
   | "parenting"
   | "tax"
   | "sports"
-  | "ai";
+  | "ai"
+  | "livingCost";
 export type CompareBadgeTone = "default" | "new" | "popular" | "estimate" | "official";
 
 export interface CompareBadge {
@@ -122,6 +123,13 @@ export const COMPARE_CATEGORIES: CompareCategory[] = [
     criteria: ["월 구독료", "비용 절감", "시간 효율", "대체 가능성"],
     featuredItemIds: ["ai-subscription", "ai-stack-cost", "ai-learning-vs-academy", "ai-side-income"],
   },
+  {
+    id: "livingCost",
+    title: "생활비·고정비 비교",
+    description: "통신비, 구독료, 전기요금처럼 매달 빠지는 고정비를 갈아타기 손익과 절감액 기준으로 비교합니다.",
+    criteria: ["월 고정비", "위약금", "절감액", "손익분기점"],
+    featuredItemIds: ["internet-tv-cancellation-penalty"],
+  },
 ];
 
 export const FEATURED_COMPARE_ITEM_IDS = [
@@ -130,6 +138,7 @@ export const FEATURED_COMPARE_ITEM_IDS = [
   "four-insurance",
   "kbo-salary",
   "ai-subscription",
+  "internet-tv-cancellation-penalty",
   "new-employee-salary",
 ];
 
@@ -810,6 +819,19 @@ export const COMPARE_ITEMS: CompareItem[] = [
     ctaLabel: "코딩 도구 비교",
     priority: 5,
   },
+  {
+    id: "internet-tv-cancellation-penalty",
+    title: "인터넷 TV 약정 해지 위약금 계산기",
+    description: "인터넷·TV 약정 해지 위약금, 신규 사은품, 월요금 차이를 넣어 통신사 갈아타기 손익분기점을 계산합니다.",
+    href: "/tools/internet-tv-cancellation-penalty/",
+    type: "calculator",
+    categoryId: "livingCost",
+    criteria: ["약정기간", "위약금", "사은품", "손익분기점"],
+    badges: [{ label: "신규", tone: "new" }, { label: "계산기", tone: "default" }],
+    stats: [{ label: "결과", value: "예상 위약금" }, { label: "판정", value: "갈아타기 손익" }],
+    ctaLabel: "위약금 계산",
+    priority: 1,
+  },
 ];
 
 export const COMPARE_PRINCIPLES: ComparePrinciple[] = [
@@ -866,6 +888,12 @@ export const COMPARE_PRINCIPLES: ComparePrinciple[] = [
     title: "AI·구독·교육비 비교 기준",
     criteria: ["월 구독료", "원화 환산", "팀 인원", "절감 시간", "대체 비용"],
     caution: "AI 구독료와 기능은 상품 개편, 환율, 프로모션, 팀 요금제 조건에 따라 달라질 수 있습니다.",
+  },
+  {
+    categoryId: "livingCost",
+    title: "생활비·고정비 비교 기준",
+    criteria: ["월 고정비", "약정기간", "위약금", "신규 혜택", "손익분기점"],
+    caution: "통신비 위약금과 사은품 반환 조건은 통신사, 대리점, 가입 약관에 따라 달라질 수 있습니다.",
   },
 ];
 

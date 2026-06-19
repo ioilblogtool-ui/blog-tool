@@ -1,0 +1,481 @@
+// ── 방문 유형 탭 ──────────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-visit-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.medical-expense-claim-page .mecc-visit-btn {
+  flex: 1;
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #5F5E5A;
+  background: #F7F6F4;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+  &[aria-pressed="true"] {
+    border-color: #0F6E56;
+    background: #0F6E56;
+    color: #FFFFFF;
+  }
+}
+
+// ── 세대 탭 ───────────────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-gen-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.medical-expense-claim-page .mecc-gen-btn {
+  border: 1px solid #E0DFDB;
+  border-radius: 8px;
+  padding: 6px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #5F5E5A;
+  background: #F7F6F4;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+  &[aria-pressed="true"] {
+    border-color: #0F6E56;
+    background: #0F6E56;
+    color: #FFFFFF;
+  }
+}
+
+.medical-expense-claim-page .mecc-gen-note {
+  font-size: 11px;
+  color: #888780;
+  line-height: 1.5;
+  margin: 8px 0 0;
+  min-height: 16px;
+}
+
+// ── 무청구 할인 토글 ──────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.medical-expense-claim-page .mecc-toggle-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A1A18;
+}
+
+.medical-expense-claim-page .mecc-toggle {
+  min-width: 52px;
+  border: 1px solid #E0DFDB;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #888780;
+  background: #F7F6F4;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &.is-active {
+    background: #0F6E56;
+    color: #FFFFFF;
+    border-color: #0F6E56;
+  }
+}
+
+.medical-expense-claim-page .mecc-toggle-target {
+  overflow: hidden;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// ── 힌트 텍스트 ───────────────────────────────────────────────────────────────
+.medical-expense-claim-page .field__hint {
+  font-size: 10px;
+  color: #B4B2A9;
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
+
+// ── KPI 그리드 ────────────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.medical-expense-claim-page .kpi-card {
+  background: #F7F6F4;
+  border-radius: 10px;
+  padding: 14px 12px;
+
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  span {
+    display: block;
+    font-size: 9px;
+    color: #B4B2A9;
+    line-height: 1.4;
+  }
+}
+
+.medical-expense-claim-page .kpi-card--accent {
+  background: #E1F5EE;
+
+  p { color: #5F5E5A; }
+  strong { font-size: 20px; color: #0F6E56; }
+  span { color: #1D9E75; }
+}
+
+// ── 판정 카드 ────────────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-verdict-card {
+  p { color: #5F5E5A; }
+}
+
+.medical-expense-claim-page .mecc-verdict--recommend {
+  background: #E1F5EE;
+  strong { color: #0F6E56; font-size: 15px; }
+  span { color: #1D9E75; }
+}
+
+.medical-expense-claim-page .mecc-verdict--skip {
+  background: #FFF8EC;
+  strong { color: #BA7517; font-size: 14px; }
+  span { color: #BA7517; }
+}
+
+.medical-expense-claim-page .mecc-verdict--no-refund {
+  background: #F0EFED;
+  strong { color: #888780; font-size: 14px; }
+  span { color: #B4B2A9; }
+}
+
+// ── 섹션 헤더 ────────────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-section {
+  margin-bottom: 32px;
+}
+
+.medical-expense-claim-page .mecc-section__head {
+  margin-bottom: 14px;
+
+  h2 {
+    font-size: 17px;
+    font-weight: 500;
+    color: #1A1A18;
+    margin: 0;
+  }
+}
+
+.medical-expense-claim-page .mecc-section__eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: #0F6E56;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+}
+
+// ── 항목별 환급액 내역 ─────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-breakdown-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.medical-expense-claim-page .mecc-breakdown-card {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 14px;
+  background: #FFFFFF;
+}
+
+.medical-expense-claim-page .mecc-breakdown-card__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #888780;
+  margin: 0 0 10px;
+}
+
+.medical-expense-claim-page .mecc-breakdown-card__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.medical-expense-claim-page .mecc-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: #5F5E5A;
+  padding: 2px 0;
+  border-bottom: 1px solid #F7F6F4;
+}
+
+.medical-expense-claim-page .mecc-breakdown-card__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+
+  span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #1A1A18;
+  }
+
+  strong {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0F6E56;
+  }
+}
+
+// ── 무청구 할인 손실 비교 ─────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-discount-compare {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 16px;
+  background: #FFFFFF;
+}
+
+.medical-expense-claim-page .mecc-discount-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 13px;
+
+  span { color: #5F5E5A; }
+  strong { font-size: 15px; font-weight: 600; }
+
+  &--sub span { color: #888780; }
+
+  &--total {
+    span { font-weight: 600; color: #1A1A18; }
+    strong { font-size: 17px; }
+  }
+}
+
+.medical-expense-claim-page .mecc-discount-divider {
+  border-top: 1px solid #E0DFDB;
+  margin: 4px 0;
+}
+
+.medical-expense-claim-page .mecc-discount-verdict {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.medical-expense-claim-page .mecc-verdict-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 5px 16px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.mecc-verdict--recommend {
+    background: #0F6E56;
+    color: #FFFFFF;
+  }
+
+  &.mecc-verdict--skip {
+    background: #BA7517;
+    color: #FFFFFF;
+  }
+}
+
+// ── 공통 색상 클래스 ──────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-diff-positive {
+  color: #0F6E56;
+}
+
+.medical-expense-claim-page .mecc-diff-negative {
+  color: #C0392B;
+}
+
+// ── 가입 세대 정보 카드 ───────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-gen-info-card {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  padding: 16px;
+  background: #FFFFFF;
+}
+
+.medical-expense-claim-page .mecc-gen-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.medical-expense-claim-page .mecc-gen-info-item {
+  p {
+    font-size: 10px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+
+  strong {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1A1A18;
+  }
+}
+
+.medical-expense-claim-page .mecc-gen-info-note {
+  font-size: 11px;
+  color: #888780;
+  line-height: 1.5;
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #F0EFED;
+}
+
+// ── 청구 불가 항목 ────────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-excluded-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.medical-expense-claim-page .mecc-excluded-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #FFF8EC;
+  border: 1px solid #F6D88A;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #5F5E5A;
+  line-height: 1.5;
+}
+
+.medical-expense-claim-page .mecc-excluded-icon {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #BA7517;
+  margin-top: 1px;
+}
+
+// ── 청구 절차 가이드 ──────────────────────────────────────────────────────────
+.medical-expense-claim-page .mecc-steps-details {
+  border: 1px solid #E0DFDB;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.medical-expense-claim-page .mecc-steps-summary {
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1A1A18;
+  cursor: pointer;
+  list-style: none;
+  background: #F7F6F4;
+
+  &::-webkit-details-marker { display: none; }
+
+  &::after {
+    content: " ▾";
+    font-size: 10px;
+    color: #888780;
+  }
+
+  details[open] &::after {
+    content: " ▴";
+  }
+}
+
+.medical-expense-claim-page .mecc-steps {
+  margin: 0;
+  padding: 14px 16px 14px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    font-size: 12px;
+    color: #5F5E5A;
+    line-height: 1.6;
+  }
+}
+
+// ── 계산 기준 로직 패널 ───────────────────────────────────────────────────────
+.medical-expense-claim-page .logic-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.medical-expense-claim-page .logic-card {
+  background: #F7F6F4;
+  border-radius: 8px;
+  padding: 12px 14px;
+
+  strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #1A1A18;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 11px;
+    color: #888780;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// ── 유틸 ─────────────────────────────────────────────────────────────────────
+.medical-expense-claim-page .field-span-full {
+  grid-column: 1 / -1;
+}
