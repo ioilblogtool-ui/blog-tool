@@ -1,0 +1,354 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  calcCagr,
+  calcChangeRate,
+  calcGoldMetrics,
+  formatManwon,
+  formatPercent,
+  formatUsd,
+  formatWon,
+  goldPrice2016Vs2026,
+} from "../../data/goldPrice2016Vs2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = goldPrice2016Vs2026;
+const base = report.baseCompare;
+const startMetrics = calcGoldMetrics(base.startUsdOz, base.startUsdKrw);
+const endMetrics = calcGoldMetrics(base.endUsdOz, base.endUsdKrw);
+const usdTotalReturn = calcChangeRate(base.startUsdOz, base.endUsdOz);
+const krwTotalReturn = calcChangeRate(startMetrics.krwPerDon, endMetrics.krwPerDon);
+const usdCagr = calcCagr(base.startUsdOz, base.endUsdOz, 10) * 100;
+const krwCagr = calcCagr(startMetrics.krwPerDon, endMetrics.krwPerDon, 10) * 100;
+const multipleUsd = base.endUsdOz / base.startUsdOz;
+const multipleKrw = endMetrics.krwPerDon / startMetrics.krwPerDon;
+
+const yearlyRows = report.yearPoints.map((point, index, list) => {
+  const metrics = calcGoldMetrics(point.priceUsdOz, point.usdKrw);
+  const prev = list[index - 1];
+  const yoyUsd = prev ? calcChangeRate(prev.priceUsdOz, point.priceUsdOz) : 0;
+  const prevMetrics = prev ? calcGoldMetrics(prev.priceUsdOz, prev.usdKrw) : null;
+  const yoyKrw = prevMetrics ? calcChangeRate(prevMetrics.krwPerDon, metrics.krwPerDon) : 0;
+  const indexed = calcChangeRate(startMetrics.krwPerDon, metrics.krwPerDon);
+  return {
+    ...point,
+    metrics,
+    yoyUsd,
+    yoyKrw,
+    indexed,
+  };
+});
+
+const biggestUp = [...yearlyRows].slice(1).sort((a, b) => b.yoyKrw - a.yoyKrw)[0];
+const biggestDown = [...yearlyRows].slice(1).sort((a, b) => a.yoyKrw - b.yoyKrw)[0];
+const investmentRows = report.investmentCases.map((item) => {
+  const finalAmount = item.amount * multipleKrw;
+  return {
+    ...item,
+    finalAmount,
+    profit: finalAmount - item.amount,
+  };
+});
+const maxBar = Math.max(...yearlyRows.map((row) => row.metrics.krwPerDon));
+
+const seoIntro = [
+  "금은 한국인이 유난히 친숙하게 느끼는 실물자산입니다. 돌반지, 예물, 순금 한 돈, 금 통장, KRX 금시장처럼 일상 언어와 투자 언어가 함께 쓰입니다. 그래서 금값이 오르면 단순히 국제 원자재 가격이 오른 것이 아니라 '내가 10년 전에 사뒀다면 얼마가 됐을까'라는 체감 질문으로 이어집니다.",
+  "2016년 6월과 2026년 6월을 비교하면 국제 금값은 약 3.4배, 원화 1돈 환산 가격은 약 3.9배로 커졌습니다. 같은 금이라도 한국 투자자에게는 달러 금값 상승과 원달러 환율 상승이 함께 작용했기 때문에 체감 상승률이 더 크게 보입니다.",
+  "다만 금값은 매년 일정하게 오른 자산이 아닙니다. 2017~2018년에는 거의 정체됐고, 2020년 팬데믹과 2024~2025년 중앙은행 매입·달러 대체 자산 논리가 강해진 구간에서 상승이 집중됐습니다. 그래서 이 리포트는 총수익률뿐 아니라 매년 몇 퍼센트씩 움직였는지를 같이 보여줍니다.",
+  "실물 금 투자자는 원재료 가격만 보면 안 됩니다. 순금 1돈 원재료 환산가와 실제 금은방 매입가는 다를 수 있고, 부가세·세공비·매입매도 스프레드가 수익률을 깎습니다. 장기 보유 목적이라면 실물 금, KRX 금시장, 금 ETF의 비용 구조를 나눠 보는 것이 좋습니다.",
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: report.meta.title,
+      description: report.meta.description,
+      dateModified: report.meta.updatedAt,
+      inLanguage: "ko-KR",
+      about: ["금값", "금 투자", "2016년 금값", "2026년 금값", "10년 수익률"],
+      mainEntityOfPage: `https://bigyocalc.com/reports/${report.meta.slug}/`,
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: report.faq.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page gold-price-report-page">
+    <CalculatorHero
+      eyebrow="금값 10년 비교"
+      title="금값 2016년 6월 vs 2026년 6월"
+      description="한국인이 좋아하는 금, 10년 동안 얼마나 올랐고 매년 몇 퍼센트씩 움직였는지 1돈·원화·투자금 기준으로 계산했습니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, `기준 업데이트: ${report.meta.updatedAt}`]}
+    />
+
+    <section class="content-section gold-hero-board">
+      <div class="gold-hero-copy">
+        <p class="gold-section-eyebrow">Editor's Brief</p>
+        <h2>10년 전 금 1돈은 약 {formatManwon(startMetrics.krwPerDon)}, 지금은 약 {formatManwon(endMetrics.krwPerDon)}입니다</h2>
+        <p>
+          국제 금값만 보면 약 {multipleUsd.toFixed(2)}배지만, 원화로 환산한 순금 1돈 가격은 약 {multipleKrw.toFixed(2)}배입니다.
+          금값 상승에 환율 효과까지 더해져 한국인이 체감하는 금값 상승률이 더 커졌습니다.
+        </p>
+        <div class="gold-hero-chip-row">
+          <span>달러 금값 {formatPercent(usdTotalReturn, true)}</span>
+          <span>원화 1돈 {formatPercent(krwTotalReturn, true)}</span>
+          <span>연평균 원화 {formatPercent(krwCagr)}</span>
+        </div>
+      </div>
+      <div class="gold-hero-stats">
+        <article>
+          <p>2016년 6월 국제 금값</p>
+          <strong>{formatUsd(base.startUsdOz)}</strong>
+          <span>트로이온스당 대표값</span>
+        </article>
+        <article class="is-accent">
+          <p>2026년 6월 국제 금값</p>
+          <strong>{formatUsd(base.endUsdOz)}</strong>
+          <span>최근 공개 정산가 기준 대표값</span>
+        </article>
+        <article>
+          <p>10년 연평균 상승률</p>
+          <strong>{formatPercent(krwCagr)}</strong>
+          <span>원화 1돈 환산 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section gold-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 숫자</p>
+        <h2>검색해서 바로 알고 싶은 답 6개</h2>
+      </div>
+      <div class="gold-kpi-grid">
+        <article class="gold-kpi-card">
+          <p>국제 금값 상승</p>
+          <strong>{multipleUsd.toFixed(2)}배</strong>
+          <span>{formatUsd(base.startUsdOz)} → {formatUsd(base.endUsdOz)}</span>
+        </article>
+        <article class="gold-kpi-card is-hot">
+          <p>원화 1돈 상승</p>
+          <strong>{multipleKrw.toFixed(2)}배</strong>
+          <span>{formatWon(startMetrics.krwPerDon)} → {formatWon(endMetrics.krwPerDon)}</span>
+        </article>
+        <article class="gold-kpi-card">
+          <p>달러 CAGR</p>
+          <strong>{formatPercent(usdCagr)}</strong>
+          <span>10년 복리 기준</span>
+        </article>
+        <article class="gold-kpi-card">
+          <p>원화 CAGR</p>
+          <strong>{formatPercent(krwCagr)}</strong>
+          <span>환율 반영 1돈 기준</span>
+        </article>
+        <article class="gold-kpi-card">
+          <p>가장 많이 오른 해</p>
+          <strong>{biggestUp.year}년</strong>
+          <span>원화 1돈 전년 대비 {formatPercent(biggestUp.yoyKrw, true)}</span>
+        </article>
+        <article class="gold-kpi-card">
+          <p>가장 약했던 해</p>
+          <strong>{biggestDown.year}년</strong>
+          <span>원화 1돈 전년 대비 {formatPercent(biggestDown.yoyKrw, true)}</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section gold-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2016 vs 2026</p>
+        <h2>1온스, 1g, 1돈으로 바꿔 보면 체감이 다릅니다</h2>
+        <p>실물 금을 보는 한국 사용자에게는 트로이온스보다 1돈 가격이 더 직관적입니다.</p>
+      </div>
+      <div class="gold-compare-grid">
+        <article class="gold-compare-card">
+          <p class="gold-compare-card__year">2016년 6월</p>
+          <h3>금값이 아직 100만원대였던 시기</h3>
+          <ul>
+            <li><span>국제 금값</span><strong>{formatUsd(base.startUsdOz)}/oz</strong></li>
+            <li><span>원화 1g</span><strong>{formatWon(startMetrics.krwPerGram)}</strong></li>
+            <li><span>순금 1돈</span><strong>{formatWon(startMetrics.krwPerDon)}</strong></li>
+            <li><span>순금 10돈</span><strong>{formatManwon(startMetrics.krwPerDon * 10)}</strong></li>
+          </ul>
+        </article>
+        <article class="gold-compare-card gold-compare-card--current">
+          <p class="gold-compare-card__year">2026년 6월</p>
+          <h3>금 1돈이 70만원대 원재료 가격으로 보이는 시기</h3>
+          <ul>
+            <li><span>국제 금값</span><strong>{formatUsd(base.endUsdOz)}/oz</strong></li>
+            <li><span>원화 1g</span><strong>{formatWon(endMetrics.krwPerGram)}</strong></li>
+            <li><span>순금 1돈</span><strong>{formatWon(endMetrics.krwPerDon)}</strong></li>
+            <li><span>순금 10돈</span><strong>{formatManwon(endMetrics.krwPerDon * 10)}</strong></li>
+          </ul>
+        </article>
+      </div>
+      <p class="gold-footnote">위 1돈 가격은 국제 금값과 환율로 환산한 원재료 기준입니다. 실제 금은방 판매가는 부가세와 세공비, 매입·매도 스프레드 때문에 달라집니다.</p>
+    </section>
+
+    <section class="content-section gold-year-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도별 상승률</p>
+        <h2>금값은 매년 똑같이 오른 게 아니라 몇 번의 큰 파동으로 올랐습니다</h2>
+        <p>2016년을 0%로 놓고, 매년 6월 무렵 대표 가격과 원화 1돈 환산 변화를 함께 봅니다.</p>
+      </div>
+      <div class="gold-year-chart" aria-label="연도별 원화 1돈 가격 막대그래프">
+        {yearlyRows.map((row) => (
+          <article class="gold-year-bar-row">
+            <span class="gold-year-bar-row__year">{row.year}</span>
+            <div class="gold-year-bar-row__track">
+              <div class="gold-year-bar-row__bar" style={`width: ${(row.metrics.krwPerDon / maxBar) * 100}%`}></div>
+            </div>
+            <strong>{formatManwon(row.metrics.krwPerDon)}</strong>
+            <span class={row.yoyKrw >= 0 ? "is-up" : "is-down"}>{row.year === 2016 ? "기준" : formatPercent(row.yoyKrw, true)}</span>
+          </article>
+        ))}
+      </div>
+      <div class="table-wrap">
+        <table class="gold-year-table">
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>국제 금값</th>
+              <th>원달러</th>
+              <th>원화 1돈</th>
+              <th>전년 대비</th>
+              <th>2016 대비</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {yearlyRows.map((row) => (
+              <tr class={row.year === 2026 ? "is-current" : ""}>
+                <td><strong>{row.year}</strong></td>
+                <td>{formatUsd(row.priceUsdOz)}</td>
+                <td>{row.usdKrw.toLocaleString("ko-KR")}원</td>
+                <td>{formatWon(row.metrics.krwPerDon)}</td>
+                <td class={row.yoyKrw >= 0 ? "is-up" : "is-down"}>{row.year === 2016 ? "기준" : formatPercent(row.yoyKrw, true)}</td>
+                <td>{formatPercent(row.indexed, true)}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section gold-investment-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">투자금 환산</p>
+        <h2>2016년 6월에 금을 샀다면 지금 얼마가 됐을까?</h2>
+        <p>원화 1돈 환산 기준 상승률을 그대로 적용한 단순 계산입니다. 실물 거래 비용과 세금은 제외했습니다.</p>
+      </div>
+      <div class="gold-investment-grid">
+        {investmentRows.map((row) => (
+          <article class="gold-investment-card">
+            <p>2016년 {row.label} 매수</p>
+            <strong>{formatManwon(row.finalAmount)}</strong>
+            <span>평가차익 약 {formatManwon(row.profit)}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gold-context-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 올랐나</p>
+        <h2>금값 10년 상승을 만든 네 가지 배경</h2>
+      </div>
+      <div class="gold-context-grid">
+        <article>
+          <strong>1. 위기 때마다 안전자산 수요가 붙었습니다</strong>
+          <p>2016년 브렉시트, 2020년 팬데믹, 2022년 전쟁과 인플레이션, 2024~2026년 지정학 리스크가 금 수요를 반복적으로 자극했습니다.</p>
+        </article>
+        <article>
+          <strong>2. 중앙은행 매입이 구조적 수요로 작용했습니다</strong>
+          <p>2020년대 들어 금은 단순 장신구가 아니라 외환보유고와 달러 대체 자산의 성격이 강해졌습니다. 이 흐름이 고점권 가격을 지지했습니다.</p>
+        </article>
+        <article>
+          <strong>3. 한국인은 환율 효과까지 같이 맞았습니다</strong>
+          <p>국제 금값이 달러로 오르는 동안 원달러 환율도 높아졌습니다. 그래서 한국에서 보는 1g, 1돈 가격은 달러 금값보다 더 크게 오른 것처럼 보입니다.</p>
+        </article>
+        <article>
+          <strong>4. 실물 금은 심리적 가격 저항이 늦게 옵니다</strong>
+          <p>돌반지와 예물 문화 때문에 한국에서는 금이 투자상품이면서 선물·상징재입니다. 가격이 올라도 일정 수요가 남는 점이 체감 가격을 더 단단하게 만듭니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section gold-cta-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">같이 보면 좋은 10년 콘텐츠</p>
+        <h2>금값만 보면 절반입니다. 집값, 연봉, 주식과 같이 봐야 체감이 됩니다</h2>
+      </div>
+      <div class="gold-cta-grid">
+        {report.ctaLinks.map((link) => (
+          <a class="gold-cta-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gold-source-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처와 한계</p>
+        <h2>금값 데이터는 기준에 따라 조금씩 달라질 수 있습니다</h2>
+        <p>국제 금값은 LBMA, 현물, 선물, 월평균, 종가 기준에 따라 숫자가 달라집니다. 이 리포트는 검색 사용자가 10년 변화를 이해하기 위한 대표값 비교입니다.</p>
+      </div>
+      <div class="gold-source-grid">
+        {report.sourceLinks.map((source) => (
+          <a class="gold-source-card" href={source.href} target="_blank" rel="noreferrer">
+            <strong>{source.label}</strong>
+            <span>{source.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="금값 10년 비교에서 놓치면 안 되는 포인트"
+      intro={seoIntro}
+      inputPoints={[
+        "2016년 6월과 2026년 6월 금값을 국제 달러 기준과 한국 원화 1돈 기준으로 나눠 확인할 수 있습니다.",
+        "매년 몇 퍼센트씩 올랐는지 전년 대비 상승률을 표로 정리했습니다.",
+        "100만원, 500만원, 1000만원, 1억원을 2016년에 금으로 보유했다면 현재 얼마가 됐는지 단순 환산했습니다.",
+        "비트코인, S&P500, 서울 집값, 평균 연봉·자산 10년 비교 리포트로 이어지는 내부 비교 경로를 제공합니다.",
+      ]}
+      criteria={[
+        "국제 금값은 트로이온스당 달러 가격을 기준으로 합니다.",
+        "원화 금값은 국제 금값에 대표 원달러 환율을 곱한 뒤 1g과 1돈으로 환산합니다.",
+        "1돈은 3.75g, 1트로이온스는 약 31.1035g으로 계산합니다.",
+        "실물 금 판매가는 부가세, 세공비, 매입·매도 스프레드가 붙어 원재료 환산가와 다를 수 있습니다.",
+      ]}
+      faq={report.faq}
+      related={report.ctaLinks}
+    />
+  </main>
+</BaseLayout>
