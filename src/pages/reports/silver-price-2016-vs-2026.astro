@@ -1,0 +1,354 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  calcCagr,
+  calcChangeRate,
+  calcSilverMetrics,
+  formatManwon,
+  formatPercent,
+  formatUsd,
+  formatWon,
+  silverPrice2016Vs2026,
+} from "../../data/silverPrice2016Vs2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = silverPrice2016Vs2026;
+const base = report.baseCompare;
+const startMetrics = calcSilverMetrics(base.startUsdOz, base.startUsdKrw);
+const endMetrics = calcSilverMetrics(base.endUsdOz, base.endUsdKrw);
+const usdTotalReturn = calcChangeRate(base.startUsdOz, base.endUsdOz);
+const krwTotalReturn = calcChangeRate(startMetrics.krwPerDon, endMetrics.krwPerDon);
+const usdCagr = calcCagr(base.startUsdOz, base.endUsdOz, 10) * 100;
+const krwCagr = calcCagr(startMetrics.krwPerDon, endMetrics.krwPerDon, 10) * 100;
+const multipleUsd = base.endUsdOz / base.startUsdOz;
+const multipleKrw = endMetrics.krwPerDon / startMetrics.krwPerDon;
+
+const yearlyRows = report.yearPoints.map((point, index, list) => {
+  const metrics = calcSilverMetrics(point.priceUsdOz, point.usdKrw);
+  const prev = list[index - 1];
+  const yoyUsd = prev ? calcChangeRate(prev.priceUsdOz, point.priceUsdOz) : 0;
+  const prevMetrics = prev ? calcSilverMetrics(prev.priceUsdOz, prev.usdKrw) : null;
+  const yoyKrw = prevMetrics ? calcChangeRate(prevMetrics.krwPerDon, metrics.krwPerDon) : 0;
+  const indexed = calcChangeRate(startMetrics.krwPerDon, metrics.krwPerDon);
+  return {
+    ...point,
+    metrics,
+    yoyUsd,
+    yoyKrw,
+    indexed,
+  };
+});
+
+const biggestUp = [...yearlyRows].slice(1).sort((a, b) => b.yoyKrw - a.yoyKrw)[0];
+const biggestDown = [...yearlyRows].slice(1).sort((a, b) => a.yoyKrw - b.yoyKrw)[0];
+const investmentRows = report.investmentCases.map((item) => {
+  const finalAmount = item.amount * multipleKrw;
+  return {
+    ...item,
+    finalAmount,
+    profit: finalAmount - item.amount,
+  };
+});
+const maxBar = Math.max(...yearlyRows.map((row) => row.metrics.krwPerKg));
+
+const seoIntro = [
+  "은은 금보다 덜 화려해 보이지만, 가격 움직임은 훨씬 거칠 수 있습니다. 한국에서는 금처럼 1돈 단위로 말하기도 하고, 실버바나 은괴는 1kg 단위로 보는 경우도 많아 실제 체감 가격을 계산하기가 쉽지 않습니다.",
+  "2016년 6월과 2026년 6월을 비교하면 국제 은값은 약 4배, 원화 1돈 환산가는 약 4.7배로 커졌습니다. 같은 기간 원달러 환율 상승이 겹치면서 한국인이 체감하는 은값 상승률은 달러 은값 상승률보다 더 크게 보입니다.",
+  "은값 상승은 금과 같은 안전자산 수요만으로 설명하기 어렵습니다. 태양광, 전기차, 전자부품, 전력망, AI 데이터센터 관련 설비처럼 산업 수요가 함께 붙었고, 공급 부족 이슈가 겹치면서 2025~2026년에 상승 속도가 빨라졌습니다.",
+  "다만 은은 금보다 변동성이 큰 자산입니다. 2026년 초 고점 이후 조정 폭도 컸고, 실물 은은 부가세와 스프레드 부담이 커서 시세가 올라도 실제 손익은 다르게 나올 수 있습니다. 그래서 이 리포트는 수익률만이 아니라 매년 흔들린 폭과 거래 비용까지 함께 보도록 설계했습니다.",
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: report.meta.title,
+      description: report.meta.description,
+      dateModified: report.meta.updatedAt,
+      inLanguage: "ko-KR",
+      about: ["은값", "은 투자", "은 1kg 가격", "2016년 은값", "2026년 은값", "10년 수익률"],
+      mainEntityOfPage: `https://bigyocalc.com/reports/${report.meta.slug}/`,
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: report.faq.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page silver-price-report-page">
+    <CalculatorHero
+      eyebrow="은값 10년 비교"
+      title="은값 2016년 6월 vs 2026년 6월"
+      description="금값만 오른 줄 알았는데 은값도 크게 뛰었습니다. 10년 동안 은 1돈, 1kg, 투자금 기준으로 얼마나 올랐고 매년 몇 퍼센트씩 움직였는지 계산했습니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, `기준 업데이트: ${report.meta.updatedAt}`]}
+    />
+
+    <section class="content-section silver-hero-board">
+      <div class="silver-hero-copy">
+        <p class="silver-section-eyebrow">Editor's Brief</p>
+        <h2>10년 전 은 1kg은 약 {formatManwon(startMetrics.krwPerKg)}, 지금은 약 {formatManwon(endMetrics.krwPerKg)}입니다</h2>
+        <p>
+          국제 은값은 {multipleUsd.toFixed(2)}배, 원화 1돈 기준은 {multipleKrw.toFixed(2)}배로 커졌습니다.
+          은은 금보다 산업 수요 비중이 높아 상승 구간에서는 빠르게 뛰지만, 조정 구간에서는 더 크게 흔들릴 수 있습니다.
+        </p>
+        <div class="silver-hero-chip-row">
+          <span>달러 은값 {formatPercent(usdTotalReturn, true)}</span>
+          <span>원화 1돈 {formatPercent(krwTotalReturn, true)}</span>
+          <span>연평균 원화 {formatPercent(krwCagr)}</span>
+        </div>
+      </div>
+      <div class="silver-hero-stats">
+        <article>
+          <p>2016년 6월 국제 은값</p>
+          <strong>{formatUsd(base.startUsdOz)}</strong>
+          <span>트로이온스당 대표값</span>
+        </article>
+        <article class="is-accent">
+          <p>2026년 6월 국제 은값</p>
+          <strong>{formatUsd(base.endUsdOz)}</strong>
+          <span>최근 공개 정산가 대표값</span>
+        </article>
+        <article>
+          <p>10년 연평균 상승률</p>
+          <strong>{formatPercent(krwCagr)}</strong>
+          <span>원화 1돈 환산 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section silver-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 숫자</p>
+        <h2>은값 검색자가 바로 알고 싶은 6가지</h2>
+      </div>
+      <div class="silver-kpi-grid">
+        <article class="silver-kpi-card">
+          <p>국제 은값 상승</p>
+          <strong>{multipleUsd.toFixed(2)}배</strong>
+          <span>{formatUsd(base.startUsdOz)} → {formatUsd(base.endUsdOz)}</span>
+        </article>
+        <article class="silver-kpi-card is-hot">
+          <p>원화 1돈 상승</p>
+          <strong>{multipleKrw.toFixed(2)}배</strong>
+          <span>{formatWon(startMetrics.krwPerDon)} → {formatWon(endMetrics.krwPerDon)}</span>
+        </article>
+        <article class="silver-kpi-card">
+          <p>은 1kg 환산</p>
+          <strong>{formatManwon(endMetrics.krwPerKg)}</strong>
+          <span>원재료 환산가 기준</span>
+        </article>
+        <article class="silver-kpi-card">
+          <p>달러 CAGR</p>
+          <strong>{formatPercent(usdCagr)}</strong>
+          <span>10년 복리 기준</span>
+        </article>
+        <article class="silver-kpi-card">
+          <p>가장 많이 오른 해</p>
+          <strong>{biggestUp.year}년</strong>
+          <span>원화 1돈 전년 대비 {formatPercent(biggestUp.yoyKrw, true)}</span>
+        </article>
+        <article class="silver-kpi-card">
+          <p>가장 흔들린 해</p>
+          <strong>{biggestDown.year}년</strong>
+          <span>원화 1돈 전년 대비 {formatPercent(biggestDown.yoyKrw, true)}</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section silver-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2016 vs 2026</p>
+        <h2>은은 1돈보다 1kg으로 보면 상승 체감이 더 큽니다</h2>
+        <p>은 제품은 소액으로는 1돈, 실버바는 1kg 단위로 보는 경우가 많아 두 단위를 함께 환산했습니다.</p>
+      </div>
+      <div class="silver-compare-grid">
+        <article class="silver-compare-card">
+          <p class="silver-compare-card__year">2016년 6월</p>
+          <h3>은 1kg이 60만원대였던 시기</h3>
+          <ul>
+            <li><span>국제 은값</span><strong>{formatUsd(base.startUsdOz)}/oz</strong></li>
+            <li><span>원화 1g</span><strong>{formatWon(startMetrics.krwPerGram)}</strong></li>
+            <li><span>은 1돈</span><strong>{formatWon(startMetrics.krwPerDon)}</strong></li>
+            <li><span>은 1kg</span><strong>{formatManwon(startMetrics.krwPerKg)}</strong></li>
+          </ul>
+        </article>
+        <article class="silver-compare-card silver-compare-card--current">
+          <p class="silver-compare-card__year">2026년 6월</p>
+          <h3>은 1kg이 300만원대 원재료 가격으로 보이는 시기</h3>
+          <ul>
+            <li><span>국제 은값</span><strong>{formatUsd(base.endUsdOz)}/oz</strong></li>
+            <li><span>원화 1g</span><strong>{formatWon(endMetrics.krwPerGram)}</strong></li>
+            <li><span>은 1돈</span><strong>{formatWon(endMetrics.krwPerDon)}</strong></li>
+            <li><span>은 1kg</span><strong>{formatManwon(endMetrics.krwPerKg)}</strong></li>
+          </ul>
+        </article>
+      </div>
+      <p class="silver-footnote">위 가격은 국제 은값과 환율로 환산한 원재료 기준입니다. 실제 실버바, 은괴, 은제품 매매가는 부가세, 제조비, 브랜드 프리미엄, 매입·매도 스프레드 때문에 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="content-section silver-year-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도별 상승률</p>
+        <h2>은값은 꾸준히 오른 게 아니라, 급등과 조정을 반복했습니다</h2>
+        <p>2016년을 기준으로 매년 6월 무렵 대표 가격과 원화 1kg 환산 변화를 함께 봅니다.</p>
+      </div>
+      <div class="silver-year-chart" aria-label="연도별 원화 1kg 은값 막대 그래프">
+        {yearlyRows.map((row) => (
+          <article class="silver-year-bar-row">
+            <span class="silver-year-bar-row__year">{row.year}</span>
+            <div class="silver-year-bar-row__track">
+              <div class="silver-year-bar-row__bar" style={`width: ${(row.metrics.krwPerKg / maxBar) * 100}%`}></div>
+            </div>
+            <strong>{formatManwon(row.metrics.krwPerKg)}</strong>
+            <span class={row.yoyKrw >= 0 ? "is-up" : "is-down"}>{row.year === 2016 ? "기준" : formatPercent(row.yoyKrw, true)}</span>
+          </article>
+        ))}
+      </div>
+      <div class="table-wrap">
+        <table class="silver-year-table">
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>국제 은값</th>
+              <th>원달러</th>
+              <th>원화 1kg</th>
+              <th>전년 대비</th>
+              <th>2016 대비</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {yearlyRows.map((row) => (
+              <tr class={row.year === 2026 ? "is-current" : ""}>
+                <td><strong>{row.year}</strong></td>
+                <td>{formatUsd(row.priceUsdOz)}</td>
+                <td>{row.usdKrw.toLocaleString("ko-KR")}원</td>
+                <td>{formatManwon(row.metrics.krwPerKg)}</td>
+                <td class={row.yoyKrw >= 0 ? "is-up" : "is-down"}>{row.year === 2016 ? "기준" : formatPercent(row.yoyKrw, true)}</td>
+                <td>{formatPercent(row.indexed, true)}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section silver-investment-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">투자금 환산</p>
+        <h2>2016년 6월에 은을 샀다면 지금 얼마가 됐을까?</h2>
+        <p>원화 1돈 환산 상승률을 그대로 적용한 단순 계산입니다. 실제 거래 비용, 세금, 보관비, 스프레드는 제외했습니다.</p>
+      </div>
+      <div class="silver-investment-grid">
+        {investmentRows.map((row) => (
+          <article class="silver-investment-card">
+            <p>2016년 {row.label} 매수</p>
+            <strong>{formatManwon(row.finalAmount)}</strong>
+            <span>평가 차익 약 {formatManwon(row.profit)}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section silver-context-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 올랐나</p>
+        <h2>은값 10년 상승을 만든 4가지 배경</h2>
+      </div>
+      <div class="silver-context-grid">
+        <article>
+          <strong>1. 금을 따라가는 귀금속 수요가 붙었습니다</strong>
+          <p>금값이 급등하면 상대적으로 저렴한 은도 함께 주목받습니다. 은은 소액 접근성이 좋아 개인 투자 수요가 빠르게 붙을 수 있습니다.</p>
+        </article>
+        <article>
+          <strong>2. 태양광과 전기차 수요가 가격을 밀었습니다</strong>
+          <p>은은 전도성이 뛰어나 태양광 패널, 전기차, 전자부품, 전력망 설비에 쓰입니다. 이 산업 수요가 금과 다른 은의 핵심 포인트입니다.</p>
+        </article>
+        <article>
+          <strong>3. 공급은 생각보다 빠르게 늘기 어렵습니다</strong>
+          <p>은은 다른 금속을 캐는 과정에서 부산물로 나오는 비중이 커서, 가격이 오른다고 은 공급만 즉시 크게 늘리기 어렵다는 평가가 많습니다.</p>
+        </article>
+        <article>
+          <strong>4. 한국 투자자는 환율 효과까지 같이 받았습니다</strong>
+          <p>달러 은값 상승에 원달러 환율 상승이 겹치면 원화 은값은 더 크게 움직입니다. 그래서 국내 체감 상승률은 국제 은값 상승률보다 커질 수 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section silver-cta-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">같이 보면 좋은 10년 콘텐츠</p>
+        <h2>은값만 보면 절반입니다. 금, 집값, 월급, 주식과 같이 봐야 체감됩니다</h2>
+      </div>
+      <div class="silver-cta-grid">
+        {report.ctaLinks.map((link) => (
+          <a class="silver-cta-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section silver-source-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처와 한계</p>
+        <h2>은값은 기준 시점과 상품 형태에 따라 숫자가 달라질 수 있습니다</h2>
+        <p>국제 은값은 LBMA, 현물, 선물, 평균가, 정산가 기준에 따라 조금씩 달라집니다. 이 리포트는 검색 사용자가 10년 변화를 이해하기 위한 대표값 비교입니다.</p>
+      </div>
+      <div class="silver-source-grid">
+        {report.sourceLinks.map((source) => (
+          <a class="silver-source-card" href={source.href} target="_blank" rel="noreferrer">
+            <strong>{source.label}</strong>
+            <span>{source.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="은값 10년 비교에서 꼭 봐야 할 포인트"
+      intro={seoIntro}
+      inputPoints={[
+        "2016년 6월과 2026년 6월 은값을 국제 달러 기준과 한국 원화 기준으로 나눠 확인할 수 있습니다.",
+        "은 1돈 가격, 은 1kg 가격, 100만원부터 1억원까지 투자금 환산값을 함께 정리했습니다.",
+        "매년 몇 퍼센트씩 올랐는지 전년 대비 상승률과 2016년 대비 누적 상승률을 표로 확인할 수 있습니다.",
+        "금값, 비트코인, S&P500, 서울 집값, 평균 연봉·자산 리포트로 이어지는 내부 비교 경로를 제공합니다.",
+      ]}
+      criteria={[
+        "국제 은값은 트로이온스당 달러 가격을 기준으로 합니다.",
+        "원화 은값은 국제 은값에 대표 원달러 환율을 곱한 뒤 1g, 1돈, 1kg으로 환산합니다.",
+        "1돈은 3.75g, 1트로이온스는 약 31.1035g, 1kg은 1000g으로 계산합니다.",
+        "실물 은 매매가는 부가세, 제조비, 프리미엄, 매입·매도 스프레드가 붙어 원재료 환산가와 다를 수 있습니다.",
+      ]}
+      faq={report.faq}
+      related={report.ctaLinks}
+    />
+  </main>
+</BaseLayout>
