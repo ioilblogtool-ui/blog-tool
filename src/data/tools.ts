@@ -735,6 +735,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "childcare-short-time-pay-calculator",
+    title: "육아기 근로시간 단축 급여 계산기",
+    description: "월 통상임금과 단축 전후 주 근로시간을 입력하면 회사 지급 임금, 고용보험 급여, 예상 월수령액을 계산합니다.",
+    order: 13.2,
+    eyebrow: "육아 단축근무 급여",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "육아", "고용보험"],
+    previewStats: [
+      { label: "대표 입력", value: "40→30시간" },
+      { label: "결과", value: "월수령 예상" }
+    ]
+  },
+  {
     slug: "home-purchase-fund",
     title: "내집마련 자금 계산기",
     description: "매매가·지역 유형·주택 보유 수를 입력하면 LTV 기반 최대 대출 가능액, 취득세·중개보수 포함 총 필요 현금, 월 상환액을 계산하는 페이지",

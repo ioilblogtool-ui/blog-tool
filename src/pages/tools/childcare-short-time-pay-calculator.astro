@@ -1,0 +1,339 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import {
+  CHILDCARE_SHORT_TIME_CHECKLIST,
+  CHILDCARE_SHORT_TIME_CRITERIA,
+  CHILDCARE_SHORT_TIME_FAQ,
+  CHILDCARE_SHORT_TIME_INPUT_POINTS,
+  CHILDCARE_SHORT_TIME_PAY_META,
+  CHILDCARE_SHORT_TIME_PAY_POLICY,
+  CHILDCARE_SHORT_TIME_PRESETS,
+  CHILDCARE_SHORT_TIME_REFERENCE_LINKS,
+  CHILDCARE_SHORT_TIME_RELATED_LINKS,
+  CHILDCARE_SHORT_TIME_SEO_INTRO,
+  CHILDCARE_SHORT_TIME_WAGE_PRESETS,
+  DEFAULT_CHILDCARE_SHORT_TIME_INPUT,
+} from "../../data/childcareShortTimePay";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const pagePath = `/tools/${CHILDCARE_SHORT_TIME_PAY_META.slug}/`;
+const pageUrl = new URL(withBase(pagePath), Astro.site ?? "https://bigyocalc.com").toString();
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: CHILDCARE_SHORT_TIME_PAY_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Web",
+      url: pageUrl,
+      inLanguage: "ko-KR",
+      description: CHILDCARE_SHORT_TIME_PAY_META.description,
+      dateModified: CHILDCARE_SHORT_TIME_PAY_META.updatedAt,
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "KRW",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: CHILDCARE_SHORT_TIME_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={CHILDCARE_SHORT_TIME_PAY_META.seoTitle}
+  description={CHILDCARE_SHORT_TIME_PAY_META.description}
+  jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell childcare-short-time-pay-page" id="childcare-short-time-pay-calculator" data-calculator="childcare-short-time-pay-calculator">
+    <CalculatorHero
+      eyebrow="육아 단축근무 급여"
+      title={CHILDCARE_SHORT_TIME_PAY_META.title}
+      description="월 통상임금과 단축 전후 주 근로시간을 넣으면 회사 월급, 고용보험 급여, 예상 월수령액을 분리해 계산합니다."
+    />
+
+    <div class="cstp-quick-facts" aria-label="계산기 핵심 기능">
+      <span>2026년 기준</span>
+      <span>최초 10시간 구간 분리</span>
+      <span>회사 지급액 직접 입력 가능</span>
+      <span>근로시간별 비교표 제공</span>
+    </div>
+
+    <ToolActionBar resetId="resetCstpBtn" copyId="copyCstpLinkBtn" />
+
+    <InfoNotice
+      title="계산 전 확인"
+      lines={[
+        "이 계산기는 사전 모의계산이며 확정 지급액이 아닙니다.",
+        "월 통상임금, 고용보험 가입 이력, 실제 단축 기간, 회사의 임금 산정 방식에 따라 실제 금액이 달라질 수 있습니다.",
+        "단축 후 주 근로시간은 일반적으로 주 15시간 이상 35시간 이하 범위를 확인해야 합니다.",
+      ]}
+    />
+
+    <section class="cstp-calculator-grid" aria-labelledby="cstp-input-title">
+      <article class="panel cstp-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title" id="cstp-input-title">내 단축근무 조건 입력</h2>
+          </div>
+          <p class="panel-heading__summary">대표값을 누르거나 직접 입력하면 결과가 즉시 바뀝니다.</p>
+        </div>
+
+        <div class="form-grid form-grid--compact">
+          <label class="field field-span-full">
+            <span>월 통상임금</span>
+            <input id="cstpWage" type="number" min="0" step="10000" value={DEFAULT_CHILDCARE_SHORT_TIME_INPUT.monthlyOrdinaryWage} inputmode="numeric" />
+            <small id="cstpWageHint">300만원</small>
+          </label>
+
+          <div class="cstp-preset-row field-span-full" aria-label="통상임금 빠른 선택">
+            {CHILDCARE_SHORT_TIME_WAGE_PRESETS.map((preset) => (
+              <button class="cstp-chip cstp-wage-preset" type="button" data-wage={preset.value}>{preset.label}</button>
+            ))}
+          </div>
+
+          <label class="field">
+            <span>단축 전 주 근로시간</span>
+            <input id="cstpBeforeHours" type="number" min="1" max="52" step="1" value={DEFAULT_CHILDCARE_SHORT_TIME_INPUT.weeklyHoursBefore} inputmode="numeric" />
+            <small>예: 주 40시간</small>
+          </label>
+          <label class="field">
+            <span>단축 후 주 근로시간</span>
+            <input id="cstpAfterHours" type="number" min={CHILDCARE_SHORT_TIME_PAY_POLICY.minWeeklyHoursAfter} max={CHILDCARE_SHORT_TIME_PAY_POLICY.maxWeeklyHoursAfter} step="1" value={DEFAULT_CHILDCARE_SHORT_TIME_INPUT.weeklyHoursAfter} inputmode="numeric" />
+            <small>주 15~35시간 범위 확인</small>
+          </label>
+          <label class="field">
+            <span>계획 기간</span>
+            <input id="cstpMonths" type="number" min="1" max="36" step="1" value={DEFAULT_CHILDCARE_SHORT_TIME_INPUT.plannedMonths} inputmode="numeric" />
+            <small>총액 추정용 개월 수</small>
+          </label>
+          <label class="field">
+            <span>회사 지급 방식</span>
+            <select id="cstpCompanyPayMode">
+              <option value="AUTO" selected>시간 비례 자동 계산</option>
+              <option value="MANUAL">회사 안내 금액 직접 입력</option>
+            </select>
+            <small id="cstpCompanyModeHint">통상임금 × 단축 후 근로시간 비율</small>
+          </label>
+          <label class="field field-span-full cstp-manual-pay-field" id="cstpManualPayWrap">
+            <span>회사 안내 월 지급액</span>
+            <input id="cstpManualCompanyPay" type="number" min="0" step="10000" inputmode="numeric" placeholder="예: 2250000" />
+            <small>회사에서 안내받은 단축 후 월급이 있을 때만 입력합니다.</small>
+          </label>
+        </div>
+
+        <div class="cstp-preset-list" aria-label="근로시간 단축 대표 사례">
+          {CHILDCARE_SHORT_TIME_PRESETS.map((preset) => (
+            <button class="cstp-preset-card cstp-hours-preset" type="button" data-before={preset.weeklyHoursBefore} data-after={preset.weeklyHoursAfter}>
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+
+        <button id="calcCstpBtn" class="button button--primary" type="button">급여 다시 계산하기</button>
+      </article>
+
+      <article class="panel cstp-result-panel" aria-live="polite">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">결과</p>
+            <h2 class="panel__title">예상 월수령액</h2>
+          </div>
+          <p class="panel-heading__summary" id="cstpResultSummary">입력값 기준으로 월 현금흐름을 계산합니다.</p>
+        </div>
+
+        <div id="cstpWarnings" class="cstp-warning-list" role="status"></div>
+
+        <div class="cstp-result-total">
+          <p>회사 지급 + 고용보험 급여</p>
+          <strong id="cstpTotal">-</strong>
+          <span id="cstpDelta">-</span>
+        </div>
+
+        <div class="cstp-metric-grid">
+          <article class="cstp-metric-card">
+            <p>회사 지급 예상액</p>
+            <strong id="cstpCompany">-</strong>
+            <span id="cstpCompanyNote">시간 비례 기준</span>
+          </article>
+          <article class="cstp-metric-card cstp-metric-card--support">
+            <p>고용보험 급여</p>
+            <strong id="cstpGovernment">-</strong>
+            <span id="cstpPolicySummary">2026년 상한 반영</span>
+          </article>
+          <article class="cstp-metric-card cstp-metric-card--ratio">
+            <p>기존 월급 대비</p>
+            <strong id="cstpReplacement">-</strong>
+            <span>월수령 예상 비율</span>
+          </article>
+        </div>
+
+        <div class="cstp-hours-visual">
+          <div class="cstp-hours-visual__head">
+            <p>주 근로시간 구조</p>
+            <strong id="cstpReducedSummary">-</strong>
+          </div>
+          <div class="cstp-hours-visual__track" aria-hidden="true">
+            <div class="cstp-hours-visual__part cstp-hours-visual__part--work" id="cstpWorkBar"><span>근무</span></div>
+            <div class="cstp-hours-visual__part cstp-hours-visual__part--first" id="cstpFirstBar"><span>최초 10시간</span></div>
+            <div class="cstp-hours-visual__part cstp-hours-visual__part--extra" id="cstpExtraBar"><span>추가 단축</span></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="cstp-detail-grid">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">산식</p>
+            <h2 class="panel__title">고용보험 급여 계산 구조</h2>
+          </div>
+          <p class="panel-heading__summary">최초 10시간과 추가 단축분을 나누어 계산합니다.</p>
+        </div>
+        <div class="cstp-formula-grid">
+          <article class="cstp-formula-card">
+            <p>최초 10시간 단축분</p>
+            <strong id="cstpFirstSupport">-</strong>
+            <code id="cstpFirstFormula">-</code>
+            <span id="cstpFirstBase">-</span>
+          </article>
+          <article class="cstp-formula-card">
+            <p>추가 단축시간</p>
+            <strong id="cstpExtraSupport">-</strong>
+            <code id="cstpExtraFormula">-</code>
+            <span id="cstpExtraBase">-</span>
+          </article>
+        </div>
+        <p class="cstp-formula-note" id="cstpCapNote">-</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">총액</p>
+            <h2 class="panel__title">계획 기간 기준 누적 예상</h2>
+          </div>
+          <p class="panel-heading__summary">입력한 개월 수만큼 같은 조건이 이어진다고 가정합니다.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table cstp-result-table">
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>월 예상</th>
+                <th>기간 합계</th>
+              </tr>
+            </thead>
+            <tbody id="cstpTotalTable"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">비교</p>
+          <h2 class="panel__title">단축 후 근로시간별 월수령액 비교</h2>
+        </div>
+        <p class="panel-heading__summary">같은 월 통상임금 기준으로 주 35시간부터 15시간까지 비교합니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="result-table cstp-result-table cstp-scenario-table">
+          <thead>
+            <tr>
+              <th>단축 구조</th>
+              <th>회사 지급</th>
+              <th>고용보험 급여</th>
+              <th>월수령 예상</th>
+              <th>기존 대비</th>
+            </tr>
+          </thead>
+          <tbody id="cstpScenarioBody"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <section class="cstp-check-reference-grid">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">체크리스트</p>
+            <h2 class="panel__title">신청 전 확인할 것</h2>
+          </div>
+          <p class="panel-heading__summary">계산 결과를 실제 신청 준비로 옮길 때 필요한 항목입니다.</p>
+        </div>
+        <div class="cstp-checklist">
+          {CHILDCARE_SHORT_TIME_CHECKLIST.map((item) => (
+            <article class="cstp-check-card">
+              <strong>{item.title}</strong>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">공식 참고</p>
+            <h2 class="panel__title">제도 확인 링크</h2>
+          </div>
+          <p class="panel-heading__summary">신청 요건과 심사 기준은 공식 안내에서 마지막으로 확인하세요.</p>
+        </div>
+        <div class="cstp-reference-list">
+          {CHILDCARE_SHORT_TIME_REFERENCE_LINKS.map((link) => (
+            <a class="cstp-reference-card" href={link.href} target="_blank" rel="noreferrer">
+              <strong>{link.label}</strong>
+              <span>{link.description}</span>
+            </a>
+          ))}
+        </div>
+        <p class="cstp-reference-date">
+          기준 확인일: {CHILDCARE_SHORT_TIME_PAY_POLICY.sourceCheckedAt} · {CHILDCARE_SHORT_TIME_PAY_POLICY.sourceLabel}
+        </p>
+      </article>
+    </section>
+
+    <SeoContent
+      introTitle="육아기 근로시간 단축 급여 계산기에서 확인할 핵심"
+      intro={CHILDCARE_SHORT_TIME_SEO_INTRO}
+      inputPoints={CHILDCARE_SHORT_TIME_INPUT_POINTS}
+      criteria={CHILDCARE_SHORT_TIME_CRITERIA}
+      faq={CHILDCARE_SHORT_TIME_FAQ}
+      related={CHILDCARE_SHORT_TIME_RELATED_LINKS}
+    />
+  </main>
+
+  <script is:inline type="application/json" id="cstp-config">
+    {JSON.stringify({
+      defaults: DEFAULT_CHILDCARE_SHORT_TIME_INPUT,
+      policy: CHILDCARE_SHORT_TIME_PAY_POLICY,
+      presets: CHILDCARE_SHORT_TIME_PRESETS,
+    })}
+  </script>
+  <script type="module" src={withBase("/scripts/childcare-short-time-pay-calculator.js")}></script>
+</BaseLayout>
