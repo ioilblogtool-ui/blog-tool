@@ -1,0 +1,346 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  calcCagr,
+  calcChangeRate,
+  formatManwon,
+  formatPercent,
+  formatWon,
+  samsungStock2016Vs2026,
+} from "../../data/samsungStock2016Vs2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const report = samsungStock2016Vs2026;
+const base = report.baseCompare;
+const priceReturn = calcChangeRate(base.startPriceKrw, base.endPriceKrw);
+const priceCagr = calcCagr(base.startPriceKrw, base.endPriceKrw, 10) * 100;
+const priceMultiple = base.endPriceKrw / base.startPriceKrw;
+const dividendReturn = (base.estimatedDividendPerShare / base.startPriceKrw) * 100;
+const totalWithDividendPerShare = base.endPriceKrw + base.estimatedDividendPerShare;
+const totalReturnWithDividend = calcChangeRate(base.startPriceKrw, totalWithDividendPerShare);
+const totalMultipleWithDividend = totalWithDividendPerShare / base.startPriceKrw;
+
+const yearlyRows = report.yearPoints.map((point, index, list) => {
+  const prev = list[index - 1];
+  const yoy = prev ? calcChangeRate(prev.priceKrw, point.priceKrw) : 0;
+  const indexed = calcChangeRate(base.startPriceKrw, point.priceKrw);
+  return {
+    ...point,
+    yoy,
+    indexed,
+  };
+});
+
+const biggestUp = [...yearlyRows].slice(1).sort((a, b) => b.yoy - a.yoy)[0];
+const biggestDown = [...yearlyRows].slice(1).sort((a, b) => a.yoy - b.yoy)[0];
+const maxBar = Math.max(...yearlyRows.map((row) => row.priceKrw));
+
+const investmentRows = report.investmentCases.map((item) => {
+  const shares = item.amount / base.startPriceKrw;
+  const priceOnly = shares * base.endPriceKrw;
+  const dividend = shares * base.estimatedDividendPerShare;
+  const total = priceOnly + dividend;
+  return {
+    ...item,
+    shares,
+    priceOnly,
+    dividend,
+    total,
+    profit: total - item.amount,
+  };
+});
+
+const seoIntro = [
+  "삼성전자는 한국 개인투자자가 가장 많이 떠올리는 장기투자 종목입니다. 그래서 '2016년에 삼성전자를 샀다면 지금 얼마일까'라는 질문은 단순한 호기심이 아니라, 한국 주식 장기투자의 체감 성과를 보여주는 좋은 기준점입니다.",
+  "2016년 6월 삼성전자 주가는 2018년 50:1 액면분할을 반영하면 약 2만 8,600원 수준으로 볼 수 있습니다. 2026년 6월 중순 보도 기준 종가 29만 9,000원과 비교하면 주가만 약 10.5배입니다.",
+  "다만 삼성전자가 10년 내내 편하게 오른 것은 아닙니다. 2017년 메모리 슈퍼사이클, 2021년 동학개미 열풍, 2022년 반도체 다운사이클, 2025~2026년 AI 메모리 랠리처럼 강한 상승과 깊은 조정이 번갈아 왔습니다.",
+  "이 리포트는 주가 수익률을 중심으로 보되, 보유 기간 중 받은 현금 배당 추정치도 따로 표시합니다. 배당 재투자와 세금은 제외했기 때문에 실제 계좌 수익률과는 차이가 날 수 있습니다.",
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: report.meta.title,
+      description: report.meta.description,
+      dateModified: report.meta.updatedAt,
+      inLanguage: "ko-KR",
+      about: ["삼성전자 주가", "005930", "삼성전자 10년 수익률", "2016년 삼성전자", "2026년 삼성전자"],
+      mainEntityOfPage: `https://bigyocalc.com/reports/${report.meta.slug}/`,
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: report.faq.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={report.meta.title} description={report.meta.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page samsung-stock-report-page">
+    <CalculatorHero
+      eyebrow="삼성전자 10년 수익률"
+      title="삼성전자 2016년에 샀다면?"
+      description="2016년 6월 삼성전자 주식을 샀다면 2026년 6월 현재 얼마가 됐을지, 액면분할 보정 주가와 배당 추정치를 함께 비교했습니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[report.meta.methodology, report.meta.caution, `기준 업데이트: ${report.meta.updatedAt}`]}
+    />
+
+    <section class="content-section samsung-stock-hero-board">
+      <div class="samsung-stock-hero-copy">
+        <p class="samsung-stock-section-eyebrow">Editor's Brief</p>
+        <h2>2016년 100만원어치 삼성전자는 2026년 약 {formatManwon(investmentRows[0].total)}입니다</h2>
+        <p>
+          주가만 보면 {priceMultiple.toFixed(2)}배, 보유 중 받은 현금 배당 추정치까지 단순 합산하면 약 {totalMultipleWithDividend.toFixed(2)}배입니다.
+          다만 이 숫자는 세금과 거래비용, 배당 재투자를 제외한 장기 보유 비교입니다.
+        </p>
+        <div class="samsung-stock-hero-chip-row">
+          <span>주가 수익률 {formatPercent(priceReturn, true)}</span>
+          <span>연평균 {formatPercent(priceCagr)}</span>
+          <span>배당 단순 가산 {formatPercent(dividendReturn, true)}</span>
+        </div>
+      </div>
+      <div class="samsung-stock-hero-stats">
+        <article>
+          <p>2016년 6월 보정 주가</p>
+          <strong>{formatWon(base.startPriceKrw)}</strong>
+          <span>{base.stockSplit}</span>
+        </article>
+        <article class="is-accent">
+          <p>2026년 6월 대표 주가</p>
+          <strong>{formatWon(base.endPriceKrw)}</strong>
+          <span>6월 중순 보도 기준 종가</span>
+        </article>
+        <article>
+          <p>배당 포함 단순 수익률</p>
+          <strong>{formatPercent(totalReturnWithDividend, true)}</strong>
+          <span>재투자·세금 제외</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section samsung-stock-kpi-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 숫자</p>
+        <h2>삼성전자 10년 수익률, 바로 보는 6가지</h2>
+      </div>
+      <div class="samsung-stock-kpi-grid">
+        <article class="samsung-stock-kpi-card">
+          <p>주가 상승 배수</p>
+          <strong>{priceMultiple.toFixed(2)}배</strong>
+          <span>{formatWon(base.startPriceKrw)} → {formatWon(base.endPriceKrw)}</span>
+        </article>
+        <article class="samsung-stock-kpi-card is-hot">
+          <p>배당 포함 단순 배수</p>
+          <strong>{totalMultipleWithDividend.toFixed(2)}배</strong>
+          <span>주가 + 주당 배당 추정 {formatWon(base.estimatedDividendPerShare)}</span>
+        </article>
+        <article class="samsung-stock-kpi-card">
+          <p>연평균 주가 수익률</p>
+          <strong>{formatPercent(priceCagr)}</strong>
+          <span>10년 복리 기준</span>
+        </article>
+        <article class="samsung-stock-kpi-card">
+          <p>가장 많이 오른 해</p>
+          <strong>{biggestUp.year}년</strong>
+          <span>전년 대비 {formatPercent(biggestUp.yoy, true)}</span>
+        </article>
+        <article class="samsung-stock-kpi-card">
+          <p>가장 크게 빠진 해</p>
+          <strong>{biggestDown.year}년</strong>
+          <span>전년 대비 {formatPercent(biggestDown.yoy, true)}</span>
+        </article>
+        <article class="samsung-stock-kpi-card">
+          <p>1억원 장기 보유</p>
+          <strong>{formatManwon(investmentRows[3].total)}</strong>
+          <span>배당 단순 합산 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section samsung-stock-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">2016 vs 2026</p>
+        <h2>액면분할 전 가격을 현재 단위로 바꿔야 제대로 비교됩니다</h2>
+        <p>삼성전자는 2018년에 50:1 액면분할을 했기 때문에 2016년 가격은 현재 1주 단위로 보정해 비교했습니다.</p>
+      </div>
+      <div class="samsung-stock-compare-grid">
+        <article class="samsung-stock-compare-card">
+          <p class="samsung-stock-compare-card__year">2016년 6월</p>
+          <h3>현재 단위로 보면 2만원대 후반의 삼성전자</h3>
+          <ul>
+            <li><span>보정 주가</span><strong>{formatWon(base.startPriceKrw)}</strong></li>
+            <li><span>100만원 매수 가능 수량</span><strong>{investmentRows[0].shares.toFixed(1)}주</strong></li>
+            <li><span>투자 포인트</span><strong>메모리 슈퍼사이클 전</strong></li>
+          </ul>
+        </article>
+        <article class="samsung-stock-compare-card samsung-stock-compare-card--current">
+          <p class="samsung-stock-compare-card__year">2026년 6월</p>
+          <h3>AI 메모리 기대가 붙은 20만원대 후반의 삼성전자</h3>
+          <ul>
+            <li><span>대표 주가</span><strong>{formatWon(base.endPriceKrw)}</strong></li>
+            <li><span>100만원 매수분 평가액</span><strong>{formatManwon(investmentRows[0].priceOnly)}</strong></li>
+            <li><span>투자 포인트</span><strong>HBM·AI 메모리 랠리</strong></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section samsung-stock-year-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연도별 흐름</p>
+        <h2>10년 수익률은 크지만, 중간에는 깊은 조정도 있었습니다</h2>
+        <p>2016년을 기준으로 연도별 대표 주가와 전년 대비 상승률을 정리했습니다.</p>
+      </div>
+      <div class="samsung-stock-year-chart" aria-label="연도별 삼성전자 주가 막대 그래프">
+        {yearlyRows.map((row) => (
+          <article class="samsung-stock-year-bar-row">
+            <span class="samsung-stock-year-bar-row__year">{row.year}</span>
+            <div class="samsung-stock-year-bar-row__track">
+              <div class="samsung-stock-year-bar-row__bar" style={`width: ${(row.priceKrw / maxBar) * 100}%`}></div>
+            </div>
+            <strong>{formatWon(row.priceKrw)}</strong>
+            <span class={row.yoy >= 0 ? "is-up" : "is-down"}>{row.year === 2016 ? "기준" : formatPercent(row.yoy, true)}</span>
+          </article>
+        ))}
+      </div>
+      <div class="table-wrap">
+        <table class="samsung-stock-year-table">
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>대표 주가</th>
+              <th>전년 대비</th>
+              <th>2016 대비</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {yearlyRows.map((row) => (
+              <tr class={row.year === 2026 ? "is-current" : ""}>
+                <td><strong>{row.year}</strong></td>
+                <td>{formatWon(row.priceKrw)}</td>
+                <td class={row.yoy >= 0 ? "is-up" : "is-down"}>{row.year === 2016 ? "기준" : formatPercent(row.yoy, true)}</td>
+                <td>{formatPercent(row.indexed, true)}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section samsung-stock-investment-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">투자금 환산</p>
+        <h2>2016년에 삼성전자를 샀다면 투자금별로 이렇게 달라집니다</h2>
+        <p>2016년 보정 주가로 산 뒤 2026년 대표 주가까지 보유했다고 가정했습니다. 배당은 현금으로 받은 뒤 재투자하지 않은 단순 합산입니다.</p>
+      </div>
+      <div class="samsung-stock-investment-grid">
+        {investmentRows.map((row) => (
+          <article class="samsung-stock-investment-card">
+            <p>2016년 {row.label} 매수</p>
+            <strong>{formatManwon(row.total)}</strong>
+            <span>주가 평가액 {formatManwon(row.priceOnly)} · 배당 약 {formatManwon(row.dividend)}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section samsung-stock-context-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 올랐나</p>
+        <h2>삼성전자 10년 수익률을 만든 4가지 배경</h2>
+      </div>
+      <div class="samsung-stock-context-grid">
+        <article>
+          <strong>1. 메모리 반도체 사이클이 주가를 크게 흔들었습니다</strong>
+          <p>삼성전자는 메모리 반도체 업황에 민감합니다. 2017년, 2025~2026년처럼 업황 기대가 강한 구간에서는 주가 재평가가 빠르게 나타났습니다.</p>
+        </article>
+        <article>
+          <strong>2. 2021년 개인투자자 매수세가 국민주 이미지를 강화했습니다</strong>
+          <p>동학개미 흐름 속에서 삼성전자는 한국 주식 장기투자의 상징처럼 소비됐습니다. 다만 개인 매수세 이후 2022년 조정도 컸습니다.</p>
+        </article>
+        <article>
+          <strong>3. AI 메모리 기대가 2025~2026년 랠리를 만들었습니다</strong>
+          <p>HBM과 AI 인프라 수요가 메모리 기업 밸류에이션을 끌어올렸습니다. 이 구간이 10년 수익률을 크게 높인 핵심 구간입니다.</p>
+        </article>
+        <article>
+          <strong>4. 배당은 수익률의 보조 엔진이었습니다</strong>
+          <p>삼성전자는 장기 보유자에게 꾸준한 현금 배당을 제공했습니다. 배당 재투자까지 하면 장기 수익률은 단순 주가 수익률보다 달라질 수 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section samsung-stock-cta-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">같이 보면 좋은 10년 콘텐츠</p>
+        <h2>삼성전자만 보면 아쉽습니다. ETF, 금, 비트코인, 월급과 같이 비교하세요</h2>
+      </div>
+      <div class="samsung-stock-cta-grid">
+        {report.ctaLinks.map((link) => (
+          <a class="samsung-stock-cta-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section samsung-stock-source-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처와 한계</p>
+        <h2>주가 비교는 기준일과 보정 방식에 따라 달라질 수 있습니다</h2>
+        <p>이 리포트는 10년 변화를 이해하기 위한 대표값 비교입니다. 실제 수익률은 매수일, 매도일, 배당 재투자, 세금, 수수료, 보유 계좌에 따라 달라집니다.</p>
+      </div>
+      <div class="samsung-stock-source-grid">
+        {report.sourceLinks.map((source) => (
+          <a class="samsung-stock-source-card" href={source.href} target="_blank" rel="noreferrer">
+            <strong>{source.label}</strong>
+            <span>{source.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="삼성전자 10년 수익률을 볼 때 놓치면 안 되는 것"
+      intro={seoIntro}
+      inputPoints={[
+        "2016년 6월 삼성전자 주가를 2018년 50:1 액면분할 이후 현재 주식 수 기준으로 보정해 비교합니다.",
+        "100만원, 500만원, 1000만원, 1억원을 투자했을 때 2026년 평가액과 배당 추정치를 함께 확인할 수 있습니다.",
+        "연도별 주가 흐름을 통해 삼성전자가 매년 꾸준히 오른 종목이 아니라는 점을 확인할 수 있습니다.",
+        "ETF, 비트코인·금·S&P500, 금값, 평균 연봉·자산 10년 리포트로 이어지는 내부 비교 경로를 제공합니다.",
+      ]}
+      criteria={[
+        "핵심 수익률은 삼성전자 보통주 005930의 액면분할 보정 주가 기준입니다.",
+        "배당은 장기 보유자가 받은 현금 배당을 단순 추정한 값이며, 배당 재투자와 세금은 반영하지 않습니다.",
+        "2016년과 2026년의 대표 가격은 특정 하루의 체결가가 아니라 10년 비교용 기준값입니다.",
+        "이 페이지는 투자 권유가 아니며, 실제 매수·매도 판단에는 실적, 업황, 밸류에이션, 개인 투자 기간을 함께 봐야 합니다.",
+      ]}
+      faq={report.faq}
+      related={report.ctaLinks}
+    />
+  </main>
+</BaseLayout>

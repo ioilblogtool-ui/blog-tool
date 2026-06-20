@@ -1,0 +1,240 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  HSSR_META,
+  HSSR_CAREER_TIMELINE,
+  HSSR_ASSET_BREAKDOWN,
+  HSSR_DEBT_MANWON,
+  HSSR_TOTAL_ASSETS_MANWON,
+  HSSR_COMPENSATION_COMPARE,
+  HSSR_RELATED_OFFICIALS_COMPARE,
+  HSSR_PROCEDURE_STEPS,
+  HSSR_RELATED_LINKS,
+  HSSR_FAQ,
+  HSSR_SEO_INTRO,
+  HSSR_SEO_CRITERIA,
+  formatManwon,
+  getCompGapManwon,
+} from "../../data/hanSeongSookPmNomineeCareerAssets2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${HSSR_META.slug}/`;
+const compGap = getCompGapManwon(HSSR_COMPENSATION_COMPARE);
+const badgeClass = (label: string) => label.replace(/\s/g, "-");
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: HSSR_META.title,
+    description: HSSR_META.seoDescription,
+    dateModified: HSSR_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: HSSR_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: HSSR_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={HSSR_META.seoTitle} description={HSSR_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page hssr-page" data-report="han-seong-sook-pm-nominee-career-assets-2026">
+    <CalculatorHero
+      eyebrow="인물 커리어·재산 리포트"
+      title={HSSR_META.title}
+      description={HSSR_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        HSSR_META.dataNote,
+        "총재산은 2026년 3월 26일 정기 재산변동 공개 보도 기준이며, 국무총리 취임 전까지는 '후보자' 표기를 유지합니다.",
+        "이 페이지는 정치적 평가가 아니라 공개 경력·재산 수치를 커리어 타임라인으로 정리한 인터랙티브 리포트입니다.",
+      ]}
+    />
+
+    <section class="content-section hssr-profile" aria-labelledby="hssr-profile-title">
+      <div class="hssr-section-heading">
+        <p>프로필 요약</p>
+        <h2 id="hssr-profile-title">한성숙은 누구인가</h2>
+      </div>
+
+      <div class="hssr-profile-grid">
+        <article class="hssr-profile-card">
+          <span>현재 직위</span>
+          <strong>국무총리 후보자</strong>
+          <small>전 중소벤처기업부 장관</small>
+        </article>
+        <article class="hssr-profile-card">
+          <span>주요 경력</span>
+          <strong>네이버 대표이사</strong>
+          <small>2017년 3월 ~ 2022년 3월</small>
+        </article>
+        <article class="hssr-profile-card">
+          <span>지명 배경</span>
+          <strong>플랫폼·정부 혁신 리더십</strong>
+          <small>소상공인·중기 경제 성장 적임자 평가</small>
+        </article>
+        <article class="hssr-profile-card">
+          <span>다음 절차</span>
+          <strong>국회 인사청문회</strong>
+          <small>본회의 인준 필요</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section hssr-timeline" aria-labelledby="hssr-timeline-title">
+      <div class="hssr-section-heading">
+        <p>커리어 타임라인</p>
+        <h2 id="hssr-timeline-title">네이버 대표에서 총리 후보까지</h2>
+        <span>각 단계의 보수·자산 수치는 공개 자료 기준과 추정값을 뱃지로 구분해 표시합니다.</span>
+      </div>
+
+      <ol class="hssr-timeline-list">
+        {HSSR_CAREER_TIMELINE.map((step) => (
+          <li class="hssr-timeline-item">
+            <div class="hssr-timeline-marker"><span>{step.year}</span></div>
+            <div class="hssr-timeline-body">
+              <span class={`hssr-badge hssr-badge--${badgeClass(step.badge)}`}>{step.badge}</span>
+              <h3>{step.roleTitle} · {step.org}</h3>
+              <p class="hssr-timeline-period">{step.periodLabel}</p>
+              <p>{step.description}</p>
+              {step.compEstimateLabel && <p class="hssr-timeline-comp">{step.compEstimateLabel}</p>}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section hssr-assets" aria-labelledby="hssr-assets-title">
+      <div class="hssr-section-heading">
+        <p>공개 재산 상세</p>
+        <h2 id="hssr-assets-title">총재산 {formatManwon(HSSR_TOTAL_ASSETS_MANWON)}의 구성</h2>
+        <span>2026년 3월 26일 고위공직자 정기 재산변동 공개 보도 기준입니다.</span>
+      </div>
+
+      <div class="hssr-asset-bars">
+        {HSSR_ASSET_BREAKDOWN.map((item) => (
+          <div class="hssr-asset-row">
+            <span class="hssr-asset-label">{item.label}</span>
+            <div class="hssr-asset-bar-track">
+              <div class="hssr-asset-bar-fill" style={`width: ${item.shareOfTotalPercent * 10}%`}></div>
+            </div>
+            <span class="hssr-asset-amount">{formatManwon(item.amountManwon)}</span>
+          </div>
+        ))}
+      </div>
+
+      <p class="hssr-asset-debt">공개된 채무는 {formatManwon(HSSR_DEBT_MANWON)}이며, 위 총재산은 채무를 차감하기 전 보도 기준 수치입니다.</p>
+    </section>
+
+    <section class="content-section hssr-compensation" aria-labelledby="hssr-comp-title">
+      <div class="hssr-section-heading">
+        <p>보수 비교</p>
+        <h2 id="hssr-comp-title">장관에서 총리가 되면 연봉이 어떻게 바뀔까</h2>
+        <span>2026년 정무직 공무원 보수표 기준 세전 연봉입니다.</span>
+      </div>
+
+      <div class="hssr-comp-grid">
+        {HSSR_COMPENSATION_COMPARE.map((item) => (
+          <article class="hssr-comp-card">
+            <span class={`hssr-badge hssr-badge--${badgeClass(item.badge)}`}>{item.badge}</span>
+            <strong>{item.roleLabel}</strong>
+            <em>{formatManwon(item.annualCompManwon)}</em>
+            <small>월 {formatManwon(item.monthlyCompManwon)} · {item.note}</small>
+          </article>
+        ))}
+      </div>
+
+      <p class="hssr-comp-gap">취임 시 연봉 차이는 약 {formatManwon(compGap)}입니다.</p>
+    </section>
+
+    <section class="content-section hssr-context" aria-labelledby="hssr-context-title">
+      <div class="hssr-section-heading">
+        <p>공직자 재산 비교</p>
+        <h2 id="hssr-context-title">민간 출신과 관료 출신, 자산 구조가 다르다</h2>
+        <span>같은 정기 재산변동 공개 기준으로 작성된 다른 공직자와 비교합니다.</span>
+      </div>
+
+      <div class="hssr-compare-grid">
+        {HSSR_RELATED_OFFICIALS_COMPARE.map((official) => (
+          <a class="hssr-compare-card" href={withBase(official.href)}>
+            <span class={`hssr-bg-tag hssr-bg-tag--${official.background === "민간 출신" ? "private" : "public"}`}>{official.background}</span>
+            <strong>{official.nameKo}</strong>
+            <small>{official.roleTitle}</small>
+            <em>{formatManwon(official.totalAssetsManwon)}</em>
+            <p>{official.note}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section hssr-procedure" aria-labelledby="hssr-procedure-title">
+      <div class="hssr-section-heading">
+        <p>다음 절차</p>
+        <h2 id="hssr-procedure-title">정식 취임까지 남은 단계</h2>
+      </div>
+
+      <ol class="hssr-procedure-list">
+        {HSSR_PROCEDURE_STEPS.map((step) => (
+          <li class={`hssr-procedure-item hssr-procedure-item--${step.statusLabel === "완료" ? "done" : step.statusLabel === "진행 중" ? "active" : "pending"}`}>
+            <span class="hssr-procedure-order">{step.order}</span>
+            <div>
+              <strong>{step.title}</strong>
+              <p>{step.description}</p>
+            </div>
+            <span class="hssr-procedure-status">{step.statusLabel}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section hssr-related" aria-labelledby="hssr-related-title">
+      <div class="hssr-section-heading">
+        <p>같이 보면 좋은 리포트</p>
+        <h2 id="hssr-related-title">다른 공직자 재산도 비교해보세요</h2>
+      </div>
+
+      <div class="hssr-related-grid">
+        {HSSR_RELATED_LINKS.map((link) => (
+          <a class="hssr-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="한성숙 국무총리 후보자, 숫자로 보는 커리어와 재산"
+      intro={HSSR_SEO_INTRO}
+      criteria={HSSR_SEO_CRITERIA}
+      faq={HSSR_FAQ}
+      related={HSSR_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

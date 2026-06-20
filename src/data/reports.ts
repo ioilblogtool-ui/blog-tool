@@ -219,6 +219,13 @@ export const reports: ReportMeta[] = [
     badges: ["은값", "10년비교", "1kg"],
   },
   {
+    slug: "samsung-electronics-stock-2016-vs-2026",
+    title: "삼성전자 2016년에 샀다면? 2026년까지 10년 수익률 비교",
+    description: "삼성전자 주식을 2016년 6월에 샀다면 2026년 6월 현재 얼마가 됐는지 액면분할 보정 주가, 투자금, 배당 기준으로 비교한 리포트입니다.",
+    order: 13.4,
+    badges: ["삼성전자", "주식", "10년비교"],
+  },
+  {
     slug: "baby-cost-guide-first-year",
     title: "신생아~돌까지 육아 비용 총정리 — 가성비·평균·프리미엄 비교",
     description: "기저귀, 분유, 병원비, 이유식, 육아용품까지 아기 1년 육아 비용을 3단계 기준으로 비교하고 지원금 반영 후 실부담까지 확인하는 리포트입니다.",
@@ -910,5 +917,12 @@ export const reports: ReportMeta[] = [
     description: "골프·테니스·스키·헬스·낚시 등 10가지 취미의 월 유지비와 10년 총비용을 비교합니다.",
     order: 61.3,
     badges: ["골프", "취미 비교", "10종", "2026"],
+  },
+  {
+    slug: "han-seong-sook-pm-nominee-career-assets-2026",
+    title: "한성숙 재산·경력 2026｜네이버 대표에서 총리 후보까지",
+    description: "한성숙 국무총리 후보자의 네이버 대표이사~중기부 장관 커리어 타임라인과 공개 재산 223억원 상세를 정리합니다.",
+    order: 61.4,
+    badges: ["한성숙", "총리 후보자", "재산", "2026"],
   },
 ];
