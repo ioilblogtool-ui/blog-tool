@@ -925,4 +925,11 @@ export const reports: ReportMeta[] = [
     order: 61.4,
     badges: ["한성숙", "총리 후보자", "재산", "2026"],
   },
+  {
+    slug: "seoul-housing-affordability-map-2026",
+    title: "내 연봉으로 서울 어디 살 수 있나 | 구별 PIR 지도 2026",
+    description: "연소득과 보유 현금을 입력하면 서울 25개 구 매매·전세 가능 여부를 지도로 바로 확인합니다. 구별 평균가, 전세가율까지 한 번에 비교하세요.",
+    order: 61.5,
+    badges: ["서울", "PIR", "매매·전세", "2026"],
+  },
 ];

@@ -1,0 +1,291 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { seoulApartmentDistricts } from "../../data/seoulApartmentPrice2026";
+import {
+  SHAA_META,
+  SHAA_MAP_SHAPES,
+  SHAA_DEFAULTS,
+  SHAA_BUDGET_BANDS,
+  SHAA_FAQ,
+  SHAA_SEO_INTRO,
+  SHAA_SEO_CRITERIA,
+  SHAA_RELATED_LINKS,
+  SHAA_TIER_LABELS,
+  normalizeDistrictId,
+  classifyAllDistricts,
+  getTierSummary,
+  formatManwonToEok,
+} from "../../data/seoulHousingAffordabilityMap2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SHAA_META.slug}/`;
+
+const initialResults = classifyAllDistricts(SHAA_DEFAULTS.cashManwon, SHAA_DEFAULTS.ltv);
+const initialSummary = getTierSummary(initialResults);
+const initialSelected = initialResults.find((r) => r.districtId === "gangnam") ?? initialResults[0];
+
+const clientPayload = {
+  districts: seoulApartmentDistricts.map((d) => ({
+    ...d,
+    id: normalizeDistrictId(d.district),
+  })),
+  defaults: SHAA_DEFAULTS,
+  tierLabels: SHAA_TIER_LABELS,
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SHAA_META.title,
+    description: SHAA_META.seoDescription,
+    dateModified: SHAA_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SHAA_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SHAA_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={SHAA_META.seoTitle} description={SHAA_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page shaa-page" data-report="seoul-housing-affordability-map-2026">
+    <CalculatorHero
+      eyebrow="서울 주거 의사결정 리포트"
+      title={SHAA_META.title}
+      description={SHAA_META.description}
+    />
+
+    <InfoNotice
+      title="계산 기준 안내"
+      lines={[
+        SHAA_META.dataNote,
+        "이 페이지는 대출 상담이나 투자 추천이 아니라, 공개 시세를 기준으로 단순화한 비교 정보입니다.",
+        "정확한 대출 한도는 '부동산 매매 자금 계산기'나 금융기관 상담으로 별도 확인하세요.",
+      ]}
+    />
+
+    <section class="content-section shaa-inputs" aria-labelledby="shaa-inputs-title">
+      <div class="shaa-section-heading">
+        <p>내 조건 입력</p>
+        <h2 id="shaa-inputs-title">연소득과 보유 현금을 입력하면 지도가 바로 바뀝니다</h2>
+        <span>입력값은 저장되지 않으며, 브라우저에서만 즉시 계산됩니다.</span>
+      </div>
+
+      <div class="shaa-mode-toggle" role="tablist" aria-label="매매·전세 보기 전환">
+        <button type="button" id="shaaModeBuy" class="shaa-mode-btn is-active" role="tab" aria-selected="true">매매로 보기</button>
+        <button type="button" id="shaaModeJeonse" class="shaa-mode-btn" role="tab" aria-selected="false">전세로 보기</button>
+      </div>
+
+      <div class="shaa-input-grid">
+        <label class="shaa-input-field">
+          <span>연소득(만원)</span>
+          <input type="range" id="shaaIncomeRange" min="2000" max="30000" step="100" value={SHAA_DEFAULTS.annualIncomeManwon} />
+          <input type="number" id="shaaIncomeNumber" min="0" value={SHAA_DEFAULTS.annualIncomeManwon} />
+        </label>
+        <label class="shaa-input-field">
+          <span>보유 현금(만원)</span>
+          <input type="range" id="shaaCashRange" min="0" max="300000" step="500" value={SHAA_DEFAULTS.cashManwon} />
+          <input type="number" id="shaaCashNumber" min="0" value={SHAA_DEFAULTS.cashManwon} />
+        </label>
+        <label class="shaa-input-field">
+          <span>대출 가정 (LTV)</span>
+          <select id="shaaLtvSelect">
+            <option value="60">60%</option>
+            <option value="70" selected>70%</option>
+            <option value="80">80%</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="content-section shaa-summary" aria-labelledby="shaa-summary-title">
+      <div class="shaa-section-heading">
+        <p>한눈에 보기</p>
+        <h2 id="shaa-summary-title">서울 25개 구 중 몇 곳이 가능할까</h2>
+      </div>
+
+      <div class="shaa-summary-grid">
+        <article class="shaa-summary-card shaa-summary-card--buyable">
+          <span>매매 가능</span>
+          <strong id="shaaCountBuyable">{initialSummary.buyable}</strong>
+          <small>개 구</small>
+        </article>
+        <article class="shaa-summary-card shaa-summary-card--stretch">
+          <span>대출 부담 큼</span>
+          <strong id="shaaCountStretch">{initialSummary.stretch}</strong>
+          <small>개 구</small>
+        </article>
+        <article class="shaa-summary-card shaa-summary-card--jeonse-only">
+          <span>전세만 가능</span>
+          <strong id="shaaCountJeonseOnly">{initialSummary.jeonseOnly}</strong>
+          <small>개 구</small>
+        </article>
+        <article class="shaa-summary-card shaa-summary-card--hard">
+          <span>진입 어려움</span>
+          <strong id="shaaCountHard">{initialSummary.hard}</strong>
+          <small>개 구</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section shaa-workspace" aria-labelledby="shaa-map-title">
+      <div class="shaa-section-heading">
+        <p>인터랙티브 지도</p>
+        <h2 id="shaa-map-title">구를 클릭하면 상세 비교가 나옵니다</h2>
+        <span>지도 색은 위에서 입력한 조건에 따라 실시간으로 바뀝니다.</span>
+      </div>
+
+      <div class="shaa-search" role="search">
+        <label for="shaaDistrictSearch">구 이름 검색</label>
+        <div class="shaa-search__row">
+          <input id="shaaDistrictSearch" type="search" list="shaaDistrictOptions" placeholder="예: 강남구, 노원구" autocomplete="off" />
+          <button type="button" id="shaaDistrictSearchButton">검색</button>
+        </div>
+        <datalist id="shaaDistrictOptions">
+          {seoulApartmentDistricts.map((d) => <option value={d.district}>{d.district}</option>)}
+        </datalist>
+      </div>
+
+      <div class="shaa-layout">
+        <div class="shaa-map-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 780" class="shaa-map" id="shaaMap" role="img" aria-labelledby="shaa-map-svg-title">
+            <title id="shaa-map-svg-title">서울 25개 구 PIR 기준 매매·전세 가능 여부 지도</title>
+            <g class="shaa-map__regions">
+              {SHAA_MAP_SHAPES.map((shape) => {
+                const result = initialResults.find((r) => r.districtId === shape.id);
+                const tier = result?.tier ?? "hard";
+                return (
+                  <path
+                    id={`shaa-district-${shape.id}`}
+                    class={`shaa-map__district shaa-map__district--${tier}`}
+                    data-district-id={shape.id}
+                    d={shape.d}
+                    tabindex="0"
+                    role="button"
+                    aria-label={`${result?.districtName ?? shape.id} ${SHAA_TIER_LABELS[tier]}`}
+                  />
+                );
+              })}
+            </g>
+            <g class="shaa-map__labels" aria-hidden="true">
+              {SHAA_MAP_SHAPES.map((shape) => {
+                const result = initialResults.find((r) => r.districtId === shape.id);
+                return <text x={shape.x} y={shape.y}>{(result?.districtName ?? shape.id).replace("구", "")}</text>;
+              })}
+            </g>
+          </svg>
+          <div id="shaaTooltip" class="shaa-tooltip" aria-hidden="true"></div>
+          <div class="shaa-legend" aria-label="지도 범례">
+            <span class="shaa-legend__item shaa-legend__item--buyable">매매 가능</span>
+            <span class="shaa-legend__item shaa-legend__item--stretch">대출 부담 큼</span>
+            <span class="shaa-legend__item shaa-legend__item--jeonse-only">전세만 가능</span>
+            <span class="shaa-legend__item shaa-legend__item--hard">진입 어려움</span>
+          </div>
+        </div>
+
+        <aside class="shaa-panel" id="shaaPanel" aria-live="polite">
+          <p class="shaa-panel__eyebrow">선택된 구</p>
+          <h3 id="shaaPanelDistrictName">{initialSelected.districtName}</h3>
+          <div id="shaaPanelTierPill" class={`shaa-tier-pill shaa-tier-pill--${initialSelected.tier}`}>
+            {SHAA_TIER_LABELS[initialSelected.tier]}
+          </div>
+          <dl class="shaa-panel__facts">
+            <div><dt>평균 매매가</dt><dd id="shaaPanelAverage">{formatManwonToEok(initialSelected.averagePrice)}</dd></div>
+            <div><dt>84㎡ 평균가</dt><dd id="shaaPanelPrice84">{formatManwonToEok(initialSelected.price84)}</dd></div>
+            <div><dt>추정 전세가</dt><dd id="shaaPanelJeonse">{formatManwonToEok(initialSelected.jeonsePrice)}</dd></div>
+            <div><dt>예산 격차</dt><dd id="shaaPanelGap">{initialSelected.gapLabel}</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <section class="content-section shaa-budget" aria-labelledby="shaa-budget-title">
+      <div class="shaa-section-heading">
+        <p>예산대별 추천</p>
+        <h2 id="shaa-budget-title">내 예산대에서는 어디부터 봐야 할까</h2>
+      </div>
+
+      <div class="shaa-budget-grid">
+        {SHAA_BUDGET_BANDS.map((band) => (
+          <article class="shaa-budget-card">
+            <strong>{band.budget}</strong>
+            <p class="shaa-budget-options">{band.options}</p>
+            <p class="shaa-budget-strategy">{band.strategy}</p>
+            <p class="shaa-budget-caution">⚠ {band.caution}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section shaa-method" aria-labelledby="shaa-method-title">
+      <div class="shaa-section-heading">
+        <p>계산 방법론</p>
+        <h2 id="shaa-method-title">등급은 이렇게 계산됩니다</h2>
+      </div>
+      <div class="shaa-method-grid">
+        <article>
+          <h3>매매 가능 예산</h3>
+          <p>보유 현금 ÷ (1 - LTV). LTV 70% 가정 시 보유 현금의 약 3.3배가 최대 매매 예산입니다.</p>
+        </article>
+        <article>
+          <h3>전세 가능 예산</h3>
+          <p>보유 현금 + (보유 현금 × 전세대출 가정 비율 80%). 전세는 매매보다 진입 장벽이 낮게 계산됩니다.</p>
+        </article>
+        <article>
+          <h3>등급 분류 기준</h3>
+          <p>매매 예산이 구 평균가 이상이면 매매 가능, 84㎡가 이상이면 대출 부담 큼, 전세 예산이 추정 전세가 이상이면 전세만 가능, 둘 다 부족하면 진입 어려움으로 분류합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section shaa-related" aria-labelledby="shaa-related-title">
+      <div class="shaa-section-heading">
+        <p>같이 보면 좋은 콘텐츠</p>
+        <h2 id="shaa-related-title">서울 주거 리포트 이어서 보기</h2>
+      </div>
+      <div class="shaa-related-grid">
+        {SHAA_RELATED_LINKS.map((link) => (
+          <a class="shaa-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="서울 집값, 내 연봉 기준으로 다시 보면"
+      intro={SHAA_SEO_INTRO}
+      criteria={SHAA_SEO_CRITERIA}
+      faq={SHAA_FAQ}
+      related={SHAA_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>
+
+<script id="shaaPayload" type="application/json" set:html={JSON.stringify(clientPayload)}></script>
+<script src={withBase("/scripts/seoul-housing-affordability-map-2026.js")} defer></script>

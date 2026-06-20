@@ -1,0 +1,438 @@
+.shaa-page {
+  --shaa-ink: #172033;
+  --shaa-muted: #667085;
+  --shaa-line: #d8e0ea;
+  --shaa-soft: #f5f8fb;
+  --shaa-blue: #2f5acf;
+  --shaa-buyable: #0f8a5f;
+  --shaa-stretch: #b8860b;
+  --shaa-jeonse-only: #2f5acf;
+  --shaa-hard: #c23b3b;
+
+  .shaa-section-heading {
+    display: grid;
+    gap: 6px;
+
+    p,
+    h2,
+    span {
+      margin: 0;
+    }
+
+    p {
+      color: var(--shaa-blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    h2 {
+      color: var(--shaa-ink);
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.25;
+    }
+
+    span {
+      color: var(--shaa-muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+  }
+
+  /* 입력 섹션 */
+  .shaa-mode-toggle {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--shaa-line);
+    border-radius: 999px;
+    background: var(--shaa-soft);
+    margin-bottom: 14px;
+  }
+
+  .shaa-mode-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--shaa-muted);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+
+    &.is-active {
+      background: #fff;
+      color: var(--shaa-blue);
+      box-shadow: 0 1px 2px rgba(23, 32, 51, 0.08);
+    }
+  }
+
+  .shaa-input-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .shaa-input-field {
+    display: grid;
+    gap: 8px;
+
+    span {
+      color: var(--shaa-ink);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    input[type="number"],
+    select {
+      padding: 8px 10px;
+      border: 1px solid var(--shaa-line);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+  }
+
+  /* 요약 카드 */
+  .shaa-summary-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+
+  .shaa-summary-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--shaa-line);
+    border-radius: 8px;
+    background: #fff;
+
+    span {
+      color: var(--shaa-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    strong {
+      font-size: clamp(24px, 4vw, 32px);
+      line-height: 1.1;
+    }
+
+    small {
+      color: var(--shaa-muted);
+      font-size: 12px;
+    }
+
+    &--buyable strong { color: var(--shaa-buyable); }
+    &--stretch strong { color: var(--shaa-stretch); }
+    &--jeonse-only strong { color: var(--shaa-jeonse-only); }
+    &--hard strong { color: var(--shaa-hard); }
+  }
+
+  /* 검색 */
+  .shaa-search {
+    margin-bottom: 12px;
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--shaa-ink);
+      font-size: 13px;
+      font-weight: 800;
+    }
+  }
+
+  .shaa-search__row {
+    display: flex;
+    gap: 8px;
+
+    input {
+      flex: 1;
+      padding: 9px 12px;
+      border: 1px solid var(--shaa-line);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 9px 16px;
+      border: none;
+      border-radius: 6px;
+      background: var(--shaa-blue);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  }
+
+  /* 지도 + 패널 레이아웃 */
+  .shaa-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(240px, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .shaa-map-wrap {
+    position: relative;
+  }
+
+  .shaa-map {
+    width: 100%;
+    height: auto;
+  }
+
+  .shaa-map__district {
+    stroke: #fff;
+    stroke-width: 1.5;
+    cursor: pointer;
+    transition: fill 0.2s, opacity 0.15s;
+
+    &--buyable { fill: var(--shaa-buyable); }
+    &--stretch { fill: var(--shaa-stretch); }
+    &--jeonse-only { fill: var(--shaa-jeonse-only); }
+    &--hard { fill: var(--shaa-hard); }
+
+    &.is-active { stroke: var(--shaa-ink); stroke-width: 3; }
+    &:hover { opacity: 0.85; }
+    &:focus-visible { outline: 2px solid var(--shaa-ink); }
+  }
+
+  .shaa-map__labels text {
+    font-size: 11px;
+    font-weight: 700;
+    fill: #fff;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+
+  .shaa-tooltip {
+    position: absolute;
+    z-index: 5;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--shaa-ink);
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+
+    &[aria-hidden="false"] {
+      opacity: 1;
+    }
+
+    strong {
+      display: block;
+    }
+  }
+
+  .shaa-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  .shaa-legend__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--shaa-muted);
+
+    &::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    &--buyable::before { background: var(--shaa-buyable); }
+    &--stretch::before { background: var(--shaa-stretch); }
+    &--jeonse-only::before { background: var(--shaa-jeonse-only); }
+    &--hard::before { background: var(--shaa-hard); }
+  }
+
+  /* 패널 */
+  .shaa-panel {
+    display: grid;
+    gap: 10px;
+    padding: 18px;
+    border: 1px solid var(--shaa-line);
+    border-radius: 8px;
+    background: #fff;
+    align-content: start;
+
+    h3 {
+      margin: 0;
+      color: var(--shaa-ink);
+      font-size: 20px;
+    }
+  }
+
+  .shaa-panel__eyebrow {
+    margin: 0;
+    color: var(--shaa-blue);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .shaa-tier-pill {
+    width: fit-content;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+
+    &--buyable { background: #e7f6ee; color: var(--shaa-buyable); }
+    &--stretch { background: #fdf2dc; color: var(--shaa-stretch); }
+    &--jeonse-only { background: #eaf1ff; color: var(--shaa-jeonse-only); }
+    &--hard { background: #fbe9e9; color: var(--shaa-hard); }
+  }
+
+  .shaa-panel__facts {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--shaa-soft);
+    }
+
+    dt {
+      color: var(--shaa-muted);
+      font-size: 13px;
+    }
+
+    dd {
+      margin: 0;
+      color: var(--shaa-ink);
+      font-size: 13px;
+      font-weight: 800;
+    }
+  }
+
+  /* 예산대 카드 */
+  .shaa-budget-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .shaa-budget-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--shaa-line);
+    border-radius: 8px;
+    background: #fff;
+
+    strong {
+      color: var(--shaa-ink);
+      font-size: 16px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--shaa-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .shaa-budget-caution {
+      color: var(--shaa-stretch);
+    }
+  }
+
+  /* 방법론 카드 */
+  .shaa-method-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .shaa-method-grid article {
+    padding: 16px;
+    border: 1px solid var(--shaa-line);
+    border-radius: 8px;
+    background: #fff;
+
+    h3 {
+      margin: 0 0 6px;
+      color: var(--shaa-ink);
+      font-size: 15px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--shaa-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  /* 관련 링크 */
+  .shaa-related-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .shaa-related-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--shaa-line);
+    border-radius: 8px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.16s, transform 0.16s;
+
+    &:hover {
+      border-color: var(--shaa-blue);
+      transform: translateY(-1px);
+    }
+
+    strong {
+      color: var(--shaa-ink);
+      font-size: 15px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--shaa-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .shaa-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .shaa-summary-grid,
+    .shaa-budget-grid,
+    .shaa-method-grid,
+    .shaa-related-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .shaa-search__row {
+      flex-direction: column;
+    }
+  }
+}
