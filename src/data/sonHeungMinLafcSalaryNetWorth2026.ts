@@ -83,10 +83,10 @@ export interface FaqItem {
 
 export const SHMS_META = {
   slug: "son-heung-min-lafc-salary-net-worth-2026",
-  title: "손흥민 연봉 2026｜LAFC 주급·세후 실수령액·재산 추정",
-  seoTitle: "손흥민 연봉 2026 | LAFC 주급·세후 실수령액·재산 추정",
+  title: "손흥민 연봉 2026｜LAFC 주급 3억, 재산은 몇 억일까",
+  seoTitle: "손흥민 연봉 2026 | LAFC 주급 3억, 재산은 몇 억일까",
   seoDescription:
-    "손흥민의 2026년 LAFC 보도 기준 연봉을 원화, 월급, 주급, 일급, 세후 실수령액으로 환산하고 토트넘 시절 누적 연봉과 광고 수입을 포함한 재산 추정 범위를 정리합니다.",
+    "손흥민의 2026년 LAFC 보도 기준 연봉을 환산하면 주급 약 3억원입니다. 월급·일급·세후 실수령액과 토트넘 시절 누적 연봉, 광고 수입 포함 재산 추정 범위를 정리합니다.",
   description:
     "손흥민의 LAFC 보도 기준 연봉을 원화, 월급, 주급, 일급, 세후 실수령액으로 환산하고 커리어 누적 연봉과 재산 추정 범위를 함께 정리합니다.",
   updatedAt: "2026-06-18",

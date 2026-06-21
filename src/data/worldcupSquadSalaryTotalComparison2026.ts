@@ -463,6 +463,8 @@ export const WCSST_FAQ: WorldcupSquadFaq[] = [
 
 export const WCSST_RELATED_LINKS = [
   { href: "/reports/korea-worldcup-squad-salary-2026/", label: "한국 월드컵 대표팀 선수별 연봉 보기" },
+  { href: "/reports/son-heung-min-lafc-salary-net-worth-2026/", label: "손흥민 연봉 2026｜LAFC 주급·재산 추정" },
+  { href: "/reports/lee-kang-in-psg-salary-2026/", label: "이강인 연봉 2026｜PSG 주급·실수령액" },
   { href: "/reports/kleague-salary-comparison-2026/", label: "K리그 연봉 순위 비교" },
   { href: "/reports/kbo-salary-comparison-2026/", label: "KBO 연봉 비교 리포트" },
   { href: "/reports/large-company-salary-growth-by-years-2026/", label: "대기업 연차별 연봉 성장 비교" },
