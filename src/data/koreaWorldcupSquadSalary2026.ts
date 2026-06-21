@@ -264,6 +264,9 @@ export const KWSS_FAQ: PageFaqItem[] = [
 ];
 
 export const KWSS_RELATED_LINKS = [
+  { href: "/reports/brazil-worldcup-squad-salary-2026/", label: "브라질 대표팀 연봉 순위 2026" },
+  { href: "/reports/argentina-worldcup-squad-salary-2026/", label: "아르헨티나 대표팀 연봉 순위 2026" },
+  { href: "/reports/france-worldcup-squad-salary-2026/", label: "프랑스 대표팀 연봉 순위 2026" },
   { href: "/reports/son-heung-min-lafc-salary-net-worth-2026/", label: "손흥민 연봉 2026｜LAFC 주급·세후 실수령액·재산 추정" },
   { href: "/reports/lee-kang-in-psg-salary-2026/", label: "이강인 연봉 2026｜PSG 주급·세후 실수령액" },
   { href: "/reports/korea-football-legends-salary-comparison-2026/", label: "손흥민·김민재·이강인 연봉 vs 역대 레전드 연봉 비교" },

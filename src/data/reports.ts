@@ -632,6 +632,27 @@ export const reports: ReportMeta[] = [
     badges: ["월드컵", "국가대표", "연봉", "2026"],
   },
   {
+    slug: "brazil-worldcup-squad-salary-2026",
+    title: "2026 브라질 월드컵 대표팀 연봉 순위",
+    description: "비니시우스 주니오르, 호드리고, 카제미루 등 브라질 월드컵 대표팀 주요 선수의 보도 기준 추정 연봉을 원화, 월급, 일급, 경기 90분 기준으로 환산합니다.",
+    order: 37.1161,
+    badges: ["월드컵", "브라질", "연봉", "2026"],
+  },
+  {
+    slug: "argentina-worldcup-squad-salary-2026",
+    title: "2026 아르헨티나 월드컵 대표팀 연봉 순위",
+    description: "리오넬 메시, 줄리안 알바레스, 엔소 페르난데스 등 아르헨티나 월드컵 대표팀 주요 선수의 보도 기준 추정 연봉을 원화, 월급, 일급, 경기 90분 기준으로 환산합니다.",
+    order: 37.1162,
+    badges: ["월드컵", "아르헨티나", "연봉", "2026"],
+  },
+  {
+    slug: "france-worldcup-squad-salary-2026",
+    title: "2026 프랑스 월드컵 대표팀 연봉 순위",
+    description: "킬리안 음바페, 우스만 뎀벨레, 그리즈만 등 프랑스 월드컵 대표팀 주요 선수의 보도 기준 추정 연봉을 원화, 월급, 일급, 경기 90분 기준으로 환산합니다.",
+    order: 37.1163,
+    badges: ["월드컵", "프랑스", "연봉", "2026"],
+  },
+  {
     slug: "son-heung-min-lafc-salary-net-worth-2026",
     title: "손흥민 연봉 2026｜LAFC 주급 3억, 재산은 몇 억일까",
     description: "손흥민의 2026년 LAFC 보도 기준 연봉을 환산하면 주급 약 3억원입니다. 커리어 누적 연봉과 재산 추정 범위를 함께 정리합니다.",
@@ -658,6 +679,13 @@ export const reports: ReportMeta[] = [
     description: "손흥민·김민재·이강인과 박지성·차범근 등 레전드 6인의 연봉을 현재가치로 환산해 비교합니다. 세대 간 최대 32배까지 벌어지는 연봉 격차를 데이터로 확인하세요.",
     order: 37.117,
     badges: ["월드컵", "레전드", "연봉", "2026"],
+  },
+  {
+    slug: "messi-ronaldo-career-comparison-2026",
+    title: "메시 호날두 비교 2026 | 통산 골·발롱도르·연봉 한눈에",
+    description: "메시와 호날두의 통산 골, 발롱도르, 월드컵 성적, 현재 연봉을 항목별로 비교합니다. 최근 해트트릭 등 최신 경기 기록도 함께 확인하세요.",
+    order: 37.1175,
+    badges: ["메시", "호날두", "GOAT 비교", "2026"],
   },
   {
     slug: "national-assembly-wealth-2026",
