@@ -346,6 +346,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "couple-monthly-cashflow-calculator",
+    title: "부부 월 현금흐름 계산기",
+    description: "남편 연봉, 아내 연봉, 대출, 육아비, 생활비, 투자금을 입력하면 월 잉여현금, 저축률, 10억 도달 예상 기간을 계산합니다.",
+    order: 2.55,
+    eyebrow: "부부 현금흐름",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "맞벌이", "생활비", "저축률"],
+    previewStats: [
+      { label: "핵심 결과", value: "월 잉여현금" },
+      { label: "목표자산", value: "10억 기간" }
+    ]
+  },
+  {
     slug: "diaper-cost",
     title: "아기 기저귀 값 계산기",
     description: "신생아부터 돌까지 월령별 사용량을 자동 계산하고, 하기스·팸퍼스·보솜이 등 브랜드별 총비용을 비교하는 페이지",
