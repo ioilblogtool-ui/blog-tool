@@ -1,0 +1,231 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  MSC_DEFAULT_INPUT,
+  MSC_FAQ,
+  MSC_LIMITS,
+  MSC_META,
+  MSC_PRESETS,
+  MSC_RELATED_LINKS,
+} from "../../data/militarySavingsCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaultInput: MSC_DEFAULT_INPUT,
+  limits: MSC_LIMITS,
+  presets: MSC_PRESETS,
+};
+
+const faqSchema = MSC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={MSC_META.seoTitle}
+  description={MSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: MSC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: MSC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${MSC_META.slug}/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={MSC_META.slug} pageClass="msc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="장병내일준비적금"
+        title="장병내일준비적금 만기 계산기"
+        description="월 납입액과 복무 기간, 정부 매칭지원금 비율을 입력하면 전역 시 받을 수 있는 총수령액을 바로 계산합니다."
+        badges={["전역 목돈", "정부 매칭지원금", "비과세"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          MSC_META.dataNote,
+          "이 계산기는 단리 적금 방식으로 이자를 추정하며, 매칭지원금은 본인 납입금에 비례해 계산합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="mscResetBtn" copyId="mscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">자주 찾는 케이스</h2>
+          </div>
+          <p class="panel-heading__summary">대표 케이스를 먼저 선택한 뒤 조건을 직접 조정하세요.</p>
+        </div>
+        <div class="msc-preset-grid">
+          {MSC_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`msc-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+              data-preset-months={preset.months}
+              data-preset-contribution={preset.monthlyContribution}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">납입 조건 입력</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>월 납입액</span>
+            <input data-msc="monthlyContribution" data-type="number" type="number" min="10000" max={MSC_LIMITS.maxMonthlyContribution} step="10000" class="input-number" />
+            <small>최대 {MSC_LIMITS.maxMonthlyContribution.toLocaleString()}원</small>
+          </label>
+
+          <label class="field">
+            <span>복무 기간(개월)</span>
+            <input data-msc="months" data-type="number" type="number" min="1" max={MSC_LIMITS.maxMonths} step="1" class="input-number" />
+            <small>최대 {MSC_LIMITS.maxMonths}개월</small>
+          </label>
+
+          <label class="field">
+            <span>적용 금리(연, %)</span>
+            <input data-msc="annualRate" data-type="number" type="number" min="0" max="15" step="0.1" class="input-number" />
+          </label>
+
+          <label class="field">
+            <span>정부 매칭지원금 비율(%)</span>
+            <input data-msc="matchingRate" data-type="number" type="number" min="0" max="200" step="5" class="input-number" />
+          </label>
+        </div>
+
+        <label class="check-field">
+          <input type="checkbox" data-msc="taxFree" />
+          <span>이자소득 비과세 적용</span>
+        </label>
+      </article>
+    </Fragment>
+
+    <section class="msc-summary-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">전역 시 예상 수령액</h2>
+        </div>
+        <p class="panel-heading__summary" id="mscSummaryText">납입 조건에 따른 만기 수령액을 계산합니다.</p>
+      </div>
+
+      <div class="msc-result-grid" aria-live="polite">
+        <article class="msc-result-card msc-result-card--main">
+          <span>총 수령액 (추정)</span>
+          <strong id="mscTotalPayout">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="msc-result-card">
+          <span>본인 납입 총액</span>
+          <strong id="mscPrincipal">-</strong>
+        </article>
+        <article class="msc-result-card">
+          <span>은행 이자 (추정)</span>
+          <strong id="mscInterest">-</strong>
+        </article>
+        <article class="msc-result-card">
+          <span>정부 매칭지원금 (추정)</span>
+          <strong id="mscMatching">-</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">민감도</p>
+          <h2 class="panel__title">월 납입액별 만기 수령액 비교</h2>
+        </div>
+        <p class="panel-heading__summary">같은 복무 기간·금리·매칭 비율 기준으로 월 납입액만 바꿔본 결과입니다.</p>
+      </div>
+      <div class="msc-table-wrap">
+        <table class="msc-table">
+          <thead>
+            <tr>
+              <th>월 납입액</th>
+              <th>본인 납입 총액</th>
+              <th>이자(추정)</th>
+              <th>매칭지원금(추정)</th>
+              <th>총 수령액(추정)</th>
+            </tr>
+          </thead>
+          <tbody id="mscScenarioRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <CompareCta
+      variant="hub"
+      title="이번 달 월급에서 얼마를 적금에 넣을 수 있는지 먼저 확인하세요"
+      description="군인 월급 계산기에서 계급별 예상 월급을 확인한 뒤, 이 계산기에서 적정 납입액을 가늠해보세요."
+      links={[
+        { href: "/tools/military-salary-calculator/", label: "군인 월급 계산기" },
+        { href: "/reports/military-salary-2026/", label: "군인 월급·연봉 2026 리포트" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="장병내일준비적금, 전역할 때 얼마나 모일까?"
+        intro={[
+          "입대를 앞두거나 이미 복무 중이라면 장병내일준비적금에 가입해두라는 이야기를 많이 듣게 됩니다. 그런데 정확히 월 얼마를 넣어야 하고, 전역할 때 실제로 얼마를 받을 수 있는지는 직접 계산해보지 않으면 감이 잡히지 않습니다. 이 계산기는 월 납입액과 복무 기간, 정부 매칭지원금 비율을 입력해 전역 시 받을 수 있는 총수령액을 바로 계산해주는 도구입니다.",
+          "장병내일준비적금의 만기 수령액은 세 가지 요소로 구성됩니다. 본인이 매달 납입한 금액의 합계, 그 금액에 적용되는 은행 이자, 그리고 정부가 더해주는 매칭지원금입니다. 은행 이자는 매달 납입한 금액이 각각 다른 기간 동안 적립되는 적금 특유의 단리 방식으로 계산되며, 매칭지원금은 본인 납입금에 비례해 정해진 비율로 더해지는 구조입니다.",
+          "결과를 볼 때는 본인 납입 총액과 매칭지원금의 비율을 함께 확인하는 것이 중요합니다. 매칭지원금 비율이 높을수록 같은 금액을 납입해도 실제로 받는 총수령액이 크게 늘어나기 때문에, 월급에서 무리가 되지 않는 선까지는 최대한 납입하는 것이 유리한 구조입니다. 복무 기간이 짧으면 같은 월 납입액이라도 총 납입 횟수가 줄어 총수령액도 함께 줄어듭니다.",
+          "다만 이 계산기의 금리와 매칭지원금 비율은 일반적으로 알려진 기준을 단순화한 추정치이며, 실제 가입 시점의 취급 은행별 금리와 정부 매칭 비율은 정책 변경에 따라 달라질 수 있습니다. 정확한 가입 조건과 한도는 국방부 공식 안내나 취급 은행을 통해 확인하는 것이 안전합니다.",
+        ]}
+        inputPoints={[
+          "월 납입액과 복무 기간을 입력하면 본인 납입 총액이 자동으로 계산됩니다.",
+          "적용 금리와 정부 매칭지원금 비율을 직접 조정해 다양한 시나리오를 비교할 수 있습니다.",
+          "월 납입액별 비교표에서 납입액에 따라 총수령액이 얼마나 달라지는지 한눈에 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "이자는 매월 납입금이 각각 다른 기간 적립되는 단리 적금 방식으로 계산합니다.",
+          "정부 매칭지원금은 본인 납입 총액에 입력한 비율을 곱해 계산합니다.",
+          "비과세 옵션을 끄면 이자소득세 15.4%를 적용한 일반 적금 기준으로도 비교할 수 있습니다.",
+          "실제 가입 한도, 금리, 매칭 비율은 가입 시점의 정책과 취급 은행에 따라 달라질 수 있습니다.",
+        ]}
+        faq={MSC_FAQ}
+        related={MSC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="mscConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/military-savings-calculator.js")}></script>
+</BaseLayout>

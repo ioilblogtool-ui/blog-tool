@@ -220,6 +220,34 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "military-salary-calculator",
+    title: "군인 월급 계산기 2027",
+    description: "병사, 부사관, 장교 계급을 선택하면 2027년 기준 월급과 세후 실수령액, 연봉을 바로 계산합니다.",
+    order: 1.661,
+    eyebrow: "군인 월급 계산기",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "병사", "부사관", "장교"],
+    previewStats: [
+      { label: "병장 월급", value: "125만" },
+      { label: "기준", value: "2027 봉급표" }
+    ]
+  },
+  {
+    slug: "military-savings-calculator",
+    title: "장병내일준비적금 만기 계산기 2027",
+    description: "월 납입액과 복무 기간, 정부 매칭지원금 비율을 입력하면 전역 시 받을 수 있는 총수령액을 바로 계산합니다.",
+    order: 1.662,
+    eyebrow: "장병내일준비적금",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "전역 목돈", "매칭지원금"],
+    previewStats: [
+      { label: "최대 월 납입", value: "55만" },
+      { label: "결과", value: "전역 시 총수령액" }
+    ]
+  },
+  {
     slug: "nurse-salary-calculator",
     title: "간호사 연차별 연봉·실수령 계산기",
     description: "병원 유형(빅5·대학병원·종합병원·중소병원·보건소·요양병원)과 연차, 나이트 근무 횟수를 입력하면 2026년 기준 연봉과 월 실수령액 범위를 추정하는 페이지",

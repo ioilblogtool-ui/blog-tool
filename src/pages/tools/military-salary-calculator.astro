@@ -1,0 +1,216 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  MS_CATEGORY_LABELS,
+  MS_FAQ,
+  MS_META,
+  MS_OPTIONS_BY_CATEGORY,
+  MS_PRESETS,
+  MS_RELATED_LINKS,
+} from "../../data/militarySalaryCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  optionsByCategory: MS_OPTIONS_BY_CATEGORY,
+  presets: MS_PRESETS,
+};
+
+const faqSchema = MS_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={MS_META.seoTitle}
+  description={MS_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: MS_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: MS_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${MS_META.slug}/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={MS_META.slug} pageClass="ms-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="군인 월급 계산기"
+        title="군인 월급 계산기 2027"
+        description="병사, 부사관, 장교 계급을 선택하면 월급과 세후 실수령액, 연봉을 바로 계산합니다."
+        badges={["2027 봉급", "병사·부사관·장교", "실수령 추정"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          MS_META.dataNote,
+          "병사는 계급별 고정 봉급, 부사관·장교는 계급·호봉별 봉급표를 기준으로 합니다.",
+          "직책수당, 특수직무수당, 가족수당, 주거수당 등 개인별 수당은 포함되지 않았습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="msResetBtn" copyId="msCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">자주 찾는 케이스</h2>
+          </div>
+          <p class="panel-heading__summary">대표 케이스를 먼저 선택한 뒤 계급을 직접 조정하세요.</p>
+        </div>
+        <div class="ms-preset-grid">
+          {MS_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`ms-preset-btn${index === 0 ? " is-active" : ""}`}
+              data-preset={preset.id}
+              data-preset-category={preset.category}
+              data-preset-rank={preset.rankId}
+            >
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">군종·계급 입력</h2>
+          </div>
+          <p class="panel-heading__summary">군종을 선택하면 계급 목록이 바뀝니다.</p>
+        </div>
+
+        <div class="ms-category-tabs" role="group" aria-label="군종 선택">
+          {Object.entries(MS_CATEGORY_LABELS).map(([value, label]) => (
+            <button type="button" class="ms-category-btn" data-ms-category={value}>{label}</button>
+          ))}
+        </div>
+
+        <label class="field">
+          <span>계급(호봉)</span>
+          <select data-ms="rankId" class="input-number"></select>
+        </label>
+      </article>
+    </Fragment>
+
+    <section class="ms-summary-panel panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">결과</p>
+          <h2 class="panel__title">계급별 월급·실수령액</h2>
+        </div>
+        <p class="panel-heading__summary" id="msSummaryText">군종·계급 조건에 따른 월급·연봉을 계산합니다.</p>
+      </div>
+
+      <div class="ms-result-grid" aria-live="polite">
+        <article class="ms-result-card ms-result-card--main">
+          <span>월 실수령 (추정)</span>
+          <strong id="msMonthlyNet">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="ms-result-card">
+          <span>월 기본급</span>
+          <strong id="msMonthlyBase">-</strong>
+        </article>
+        <article class="ms-result-card">
+          <span>연봉 (세전)</span>
+          <strong id="msAnnualGross">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="ms-result-card">
+          <span>연봉 실수령 (추정)</span>
+          <strong id="msAnnualNet">-</strong>
+          <small>추정</small>
+        </article>
+      </div>
+      <p class="ms-note" id="msRankNote"></p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계급표</p>
+          <h2 class="panel__title">같은 군종 내 계급별 비교</h2>
+        </div>
+        <p class="panel-heading__summary">선택한 군종의 전체 계급(호봉)을 한 번에 비교합니다.</p>
+      </div>
+      <div class="ms-table-wrap">
+        <table class="ms-table">
+          <thead>
+            <tr>
+              <th>계급(호봉)</th>
+              <th>월 기본급</th>
+              <th>월 실수령(추정)</th>
+              <th>연봉(세전, 추정)</th>
+            </tr>
+          </thead>
+          <tbody id="msRankRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <CompareCta
+      variant="hub"
+      title="복무 중 모을 수 있는 적금까지 함께 확인하세요"
+      description="장병내일준비적금 계산기에서 월 납입액과 매칭지원금을 입력하면 전역 시 받을 수 있는 목돈 규모를 바로 확인할 수 있습니다."
+      links={[
+        { href: "/tools/military-savings-calculator/", label: "장병내일준비적금 계산기" },
+        { href: "/reports/military-salary-2026/", label: "군인 월급·연봉 2026 리포트" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="군인 월급, 계급마다 왜 이렇게 다를까?"
+        intro={[
+          "입대를 앞두거나 부사관·장교 임관을 준비하고 있다면 계급별로 월급이 정확히 얼마인지 궁금할 수밖에 없습니다. 병사는 이병부터 병장까지 복무 기간에 따라 계급이 자동으로 올라가며 그에 맞춰 고정 봉급을 받고, 부사관과 장교는 계급과 호봉에 따라 세분화된 봉급표를 적용받는 구조입니다. 이 계산기는 군종과 계급을 선택하면 월급과 세후 실수령액, 연봉을 바로 계산해줍니다.",
+          "병사 봉급은 정부의 단계적 인상 정책에 따라 매년 오르고 있으며, 병장 기준 현금 봉급을 점진적으로 높이는 방향으로 정책이 추진되고 있습니다. 부사관과 장교는 계급이 올라갈수록, 같은 계급 안에서도 호봉이 높아질수록 봉급이 함께 상승하는 구조라, 단순히 계급만 보지 말고 호봉까지 함께 확인하는 것이 정확한 비교 방법입니다.",
+          "결과를 볼 때는 월 기본급과 세후 실수령액을 함께 확인하는 것이 중요합니다. 병사는 관사·급식이 현물로 제공되기 때문에 명시된 봉급보다 실질 가치가 더 높다고 볼 수 있고, 부사관·장교는 직책수당이나 특수직무수당처럼 보직에 따라 추가되는 항목이 있어 이 계산기에 표시된 금액보다 실제 수령액이 더 많을 수 있습니다.",
+          "다만 이 계산기는 국방부 군인보수법과 공개된 봉급표를 기준으로 한 일반적인 추정치이며, 직책수당·특수직무수당·가족수당·주거수당 같은 개인별 수당은 반영하지 않았습니다. 정확한 지급액은 소속 부대의 인사·급여 담당 부서를 통해 확인하는 것이 안전합니다.",
+        ]}
+        inputPoints={[
+          "군종(병사·부사관·장교)을 선택하면 해당 군종의 계급 목록이 자동으로 바뀝니다.",
+          "계급(호봉)을 선택하면 월 기본급, 세후 실수령액, 연봉이 즉시 계산됩니다.",
+          "같은 군종 내 전체 계급표를 한 번에 비교해 다음 계급과의 차이를 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "병사 봉급은 2026~2027년 봉급표와 인상 추세를 기준으로 한 추정치입니다.",
+          "부사관·장교 봉급은 국방부 군인보수법 대표 호봉 기준 추정치입니다.",
+          "세후 실수령액은 미혼·부양가족 없음을 기준으로 한 단순 추정치입니다.",
+          "직책수당·특수직무수당·가족수당·주거수당 등 개인별 수당은 포함되지 않았습니다.",
+        ]}
+        faq={MS_FAQ}
+        related={MS_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="msConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/military-salary-calculator.js")}></script>
+</BaseLayout>
