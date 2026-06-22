@@ -1,0 +1,239 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CIC_CONFIG,
+  CIC_FAQ,
+  CIC_META,
+  CIC_RELATED_LINKS,
+  CIC_SEO_CONTENT,
+} from "../../data/childIncentiveCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${CIC_META.slug}/`;
+const man = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만 원`;
+---
+
+<BaseLayout
+  title={CIC_META.seoTitle}
+  description={CIC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: CIC_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: CIC_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: CIC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={CIC_META.slug} pageClass="cic-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="복지·지원금"
+        title="자녀장려금 계산기 2026"
+        description="부부합산 소득, 자녀 수, 재산을 입력하면 2026년 기준 자녀별 예상 지급액을 계산합니다."
+        badges={["신규", "자녀장려금", "다자녀", "2026"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          CIC_META.dataNote,
+          "기한 후 신청(6/2~12/1)은 산정액의 95%만 지급됩니다. 재산 1.7억~2.4억 구간 50% 감액과는 별도로 적용됩니다.",
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="cicResetBtn" copyId="cicCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel cic-quick-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">2026 기준</p>
+            <h2 class="panel__title">자녀 1인당 최대 {man(1_000_000)}</h2>
+          </div>
+          <p class="panel-heading__summary">소득 2,100만 원 이하면 자녀 1인당 최대 100만 원, 소득이 늘수록 점차 줄어 최소 50만 원까지 보장됩니다.</p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">상황을 골라 시작</h2>
+          </div>
+        </div>
+        <div class="cic-preset-grid">
+          {CIC_CONFIG.presets.map((preset) => (
+            <button type="button" class="cic-preset-btn" data-cic-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel cic-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">소득·자녀 수·재산·신청유형</h2>
+          </div>
+        </div>
+
+        <section class="cic-input-section" aria-labelledby="cic-income-title">
+          <h3 id="cic-income-title">기본 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>부부합산 총소득(연)</span>
+              <input data-cic="totalIncome" type="text" inputmode="numeric" class="input-number" value="30,000,000" />
+            </label>
+            <label class="field">
+              <span>부양자녀 수(만 18세 미만)</span>
+              <input data-cic="childCount" type="text" inputmode="numeric" class="input-number" value="1" />
+            </label>
+            <label class="field">
+              <span>신청유형</span>
+              <select data-cic="applicationTiming">
+                <option value="regular">정기 신청 (전액 지급)</option>
+                <option value="late">기한 후 신청 (95% 지급)</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="cic-input-section" aria-labelledby="cic-asset-title">
+          <h3 id="cic-asset-title">재산 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>주택(공시가격)</span>
+              <input data-cic="housing" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>전세금·임차보증금</span>
+              <input data-cic="deposit" type="text" inputmode="numeric" class="input-number" value="50,000,000" />
+            </label>
+            <label class="field">
+              <span>예금·적금</span>
+              <input data-cic="savings" type="text" inputmode="numeric" class="input-number" value="5,000,000" />
+            </label>
+            <label class="field">
+              <span>주식·증권</span>
+              <input data-cic="securities" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>자동차(시가)</span>
+              <input data-cic="vehicle" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>기타 재산</span>
+              <input data-cic="other" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="cic-section cic-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>예상 자녀장려금 지급액</h2>
+        <p>입력값을 바꾸면 자녀 1인당 산정액과 감액 적용 결과가 즉시 다시 계산됩니다.</p>
+      </div>
+      <div class="cic-kpi-grid">
+        <article class="cic-kpi cic-kpi--main"><span>최종 예상 지급액</span><strong data-cic-result="finalAmount">-</strong><small>모의계산 결과</small></article>
+        <article class="cic-kpi"><span>자녀 1인당 산정액</span><strong data-cic-result="perChildAmount">-</strong></article>
+        <article class="cic-kpi"><span>부양자녀 수</span><strong data-cic-result="childCount">-</strong></article>
+        <article class="cic-kpi"><span>감액 적용</span><strong data-cic-result="reductionSummary">-</strong></article>
+      </div>
+      <p class="cic-summary" data-cic-summary></p>
+    </section>
+
+    <section class="cic-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">자녀 수별 비교</p>
+        <h2>자녀가 1명·2명·3명이면 얼마나 차이날까요</h2>
+      </div>
+      <div class="cic-table-wrap">
+        <table class="cic-child-count-table">
+          <thead>
+            <tr>
+              <th>자녀 수</th>
+              <th>예상 지급액</th>
+            </tr>
+          </thead>
+          <tbody data-cic-comparison-body></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="cic-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">감액 해석</p>
+        <h2>왜 줄었는지 확인하기</h2>
+      </div>
+      <div class="cic-reduction-grid">
+        <article class="cic-reduction-card">
+          <strong>재산 감액</strong>
+          <p data-cic-reduction-text="asset">-</p>
+        </article>
+        <article class="cic-reduction-card">
+          <strong>신청유형 감액</strong>
+          <p data-cic-reduction-text="timing">-</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="cic-section cic-cta-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">같이 확인</p>
+        <h2>근로장려금도 같은 조건으로 받을 수 있을까요?</h2>
+      </div>
+      <div class="cic-action-grid">
+        <a href={withBase("/tools/work-incentive-calculator/")}>근로장려금 계산기 보기</a>
+        <a href={withBase("/tools/welfare-benefit-eligibility/")}>다른 복지급여 가능성 보기</a>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={CIC_SEO_CONTENT.introTitle}
+        intro={CIC_SEO_CONTENT.intro}
+        inputPoints={CIC_SEO_CONTENT.inputPoints}
+        criteria={CIC_SEO_CONTENT.criteria}
+        faq={CIC_FAQ}
+        related={CIC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="cic-data" type="application/json" set:html={JSON.stringify(CIC_CONFIG)} />
+  <script type="module" src={withBase("/scripts/child-incentive-calculator.js")}></script>
+</BaseLayout>

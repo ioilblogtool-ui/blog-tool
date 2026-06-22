@@ -708,6 +708,34 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "work-incentive-calculator",
+    title: "근로장려금 계산기 2026",
+    description: "가구유형, 총소득, 재산을 입력하면 2026년 기준 근로장려금 예상 지급액과 기한 후 신청 시 감액 여부를 바로 계산합니다.",
+    order: 11.73,
+    eyebrow: "근로장려금 계산",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "근로장려금", "기한후신청", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "예상 지급액" },
+      { label: "기한후신청", value: "95% 지급" }
+    ]
+  },
+  {
+    slug: "child-incentive-calculator",
+    title: "자녀장려금 계산기 2026",
+    description: "부부합산 소득, 자녀 수, 재산을 입력하면 2026년 기준 자녀별 예상 지급액과 자녀 1명·2명·3명 비교를 바로 계산합니다.",
+    order: 11.74,
+    eyebrow: "자녀장려금 계산",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "자녀장려금", "다자녀", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "자녀별 지급액" },
+      { label: "1인당 최대", value: "100만 원" }
+    ]
+  },
+  {
     slug: "basic-livelihood-recipient-asset-standard",
     title: "기초생활수급자 재산 기준 계산기 2026",
     description: "전세보증금, 예금, 부채, 자동차를 입력해 기초생활수급자 재산 기준과 월 소득환산액 영향을 자가 점검합니다.",

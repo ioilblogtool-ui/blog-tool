@@ -61,17 +61,49 @@ export interface CumulativeCostRow {
   isLowest?: boolean;
 }
 
+export interface FormulaDecisionCard {
+  title: string;
+  headline: string;
+  body: string;
+  linksTo: string;
+}
+
+export interface MonthlyCanRow {
+  ageRange: string;
+  dailyGrams: string;
+  monthlyGrams: number;
+  estimatedCans: string;
+  monthlyCostLow: number;
+  monthlyCostMid: number;
+  monthlyCostHigh: number;
+  note: string;
+}
+
+export interface FormulaBuyingChecklist {
+  title: string;
+  body: string;
+  risk: string;
+}
+
+export interface FormulaCtaCard {
+  href: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  cta: string;
+}
+
 // ── META ────────────────────────────────────────────────
 export const BFC_META = {
   slug: "baby-formula-brand-cost-comparison-2026",
-  title: "2026 분유 브랜드별 실비용 완전 비교",
+  title: "2026 분유 가격 비교표·브랜드별 실비용 완전 비교",
   seoTitle:
-    "2026 분유 브랜드별 실비용 완전 비교 — 아이엠마더·앱솔루트·압타밀·시밀락 12개월 총비용",
+    "분유 가격 비교표 2026｜아이엠마더·앱솔루트·압타밀·히프 100g 단가·12개월 총비용",
   description:
-    "국내외 분유 브랜드 9개를 1단~4단 실구매가 기준으로 비교했습니다. 월령별 월 비용 환산, 12개월 누적 비용, 쿠팡·마트·직구 최저가, 정기배송 할인까지 한 페이지에서 확인하세요.",
-  updatedAt: "2026-05",
+    "국내외 분유 브랜드 9개를 100g 단가, 월령별 캔 수, 12개월 누적 비용 기준으로 비교했습니다. 아이엠마더·앱솔루트·압타밀·히프·시밀락 가격표와 정기배송·직구 체크포인트를 한 번에 확인하세요.",
+  updatedAt: "2026-06-22",
   dataNote:
-    "이 리포트의 모든 가격 정보는 2026년 5월 기준 추정값입니다. 실제 가격은 판매처·시기·할인 조건에 따라 달라질 수 있으므로 구매 전 반드시 해당 판매처에서 최신 가격을 확인하세요.",
+    "이 리포트의 가격 정보는 2026년 6월 기준 온라인·마트 판매가를 800g 환산 단가로 재구성한 추정값입니다. 실제 가격은 판매처·시기·할인 조건에 따라 달라질 수 있으므로 구매 전 반드시 해당 판매처에서 최신 가격을 확인하세요.",
 };
 
 // ── 브랜드 데이터 ────────────────────────────────────────
@@ -316,6 +348,124 @@ export const CUMULATIVE_COST_ROWS: CumulativeCostRow[] = [
   { brand: "남양 임페리얼드림",  pricePerHundredG: 6250, totalCost: 1260000 },
 ];
 
+export const MONTHLY_CAN_ROWS: MonthlyCanRow[] = [
+  {
+    ageRange: "0~1개월",
+    dailyGrams: "하루 약 48g",
+    monthlyGrams: 1440,
+    estimatedCans: "800g 기준 약 1.8캔",
+    monthlyCostLow: 46800,
+    monthlyCostMid: 64800,
+    monthlyCostHigh: 90000,
+    note: "초기에는 수유량보다 적응 여부가 더 중요합니다.",
+  },
+  {
+    ageRange: "2~3개월",
+    dailyGrams: "하루 약 60g",
+    monthlyGrams: 1800,
+    estimatedCans: "800g 기준 약 2.3캔",
+    monthlyCostLow: 58500,
+    monthlyCostMid: 81000,
+    monthlyCostHigh: 112500,
+    note: "한 달 분유값이 본격적으로 체감되는 구간입니다.",
+  },
+  {
+    ageRange: "4~5개월",
+    dailyGrams: "하루 약 72g",
+    monthlyGrams: 2160,
+    estimatedCans: "800g 기준 약 2.7캔",
+    monthlyCostLow: 70200,
+    monthlyCostMid: 97200,
+    monthlyCostHigh: 135000,
+    note: "분유 소비량이 가장 커져 가격 차이가 크게 벌어집니다.",
+  },
+  {
+    ageRange: "6~7개월",
+    dailyGrams: "하루 약 60g",
+    monthlyGrams: 1800,
+    estimatedCans: "800g 기준 약 2.3캔",
+    monthlyCostLow: 58500,
+    monthlyCostMid: 81000,
+    monthlyCostHigh: 112500,
+    note: "이유식을 시작하면 분유 의존도가 서서히 낮아집니다.",
+  },
+  {
+    ageRange: "8~9개월",
+    dailyGrams: "하루 약 48g",
+    monthlyGrams: 1440,
+    estimatedCans: "800g 기준 약 1.8캔",
+    monthlyCostLow: 46800,
+    monthlyCostMid: 64800,
+    monthlyCostHigh: 90000,
+    note: "이유식 진행 속도에 따라 실제 사용량 차이가 커집니다.",
+  },
+  {
+    ageRange: "10~11개월",
+    dailyGrams: "하루 약 36g",
+    monthlyGrams: 1080,
+    estimatedCans: "800g 기준 약 1.4캔",
+    monthlyCostLow: 35100,
+    monthlyCostMid: 48600,
+    monthlyCostHigh: 67500,
+    note: "돌 전후 전환 시기를 앞두고 남는 캔 관리가 중요합니다.",
+  },
+];
+
+export const FORMULA_DECISION_CARDS: FormulaDecisionCard[] = [
+  {
+    title: "가성비 우선",
+    headline: "국내 일반 라인 + 정기배송",
+    body: "아이엠마더, 앱솔루트, 일동후디스처럼 100g당 3천 원대 중반 브랜드를 기준으로 잡으면 12개월 총액을 70만 원 안팎으로 방어하기 쉽습니다.",
+    linksTo: "분유값 계산기에서 실제 구매가를 직접 넣어보는 흐름이 가장 잘 맞습니다.",
+  },
+  {
+    title: "소화 민감",
+    headline: "브랜드보다 아기 반응 우선",
+    body: "변 상태, 토함, 발진, 수유 거부가 있으면 가격보다 적응 여부가 먼저입니다. 처음부터 대량 구매하지 말고 1~2캔으로 반응을 본 뒤 늘리는 편이 안전합니다.",
+    linksTo: "성장 백분위 계산기와 함께 보면 체중 흐름을 같이 확인할 수 있습니다.",
+  },
+  {
+    title: "프리미엄 선호",
+    headline: "성분 마케팅과 총액을 분리해서 보기",
+    body: "HMO, MFGM, LCP, 유기농 같은 문구는 비교 포인트가 될 수 있지만, 12개월 총액은 일반 라인보다 40만~60만 원 이상 커질 수 있습니다.",
+    linksTo: "모유수유 vs 분유 비용 계산기로 수유 방식까지 같이 비교하는 편이 좋습니다.",
+  },
+  {
+    title: "직구 고민",
+    headline: "배송비·통관·유통기한까지 합산",
+    body: "압타밀, 히프, 시밀락, 엔파밀은 캔 가격만 보면 매력적으로 보일 수 있지만 배송비, 환율, 통관 지연, 유통기한 리스크를 함께 봐야 합니다.",
+    linksTo: "직구는 정기배송보다 재고 관리와 배송 여유분 계산이 중요합니다.",
+  },
+];
+
+export const FORMULA_BUYING_CHECKLIST: FormulaBuyingChecklist[] = [
+  {
+    title: "100g 단가로 비교했는가",
+    body: "캔 가격이 싸 보여도 용량이 다르면 실제 단가는 비쌀 수 있습니다. 800g, 825g, 879g 제품은 반드시 100g당 가격으로 맞춰 보세요.",
+    risk: "캔 가격만 보고 고르면 월 비용을 과소평가하기 쉽습니다.",
+  },
+  {
+    title: "월령별 단계가 맞는가",
+    body: "국내 브랜드는 1단·2단·3단 구분이 익숙하지만 해외 브랜드는 단계와 월령 기준이 다를 수 있습니다.",
+    risk: "직구 제품은 국내 단계명과 1:1로 대응되지 않을 수 있습니다.",
+  },
+  {
+    title: "정기배송 수량이 과하지 않은가",
+    body: "4~5개월에는 소비량이 많지만 6개월 이후 이유식이 들어가면 분유 사용량이 줄 수 있습니다.",
+    risk: "너무 많이 사두면 유통기한과 단계 전환 때문에 남을 수 있습니다.",
+  },
+  {
+    title: "아기가 실제로 잘 먹는가",
+    body: "가격표의 1위가 우리 집 1위는 아닙니다. 수유 거부, 토함, 변 상태 변화가 있으면 다른 선택지가 필요할 수 있습니다.",
+    risk: "대량 구매 후 교체하면 절약보다 손실이 커집니다.",
+  },
+  {
+    title: "직구라면 배송 여유분이 있는가",
+    body: "해외 배송은 지연될 수 있으므로 마지막 1캔을 뜯기 전에 주문하면 늦을 수 있습니다.",
+    risk: "급하게 국내 제품으로 갈아타면 아기 적응 문제가 생길 수 있습니다.",
+  },
+];
+
 // ── 구매처 비교 ──────────────────────────────────────────
 export const PURCHASE_CHANNELS: PurchaseChannel[] = [
   {
@@ -445,4 +595,35 @@ export const BFC_RELATED_LINKS: BfcLink[] = [
   { href: "/reports/baby-cost-2016-vs-2026/", label: "아이 키우는 비용 2016 vs 2026" },
   { href: "/tools/parental-leave-short-work-calculator/", label: "육아휴직·단축근무 급여 계산기" },
   { href: "/tools/parental-leave/", label: "육아휴직 급여 계산기" },
+];
+
+export const BFC_CTA_CARDS: FormulaCtaCard[] = [
+  {
+    href: "/tools/formula-cost/",
+    eyebrow: "직접 계산",
+    title: "아기 분유값 계산기",
+    description: "월령, 캔 가격, 100g 단가를 넣어 남은 기간 분유 총비용을 바로 계산합니다.",
+    cta: "내 분유값 계산",
+  },
+  {
+    href: "/tools/breastfeeding-vs-formula-cost/",
+    eyebrow: "수유 방식 비교",
+    title: "모유수유 vs 분유 비용 계산기",
+    description: "완모·혼합·완분을 12개월 누적 비용과 유축기 손익분기점으로 비교합니다.",
+    cta: "수유 방식 비교",
+  },
+  {
+    href: "/tools/diaper-cost/",
+    eyebrow: "반복 지출",
+    title: "기저귀 비용 계산기",
+    description: "분유와 함께 매달 나가는 기저귀 비용을 브랜드·월령 기준으로 이어서 확인합니다.",
+    cta: "기저귀값 계산",
+  },
+  {
+    href: "/reports/baby-cost-guide-first-year/",
+    eyebrow: "1년 육아비",
+    title: "신생아부터 돌까지 육아비용 총정리",
+    description: "분유, 기저귀, 병원비, 이유식, 육아용품까지 첫해 총비용을 한 번에 봅니다.",
+    cta: "첫해 비용 보기",
+  },
 ];

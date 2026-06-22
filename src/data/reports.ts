@@ -808,10 +808,10 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "baby-formula-brand-cost-comparison-2026",
-    title: "2026 분유 브랜드별 실비용 완전 비교",
-    description: "아이엠마더·앱솔루트·압타밀·히프·시밀락 등 9개 브랜드를 단가·월 비용·12개월 누적 기준으로 비교합니다.",
+    title: "분유 가격 비교표 2026",
+    description: "아이엠마더·앱솔루트·압타밀·히프·시밀락 등 9개 브랜드를 100g 단가, 월령별 캔 수, 12개월 누적 비용 기준으로 비교합니다.",
     order: 45,
-    badges: ["분유", "브랜드 비교", "육아비용", "2026"],
+    badges: ["분유 가격표", "브랜드 비교", "육아비용", "2026"],
   },
   {
     slug: "2026-year-end-tax-saving-guide",
@@ -843,10 +843,10 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "youth-future-savings-2026",
-    title: "청년미래적금 조건·만기 수령액 정리 2026",
-    description: "2026년 청년미래적금 가입 조건, 신청기간, 정부기여금, 우대금리, 비과세 혜택, 청년도약계좌 갈아타기 여부를 정리합니다.",
+    title: "청년미래적금 금리 비교 2026",
+    description: "2026년 6월 22일 비교공시 기준 청년미래적금 은행별 기본금리, 최고금리, 우대조건과 나에게 유리한 은행 선택 기준을 정리합니다.",
     order: 25.05,
-    badges: ["청년미래적금", "정부기여금", "정책금융", "2026"],
+    badges: ["청년미래적금", "금리비교", "정책금융", "2026"],
   },
   {
     slug: "governor-mayor-candidate-assets-comparison-2026",

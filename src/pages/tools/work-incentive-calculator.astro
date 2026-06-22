@@ -1,0 +1,286 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  WIC_CONFIG,
+  WIC_FAQ,
+  WIC_HOUSEHOLD_TYPE_DESCRIPTIONS,
+  WIC_HOUSEHOLD_TYPE_LABELS,
+  WIC_META,
+  WIC_RELATED_LINKS,
+  WIC_SEO_CONTENT,
+  WORK_INCENTIVE_BANDS_2026,
+} from "../../data/workIncentiveCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${WIC_META.slug}/`;
+const man = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만 원`;
+---
+
+<BaseLayout
+  title={WIC_META.seoTitle}
+  description={WIC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: WIC_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: WIC_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: WIC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={WIC_META.slug} pageClass="wic-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="복지·지원금"
+        title="근로장려금 계산기 2026"
+        description="가구유형, 총소득, 재산을 입력하면 2026년 기준 예상 지급액과 기한 후 신청 시 감액 여부를 계산합니다."
+        badges={["신규", "근로장려금", "기한후신청", "2026"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          WIC_META.dataNote,
+          "기한 후 신청(6/2~12/1)은 산정액의 95%만 지급됩니다. 재산 1.7억~2.4억 구간 50% 감액과는 별도로 적용됩니다.",
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="wicResetBtn" copyId="wicCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel wic-quick-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">2026 기준</p>
+            <h2 class="panel__title">맞벌이가구 최대 {man(3_300_000)}</h2>
+          </div>
+          <p class="panel-heading__summary">가구유형에 따라 소득 기준과 최대 지급액이 달라집니다. 산정 구간은 점증→평탄→점감 구조입니다.</p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">상황을 골라 시작</h2>
+          </div>
+        </div>
+        <div class="wic-preset-grid">
+          {WIC_CONFIG.presets.map((preset) => (
+            <button type="button" class="wic-preset-btn" data-wic-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel wic-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">가구·소득·재산·신청유형</h2>
+          </div>
+        </div>
+
+        <section class="wic-input-section" aria-labelledby="wic-basic-title">
+          <h3 id="wic-basic-title">기본 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>가구유형</span>
+              <select data-wic="householdType">
+                {Object.entries(WIC_HOUSEHOLD_TYPE_LABELS).map(([value, label]) => (
+                  <option value={value} selected={value === "single-earner"}>{label}</option>
+                ))}
+              </select>
+              <small data-wic-household-desc>{WIC_HOUSEHOLD_TYPE_DESCRIPTIONS["single-earner"]}</small>
+            </label>
+            <label class="field">
+              <span>신청유형</span>
+              <select data-wic="applicationTiming">
+                <option value="regular">정기 신청 (전액 지급)</option>
+                <option value="late">기한 후 신청 (95% 지급)</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="wic-input-section" aria-labelledby="wic-income-title">
+          <h3 id="wic-income-title">소득 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>신청인 총급여(연)</span>
+              <input data-wic="applicantIncome" type="text" inputmode="numeric" class="input-number" value="18,000,000" />
+            </label>
+            <label class="field">
+              <span>배우자 총급여(연)</span>
+              <input data-wic="spouseIncome" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+          </div>
+        </section>
+
+        <section class="wic-input-section" aria-labelledby="wic-asset-title">
+          <h3 id="wic-asset-title">재산 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>주택(공시가격)</span>
+              <input data-wic="housing" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>전세금·임차보증금</span>
+              <input data-wic="deposit" type="text" inputmode="numeric" class="input-number" value="50,000,000" />
+            </label>
+            <label class="field">
+              <span>예금·적금</span>
+              <input data-wic="savings" type="text" inputmode="numeric" class="input-number" value="5,000,000" />
+            </label>
+            <label class="field">
+              <span>주식·증권</span>
+              <input data-wic="securities" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>자동차(시가)</span>
+              <input data-wic="vehicle" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+            <label class="field">
+              <span>기타 재산</span>
+              <input data-wic="other" type="text" inputmode="numeric" class="input-number" value="0" />
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="wic-section wic-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>예상 근로장려금 지급액</h2>
+        <p>입력값을 바꾸면 산정 구간과 감액 적용 결과가 즉시 다시 계산됩니다.</p>
+      </div>
+      <div class="wic-kpi-grid">
+        <article class="wic-kpi wic-kpi--main"><span>최종 예상 지급액</span><strong data-wic-result="finalAmount">-</strong><small>모의계산 결과</small></article>
+        <article class="wic-kpi"><span>기본 산정액</span><strong data-wic-result="baseAmount">-</strong></article>
+        <article class="wic-kpi"><span>적용 구간</span><strong data-wic-result="bandLabel">-</strong></article>
+        <article class="wic-kpi"><span>감액 적용</span><strong data-wic-result="reductionSummary">-</strong></article>
+      </div>
+      <p class="wic-summary" data-wic-summary></p>
+    </section>
+
+    <section class="wic-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">감액 해석</p>
+        <h2>왜 줄었는지 확인하기</h2>
+      </div>
+      <div class="wic-reduction-grid">
+        <article class="wic-reduction-card" data-wic-reduction="asset">
+          <strong>재산 감액</strong>
+          <p data-wic-reduction-text="asset">-</p>
+        </article>
+        <article class="wic-reduction-card" data-wic-reduction="timing">
+          <strong>신청유형 감액</strong>
+          <p data-wic-reduction-text="timing">-</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wic-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">기준표</p>
+        <h2>가구유형별 소득·재산 기준</h2>
+      </div>
+      <div class="wic-table-wrap">
+        <table class="wic-band-table">
+          <thead>
+            <tr>
+              <th>가구유형</th>
+              <th>점증구간</th>
+              <th>평탄구간(최대 지급)</th>
+              <th>점감구간</th>
+              <th>최대 지급액</th>
+            </tr>
+          </thead>
+          <tbody>
+            {WORK_INCENTIVE_BANDS_2026.map((band) => (
+              <tr data-wic-band-row={band.householdType}>
+                <td>{WIC_HOUSEHOLD_TYPE_LABELS[band.householdType]}</td>
+                <td>0~{man(band.increasingEnd)}</td>
+                <td>{man(band.increasingEnd)}~{man(band.flatEnd)}</td>
+                <td>{man(band.flatEnd)}~{man(band.incomeLimit)}</td>
+                <td>{man(band.maxAmount)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="wic-table-note">산정 구간 경계값은 보도자료 기준 추정치입니다. 정확한 금액은 국세청 홈택스 모의계산으로 확인하세요.</p>
+    </section>
+
+    <section class="wic-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">신청 일정</p>
+        <h2>2026년 근로장려금 신청 타임라인</h2>
+      </div>
+      <div class="wic-timeline">
+        {WIC_CONFIG.timingSchedule.map((item) => (
+          <article class="wic-timeline-item">
+            <strong>{item.label}</strong>
+            <span>{item.period}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="wic-section wic-cta-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">같이 확인</p>
+        <h2>자녀가 있다면 자녀장려금도 같이 받을 수 있을까요?</h2>
+      </div>
+      <div class="wic-action-grid">
+        <a href={withBase("/tools/child-incentive-calculator/")}>자녀장려금 계산기 보기</a>
+        <a href={withBase("/tools/welfare-benefit-eligibility/")}>다른 복지급여 가능성 보기</a>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={WIC_SEO_CONTENT.introTitle}
+        intro={WIC_SEO_CONTENT.intro}
+        inputPoints={WIC_SEO_CONTENT.inputPoints}
+        criteria={WIC_SEO_CONTENT.criteria}
+        faq={WIC_FAQ}
+        related={WIC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="wic-data" type="application/json" set:html={JSON.stringify(WIC_CONFIG)} />
+  <script type="module" src={withBase("/scripts/work-incentive-calculator.js")}></script>
+</BaseLayout>

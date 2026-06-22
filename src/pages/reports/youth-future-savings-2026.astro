@@ -9,6 +9,8 @@ import {
   ACCOUNT_TYPE_COMPARISONS,
   APPLICATION_CHECKS,
   BANK_RATE_INFOS,
+  BANK_RATE_SUMMARY,
+  BANK_SELECTION_GUIDES,
   DECISION_CARDS,
   ELIGIBILITY_CHECKS,
   LEAP_COMPARISON_ROWS,
@@ -36,7 +38,7 @@ const jsonLd = {
       "@type": "Article",
       headline: YOUTH_FUTURE_META.title,
       description: YOUTH_FUTURE_META.description,
-      dateModified: "2026-06-04",
+      dateModified: "2026-06-22",
       mainEntityOfPage: pageUrl,
       publisher: {
         "@type": "Organization",
@@ -64,11 +66,11 @@ const jsonLd = {
 
   <main class="container page-shell report-page yfs-page">
     <CalculatorHero
-      eyebrow="2026년 6월 출시판"
+      eyebrow="2026년 6월 22일 비교공시"
       title={YOUTH_FUTURE_META.title}
-      description="가입 대상, 정부기여금, 우대금리 확인 포인트, 청년도약계좌와의 선택 기준을 한 번에 정리합니다."
+      description="은행별 기본금리·최고금리·우대조건과 내 상황에 유리한 은행 선택 기준을 한 번에 정리합니다."
       updatedAt={YOUTH_FUTURE_META.updatedAt}
-      badges={["정책금융", "만기 추정", "기존 계좌 비교"]}
+      badges={["청년미래적금 금리", "은행별 비교", "우대조건"]}
     />
 
     <InfoNotice
@@ -76,15 +78,15 @@ const jsonLd = {
       lines={[
         "이 콘텐츠는 금융상품 가입 권유가 아니라 정책금융 정보 정리와 계산 보조 콘텐츠입니다.",
         "만기 수령액은 월 납입액, 적용금리, 우대조건, 정부기여금 지급 방식에 따라 달라지는 추정값입니다.",
-        "은행별 금리와 실제 신청 가능 여부는 출시 시점의 공식 공고와 상품설명서를 우선합니다.",
+        "은행별 금리는 2026년 6월 22일 은행연합회 청년미래적금 비교공시 기준이며, 실제 가입 전 상품설명서와 상세정보를 다시 확인하세요.",
       ]}
     />
 
     <section class="content-section yfs-section yfs-summary-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">요약</p>
-        <h2>청년미래적금 6월 출시판 핵심 숫자</h2>
-        <p>납입 한도, 정부기여금, 만기 예상액, 은행 공시 확인 포인트를 먼저 분리해서 봅니다.</p>
+        <h2>청년미래적금 금리 핵심 숫자</h2>
+        <p>기본금리는 모든 은행이 5.00%로 같고, 차이는 우대금리 달성 가능성에서 갈립니다.</p>
       </div>
 
       <div class="yfs-summary-grid">
@@ -94,6 +96,41 @@ const jsonLd = {
             <p>{metric.label}</p>
             <strong>{metric.value}</strong>
             <small>{metric.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section yfs-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">은행별 결론</p>
+        <h2>최고금리만 보면 8%, 실제 선택은 조건 달성 가능성입니다</h2>
+        <p>같은 8%라도 급여이체, 카드, 자동이체, 첫거래, 연계가입 조건이 다릅니다. 내가 이미 쓰는 은행에서 쉽게 채울 수 있는 조건이 많은지 먼저 보세요.</p>
+      </div>
+      <div class="yfs-rate-summary-grid">
+        {BANK_RATE_SUMMARY.map((item) => (
+          <article class={`yfs-rate-summary-card yfs-rate-summary-card--${item.tone}`}>
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+            <p>{item.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section yfs-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">나에게 유리한 은행</p>
+        <h2>청년미래적금 은행 선택은 이렇게 나누면 쉽습니다</h2>
+        <p>최고금리 은행을 고르는 것보다 내가 실제로 우대조건을 끝까지 유지할 수 있는 은행을 고르는 편이 안전합니다.</p>
+      </div>
+      <div class="yfs-bank-choice-grid">
+        {BANK_SELECTION_GUIDES.map((guide) => (
+          <article class="yfs-bank-choice-card">
+            <span>{guide.title}</span>
+            <strong>{guide.bestBanks}</strong>
+            <p>{guide.body}</p>
+            <small>{guide.caution}</small>
           </article>
         ))}
       </div>
@@ -162,8 +199,35 @@ const jsonLd = {
     <section class="content-section yfs-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">은행 공시</p>
-        <h2>금리와 우대조건은 최종 공시 확인</h2>
-        <p>정부기여금 구조와 은행 금리는 별도로 봐야 합니다. 은행별 우대조건 충족 여부에 따라 실수령액이 달라집니다.</p>
+        <h2>청년미래적금 은행별 금리 비교표</h2>
+        <p>2026년 6월 22일 기준 비교공시입니다. 기본금리는 모두 5.00%이며, 최고금리는 우대금리를 모두 채웠을 때 기준입니다.</p>
+      </div>
+
+      <div class="table-wrap yfs-bank-table-wrap">
+        <table class="yfs-bank-rate-table">
+          <thead>
+            <tr>
+              <th scope="col">은행</th>
+              <th scope="col">기본금리</th>
+              <th scope="col">최고금리</th>
+              <th scope="col">우대조건 요약</th>
+              <th scope="col">유리한 사람</th>
+              <th scope="col">난이도</th>
+            </tr>
+          </thead>
+          <tbody>
+            {BANK_RATE_INFOS.map((bank) => (
+              <tr>
+                <th scope="row">{bank.bank}</th>
+                <td>{bank.baseRate.toFixed(2)}%</td>
+                <td><strong>{bank.totalRate.toFixed(2)}%</strong></td>
+                <td>{bank.conditionSummary}</td>
+                <td>{bank.bestFor}</td>
+                <td><span class={`yfs-difficulty yfs-difficulty--${bank.difficulty}`}>{bank.difficulty}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div class="yfs-bank-grid">
@@ -182,6 +246,7 @@ const jsonLd = {
               <strong>{bank.totalRate}%</strong>
             </div>
             <p>{bank.note}</p>
+            <small>{bank.bestFor}</small>
           </article>
         ))}
       </div>

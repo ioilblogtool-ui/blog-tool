@@ -4,7 +4,7 @@ export const DEFAULT_YOUTH_SAVINGS_INPUT = {
   youthFutureType: "general",
   leapIncomeTierId: "tier-2",
   futureBaseRate: 5,
-  futureBonusRate: 0,
+  futureBonusRate: 3,
   leapAnnualRate: 5,
   regularAnnualRate: 3.5,
   regularMonths: 36,
