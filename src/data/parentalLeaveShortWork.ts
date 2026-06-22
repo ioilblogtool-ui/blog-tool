@@ -103,6 +103,7 @@ export const REFERENCE_LINKS = [
 ] as const;
 
 export const RELATED_LINKS = [
+  { href: '/tools/childcare-short-time-pay-calculator/', label: '육아기 근로시간 단축 급여 계산기' },
   { href: '/tools/parental-leave-pay/', label: '육아휴직 급여 계산기' },
   { href: '/tools/single-parental-leave-total/', label: '한 명만 육아휴직 총수령액 계산기' },
   { href: '/tools/six-plus-six/', label: '6+6 부모육아휴직제 계산기' },
