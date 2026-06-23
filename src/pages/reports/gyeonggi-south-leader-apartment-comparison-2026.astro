@@ -1,0 +1,341 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  GSLA_CRITERIA,
+  GSLA_FAQ,
+  GSLA_META,
+  GSLA_REGIONS,
+  GSLA_RELATED_LINKS,
+  GSLA_SCORE_LABELS,
+  GSLA_SEO_INTRO,
+  GSLA_SOURCE_LINKS,
+  formatScore,
+  scoreWidth,
+} from "../../data/gyeonggiSouthLeaderApartmentComparison2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${GSLA_META.slug}/`;
+
+const tableRows = GSLA_REGIONS.map((region) => ({
+  ...region,
+  complexes: region.leaderComplexes.slice(0, 3).join(", "),
+  transportText: region.transport.slice(0, 3).join(", "),
+  jobText: region.jobAccess.slice(0, 2).join(", "),
+}));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: GSLA_META.seoTitle,
+      description: GSLA_META.description,
+      dateModified: GSLA_META.updatedAt,
+      inLanguage: "ko-KR",
+      mainEntityOfPage: reportUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      about: ["경기 남부 아파트", "동탄 아파트", "분당 아파트", "수지 아파트", "영통 아파트", "대장 아파트"],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: GSLA_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+        { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+        { "@type": "ListItem", position: 3, name: GSLA_META.title, item: reportUrl },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout title={GSLA_META.seoTitle} description={GSLA_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page gsla-page">
+    <CalculatorHero
+      eyebrow="2026 경기 남부 아파트 비교"
+      title={GSLA_META.title}
+      description="전용 84㎡ 기준 가격대, GTX·신분당선·수인분당선 교통, 삼성전자·판교·강남 직주근접, 학군, 신축성, 리스크를 같은 기준으로 비교합니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[GSLA_META.dataNote, GSLA_META.caution, `기준 업데이트: ${GSLA_META.updatedAt}`]}
+    />
+
+    <section class="content-section gsla-hero-board" aria-labelledby="gsla-brief-title">
+      <div class="gsla-hero-board__copy">
+        <p class="gsla-eyebrow">Editor's Brief</p>
+        <h2 id="gsla-brief-title">가격 레벨은 분당, 상승 탄력은 동탄, 균형 실거주는 수지, 직주근접은 영통입니다.</h2>
+        <p>
+          네 지역 모두 경기 남부 핵심 주거지지만 가격을 만드는 이유는 다릅니다. 분당은 입지와 학군, 동탄은 GTX-A와
+          반도체 벨트, 수지는 신분당선과 실거주 균형, 영통은 삼성전자 직주근접과 광교·수원 생활권이 핵심입니다.
+        </p>
+        <div class="gsla-hero-board__actions" aria-label="관련 계산기 바로가기">
+          <a href="/tools/home-purchase-fund/">내 예산으로 계산하기</a>
+          <a href="/tools/couple-monthly-cashflow-calculator/">월 현금흐름 확인하기</a>
+        </div>
+      </div>
+      <div class="gsla-hero-board__stats">
+        <article>
+          <span>가격 레벨</span>
+          <strong>분당</strong>
+          <p>18억~25억+ 구간의 상급지 가격대</p>
+        </article>
+        <article>
+          <span>최근 탄력</span>
+          <strong>동탄</strong>
+          <p>GTX-A와 반도체 벨트 후킹</p>
+        </article>
+        <article>
+          <span>균형 선택</span>
+          <strong>수지</strong>
+          <p>신분당선·학군·가격 부담의 균형</p>
+        </article>
+        <article>
+          <span>직주근접</span>
+          <strong>영통</strong>
+          <p>삼성전자와 수원·광교 생활권</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section gsla-region-summary" aria-labelledby="gsla-summary-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한눈에 보기</p>
+        <h2 id="gsla-summary-title">경기 남부 4대 주거지 포지션</h2>
+      </div>
+      <div class="gsla-region-grid">
+        {GSLA_REGIONS.map((region) => (
+          <article class={`gsla-region-card gsla-region-card--${region.key}`}>
+            <p class="gsla-region-card__label">{region.label}</p>
+            <h3>{region.name}</h3>
+            <p>{region.summary}</p>
+            <dl>
+              <div>
+                <dt>84㎡ 가격대</dt>
+                <dd>{region.priceRange84}</dd>
+              </div>
+              <div>
+                <dt>핵심 리스크</dt>
+                <dd>{region.mainRisk}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gsla-table-section" aria-labelledby="gsla-table-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">84㎡ 비교표</p>
+        <h2 id="gsla-table-title">동탄·분당·수지·영통 대장 아파트 가격 비교</h2>
+        <p class="section-header__description">
+          단지명만 나열하지 않고 가격을 만드는 교통, 직주근접, 학군, 신축성, 리스크를 같은 열로 놓았습니다.
+        </p>
+      </div>
+      <div class="gsla-table-wrap">
+        <table class="gsla-table">
+          <caption>경기 남부 대장 아파트 84㎡ 가격대와 주요 판단 기준 비교</caption>
+          <thead>
+            <tr>
+              <th scope="col">지역</th>
+              <th scope="col">대표 단지</th>
+              <th scope="col">84㎡ 최근 가격대</th>
+              <th scope="col">GTX/교통</th>
+              <th scope="col">직주근접</th>
+              <th scope="col">학군</th>
+              <th scope="col">재건축/신축</th>
+              <th scope="col">리스크</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tableRows.map((region) => (
+              <tr>
+                <th scope="row">
+                  <strong>{region.name}</strong>
+                  <span>{region.label}</span>
+                </th>
+                <td>{region.complexes}</td>
+                <td class="gsla-table__price">{region.priceRange84}</td>
+                <td>{region.transportText}</td>
+                <td>{region.jobText}</td>
+                <td>{region.schoolLife}</td>
+                <td>{region.newnessOrRedevelopment}</td>
+                <td>{region.mainRisk}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="gsla-table-note">
+        표의 가격대는 한 점 가격이 아니라 전용 84㎡ 기준 최근 실거래가와 주요 매물가를 함께 본 비교용 범위입니다.
+      </p>
+    </section>
+
+    <section class="content-section gsla-detail-section" aria-labelledby="gsla-detail-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 비싼가</p>
+        <h2 id="gsla-detail-title">지역별 가격을 만드는 핵심 요인</h2>
+      </div>
+      <div class="gsla-detail-list">
+        {GSLA_REGIONS.map((region) => (
+          <article class="gsla-detail-card">
+            <div class="gsla-detail-card__head">
+              <div>
+                <p>{region.label}</p>
+                <h3>{region.name}</h3>
+              </div>
+              {region.weeklyChange && (
+                <span class="gsla-change-badge" title={region.weeklyChange.sourceNote}>
+                  {region.weeklyChange.label} {region.weeklyChange.value}
+                </span>
+              )}
+            </div>
+            <p class="gsla-detail-card__summary">{region.summary}</p>
+            <div class="gsla-detail-card__columns">
+              <div>
+                <h4>대표 생활권</h4>
+                <ul>
+                  {region.representativeAreas.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+              <div>
+                <h4>가격 요인</h4>
+                <ul>
+                  {region.whyExpensive.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+              <div>
+                <h4>맞는 수요자</h4>
+                <ul>
+                  {region.buyerFit.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+              <div>
+                <h4>주의할 점</h4>
+                <ul>
+                  {region.caution.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gsla-score-section" aria-labelledby="gsla-score-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자체 평가표</p>
+        <h2 id="gsla-score-title">교통·직주근접·학군·리스크 점수 비교</h2>
+        <p class="section-header__description">
+          점수는 비교계산소 자체 기준입니다. 매수 추천 점수가 아니라 지역별 성격을 비교하기 위한 지표입니다.
+        </p>
+      </div>
+      <div class="gsla-score-grid">
+        {GSLA_REGIONS.map((region) => (
+          <article class="gsla-score-card">
+            <h3>{region.name}</h3>
+            <p>{region.label}</p>
+            <div class="gsla-score-list">
+              {GSLA_SCORE_LABELS.map((item) => (
+                <div class="gsla-score-row">
+                  <div class="gsla-score-row__label">
+                    <span>{item.label}</span>
+                    <small>{item.note}</small>
+                  </div>
+                  <div class="gsla-score-row__bar" aria-hidden="true">
+                    <span style={`width: ${scoreWidth(region.score[item.key])}`}></span>
+                  </div>
+                  <strong>{formatScore(region.score[item.key])}</strong>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gsla-risk-section" aria-labelledby="gsla-risk-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리스크 체크</p>
+        <h2 id="gsla-risk-title">좋은 지역일수록 월 부담과 리스크를 같이 봐야 합니다</h2>
+      </div>
+      <div class="gsla-risk-grid">
+        <article>
+          <h3>단기 급등</h3>
+          <p>동탄처럼 상승률이 강한 지역은 매물 감소와 상승 거래가 동시에 나타날 수 있습니다. 실거래가와 호가 차이를 확인해야 합니다.</p>
+        </article>
+        <article>
+          <h3>가격 부담</h3>
+          <p>분당처럼 가격 레벨이 높은 지역은 금리, DSR, 취득세, 관리비까지 포함한 월 부담 계산이 먼저입니다.</p>
+        </article>
+        <article>
+          <h3>교통 편차</h3>
+          <p>수지와 영통은 같은 지역 안에서도 역세권, 도로 접근, 출퇴근 시간에 따라 체감 가치가 크게 달라집니다.</p>
+        </article>
+        <article>
+          <h3>생활권 경계</h3>
+          <p>광교, 영통, 수지 일부는 행정구역과 생활권이 겹칩니다. 단지 주소보다 실제 동선과 생활권을 확인해야 합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section gsla-budget-cta" aria-labelledby="gsla-budget-title">
+      <div>
+        <p class="gsla-eyebrow">다음 단계</p>
+        <h2 id="gsla-budget-title">15억 아파트는 가격보다 월 현금흐름이 더 중요합니다</h2>
+        <p>
+          같은 15억이라도 금리, 대출금, 관리비, 육아비, 차량비, 투자금에 따라 매달 남는 돈은 완전히 달라집니다.
+          관심 지역을 골랐다면 이제 내 예산으로 실제 부담 가능한지 계산해보는 단계입니다.
+        </p>
+      </div>
+      <div class="gsla-cta-grid">
+        {GSLA_RELATED_LINKS.slice(0, 3).map((link) => (
+          <a href={link.href} class="gsla-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gsla-source-section" aria-labelledby="gsla-source-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">데이터 기준</p>
+        <h2 id="gsla-source-title">가격대와 상승률을 읽을 때 확인할 기준</h2>
+      </div>
+      <div class="gsla-source-grid">
+        {GSLA_SOURCE_LINKS.map((link) => (
+          <a href={link.href} class="gsla-source-card" target="_blank" rel="noopener noreferrer">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="동탄·분당·수지·영통 대장 아파트 비교를 이렇게 읽으세요"
+      intro={GSLA_SEO_INTRO}
+      criteria={GSLA_CRITERIA}
+      faq={GSLA_FAQ}
+      related={GSLA_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

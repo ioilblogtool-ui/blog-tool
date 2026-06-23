@@ -1,0 +1,326 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  DT20_AFFORDABILITY_MATRIX,
+  DT20_EVIDENCE_METRICS,
+  DT20_FAQ,
+  DT20_INCOME_SCENARIOS,
+  DT20_LOAN_SCENARIOS,
+  DT20_META,
+  DT20_PRICE_DRIVERS,
+  DT20_PURCHASE_COSTS,
+  DT20_REGION_COMPARE,
+  DT20_RELATED_LINKS,
+  DT20_RISK_ITEMS,
+  DT20_SEO_BULLETS,
+  DT20_SEO_INTRO,
+  formatKrw,
+  formatMonthlyKrw,
+  formatPercent,
+} from "../../data/dongtan20BillionApartmentAffordability2026";
+
+const baseLoan = DT20_LOAN_SCENARIOS.find((item) => item.id === "loan12") ?? DT20_LOAN_SCENARIOS[1];
+const baseIncome = DT20_INCOME_SCENARIOS.find((item) => item.id === "income1000") ?? DT20_INCOME_SCENARIOS[1];
+const baseCell = DT20_AFFORDABILITY_MATRIX.find((item) => item.incomeId === baseIncome.id && item.loanId === baseLoan.id);
+const faqForSeo = DT20_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: DT20_META.title,
+      description: DT20_META.description,
+      inLanguage: "ko-KR",
+      dateModified: "2026-06-23",
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+      mainEntityOfPage: `https://bigyocalc.com/reports/${DT20_META.slug}/`,
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: DT20_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={DT20_META.seoTitle} description={DT20_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page dt20-page">
+    <CalculatorHero
+      eyebrow="동탄 집값 검증"
+      title="동탄 20억 시대, 월급으로 감당 가능한 가격일까?"
+      description="84㎡ 20억 실거래가를 기준으로 필요 현금, 대출 월 원리금, 부부 실수령별 가능성을 계산합니다."
+      badges={["동탄", "20억", "대출", "실거주"]}
+    />
+
+    <InfoNotice
+      title="보도 기반 추정 리포트"
+      lines={[
+        DT20_META.caution,
+        "20억8000만 원, 5.11%, 매물 42.6% 감소는 사용자 제공 보도 수치 기반 초안입니다. 구현 후 실제 운영 전에는 보도 원문과 국토부 실거래 확인이 필요합니다.",
+        `업데이트 기준: ${DT20_META.updatedAt}`,
+      ]}
+    />
+
+    <section class="content-section dt20-brief">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 결론</p>
+        <h2>20억은 가능한 숫자지만, 대출로 버티기 쉬운 가격은 아닙니다</h2>
+        <p>
+          기준 시나리오를 대출 12억, 연 4.2%, 40년 원리금 균등, 부부 실수령 1,000만 원으로 놓으면 월 원리금만
+          <strong> {formatMonthlyKrw(baseLoan.monthlyPayment)}</strong>입니다. 생활비를 함께 보면 실거주 검토는 가능해도 여유로운 가격으로 보기는 어렵습니다.
+        </p>
+      </div>
+      <div class="dt20-brief-grid">
+        <article class="dt20-brief-card is-primary">
+          <span>기준 판정</span>
+          <strong>{baseCell?.label ?? "빠듯"}</strong>
+          <p>{baseCell?.comment ?? "생활비와 금리 변화를 함께 봐야 합니다."}</p>
+        </article>
+        <article class="dt20-brief-card">
+          <span>기준 대출</span>
+          <strong>{formatKrw(baseLoan.loanAmount)}</strong>
+          <p>40년 원리금 균등, 연 4.2% 시뮬레이션</p>
+        </article>
+        <article class="dt20-brief-card">
+          <span>주거비 부담률</span>
+          <strong>{baseCell ? formatPercent(baseCell.housingRatio) : "약 59%"}</strong>
+          <p>월 원리금 / 부부 실수령</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 지표</p>
+        <h2>동탄 20억 논쟁에서 먼저 봐야 할 숫자 4개</h2>
+      </div>
+      <div class="dt20-kpi-grid" aria-label="동탄 20억 검증 핵심 지표">
+        {DT20_EVIDENCE_METRICS.map((metric) => (
+          <article class="dt20-kpi-card">
+            <span class="dt20-badge">{metric.badge}</span>
+            <p>{metric.label}</p>
+            <strong>{metric.value}</strong>
+            <small>{metric.description}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dt20-flow-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">최근 흐름</p>
+        <h2>동탄 집값은 왜 다시 주목받고 있나</h2>
+        <p>
+          동탄 집값 상승은 하나의 호재만으로 설명하기 어렵습니다. GTX-A, 삼성전자·반도체 배후 수요, 신축 대단지 선호,
+          매물 감소가 동시에 겹치면서 고가 실거래와 검색 관심이 함께 커진 흐름으로 보는 편이 안전합니다.
+        </p>
+      </div>
+      <div class="dt20-note-box">
+        <strong>20억8000만 원 실거래의 의미</strong>
+        <p>
+          이 숫자는 동탄 전체 평균이라기보다 입지·연식·역 접근성·브랜드가 좋은 상단 가격을 보여주는 신호로 해석해야 합니다.
+          같은 84㎡라도 단지별 가격 차이가 크기 때문에 “동탄 전체가 20억”이라고 일반화하면 위험합니다.
+        </p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">필요 현금</p>
+        <h2>20억 아파트를 사려면 현금이 얼마나 필요할까?</h2>
+        <p>취득세와 중개보수는 단순 추정입니다. 실제 세금은 보유주택 수, 규제지역 여부, 생애최초 조건에 따라 달라질 수 있습니다.</p>
+      </div>
+      <div class="dt20-table-wrap">
+        <table class="dt20-data-table dt20-data-table--cash">
+          <thead>
+            <tr>
+              <th scope="col">시나리오</th>
+              <th scope="col">자기자금</th>
+              <th scope="col">취득세 추정</th>
+              <th scope="col">중개·기타비용</th>
+              <th scope="col">총 필요 현금</th>
+              <th scope="col">해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DT20_PURCHASE_COSTS.map((row) => (
+              <tr>
+                <th scope="row">{row.label}</th>
+                <td>{formatKrw(row.equityRequired)}</td>
+                <td>{formatKrw(row.acquisitionTax)}</td>
+                <td>{formatKrw(row.brokerageFee + row.legalFee + row.movingReserve)}</td>
+                <td><strong>{formatKrw(row.totalCashRequired)}</strong></td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">대출 부담</p>
+        <h2>대출 10억·12억·15억이면 월 원리금은 얼마일까?</h2>
+        <p>기본값은 연 4.2%, 40년 원리금 균등입니다. 금리와 기간이 바뀌면 월 상환액도 크게 달라집니다.</p>
+      </div>
+      <div class="dt20-loan-grid">
+        {DT20_LOAN_SCENARIOS.map((loan) => (
+          <article class="dt20-loan-card">
+            <p>{loan.label}</p>
+            <strong>{formatMonthlyKrw(loan.monthlyPayment)}</strong>
+            <span>연 상환액 {formatKrw(loan.annualPayment)}</span>
+            <small>{loan.description}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">소득별 가능성</p>
+        <h2>부부 실수령 800만·1,000만·1,200만 원이면 가능할까?</h2>
+        <p>주거비 부담률은 월 원리금을 부부 월 실수령으로 나눈 값입니다. 색상보다 판정 문구와 생활비 후 잔액을 함께 보세요.</p>
+      </div>
+      <div class="dt20-affordability-grid">
+        {DT20_INCOME_SCENARIOS.map((income) => (
+          <article class="dt20-income-card">
+            <div class="dt20-income-card__head">
+              <h3>{income.label}</h3>
+              <p>{income.description}</p>
+            </div>
+            <div class="dt20-income-card__rows">
+              {DT20_LOAN_SCENARIOS.map((loan) => {
+                const cell = DT20_AFFORDABILITY_MATRIX.find((item) => item.incomeId === income.id && item.loanId === loan.id);
+                return (
+                  <div class={`dt20-affordability-cell is-${cell?.level ?? "tight"}`}>
+                    <span>{loan.label}</span>
+                    <strong>{cell ? formatMonthlyKrw(cell.monthlyPayment) : "-"}</strong>
+                    <em>{cell ? `${formatPercent(cell.housingRatio)} · ${cell.label}` : "-"}</em>
+                    <small>{cell ? `생활비 후 ${formatKrw(cell.remainingCash)}` : ""}</small>
+                  </div>
+                );
+              })}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상승 이유</p>
+        <h2>동탄 집값 급등 이유 5가지</h2>
+      </div>
+      <div class="dt20-driver-grid">
+        {DT20_PRICE_DRIVERS.map((driver, index) => (
+          <article class="dt20-driver-card">
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{driver.title}</h3>
+            <p>{driver.summary}</p>
+            <div>
+              <strong>상승 요인</strong>
+              <p>{driver.upside}</p>
+            </div>
+            <div class="is-caution">
+              <strong>주의점</strong>
+              <p>{driver.caution}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역 비교</p>
+        <h2>동탄은 광교·영통·분당과 어떻게 비교해야 할까?</h2>
+        <p>가격만으로 우열을 나누기보다 서울 접근성, 직주근접, 신축 상품성, 학군과 생활 인프라를 함께 봐야 합니다.</p>
+      </div>
+      <div class="dt20-region-grid">
+        {DT20_REGION_COMPARE.map((region) => (
+          <article class="dt20-region-card">
+            <h3>{region.name}</h3>
+            <strong>{region.pricePosition}</strong>
+            <div>
+              <span>강점</span>
+              <p>{region.strengths.join(" · ")}</p>
+            </div>
+            <div>
+              <span>리스크</span>
+              <p>{region.risks.join(" · ")}</p>
+            </div>
+            <small>{region.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dt20-risk-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">리스크 체크</p>
+        <h2>단기 과열 리스크도 같이 봐야 합니다</h2>
+      </div>
+      <div class="dt20-risk-list">
+        {DT20_RISK_ITEMS.map((item) => (
+          <article class="dt20-risk-item">
+            <span>확인</span>
+            <p>{item}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dt20-conclusion">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">결론</p>
+        <h2>실거주 가능 가격 vs 투자 과열 가격</h2>
+      </div>
+      <div class="dt20-conclusion-grid">
+        <article>
+          <span>실거주 검토 가능</span>
+          <strong>현금 8억 이상 + 실수령 1,200만 원 이상</strong>
+          <p>생활권이 동탄에 고정돼 있고 대출을 10억~12억 안팎으로 통제할 수 있다면 검토권에 들어옵니다.</p>
+        </article>
+        <article>
+          <span>빠듯한 가격</span>
+          <strong>실수령 1,000만 원 전후 + 대출 12억 이상</strong>
+          <p>월 원리금만으로도 부담률이 커집니다. 자녀 교육비, 차량비, 금리 변동까지 넣으면 여유가 줄어듭니다.</p>
+        </article>
+        <article>
+          <span>과열 주의</span>
+          <strong>단기 상승만 보고 진입하는 경우</strong>
+          <p>GTX-A와 반도체 기대가 가격에 얼마나 반영됐는지, 거래량과 호가 괴리가 커지는지 확인해야 합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section dt20-related-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">관련 계산기</p>
+        <h2>내 조건으로 다시 계산해보세요</h2>
+      </div>
+      <div class="dt20-related-grid">
+        {DT20_RELATED_LINKS.map((link) => (
+          <a href={link.href} class={link.tone === "primary" ? "is-primary" : ""}>
+            <strong>{link.title}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent title="동탄 20억 아파트 감당 가능성 계산 기준" intro={DT20_SEO_INTRO} bullets={DT20_SEO_BULLETS} faqs={faqForSeo} />
+  </main>
+</BaseLayout>

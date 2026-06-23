@@ -520,6 +520,13 @@ export const reports: ReportMeta[] = [
     badges: ["서울", "주담대", "대환대출", "2026"],
   },
   {
+    slug: "dongtan-20-billion-apartment-affordability-2026",
+    title: "동탄 20억 시대, 진짜 가능한 가격일까?",
+    description: "동탄 84㎡ 20억 실거래가를 기준으로 필요 현금, 대출 10억·12억·15억 월 원리금, 부부 실수령별 감당 가능성을 검증합니다.",
+    order: 31.3,
+    badges: ["동탄", "20억", "아파트", "대출", "2026"],
+  },
+  {
     slug: "first-home-buyer-benefits-2026",
     title: "2026 생애최초 주택 구입 혜택 완전 분석",
     description: "취득세 감면, 디딤돌대출, 보금자리론, 신생아 특례대출, 청약 특별공급을 가구 유형별로 비교합니다.",
@@ -959,5 +966,19 @@ export const reports: ReportMeta[] = [
     description: "연소득과 보유 현금을 입력하면 서울 25개 구 매매·전세 가능 여부를 지도로 바로 확인합니다. 구별 평균가, 전세가율까지 한 번에 비교하세요.",
     order: 61.5,
     badges: ["서울", "PIR", "매매·전세", "2026"],
+  },
+  {
+    slug: "gyeonggi-south-leader-apartment-comparison-2026",
+    title: "동탄·분당·수지·영통 대장 아파트 가격 비교",
+    description: "2026년 경기 남부 대표 주거지의 84㎡ 가격대, 교통, 직주근접, 학군, 신축성, 리스크를 같은 표로 비교합니다.",
+    order: 61.55,
+    badges: ["경기 남부", "대장 아파트", "84㎡", "2026"],
+  },
+  {
+    slug: "yongin-vs-pyeongtaek-cluster-housing-2026",
+    title: "용인 vs 평택 반도체 클러스터 2026 | 집값·투자규모 한눈에 비교",
+    description: "용인 반도체 클러스터(122조원)와 평택 삼성캠퍼스 주변 집값 변화를 투자 규모, 인력 유입, 최근 실거래 기준으로 비교합니다.",
+    order: 61.6,
+    badges: ["용인", "평택", "반도체 클러스터", "2026"],
   },
 ];
