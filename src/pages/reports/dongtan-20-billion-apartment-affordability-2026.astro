@@ -9,6 +9,9 @@ import {
   DT20_EVIDENCE_METRICS,
   DT20_FAQ,
   DT20_INCOME_SCENARIOS,
+  DT20_BUYER_GUIDE_STEPS,
+  DT20_LOAN_STRESS_SCENARIOS,
+  DT20_LONGTAIL_SECTIONS,
   DT20_LOAN_SCENARIOS,
   DT20_META,
   DT20_PRICE_DRIVERS,
@@ -16,8 +19,10 @@ import {
   DT20_REGION_COMPARE,
   DT20_RELATED_LINKS,
   DT20_RISK_ITEMS,
-  DT20_SEO_BULLETS,
-  DT20_SEO_INTRO,
+  DT20_SEO_ACTION_POINTS,
+  DT20_SEO_CRITERIA,
+  DT20_SEO_DETAIL_INTRO,
+  DT20_SOURCE_CHECKLIST,
   formatKrw,
   formatMonthlyKrw,
   formatPercent,
@@ -135,6 +140,40 @@ const jsonLd = {
       </div>
     </section>
 
+    <section class="content-section dt20-detail-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상세 안내</p>
+        <h2>동탄 20억 기사를 볼 때 꼭 나눠봐야 할 기준</h2>
+        <p>
+          검색 결과에서 보이는 숫자는 자극적이지만, 실제 매수 판단은 단지·층·거래량·대출 가능액을 나눠서 봐야 합니다.
+          아래 기준을 거치면 “뉴스로 보이는 20억”과 “내가 감당할 수 있는 20억”을 분리할 수 있습니다.
+        </p>
+      </div>
+      <div class="dt20-check-grid">
+        {DT20_SOURCE_CHECKLIST.map((item) => (
+          <article class="dt20-check-card">
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dt20-seo-copy">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">검색 의도별 해석</p>
+        <h2>동탄 20억, 동탄 84㎡, 동탄 집값 급등을 이렇게 봐야 합니다</h2>
+      </div>
+      <div class="dt20-longtail-grid">
+        {DT20_LONGTAIL_SECTIONS.map((item) => (
+          <article class="dt20-longtail-card">
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
     <section class="content-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">필요 현금</p>
@@ -185,6 +224,22 @@ const jsonLd = {
           </article>
         ))}
       </div>
+      <div class="dt20-stress-panel">
+        <div class="section-header section-header--compact">
+          <p class="section-header__eyebrow">금리 민감도</p>
+          <h3>대출 12억은 금리 1%p 차이에도 체감 부담이 크게 달라집니다</h3>
+          <p>아래 값은 40년 원리금 균등 기준의 단순 시뮬레이션입니다. 실제 대출금리는 은행 심사와 상품 조건에 따라 달라집니다.</p>
+        </div>
+        <div class="dt20-stress-grid">
+          {DT20_LOAN_STRESS_SCENARIOS.map((scenario) => (
+            <article>
+              <span>{scenario.label}</span>
+              <strong>{formatMonthlyKrw(scenario.loan12Monthly)}</strong>
+              <p>{scenario.note}</p>
+            </article>
+          ))}
+        </div>
+      </div>
     </section>
 
     <section class="content-section">
@@ -213,6 +268,26 @@ const jsonLd = {
                 );
               })}
             </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section dt20-buyer-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">매수 전 체크</p>
+        <h2>동탄 20억 아파트를 검토한다면 이 순서로 보세요</h2>
+        <p>
+          실거주자는 가격 전망보다 자금 일정과 월 현금흐름을 먼저 확인해야 합니다. 특히 20억 가격대는 대출 가능액보다
+          세금, 보유비, 생활비를 버틸 수 있는지가 더 중요합니다.
+        </p>
+      </div>
+      <div class="dt20-step-grid">
+        {DT20_BUYER_GUIDE_STEPS.map((item) => (
+          <article class="dt20-step-card">
+            <span>{item.step}</span>
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
           </article>
         ))}
       </div>
@@ -321,6 +396,13 @@ const jsonLd = {
       </div>
     </section>
 
-    <SeoContent title="동탄 20억 아파트 감당 가능성 계산 기준" intro={DT20_SEO_INTRO} bullets={DT20_SEO_BULLETS} faqs={faqForSeo} />
+    <SeoContent
+      introTitle="동탄 20억 아파트 감당 가능성 계산 기준"
+      intro={DT20_SEO_DETAIL_INTRO}
+      inputPoints={DT20_SEO_ACTION_POINTS}
+      criteria={DT20_SEO_CRITERIA}
+      faq={faqForSeo}
+      related={DT20_RELATED_LINKS.map((link) => ({ href: link.href, title: link.title }))}
+    />
   </main>
 </BaseLayout>
