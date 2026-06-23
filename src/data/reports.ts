@@ -520,6 +520,13 @@ export const reports: ReportMeta[] = [
     badges: ["서울", "주담대", "대환대출", "2026"],
   },
   {
+    slug: "bundang-redevelopment-vs-dongtan-newbuild-2026",
+    title: "분당 재건축 vs 동탄 신축, 15억이면 어디가 나을까",
+    description: "분당 재건축 시범단지와 동탄 신축 아파트를 학군, 교통, 투자 포인트, 리스크 기준으로 비교합니다. 내 상황에 맞는 선택 기준을 확인하세요.",
+    order: 31.25,
+    badges: ["분당", "동탄", "재건축", "신축", "2026"],
+  },
+  {
     slug: "dongtan-20-billion-apartment-affordability-2026",
     title: "동탄 20억 시대, 진짜 가능한 가격일까?",
     description: "동탄 84㎡ 20억 실거래가를 기준으로 필요 현금, 대출 10억·12억·15억 월 원리금, 부부 실수령별 감당 가능성을 검증합니다.",
@@ -980,5 +987,12 @@ export const reports: ReportMeta[] = [
     description: "용인 반도체 클러스터(122조원)와 평택 삼성캠퍼스 주변 집값 변화를 투자 규모, 인력 유입, 최근 실거래 기준으로 비교합니다.",
     order: 61.6,
     badges: ["용인", "평택", "반도체 클러스터", "2026"],
+  },
+  {
+    slug: "samsung-vs-skhynix-earnings-bonus-2026",
+    title: "삼성전자 vs SK하이닉스 성과급 2026 | 실적 늘면 얼마 더 받을까",
+    description: "삼성전자·SK하이닉스의 2026~2028년 영업이익 전망과 직급별 성과급 환산을 한 화면에서 비교합니다.",
+    order: 61.7,
+    badges: ["삼성전자", "SK하이닉스", "성과급", "2026"],
   },
 ];

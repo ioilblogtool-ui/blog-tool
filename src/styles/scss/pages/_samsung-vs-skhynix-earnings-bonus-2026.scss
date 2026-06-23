@@ -1,0 +1,161 @@
+.sevb-page {
+  --sevb-ink: #172033;
+  --sevb-muted: #667085;
+  --sevb-line: #d8e0ea;
+  --sevb-samsung: #1428a0;
+  --sevb-hynix: #e4002b;
+
+  .sevb-input-row {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    margin-bottom: 16px;
+
+    label {
+      display: grid;
+      gap: 6px;
+    }
+
+    span {
+      color: var(--sevb-ink);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    select {
+      padding: 8px 10px;
+      border: 1px solid var(--sevb-line);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+  }
+
+  .sevb-result-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sevb-result-card {
+    display: grid;
+    gap: 6px;
+    padding: 18px;
+    border-radius: 8px;
+    border: 1px solid var(--sevb-line);
+    background: #fff;
+
+    span {
+      color: var(--sevb-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    strong {
+      display: block;
+      font-size: clamp(20px, 3.5vw, 28px);
+    }
+
+    small {
+      color: var(--sevb-muted);
+      font-size: 12px;
+    }
+
+    &--samsung strong {
+      color: var(--sevb-samsung);
+    }
+
+    &--hynix strong {
+      color: var(--sevb-hynix);
+    }
+  }
+
+  .sevb-consensus-grid,
+  .sevb-insight-grid,
+  .sevb-related-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .sevb-consensus-grid article {
+    padding: 16px;
+    border: 1px solid #f0d999;
+    border-radius: 8px;
+    background: #fff8e8;
+
+    strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--sevb-ink);
+      font-size: 14px;
+    }
+
+    p {
+      margin: 0 0 6px;
+      color: var(--sevb-ink);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    small {
+      color: var(--sevb-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  }
+
+  .sevb-insight-grid article {
+    padding: 16px;
+    border: 1px solid var(--sevb-line);
+    border-radius: 8px;
+    background: #fff;
+
+    h3 {
+      margin: 0 0 6px;
+      color: var(--sevb-ink);
+      font-size: 15px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--sevb-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  .sevb-related-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--sevb-line);
+    border-radius: 8px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.16s, transform 0.16s;
+
+    &:hover {
+      border-color: var(--sevb-samsung);
+      transform: translateY(-1px);
+    }
+
+    strong {
+      color: var(--sevb-ink);
+      font-size: 15px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--sevb-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .sevb-result-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

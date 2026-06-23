@@ -1,0 +1,219 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { rankPresets as hynixRankPresets, psMultipliersByYear } from "../../data/skHynixCompensation";
+import { rankPresets as samsungRankPresets, divisions as samsungDivisions } from "../../data/samsungCompensation";
+import {
+  SEVB_META,
+  SEVB_FAQ,
+  SEVB_SEO_INTRO,
+  SEVB_SEO_CRITERIA,
+  SEVB_RELATED_LINKS,
+  SEVB_CONSENSUS_REFERENCE_CARDS,
+  getEarningsCompareRows,
+  estimateHynixBonus,
+  estimateSamsungBonus,
+} from "../../data/samsungVsSkhynixEarningsBonus2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SEVB_META.slug}/`;
+const earningsRows = getEarningsCompareRows();
+
+const initialHynix = estimateHynixBonus("MANAGER", "2026", "BASE");
+const initialSamsung = estimateSamsungBonus("MANAGER", "DS", "BASE");
+
+const clientPayload = {
+  hynixRankPresets,
+  samsungRankPresets,
+  samsungDivisions,
+  psMultipliersByYear,
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SEVB_META.title,
+    description: SEVB_META.seoDescription,
+    dateModified: SEVB_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SEVB_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SEVB_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={SEVB_META.seoTitle} description={SEVB_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page sevb-page" data-report="samsung-vs-skhynix-earnings-bonus-2026">
+    <CalculatorHero
+      eyebrow="실적·성과급 연동 리포트"
+      title={SEVB_META.title}
+      description={SEVB_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내 (중요)"
+      lines={[
+        SEVB_META.dataNote,
+        "실적 비교 섹션과 성과급 비율 섹션은 서로 다른 시점·출처의 자료이며, 둘을 곱해 새 숫자를 만들지 않습니다.",
+        "이 페이지는 이직·투자 추천이 아니라 공개된 실적 전망과 보도된 성과급 비율을 비교하는 정보 제공용 리포트입니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>2026~2028 실적 전망 비교</h2>
+      <p class="op-message">매출·영업이익 수치는 '반도체 4대장 실적 전망' 리포트와 동일한 자료를 그대로 인용합니다.</p>
+      <div class="op-table-wrap sevb-earnings-table">
+        <table>
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>삼성전자 매출</th>
+              <th>삼성전자 영업이익(이익률)</th>
+              <th>SK하이닉스 매출</th>
+              <th>SK하이닉스 영업이익(이익률)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {earningsRows.map((row) => (
+              <tr>
+                <td>{row.year}E</td>
+                <td>{row.samsung.revenue}조원</td>
+                <td>{row.samsung.operatingProfit}조원 ({row.samsung.operatingMargin}%)</td>
+                <td>{row.hynix.revenue}조원</td>
+                <td>{row.hynix.operatingProfit}조원 ({row.hynix.operatingMargin}%)</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">
+        출처: <a href={withBase("/reports/semiconductor-stocks-forecast-2026-2028/")}>반도체 4대장 2026~2028 실적 전망 비교</a> (2026-05-31 기준 컨센서스·시나리오 재구성)
+      </p>
+    </section>
+
+    <section class="op-section sevb-bonus-panel">
+      <h2>내 직급이면 성과급 얼마?</h2>
+      <p class="op-message">연도·시나리오를 바꾸면 두 회사 예상 성과급이 동시에 갱신됩니다. 삼성전자 사업부 비율은 연도 구분 없이 동일 시나리오 기준입니다.</p>
+
+      <div class="sevb-input-row">
+        <label>
+          <span>SK하이닉스 직급</span>
+          <select id="sevbHynixRank">
+            {hynixRankPresets.map((r) => <option value={r.code} selected={r.code === "MANAGER"}>{r.label}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>삼성전자 직급</span>
+          <select id="sevbSamsungRank">
+            {samsungRankPresets.map((r) => <option value={r.code} selected={r.code === "MANAGER"}>{r.label}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>삼성전자 사업부</span>
+          <select id="sevbSamsungDivision">
+            {samsungDivisions.map((d) => <option value={d.code} selected={d.code === "DS"}>{d.label}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>연도</span>
+          <select id="sevbYear">
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+          </select>
+        </label>
+        <label>
+          <span>시나리오</span>
+          <select id="sevbScenario">
+            <option value="CONSERVATIVE">보수적</option>
+            <option value="BASE" selected>기준</option>
+            <option value="AGGRESSIVE">공격적</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="sevb-result-grid">
+        <article class="sevb-result-card sevb-result-card--hynix">
+          <span>SK하이닉스</span>
+          <strong id="sevbHynixResult">{initialHynix.estimatedBonus.toLocaleString("ko-KR")}원</strong>
+          <small id="sevbHynixRate">{initialHynix.rateLabel} · {initialHynix.scenarioLabel}</small>
+        </article>
+        <article class="sevb-result-card sevb-result-card--samsung">
+          <span>삼성전자</span>
+          <strong id="sevbSamsungResult">{initialSamsung.estimatedBonus.toLocaleString("ko-KR")}원</strong>
+          <small id="sevbSamsungRate">{initialSamsung.rateLabel} · {initialSamsung.scenarioLabel}</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section sevb-consensus-notice">
+      <h2>잠깐, 이 두 수치는 다른 자료입니다</h2>
+      <div class="sevb-consensus-grid">
+        {SEVB_CONSENSUS_REFERENCE_CARDS.map((card) => (
+          <article>
+            <strong>{card.label}</strong>
+            <p>{card.value}</p>
+            <small>{card.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>매출은 삼성, 이익률은 하이닉스</h2>
+      <div class="sevb-insight-grid">
+        <article><h3>규모</h3><p>삼성전자는 메모리·파운드리·모바일·가전이 섞인 종합 기업이라 매출 규모가 훨씬 큽니다.</p></article>
+        <article><h3>이익률</h3><p>SK하이닉스는 메모리·HBM에 집중해 영업이익률이 70%대로 삼성전자(20%대)보다 높게 나타납니다.</p></article>
+        <article><h3>성과급 체감</h3><p>이익률이 높은 SK하이닉스가 PS 비율도 높게 형성되는 경향이 있어, 같은 기준급이라면 시나리오에 따라 체감 차이가 커질 수 있습니다.</p></article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>같이 보면 좋은 계산기와 리포트</h2>
+      <div class="sevb-related-grid">
+        {SEVB_RELATED_LINKS.map((link) => (
+          <a class="sevb-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="삼성전자와 SK하이닉스, 실적과 성과급을 같이 보면"
+      intro={SEVB_SEO_INTRO}
+      criteria={SEVB_SEO_CRITERIA}
+      faq={SEVB_FAQ}
+      related={SEVB_RELATED_LINKS}
+    />
+
+    <script id="sevbPayload" type="application/json" set:html={JSON.stringify(clientPayload)}></script>
+  </main>
+
+  <script src={withBase("/scripts/samsung-vs-skhynix-earnings-bonus-2026.js")} defer></script>
+</BaseLayout>

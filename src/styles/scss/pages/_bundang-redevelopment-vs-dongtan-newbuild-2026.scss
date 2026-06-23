@@ -1,0 +1,491 @@
+.brd-page {
+  --brd-bundang: #0f766e;
+  --brd-bundang-soft: #f0fdfa;
+  --brd-dongtan: #1d4ed8;
+  --brd-dongtan-soft: #eff6ff;
+  --brd-ink: #111827;
+  --brd-muted: #6b7280;
+  --brd-line: #e5e7eb;
+  --brd-card: #ffffff;
+}
+
+.brd-section-heading {
+  margin-bottom: 1rem;
+
+  p {
+    margin: 0 0 0.35rem;
+    color: var(--brd-ink);
+    font-size: 0.78rem;
+    font-weight: 800;
+    opacity: 0.6;
+  }
+
+  h2 {
+    margin: 0 0 0.35rem;
+    color: var(--brd-ink);
+    font-size: 1.35rem;
+    line-height: 1.35;
+  }
+
+  span {
+    color: var(--brd-muted);
+    font-size: 0.92rem;
+  }
+}
+
+// ── 우선순위 탭 ─────────────────────────────────
+.brd-priority-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.brd-tab-btn {
+  flex: 0 0 auto;
+  min-height: 42px;
+  padding: 0.55rem 1rem;
+  border: 1.5px solid var(--brd-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--brd-muted);
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 0.16s, background 0.16s, color 0.16s;
+
+  &.is-active {
+    border-color: #7c3aed;
+    background: #f5f3ff;
+    color: #6d28d9;
+  }
+}
+
+.brd-priority-panel {
+  display: none;
+  margin-bottom: 1.25rem;
+
+  &.is-active {
+    display: grid;
+    gap: 0.7rem;
+  }
+}
+
+.brd-priority-cards {
+  display: grid;
+}
+
+.brd-priority-panel.is-active {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.brd-priority-card {
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--brd-line);
+
+  span {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 800;
+    font-size: 0.82rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--brd-ink);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  &--bundang {
+    border-top: 4px solid var(--brd-bundang);
+    background: var(--brd-bundang-soft);
+
+    span {
+      color: var(--brd-bundang);
+    }
+  }
+
+  &--dongtan {
+    border-top: 4px solid var(--brd-dongtan);
+    background: var(--brd-dongtan-soft);
+
+    span {
+      color: var(--brd-dongtan);
+    }
+  }
+}
+
+.brd-priority-interpretation {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-left: 4px solid #7c3aed;
+  background: #f5f3ff;
+  color: var(--brd-ink);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+// ── 비교표 ─────────────────────────────────
+.brd-table-wrap {
+  overflow-x: auto;
+}
+
+.brd-frame-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+
+  th,
+  td {
+    padding: 0.7rem 0.85rem;
+    border-bottom: 1px solid var(--brd-line);
+    text-align: left;
+    vertical-align: top;
+    font-size: 0.86rem;
+  }
+
+  th {
+    color: var(--brd-muted);
+    font-weight: 700;
+    font-size: 0.78rem;
+  }
+
+  td strong {
+    display: block;
+    color: var(--brd-ink);
+  }
+
+  td small {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--brd-muted);
+    font-size: 0.74rem;
+    line-height: 1.5;
+  }
+
+  tr.is-highlighted {
+    background: #faf5ff;
+  }
+}
+
+.brd-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 0.7rem;
+  font-weight: 800;
+  white-space: nowrap;
+
+  &--공식-발표 {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &--보도-기준 {
+    background: #e0f2fe;
+    color: #075985;
+  }
+
+  &--추정 {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  &--확정-전 {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+// ── 예산 슬라이더 ─────────────────────────────────
+.brd-budget-slider-wrap {
+  margin-bottom: 1.25rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--brd-ink);
+    font-size: 0.92rem;
+
+    strong {
+      color: #7c3aed;
+      font-size: 1.1rem;
+    }
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #7c3aed;
+  }
+}
+
+.brd-budget-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--brd-muted);
+  font-size: 0.76rem;
+  margin-top: 0.3rem;
+}
+
+.brd-example-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.brd-example-card {
+  padding: 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--brd-line);
+  background: var(--brd-card);
+
+  > span {
+    display: inline-flex;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 800;
+  }
+
+  h3 {
+    margin: 0.6rem 0 0.2rem;
+    color: var(--brd-ink);
+    font-size: 1.05rem;
+  }
+
+  > p {
+    margin: 0 0 0.5rem;
+    color: var(--brd-muted);
+    font-size: 0.82rem;
+  }
+
+  strong {
+    display: block;
+    font-size: 1.3rem;
+  }
+
+  &--bundang {
+    border-top: 4px solid var(--brd-bundang);
+
+    > span {
+      background: var(--brd-bundang-soft);
+      color: var(--brd-bundang);
+    }
+
+    strong {
+      color: var(--brd-bundang);
+    }
+  }
+
+  &--dongtan {
+    border-top: 4px solid var(--brd-dongtan);
+
+    > span {
+      background: var(--brd-dongtan-soft);
+      color: var(--brd-dongtan);
+    }
+
+    strong {
+      color: var(--brd-dongtan);
+    }
+  }
+}
+
+.brd-example-card__meta {
+  margin: 0.5rem 0 0;
+  color: var(--brd-muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.brd-example-note {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.8rem;
+}
+
+// ── 재건축 타임라인 ─────────────────────────────────
+.brd-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.brd-stage-card {
+  padding: 1rem;
+  border: 1px solid var(--brd-line);
+  border-top: 4px solid var(--brd-bundang);
+  border-radius: 10px;
+  background: var(--brd-card);
+
+  p {
+    margin: 0.3rem 0;
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+}
+
+.brd-stage-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  h3 {
+    margin: 0;
+    color: var(--brd-ink);
+    font-size: 1rem;
+  }
+}
+
+.brd-stage-card__complexes {
+  color: var(--brd-muted);
+}
+
+// ── 동탄 입주 물량 ─────────────────────────────────
+.brd-supply-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.brd-supply-card {
+  padding: 1rem;
+  border: 1px solid var(--brd-line);
+  border-top: 4px solid var(--brd-dongtan);
+  border-radius: 10px;
+  background: var(--brd-card);
+
+  h3 {
+    margin: 0 0 0.3rem;
+    color: var(--brd-ink);
+    font-size: 0.96rem;
+  }
+
+  p {
+    margin: 0.2rem 0;
+    color: var(--brd-muted);
+    font-size: 0.82rem;
+  }
+
+  strong {
+    display: block;
+    margin: 0.3rem 0;
+    color: var(--brd-dongtan);
+    font-size: 1.15rem;
+  }
+}
+
+// ── 리스크 비교 ─────────────────────────────────
+.brd-risk-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.brd-risk-card {
+  padding: 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--brd-line);
+
+  h3 {
+    margin: 0 0 0.6rem;
+    font-size: 1rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.4rem;
+    color: var(--brd-ink);
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+
+  &--bundang {
+    border-top: 4px solid var(--brd-bundang);
+    background: var(--brd-bundang-soft);
+
+    h3 {
+      color: var(--brd-bundang);
+    }
+  }
+
+  &--dongtan {
+    border-top: 4px solid var(--brd-dongtan);
+    background: var(--brd-dongtan-soft);
+
+    h3 {
+      color: var(--brd-dongtan);
+    }
+  }
+}
+
+// ── 관련 링크 ─────────────────────────────────
+.brd-related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.brd-related-grid a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 1rem;
+  border: 1px solid var(--brd-line);
+  border-radius: 8px;
+  background: #fff;
+  color: #6d28d9;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: #7c3aed;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.12);
+  }
+}
