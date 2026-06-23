@@ -26,14 +26,24 @@ export interface SamsungShuttleFaq {
   answer: string;
 }
 
+export interface SamsungShuttleExample {
+  zoneId: string;
+  complex: string;
+  location: string;
+  sizeLabel: string;
+  priceLabel: string;
+  tradeLabel: string;
+  sourceLabel: string;
+}
+
 export const SAMSUNG_SHUTTLE_META = {
   slug: "samsung-shuttle-real-estate-2026",
   title: "삼성전자 셔틀버스 노선별 아파트 시세 정리 2026",
   description:
     "수원·기흥·화성·평택 캠퍼스별 삼성전자 셔틀권 아파트 전세·매매 시세와 출퇴근 후보 지역을 한눈에 정리합니다.",
-  updatedAt: "2026년 1분기 기준",
+  updatedAt: "2026년 1분기 기준 (실거래 예시는 2025년 거래 기준)",
   caution:
-    "셔틀 정류장과 노선은 회사 내부 운영 정보에 따라 바뀔 수 있습니다. 이 페이지는 공개 채용 정보, 직장인 커뮤니티에서 반복 언급되는 권역, 국토부 실거래가 참고값을 묶은 추정 리포트입니다.",
+    "셔틀 정류장과 노선은 회사 내부 운영 정보에 따라 바뀔 수 있습니다. 권역별 평균 시세는 공개 채용 정보, 직장인 커뮤니티에서 반복 언급되는 권역을 단순화한 참고값이며, 표 하단의 '실제 단지 예시'는 국토교통부 실거래가 공개시스템 기준으로 확인된 개별 단지의 거래가입니다. 같은 권역이라도 단지·층·향·역세권 여부에 따라 가격 차이가 크므로 예시 단지의 가격을 권역 전체 평균으로 보면 안 됩니다.",
 };
 
 export const SAMSUNG_SHUTTLE_CAMPUSES: SamsungShuttleCampus[] = [
@@ -84,11 +94,11 @@ export const SAMSUNG_SHUTTLE_ZONES: SamsungShuttleZone[] = [
     targetCampus: ["수원", "기흥"],
     commuteLabel: "40~50분",
     commuteMin: 40,
-    jeonseEok: 6.5,
-    saleEok: 16,
-    pricePerPyeongManwon: 5000,
-    note: "IT·판교 생활권과 삼성 통근을 같이 보려는 수요가 많습니다. 기흥·수원 접근성은 좋은 편입니다.",
-    badge: "추정",
+    jeonseEok: 7,
+    saleEok: 17,
+    pricePerPyeongManwon: 5400,
+    note: "IT·판교 생활권과 삼성 통근을 같이 보려는 수요가 많습니다. 기흥·수원 접근성은 좋은 편입니다. 다만 백현동처럼 판교역 인접 단지는 평당 7,000만 원대까지 올라가 권역 안에서도 가격 차이가 큽니다.",
+    badge: "참고",
   },
   {
     id: "gwanggyo",
@@ -97,11 +107,11 @@ export const SAMSUNG_SHUTTLE_ZONES: SamsungShuttleZone[] = [
     targetCampus: ["수원", "기흥"],
     commuteLabel: "20~35분",
     commuteMin: 25,
-    jeonseEok: 4.5,
-    saleEok: 10,
-    pricePerPyeongManwon: 3100,
-    note: "수원·기흥 출퇴근 균형이 좋습니다. 강남권보다 매매 부담은 낮고 생활 인프라는 안정적입니다.",
-    badge: "추정",
+    jeonseEok: 5,
+    saleEok: 13,
+    pricePerPyeongManwon: 4000,
+    note: "수원·기흥 출퇴근 균형이 좋습니다. 강남권보다 매매 부담은 낮고 생활 인프라는 안정적입니다. 광교신도시 내에서도 호수공원 인접 단지는 16억대까지 형성돼 있어 단지별 격차를 확인해야 합니다.",
+    badge: "참고",
   },
   {
     id: "dongtan",
@@ -110,11 +120,11 @@ export const SAMSUNG_SHUTTLE_ZONES: SamsungShuttleZone[] = [
     targetCampus: ["화성", "평택"],
     commuteLabel: "20~30분",
     commuteMin: 20,
-    jeonseEok: 3.8,
-    saleEok: 8,
-    pricePerPyeongManwon: 2500,
-    note: "화성·평택 캠퍼스 모두를 염두에 둘 때 실용적인 선택지입니다. GTX-A 이용 가능성이 장기 변수입니다.",
-    badge: "추정",
+    jeonseEok: 4.5,
+    saleEok: 10,
+    pricePerPyeongManwon: 3200,
+    note: "화성·평택 캠퍼스 모두를 염두에 둘 때 실용적인 선택지입니다. GTX-A 이용 가능성이 장기 변수입니다. 동탄역 인근 신축 단지는 13억대까지 거래되고 있어 역세권 여부에 따라 가격 차이가 큽니다.",
+    badge: "참고",
   },
   {
     id: "suwon",
@@ -123,11 +133,11 @@ export const SAMSUNG_SHUTTLE_ZONES: SamsungShuttleZone[] = [
     targetCampus: ["수원", "기흥"],
     commuteLabel: "10~20분",
     commuteMin: 15,
-    jeonseEok: 2.8,
-    saleEok: 6,
-    pricePerPyeongManwon: 1900,
-    note: "수원 삼성디지털시티 직주근접성이 가장 강합니다. 전세 부담을 낮추려는 실거주자에게 유리합니다.",
-    badge: "추정",
+    jeonseEok: 3.2,
+    saleEok: 8,
+    pricePerPyeongManwon: 2300,
+    note: "수원 삼성디지털시티 직주근접성이 가장 강합니다. 전세 부담을 낮추려는 실거주자에게 유리합니다. 망포동 일대 비교적 신축 단지는 12억 안팎까지 거래된 사례가 있습니다.",
+    badge: "참고",
   },
   {
     id: "pyeongtaek",
@@ -137,10 +147,60 @@ export const SAMSUNG_SHUTTLE_ZONES: SamsungShuttleZone[] = [
     commuteLabel: "10~20분",
     commuteMin: 15,
     jeonseEok: 2.2,
-    saleEok: 4.5,
-    pricePerPyeongManwon: 1400,
-    note: "평택캠퍼스 직주근접에 가장 초점이 맞습니다. 가격 진입장벽은 낮지만 서울 접근성은 별도로 봐야 합니다.",
+    saleEok: 5,
+    pricePerPyeongManwon: 1500,
+    note: "평택캠퍼스 직주근접에 가장 초점이 맞습니다. 가격 진입장벽은 낮지만 서울 접근성은 별도로 봐야 합니다. 2021년 호황기에는 일부 단지가 10억 가까이 거래되기도 했으나, 이후 시세 등락이 있어 최신 호가 확인이 필요합니다.",
     badge: "추정",
+  },
+];
+
+// 국토교통부 실거래가 공개시스템 기준으로 확인된 권역별 실제 거래 예시.
+// 권역 평균이 아니라 특정 단지의 84㎡ 거래가이므로, 동일 권역 안에서도 단지·층·향에 따라 차이가 크다.
+export const SAMSUNG_SHUTTLE_EXAMPLES: SamsungShuttleExample[] = [
+  {
+    zoneId: "pangyo",
+    complex: "백현마을7단지(휴먼시아)",
+    location: "성남시 분당구 백현동",
+    sizeLabel: "전용 84.73㎡",
+    priceLabel: "평당 약 7,789만 원(매매 환산 약 19.9억 원)",
+    tradeLabel: "2025년 5월 실거래",
+    sourceLabel: "국토교통부 실거래가 공개시스템 기준 보도자료",
+  },
+  {
+    zoneId: "gwanggyo",
+    complex: "광교 자연앤힐스테이트",
+    location: "수원시 영통구 이의동",
+    sizeLabel: "전용 84㎡",
+    priceLabel: "16억 500만~16억 8,500만 원",
+    tradeLabel: "2025년 10월 실거래",
+    sourceLabel: "국토교통부 실거래가 공개시스템 기준 보도자료",
+  },
+  {
+    zoneId: "dongtan",
+    complex: "동탄역 시범한화 꿈에그린 프레스티지",
+    location: "화성시 오산동 동탄2신도시",
+    sizeLabel: "전용 84.51㎡",
+    priceLabel: "13억 3,500만 원",
+    tradeLabel: "2025년 2월 실거래",
+    sourceLabel: "국토교통부 실거래가 공개시스템 기준",
+  },
+  {
+    zoneId: "suwon",
+    complex: "망포동 영통아이파크캐슬1단지",
+    location: "수원시 영통구 망포동",
+    sizeLabel: "전용 84㎡(약 27.7평)",
+    priceLabel: "11억 9,500만 원",
+    tradeLabel: "최근 실거래",
+    sourceLabel: "국토교통부 실거래가 공개시스템 기준",
+  },
+  {
+    zoneId: "pyeongtaek",
+    complex: "고덕국제신도시파라곤",
+    location: "평택시 고덕동",
+    sizeLabel: "전용 85㎡",
+    priceLabel: "9억 8,000만 원 (2021년 호황기 최고가)",
+    tradeLabel: "2021년 9월 실거래 — 최신 시세는 변동 가능",
+    sourceLabel: "국토교통부 실거래가 공개시스템 기준",
   },
 ];
 
@@ -174,6 +234,11 @@ export const SAMSUNG_SHUTTLE_FAQ: SamsungShuttleFaq[] = [
     question: "셔틀 정류장 근처 아파트가 항상 더 비싼가요?",
     answer:
       "항상 그렇지는 않습니다. 강남·판교는 지역 자체 시세가 더 큰 요인이고, 광교·동탄·고덕은 캠퍼스 접근성이 일부 수요를 만들 수 있습니다. 학군, 역세권, 대단지 여부가 함께 작동합니다.",
+  },
+  {
+    question: "표에 나온 권역 시세는 실거래가인가요?",
+    answer:
+      "권역별 표의 시세는 여러 단지를 단순화한 참고 평균값입니다. 실제 거래가 확인된 개별 단지 예시는 본문의 '실제 단지 예시' 섹션에서 국토교통부 실거래가 공개시스템 기준으로 별도 표시했습니다. 같은 권역이라도 역세권 여부, 연식, 층·향에 따라 가격 차이가 크므로 예시 단지 가격을 권역 전체로 확대해 해석하지 않는 것이 좋습니다.",
   },
   {
     question: "외부인도 삼성전자 셔틀을 탈 수 있나요?",

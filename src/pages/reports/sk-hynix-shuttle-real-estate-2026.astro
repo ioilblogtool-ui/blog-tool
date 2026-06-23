@@ -7,6 +7,8 @@ import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import {
   APARTMENT_AREAS,
+  SK_HYNIX_HOT_COMPLEXES,
+  SK_HYNIX_HOT_COMPLEXES_SOURCE,
   SK_HYNIX_SHUTTLE_FAQ,
   SK_HYNIX_SHUTTLE_META,
   SK_HYNIX_SHUTTLE_RELATED,
@@ -171,6 +173,41 @@ const articleJsonLd = {
     </section>
 
     <section class="op-section">
+      <h2>성과급발 '셔세권' 신고가 단지 TOP4</h2>
+      <p class="op-message">통근버스가 지나가는 권역의 집값이 함께 오르는 '셔세권' 현상이 언론에 보도됐습니다. 아래 4개 단지는 추정값이 아니라 보도된 실거래 사례입니다.</p>
+      <div class="op-table-wrap skhre-hot-table">
+        <table>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>단지명</th>
+              <th>지역</th>
+              <th>평형</th>
+              <th>시세</th>
+              <th>특징</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SK_HYNIX_HOT_COMPLEXES.map((complex) => (
+              <tr>
+                <td>{complex.rank}</td>
+                <td>{complex.name}</td>
+                <td>{complex.area}</td>
+                <td>{complex.unitType}</td>
+                <td><span class="skhre-badge skhre-badge--confirmed">{complex.priceLabel}</span></td>
+                <td>{complex.feature}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">
+        출처: <a href={SK_HYNIX_HOT_COMPLEXES_SOURCE.url} target="_blank" rel="noopener noreferrer">{SK_HYNIX_HOT_COMPLEXES_SOURCE.label}</a>.
+        같은 단지라도 호수·층·거래 시점에 따라 가격 차이가 크므로 위 시세를 특정 매물의 확정가로 보지 않는 것이 안전합니다.
+      </p>
+    </section>
+
+    <section class="op-section">
       <h2>이천 현지 거주 vs 판교·분당 셔틀 비교</h2>
       <div class="op-table-wrap skhre-compare-table">
         <table>
@@ -225,7 +262,8 @@ const articleJsonLd = {
         "SK하이닉스 이천 본사 발령을 받으면 가장 먼저 떠오르는 질문은 어디에 살아야 하느냐입니다. 이천은 서울에서 대중교통으로 접근하기 쉽지 않아 회사 셔틀버스가 현실적인 통근 수단이 됩니다. 강남권에서는 이천까지 80~100분, 판교에서는 약 40분 수준으로 보는 것이 현실적입니다.",
         "SK하이닉스 셔틀버스는 강남역, 역삼역, 양재역, 판교역, 정자역 등 주요 거점이 재직자 커뮤니티에서 반복적으로 확인됩니다. 다만 실제 운행 노선과 시간표는 HAPPYROAD 앱 또는 사내 포털에서 재직자가 직접 확인해야 합니다.",
         "셔틀 소요 시간과 아파트 시세를 함께 보면 직주근접 비용의 차이가 보입니다. 이천 현지는 30평대 전세가 약 1.5억원 수준으로 낮지만 생활 인프라가 제한적이고, 판교는 전세 부담이 크지만 이천과 판교 사무소 모두 대응할 수 있는 중간 거점입니다.",
-        "이 리포트의 정류장과 시간은 추정값이며, 아파트 시세도 2026년 1분기 참고값입니다. 거주지를 최종 결정하기 전에는 최신 셔틀 노선, 실거래가, 대출 가능액, 세금, 가족 생활권을 함께 확인해야 합니다.",
+        "최근에는 강남·판교 외에 화성 동탄, 용인 수지, 하남 등 셔틀 정류장이 있는 권역의 집값이 함께 오르는 '셔세권' 현상이 언론에 보도되고 있습니다. 한국신용신문 보도 기준으로 동탄 센트럴푸르지오 전용 59㎡는 8.2억원(전년 대비 24.68% 상승), 용인 수지 성복역롯데캐슬골드타운 전용 84㎡는 17.4억원, 하남 미사강변센트럴자이 전용 96㎡는 16.3억원에 거래됐습니다. 이 수치는 추정이 아니라 실제 보도된 거래 사례입니다.",
+        "이 리포트의 정류장과 시간은 재직자 커뮤니티 기반 추정값이며, 권역별 30평대 아파트 시세도 2026년 1분기 참고값입니다. 다만 위에서 소개한 셔세권 단지 4곳의 시세는 언론에 보도된 실거래 사례를 그대로 인용한 값입니다. 거주지를 최종 결정하기 전에는 최신 셔틀 노선, 실거래가, 대출 가능액, 세금, 가족 생활권을 함께 확인해야 합니다.",
       ]}
       inputPoints={[
         "권역별 셔틀 소요 시간과 30평대 전세·매매 시세를 한 표에서 비교합니다.",
@@ -234,7 +272,8 @@ const articleJsonLd = {
       ]}
       criteria={[
         "셔틀 권역은 재직자 커뮤니티와 공개 확인 정류장 기반 추정값입니다.",
-        "아파트 시세는 국토부 실거래가 2026년 1분기 기준 30평대 참고값입니다.",
+        "권역별 30평대 아파트 시세는 국토부 실거래가 2026년 1분기 기준 참고값입니다.",
+        "셔세권 신고가 단지 4곳의 시세는 한국신용신문 보도를 인용한 실거래 사례이며 추정값이 아닙니다.",
         "소요 시간은 평상시 기준 추정이며 실제 출퇴근 시간대와 교통 상황에 따라 달라질 수 있습니다.",
         "본 콘텐츠는 정보 제공용이며 특정 지역, 단지, 매수를 권유하지 않습니다.",
       ]}

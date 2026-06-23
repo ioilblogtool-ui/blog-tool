@@ -11,6 +11,74 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-06-23 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 570 | +33.8% |
+| 노출 | 18,000 | +56.5% |
+| CTR | 3.2% | -0.6%p |
+
+### 상위 키워드 TOP 10 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 아파트 보유세 계산기 | 25 | 54 | 46.3 |
+| 2 | 이강인 연봉 | 20 | 2,270 | 0.9 |
+| 3 | 삼성 성과급 계산기 | 11 | 50 | 22.0 |
+| 4 | 삼성전자 성과급 계산기 | 8 | 185 | 4.3 |
+| 5 | 초등학교 교사 연봉 | 6 | 54 | 11.1 |
+| 6 | 중학교 교사 월급 | 6 | 42 | 14.3 |
+| 7 | 성과급 계산기 | 5 | 106 | 4.7 |
+| 8 | 초등교사 월급 | 5 | 85 | 5.9 |
+| 9 | 분유 가격 비교표 | 5 | 30 | 16.7 |
+| 10 | 현대차 성과급 | 4 | 50 | 8.0 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/teacher-salary-2026/ | 62 | 1,272 | 4.9 |
+| 2 | /tools/apartment-holding-tax/ | 29 | 543 | 5.3 |
+| 3 | /reports/korea-football-legends-salary-comparison-2026/ | 21 | 1,699 | 1.2 |
+| 4 | /tools/teacher-salary-calculator/ | 18 | 335 | 5.4 |
+| 5 | /reports/samsung-ds-bonus-calculation-guide/ | 17 | 410 | 4.1 |
+| 6 | /reports/construction-salary-bonus-comparison-2026/ | 15 | 114 | 13.2 |
+| 7 | /compare/bonus/ | 14 | 158 | 8.9 |
+| 8 | /tools/samsung-bonus/ | 13 | 158 | 8.2 |
+| 9 | /tools/minimum-wage-2026/ | 11 | 395 | 2.8 |
+| 10 | /tools/youth-savings-maturity-calculator/ | 11 | 267 | 4.1 |
+| 11 | /reports/sk-hynix-shuttle-real-estate-2026/ | 11 | 220 | 5.0 |
+| 12 | /reports/police-salary-2026/ | 11 | 198 | 5.6 |
+| 13 | /reports/worldcup-squad-salary-total-comparison-2026/ | 11 | 172 | 6.4 |
+| 14 | /tools/bonus-after-tax-calculator/ | 11 | 143 | 7.7 |
+| 15 | /reports/samsung-shuttle-real-estate-2026/ | 11 | 106 | 10.4 |
+| 16 | /reports/stock-brokerage-fee-comparison-2026/ | 10 | 342 | 2.9 |
+| 17 | /reports/sk-hynix-bonus-2027/ | 10 | 124 | 8.1 |
+| 18 | /tools/overtime-pay-calculator/ | 9 | 298 | 3.0 |
+| 19 | /reports/military-salary-2026/ | 9 | 247 | 3.6 |
+| 20 | /tools/postnatal-care-income-eligibility/ | 9 | 132 | 6.8 |
+| 21 | /reports/professor-salary-2026/ | 8 | 77 | 10.4 |
+| 22 | /tools/welfare-benefit-eligibility/ | 8 | 38 | 21.1 |
+| 23 | /tools/real-estate-acquisition-tax/ | 7 | 118 | 5.9 |
+| 24 | /reports/baby-formula-brand-cost-comparison-2026/ | 7 | 77 | 9.1 |
+| 25 | /tools/parental-leave-short-work-calculator/ | 6 | 283 | 2.1 |
+| 26 | /reports/corporate-bonus-comparison-2026/ | 6 | 113 | 5.3 |
+| 27 | /tools/livelihood-benefit-income-recognition/ | 6 | 57 | 10.5 |
+| 28 | /reports/public-enterprise-bonus-comparison-2026/ | 6 | 20 | 30.0 |
+| 29 | /reports/firefighter-salary-2026/ | 5 | 315 | 1.6 |
+| 30 | /reports/kleague-salary-comparison-2026/ | 5 | 184 | 2.7 |
+
+### 주목 포인트
+- 클릭 +33.8%, 노출 +56.5%로 2일 연속 큰 폭 증가. CTR은 3.8%→3.2%로 소폭 하락했지만 노출 증가폭이 더 커서 클릭 자체는 늘었습니다 — 노출 늘고 CTR 떨어지는 패턴이지만 절대 클릭수는 증가하는 좋은 방향.
+- `아파트 보유세 계산기`가 클릭 25·CTR 46.3%로 신규 1위 등극. 노출은 54로 작지만 검색 의도와 타이틀이 거의 완벽하게 맞아떨어지는 키워드입니다. `/tools/apartment-holding-tax/`도 URL 순위 2위(클릭 29, 전일 14에서 2배 이상 증가)로 동반 상승 — 최근 점검했던 페이지가 실제로 트래픽을 만들어내고 있습니다.
+- `이강인 연봉`은 노출 2,270·CTR 0.9%로 여전히 노출 대비 클릭이 낮은 구간에 머물러 있습니다(전일 노출 2,253·CTR 1.0%와 거의 동일). 축구 연봉 클러스터의 CTR 개선은 아직 본격화되지 않은 상태.
+- `삼성전자 성과급 계산기`는 클릭 8·노출 185로 한 달 전 대비 크게 축소된 채 유지 중 — 계절적 수요(5~6월 성과급 발표 시즌) 감소로 추정.
+- `teacher-salary-2026`이 클릭 62로 변함없이 1위 URL, `korea-football-legends-salary-comparison-2026`은 노출 1,699에 CTR 1.2%로 여전히 노출 대비 클릭이 낮은 페이지 중 하나.
+- URL 11~20위가 대부분 클릭 9~11·CTR 3~10% 구간에 폭넓게 분포 — 신규로 만든 셔틀버스/경찰·소방관 연봉/월드컵 비교 리포트들이 골고루 트래픽을 만들어내며 롱테일 분산이 잘 되고 있습니다.
+- `welfare-benefit-eligibility`(CTR 21.1%), `public-enterprise-bonus-comparison-2026`(CTR 30.0%) — 볼륨은 작지만 CTR이 매우 높은 틈새 페이지로 확인됩니다.
+
+---
+
 ## 2026-06-22 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)

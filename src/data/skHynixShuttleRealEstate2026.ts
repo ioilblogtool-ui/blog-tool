@@ -26,6 +26,16 @@ export interface HynixShuttleFaq {
   answer: string;
 }
 
+export interface HynixHotComplex {
+  rank: number;
+  name: string;
+  area: string;
+  unitType: string;
+  priceLabel: string;
+  feature: string;
+  badge: DataBadge;
+}
+
 export const SK_HYNIX_SHUTTLE_META = {
   title: "SK하이닉스 셔틀버스 노선별 아파트 시세 정리 2026",
   description: "이천 본사·청주·판교 캠퍼스별 주요 셔틀 권역 아파트 전세·매매 시세를 정리했습니다.",
@@ -79,6 +89,33 @@ export const SK_HYNIX_SHUTTLE_ZONES: HynixShuttleZone[] = [
     commuteMin: 15,
     commuteNote: "청주 M15 기준 10~20분. 수도권 발령자는 청주 왕복 통근이 현실적으로 어려움.",
     badge: "추정",
+  },
+  {
+    id: "dongtan",
+    name: "화성 동탄권",
+    areas: ["동탄역", "능동", "반송동"],
+    targetCampus: ["이천 본사"],
+    commuteMin: 50,
+    commuteNote: "동탄역 일대는 SK·삼성 셔틀 노선이 교차하는 정류장으로 언론에 보도됨. 정확한 소요 시간은 비공개라 거리 기준 약 50분 내외로 추정.",
+    badge: "확인됨",
+  },
+  {
+    id: "yongin_suji",
+    name: "용인 수지권",
+    areas: ["성복역"],
+    targetCampus: ["이천 본사"],
+    commuteMin: 45,
+    commuteNote: "성복역 일대는 삼성·SK하이닉스 셔틀이 모두 정차하는 것으로 보도됨. 소요 시간은 거리 기준 약 45분 내외로 추정.",
+    badge: "확인됨",
+  },
+  {
+    id: "hanam",
+    name: "하남권",
+    areas: ["미사강변"],
+    targetCampus: ["이천 본사"],
+    commuteMin: 60,
+    commuteNote: "미사강변 일대는 SK하이닉스 셔틀 운행이 보도된 정류장. 소요 시간은 거리 기준 약 60분 내외로 추정.",
+    badge: "확인됨",
   },
 ];
 
@@ -145,6 +182,50 @@ export const APARTMENT_AREAS: ApartmentArea[] = [
   },
 ];
 
+export const SK_HYNIX_HOT_COMPLEXES: HynixHotComplex[] = [
+  {
+    rank: 1,
+    name: "동탄역반도유보라아이비파크5.0",
+    area: "화성시 동탄",
+    unitType: "역세권",
+    priceLabel: "신고가 행진 중",
+    feature: "SK·삼성 셔틀 3개 노선이 교차하는 정류장 인근 단지",
+    badge: "확인됨",
+  },
+  {
+    rank: 2,
+    name: "동탄 센트럴푸르지오",
+    area: "화성시 동탄",
+    unitType: "전용 59㎡",
+    priceLabel: "8.2억원",
+    feature: "이천 캠퍼스 셔틀 직통, 전년 대비 24.68% 상승",
+    badge: "확인됨",
+  },
+  {
+    rank: 3,
+    name: "성복역롯데캐슬골드타운",
+    area: "용인시 수지구",
+    unitType: "전용 84㎡",
+    priceLabel: "17.4억원",
+    feature: "삼성·SK하이닉스 셔틀 모두 정차하는 역세권 단지",
+    badge: "확인됨",
+  },
+  {
+    rank: 4,
+    name: "미사강변센트럴자이",
+    area: "하남시 미사강변",
+    unitType: "전용 96㎡",
+    priceLabel: "16.3억원",
+    feature: "서울 생활권 접근성과 셔틀 운행을 함께 누리는 단지",
+    badge: "확인됨",
+  },
+];
+
+export const SK_HYNIX_HOT_COMPLEXES_SOURCE = {
+  label: "한국신용신문 · 하이닉스 성과급 25조의 종착지…'셔세권' 아파트 Top4",
+  url: "https://www.creditnews.kr/news/articleView.html?idxno=2745",
+};
+
 export const SK_HYNIX_SHUTTLE_FAQ: HynixShuttleFaq[] = [
   {
     question: "이천 발령을 받으면 꼭 이천에 살아야 하나요?",
@@ -175,6 +256,11 @@ export const SK_HYNIX_SHUTTLE_FAQ: HynixShuttleFaq[] = [
     question: "용인 반도체 클러스터 착공 이후 어느 지역이 주목받나요?",
     answer:
       "용인 처인구 일대는 장기적으로 반도체 클러스터 영향권으로 거론됩니다. 다만 현재 단계에서 거주지를 투자 목적으로 고르는 것은 위험할 수 있으므로, 실제 근무지와 셔틀 노선이 확정된 뒤 주거 편의성 중심으로 판단하는 것이 안전합니다.",
+  },
+  {
+    question: "셔틀버스가 지나가는 동네 집값도 실제로 오르나요?",
+    answer:
+      "언론 보도 기준으로는 그렇습니다. 한국신용신문이 정리한 '셔세권' 아파트 사례를 보면 화성 동탄 센트럴푸르지오 전용 59㎡가 8.2억원으로 전년 대비 24.68% 올랐고, 용인 수지 성복역롯데캐슬골드타운 전용 84㎡는 17.4억원, 하남 미사강변센트럴자이 전용 96㎡는 16.3억원에 거래됐습니다. 다만 이런 신고가는 특정 거래 사례일 수 있어 같은 단지라도 호수와 시점에 따라 차이가 큽니다.",
   },
 ];
 
