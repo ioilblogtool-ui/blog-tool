@@ -43,9 +43,16 @@
     document.getElementById("sevbSamsungRate").textContent = "OPI " + ratePercent.toFixed(1) + "% · " + scenarioLabel(scenarioKey);
   }
 
+  function updateDivisionWarning() {
+    const warning = document.getElementById("sevbDivisionWarning");
+    if (!warning) return;
+    warning.hidden = samsungDivisionSelect.value === "DS";
+  }
+
   function recalcAll() {
     calcHynix();
     calcSamsung();
+    updateDivisionWarning();
   }
 
   [hynixRankSelect, samsungRankSelect, samsungDivisionSelect, yearSelect, scenarioSelect].forEach((el) => {
