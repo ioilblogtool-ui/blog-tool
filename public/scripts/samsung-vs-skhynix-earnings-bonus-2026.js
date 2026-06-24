@@ -21,10 +21,12 @@
   function calcHynix() {
     const rank = hynixRankPresets.find((r) => r.code === hynixRankSelect.value);
     const yearData = psMultipliersByYear[yearSelect.value];
-    const rate = yearData[scenarioKeyMap[scenarioSelect.value]];
-    const bonus = Math.round((rank.defaultSalary * rate) / 100);
+    const psMultiple = yearData[scenarioKeyMap[scenarioSelect.value]];
+    // SK하이닉스 PS는 연봉이 아니라 "기준급(연봉/20)"에 배수를 곱하는 구조 (sk-hynix-bonus.js와 동일 산식)
+    const psBaseSalary = rank.defaultSalary / 20;
+    const bonus = Math.round(psBaseSalary * psMultiple);
     document.getElementById("sevbHynixResult").textContent = bonus.toLocaleString("ko-KR") + "원";
-    document.getElementById("sevbHynixRate").textContent = "PS " + rate + "% · " + scenarioLabel(scenarioSelect.value);
+    document.getElementById("sevbHynixRate").textContent = "PS " + psMultiple.toFixed(2) + "배 · " + scenarioLabel(scenarioSelect.value);
   }
 
   function calcSamsung() {

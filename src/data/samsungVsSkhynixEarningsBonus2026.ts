@@ -80,15 +80,18 @@ export function estimateHynixBonus(
 ): BonusEstimateResult {
   const rank = hynixRankPresets.find((r) => r.code === rankCode)!;
   const yearData = psMultipliersByYear[year];
-  const ratePercent =
+  const psMultiple =
     scenario === "CONSERVATIVE" ? yearData.conservative : scenario === "BASE" ? yearData.base : yearData.aggressive;
+  // SK하이닉스 PS는 연봉이 아니라 "기준급(연봉/20)"에 배수를 곱하는 구조입니다.
+  // 기존 sk-hynix-bonus 계산기(public/scripts/sk-hynix-bonus.js)의 calculatePerson()과 동일한 산식입니다.
+  const psBaseSalary = rank.defaultSalary / 20;
   return {
     company: "sk-hynix",
     rankLabel: rank.label,
     baseSalary: rank.defaultSalary,
-    ratePercent,
-    rateLabel: `PS ${ratePercent}%`,
-    estimatedBonus: Math.round((rank.defaultSalary * ratePercent) / 100),
+    ratePercent: psMultiple,
+    rateLabel: `PS ${psMultiple.toFixed(2)}배`,
+    estimatedBonus: Math.round(psBaseSalary * psMultiple),
     scenarioLabel: scenarioLabelOf(scenario),
   };
 }
