@@ -722,6 +722,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "company-bonus-capacity-score-calculator",
+    title: "우리 회사 성과급 체력 점수 계산기",
+    description: "매출, 영업이익, 직원 수, 전년 성과급률을 입력하면 올해 성과급 체력 점수와 예상 성과급 세전·세후 금액을 계산합니다.",
+    order: 3.57,
+    eyebrow: "성과급 체력 진단",
+    category: "salary",
+    iframeReady: true,
+    badges: ["신규", "성과급", "기업비교", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "성과급 체력 점수" },
+      { label: "비교 회사", value: "17개사" }
+    ]
+  },
+  {
     slug: "work-incentive-calculator",
     title: "근로장려금 계산기 2026",
     description: "가구유형, 총소득, 재산을 입력하면 2026년 기준 근로장려금 예상 지급액과 기한 후 신청 시 감액 여부를 바로 계산합니다.",

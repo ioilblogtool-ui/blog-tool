@@ -1,0 +1,278 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  CBC_COMPANY_PRESETS,
+  CBC_CRITERIA,
+  CBC_FAQ,
+  CBC_INDUSTRY_DEFAULTS,
+  CBC_META,
+  CBC_RELATED_LINKS,
+  CBC_SEO_INTRO,
+} from "../../data/companyBonusCapacityScoreCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${CBC_META.slug}/`;
+
+const cbcConfig = {
+  companies: CBC_COMPANY_PRESETS,
+  industries: CBC_INDUSTRY_DEFAULTS,
+  defaultCompanyId: "samsung-electronics",
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: CBC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web",
+    description: CBC_META.seoDescription,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
+    url: pageUrl,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: CBC_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout title={CBC_META.seoTitle} description={CBC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={CBC_META.slug} pageClass="cbc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="성과급 체력 진단"
+        title="우리 회사 성과급 체력 점수 계산기"
+        description="매출, 영업이익, 직원 수, 전년 성과급률을 넣으면 올해 성과급을 줄 체력이 있는 회사인지 0~100점으로 계산합니다."
+        badges={["신규", "성과급", "기업 비교", "2026"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          CBC_META.dataNote,
+          "영업이익률·직원 1인당 영업이익은 업종 평균 대비 상대값으로 채점합니다. 같은 영업이익률이라도 업종에 따라 점수가 다를 수 있습니다.",
+          "이 계산기는 성과급 지급을 보장하는 자료가 아니라 회사의 성과급 체력을 가늠하는 참고 도구입니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="cbcResetBtn" copyId="cbcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel cbc-input-panel" data-cbc-calculator>
+        <div class="cbc-section">
+          <h2 class="cbc-section-title">회사 선택</h2>
+          <div class="cbc-mode-toggle" role="group" aria-label="입력 모드 선택">
+            <button type="button" class="cbc-mode-btn is-active" data-cbc-mode="preset">회사 선택</button>
+            <button type="button" class="cbc-mode-btn" data-cbc-mode="custom">직접 입력</button>
+          </div>
+
+          <div class="cbc-mode-panel" data-cbc-mode-panel="preset">
+            <label class="field">
+              <span>회사</span>
+              <select data-cbc="companyId">
+                {CBC_COMPANY_PRESETS.map((c) => (
+                  <option value={c.id} selected={c.id === cbcConfig.defaultCompanyId}>{c.name}</option>
+                ))}
+              </select>
+              <small data-cbc-data-note>-</small>
+            </label>
+          </div>
+
+          <div class="cbc-mode-panel" data-cbc-mode-panel="custom" hidden>
+            <label class="field">
+              <span>회사명(자유 입력)</span>
+              <input type="text" data-cbc="customName" value="우리 회사" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>업종</span>
+            <select data-cbc="industry">
+              {CBC_INDUSTRY_DEFAULTS.map((ind) => <option value={ind.industry}>{ind.label}</option>)}
+            </select>
+            <small>업종 평균과 비교해 영업이익률·직원 1인당 영업이익 점수를 매깁니다.</small>
+          </label>
+        </div>
+
+        <div class="cbc-section">
+          <h2 class="cbc-section-title">실적 정보</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>올해 매출(억 원)</span>
+              <input data-cbc="revenue" type="text" inputmode="numeric" class="input-number" value="3,336,059" />
+            </label>
+            <label class="field">
+              <span>올해 영업이익(억 원)</span>
+              <input data-cbc="operatingProfit" type="text" inputmode="numeric" class="input-number" value="436,011" />
+            </label>
+            <label class="field">
+              <span>전년 영업이익(억 원)</span>
+              <input data-cbc="previousOperatingProfit" type="text" inputmode="numeric" class="input-number" value="327,300" />
+            </label>
+            <label class="field">
+              <span>직원 수(명)</span>
+              <input data-cbc="employeeCount" type="text" inputmode="numeric" class="input-number" value="125,000" />
+            </label>
+            <label class="field">
+              <span>전년도 성과급률(기본급 대비 %)</span>
+              <input data-cbc="previousBonusRate" type="text" inputmode="numeric" class="input-number" value="47" />
+            </label>
+            <label class="field">
+              <span>업황 전망</span>
+              <select data-cbc="outlook">
+                <option value="strong-up">강한 개선</option>
+                <option value="up" selected>개선</option>
+                <option value="flat">유지</option>
+                <option value="down">둔화</option>
+                <option value="weak">악화</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="cbc-section">
+          <h2 class="cbc-section-title">내 연봉 기준</h2>
+          <div class="form-grid">
+            <label class="field">
+              <span>기준 연봉(만 원)</span>
+              <input data-cbc="annualSalary" type="text" inputmode="numeric" class="input-number" value="7,000" />
+            </label>
+            <label class="field">
+              <span>기본급 비중(%)</span>
+              <input data-cbc="baseSalaryRatio" type="text" inputmode="numeric" class="input-number" value="70" />
+            </label>
+          </div>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="cbc-section cbc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>성과급 체력 점수</h2>
+        <p>입력값을 바꾸면 점수와 예상 성과급이 즉시 다시 계산됩니다.</p>
+      </div>
+
+      <div class="cbc-score-gauge">
+        <div class="cbc-score-gauge__bar"><i data-cbc-result="scoreBar"></i></div>
+        <div class="cbc-score-gauge__value">
+          <strong data-cbc-result="score">-</strong>
+          <span data-cbc-result="scoreLabel">-</span>
+        </div>
+      </div>
+      <p class="cbc-score-message" data-cbc-result="scoreMessage"></p>
+      <p class="cbc-invalid-notice" data-cbc-invalid hidden>매출, 영업이익, 직원 수를 모두 입력해야 점수를 계산할 수 있습니다.</p>
+
+      <div class="cbc-kpi-grid">
+        <article class="cbc-kpi"><span>예상 성과급률</span><strong data-cbc-result="expectedBonusRate">-</strong><small>기본급 대비, 추정</small></article>
+        <article class="cbc-kpi"><span>세전 예상 성과급</span><strong data-cbc-result="grossBonus">-</strong></article>
+        <article class="cbc-kpi cbc-kpi--accent"><span>세후 예상 성과급</span><strong data-cbc-result="netBonus">-</strong></article>
+        <article class="cbc-kpi"><span>월 환산 효과</span><strong data-cbc-result="monthlyEquivalent">-</strong></article>
+      </div>
+
+      <div class="cbc-breakdown">
+        <h3>점수 분해</h3>
+        <div class="cbc-breakdown-row" data-cbc-breakdown="profitGrowth">
+          <span>영업이익 증가율 (30점)</span>
+          <div class="cbc-breakdown-bar"><i></i></div>
+          <em>0</em>
+        </div>
+        <div class="cbc-breakdown-row" data-cbc-breakdown="margin">
+          <span>영업이익률 (25점)<small data-cbc-relative="margin"></small></span>
+          <div class="cbc-breakdown-bar"><i></i></div>
+          <em>0</em>
+        </div>
+        <div class="cbc-breakdown-row" data-cbc-breakdown="profitPerEmployee">
+          <span>직원 1인당 영업이익 (20점)<small data-cbc-relative="profitPerEmployee"></small></span>
+          <div class="cbc-breakdown-bar"><i></i></div>
+          <em>0</em>
+        </div>
+        <div class="cbc-breakdown-row" data-cbc-breakdown="previousBonus">
+          <span>전년도 성과급 이력 (15점)</span>
+          <div class="cbc-breakdown-bar"><i></i></div>
+          <em>0</em>
+        </div>
+        <div class="cbc-breakdown-row" data-cbc-breakdown="outlook">
+          <span>업황 전망 (10점)</span>
+          <div class="cbc-breakdown-bar"><i></i></div>
+          <em>0</em>
+        </div>
+      </div>
+
+      <div class="cbc-insights" data-cbc-insights></div>
+    </section>
+
+    <section class="cbc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">업종 비교</p>
+        <h2>같은 업종 프리셋 회사와 비교</h2>
+      </div>
+      <div class="cbc-table-wrap">
+        <table class="cbc-peer-table">
+          <caption>선택한 업종의 회사별 영업이익률·직원 1인당 영업이익·전년 성과급률 비교</caption>
+          <thead>
+            <tr>
+              <th scope="col">회사</th>
+              <th scope="col">영업이익률</th>
+              <th scope="col">직원 1인당 영업이익</th>
+              <th scope="col">전년 성과급률</th>
+            </tr>
+          </thead>
+          <tbody data-cbc-peer-body></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="cbc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">산식 공개</p>
+        <h2>성과급 체력 점수는 이렇게 계산합니다</h2>
+      </div>
+      <div class="cbc-formula-grid">
+        <article><strong>영업이익 증가율</strong><span>30점</span><p>전년 대비 영업이익 개선폭. 회사 자체의 절대적인 변화를 기준으로 채점합니다.</p></article>
+        <article><strong>영업이익률</strong><span>25점</span><p>업종 평균 대비 상대값으로 채점합니다. 절대 금액 기준이면 금융·플랫폼업이 항상 유리해지는 왜곡이 생기기 때문입니다.</p></article>
+        <article><strong>직원 1인당 영업이익</strong><span>20점</span><p>업종 평균 대비 상대값으로 채점합니다. 인력집약적 업종(조선·방산)과 자본집약적 업종을 같은 기준으로 비교하지 않습니다.</p></article>
+        <article><strong>전년도 성과급 지급 이력</strong><span>15점</span><p>회사의 성과급 환원 문화를 반영합니다.</p></article>
+        <article><strong>업황 전망</strong><span>10점</span><p>업종 사이클에 따른 보정값입니다.</p></article>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="성과급 체력 점수 계산기를 보는 방법"
+        intro={CBC_SEO_INTRO}
+        inputPoints={[
+          "회사를 선택하거나 직접 입력해 올해 성과급 체력 점수를 0~100점으로 확인할 수 있습니다.",
+          "기준 연봉과 기본급 비중을 입력하면 예상 성과급 세전·세후 금액과 월 환산 효과까지 볼 수 있습니다.",
+          "같은 업종 회사들과 영업이익률·직원 1인당 영업이익·전년 성과급률을 비교할 수 있습니다.",
+        ]}
+        criteria={CBC_CRITERIA}
+        faq={CBC_FAQ}
+        related={CBC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="cbc-data" type="application/json" set:html={JSON.stringify(cbcConfig)} />
+  <script src={withBase("scripts/company-bonus-capacity-score-calculator.js")} defer></script>
+</BaseLayout>

@@ -1,0 +1,381 @@
+.cbc-page {
+  --cbc-ink: #172033;
+  --cbc-muted: #5e6878;
+  --cbc-line: #dbe3ef;
+  --cbc-soft: #f6f8fb;
+  --cbc-blue: #2563eb;
+  --cbc-green: #15803d;
+  --cbc-amber: #b45309;
+  --cbc-red: #b91c1c;
+
+  .cbc-section,
+  .cbc-input-panel {
+    border: 1px solid var(--cbc-line);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  }
+
+  .cbc-section {
+    display: grid;
+    gap: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .section-header {
+    display: grid;
+    gap: 5px;
+
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h2 {
+      color: var(--cbc-ink);
+      font-size: clamp(1.08rem, 1.9vw, 1.36rem);
+    }
+
+    p:not(.section-header__eyebrow) {
+      color: var(--cbc-muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+  }
+
+  .section-header__eyebrow {
+    color: var(--cbc-blue);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    margin: 0;
+  }
+
+  .cbc-input-panel {
+    padding: 18px;
+  }
+
+  .cbc-mode-toggle {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .cbc-mode-btn {
+    min-height: 42px;
+    border: 1.5px solid var(--cbc-line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--cbc-muted);
+    font-weight: 800;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+    &.is-active {
+      border-color: var(--cbc-blue);
+      background: #eff6ff;
+      color: var(--cbc-blue);
+    }
+  }
+
+  .cbc-section-title {
+    margin: 0;
+    color: var(--cbc-ink);
+    font-size: 0.94rem;
+  }
+
+  .form-grid {
+    display: grid;
+    gap: 11px;
+
+    @media (min-width: 720px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: 7px;
+    color: #334155;
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .field input,
+  .field select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--cbc-line);
+    border-radius: 8px;
+    padding: 10px 11px;
+    background: #fff;
+    color: var(--cbc-ink);
+    font: inherit;
+    font-weight: 700;
+  }
+
+  .field small {
+    color: var(--cbc-muted);
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  // ── 결과 ───────────────────────────────────────────
+  .cbc-score-gauge {
+    display: grid;
+    gap: 8px;
+  }
+
+  .cbc-score-gauge__bar {
+    height: 14px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #fee2e2 0%, #fef3c7 40%, #dcfce7 80%, #bbf7d0 100%);
+
+    i {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: var(--cbc-blue);
+      transition: width 0.2s ease;
+    }
+  }
+
+  .cbc-score-gauge__value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+
+    strong {
+      color: var(--cbc-ink);
+      font-size: 2rem;
+    }
+
+    span {
+      color: var(--cbc-blue);
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+  }
+
+  .cbc-score-message {
+    margin: 0;
+    border-left: 4px solid var(--cbc-blue);
+    padding: 11px 13px;
+    background: #eff6ff;
+    color: #334155;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .cbc-invalid-notice {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 0.82rem;
+  }
+
+  .cbc-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+
+    @media (min-width: 1020px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .cbc-kpi {
+    display: grid;
+    gap: 6px;
+    min-height: 100px;
+    border: 1px solid var(--cbc-line);
+    border-radius: 8px;
+    padding: 14px;
+    background: var(--cbc-soft);
+
+    span {
+      color: var(--cbc-muted);
+      font-size: 0.76rem;
+      font-weight: 900;
+    }
+
+    strong {
+      color: var(--cbc-ink);
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      overflow-wrap: anywhere;
+    }
+
+    small {
+      color: var(--cbc-muted);
+      font-size: 0.72rem;
+    }
+  }
+
+  .cbc-kpi--accent {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+
+    strong {
+      color: var(--cbc-blue);
+    }
+  }
+
+  // ── 점수 분해 ───────────────────────────────────────────
+  .cbc-breakdown {
+    display: grid;
+    gap: 10px;
+
+    h3 {
+      margin: 0;
+      color: var(--cbc-ink);
+      font-size: 0.96rem;
+    }
+  }
+
+  .cbc-breakdown-row {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) minmax(120px, 2fr) 56px;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--cbc-ink);
+
+    small {
+      display: block;
+      color: var(--cbc-muted);
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+
+    em {
+      text-align: right;
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr;
+
+      em {
+        text-align: left;
+      }
+    }
+  }
+
+  .cbc-breakdown-bar {
+    height: 10px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e5e7eb;
+
+    i {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: var(--cbc-blue);
+      transition: width 0.2s ease;
+    }
+  }
+
+  .cbc-insights {
+    display: grid;
+    gap: 8px;
+  }
+
+  .cbc-insight {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--cbc-soft);
+    color: #334155;
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  // ── 업종 비교표 ───────────────────────────────────────────
+  .cbc-table-wrap {
+    overflow-x: auto;
+  }
+
+  .cbc-peer-table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+
+    caption {
+      text-align: left;
+      margin-bottom: 8px;
+      color: var(--cbc-muted);
+      font-size: 0.78rem;
+    }
+
+    th,
+    td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--cbc-line);
+      text-align: center;
+    }
+
+    th {
+      background: var(--cbc-soft);
+      color: var(--cbc-blue);
+      font-weight: 900;
+    }
+
+    td:first-child {
+      text-align: left;
+      font-weight: 800;
+      color: var(--cbc-ink);
+    }
+
+    tr.is-active td {
+      background: #eff6ff;
+    }
+  }
+
+  // ── 산식 공개 ───────────────────────────────────────────
+  .cbc-formula-grid {
+    display: grid;
+    gap: 10px;
+
+    @media (min-width: 720px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    article {
+      padding: 14px;
+      border: 1px solid var(--cbc-line);
+      border-radius: 8px;
+      background: var(--cbc-soft);
+
+      strong {
+        display: inline;
+        color: var(--cbc-ink);
+        font-size: 0.92rem;
+      }
+
+      span {
+        margin-left: 6px;
+        color: var(--cbc-blue);
+        font-weight: 900;
+        font-size: 0.82rem;
+      }
+
+      p {
+        margin: 6px 0 0;
+        color: var(--cbc-muted);
+        font-size: 0.82rem;
+        line-height: 1.55;
+      }
+    }
+  }
+}
