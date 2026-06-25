@@ -1,0 +1,173 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  DHAR_META,
+  DHAR_RANKING,
+  DHAR_MARKET_HEAT,
+  DHAR_POLARIZATION,
+  DHAR_INSIGHTS,
+  DHAR_FAQ,
+  DHAR_SEO_INTRO,
+  DHAR_SEO_CRITERIA,
+  DHAR_RELATED_LINKS,
+} from "../../data/dongtanHotApartmentRanking2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${DHAR_META.slug}/`;
+const formatEok = (manwon: number) => {
+  const eok = manwon / 10000;
+  const formatted = eok >= 10 ? eok.toFixed(1) : eok.toFixed(2);
+  return `${formatted.replace(/\.0$/, "")}억원`;
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: DHAR_META.title,
+    description: DHAR_META.seoDescription,
+    dateModified: DHAR_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: DHAR_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: DHAR_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={DHAR_META.seoTitle} description={DHAR_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page dhar-page" data-report="dongtan-hot-apartment-ranking-2026">
+    <CalculatorHero
+      eyebrow="동탄 부동산 추적 리포트"
+      title={DHAR_META.title}
+      description={DHAR_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        DHAR_META.dataNote,
+        "이 페이지는 투자·매수 추천이 아니라 보도된 실거래 사례를 정리한 추적용 리포트입니다.",
+        "TOP10을 채우기 위해 추정 단지를 넣지 않았으며, 확인된 8개 단지만 순위에 포함했습니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>동탄 부동산, 지금 얼마나 뜨거운가</h2>
+      <p class="op-message">2026년 6월 보도 기준 확인된 시장 과열 신호입니다.</p>
+      <div class="dhar-heat-grid">
+        {DHAR_MARKET_HEAT.map((kpi) => (
+          <article class="dhar-heat-card">
+            <span>{kpi.label}</span>
+            <strong>{kpi.value}</strong>
+            <p>{kpi.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>동탄 신고가 아파트 TOP8</h2>
+      <p class="op-message">전부 84㎡(5위 제외) 기준 확인된 실거래 사례입니다.</p>
+      <div class="op-table-wrap dhar-ranking-table">
+        <table>
+          <thead>
+            <tr><th>순위</th><th>단지명</th><th>지역</th><th>거래가</th><th>평형</th><th>거래일</th><th>직전 최고가 대비</th></tr>
+          </thead>
+          <tbody>
+            {DHAR_RANKING.map((row) => (
+              <tr class={row.tradeDate >= "2026-06-10" ? "dhar-row--recent" : ""}>
+                <td>{row.rank}</td>
+                <td>{row.complexName}{row.note && <span class="dhar-note-flag" title={row.note}>ⓘ</span>}</td>
+                <td>{row.district}</td>
+                <td>{formatEok(row.priceManwon)}</td>
+                <td>{row.unitArea}</td>
+                <td>{row.tradeDate}</td>
+                <td>{row.increaseManwon ? `+${formatEok(row.increaseManwon)}${row.increasePeriod ? ` (${row.increasePeriod})` : ""}` : "직전 거래 미확인"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>같은 동탄인데 4배 넘게 차이 난다</h2>
+      <div class="dhar-polarization-grid">
+        {DHAR_POLARIZATION.map((card) => (
+          <article class="dhar-polarization-card">
+            <span>{card.label}</span>
+            <strong>{card.complexName}</strong>
+            <small>{card.district} · {card.unitArea}</small>
+            <em>{formatEok(card.priceManwon)}</em>
+          </article>
+        ))}
+      </div>
+      <p class="op-message">두 단지 모두 84㎡ 기준이며, 가격 차이는 약 4.5배입니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>왜 과열이라고 보는가</h2>
+      <div class="dhar-insight-grid">
+        {DHAR_INSIGHTS.map((insight) => (
+          <article><h3>{insight.title}</h3><p>{insight.body}</p></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section dhar-cta-box">
+      <div>
+        <p>이 가격, 내가 감당할 수 있을까?</p>
+        <h2>동탄 20억 시대, 진짜 가능한 가격인지 확인하기</h2>
+        <span>필요 현금, 대출 10억·12억·15억별 월 원리금, 부부 실수령 기준 감당 가능성을 직접 계산해보세요.</span>
+      </div>
+      <div class="dhar-cta-box__actions">
+        <a class="button button--secondary" href={withBase("/reports/dongtan-20-billion-apartment-affordability-2026/")}>감당 가능성 확인</a>
+        <a class="button button--ghost" href={withBase("/tools/home-purchase-fund/")}>매매 자금 계산기</a>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>동탄·경기 남부 리포트 이어서 보기</h2>
+      <div class="dhar-related-grid">
+        {DHAR_RELATED_LINKS.map((link) => (
+          <a class="dhar-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="동탄, 한 달 만에 1억 4천 오른 진짜 이유"
+      intro={DHAR_SEO_INTRO}
+      criteria={DHAR_SEO_CRITERIA}
+      faq={DHAR_FAQ}
+      related={DHAR_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

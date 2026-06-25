@@ -995,4 +995,11 @@ export const reports: ReportMeta[] = [
     order: 61.7,
     badges: ["삼성전자", "SK하이닉스", "성과급", "2026"],
   },
+  {
+    slug: "dongtan-hot-apartment-ranking-2026",
+    title: "동탄 아파트 신고가 순위 2026 | 한 달 만에 1억 4천 오른 단지는",
+    description: "동탄역롯데캐슬 22억 2,500만원 등 2026년 6월 신고가를 기록한 동탄 아파트 8곳을 거래가·상승액 기준으로 정리합니다.",
+    order: 61.8,
+    badges: ["동탄", "신고가", "아파트 순위", "2026"],
+  },
 ];

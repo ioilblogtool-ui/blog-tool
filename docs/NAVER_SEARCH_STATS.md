@@ -11,6 +11,93 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-06-25 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 560 | +11.6% |
+| 노출 | 16,000 | -6.1% |
+| CTR | 3.6% | +0.6%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 이강인 연봉 | 23 | 1,199 | 1.9 |
+| 2 | 하이닉스 성과급 계산기 | 9 | 32 | 28.1 |
+| 3 | 아파트 보유세 계산기 | 9 | 21 | 42.9 |
+| 4 | 분유 가격 비교표 | 6 | 22 | 27.3 |
+| 5 | 국회의원 재산순위 | 6 | 9 | 66.7 |
+| 6 | 성과급 세금 계산기 | 5 | 48 | 10.4 |
+| 7 | 삼성 성과급 계산기 | 4 | 42 | 9.5 |
+| 8 | 중학교 교사 월급 | 4 | 28 | 14.3 |
+| 9 | 이강인 손흥민 연봉 | 4 | 12 | 33.3 |
+| 10 | 건설사 연봉 순위 | 4 | 7 | 57.1 |
+| 11 | 성과급 세금계산기 | 4 | 6 | 66.7 |
+| 12 | kbo 구단별 연봉 총액 | 4 | 4 | 100.0 |
+| 13 | 삼성전자 성과급 계산기 | 3 | 207 | 1.4 |
+| 14 | 초등교사 월급 | 3 | 90 | 3.3 |
+| 15 | 최저시급 월급 세후 | 3 | 51 | 5.9 |
+| 16 | 주거급여 계산기 | 3 | 34 | 8.8 |
+| 17 | 중학교 선생님 월급 | 3 | 28 | 10.7 |
+| 18 | 26년 재산세 확인방법 | 3 | 26 | 11.5 |
+| 19 | 육아기 근로시간 단축 급여 계산 | 3 | 25 | 12.0 |
+| 20 | 삼성중공업 성과급 | 3 | 15 | 20.0 |
+| 21 | 생계급여 소득인정액 계산기 | 3 | 6 | 50.0 |
+| 22 | 2015년이더리움가격 | 3 | 6 | 50.0 |
+| 23 | 성과급 실수령액 계산 | 3 | 6 | 50.0 |
+| 24 | 이강인연봉 | 2 | 110 | 1.8 |
+| 25 | 현대차 성과급 | 2 | 102 | 2.0 |
+| 26 | 성과급 계산기 | 2 | 84 | 2.4 |
+| 27 | 2027 군인 월급 | 2 | 38 | 5.3 |
+| 28 | 고등학교 교사 월급 | 2 | 32 | 6.2 |
+| 29 | 최저임금 2026 세후 월급 | 2 | 30 | 6.7 |
+| 30 | 경찰 호봉표 | 2 | 25 | 8.0 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/teacher-salary-2026/ | 43 | 1,102 | 3.9 |
+| 2 | /reports/sk-hynix-shuttle-real-estate-2026/ | 26 | 438 | 5.9 |
+| 3 | /reports/construction-salary-bonus-comparison-2026/ | 24 | 149 | 16.1 |
+| 4 | /reports/lee-kang-in-psg-salary-2026/ | 23 | 1,293 | 1.8 |
+| 5 | /tools/teacher-salary-calculator/ | 23 | 319 | 7.2 |
+| 6 | /tools/bonus-after-tax-calculator/ | 18 | 207 | 8.7 |
+| 7 | /reports/worldcup-squad-salary-total-comparison-2026/ | 17 | 107 | 15.9 |
+| 8 | /reports/kbo-salary-comparison-2026/ | 17 | 88 | 19.3 |
+| 9 | /tools/sk-hynix-bonus/ | 16 | 133 | 12.0 |
+| 10 | /compare/bonus/ | 13 | 317 | 4.1 |
+| 11 | /reports/professor-salary-2026/ | 13 | 101 | 12.9 |
+| 12 | /tools/apartment-holding-tax/ | 12 | 249 | 4.8 |
+| 13 | /tools/minimum-wage-2026/ | 11 | 372 | 3.0 |
+| 14 | /reports/korea-football-legends-salary-comparison-2026/ | 11 | 118 | 9.3 |
+| 15 | /reports/national-assembly-wealth-2026/ | 9 | 17 | 52.9 |
+| 16 | /reports/pension-by-job-comparison-2026/ | 8 | 109 | 7.3 |
+| 17 | /reports/baby-formula-brand-cost-comparison-2026/ | 8 | 97 | 8.2 |
+| 18 | /tools/livelihood-benefit-income-recognition/ | 8 | 44 | 18.2 |
+| 19 | /reports/samsung-ds-bonus-calculation-guide/ | 7 | 317 | 2.2 |
+| 20 | /reports/military-salary-2026/ | 7 | 237 | 3.0 |
+| 21 | /reports/police-salary-2026/ | 7 | 206 | 3.4 |
+| 22 | /tools/real-estate-acquisition-tax/ | 7 | 116 | 6.0 |
+| 23 | /tools/samsung-bonus/ | 6 | 279 | 2.2 |
+| 24 | /reports/corporate-bonus-comparison-2026/ | 6 | 185 | 3.2 |
+| 25 | /tools/stock-brokerage-fee-calculator/ | 6 | 145 | 4.1 |
+| 26 | /reports/public-enterprise-bonus-comparison-2026/ | 6 | 42 | 14.3 |
+| 27 | /reports/stock-brokerage-fee-comparison-2026/ | 5 | 363 | 1.4 |
+| 28 | /tools/parental-leave-short-work-calculator/ | 5 | 239 | 2.1 |
+| 29 | /tools/childcare-short-time-pay-calculator/ | 5 | 177 | 2.8 |
+| 30 | /reports/local-election-seoul-2026/ | 5 | 59 | 8.5 |
+
+### 주목 포인트
+- 클릭 +11.6%, 노출 -6.1%인데 CTR이 3.0%→3.6%로 개선되며 클릭이 늘었습니다. 노출이 줄고 클릭이 늘어난 건 검색 매칭이 좋아진 신호로 볼 수 있습니다.
+- `이강인 연봉` 노출 1,199(전일 대비 큰 감소)·CTR 1.9%로 노출이 줄면서 CTR이 오히려 오름 — 06-22에 관찰된 "노출 감소 시 CTR 개선" 패턴이 다시 확인됨.
+- `sk-hynix-shuttle-real-estate-2026`(클릭 26·노출 438·CTR 5.9%)이 URL 2위로 크게 상승 — 최근 보강한 셔틀권 부동산 리포트가 꾸준히 성과를 내고 있음.
+- `livelihood-benefit-income-recognition`(클릭 8·CTR 18.2%), `생계급여 소득인정액 계산기`(CTR 50%) — 복지 계산기 클러스터가 견고한 틈새로 자리잡음. 같은 클러스터의 신규 `기초연금 수급 가능성 계산기`는 아직 데이터에 잡히지 않음(배포 당일) — 다음 트래킹에서 확인 필요.
+- `kbo 구단별 연봉 총액`(CTR 100%), `국회의원 재산순위`(CTR 66.7%), `건설사 연봉 순위`(CTR 57.1%) — 볼륨은 작지만 고CTR 틈새 키워드가 다양하게 늘어나는 추세.
+- `construction-salary-bonus-comparison-2026`(CTR 16.1%), `kbo-salary-comparison-2026`(CTR 19.3%), `worldcup-squad-salary-total-comparison-2026`(CTR 15.9%) — 중간권 리포트들의 CTR이 전반적으로 양호.
+
+---
+
 ## 2026-06-24 (최근 1일)
 
 > 전일(06-23) 최종 확정치(클릭 574·노출 17,869) 대비.

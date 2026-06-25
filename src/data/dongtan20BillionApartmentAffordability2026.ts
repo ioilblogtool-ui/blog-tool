@@ -458,10 +458,16 @@ export const DT20_LONGTAIL_SECTIONS = [
 
 export const DT20_RELATED_LINKS: RelatedLink[] = [
   {
+    href: "/reports/dongtan-hot-apartment-ranking-2026/",
+    title: "동탄 신고가 아파트 TOP8 추적",
+    description: "한 달 만에 1억 4천 오른 단지부터 양극화 사례까지 신고가 순위로 확인합니다.",
+    tone: "primary",
+  },
+  {
     href: "/tools/income-home-affordability/",
     title: "우리 소득으로 집 살 수 있을까?",
     description: "연소득과 대출 조건을 넣어 구매 가능한 주택 가격을 계산합니다.",
-    tone: "primary",
+    tone: "default",
   },
   {
     href: "/tools/loan-refinancing-calculator/",

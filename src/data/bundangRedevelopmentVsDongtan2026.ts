@@ -326,6 +326,7 @@ export const BRD_FAQ: ComparisonFaq[] = [
 ];
 
 export const BRD_RELATED_LINKS = [
+  { href: "/reports/dongtan-hot-apartment-ranking-2026/", label: "동탄 신고가 아파트 TOP8 추적" },
   { href: "/tools/home-purchase-fund/", label: "내집마련 자금 계산기" },
   { href: "/tools/income-home-affordability/", label: "소득 대비 집값 부담 계산기" },
   { href: "/reports/seoul-housing-affordability-map-2026/", label: "내 연봉으로 서울 어디 살 수 있나" },

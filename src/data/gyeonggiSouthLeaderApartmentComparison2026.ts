@@ -197,6 +197,11 @@ export const GSLA_SCORE_LABELS: { key: keyof GslaScore; label: string; note: str
 
 export const GSLA_RELATED_LINKS: GslaRelatedLink[] = [
   {
+    href: "/reports/dongtan-hot-apartment-ranking-2026/",
+    label: "동탄 신고가 아파트 TOP8 추적",
+    description: "대장 아파트 비교에서 나온 동탄, 실제로 어느 단지가 신고가를 경신하고 있는지 확인합니다.",
+  },
+  {
     href: "/tools/home-purchase-fund/",
     label: "주택구입자금 계산기",
     description: "목표 아파트 가격을 넣고 필요한 현금, 대출 규모, 취득 부대비용을 계산합니다.",

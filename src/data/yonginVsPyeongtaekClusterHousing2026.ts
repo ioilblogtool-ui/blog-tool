@@ -172,6 +172,7 @@ export const YVP_FAQ: FaqItem[] = [
 ];
 
 export const YVP_RELATED_LINKS: RelatedLink[] = [
+  { href: "/reports/dongtan-hot-apartment-ranking-2026/", label: "동탄 신고가 아파트 TOP8 추적", description: "경기 남부 신고가 랠리, 어느 단지가 가장 뜨거운지 확인" },
   { href: "/reports/sk-hynix-shuttle-real-estate-2026/", label: "SK하이닉스 셔틀버스 아파트 시세 정리", description: "이천 본사·셔틀 통근권 기준 시세 비교" },
   { href: "/reports/samsung-shuttle-real-estate-2026/", label: "삼성전자 셔틀권 부동산 정리", description: "삼성 캠퍼스 셔틀 통근권 기준 시세 비교" },
   { href: "/reports/seoul-housing-affordability-map-2026/", label: "내 연봉으로 서울 어디 살 수 있나", description: "서울 25개 구 매매·전세 가능 여부 지도" },
