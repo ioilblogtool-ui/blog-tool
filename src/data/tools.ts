@@ -722,6 +722,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "family-care-allowance-calculator",
+    title: "가족돌봄수당 계산기 2026",
+    description: "아이 생년월, 소득, 돌봄시간을 입력해 가족돌봄수당(조부모 돌봄수당) 신청 가능성과 예상 지원금을 자가 점검용으로 계산합니다.",
+    order: 11.73,
+    eyebrow: "가족돌봄수당 자가점검",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "가족돌봄수당", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "예상 지원금" },
+      { label: "기준 비교", value: "24~36개월" }
+    ]
+  },
+  {
     slug: "housing-benefit-income-recognition",
     title: "주거급여 계산기 2026",
     description: "가구원 수, 월소득, 재산, 거주 형태를 입력하면 주거급여 선정기준 통과 여부와 예상 기준임대료·수선비용을 바로 계산합니다.",
