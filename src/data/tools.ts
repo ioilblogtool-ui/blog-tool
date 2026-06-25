@@ -708,6 +708,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "basic-pension-eligibility-calculator",
+    title: "기초연금 수급 가능성 계산기 2026",
+    description: "가구 형태, 소득, 재산을 입력해 2026년 기초연금 선정기준 대비 소득인정액과 예상 기초연금액을 자가 점검용으로 계산합니다.",
+    order: 11.72,
+    eyebrow: "기초연금 수급 가능성",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "기초연금", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "예상 수급액" },
+      { label: "기준 비교", value: "선정기준액" }
+    ]
+  },
+  {
     slug: "housing-benefit-income-recognition",
     title: "주거급여 계산기 2026",
     description: "가구원 수, 월소득, 재산, 거주 형태를 입력하면 주거급여 선정기준 통과 여부와 예상 기준임대료·수선비용을 바로 계산합니다.",
