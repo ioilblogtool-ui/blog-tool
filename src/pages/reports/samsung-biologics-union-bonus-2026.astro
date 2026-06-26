@@ -1,0 +1,291 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import {
+  PROFIT_BASIS,
+  EMPLOYEE_BASES,
+  UNION_DEMAND_FACTS,
+  OFFER_COMPARISON,
+  OFFER_BAR_ROWS,
+  MATRIX_ROWS,
+  SEO_CRITERIA,
+  RELATED_LINKS,
+  SBU_FAQ,
+  SBU_META,
+  DEMAND_RATE,
+  ENCOURAGEMENT_PER_HEAD,
+  DEFAULT_EMPLOYEE_BASIS_ID,
+  formatSbuWon,
+} from "../../data/samsungBiologicsUnionBonus2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/reports/${SBU_META.slug}/`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: SBU_META.seoTitle,
+      description: SBU_META.description,
+      inLanguage: "ko-KR",
+      dateModified: SBU_META.updatedAt,
+      mainEntityOfPage: pageUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: SBU_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+
+const config = {
+  operatingProfit: PROFIT_BASIS.operatingProfit,
+  employeeBases: EMPLOYEE_BASES,
+  demandRate: DEMAND_RATE,
+  encouragementPerHead: ENCOURAGEMENT_PER_HEAD,
+  defaultEmployeeBasisId: DEFAULT_EMPLOYEE_BASIS_ID,
+};
+
+const relatedForSeo = RELATED_LINKS.map(({ href, label }) => ({ href, label }));
+
+const seoIntro = [
+  "삼성바이오로직스 노조는 2026년 임금협상에서 기본급 14.3% 인상, 1인당 3,000만원 격려금, 그리고 영업이익의 20%를 성과급으로 배분하라는 요구를 내놓았습니다. 회사는 6.2% 인상과 1인당 600만원 일시금을 제시했는데, 이 격차가 협상의 핵심 쟁점입니다.",
+  "결국 노사는 접점을 찾지 못했고, 2026년 5월 1일부터 5일간 창사 15년 만의 첫 전면파업으로 이어졌습니다. 조합원 약 4,000명 중 2,500명이 파업에 참여했고, 회사는 생산 차질로 인한 손실을 약 6,400억원으로 추산했습니다.",
+  "이 페이지에서는 노조 요구안의 핵심 수치(영업이익 20%, 격려금 3,000만원)를 직원 수 기준에 따라 1인당으로 환산해볼 수 있습니다. 조합원 수(약 4,000명) 기준과 전체 임직원 추정치(약 5,360명) 기준을 바꿔보면 1인당 체감 금액이 어떻게 달라지는지 확인할 수 있습니다.",
+  "또한 노조 요구안과 회사 제시안을 나란히 비교한 표와 막대 그래프를 통해, 단순히 '요구가 크다'는 인상이 아니라 실제로 얼마나 차이가 나는지(임금 인상률 약 2.3배, 격려금 5배)를 구체적으로 보여줍니다.",
+  "회사 측은 노조 요구안을 그대로 적용하면 신입사원 기준 실질 인상률이 21.3%에 달해 수용이 어렵다는 입장이며, 노조는 채용·승진 등 인사 운영 참여까지 요구했다가 이후 이를 포기하고 수정안 협의로 입장을 조정했습니다.",
+  "이 페이지의 모든 금액은 노조 요구안과 회사 제시안을 기준으로 한 단순 산술 추정이며, 실제 협상 결과나 개인별 배분 방식과는 무관합니다. 삼성그룹 초기업노조 탈퇴 투표 등 상황이 유동적이라, 최종 합의가 이루어지면 이 페이지도 업데이트할 예정입니다.",
+];
+---
+
+<BaseLayout title={SBU_META.seoTitle} description={SBU_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sbu-page" data-report={SBU_META.slug}>
+    <CalculatorHero
+      eyebrow="창사 첫 전면파업"
+      title={SBU_META.title}
+      description="노조 요구안과 회사 제시안을 직접 비교하고, 영업이익 20% 배분 시 1인당 환산액을 계산해보세요."
+      badges={["요구안 기준", "추정 시뮬레이션", "2026"]}
+    />
+
+    <InfoNotice
+      title="시뮬레이션 기준 안내"
+      lines={[
+        "이 페이지는 노조 요구안(확정 아님)을 기준으로 한 단순 산술 시뮬레이션입니다.",
+        "협상이 진행 중이며 실제 합의 결과는 달라질 수 있습니다.",
+        "1인당 환산액은 '총 재원 ÷ 직원 수'의 단순 평균이며, 실제 개인별 지급 방식과 무관합니다.",
+      ]}
+    />
+
+    <section class="content-section sbu-facts-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">노조 요구안</p>
+        <h2>삼성바이오로직스 노조가 요구한 것</h2>
+      </div>
+      <div class="sbu-facts-grid">
+        {UNION_DEMAND_FACTS.map((fact) => (
+          <div class="sbu-fact-card">
+            <span class="sbu-fact-label">{fact.label}</span>
+            <p class="sbu-fact-value">{fact.value}</p>
+            {fact.sourceUrl && (
+              <a href={fact.sourceUrl} class="sbu-fact-source" target="_blank" rel="noopener noreferrer">
+                출처: {fact.sourceName}
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sbu-offer-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">요구안 vs 제시안</p>
+        <h2>노조 요구안과 회사 제시안, 얼마나 다를까</h2>
+        <p>임금 인상률과 격려금은 막대로, 나머지 항목은 표로 비교했습니다.</p>
+      </div>
+
+      <div class="sbu-offer-bars">
+        {OFFER_BAR_ROWS.map((row) => (
+          <div class="sbu-offer-bar-row">
+            <span class="sbu-offer-bar-label">{row.label}</span>
+            <div class="sbu-offer-bar sbu-offer-bar--demand" style={`width:${Math.max((row.demandValue / row.maxScale) * 100, 18)}%`}>
+              노조 요구 {row.demandText}
+            </div>
+            <div class="sbu-offer-bar sbu-offer-bar--offer" style={`width:${Math.max((row.offerValue / row.maxScale) * 100, 18)}%`}>
+              회사 제시 {row.offerText}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="sbu-table-wrap">
+        <table class="sbu-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>노조 요구안</th>
+              <th>회사 제시안</th>
+              <th>격차</th>
+            </tr>
+          </thead>
+          <tbody>
+            {OFFER_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td><strong>{row.unionDemand}</strong></td>
+                <td>{row.companyOffer}</td>
+                <td class="sbu-gap-note">{row.gap}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section sbu-calc-section" id="calc">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">직접 계산해보기</p>
+        <h2>영업이익 20%, 1인당 얼마인지 계산해보기</h2>
+        <p>직원 수 기준을 바꿔보면서 1인당 환산액이 어떻게 달라지는지 확인하세요.</p>
+      </div>
+
+      <div class="sbu-calc-controls">
+        <label class="sbu-calc-field">
+          <span>직원 수 기준</span>
+          <select id="sbuEmployeeBasis">
+            {EMPLOYEE_BASES.map((basis) => (
+              <option value={basis.id} selected={basis.id === DEFAULT_EMPLOYEE_BASIS_ID}>
+                {basis.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div class="sbu-result-grid">
+        <div class="sbu-result-card">
+          <span class="sbu-result-label">총 성과급 재원 (영업이익 × 20%)</span>
+          <strong class="sbu-result-value" id="sbuTotalFund">{formatSbuWon(PROFIT_BASIS.operatingProfit * DEMAND_RATE)}</strong>
+        </div>
+        <div class="sbu-result-card">
+          <span class="sbu-result-label">1인당 환산 성과급</span>
+          <strong class="sbu-result-value" id="sbuPerHead">—</strong>
+        </div>
+        <div class="sbu-result-card">
+          <span class="sbu-result-label">격려금 합산 1인당 총 수령액</span>
+          <strong class="sbu-result-value" id="sbuPerHeadTotal">—</strong>
+        </div>
+      </div>
+      <p class="sbu-estimate-badge">추정 시뮬레이션</p>
+    </section>
+
+    <section class="content-section sbu-matrix-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">전체 비교</p>
+        <h2>직원 수 기준별 1인당 환산액 비교</h2>
+      </div>
+      <div class="sbu-table-wrap">
+        <table class="sbu-table" id="sbuMatrixTable">
+          <thead>
+            <tr>
+              <th>직원 수 기준</th>
+              <th>총 재원</th>
+              <th>1인당 성과급</th>
+              <th>격려금 합산 총액</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MATRIX_ROWS.map((row) => (
+              <tr data-employee-basis={row.employeeBasisId}>
+                <td>{row.employeeShortLabel}</td>
+                <td>{formatSbuWon(row.totalFund)}</td>
+                <td>{formatSbuWon(row.perHead)}</td>
+                <td>{formatSbuWon(row.perHeadWithEncouragement)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section sbu-strike-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">파업 현황</p>
+        <h2>창사 첫 전면파업, 어느 정도 규모였나</h2>
+      </div>
+      <div class="sbu-strike-kpi-grid">
+        <div class="sbu-strike-kpi-card">
+          <span class="sbu-strike-kpi-label">파업 기간</span>
+          <strong class="sbu-strike-kpi-value">5일</strong>
+          <span class="sbu-strike-kpi-sub">2026.5.1 ~ 5.5</span>
+        </div>
+        <div class="sbu-strike-kpi-card">
+          <span class="sbu-strike-kpi-label">파업 참여 인원</span>
+          <strong class="sbu-strike-kpi-value">2,500명</strong>
+          <span class="sbu-strike-kpi-sub">조합원 약 4,000명 중</span>
+        </div>
+        <div class="sbu-strike-kpi-card">
+          <span class="sbu-strike-kpi-label">예상 손실</span>
+          <strong class="sbu-strike-kpi-value">6,400억원</strong>
+          <span class="sbu-strike-kpi-sub">회사 측 추산</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section sbu-interpretation-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 어려울까</p>
+        <h2>왜 협상이 쉽게 좁혀지지 않을까</h2>
+      </div>
+      <div class="sbu-interpretation-grid">
+        <div class="sbu-interpretation-card">
+          <p class="sbu-interpretation-title">임금·성과급 외 인사권까지 걸려있다</p>
+          <p>노조는 채용·승진 등 인사 운영 참여까지 요구했습니다. 단순 금액 조정만으로는 합의가 어려운 구조였습니다.</p>
+        </div>
+        <div class="sbu-interpretation-card">
+          <p class="sbu-interpretation-title">회사는 신입사원 기준 21.3% 인상이라 본다</p>
+          <p>노조안을 그대로 적용하면 신입사원 기준 실질 인상률이 21.3%에 달한다는 게 회사의 반론입니다.</p>
+        </div>
+        <div class="sbu-interpretation-card">
+          <p class="sbu-interpretation-title">초기업노조 탈퇴 투표 등 변수가 많다</p>
+          <p>삼성그룹 초기업노조 탈퇴 여부를 묻는 투표가 진행되는 등 협상 환경 자체가 계속 바뀌고 있습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="삼성바이오로직스 성과급 20% 요구, 어떻게 봐야 할까요?"
+      intro={seoIntro}
+      criteria={SEO_CRITERIA}
+      faq={SBU_FAQ}
+      related={relatedForSeo}
+    />
+
+    <CompareCta
+      eyebrow="다음 계산"
+      title="성과급을 실제로 받으면 세후 얼마일까요?"
+      description="성과급 세금 계산기로 세후 실수령액을 직접 계산해보세요."
+      variant="bonus"
+      links={[
+        { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세금 계산기", tone: "primary" },
+        { href: "/reports/hyundai-motor-union-bonus-2026/", label: "현대차 성과급 30% 요구 계산", tone: "secondary" },
+        { href: "/compare/bonus/", label: "성과급 계산기 모음", tone: "secondary" },
+      ]}
+    />
+  </main>
+</BaseLayout>
+
+<script id="sbuConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/samsung-biologics-union-bonus-2026.js" defer></script>

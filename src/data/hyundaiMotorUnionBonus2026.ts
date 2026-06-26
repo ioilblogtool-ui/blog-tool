@@ -247,6 +247,7 @@ export interface RelatedLink {
 export const RELATED_LINKS: RelatedLink[] = [
   { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세금 계산기" },
   { href: "/tools/hyundai-bonus/", label: "현대자동차 성과급 계산기" },
+  { href: "/reports/samsung-biologics-union-bonus-2026/", label: "삼성바이오로직스 성과급 20% 요구 계산" },
   { href: "/reports/corporate-bonus-comparison-2026/", label: "대기업 성과급 완전 비교" },
   { href: "/reports/corporate-bonus-ranking-top10-2026/", label: "대기업 성과급 순위 TOP 10" },
 ];

@@ -50,6 +50,13 @@ export const reports: ReportMeta[] = [
     badges: ["현대차", "노조", "성과급", "2026"],
   },
   {
+    slug: "samsung-biologics-union-bonus-2026",
+    title: "삼성바이오로직스 성과급 20% 요구 2026 | 1인당 환산액 계산",
+    description: "삼성바이오로직스 노조의 영업이익 20% 성과급, 1인당 3,000만원 격려금 요구를 직접 계산. 회사 제시안과 격차도 한눈에 비교합니다.",
+    order: 3.521,
+    badges: ["삼성바이오로직스", "노조", "성과급", "2026"],
+  },
+  {
     slug: "public-enterprise-bonus-comparison-2026",
     title: "공기업 성과급 비교 2026｜한전·코레일·LH는 얼마나 받을까",
     description: "한전, 코레일, LH, 건보공단 등 주요 공공기관의 성과급 구조와 입력 연봉 기준 추정 성과급을 비교하는 리포트입니다.",
