@@ -1,0 +1,263 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import {
+  PROFIT_BASES,
+  EMPLOYEE_BASES,
+  UNION_DEMAND_FACTS,
+  MATRIX_ROWS,
+  COMPARISON_ROWS,
+  SEO_CRITERIA,
+  RELATED_LINKS,
+  HMU_FAQ,
+  HMU_META,
+  DEMAND_RATE,
+  DEFAULT_PROFIT_BASIS_ID,
+  DEFAULT_EMPLOYEE_BASIS_ID,
+  formatHmuWon,
+} from "../../data/hyundaiMotorUnionBonus2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/reports/${HMU_META.slug}/`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: HMU_META.seoTitle,
+      description: HMU_META.description,
+      inLanguage: "ko-KR",
+      dateModified: HMU_META.updatedAt,
+      mainEntityOfPage: pageUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: HMU_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+
+const config = {
+  profitBases: PROFIT_BASES,
+  employeeBases: EMPLOYEE_BASES,
+  demandRate: DEMAND_RATE,
+  defaultProfitBasisId: DEFAULT_PROFIT_BASIS_ID,
+  defaultEmployeeBasisId: DEFAULT_EMPLOYEE_BASIS_ID,
+};
+
+const seoIntro = [
+  "현대차 노조는 2026년 4월 임시대의원대회를 통해 임단협 요구안을 확정했습니다. 핵심은 전년도 순이익의 30%를 성과급으로 지급하라는 것인데, 이를 정규직뿐 아니라 협력업체 직원에게도 동일하게 적용해야 한다는 요구가 함께 담겨 있습니다.",
+  "문제는 '순이익 30%'라는 숫자가 그대로는 체감되지 않는다는 점입니다. 그래서 언론들은 이를 1인당 환산액으로 보도했는데, 같은 요구안을 두고도 1인당 6,000만원이라는 보도와 4,000만원이라는 보도가 동시에 나왔습니다.",
+  "이 차이는 계산이 틀려서가 아니라, 나누는 기준이 다르기 때문입니다. 분자(총 성과급 재원)는 순이익 기준 연도와 금액에 따라 달라지고, 분모(직원 수)는 정규직 조합원만 셀지 협력업체까지 포함할지에 따라 크게 달라집니다.",
+  "이 페이지에서는 두 기준을 직접 바꿔보면서 1인당 환산액이 어떻게 달라지는지 확인할 수 있습니다. 6개 조합을 미리 표로 정리해두었으니, 보도된 숫자가 어떤 기준에서 나온 것인지도 가늠해볼 수 있습니다.",
+  "현대차 노조는 24일 조합원 3만 9,668명을 대상으로 쟁의행위 찬반투표를 진행해 86.65% 찬성률로 가결했습니다. 2년 연속 파업 가능성이 거론되는 가운데, 실제 합의 결과는 이 요구안과 다르게 정해질 수 있습니다.",
+  "이 페이지의 모든 금액은 노조 요구안을 기준으로 한 단순 산술 추정이며, 실제 회사의 지급 능력, 협상 결과, 개인별 배분 방식과는 무관합니다. 합의가 이루어지면 이 페이지도 업데이트할 예정입니다.",
+  "현대차는 그동안 성과급을 연봉 대비 고정 비율(%)이 아니라 매년 노사협의를 통해 정하는 방식을 써왔습니다. 노조가 이번에 '전년도 순이익의 30%'라는 고정 비율을 요구한 것은 단순 인상 요구가 아니라, 성과급 산정 방식 자체를 바꾸자는 구조적 제안이라는 점에서 의미가 다릅니다.",
+];
+
+const relatedForSeo = RELATED_LINKS.map(({ href, label }) => ({ href, label }));
+---
+
+<BaseLayout title={HMU_META.seoTitle} description={HMU_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page hmu-page" data-report={HMU_META.slug}>
+    <CalculatorHero
+      eyebrow="2026 임단협 이슈"
+      title={HMU_META.title}
+      description="순이익 기준과 직원 수 기준을 바꿔보면서 1인당 환산액이 어떻게 달라지는지 직접 확인해보세요."
+      badges={["요구안 기준", "추정 시뮬레이션", "2026"]}
+    />
+
+    <InfoNotice
+      title="시뮬레이션 기준 안내"
+      lines={[
+        "이 페이지는 노조 요구안(확정 아님)을 기준으로 한 단순 산술 시뮬레이션입니다.",
+        "실제 합의가 이루어지면 금액과 배분 방식은 달라질 수 있습니다.",
+        "1인당 환산액은 '총 재원 ÷ 직원 수'의 단순 평균이며, 실제 개인별 지급 방식과 무관합니다.",
+      ]}
+    />
+
+    <section class="content-section hmu-facts-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">노조 요구안</p>
+        <h2>현대차 노조가 요구한 것</h2>
+      </div>
+      <div class="hmu-facts-grid">
+        {UNION_DEMAND_FACTS.map((fact) => (
+          <div class="hmu-fact-card">
+            <span class="hmu-fact-label">{fact.label}</span>
+            <p class="hmu-fact-value">{fact.value}</p>
+            {fact.sourceUrl && (
+              <a href={fact.sourceUrl} class="hmu-fact-source" target="_blank" rel="noopener noreferrer">
+                출처: {fact.sourceName}
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section hmu-calc-section" id="calc">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">직접 계산해보기</p>
+        <h2>기준을 바꿔서 1인당 환산액 확인하기</h2>
+        <p>순이익 30% 요구를 그대로 적용했을 때, 1인당 얼마가 되는지 기준을 바꿔보세요.</p>
+      </div>
+
+      <div class="hmu-calc-controls">
+        <label class="hmu-calc-field">
+          <span>순이익 기준</span>
+          <select id="hmuProfitBasis">
+            {PROFIT_BASES.map((basis) => (
+              <option value={basis.id} selected={basis.id === DEFAULT_PROFIT_BASIS_ID}>
+                {basis.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label class="hmu-calc-field">
+          <span>직원 수 기준</span>
+          <select id="hmuEmployeeBasis">
+            {EMPLOYEE_BASES.map((basis) => (
+              <option value={basis.id} selected={basis.id === DEFAULT_EMPLOYEE_BASIS_ID}>
+                {basis.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div class="hmu-result-grid">
+        <div class="hmu-result-card">
+          <span class="hmu-result-label">총 성과급 재원 (순이익 × 30%)</span>
+          <strong class="hmu-result-value" id="hmuTotalFund">—</strong>
+        </div>
+        <div class="hmu-result-card">
+          <span class="hmu-result-label">1인당 환산액</span>
+          <strong class="hmu-result-value" id="hmuPerHead">—</strong>
+        </div>
+        <div class="hmu-result-card">
+          <span class="hmu-result-label">선택한 직원 수 기준</span>
+          <strong class="hmu-result-value" id="hmuEmployeeCount">—</strong>
+        </div>
+      </div>
+      <p class="hmu-estimate-badge">추정 시뮬레이션</p>
+    </section>
+
+    <section class="content-section hmu-matrix-section" id="matrix">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">전체 비교</p>
+        <h2>기준 조합별 1인당 환산액 비교</h2>
+        <p>선택한 조합은 표에서 강조되어 표시됩니다.</p>
+      </div>
+      <div class="hmu-table-wrap">
+        <table class="hmu-table" id="hmuMatrixTable">
+          <thead>
+            <tr>
+              <th>순이익 기준</th>
+              <th>직원 수 기준</th>
+              <th>총 재원</th>
+              <th>1인당 환산액</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MATRIX_ROWS.map((row) => (
+              <tr data-profit-basis={row.profitBasisId} data-employee-basis={row.employeeBasisId}>
+                <td>{row.profitShortLabel}</td>
+                <td>{row.employeeShortLabel}</td>
+                <td>{formatHmuWon(row.totalFund)}</td>
+                <td>{formatHmuWon(row.perHead)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section hmu-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">기존 구조와 비교</p>
+        <h2>기존 지급 구조와 요구안이 어떻게 다른가</h2>
+        <p>노조 요구가 단순 인상이 아니라 산정 방식 자체를 바꾸는 제안이라는 점을 비교표로 정리했습니다.</p>
+      </div>
+      <div class="hmu-table-wrap">
+        <table class="hmu-table hmu-compare-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>기존</th>
+              <th>노조 요구안</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARISON_ROWS.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.current}</td>
+                <td><strong>{row.demand}</strong></td>
+                <td class="hmu-compare-note">{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section hmu-interpretation-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 다를까</p>
+        <h2>왜 1인당 환산액이 보도마다 다를까</h2>
+      </div>
+      <div class="hmu-interpretation-grid">
+        <div class="hmu-interpretation-card">
+          <p class="hmu-interpretation-title">분모(직원 수)가 다르다</p>
+          <p>정규직 조합원만 기준으로 하면 1인당 금액이 커지고, 협력업체까지 포함하면 분모가 커져 1인당 금액이 작아집니다.</p>
+        </div>
+        <div class="hmu-interpretation-card">
+          <p class="hmu-interpretation-title">순이익 기준 연도·금액이 다르다</p>
+          <p>같은 "전년도 순이익"이라도 보도마다 10조 3,648억원, 13조원 등 서로 다른 수치를 사용해 총 재원 자체가 달라집니다.</p>
+        </div>
+        <div class="hmu-interpretation-card">
+          <p class="hmu-interpretation-title">요구안과 실제 합의는 다르다</p>
+          <p>이 모든 수치는 노조의 요구안일 뿐, 실제 회사와의 협상 결과는 다르게 정해질 가능성이 높습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="현대차 성과급 30% 요구, 어떻게 봐야 할까요?"
+      intro={seoIntro}
+      criteria={SEO_CRITERIA}
+      faq={HMU_FAQ}
+      related={relatedForSeo}
+    />
+
+    <CompareCta
+      eyebrow="다음 계산"
+      title="성과급을 실제로 받으면 세후 얼마일까요?"
+      description="성과급 세금 계산기로 세후 실수령액을 직접 계산해보세요."
+      variant="bonus"
+      links={[
+        { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세금 계산기", tone: "primary" },
+        { href: "/reports/corporate-bonus-comparison-2026/", label: "대기업 성과급 완전 비교", tone: "secondary" },
+        { href: "/compare/bonus/", label: "성과급 계산기 모음", tone: "secondary" },
+      ]}
+    />
+  </main>
+</BaseLayout>
+
+<script id="hmuConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/hyundai-motor-union-bonus-2026.js" defer></script>

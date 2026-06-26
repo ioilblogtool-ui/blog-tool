@@ -43,6 +43,13 @@ export const reports: ReportMeta[] = [
     badges: ["성과급 순위", "SK하이닉스", "삼성전자", "2026"],
   },
   {
+    slug: "hyundai-motor-union-bonus-2026",
+    title: "현대차 성과급 30% 요구 2026 | 1인당 환산액 바로 계산",
+    description: "현대차 노조의 순이익 30% 성과급 요구안을 1인당으로 환산해보는 시뮬레이션. 기준에 따라 4천만~6천만원까지 차이나는 이유와 직접 계산해보는 시뮬레이션 포함.",
+    order: 3.52,
+    badges: ["현대차", "노조", "성과급", "2026"],
+  },
+  {
     slug: "public-enterprise-bonus-comparison-2026",
     title: "공기업 성과급 비교 2026｜한전·코레일·LH는 얼마나 받을까",
     description: "한전, 코레일, LH, 건보공단 등 주요 공공기관의 성과급 구조와 입력 연봉 기준 추정 성과급을 비교하는 리포트입니다.",
