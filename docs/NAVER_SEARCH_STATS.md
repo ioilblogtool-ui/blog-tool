@@ -11,6 +11,92 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-06-26 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 620 | +12.2% |
+| 노출 | 24,000 | +54.4% |
+| CTR | 2.6% | -1.0%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 이강인 연봉 | 43 | 7,876 | 0.5 |
+| 2 | 국회의원 재산순위 | 16 | 30 | 53.3 |
+| 3 | 하이닉스 성과급 계산기 | 14 | 59 | 23.7 |
+| 4 | 성과급 세금 계산기 | 8 | 28 | 28.6 |
+| 5 | 아파트 보유세 계산기 | 8 | 25 | 32.0 |
+| 6 | 경찰 호봉표 | 7 | 29 | 24.1 |
+| 7 | 초등교사 월급 | 6 | 104 | 5.8 |
+| 8 | 삼성 성과급 계산기 | 6 | 38 | 15.8 |
+| 9 | 중학교 교사 월급 | 6 | 30 | 20.0 |
+| 10 | 육아기 근로시간 단축 급여 계산 | 5 | 21 | 23.8 |
+| 11 | 2026 월드컵 포상금 | 4 | 46 | 8.7 |
+| 12 | 26년 재산세 확인방법 | 4 | 33 | 12.1 |
+| 13 | 분유 가격 비교표 | 4 | 13 | 30.8 |
+| 14 | 브라질 비니시우스 연봉 | 4 | 6 | 66.7 |
+| 15 | 야근수당 계산기 연봉 | 4 | 4 | 100.0 |
+| 16 | 성과급 계산기 | 3 | 100 | 3.0 |
+| 17 | 교사 월급 | 3 | 57 | 5.3 |
+| 18 | 중학교 선생님 월급 | 3 | 24 | 12.5 |
+| 19 | 퇴직금 세후 | 3 | 18 | 16.7 |
+| 20 | 하이닉스 pi | 3 | 17 | 17.6 |
+| 21 | 브라질 선수 연봉 | 3 | 16 | 18.8 |
+| 22 | 사립고등학교 교사 월급 | 3 | 5 | 60.0 |
+| 23 | 이강인연봉 | 2 | 545 | 0.4 |
+| 24 | 삼성sds 성과급 | 2 | 194 | 1.0 |
+| 25 | 2026 증권사 수수료 비교 | 2 | 179 | 1.1 |
+| 26 | 삼성전자 tai | 2 | 98 | 2.0 |
+| 27 | 삼성 tai | 2 | 28 | 7.1 |
+| 28 | 청년미래적금 비교공시 | 2 | 23 | 8.7 |
+| 29 | 월드컵 선수 연봉 비교 | 2 | 22 | 9.1 |
+| 30 | 초등학교 교사 연봉 | 2 | 22 | 9.1 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/teacher-salary-2026/ | 65 | 1,219 | 5.3 |
+| 2 | /reports/lee-kang-in-psg-salary-2026/ | 38 | 5,795 | 0.7 |
+| 3 | /reports/worldcup-squad-salary-total-comparison-2026/ | 33 | 412 | 8.0 |
+| 4 | /tools/bonus-after-tax-calculator/ | 22 | 378 | 5.8 |
+| 5 | /reports/national-assembly-wealth-2026/ | 20 | 47 | 42.6 |
+| 6 | /tools/sk-hynix-bonus/ | 19 | 135 | 14.1 |
+| 7 | /reports/korea-worldcup-squad-salary-2026/ | 17 | 516 | 3.3 |
+| 8 | /reports/professor-salary-2026/ | 15 | 102 | 14.7 |
+| 9 | /reports/kbo-salary-comparison-2026/ | 14 | 74 | 18.9 |
+| 10 | /compare/bonus/ | 13 | 295 | 4.4 |
+| 11 | /tools/worldcup-prize-money-calculator/ | 12 | 852 | 1.4 |
+| 12 | /tools/minimum-wage-2026/ | 12 | 377 | 3.2 |
+| 13 | /reports/sk-hynix-shuttle-real-estate-2026/ | 12 | 340 | 3.5 |
+| 14 | /reports/construction-salary-bonus-comparison-2026/ | 12 | 131 | 9.2 |
+| 15 | /reports/kleague-salary-comparison-2026/ | 11 | 721 | 1.5 |
+| 16 | /reports/korea-football-legends-salary-comparison-2026/ | 10 | 3,006 | 0.3 |
+| 17 | /tools/apartment-holding-tax/ | 10 | 352 | 2.8 |
+| 18 | /reports/military-salary-2026/ | 10 | 192 | 5.2 |
+| 19 | /reports/semiconductor-stocks-forecast-2026-2028/ | 10 | 183 | 5.5 |
+| 20 | /reports/new-employee-salary-2026/ | 10 | 123 | 8.1 |
+| 21 | /tools/teacher-salary-calculator/ | 9 | 297 | 3.0 |
+| 22 | /tools/samsung-bonus/ | 9 | 220 | 4.1 |
+| 23 | /reports/police-salary-2026/ | 9 | 186 | 4.8 |
+| 24 | /tools/childcare-short-time-pay-calculator/ | 8 | 184 | 4.3 |
+| 25 | /tools/postnatal-care-income-eligibility/ | 7 | 128 | 5.5 |
+| 26 | /reports/sk-hynix-bonus-2027/ | 7 | 73 | 9.6 |
+| 27 | /reports/samsung-ds-bonus-calculation-guide/ | 6 | 254 | 2.4 |
+| 28 | /reports/samsung-bonus-rank-net-comparison-2026/ | 6 | 134 | 4.5 |
+| 29 | /reports/silson-insurance-generation-comparison-2026/ | 6 | 78 | 7.7 |
+| 30 | /tools/livelihood-benefit-income-recognition/ | 6 | 48 | 12.5 |
+
+### 주목 포인트
+- 클릭 +12.2%, 노출 +54.4% — 절대 수치 기준으로는 클릭·노출 모두 전일 대비 뚜렷하게 늘었습니다. CTR은 3.6%→2.6%로 낮아졌지만, 노출이 그만큼 크게 늘었기 때문에 클릭 자체는 증가했습니다.
+- 노출 증가를 주도한 건 `이강인 연봉`(1,199→7,876, 6.6배)과 `lee-kang-in-psg-salary-2026`(노출 5,795)·`korea-football-legends-salary-comparison-2026`(노출 3,006) 등 이강인·월드컵 클러스터입니다. 이 키워드들의 CTR은 아직 낮지만(0.3~0.7%), 노출 자체가 커진 건 검색 노출 기반이 넓어지고 있다는 신호로 볼 수 있습니다.
+- `teacher-salary-2026`이 클릭 65로 1위 URL 유지. `worldcup-squad-salary-total-comparison-2026`(CTR 8.0%)·`national-assembly-wealth-2026`(CTR 42.6%)는 노출 대비 전환도 좋은 편.
+- `국회의원 재산순위`(CTR 53.3%), `사립고등학교 교사 월급`(60%), `야근수당 계산기 연봉`(100%) — 볼륨은 작지만 CTR이 매우 높은 틈새 키워드들도 꾸준히 유지.
+- `company-bonus-capacity-score-calculator`, `bundang-redevelopment-vs-dongtan-newbuild-2026` 등 어제 배포 페이지는 아직 TOP30 밖 — 색인 반영에는 보통 며칠 걸리니 다음 데이터에서 확인.
+
+---
+
 ## 2026-06-25 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)

@@ -736,6 +736,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "youth-rent-support-calculator",
+    title: "청년월세지원 계산기 2026",
+    description: "본인·부모님 소득과 재산, 월세를 입력해 청년월세지원 신청 가능 여부와 예상 지원금을 자가 점검용으로 계산합니다.",
+    order: 11.74,
+    eyebrow: "청년월세지원 자가점검",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "청년월세지원", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "예상 지원금" },
+      { label: "기준 비교", value: "월 최대 20만원" }
+    ]
+  },
+  {
     slug: "housing-benefit-income-recognition",
     title: "주거급여 계산기 2026",
     description: "가구원 수, 월소득, 재산, 거주 형태를 입력하면 주거급여 선정기준 통과 여부와 예상 기준임대료·수선비용을 바로 계산합니다.",
