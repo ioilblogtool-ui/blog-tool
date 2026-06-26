@@ -173,6 +173,7 @@ export interface RelatedLink {
 
 export const RELATED_LINKS: RelatedLink[] = [
   { href: "/reports/hyundai-motor-union-bonus-2026/", label: "현대차 성과급 30% 요구 계산" },
+  { href: "/reports/kakao-union-bonus-2026/", label: "카카오 성과급 갈등 2026" },
   { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세금 계산기" },
   { href: "/reports/corporate-bonus-comparison-2026/", label: "대기업 성과급 완전 비교" },
   { href: "/reports/corporate-bonus-ranking-top10-2026/", label: "대기업 성과급 순위 TOP 10" },

@@ -1,0 +1,191 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import {
+  DEMAND_ITEMS,
+  TIMELINE,
+  UNION_DEMAND_FACTS,
+  SEO_CRITERIA,
+  RELATED_LINKS,
+  KKU_FAQ,
+  KKU_META,
+} from "../../data/kakaoUnionBonus2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/reports/${KKU_META.slug}/`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: KKU_META.seoTitle,
+      description: KKU_META.description,
+      inLanguage: "ko-KR",
+      dateModified: KKU_META.updatedAt,
+      mainEntityOfPage: pageUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: KKU_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+
+const relatedForSeo = RELATED_LINKS.map(({ href, label }) => ({ href, label }));
+
+const seoIntro = [
+  "카카오는 2026년 6월 10일, 본사를 포함한 5개 법인이 동시에 4시간 부분파업에 들어갔습니다. 카카오 본사 차원에서는 창사 이래 처음 있는 파업으로, 약 1,500명이 참여했습니다.",
+  "이 갈등은 단순히 '성과급을 더 달라'는 요구가 아닙니다. 노조는 성과급 비율(영업이익 13~14%), RSU(양도제한조건부주식) 처리 방식, 계열사 구조조정 시 고용안정, 보상 산정 투명성까지 네 가지를 함께 요구하고 있습니다.",
+  "회사는 성과급을 영업이익의 10% 수준으로 제안했지만, RSU를 성과 보상의 일부로 포함하자는 입장입니다. 노조는 RSU를 별도로 봐야 한다는 입장이라, 같은 '10%'라는 숫자도 실제 체감 보상은 다르게 계산됩니다.",
+  "노조가 스스로 강조하는 지점은 성과급이 아니라 고용안정입니다. 최근 계열사 매각·분사·구조조정 과정에서 불거진 고용 불안이 이번 갈등의 더 깊은 배경이라는 것입니다.",
+  "2026년 5월 18일 경기지방노동위원회 조정이 실패했고, 5월 20일에는 5개 법인 모두 파업 찬반투표가 가결됐습니다. 노조는 '부분 파업으로는 부족하다'며 6월 29일 대규모 총파업을 예고한 상태입니다.",
+  "이 페이지는 협상이 진행 중인 사안을 다룹니다. 성과급 비율이나 1인당 금액은 모두 노조·회사 양측의 주장을 인용한 것으로 확정치가 아니며, 협상 경과에 따라 내용이 바뀔 수 있습니다.",
+];
+---
+
+<BaseLayout title={KKU_META.seoTitle} description={KKU_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page kku-page" data-report={KKU_META.slug}>
+    <CalculatorHero
+      eyebrow="창사 첫 부분파업"
+      title={KKU_META.title}
+      description="성과급 비율 하나의 문제가 아닙니다. 노조 요구 4가지와 회사 입장을 나란히 비교해보세요."
+      badges={["갈등 정리", "2026", "5개 법인"]}
+    />
+
+    <InfoNotice
+      title="협상 진행 중 안내"
+      lines={[
+        "이 페이지는 협상이 진행 중인 사안을 다룹니다. 금액은 노조 측 주장 인용이며 확정치가 아닙니다.",
+        "협상 경과에 따라 내용이 빠르게 바뀔 수 있어 최신 보도를 함께 확인하시길 권장합니다.",
+      ]}
+    />
+
+    <section class="content-section kku-facts-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">파업 현황</p>
+        <h2>카카오 파업, 어디까지 왔나</h2>
+      </div>
+      <div class="kku-facts-grid">
+        {UNION_DEMAND_FACTS.map((fact) => (
+          <div class="kku-fact-card">
+            <span class="kku-fact-label">{fact.label}</span>
+            <p class="kku-fact-value">{fact.value}</p>
+            {fact.sourceUrl && (
+              <a href={fact.sourceUrl} class="kku-fact-source" target="_blank" rel="noopener noreferrer">
+                출처: {fact.sourceName}
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section kku-demand-section" id="demands">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 쟁점</p>
+        <h2>노조 요구 4가지 vs 회사 입장</h2>
+        <p>성과급 비율뿐 아니라 RSU 처리, 고용안정, 투명성까지 네 갈래로 얽혀 있습니다.</p>
+      </div>
+      <div class="kku-demand-grid">
+        {DEMAND_ITEMS.map((item) => (
+          <article class="kku-demand-card">
+            <h3>{item.title}</h3>
+            <div class="kku-demand-row">
+              <span class="kku-demand-tag kku-demand-tag--union">노조</span>
+              <p>{item.unionPosition}</p>
+            </div>
+            <div class="kku-demand-row">
+              <span class="kku-demand-tag kku-demand-tag--company">회사</span>
+              <p>{item.companyPosition}</p>
+            </div>
+            <p class="kku-demand-gap">{item.gapNote}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section kku-timeline-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">타임라인</p>
+        <h2>갈등 타임라인</h2>
+      </div>
+      <ol class="kku-timeline">
+        {TIMELINE.map((item) => (
+          <li class="kku-timeline-item">
+            <span class="kku-timeline-date">{item.date}</span>
+            <p class="kku-timeline-label">{item.label}</p>
+            <a href={item.sourceUrl} class="kku-timeline-source" target="_blank" rel="noopener noreferrer">
+              출처: {item.sourceName}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section kku-interpretation-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 다를까</p>
+        <h2>왜 단순 성과급 갈등이 아닐까</h2>
+      </div>
+      <div class="kku-interpretation-grid">
+        <div class="kku-interpretation-card">
+          <p class="kku-interpretation-title">노조가 직접 강조한 프레이밍</p>
+          <p>노조는 스스로 "성과급 집단행동" 프레임을 경계하며, 핵심은 고용안정이라고 밝혔습니다.</p>
+        </div>
+        <div class="kku-interpretation-card">
+          <p class="kku-interpretation-title">RSU 포함 여부가 같은 비율도 다르게 만든다</p>
+          <p>회사 제안 10%에 RSU가 포함되는지 여부에 따라 실질 현금 보상 체감이 크게 달라집니다.</p>
+        </div>
+        <div class="kku-interpretation-card">
+          <p class="kku-interpretation-title">정확한 비율 자체가 아직 협상 중</p>
+          <p>다른 대기업과 달리 카카오는 성과급 % 자체가 확정되지 않아 단정적인 수치 비교가 어렵습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section kku-compare-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다른 갈등과 비교</p>
+        <h2>다른 대기업 노조 갈등과 비교하면</h2>
+      </div>
+      <p>현대차·삼성바이오로직스는 성과급 비율(%) 자체가 핵심 쟁점이었다면, 카카오는 비율과 RSU 처리, 고용안정까지 얽혀 있어 단순 수치 비교로는 설명이 어렵습니다.</p>
+      <div class="kku-sibling-links">
+        <a href="/reports/hyundai-motor-union-bonus-2026/">현대차 성과급 30% 요구 계산</a>
+        <a href="/reports/samsung-biologics-union-bonus-2026/">삼성바이오로직스 성과급 20% 요구 계산</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="카카오 성과급 갈등 2026, 어떻게 봐야 할까요?"
+      intro={seoIntro}
+      criteria={SEO_CRITERIA}
+      faq={KKU_FAQ}
+      related={relatedForSeo}
+    />
+
+    <CompareCta
+      eyebrow="다음 계산"
+      title="다른 대기업 노조 갈등도 숫자로 확인해보세요"
+      description="현대차·삼성바이오로직스 노조 요구안을 1인당 환산액으로 직접 계산해볼 수 있습니다."
+      variant="bonus"
+      links={[
+        { href: "/reports/hyundai-motor-union-bonus-2026/", label: "현대차 성과급 30% 요구 계산", tone: "primary" },
+        { href: "/reports/samsung-biologics-union-bonus-2026/", label: "삼성바이오로직스 성과급 20% 요구 계산", tone: "secondary" },
+        { href: "/compare/bonus/", label: "성과급 계산기 모음", tone: "secondary" },
+      ]}
+    />
+  </main>
+</BaseLayout>

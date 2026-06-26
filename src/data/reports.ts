@@ -57,6 +57,13 @@ export const reports: ReportMeta[] = [
     badges: ["삼성바이오로직스", "노조", "성과급", "2026"],
   },
   {
+    slug: "kakao-union-bonus-2026",
+    title: "카카오 성과급 갈등 2026 | 첫 부분파업 핵심 쟁점 정리",
+    description: "카카오 노조의 성과급 비율, RSU 처리, 고용안정, 투명성 요구를 회사 입장과 나란히 비교. 창사 첫 부분파업까지 이어진 갈등의 핵심을 정리합니다.",
+    order: 3.522,
+    badges: ["카카오", "노조", "성과급갈등", "2026"],
+  },
+  {
     slug: "public-enterprise-bonus-comparison-2026",
     title: "공기업 성과급 비교 2026｜한전·코레일·LH는 얼마나 받을까",
     description: "한전, 코레일, LH, 건보공단 등 주요 공공기관의 성과급 구조와 입력 연봉 기준 추정 성과급을 비교하는 리포트입니다.",
