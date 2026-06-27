@@ -1015,6 +1015,21 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "first-birthday-party-cost",
+    title: "돌잔치 비용 비교 계산기",
+    description: "하객 수, 보증 인원, 1인 식대, 스튜디오 촬영, 한복 대여, 돌상, 답례품을 입력해 돌잔치 총비용과 순부담액을 계산합니다.",
+    order: 15.3,
+    eyebrow: "돌잔치 예산",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규", "추정", "돌잔치"],
+    previewStats: [
+      { label: "핵심 결과", value: "총예산" },
+      { label: "식대 기준", value: "보증 인원" },
+      { label: "순부담액", value: "축의금 차감" },
+    ],
+  },
+  {
     slug: "six-plus-six",
     title: "6+6 부모육아휴직제 계산기",
     description: "부모 모두 육아휴직을 쓸 때 특례 적용 여부와 일반 육아휴직 대비 차액을 비교하는 페이지",
@@ -1419,6 +1434,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "비교 대상", value: "어린이집 vs 유치원" },
       { label: "지원금 반영", value: "2026년 기준" },
+    ],
+  },
+  {
+    slug: "daycare-vs-babysitter-cost-2026",
+    title: "어린이집 vs 가정보육 비용 비교 계산기 2026",
+    description: "자녀 나이와 보육 형태를 입력하면 어린이집 순부담액과 베이비시터·단축근무 가정보육 비용을 정부지원금까지 반영해 바로 비교합니다.",
+    order: 26.06,
+    eyebrow: "육아 비용 비교",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "비교 대상", value: "어린이집 vs 가정보육" },
+      { label: "포함 시나리오", value: "베이비시터·단축근무" },
     ],
   },
   {

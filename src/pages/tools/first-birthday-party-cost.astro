@@ -1,0 +1,346 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PAGE_META,
+  BIRTHDAY_REGION_OPTIONS,
+  PARTY_TYPE_PRESETS,
+  OPTION_LABELS,
+  OPTION_COSTS,
+  DEFAULT_INPUT,
+  CONTRACT_CHECKLIST,
+  FIRST_BIRTHDAY_FAQ,
+  relatedLinks,
+} from "../../data/firstBirthdayPartyCost";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  BIRTHDAY_REGION_OPTIONS,
+  PARTY_TYPE_PRESETS,
+  OPTION_COSTS,
+  DEFAULT_INPUT,
+};
+
+const tierOptions = Object.entries(OPTION_LABELS);
+---
+
+<BaseLayout
+  title={PAGE_META.title}
+  description={PAGE_META.subtitle}
+  ogImage="/og/tools/first-birthday-party-cost.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "돌잔치 비용 비교 계산기",
+    url: `${import.meta.env.SITE}/tools/first-birthday-party-cost/`,
+    description: PAGE_META.subtitle,
+    applicationCategory: "LifestyleApplication",
+    operatingSystem: "All",
+    inLanguage: "ko-KR",
+    isAccessibleForFree: true,
+    provider: { "@type": "Organization", name: "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="first-birthday-party-cost" pageClass="fbpc-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="육아·가족 행사 비용"
+        title="돌잔치 비용 비교 계산기"
+        description="스튜디오 촬영, 한복 대여, 돌상, 답례품, 연회장 식대까지 한 번에 계산해 돌잔치 총예산과 순부담액을 확인하세요."
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="fbpcResetButton" copyId="fbpcShareButton" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel fbpc-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 조건</p>
+            <h2 class="panel__title">지역과 행사 유형</h2>
+          </div>
+          <p class="panel-heading__summary">유형을 고르면 하객 수, 보증 인원, 식대 기본값이 채워집니다.</p>
+        </div>
+
+        <div class="fbpc-field-block">
+          <p class="fbpc-field-label">지역</p>
+          <div class="fbpc-segment-grid fbpc-segment-grid--four">
+            {BIRTHDAY_REGION_OPTIONS.map((region) => (
+              <button
+                type="button"
+                class={`fbpc-segment-button${region.id === DEFAULT_INPUT.region ? " is-active" : ""}`}
+                data-fbpc-region={region.id}
+                aria-pressed={region.id === DEFAULT_INPUT.region ? "true" : "false"}
+              >
+                <span>{region.label}</span>
+                <small>{region.note}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="fbpc-field-block">
+          <p class="fbpc-field-label">돌잔치 유형</p>
+          <div class="fbpc-segment-grid">
+            {PARTY_TYPE_PRESETS.map((preset) => (
+              <button
+                type="button"
+                class={`fbpc-segment-button${preset.id === DEFAULT_INPUT.partyType ? " is-active" : ""}`}
+                data-fbpc-party-type={preset.id}
+                aria-pressed={preset.id === DEFAULT_INPUT.partyType ? "true" : "false"}
+              >
+                <span>{preset.label}</span>
+                <small>{preset.description}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="fbpc-input-grid">
+          <label class="fbpc-field" for="fbpcGuestCount">
+            <span>예상 하객 수</span>
+            <input id="fbpcGuestCount" type="number" min="1" max="300" step="1" value={DEFAULT_INPUT.guestCount} />
+          </label>
+          <label class="fbpc-field" for="fbpcGuaranteedCount">
+            <span>보증 인원</span>
+            <input id="fbpcGuaranteedCount" type="number" min="0" max="300" step="1" value={DEFAULT_INPUT.guaranteedCount} />
+          </label>
+          <label class="fbpc-field" for="fbpcMealPrice">
+            <span>1인 식대</span>
+            <input id="fbpcMealPrice" type="number" min="0" max="300000" step="1000" value={DEFAULT_INPUT.mealPrice} />
+          </label>
+          <label class="fbpc-field" for="fbpcVenuePackageCost">
+            <span>장소·패키지</span>
+            <input id="fbpcVenuePackageCost" type="number" min="0" max="5000000" step="10000" value={DEFAULT_INPUT.venuePackageCost} />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel fbpc-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">촬영·의상</p>
+            <h2 class="panel__title">사진과 한복 옵션</h2>
+          </div>
+          <p class="panel-heading__summary">사전 촬영과 당일 스냅, 아이·부모 한복 비용을 반영합니다.</p>
+        </div>
+
+        <div class="fbpc-input-grid">
+          <label class="fbpc-field" for="fbpcStudioTier">
+            <span>스튜디오 촬영</span>
+            <select id="fbpcStudioTier">
+              {tierOptions.map(([value, label]) => <option value={value} selected={value === DEFAULT_INPUT.studioTier}>{label}</option>)}
+            </select>
+          </label>
+          <label class="fbpc-field" for="fbpcChildHanbokTier">
+            <span>아이 한복</span>
+            <select id="fbpcChildHanbokTier">
+              {tierOptions.map(([value, label]) => <option value={value} selected={value === DEFAULT_INPUT.childHanbokTier}>{label}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <label class="fbpc-toggle-row" for="fbpcEventSnapEnabled">
+          <input id="fbpcEventSnapEnabled" type="checkbox" checked={DEFAULT_INPUT.eventSnapEnabled} />
+          <span>행사 스냅 사용</span>
+        </label>
+        <label class="fbpc-field" for="fbpcEventSnapCost">
+          <span>행사 스냅 비용</span>
+          <input id="fbpcEventSnapCost" type="number" min="0" max="3000000" step="10000" value={DEFAULT_INPUT.eventSnapCost} />
+        </label>
+
+        <label class="fbpc-toggle-row" for="fbpcParentHanbokEnabled">
+          <input id="fbpcParentHanbokEnabled" type="checkbox" checked={DEFAULT_INPUT.parentHanbokEnabled} />
+          <span>부모 한복 포함</span>
+        </label>
+        <label class="fbpc-field" for="fbpcParentHanbokCost">
+          <span>부모 한복 비용</span>
+          <input id="fbpcParentHanbokCost" type="number" min="0" max="3000000" step="10000" value={DEFAULT_INPUT.parentHanbokCost} />
+        </label>
+      </article>
+
+      <article class="panel fbpc-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">진행·답례품</p>
+            <h2 class="panel__title">돌상과 부대비용</h2>
+          </div>
+          <p class="panel-heading__summary">답례품은 단가와 수량을 나누어 계산합니다.</p>
+        </div>
+
+        <div class="fbpc-input-grid">
+          <label class="fbpc-field" for="fbpcDolTableTier">
+            <span>돌상</span>
+            <select id="fbpcDolTableTier">
+              {tierOptions.map(([value, label]) => <option value={value} selected={value === DEFAULT_INPUT.dolTableTier}>{label}</option>)}
+            </select>
+          </label>
+          <label class="fbpc-field" for="fbpcReplyGiftUnitPrice">
+            <span>답례품 단가</span>
+            <input id="fbpcReplyGiftUnitPrice" type="number" min="0" max="50000" step="500" value={DEFAULT_INPUT.replyGiftUnitPrice} />
+          </label>
+          <label class="fbpc-field" for="fbpcReplyGiftCount">
+            <span>답례품 수량</span>
+            <input id="fbpcReplyGiftCount" type="number" min="0" max="300" step="1" value={DEFAULT_INPUT.replyGiftCount} />
+          </label>
+          <label class="fbpc-field" for="fbpcReserveRate">
+            <span>예비비율</span>
+            <input id="fbpcReserveRate" type="number" min="0" max="20" step="1" value={DEFAULT_INPUT.reserveRate} />
+          </label>
+        </div>
+
+        <label class="fbpc-toggle-row" for="fbpcHostEventEnabled">
+          <input id="fbpcHostEventEnabled" type="checkbox" checked={DEFAULT_INPUT.hostEventEnabled} />
+          <span>사회자·이벤트 포함</span>
+        </label>
+        <label class="fbpc-field" for="fbpcHostEventCost">
+          <span>사회자·이벤트 비용</span>
+          <input id="fbpcHostEventCost" type="number" min="0" max="2000000" step="10000" value={DEFAULT_INPUT.hostEventCost} />
+        </label>
+
+        <label class="fbpc-toggle-row" for="fbpcGrowthVideoEnabled">
+          <input id="fbpcGrowthVideoEnabled" type="checkbox" checked={DEFAULT_INPUT.growthVideoEnabled} />
+          <span>성장 영상 포함</span>
+        </label>
+        <label class="fbpc-field" for="fbpcGrowthVideoCost">
+          <span>성장 영상 비용</span>
+          <input id="fbpcGrowthVideoCost" type="number" min="0" max="1000000" step="10000" value={DEFAULT_INPUT.growthVideoCost} />
+        </label>
+
+        <label class="fbpc-toggle-row" for="fbpcHairMakeupEnabled">
+          <input id="fbpcHairMakeupEnabled" type="checkbox" checked={DEFAULT_INPUT.hairMakeupEnabled} />
+          <span>헤어메이크업 포함</span>
+        </label>
+        <label class="fbpc-field" for="fbpcHairMakeupCost">
+          <span>헤어메이크업 비용</span>
+          <input id="fbpcHairMakeupCost" type="number" min="0" max="1000000" step="10000" value={DEFAULT_INPUT.hairMakeupCost} />
+        </label>
+
+        <label class="fbpc-field" for="fbpcExpectedGiftMoney">
+          <span>예상 축의금</span>
+          <input id="fbpcExpectedGiftMoney" type="number" min="0" max="30000000" step="10000" value={DEFAULT_INPUT.expectedGiftMoney} />
+        </label>
+      </article>
+    </Fragment>
+
+    <InfoNotice
+      title="계산 기준 안내"
+      lines={[
+        "이 계산기는 지역·업체·시즌별 차이가 큰 돌잔치 비용을 빠르게 가늠하기 위한 참고용 추정 도구입니다.",
+        "식대는 실제 하객 수와 보증 인원 중 큰 값을 기준으로 계산합니다.",
+        "실제 계약 전에는 부가세, 봉사료, 주차 지원, 취소 위약금, 패키지 포함 항목을 반드시 확인하세요.",
+        `데이터 기준: ${PAGE_META.updatedAt}`,
+      ]}
+    />
+
+    <section class="fbpc-section">
+      <div class="fbpc-section__head">
+        <p class="fbpc-section__eyebrow">계산 결과</p>
+        <h2>돌잔치 총예산 요약</h2>
+        <p id="fbpcInterpretation" class="fbpc-section__sub">조건을 입력하면 총비용과 순부담액이 바로 계산됩니다.</p>
+      </div>
+
+      <div class="fbpc-kpi-grid">
+        <article class="fbpc-kpi-card fbpc-kpi-card--primary">
+          <p>예상 총비용</p>
+          <strong id="fbpcTotalCost">-</strong>
+          <span id="fbpcBillableGuestCount">보증 인원 기준</span>
+        </article>
+        <article class="fbpc-kpi-card">
+          <p>식대 합계</p>
+          <strong id="fbpcMealTotal">-</strong>
+          <span>지역 보정 반영</span>
+        </article>
+        <article class="fbpc-kpi-card">
+          <p>부대비용</p>
+          <strong id="fbpcExtraTotal">-</strong>
+          <span>촬영·의상·돌상·답례품</span>
+        </article>
+        <article class="fbpc-kpi-card fbpc-kpi-card--net">
+          <p>순부담액</p>
+          <strong id="fbpcNetCost">-</strong>
+          <span>예상 축의금 차감</span>
+        </article>
+        <article class="fbpc-kpi-card">
+          <p>하객 1인당 실비</p>
+          <strong id="fbpcCostPerGuest">-</strong>
+          <span>총비용 ÷ 하객 수</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="fbpc-section">
+      <div class="fbpc-section__head">
+        <p class="fbpc-section__eyebrow">비용 분해</p>
+        <h2>어디에 가장 많이 쓰이나요?</h2>
+      </div>
+      <div class="panel fbpc-breakdown-list" data-fbpc-breakdown></div>
+      <ul class="fbpc-warning-list" id="fbpcWarnings"></ul>
+    </section>
+
+    <section class="fbpc-section">
+      <div class="fbpc-section__head">
+        <p class="fbpc-section__eyebrow">등급 비교</p>
+        <h2>소규모·일반·프리미엄 총액 비교</h2>
+        <p class="fbpc-section__sub">같은 지역 기준으로 행사 유형을 바꿨을 때의 예상 총액 차이를 보여줍니다.</p>
+      </div>
+      <div class="fbpc-scenario-grid" data-fbpc-scenarios></div>
+    </section>
+
+    <section class="fbpc-section">
+      <div class="fbpc-section__head">
+        <p class="fbpc-section__eyebrow">계약 전 확인</p>
+        <h2>견적서에서 꼭 볼 항목</h2>
+      </div>
+      <div class="fbpc-checklist-grid">
+        {CONTRACT_CHECKLIST.map((item, index) => (
+          <article class="fbpc-check-card">
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <p>{item}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="돌잔치 비용 비교 계산기 — 결과 읽는 법"
+        intro={[
+          "돌잔치 비용은 연회장 식대만 보면 실제 예산을 과소평가하기 쉽습니다. 보증 인원에 따른 최소 식대, 사전 스튜디오 촬영, 행사 당일 스냅, 아이 한복과 부모 한복, 돌상, 답례품, 사회자와 성장 영상까지 붙으면 처음 생각한 금액보다 총액이 커질 수 있습니다. 특히 가족 식사형과 호텔형은 행사 규모가 달라 같은 하객 수라도 비용 구조가 완전히 다릅니다.",
+          "이 계산기는 실제 하객 수와 보증 인원 중 큰 값을 식대 기준 인원으로 잡고, 1인 식대와 지역 보정값을 곱해 식대 합계를 계산합니다. 여기에 장소 패키지, 스튜디오 촬영, 한복 대여, 돌상, 답례품, 진행 옵션, 예비비를 더해 총비용을 추정합니다. 예상 축의금을 입력하면 총비용에서 차감한 순부담액도 함께 볼 수 있습니다.",
+          "결과를 볼 때는 총비용 하나만 보지 말고 식대 비중과 부대비용 비중을 함께 확인하는 것이 좋습니다. 식대가 70% 이상이면 하객 수와 보증 인원 조정이 가장 큰 절약 포인트이고, 부대비용이 크다면 촬영, 돌상, 한복, 답례품 옵션을 낮추는 쪽이 효과적입니다. 1인당 실비는 하객 규모를 늘리거나 줄였을 때 예산이 얼마나 민감하게 움직이는지 보는 기준으로 활용할 수 있습니다.",
+          "돌잔치 견적은 지역, 업체, 주말 여부, 성수기, 패키지 포함 항목, 부가세와 봉사료 조건에 따라 실제 금액이 달라집니다. 이 페이지의 금액은 공식 평균이 아니라 예산을 잡기 위한 참고용 추정값입니다. 계약 전에는 보증 인원, 식대 포함 범위, 주차 지원, 취소 위약금, 돌상·스냅·성장 영상 포함 여부를 견적서에서 직접 확인하세요.",
+        ]}
+        inputPoints={[
+          "하객 수와 보증 인원을 입력해 실제 청구 기준이 되는 식대 합계를 계산합니다.",
+          "스튜디오 촬영, 한복 대여, 돌상, 답례품, 사회자, 성장 영상 등 선택 옵션을 더합니다.",
+          "예상 축의금을 입력해 총비용에서 차감한 순부담액까지 확인합니다.",
+        ]}
+        criteria={[
+          "모든 비용은 지역·업체·계약 시점에 따라 달라지는 참고용 추정값입니다.",
+          "식대는 실제 하객 수와 보증 인원 중 큰 값을 기준으로 계산합니다.",
+          "답례품은 단가와 수량을 직접 입력해 행사 규모에 맞게 조정할 수 있습니다.",
+          "실제 견적에는 부가세, 봉사료, 주차, 취소 위약금이 별도로 붙을 수 있습니다.",
+        ]}
+        faq={FIRST_BIRTHDAY_FAQ}
+        related={relatedLinks}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="firstBirthdayPartyCostConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/first-birthday-party-cost.js")}></script>
+</BaseLayout>

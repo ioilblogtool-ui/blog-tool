@@ -1,0 +1,301 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CompareToolShell from "../../components/CompareToolShell.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  DVB_CHILD_AGE_OPTIONS,
+  DVB_DAYCARE_CTA,
+  DVB_DAYCARE_SUBSIDY,
+  DVB_DAYCARE_TYPE_OPTIONS,
+  DVB_DEFAULT_INPUT,
+  DVB_FAQ,
+  DVB_HOME_CARE_ALLOWANCE,
+  DVB_HOME_CARE_MODE_OPTIONS,
+  DVB_META,
+  DVB_RELATED_LINKS,
+  DVB_SHORT_WORK_CTA,
+  DVB_SHORT_WORK_POLICY,
+  DVB_SITTER_CTA,
+  DVB_SITTER_WAGE_PRESETS,
+} from "../../data/daycareVsBabysitterCost2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaults: DVB_DEFAULT_INPUT,
+  daycareSubsidy: DVB_DAYCARE_SUBSIDY,
+  homeCareAllowance: DVB_HOME_CARE_ALLOWANCE,
+  shortWorkPolicy: DVB_SHORT_WORK_POLICY,
+};
+
+const faqSchema = DVB_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={DVB_META.seoTitle}
+  description={DVB_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        name: DVB_META.title,
+        applicationCategory: "LifestyleApplication",
+        operatingSystem: "All",
+        url: `${import.meta.env.SITE ?? "https://bigyocalc.com"}/tools/${DVB_META.slug}/`,
+        description: DVB_META.description,
+        inLanguage: "ko-KR",
+        isAccessibleForFree: true,
+        provider: { "@type": "Organization", name: "비교계산소" },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqSchema,
+      },
+    ],
+  }}
+>
+  <SiteHeader />
+
+  <CompareToolShell calculatorId="daycare-vs-babysitter-cost-2026" pageClass="dvb-page">
+    <CalculatorHero
+      slot="hero"
+      eyebrow="육아 비용 비교"
+      title={DVB_META.title}
+      description="정부지원금을 반영한 어린이집 순부담액과 베이비시터·단축근무 비용을 같은 기준으로 비교합니다."
+      badges={["어린이집", "베이비시터", "단축근무", "2026"]}
+    />
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetDvbBtn" copyId="copyDvbLinkBtn" />
+    </Fragment>
+
+    <div slot="aside">
+      <div class="dvb-shared-panel">
+        <div class="dvb-shared-label">자녀 나이 (공통)</div>
+        <div class="dvb-chip-row" data-dvb-group="childAge">
+          {DVB_CHILD_AGE_OPTIONS.map((option) => (
+            <button
+              class:list={["dvb-chip", option.id === DVB_DEFAULT_INPUT.childAge && "is-active"]}
+              type="button"
+              data-dvb-chip="childAge"
+              data-dvb-value={option.id}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="dvb-col-label dvb-col-label--daycare">🏫 어린이집</div>
+      <div class="dvb-chip-row" data-dvb-group="daycareType">
+        {DVB_DAYCARE_TYPE_OPTIONS.map((option) => (
+          <button
+            class:list={["dvb-chip", option.type === DVB_DEFAULT_INPUT.daycareType && "is-active"]}
+            type="button"
+            data-dvb-chip="daycareType"
+            data-dvb-value={option.type}
+            data-dvb-extra={option.defaultExtraCost}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <label class="dvb-field">
+        <span>월 추가비용 (특별활동비 등)</span>
+        <input data-dvb="extraCostMonthly" type="range" min="0" max="150000" step="5000" value={DVB_DEFAULT_INPUT.extraCostMonthly} />
+        <div class="dvb-field-row">
+          <input data-dvb-num="extraCostMonthly" type="text" inputmode="numeric" value={DVB_DEFAULT_INPUT.extraCostMonthly.toLocaleString("ko-KR")} />
+          <span>원/월</span>
+        </div>
+      </label>
+
+      <div class="dvb-col-label dvb-col-label--homecare" style="margin-top:1.25rem">🏠 가정보육</div>
+      <div class="dvb-chip-row" data-dvb-group="homeCareMode">
+        {DVB_HOME_CARE_MODE_OPTIONS.map((option) => (
+          <button
+            class:list={["dvb-chip", option.id === DVB_DEFAULT_INPUT.homeCareMode && "is-active"]}
+            type="button"
+            data-dvb-chip="homeCareMode"
+            data-dvb-value={option.id}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
+      <div data-dvb-section="sitter">
+        <div class="dvb-preset-row" aria-label="베이비시터 시급 빠른 선택">
+          {DVB_SITTER_WAGE_PRESETS.map((preset) => (
+            <button class="dvb-chip dvb-chip--ghost" type="button" data-dvb-sitter-preset={preset.hourlyWage}>
+              {preset.label}
+            </button>
+          ))}
+        </div>
+        <label class="dvb-field">
+          <span>베이비시터 시급</span>
+          <input data-dvb="sitterHourlyWage" type="range" min="9860" max="25000" step="100" value={DVB_DEFAULT_INPUT.sitterHourlyWage} />
+          <div class="dvb-field-row">
+            <input data-dvb-num="sitterHourlyWage" type="text" inputmode="numeric" value={DVB_DEFAULT_INPUT.sitterHourlyWage.toLocaleString("ko-KR")} />
+            <span>원/시간</span>
+          </div>
+        </label>
+        <label class="dvb-field">
+          <span>주당 이용시간</span>
+          <input data-dvb="sitterWeeklyHours" type="range" min="5" max="50" step="1" value={DVB_DEFAULT_INPUT.sitterWeeklyHours} />
+          <div class="dvb-field-row">
+            <input data-dvb-num="sitterWeeklyHours" type="text" inputmode="numeric" value={DVB_DEFAULT_INPUT.sitterWeeklyHours} />
+            <span>시간/주</span>
+          </div>
+        </label>
+      </div>
+
+      <div data-dvb-section="shortWork">
+        <label class="dvb-field">
+          <span>월 통상임금</span>
+          <input data-dvb="monthlyOrdinaryWage" type="range" min="2000000" max="8000000" step="100000" value={DVB_DEFAULT_INPUT.monthlyOrdinaryWage} />
+          <div class="dvb-field-row">
+            <input data-dvb-num="monthlyOrdinaryWage" type="text" inputmode="numeric" value={DVB_DEFAULT_INPUT.monthlyOrdinaryWage.toLocaleString("ko-KR")} />
+            <span>원/월</span>
+          </div>
+        </label>
+        <label class="dvb-field">
+          <span>단축 전 주 근로시간</span>
+          <input data-dvb="weeklyHoursBefore" type="range" min="20" max="52" step="1" value={DVB_DEFAULT_INPUT.weeklyHoursBefore} />
+          <div class="dvb-field-row">
+            <input data-dvb-num="weeklyHoursBefore" type="text" inputmode="numeric" value={DVB_DEFAULT_INPUT.weeklyHoursBefore} />
+            <span>시간/주</span>
+          </div>
+        </label>
+        <label class="dvb-field">
+          <span>단축 후 주 근로시간</span>
+          <input data-dvb="weeklyHoursAfter" type="range" min="15" max="35" step="1" value={DVB_DEFAULT_INPUT.weeklyHoursAfter} />
+          <div class="dvb-field-row">
+            <input data-dvb-num="weeklyHoursAfter" type="text" inputmode="numeric" value={DVB_DEFAULT_INPUT.weeklyHoursAfter} />
+            <span>시간/주</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div>
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          "어린이집 보육료는 시설에 직접 지급되는 바우처 구조라 학부모 체감 비용에서는 0원으로 처리하고, 추가비용(특별활동비 등)만 순부담액에 반영합니다.",
+          "베이비시터 시급과 어린이집 추가비용은 지역·기관별 편차가 큰 평균값 기준 추정입니다.",
+          "가정양육수당은 3세 이상부터는 지급되지 않습니다.",
+          "단축근무 실제 수령액은 회사의 통상임금 산정 방식에 따라 달라질 수 있습니다.",
+        ]}
+      />
+
+      <div class="dvb-conclusion" data-dvb-result="conclusionBox"></div>
+
+      <div class="dvb-kpi-compare">
+        <div class="dvb-kpi-col dvb-kpi-col--daycare">
+          <div class="dvb-kpi-col-header">🏫 어린이집</div>
+          <div class="dvb-kpi-item">
+            <span>보육료 지원(바우처)</span>
+            <strong data-dvb-result="daycareSubsidy">—</strong>
+          </div>
+          <div class="dvb-kpi-item">
+            <span>추가비용</span>
+            <strong data-dvb-result="daycareExtra">—</strong>
+          </div>
+          <div class="dvb-kpi-item">
+            <span>월 순부담액</span>
+            <strong data-dvb-result="daycareNetCost">—</strong>
+          </div>
+          <div class="dvb-kpi-cta">
+            <a class="button button--secondary" href={withBase(DVB_DAYCARE_CTA.href)}>{DVB_DAYCARE_CTA.label}</a>
+          </div>
+        </div>
+        <div class="dvb-kpi-col dvb-kpi-col--homecare">
+          <div class="dvb-kpi-col-header">🏠 가정보육</div>
+          <div class="dvb-kpi-item">
+            <span data-dvb-result="homeCareGrossLabel">인건비/임금손실</span>
+            <strong data-dvb-result="homeCareGross">—</strong>
+          </div>
+          <div class="dvb-kpi-item">
+            <span>가정양육수당</span>
+            <strong data-dvb-result="homeCareAllowance">—</strong>
+          </div>
+          <div class="dvb-kpi-item">
+            <span>월 순부담액</span>
+            <strong data-dvb-result="homeCareNetCost">—</strong>
+          </div>
+          <div class="dvb-kpi-cta">
+            <a
+              class="button button--secondary"
+              data-dvb-cta="sitter"
+              href={DVB_SITTER_CTA.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {DVB_SITTER_CTA.label}
+            </a>
+            <a class="button button--secondary" data-dvb-cta="shortWork" href={withBase(DVB_SHORT_WORK_CTA.href)}>
+              {DVB_SHORT_WORK_CTA.label}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="dvb-summary-row">
+        <article class="dvb-summary-card">
+          <span class="dvb-summary-label">월 차액</span>
+          <strong class="dvb-summary-value" data-dvb-result="monthlyDifference">—</strong>
+        </article>
+        <article class="dvb-summary-card">
+          <span class="dvb-summary-label">연간 차액</span>
+          <strong class="dvb-summary-value" data-dvb-result="annualDifference">—</strong>
+        </article>
+      </div>
+
+      <div class="dvb-chart-section">
+        <h3>월 순부담액 비교</h3>
+        <div class="dvb-chart-wrap">
+          <canvas id="dvbBarChart"></canvas>
+        </div>
+      </div>
+
+      <SeoContent
+        introTitle="어린이집 vs 가정보육 비용, 무엇을 비교해야 할까"
+        intro={[
+          "어린이집 보육료는 정부지원으로 대부분 해결되지만, 가정보육은 베이비시터 인건비나 부모의 단축근무 임금손실까지 함께 봐야 진짜 비용이 보입니다. 이 계산기는 자녀 나이와 보육 형태를 입력하면 정부지원금까지 반영한 가구의 실질 순부담액을 어린이집과 가정보육 두 시나리오로 비교해줍니다.",
+          "어린이집 보육료는 시설에 직접 지급되는 바우처 구조라 학부모가 별도로 내지 않는 경우가 많아, 이 계산기에서는 특별활동비 등 추가비용만 어린이집 순부담액으로 계산합니다. 반면 가정보육은 가정양육수당이라는 현금 지원을 받지만, 베이비시터 인건비나 단축근무로 줄어든 월급이 이를 훨씬 초과하는 경우가 많습니다.",
+          "가정보육 탭에서는 베이비시터(전일), 베이비시터(반일), 부모 단축근무 세 가지 시나리오를 선택해 같은 어린이집 결과와 비교할 수 있습니다. 단축근무 임금손실은 육아기 근로시간 단축 급여 계산기와 동일한 2026년 상한·하한 기준으로 계산합니다.",
+          "이 계산기에 반영된 베이비시터 시급과 어린이집 추가비용은 평균값 기준 추정입니다. 실제 비용은 거주 지역, 이용 기관, 계약 조건에 따라 달라질 수 있으니 최종 결정 전에는 실제 시세와 기관 안내를 다시 확인하는 것이 안전합니다.",
+        ]}
+        inputPoints={[
+          "자녀 나이를 선택하면 보육료 지원·가정양육수당이 자동 반영됩니다.",
+          "어린이집 유형과 추가비용을 조정해 순부담액을 확인합니다.",
+          "가정보육 모드(베이비시터 전일/반일/단축근무)를 선택해 비교합니다.",
+        ]}
+        criteria={[
+          "어린이집 보육료는 시설 직지급 바우처로 가정해 순부담액에서 제외했습니다.",
+          "베이비시터 월 비용은 시급 × 주당 이용시간 × 4.345로 계산합니다.",
+          "단축근무 임금손실은 육아기 근로시간 단축 급여 계산기와 동일한 로직을 사용합니다.",
+          "가정양육수당은 3세 이상부터 지급되지 않습니다.",
+        ]}
+        faq={DVB_FAQ}
+        related={DVB_RELATED_LINKS}
+      />
+    </div>
+  </CompareToolShell>
+</BaseLayout>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script id="dvbConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+<script src="/scripts/daycare-vs-babysitter-cost-2026.js" defer></script>
