@@ -856,6 +856,13 @@ export const reports: ReportMeta[] = [
     badges: ["이유식 비교표", "직접 만들기", "육아비용", "2026"],
   },
   {
+    slug: "english-kindergarten-vs-regular-kindergarten-cost-2026",
+    title: "영어유치원 일반유치원 비교 2026 | 월 학비 최대 200만 차이",
+    description: "영어유치원과 일반유치원의 월 학비, 정부 지원금 반영 순부담액, 3년 누적 비용을 비교했습니다. 영어유치원 효과 논란과 대안까지 한 페이지에서 확인하세요.",
+    order: 45.2,
+    badges: ["영어유치원 비교", "사교육비", "육아비용", "2026"],
+  },
+  {
     slug: "2026-year-end-tax-saving-guide",
     title: "2026 연말정산 절세 전략 완전 정복",
     description: "공제 항목별 절세 전략, 연봉 구간별 환급 시뮬레이션, 절세 실수 TOP10 체크리스트를 총정리합니다.",

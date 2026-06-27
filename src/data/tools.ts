@@ -1451,6 +1451,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "newborn-essentials-fullset-cost-2026",
+    title: "신생아 용품 풀세트 비용 계산기 2026",
+    description: "카시트·유모차·아기침대·젖병 세척기 등 출산 준비물을 가성비·중급·프리미엄 등급별로 선택하면 풀세트 총비용을 바로 계산합니다.",
+    order: 26.07,
+    eyebrow: "출산 준비 비용",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규", "추정"],
+    previewStats: [
+      { label: "품목 수", value: "10개" },
+      { label: "등급", value: "가성비·중급·프리미엄" },
+    ],
+  },
+  {
     slug: "delivery-vs-cooking-cost",
     title: "배달 vs 직접 요리 비용 계산기",
     description: "주당 배달 횟수, 배달비, 쿠폰, 식재료비, 조리 시간까지 입력해 월간·연간 절약액과 손익분기 주문금액을 계산합니다.",

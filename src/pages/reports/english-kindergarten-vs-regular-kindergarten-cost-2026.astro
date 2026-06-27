@@ -1,0 +1,476 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  EKC_FAQ,
+  EKC_META,
+  EKC_CTA_CARDS,
+  EKC_RELATED_LINKS,
+  INSTITUTIONS,
+  ALTERNATIVES,
+  CUMULATIVE_COST_ROWS,
+  REGIONAL_FEE_ROWS,
+  EFFECTIVENESS_VIEWS,
+  COMMON_MISTAKES,
+  SUPPORT_PROGRAMS,
+} from "../../data/englishKindergartenVsRegularCost2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const won = (n: number) => n.toLocaleString("ko-KR") + "원";
+const manWon = (n: number) => {
+  const m = Math.floor(n / 10000);
+  const r = n % 10000;
+  return m > 0 ? (r > 0 ? `${m}만 ${r.toLocaleString()}원` : `${m}만 원`) : won(n);
+};
+
+const minTotal = Math.min(...CUMULATIVE_COST_ROWS.map((r) => r.threeYearTotal));
+const maxTotal = Math.max(...CUMULATIVE_COST_ROWS.map((r) => r.threeYearTotal));
+const totalDiff = maxTotal - minTotal;
+const lowestRow = CUMULATIVE_COST_ROWS.find((r) => r.isLowest) ?? CUMULATIVE_COST_ROWS[CUMULATIVE_COST_ROWS.length - 1];
+const highestRow = CUMULATIVE_COST_ROWS.find((r) => r.isHighest) ?? CUMULATIVE_COST_ROWS[0];
+
+const privateKinder = INSTITUTIONS.find((i) => i.id === "private_kinder")!;
+const videoEnglish = ALTERNATIVES.find((a) => a.id === "video_english")!;
+const combinedMonthly = privateKinder.monthlyNetFee + privateKinder.extraMonthlyCost + videoEnglish.monthlyCost;
+
+const faqSchema = EKC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: EKC_META.seoTitle,
+      description: EKC_META.description,
+      inLanguage: "ko-KR",
+      dateModified: EKC_META.updatedAt,
+      mainEntityOfPage: `https://bigyocalc.com/reports/${EKC_META.slug}/`,
+      publisher: { "@type": "Organization", name: "비교계산소", url: "https://bigyocalc.com" },
+    },
+    { "@type": "FAQPage", mainEntity: faqSchema },
+  ],
+};
+
+const barChartData = {
+  labels: CUMULATIVE_COST_ROWS.map((r) => r.option),
+  data: CUMULATIVE_COST_ROWS.map((r) => r.threeYearTotal),
+  colors: CUMULATIVE_COST_ROWS.map((r) => (r.isLowest ? "#0F6E56" : r.isHighest ? "#B91C1C" : "#93C5BE")),
+};
+
+const regionalChartData = {
+  labels: REGIONAL_FEE_ROWS.map((r) => r.region),
+  english: REGIONAL_FEE_ROWS.map((r) => r.englishKinderAvg),
+  regular: REGIONAL_FEE_ROWS.map((r) => r.regularKinderAvg),
+};
+---
+
+<BaseLayout
+  title={EKC_META.seoTitle}
+  description={EKC_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page ekc-page">
+    <CalculatorHero
+      eyebrow="영어유치원 비교 리포트"
+      title="영어유치원 일반유치원 비교 2026"
+      description="프리미엄형 영어유치원부터 국공립유치원까지, 월 학비와 3년 누적 비용·효과성 논란을 한 페이지에서 비교합니다."
+      badges={["영어유치원 비교", "3년 누적 비용", "지원금", "추정"]}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        EKC_META.dataNote,
+        "이 리포트는 특정 학원·유치원 브랜드명을 명시하지 않고 등급·지역 기준으로 데이터를 구성했습니다.",
+        "영어유치원과 일반유치원 중 어느 쪽이 '더 나은 선택'인지는 절대적인 기준이 없습니다. 가정의 예산과 아이의 성향을 함께 고려하세요.",
+      ]}
+    />
+
+    <!-- 핵심 요약 카드 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한눈에 보는 결론</p>
+        <h2>영어유치원은 지원금 대상이 아니라는 점이 가장 큰 비용 격차를 만듭니다</h2>
+        <p>학비 정가만 비교하면 격차가 과소평가되기 쉽습니다. 정부 지원금 반영 순부담액까지 봐야 진짜 비교가 됩니다.</p>
+      </div>
+      <div class="ekc-summary-grid">
+        <div class="ekc-summary-card ekc-summary-card--warn">
+          <span class="ekc-summary-label">영어유치원 vs 국공립 차이</span>
+          <span class="ekc-summary-value">3년 약 {manWon(totalDiff)}</span>
+          <span class="ekc-summary-note">{highestRow.option} vs {lowestRow.option} (추정)</span>
+        </div>
+        <div class="ekc-summary-card">
+          <span class="ekc-summary-label">지원금 핵심</span>
+          <span class="ekc-summary-value">대부분 대상 아님</span>
+          <span class="ekc-summary-note">영어유치원은 학원으로 분류되어 누리과정 지원금 제외되는 경우 다수</span>
+        </div>
+        <div class="ekc-summary-card">
+          <span class="ekc-summary-label">효과성</span>
+          <span class="ekc-summary-value">단기 효과 O, 장기 격차는 분분</span>
+          <span class="ekc-summary-note">가정 내 지속적 노출 여부가 더 중요하다는 의견도 많음</span>
+        </div>
+        <div class="ekc-summary-card ekc-summary-card--accent">
+          <span class="ekc-summary-label">대안 팁</span>
+          <span class="ekc-summary-value">민간유치원 + 화상영어</span>
+          <span class="ekc-summary-note">월 약 {manWon(combinedMonthly)}로 영어 노출 + 비용 절감 (추정)</span>
+        </div>
+      </div>
+    </section>
+
+    <DesignTrustPanel updatedAt="2026년 6월" />
+
+    <section class="content-section ekc-conclusion">
+      <p class="section-header__eyebrow">30초 결론</p>
+      <h2>3년 기준 영어유치원(프리미엄형)과 국공립유치원은 최대 8천만 원 넘게 차이 납니다</h2>
+      <div class="ekc-conclusion-grid">
+        <article>
+          <strong>비용 기준</strong>
+          <p>{highestRow.option}은 3년 누적 약 {manWon(highestRow.threeYearTotal)}, {lowestRow.option}은 약 {manWon(lowestRow.threeYearTotal)}입니다.</p>
+        </article>
+        <article>
+          <strong>지원금 기준</strong>
+          <p>국공립·민간유치원은 누리과정 지원금이 적용돼 실질 부담이 크게 낮아지지만, 영어유치원은 대부분 해당되지 않습니다.</p>
+        </article>
+        <article>
+          <strong>실전 선택 기준</strong>
+          <p>비용 부담이 크다면 일반유치원 + 화상영어·전화영어 조합으로 영어 노출과 비용을 동시에 관리하는 방법도 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section ekc-quick-cta-section" aria-labelledby="ekc-quick-cta-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">바로 계산</p>
+        <h2 id="ekc-quick-cta-title">우리 집 조건으로 다시 계산해보세요</h2>
+        <p>육아 비용은 영어유치원 하나만 보지 않고 어린이집, 사교육비까지 같이 봐야 실제 부담이 보입니다.</p>
+      </div>
+      <div class="ekc-cta-card-grid">
+        {EKC_CTA_CARDS.map((card) => (
+          <a class="ekc-cta-card" href={withBase(card.href)}>
+            <span>{card.eyebrow}</span>
+            <strong>{card.title}</strong>
+            <p>{card.description}</p>
+            <em>{card.cta}</em>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 영어유치원, 왜 이렇게 비싼데도 보내는가 -->
+    <section class="content-section ekc-copy-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비용 판단 기준</p>
+        <h2>영어유치원, 왜 이렇게 비싼데도 보내는가</h2>
+      </div>
+      <p>영어유치원은 일반유치원보다 월 평균 80만 원에서 많게는 200만 원 이상 더 비쌉니다. 자녀의 영어 노출을 위해 지출을 감당할 가치가 있는지 고민하는 부모가 많지만, 막상 비교할 수 있는 구체적인 데이터는 찾기 어렵습니다.</p>
+      <p>가장 중요한 차이는 <strong>정부 지원금</strong>입니다. 대부분의 영어유치원은 정식 유치원이 아닌 학원으로 분류되어 누리과정·유아학비 지원금 대상이 아닙니다. 이 차이를 감안하지 않고 정가만 비교하면 실제 격차를 과소평가하거나 과대평가하기 쉽습니다.</p>
+    </section>
+
+    <!-- 월 비용 비교표 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비용 비교</p>
+        <h2>영어유치원 vs 일반유치원 월 비용 비교표 <span class="badge badge--warning">추정</span></h2>
+        <p>정가만 보지 말고 지원금 반영 순부담액, 부가 비용까지 포함한 실질 월 비용으로 비교해야 합니다.</p>
+      </div>
+      <div class="ekc-table-wrap">
+        <table class="ekc-compare-table">
+          <thead>
+            <tr>
+              <th>유형</th>
+              <th>월 정가</th>
+              <th>지원금</th>
+              <th>순부담액</th>
+              <th>부가 비용</th>
+              <th>실질 월 비용</th>
+            </tr>
+          </thead>
+          <tbody>
+            {INSTITUTIONS.map((inst) => {
+              const realMonthly = inst.monthlyNetFee + inst.extraMonthlyCost;
+              return (
+                <tr>
+                  <td class="ekc-inst-cell">{inst.label}</td>
+                  <td>{won(inst.monthlyListFee)}</td>
+                  <td>
+                    {inst.monthlySubsidy > 0
+                      ? <span>-{won(inst.monthlySubsidy)}</span>
+                      : <span class="ekc-empty">지원금 없음</span>
+                    }
+                  </td>
+                  <td class={inst.monthlyNetFee <= 50000 ? "ekc-lowest" : ""}>{won(inst.monthlyNetFee)}</td>
+                  <td>{won(inst.extraMonthlyCost)}</td>
+                  <td class={realMonthly >= 1000000 ? "ekc-highest" : realMonthly <= 50000 ? "ekc-lowest" : ""}>
+                    <strong>{won(realMonthly)}</strong>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="ekc-table-note">※ 실질 월 비용 = 순부담액 + 부가 비용(셔틀·특별활동·재료비 등). 모든 가격은 추정값입니다.</p>
+    </section>
+
+    <!-- 정부 지원금 반영 기준 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지원금 기준</p>
+        <h2>정부 지원금(누리과정·유아학비) 반영 기준</h2>
+        <p>누리과정 지원금은 국공립·민간유치원 재원 아동에게 적용되며, 영어유치원은 대부분 학원으로 분류되어 대상에서 제외됩니다.</p>
+      </div>
+      <div class="ekc-table-wrap">
+        <table class="ekc-support-table">
+          <thead>
+            <tr>
+              <th>제도</th>
+              <th>대상</th>
+              <th>금액</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SUPPORT_PROGRAMS.map((p) => (
+              <tr>
+                <td><strong>{p.name}</strong></td>
+                <td>{p.target}</td>
+                <td>{p.amount}</td>
+                <td class="ekc-support-note">{p.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3년 누적 비용 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">3년 누적</p>
+        <h2>유형별 3년 누적 비용 비교 <span class="badge badge--warning">추정</span></h2>
+        <p>만 3~5세(3년) 기준 실질 월 비용을 누적한 추정 총액입니다.</p>
+      </div>
+      <div class="ekc-chart-panel">
+        <div class="ekc-bar-chart-wrap">
+          <canvas id="ekcBarChart" aria-label="유형별 3년 누적 비용 비교 차트"></canvas>
+        </div>
+      </div>
+      <div class="ekc-cta-box">
+        <span class="ekc-cta-text">우리 아이 사교육비를 직접 계산해보세요.</span>
+        <a href={withBase("/tools/child-tutoring-cost-calculator/")} class="ekc-cta-btn">사교육비 계산기</a>
+      </div>
+    </section>
+
+    <!-- 지역별 학비 비교 차트 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역별 비교</p>
+        <h2>지역별 영어유치원 학비 수준 비교 <span class="badge badge--warning">추정</span></h2>
+        <p>같은 등급이라도 지역에 따라 학비 차이가 크게 날 수 있습니다.</p>
+      </div>
+      <div class="ekc-chart-panel">
+        <div class="ekc-bar-chart-wrap">
+          <canvas id="ekcRegionalChart" aria-label="지역별 영어유치원·일반유치원 평균 학비 비교 차트"></canvas>
+        </div>
+      </div>
+      <p class="ekc-chart-note">데이터 출처: 맘카페·학원 공개 정보 종합. 확인 필요.</p>
+    </section>
+
+    <!-- 효과성 균형 서술 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">효과성 논란</p>
+        <h2>영어유치원이 정말 효과가 있을까</h2>
+      </div>
+      <div class="ekc-effectiveness-grid">
+        {EFFECTIVENESS_VIEWS.map((view) => (
+          <div class={`ekc-effectiveness-card ekc-effectiveness-card--${view.stance}`}>
+            <strong>{view.title}</strong>
+            <p>{view.body}</p>
+          </div>
+        ))}
+      </div>
+      <p class="ekc-table-note">이 내용은 일반적인 정보이며 교육·언어발달 전문가의 의견은 사례마다 다를 수 있습니다. 아이의 성향에 맞는 선택이 가장 중요합니다.</p>
+    </section>
+
+    <!-- 대안 비교 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">대안</p>
+        <h2>영어유치원 대신 선택할 수 있는 대안</h2>
+        <p>일반유치원과 병행하면 비용 부담을 크게 줄이면서 영어 노출을 늘릴 수 있습니다.</p>
+      </div>
+      <div class="ekc-alt-grid">
+        {ALTERNATIVES.map((alt) => (
+          <div class="ekc-alt-card">
+            <strong>{alt.label}</strong>
+            <div class="ekc-alt-price">월 {won(alt.monthlyCost)}</div>
+            <p>{alt.description}</p>
+            {alt.affiliateUrl
+              ? <a class="ekc-alt-link" href={alt.affiliateUrl} target="_blank" rel="noopener sponsored">체험 신청</a>
+              : <span class="ekc-empty">제휴 링크 준비 중</span>
+            }
+          </div>
+        ))}
+      </div>
+      <p class="ekc-table-note">민간유치원 순부담액 + 부가 비용 + 화상영어를 더하면 월 약 {manWon(combinedMonthly)}로, 영어유치원(일반형) 대비 상당한 비용을 절감할 수 있습니다. (추정)</p>
+    </section>
+
+    <!-- 흔한 실수 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">주의사항</p>
+        <h2>영어유치원 보낼 때 흔히 하는 실수</h2>
+      </div>
+      <div class="ekc-check-grid">
+        {COMMON_MISTAKES.map((item) => (
+          <article class="ekc-check-card">
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 일반유치원에서 영어 노출 늘리는 법 -->
+    <section class="content-section">
+      <div class="ekc-caution-list">
+        <h4>일반유치원에서도 영어 노출을 늘리는 방법</h4>
+        <ol>
+          <li>가정 내 영어 그림책·영어 영상 노출 시간을 일정하게 확보하세요.</li>
+          <li>유치원 방과후 영어 프로그램을 활용하면 추가 비용을 크게 늘리지 않고 노출을 늘릴 수 있습니다.</li>
+          <li>화상영어·전화영어는 주 2~3회만으로도 꾸준한 노출 효과를 기대할 수 있습니다.</li>
+          <li>아이가 흥미를 잃지 않도록 강압적인 학습보다 놀이 중심 노출을 우선하세요.</li>
+          <li>영어 노출 방식 선택은 아이의 성향과 가정 상황에 맞게 조정하는 것이 중요합니다.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 학부모 후기 요약 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">정성 후기</p>
+        <h2>학부모 실제 후기 요약</h2>
+        <p>맘카페·커뮤니티 후기 기반 정성적 데이터입니다. 개인 경험에 따라 다를 수 있습니다.</p>
+      </div>
+      <ul class="ekc-review-list">
+        <li><strong>영어유치원(프리미엄형):</strong> "영어 자신감이 늘었다"는 후기 多. 비용 부담을 가장 큰 단점으로 꼽음.</li>
+        <li><strong>영어유치원(일반형):</strong> 적당한 비용에 영어 노출 효과 있다는 평가. 프리미엄형 대비 교사 비율 아쉽다는 의견.</li>
+        <li><strong>민간유치원:</strong> 지원금 적용 후 부담이 크지 않다는 후기 多. 프로그램 편차에 대한 우려도 있음.</li>
+        <li><strong>국공립유치원:</strong> 비용 부담이 거의 없다는 점 만족. 대기 기간이 길었다는 후기 다수.</li>
+      </ul>
+    </section>
+
+    <!-- 관련 콘텐츠 -->
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>영어유치원 다음에 같이 확인할 콘텐츠</h2>
+        <p>육아·사교육 비용은 어린이집, 이유식, 첫해 육아비용과 함께 보면 실제 월 부담이 더 잘 보입니다.</p>
+      </div>
+      <div class="ekc-next-grid">
+        {EKC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="ekc-next-link">{link.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 영어유치원 vs 일반유치원 비용·효과 완전 비교 — 월 200만 원 차이, 정말 그만한 가치가 있을까"
+      intro={[
+        "영어유치원은 일반유치원보다 월 평균 80만 원에서 많게는 200만 원 이상 더 비쌉니다. 자녀의 영어 노출을 위해 지출을 감당할 가치가 있는지 고민하는 부모가 많지만, 막상 비교할 수 있는 구체적인 데이터는 찾기 어렵습니다. 이 리포트는 프리미엄형·일반형 영어유치원과 국공립·민간유치원의 월 학비, 정부 지원금 반영 순부담액, 3년 누적 비용을 한 페이지에서 비교합니다. (추정)",
+        "가장 중요한 차이는 정부 지원금입니다. 대부분의 영어유치원은 정식 유치원이 아닌 학원으로 분류되어 누리과정·유아학비 지원금 대상이 아닙니다. 반면 국공립·민간유치원은 지원금을 적용하면 월 순부담액이 크게 낮아집니다. 이 차이를 감안하지 않고 정가만 비교하면 실제 격차를 과소평가하거나 과대평가하기 쉽습니다.",
+        "영어유치원의 효과에 대해서는 학계에서도 견해가 갈립니다. 조기 영어 노출이 듣기·발음 습득에 유리하다는 연구가 있지만, 장기적인 영어 실력 격차로 이어지는지는 가정 내 지속적인 영어 노출 여부가 더 중요한 변수라는 의견도 많습니다. 이 리포트는 양쪽 시각을 균형 있게 제시합니다.",
+        "비용 부담이 크다면 화상영어·전화영어·영어책 육아 같은 대안을 일반유치원과 병행하는 방법도 있습니다. 일반유치원(민간) 순부담액에 화상영어(월 15만 원 수준)를 더해도 영어유치원 대비 상당한 비용을 절감할 수 있습니다. (추정)",
+        "이 리포트의 모든 학비 정보는 2026년 6월 기준 추정값이며, 특정 브랜드명을 명시하지 않고 등급·지역 기준으로 구성했습니다. 실제 학비는 기관·지역·시기에 따라 크게 달라질 수 있으므로 등록 전 반드시 해당 기관에 직접 확인하세요. 어떤 선택이 '정답'인지는 절대적인 기준이 없으며, 가정의 예산과 아이의 성향을 함께 고려하는 것이 중요합니다.",
+      ]}
+      faq={EKC_FAQ}
+      related={EKC_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script define:vars={{ barChartData, regionalChartData }}>
+  window.addEventListener("load", () => {
+    if (typeof window.Chart === "undefined") return;
+
+    const barCtx = document.getElementById("ekcBarChart");
+    if (barCtx) {
+      new window.Chart(barCtx, {
+        type: "bar",
+        data: {
+          labels: barChartData.labels,
+          datasets: [{
+            label: "3년 누적 비용 (추정)",
+            data: barChartData.data,
+            backgroundColor: barChartData.colors,
+            borderRadius: 4,
+          }],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` 약 ${Math.round(Number(ctx.parsed.x) / 10000).toLocaleString("ko-KR")}만 원`,
+              },
+            },
+          },
+          scales: {
+            x: { ticks: { callback: (v) => Math.round(Number(v) / 10000) + "만" } },
+            y: { grid: { display: false } },
+          },
+        },
+      });
+    }
+
+    const regionalCtx = document.getElementById("ekcRegionalChart");
+    if (regionalCtx) {
+      new window.Chart(regionalCtx, {
+        type: "bar",
+        data: {
+          labels: regionalChartData.labels,
+          datasets: [
+            { label: "영어유치원", data: regionalChartData.english, backgroundColor: "#F59E0B", borderRadius: 4 },
+            { label: "일반유치원(민간)", data: regionalChartData.regular, backgroundColor: "#0F6E56", borderRadius: 4 },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "top" },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.dataset.label}: 약 ${Math.round(Number(ctx.parsed.y) / 10000).toLocaleString("ko-KR")}만 원`,
+              },
+            },
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { ticks: { callback: (v) => Math.round(Number(v) / 10000) + "만" } },
+          },
+        },
+      });
+    }
+  });
+</script>

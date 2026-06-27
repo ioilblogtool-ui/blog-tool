@@ -1,0 +1,216 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  DEFAULT_INPUT,
+  GRADE_OPTIONS,
+  ITEM_LIST,
+  ITEM_PRICE_TABLE,
+  ITEM_SEARCH_KEYWORD,
+  NEFC_FAQ,
+  NEFC_META,
+  NEFC_RELATED_LINKS,
+  NEFC_REPORT_CTA,
+  NEFC_SUPPORT_CTA,
+  SECOND_CHILD_RESET_ITEMS,
+} from "../../data/newbornEssentialsFullsetCost2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaults: DEFAULT_INPUT,
+  priceTable: ITEM_PRICE_TABLE,
+  secondChildResetItems: SECOND_CHILD_RESET_ITEMS,
+  items: ITEM_LIST.map((item) => item.id),
+  itemSearchKeyword: ITEM_SEARCH_KEYWORD,
+};
+
+const faqSchema = NEFC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={NEFC_META.seoTitle}
+  description={NEFC_META.description}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        name: NEFC_META.title,
+        applicationCategory: "LifestyleApplication",
+        operatingSystem: "All",
+        url: `${import.meta.env.SITE ?? "https://bigyocalc.com"}/tools/${NEFC_META.slug}/`,
+        description: NEFC_META.description,
+        inLanguage: "ko-KR",
+        isAccessibleForFree: true,
+        provider: { "@type": "Organization", name: "비교계산소" },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqSchema,
+      },
+    ],
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="newborn-essentials-fullset-cost-2026" pageClass="nefc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="출산 준비 비용"
+        title={NEFC_META.title}
+        description="카시트부터 젖병 세척기까지, 등급만 고르면 출산 준비물 풀세트 총비용이 바로 나옵니다."
+        badges={["출산 준비물", "가성비·중급·프리미엄", "둘째 출산 모드"]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetNefcBtn" copyId="copyNefcLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel nefc-second-child-panel">
+        <label class="nefc-toggle">
+          <input type="checkbox" id="nefcSecondChild" />
+          <span>
+            <strong>둘째 출산 모드</strong>
+            <small>카시트·유모차·아기침대를 기본 체크 해제합니다.</small>
+          </span>
+        </label>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">체크리스트</p>
+            <h2 class="panel__title">품목 선택 + 등급</h2>
+          </div>
+          <p class="panel-heading__summary">필요 없는 품목은 체크를 해제하세요.</p>
+        </div>
+        <div class="nefc-item-list">
+          {ITEM_LIST.map((item) => (
+            <div class="nefc-item-card" data-nefc-item={item.id}>
+              <label class="nefc-item-check">
+                <input type="checkbox" data-nefc-check={item.id} checked />
+                <span>{item.label}</span>
+              </label>
+              <div class="nefc-grade-segment" data-nefc-grade-group={item.id}>
+                {GRADE_OPTIONS.map((grade) => (
+                  <button
+                    type="button"
+                    class:list={["nefc-grade-btn", grade.id === "mid" && "is-active"]}
+                    data-nefc-grade-btn={item.id}
+                    data-nefc-grade-value={grade.id}
+                  >
+                    {grade.label}
+                  </button>
+                ))}
+              </div>
+              {item.note && <p class="nefc-item-note">{item.note}</p>}
+            </div>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="nefc-section">
+      <SummaryCards
+        columns={3}
+        items={[
+          { label: "현재 선택 총합계", id: "nefcSelectedTotal" },
+          { label: "전체 프리미엄 합계", id: "nefcPremiumTotal" },
+          { label: "절약 가능액", id: "nefcSaving" },
+        ]}
+      />
+      <div class="nefc-cta-row">
+        <a class="button button--secondary" href={withBase(NEFC_REPORT_CTA.href)}>{NEFC_REPORT_CTA.label}</a>
+      </div>
+    </section>
+
+    <section class="nefc-section">
+      <div class="nefc-section__head">
+        <h2>등급별 합계 비교</h2>
+        <p class="nefc-section__sub">체크된 품목만 대상으로 계산합니다.</p>
+      </div>
+      <article class="panel">
+        <div class="nefc-chart-wrap">
+          <canvas id="nefcTierChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="nefc-section">
+      <div class="nefc-section__head">
+        <h2>품목별 결과</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="result-table nefc-result-table">
+          <thead>
+            <tr>
+              <th>품목</th>
+              <th>선택 여부</th>
+              <th>등급</th>
+              <th>비용</th>
+              <th>둘러보기</th>
+            </tr>
+          </thead>
+          <tbody id="nefcItemTableBody"></tbody>
+        </table>
+      </div>
+      <div class="nefc-cta-row">
+        <a class="button button--secondary" href={withBase(NEFC_SUPPORT_CTA.href)}>{NEFC_SUPPORT_CTA.label}</a>
+      </div>
+    </section>
+
+    <InfoNotice
+      title="계산 기준 안내"
+      lines={[
+        "품목별 가격은 쿠팡·네이버쇼핑 카테고리 평균가 샘플링 기준 추정값이며 실제 구매가와 다를 수 있습니다.",
+        "카시트는 가성비 등급도 기본 안전 인증(KC 인증)을 갖춘 제품 기준으로 가격을 책정했습니다.",
+        "가성비·중급·프리미엄 3단계는 '신생아~돌까지 육아 비용 총정리' 리포트의 가성비·평균·프리미엄과 같은 단계입니다.",
+        "둘째 출산 모드를 끄더라도 이전 체크 상태가 자동으로 복원되지는 않습니다.",
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="출산 준비물 풀세트, 등급별로 얼마나 차이날까"
+        intro={[
+          "출산을 앞둔 부모는 카시트, 유모차, 아기침대부터 젖병 세척기, 모빌까지 체크리스트에 적어가며 준비물을 하나씩 고민하게 됩니다. 이 계산기는 출산 준비물 10개 품목을 체크리스트 형태로 켜고 끄고, 각 품목의 등급(가성비/중급/프리미엄)을 선택하면 풀세트 총비용을 바로 합산해 보여줍니다.",
+          "카시트·유모차·아기침대 같은 대형 용품은 사용 기간이 길어 가격 편차가 크고, 둘째를 출산하는 가정은 이미 보유한 경우가 많습니다. '둘째 출산 모드'를 켜면 이 세 품목이 기본적으로 체크 해제되어 실제 추가로 필요한 품목만 다시 합산할 수 있습니다.",
+          "등급별 합계 차트에서는 체크된 품목만을 대상으로 가성비 전체, 중급 전체, 프리미엄 전체 합계를 동시에 비교할 수 있어, 현재 선택한 조합이 어느 구간에 위치하는지 가늠하기 쉽습니다.",
+          "이 계산기의 가격은 쿠팡·네이버쇼핑 카테고리 평균가를 샘플링한 추정값입니다. 실제 구매가는 브랜드, 옵션, 할인 시점에 따라 달라질 수 있으므로 최종 구매 전에는 실제 쇼핑몰 가격을 다시 확인하는 것이 안전합니다. 기저귀·분유·병원비까지 포함한 1년 전체 육아비가 궁금하다면 '신생아~돌까지 육아 비용 총정리' 리포트를 함께 참고하세요.",
+        ]}
+        inputPoints={[
+          "필요 없는 품목은 체크를 해제하면 합계에서 바로 제외됩니다.",
+          "품목별로 가성비/중급/프리미엄 등급을 선택할 수 있습니다.",
+          "둘째 출산 모드를 켜면 대형 용품 3종이 기본 해제됩니다.",
+        ]}
+        criteria={[
+          "품목 가격은 쿠팡·네이버쇼핑 카테고리 평균가 샘플링 기준 추정값입니다.",
+          "카시트는 가성비 등급도 기본 안전 인증 기준으로 책정했습니다.",
+          "등급별 전체 합계는 체크된 품목만 대상으로 계산합니다.",
+        ]}
+        faq={NEFC_FAQ}
+        related={NEFC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script id="nefcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="/scripts/newborn-essentials-fullset-cost-2026.js" defer></script>
+</BaseLayout>
