@@ -11,6 +11,91 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-06-27 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 570 | -8.8% |
+| 노출 | 17,000 | -29.3% |
+| CTR | 3.3% | +0.7%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 국회의원 재산순위 | 29 | 37 | 78.4 |
+| 2 | 하이닉스 성과급 계산기 | 14 | 55 | 25.5 |
+| 3 | 이강인 연봉 | 11 | 2,668 | 0.4 |
+| 4 | 정원오 재산 | 10 | 26 | 38.5 |
+| 5 | 경찰 호봉표 | 8 | 31 | 25.8 |
+| 6 | 생계급여 계산기 | 6 | 20 | 30.0 |
+| 7 | 삼성 성과급 계산기 | 5 | 28 | 17.9 |
+| 8 | 분유 가격 비교표 | 5 | 17 | 29.4 |
+| 9 | 성과급 세금 계산기 | 4 | 44 | 9.1 |
+| 10 | 아파트 보유세 계산기 | 4 | 14 | 28.6 |
+| 11 | 초등학교 교사 연봉 | 3 | 30 | 10.0 |
+| 12 | 중학교 교사 월급 | 3 | 24 | 12.5 |
+| 13 | 하이닉스 ps | 3 | 21 | 14.3 |
+| 14 | 삼성중공업 성과급 | 3 | 16 | 18.8 |
+| 15 | 대학별 교수 연봉비교 | 3 | 4 | 75.0 |
+| 16 | 삼성e&a 연봉은 삼성그룹 내 다른 계열사와 비교해 어떻게 되나요? | 3 | 4 | 75.0 |
+| 17 | 서울 구별 집값 순위 | 3 | 3 | 100.0 |
+| 18 | 국회의원재산순위 | 3 | 3 | 100.0 |
+| 19 | 삼성sds 성과급 | 2 | 202 | 1.0 |
+| 20 | 야간수당 계산기 | 2 | 149 | 1.3 |
+| 21 | 삼성전자 tai | 2 | 107 | 1.9 |
+| 22 | 초등교사 월급 | 2 | 102 | 2.0 |
+| 23 | 보유세 계산기 | 2 | 101 | 2.0 |
+| 24 | 육아기 단축근무 급여계산 | 2 | 88 | 2.3 |
+| 25 | 성과급 계산기 | 2 | 52 | 3.8 |
+| 26 | 삼성전자 tai 2026 | 2 | 37 | 5.4 |
+| 27 | 삼성 tai | 2 | 37 | 5.4 |
+| 28 | 초등학교 교사 월급 | 2 | 30 | 6.7 |
+| 29 | 성과금 세금 계산 | 2 | 23 | 8.7 |
+| 30 | 26년 재산세 확인방법 | 2 | 20 | 10.0 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/teacher-salary-2026/ | 43 | 1,196 | 3.6 |
+| 2 | /reports/national-assembly-wealth-2026/ | 39 | 68 | 57.4 |
+| 3 | /reports/professor-salary-2026/ | 19 | 134 | 14.2 |
+| 4 | /tools/teacher-salary-calculator/ | 17 | 298 | 5.7 |
+| 5 | /tools/bonus-after-tax-calculator/ | 17 | 291 | 5.8 |
+| 6 | /reports/police-salary-2026/ | 17 | 217 | 7.8 |
+| 7 | /tools/sk-hynix-bonus/ | 17 | 120 | 14.2 |
+| 8 | /reports/worldcup-squad-salary-total-comparison-2026/ | 15 | 220 | 6.8 |
+| 9 | /reports/construction-salary-bonus-comparison-2026/ | 13 | 127 | 10.2 |
+| 10 | /reports/lee-kang-in-psg-salary-2026/ | 12 | 2,772 | 0.4 |
+| 11 | /reports/korea-worldcup-squad-salary-2026/ | 12 | 1,397 | 0.9 |
+| 12 | /reports/seoul-mayor-candidate-assets-2026/ | 12 | 64 | 18.8 |
+| 13 | /reports/kbo-salary-comparison-2026/ | 11 | 76 | 14.5 |
+| 14 | /tools/apartment-holding-tax/ | 10 | 278 | 3.6 |
+| 15 | /reports/samsung-ds-bonus-calculation-guide/ | 10 | 245 | 4.1 |
+| 16 | /reports/samsung-bonus-rank-net-comparison-2026/ | 10 | 161 | 6.2 |
+| 17 | /compare/bonus/ | 9 | 234 | 3.8 |
+| 18 | /tools/childcare-short-time-pay-calculator/ | 9 | 197 | 4.6 |
+| 19 | /reports/sk-hynix-shuttle-real-estate-2026/ | 8 | 218 | 3.7 |
+| 20 | /reports/military-salary-2026/ | 8 | 217 | 3.7 |
+| 21 | /reports/baby-formula-brand-cost-comparison-2026/ | 8 | 88 | 9.1 |
+| 22 | /tools/livelihood-benefit-income-recognition/ | 8 | 31 | 25.8 |
+| 23 | /tools/minimum-wage-2026/ | 7 | 256 | 2.7 |
+| 24 | /tools/samsung-bonus/ | 6 | 176 | 3.4 |
+| 25 | /tools/postnatal-care-income-eligibility/ | 6 | 113 | 5.3 |
+| 26 | /reports/sk-hynix-bonus-2027/ | 6 | 78 | 7.7 |
+| 27 | /reports/pregnancy-checkup-cost-2026/ | 6 | 66 | 9.1 |
+| 28 | /tools/military-salary-calculator/ | 6 | 61 | 9.8 |
+| 29 | /tools/shipbuilding-bonus-comparison/ | 6 | 32 | 18.8 |
+| 30 | /reports/kleague-salary-comparison-2026/ | 5 | 655 | 0.8 |
+
+### 주목 포인트
+- 노출 -29.3%이 클릭 -8.8%보다 훨씬 크게 빠지면서 CTR은 2.6%→3.3%로 개선. 검색량 자체가 줄어든 가운데 매칭 품질은 오히려 나아진 모양새.
+- `이강인 연봉`(노출 2,668·CTR 0.4%), `/reports/lee-kang-in-psg-salary-2026/`(노출 2,772·CTR 0.4%), `/reports/korea-worldcup-squad-salary-2026/`(노출 1,397·CTR 0.9%) — 축구 연봉 클러스터가 전체 노출의 상당 부분을 차지하면서도 CTR이 여전히 0%대 바닥. 타이틀 보강 우선순위 1순위로 재확인.
+- `national-assembly-wealth-2026`(CTR 57.4%), `seoul-mayor-candidate-assets-2026`(CTR 18.8%) — 정치인 재산·랭킹형 콘텐츠가 압도적으로 높은 CTR 유지. `국회의원 재산순위`(78.4%)·`국회의원재산순위`(100%) 키워드 조합도 동반 강세.
+- `대학별 교수 연봉비교`(CTR 75%), `삼성e&a 연봉` 관련 롱테일 질문형 키워드(CTR 75%), `서울 구별 집값 순위`(100%) — 볼륨은 작지만 신규 진입 틈새 키워드.
+
+---
+
 ## 2026-06-26 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)

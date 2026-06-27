@@ -696,8 +696,8 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "lee-kang-in-psg-salary-2026",
-    title: "이강인 연봉 2026 | PSG 주급 1.1억, 세후 실수령액은",
-    description: "이강인의 2026년 PSG 추정 연봉을 유로와 원화로 환산하면 주급 약 1.1억원입니다. 월급·일급·세후 실수령액까지 계산합니다.",
+    title: "이강인 연봉 2026 | 연봉 59억, 세후 실수령액은",
+    description: "이강인의 2026년 PSG 추정 연봉은 원화 약 59억원입니다. 월급·주급·일급·세후 실수령액까지 계산합니다.",
     order: 37.1155,
     badges: ["이강인", "PSG", "주급", "2026"],
   },
