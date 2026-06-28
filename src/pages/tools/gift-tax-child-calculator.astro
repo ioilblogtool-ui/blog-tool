@@ -1,0 +1,282 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PAGE_META,
+  LIFETIME_GIFT_PLAN,
+  PAGE_FAQ,
+  relatedLinks,
+} from "../../data/giftTaxChildCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title={PAGE_META.title}
+  description={PAGE_META.subtitle}
+  ogImage="/og/tools/gift-tax-child-calculator.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "자녀 증여세 계산기",
+    "url": `${import.meta.env.SITE}/tools/gift-tax-child-calculator/`,
+    "description": PAGE_META.subtitle,
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "provider": { "@type": "Organization", "name": "비교계산소" },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="gift-tax-child-calculator" pageClass="gtc-page">
+
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="세금 계산기"
+        title="자녀 증여세 계산기"
+        description="미성년 2,000만원 · 성년 5,000만원 · 혼인·출산 추가공제 1억원까지 한 번에 계산"
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetGtcBtn" copyId="copyGtcLinkBtn" />
+    </Fragment>
+
+    <!-- ① 입력 영역 -->
+    <Fragment slot="aside">
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">증여 대상</p>
+            <h2 class="panel__title">자녀 나이</h2>
+          </div>
+        </div>
+        <div class="gtc-field">
+          <input type="number" id="gtcAge" class="gtc-num-input" min="0" max="100" step="1" value="20" />
+          <span class="gtc-unit">세</span>
+        </div>
+        <p class="gtc-field-hint" id="gtcAgeHint">19세 이상 → 성년 기본공제 5,000만원 적용</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">이번 증여</p>
+            <h2 class="panel__title">이번 증여금액</h2>
+          </div>
+        </div>
+        <div class="gtc-price-row">
+          <div class="calc-slider-row">
+            <input type="range" id="gtcGiftSlider" class="calc-slider" min="0" max="30000" step="100" value="2000" />
+            <span id="gtcGiftLabel" class="calc-slider-val">2,000만원</span>
+          </div>
+          <div class="gtc-price-direct">
+            <input type="number" id="gtcGiftInput" class="gtc-num-input" min="0" max="10000000" step="100" value="2000" />
+            <span class="gtc-unit">만원</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">증여 이력</p>
+            <h2 class="panel__title">최근 10년 증여금액</h2>
+          </div>
+          <p class="panel-heading__summary">동일 수증자가 직계존속으로부터 받은 누적 금액</p>
+        </div>
+        <div class="gtc-price-direct">
+          <input type="number" id="gtcPriorGiftInput" class="gtc-num-input" min="0" max="10000000" step="100" value="0" />
+          <span class="gtc-unit">만원</span>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">추가공제</p>
+            <h2 class="panel__title">혼인·출산 여부</h2>
+          </div>
+          <p class="panel-heading__summary">합산 한도 1억원, 중복 별도 한도 아님</p>
+        </div>
+        <div class="gtc-toggle-row">
+          <label class="gtc-toggle">
+            <input type="checkbox" id="gtcMarriageToggle" />
+            <span>혼인 추가공제 적용</span>
+          </label>
+          <div class="gtc-field gtc-field--conditional" id="gtcMarriageDateField" hidden>
+            <span class="gtc-field__label">혼인신고일</span>
+            <input type="date" id="gtcMarriageDate" class="gtc-date-input" />
+          </div>
+        </div>
+        <div class="gtc-toggle-row">
+          <label class="gtc-toggle">
+            <input type="checkbox" id="gtcBirthToggle" />
+            <span>출산 추가공제 적용</span>
+          </label>
+          <div class="gtc-field gtc-field--conditional" id="gtcBirthDateField" hidden>
+            <span class="gtc-field__label">출산일</span>
+            <input type="date" id="gtcBirthDate" class="gtc-date-input" />
+          </div>
+        </div>
+        <div class="gtc-field">
+          <span class="gtc-field__label">혼인·출산 공제 기사용액</span>
+          <div class="gtc-price-direct">
+            <input type="number" id="gtcUsedDeductionInput" class="gtc-num-input gtc-num-input--sm" min="0" max="10000" step="100" value="0" />
+            <span class="gtc-unit">만원</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">참고용</p>
+            <h2 class="panel__title">증여 목적</h2>
+          </div>
+        </div>
+        <select id="gtcPurpose" class="gtc-select">
+          <option value="invest" selected>투자</option>
+          <option value="marriage">결혼</option>
+          <option value="house">주택</option>
+          <option value="living">생활비</option>
+        </select>
+      </article>
+
+    </Fragment>
+
+    <!-- ② KPI 카드 -->
+    <section class="gtc-section">
+      <div class="gtc-section__head">
+        <p class="gtc-section__eyebrow">계산 결과</p>
+        <h2>예상 증여세 요약</h2>
+        <p class="gtc-section__sub" id="gtc-result-sub">조건을 입력하면 바로 계산됩니다.</p>
+      </div>
+      <div class="gtc-kpi-grid">
+        <article class="gtc-kpi-card">
+          <p>적용 공제 합계</p>
+          <strong id="gtc-total-deduction">-</strong>
+          <span id="gtc-total-deduction-note">기본공제 + 추가공제</span>
+        </article>
+        <article class="gtc-kpi-card">
+          <p>과세표준</p>
+          <strong id="gtc-tax-base">-</strong>
+          <span id="gtc-tax-base-note">증여금액 − 공제</span>
+        </article>
+        <article class="gtc-kpi-card gtc-kpi-card--primary">
+          <p>예상 증여세</p>
+          <strong id="gtc-tax-amount">-</strong>
+          <span id="gtc-tax-amount-note">누진세율 적용</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ③ 공제 적용 내역 -->
+    <section class="gtc-section">
+      <div class="gtc-section__head">
+        <p class="gtc-section__eyebrow">공제 내역</p>
+        <h2>공제 적용 상세</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="gtc-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody id="gtc-breakdown-tbody">
+            <tr><td colspan="3" class="gtc-empty-row">조건을 입력하면 내역이 표시됩니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ④ 결과 문구 -->
+    <section class="gtc-section">
+      <div id="gtc-result-message" class="gtc-info-box">
+        <p class="gtc-info-box__title">📋 계산 결과 안내</p>
+        <p id="gtc-result-detail">조건을 입력하면 결과 문구가 표시됩니다.</p>
+      </div>
+    </section>
+
+    <!-- ⑤ 생애 증여 플랜표 (정적) -->
+    <section class="gtc-section">
+      <div class="gtc-section__head">
+        <p class="gtc-section__eyebrow">생애 플랜</p>
+        <h2>자녀 생애 증여 플랜표</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="gtc-table">
+          <thead>
+            <tr>
+              <th>시점</th>
+              <th>증여 가능 전략</th>
+              <th>비과세 가능액</th>
+            </tr>
+          </thead>
+          <tbody>
+            {LIFETIME_GIFT_PLAN.map((step) => (
+              <tr>
+                <td>{step.stage}</td>
+                <td>{step.strategy}</td>
+                <td>{step.taxFreeAmount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ⑥ InfoNotice -->
+    <InfoNotice
+      title="안내"
+      lines={[
+        "증여재산공제·증여세율은 2026년 6월 기준 국세청 공시 자료를 따른 참고용 추정치입니다.",
+        "혼인·출산 추가공제는 혼인신고일 전후 2년 또는 자녀 출생일부터 2년 이내 요건을 충족해야 적용됩니다.",
+        "10년 합산 공제는 수증자(자녀) 기준이며, 증여자(부모·조부모)별로 별도 공제가 적용되지 않습니다.",
+        "실제 신고 여부와 세액은 홈택스 또는 세무 전문가를 통해 반드시 확인하세요.",
+      ]}
+    />
+
+    <!-- ⑦ SeoContent -->
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="자녀 증여세 계산기를 보는 방법"
+        intro={[
+          "자녀에게 목돈을 증여하려는 부모와 조부모가 가장 먼저 묻는 질문은 '지금 이 금액을 주면 세금이 얼마나 나오는가'입니다. 이 계산기는 자녀 나이로 미성년(2,000만원)·성년(5,000만원) 기본공제를 자동으로 판단하고, 혼인·출산 요건을 충족하면 최대 1억원의 추가공제까지 반영해 과세표준과 예상 증여세를 계산합니다.",
+          "증여재산공제는 10년 단위로 합산됩니다. 즉 이번에 증여하는 금액과 최근 10년 이내 같은 자녀가 직계존속으로부터 받은 증여액을 모두 더한 뒤, 공제 한도를 초과하는 부분에만 세금이 부과되는 구조입니다. 혼인·출산 추가공제는 별도 한도가 아니라 합산 한도 1억원으로 운영되므로, 결혼 때 1억원을 모두 사용했다면 출산 시 추가로 1억원을 더 받을 수 있는 것은 아닙니다.",
+          "과세표준이 산출되면 5단계 누진세율(10%~50%)이 적용됩니다. 1억원 이하는 10%, 1억원 초과~5억원 이하는 20%(누진공제 1,000만원) 식으로 구간이 올라갈수록 세율과 누진공제가 함께 커지는 구조입니다. 공제 한도 이내라면 과세표준이 0원이 되어 예상 증여세도 0원으로 계산됩니다.",
+          "다만 10년 합산 공제는 증여자가 아니라 수증자, 즉 자녀를 기준으로 적용됩니다. 부모와 조부모가 각각 따로 2,000만원·5,000만원씩 무한정 공제받는 구조가 아니므로, 여러 직계존속으로부터 동시에 증여를 받을 계획이라면 최근 10년 증여금액에 합산해 입력해야 정확한 결과를 확인할 수 있습니다. 모든 계산 결과는 참고용 추정치이며, 실제 신고와 세액은 홈택스 또는 세무 전문가를 통해 확인하는 것이 안전합니다."
+        ]}
+        inputPoints={[
+          "자녀 나이를 입력하면 19세 기준으로 미성년·성년 기본공제가 자동 적용됩니다.",
+          "혼인·출산 추가공제는 토글을 켜면 날짜 입력란이 나타나며, 2년 요건을 벗어나면 공제가 적용되지 않습니다.",
+          "최근 10년 증여금액과 혼인·출산 공제 기사용액을 입력하면 남은 공제 한도까지 정확히 계산됩니다."
+        ]}
+        criteria={[
+          "기본공제: 미성년 2,000만원, 성년 5,000만원 (10년 합산 기준).",
+          "혼인·출산 추가공제: 최대 1억원, 혼인신고일 전후 2년 또는 출생일부터 2년 이내 요건 충족 시 적용, 합산 한도.",
+          "증여세율: 1억 이하 10%, 5억 이하 20%, 10억 이하 30%, 30억 이하 40%, 30억 초과 50% (5단계 누진세율, 누진공제 반영)."
+        ]}
+        faq={PAGE_FAQ}
+        related={relatedLinks}
+      />
+    </Fragment>
+
+  </SimpleToolShell>
+
+  <script type="module" src={withBase("/scripts/gift-tax-child-calculator.js")}></script>
+</BaseLayout>

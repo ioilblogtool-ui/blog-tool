@@ -2026,6 +2026,20 @@ export const tools: ToolMeta[] = [
       { label: "추가비", value: "6항목" },
     ],
   },
+  {
+    slug: "gift-tax-child-calculator",
+    title: "자녀 증여세 계산기",
+    description: "자녀 나이, 증여금액, 최근 10년 증여 이력, 혼인·출산 여부를 입력하면 미성년 2,000만원·성년 5,000만원·혼인·출산 추가공제 1억원까지 반영한 예상 증여세를 계산합니다.",
+    order: 60.7,
+    eyebrow: "세금 계산기",
+    category: "투자·재테크",
+    iframeReady: true,
+    badges: ["신규", "세금", "2026"],
+    previewStats: [
+      { label: "미성년 공제", value: "2,000만원" },
+      { label: "혼인·출산 추가공제", value: "최대 1억원" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)
