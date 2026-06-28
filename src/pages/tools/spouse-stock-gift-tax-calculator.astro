@@ -1,0 +1,333 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import DesignTrustPanel from "../../components/DesignTrustPanel.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SSG_DEFAULTS,
+  SSG_DONORS,
+  SSG_FAQ,
+  SSG_GIFT_TAX_BRACKETS,
+  SSG_GUIDE_CARDS,
+  SSG_HOLDING_PERIODS,
+  SSG_META,
+  SSG_QUICK_AMOUNTS,
+  SSG_RELATED_LINKS,
+  SSG_SCENARIOS,
+  SSG_SOURCE_LINKS,
+  SSG_STOCK_KINDS,
+} from "../../data/spouseStockGiftTaxCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaults: SSG_DEFAULTS,
+  stockKinds: SSG_STOCK_KINDS,
+  donors: SSG_DONORS,
+  holdingPeriods: SSG_HOLDING_PERIODS,
+  brackets: SSG_GIFT_TAX_BRACKETS,
+  scenarios: SSG_SCENARIOS,
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: SSG_META.title,
+      url: `${import.meta.env.SITE}/tools/${SSG_META.slug}/`,
+      description: SSG_META.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: SSG_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={SSG_META.seoTitle} description={SSG_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={SSG_META.slug} pageClass="op-page ssg-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="배우자 주식 증여"
+        title="부부간 주식 증여세 계산기"
+        description="배우자 10년 합산 6억 원 공제와 해외주식 양도세 절세 효과, 1년 이내 매도 경고를 한 번에 계산합니다."
+      />
+      <InfoNotice
+        title="증여 후 바로 매도는 특히 주의하세요"
+        lines={[
+          "2025년 이후 증여분은 배우자에게 증여받은 주식을 1년 이내 양도하면 증여자의 원래 취득가액을 기준으로 양도차익이 계산될 수 있습니다.",
+          "해외주식 절세 목적이라면 증여일, 평가액, 매도 예정일, 취득가액 증빙을 함께 확인하세요.",
+          SSG_META.caution,
+        ]}
+      />
+      <DesignTrustPanel
+        title="계산 기준"
+        updatedAt={SSG_META.updatedAt}
+        notes={[
+          "배우자 증여재산공제는 10년 합산 6억 원으로 계산합니다.",
+          "해외주식 양도세 비교는 연간 기본공제 250만 원과 22% 세율을 기본값으로 사용합니다.",
+          "국내주식·ETF는 과세 유형이 다양해 증여세와 1년 보유 경고 중심으로 표시합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetSsgBtn" copyId="copySsgLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <section class="op-panel ssg-input-panel" data-ssg-root>
+        <div class="op-panel__head">
+          <p>입력</p>
+          <h2>증여·매도 조건</h2>
+        </div>
+
+        <label class="op-field">
+          <span>주식 종류</span>
+          <select data-ssg-input="stockKind">
+            {SSG_STOCK_KINDS.map((item) => (
+              <option value={item.value} selected={item.value === SSG_DEFAULTS.stockKind}>{item.label}</option>
+            ))}
+          </select>
+        </label>
+        <p class="ssg-field-note" data-ssg-output="stockKindNote">해외주식 기준으로 양도세 비교를 계산합니다.</p>
+
+        <label class="op-field">
+          <span>증여 방향</span>
+          <select data-ssg-input="donor">
+            {SSG_DONORS.map((item) => (
+              <option value={item.value} selected={item.value === SSG_DEFAULTS.donor}>{item.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label class="op-field">
+          <span>증여 주식 평가액 (원)</span>
+          <input data-ssg-input="giftValue" inputmode="numeric" value={SSG_DEFAULTS.giftValue.toLocaleString("ko-KR")} />
+        </label>
+        <div class="ssg-quick-row" aria-label="증여 평가액 빠른 선택">
+          {SSG_QUICK_AMOUNTS.map((item) => (
+            <button type="button" data-ssg-quick={item.value}>{item.label}</button>
+          ))}
+        </div>
+
+        <label class="op-field">
+          <span>최근 10년 배우자 증여액 (원)</span>
+          <input data-ssg-input="priorSpouseGiftAmount" inputmode="numeric" value={SSG_DEFAULTS.priorSpouseGiftAmount.toLocaleString("ko-KR")} />
+        </label>
+        <p class="ssg-field-note">현금·부동산·주식 등 배우자에게 받은 증여를 합산합니다.</p>
+
+        <label class="op-field">
+          <span>증여자의 원래 취득가액 (원)</span>
+          <input data-ssg-input="donorOriginalCost" inputmode="numeric" value={SSG_DEFAULTS.donorOriginalCost.toLocaleString("ko-KR")} />
+        </label>
+
+        <label class="op-field">
+          <span>증여 후 예상 매도가액 (원)</span>
+          <input data-ssg-input="expectedSalePrice" inputmode="numeric" value={SSG_DEFAULTS.expectedSalePrice.toLocaleString("ko-KR")} />
+        </label>
+
+        <label class="op-field">
+          <span>증여 후 보유기간</span>
+          <select data-ssg-input="holdingPeriod">
+            {SSG_HOLDING_PERIODS.map((item) => (
+              <option value={item.value} selected={item.value === SSG_DEFAULTS.holdingPeriod}>{item.label}</option>
+            ))}
+          </select>
+        </label>
+
+        <details class="ssg-advanced">
+          <summary>고급 설정</summary>
+          <label class="op-field">
+            <span>해외주식 기본공제 (원)</span>
+            <input data-ssg-input="foreignStockBasicDeduction" inputmode="numeric" value={SSG_DEFAULTS.foreignStockBasicDeduction.toLocaleString("ko-KR")} />
+          </label>
+          <label class="op-field">
+            <span>해외주식 양도세율 (%)</span>
+            <input data-ssg-input="capitalGainTaxRate" type="number" min="0" max="100" step="0.1" value={(SSG_DEFAULTS.capitalGainTaxRate * 100).toString()} />
+          </label>
+          <label class="op-check">
+            <input data-ssg-input="applySelfReportCredit" type="checkbox" checked={SSG_DEFAULTS.applySelfReportCredit} />
+            증여세 신고세액공제 3% 반영
+          </label>
+        </details>
+      </section>
+
+      <section class="op-panel">
+        <div class="op-panel__head">
+          <p>예시</p>
+          <h2>대표 시나리오</h2>
+        </div>
+        <div class="ssg-scenario-list">
+          {SSG_SCENARIOS.map((item, index) => (
+            <button type="button" class:list={["ssg-scenario", { "is-active": index === 0 }]} data-ssg-scenario={item.id}>
+              <strong>{item.label}</strong>
+              <span>{item.description}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+    </Fragment>
+
+    <section class="op-section">
+      <div class="ssg-warning" data-ssg-output="holdingWarning">
+        <strong>1년 보유 규정 확인 필요</strong>
+        <span>입력값을 계산 중입니다.</span>
+      </div>
+      <div class="op-result-grid ssg-result-grid">
+        <article class="op-result-card op-result-card--accent">
+          <p>예상 절세액</p>
+          <strong data-ssg-output="estimatedSaving">-</strong>
+          <span data-ssg-output="savingNote">직접 매도와 증여 후 매도 비교</span>
+        </article>
+        <article class="op-result-card">
+          <p>예상 증여세</p>
+          <strong data-ssg-output="giftTax">-</strong>
+          <span data-ssg-output="giftTaxNote">배우자 공제 반영</span>
+        </article>
+        <article class="op-result-card">
+          <p>남은 배우자 공제</p>
+          <strong data-ssg-output="remainingDeduction">-</strong>
+          <span>10년 합산 6억 원 기준</span>
+        </article>
+        <article class="op-result-card">
+          <p>직접 매도 양도세</p>
+          <strong data-ssg-output="directSaleTax">-</strong>
+          <span data-ssg-output="directSaleTaxNote">증여 없이 매도</span>
+        </article>
+        <article class="op-result-card">
+          <p>증여 후 매도 양도세</p>
+          <strong data-ssg-output="giftedSaleTax">-</strong>
+          <span data-ssg-output="giftedSaleTaxNote">보유기간 반영</span>
+        </article>
+        <article class="op-result-card">
+          <p>증여세 과세표준</p>
+          <strong data-ssg-output="giftTaxBase">-</strong>
+          <span data-ssg-output="giftTaxBaseNote">공제 초과분</span>
+        </article>
+      </div>
+      <p class="ssg-result-comment" data-ssg-output="resultComment"></p>
+    </section>
+
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교표</p>
+        <h2>증여 전후 세금 차이</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="ssg-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>취득가액 기준</th>
+              <th>양도차익</th>
+              <th>예상 세금</th>
+            </tr>
+          </thead>
+          <tbody data-ssg-output="comparisonRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">계산 내역</p>
+        <h2>배우자 공제와 증여세 산출</h2>
+      </div>
+      <div class="ssg-deduction-panel">
+        <div class="ssg-deduction-bar">
+          <span data-ssg-output="deductionBarUsed"></span>
+        </div>
+        <div class="ssg-deduction-labels">
+          <span data-ssg-output="deductionUsedLabel">사용 0원</span>
+          <span data-ssg-output="deductionRemainLabel">잔액 0원</span>
+        </div>
+        <p data-ssg-output="deductionDesc"></p>
+      </div>
+      <div class="table-wrap">
+        <table class="ssg-table">
+          <tbody data-ssg-output="breakdownRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 포인트</p>
+        <h2>부부간 주식 증여 전 확인할 것</h2>
+      </div>
+      <div class="ssg-guide-grid">
+        {SSG_GUIDE_CARDS.map((card) => (
+          <article class="ssg-guide-card">
+            <span>{card.label}</span>
+            <h3>{card.title}</h3>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처</p>
+        <h2>계산 기준 참고 링크</h2>
+      </div>
+      <div class="ssg-source-list">
+        {SSG_SOURCE_LINKS.map((item) => (
+          <a href={item.href} target="_blank" rel="noreferrer">{item.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="부부간 주식 증여세 계산기 사용법"
+        intro={[
+          "부부간 주식 증여는 배우자 증여재산공제 6억 원 때문에 자주 활용됩니다. 특히 해외주식처럼 평가이익이 크게 쌓인 자산은, 증여 당시 평가액을 새로운 취득가액으로 활용하면 향후 양도세 부담이 크게 줄어드는 구조가 가능해 보일 수 있어 절세 수단으로 자주 언급됩니다.",
+          "다만 2025년 이후 증여분부터는 배우자 또는 직계존비속에게 증여받은 주식을 1년 이내 양도할 경우, 취득가액을 증여받은 사람이 아니라 증여자의 원래 취득가액으로 보는 규정(이월과세 유사 규정)이 적용될 수 있습니다. 이 경우 기대했던 절세 효과가 사라지고, 오히려 증여세와 양도세를 모두 부담하는 결과로 이어질 수 있어 매도 시점 설계가 핵심입니다.",
+          "이 계산기는 이번 증여 평가액, 최근 10년간 배우자에게 받은 증여액, 증여자의 원래 취득가액, 증여 후 예상 매도가액, 보유기간을 입력하면 ① 배우자 공제를 반영한 예상 증여세, ② 증여 없이 직접 매도했을 때의 양도세, ③ 증여 후 매도했을 때의 양도세를 한 화면에서 비교해 보여줍니다. 1년 이내 매도를 선택하면 취득가액 이월 경고가 함께 표시되어, 매도 시점에 따라 결과가 어떻게 달라지는지 바로 확인할 수 있습니다.",
+          "대표 시나리오 3종(평가이익 큰 해외주식 증여, 1년 이내 매도 주의, 공제 한도 초과 증여)을 버튼으로 바로 불러올 수 있어, 본인 상황과 비슷한 사례부터 빠르게 감을 잡을 수 있습니다. 결과는 모두 참고용 추정치이며, 실제 평가액 산정·환율·신고는 세무 전문가 확인을 권장합니다.",
+        ]}
+        inputPoints={[
+          "증여 주식 평가액은 증여일 기준 평가액(상장주식은 증여일 전후 2개월, 총 4개월 종가 평균)을 입력합니다.",
+          "최근 10년 배우자 증여액에는 현금·부동산·주식 등 이미 받은 모든 증여를 합산해 입력해야 공제 잔액이 정확하게 계산됩니다.",
+          "양도세 비교를 하려면 증여자의 원래 취득가액과 증여 후 예상 매도가액을 함께 입력해야 직접 매도와 증여 후 매도의 세금 차이를 비교할 수 있습니다.",
+          "증여 후 보유기간(1년 이내/1년 이후)을 반드시 선택해야 취득가액 이월 규정 적용 여부와 경고 문구가 정확히 표시됩니다.",
+          "해외주식이 아닌 국내주식·ETF를 선택하면 과세 구조가 다르다는 안내가 함께 표시되니, 결과를 그대로 확정값으로 보지 말고 참고용으로 활용하세요.",
+        ]}
+        criteria={[
+          "배우자 증여재산공제는 10년 합산 6억 원으로 계산합니다 (상속세 및 증여세법 제53조).",
+          "증여세는 공제 초과 과세표준에 5단계 누진세율(10~50%)과 누진공제를 적용하며, 신고세액공제(3%) 적용 여부를 선택할 수 있습니다.",
+          "해외주식 양도세는 연간 기본공제 250만 원을 차감한 뒤 22%(지방소득세 포함) 세율을 기본값으로 사용합니다 (소득세법 제97조의2).",
+          "2025년 이후 증여분을 1년 이내 양도하는 경우, 양도가액에서 차감하는 취득가액을 증여자의 원래 취득가액으로 보는 이월과세 유사 규정을 반영합니다.",
+          "국내주식과 ETF는 대주주 여부·상장 시장·과세 유형에 따라 양도세 구조가 달라질 수 있어, 이 계산기에서는 증여세와 1년 보유 경고를 중심으로 참고 정보만 제공합니다.",
+        ]}
+        faq={SSG_FAQ}
+        related={SSG_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="ssgConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/spouse-stock-gift-tax-calculator.js")}></script>
+</BaseLayout>

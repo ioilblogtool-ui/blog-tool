@@ -57,6 +57,19 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "spouse-stock-gift-tax-calculator",
+    title: "부부간 주식 증여세 계산기",
+    description: "배우자 10년 합산 6억원 공제와 해외주식 양도세 절세 효과, 2025년 이후 증여분 1년 이내 매도 경고를 함께 계산합니다.",
+    order: 0,
+    eyebrow: "배우자 주식 증여",
+    category: "투자·재테크",
+    badges: ["신규", "추천"],
+    previewStats: [
+      { label: "배우자 공제", value: "6억원" },
+      { label: "해외주식 기본공제", value: "250만원" },
+    ],
+  },
+  {
     slug: "aircon-electricity-cost",
     title: "에어컨 전기요금 계산기",
     description: "에어컨 소비전력·사용 시간으로 월 전기요금 추가분과 누진 구간을 계산합니다. 인버터 보정, 여름 완화 구간 자동 적용.",
