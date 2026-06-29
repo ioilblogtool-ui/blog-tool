@@ -758,6 +758,13 @@ export const reports: ReportMeta[] = [
     badges: ["증여세", "자녀", "결혼자금", "주택자금"],
   },
   {
+    slug: "family-bank-transfer-gift-tax",
+    title: "가족 간 계좌이체 증여세 기준 | 부모·자녀·부부 이체",
+    description: "부모·자녀·부부·형제 사이 계좌이체가 증여세 대상이 되는지 생활비, 전세자금, 주택자금, 차용증, 이자, 상환 증빙 기준으로 정리합니다.",
+    order: 37.16,
+    badges: ["증여세", "계좌이체", "차용증", "가족자금"],
+  },
+  {
     slug: "multi-house-tax-2026",
     title: "2026 다주택자 세금 완전 분석",
     description: "다주택자 세금을 취득세, 종합부동산세, 양도소득세, 임대소득세로 나눠 2주택·3주택 이상 케이스별로 정리합니다.",
