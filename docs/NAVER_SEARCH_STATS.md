@@ -11,6 +11,93 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-06-28 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 460 | +1.5% |
+| 노출 | 14,000 | +3.6% |
+| CTR | 3.3% | -0.1%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 이강인 연봉 | 15 | 2,481 | 0.6 |
+| 2 | 국회의원 재산순위 | 12 | 15 | 80.0 |
+| 3 | 분유 가격 비교표 | 7 | 23 | 30.4 |
+| 4 | 초등교사 월급 | 5 | 40 | 12.5 |
+| 5 | 경찰 호봉표 | 4 | 36 | 11.1 |
+| 6 | 아파트 보유세 계산기 | 4 | 22 | 18.2 |
+| 7 | lg전자 성과급 2026 | 4 | 10 | 40.0 |
+| 8 | 삼성전자 성과급 계산기 | 3 | 140 | 2.1 |
+| 9 | 2026 월드컵 포상금 | 3 | 44 | 6.8 |
+| 10 | 삼성 성과급 계산기 | 3 | 41 | 7.3 |
+| 11 | 삼성전자 tai 2026 | 3 | 25 | 12.0 |
+| 12 | 삼성 tai | 3 | 20 | 15.0 |
+| 13 | 하이닉스 pi | 3 | 10 | 30.0 |
+| 14 | 호봉계산기 | 3 | 10 | 30.0 |
+| 15 | 성과급 실수령액 계산 | 3 | 10 | 30.0 |
+| 16 | 삼성e&a 성과급 | 3 | 9 | 33.3 |
+| 17 | 코레일 성과급 | 3 | 7 | 42.9 |
+| 18 | kbo 구단별 연봉 총액 | 3 | 3 | 100.0 |
+| 19 | 2026 k리그1 구단순위 | 2 | 645 | 0.3 |
+| 20 | 초등학교 교사 월급 | 2 | 36 | 5.6 |
+| 21 | 현대차 성과급 | 2 | 35 | 5.7 |
+| 22 | 초등학교 교사 연봉 | 2 | 24 | 8.3 |
+| 23 | 하이닉스 성과급 계산기 | 2 | 22 | 9.1 |
+| 24 | 최저시급 월급 세후 | 2 | 19 | 10.5 |
+| 25 | 대학병원 약사 연봉 | 2 | 12 | 16.7 |
+| 26 | 박지성 연봉 | 2 | 9 | 22.2 |
+| 27 | 기저귀 가격 | 2 | 7 | 28.6 |
+| 28 | 2026 초등교사 실수령액 | 2 | 6 | 33.3 |
+| 29 | 한국대표팀 연봉 | 2 | 5 | 40.0 |
+| 30 | 분유 등급표 | 2 | 4 | 50.0 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/teacher-salary-2026/ | 51 | 1,028 | 5.0 |
+| 2 | /reports/worldcup-squad-salary-total-comparison-2026/ | 28 | 323 | 8.7 |
+| 3 | /reports/lee-kang-in-psg-salary-2026/ | 17 | 2,560 | 0.7 |
+| 4 | /reports/national-assembly-wealth-2026/ | 17 | 25 | 68.0 |
+| 5 | /reports/kbo-salary-comparison-2026/ | 16 | 87 | 18.4 |
+| 6 | /reports/construction-salary-bonus-comparison-2026/ | 14 | 83 | 16.9 |
+| 7 | /tools/teacher-salary-calculator/ | 13 | 222 | 5.9 |
+| 8 | /reports/sk-hynix-shuttle-real-estate-2026/ | 13 | 205 | 6.3 |
+| 9 | /reports/kleague-salary-comparison-2026/ | 12 | 877 | 1.4 |
+| 10 | /compare/bonus/ | 12 | 177 | 6.8 |
+| 11 | /tools/worldcup-prize-money-calculator/ | 11 | 864 | 1.3 |
+| 12 | /reports/baby-formula-brand-cost-comparison-2026/ | 11 | 109 | 10.1 |
+| 13 | /tools/apartment-holding-tax/ | 10 | 221 | 4.5 |
+| 14 | /reports/professor-salary-2026/ | 10 | 95 | 10.5 |
+| 15 | /reports/police-salary-2026/ | 8 | 188 | 4.3 |
+| 16 | /reports/public-enterprise-bonus-comparison-2026/ | 8 | 67 | 11.9 |
+| 17 | /reports/samsung-bonus-rank-net-comparison-2026/ | 7 | 77 | 9.1 |
+| 18 | /reports/argentina-worldcup-squad-salary-2026/ | 7 | 36 | 19.4 |
+| 19 | /reports/military-salary-2026/ | 6 | 180 | 3.3 |
+| 20 | /reports/flight-attendant-salary-2026/ | 6 | 159 | 3.8 |
+| 21 | /reports/doctor-salary-2026/ | 6 | 55 | 10.9 |
+| 22 | /reports/samsung-ds-bonus-calculation-guide/ | 5 | 179 | 2.8 |
+| 23 | /tools/bonus-after-tax-calculator/ | 5 | 176 | 2.8 |
+| 24 | /tools/minimum-wage-2026/ | 5 | 149 | 3.4 |
+| 25 | /reports/sk-hynix-bonus-2027/ | 5 | 65 | 7.7 |
+| 26 | /tools/car-accident-insurance-vs-cash-calculator/ | 5 | 53 | 9.4 |
+| 27 | /tools/doctor-salary-calculator/ | 5 | 39 | 12.8 |
+| 28 | /reports/pharmacist-salary-2026/ | 5 | 33 | 15.2 |
+| 29 | /reports/lg-bonus-2026/ | 5 | 19 | 26.3 |
+| 30 | /reports/son-heung-min-lafc-salary-net-worth-2026/ | 4 | 198 | 2.0 |
+
+### 주목 포인트
+- 클릭 +1.5%, 노출 +3.6%, CTR 3.3%(-0.1%p) — 전일과 거의 비슷한 흐름으로 안정세.
+- `이강인 연봉`(노출 2,481·CTR 0.6%), `/reports/lee-kang-in-psg-salary-2026/`(노출 2,560·CTR 0.7%) — 축구 연봉 클러스터 노출은 줄었지만(2,668→2,481) CTR은 여전히 0%대로 개선 더딤.
+- `worldcup-squad-salary-total-comparison-2026`(클릭 28·CTR 8.7%), `argentina-worldcup-squad-salary-2026`(CTR 19.4%), `2026 월드컵 포상금`(CTR 6.8%) — 월드컵 시즌 진입하며 대표팀/포상금 콘텐츠 클러스터가 동반 강세.
+- `국회의원 재산순위`(CTR 80%), `kbo 구단별 연봉 총액`(CTR 100%) — 정치인 재산·스포츠 구단 연봉형 틈새 키워드 CTR 강세 지속.
+- `lg전자 성과급 2026`(CTR 40%), `삼성e&a 성과급`(CTR 33.3%), `코레일 성과급`(CTR 42.9%) — 성과급 롱테일 키워드 다변화. 신규 진입 `lg-bonus-2026`(클릭 5·CTR 26.3%) 리포트도 첫 트래킹 진입.
+- `son-heung-min-lafc-salary-net-worth-2026`(노출 198·CTR 2.0%) — 손흥민 LAFC 이적 콘텐츠 신규 진입, 향후 추이 확인 필요.
+
+---
+
 ## 2026-06-27 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)
