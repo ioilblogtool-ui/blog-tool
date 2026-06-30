@@ -1,0 +1,637 @@
+.sjap-page {
+  --sjap-ink: #172033;
+  --sjap-muted: #667085;
+  --sjap-line: #d8e0ea;
+  --sjap-soft: #f6f8fb;
+  --sjap-panel: #ffffff;
+  --sjap-blue: #2563eb;
+  --sjap-green: #138a5b;
+  --sjap-teal: #0f766e;
+  --sjap-amber: #b7791f;
+  --sjap-red: #c2410c;
+  --sjap-slate: #334155;
+
+  .hero {
+    margin-bottom: 14px;
+  }
+}
+
+.sjap-eyebrow {
+  margin: 0 0 6px;
+  color: var(--sjap-blue);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.sjap-summary-grid,
+.sjap-lifestyle-grid,
+.sjap-context-grid,
+.sjap-related-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 700px) {
+  .sjap-summary-grid,
+  .sjap-lifestyle-grid,
+  .sjap-context-grid,
+  .sjap-related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1080px) {
+  .sjap-summary-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .sjap-lifestyle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sjap-context-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.sjap-summary-card,
+.sjap-lifestyle-card,
+.sjap-context-card,
+.sjap-related-card {
+  min-width: 0;
+  border: 1px solid var(--sjap-line);
+  border-radius: 8px;
+  background: var(--sjap-panel);
+}
+
+.sjap-summary-card {
+  padding: 16px;
+
+  span,
+  p {
+    margin: 0;
+    color: var(--sjap-muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  span {
+    font-weight: 900;
+  }
+
+  strong {
+    display: block;
+    margin: 7px 0;
+    color: var(--sjap-ink);
+    font-size: 24px;
+    line-height: 1.15;
+    word-break: keep-all;
+  }
+}
+
+.sjap-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+  scrollbar-width: thin;
+}
+
+.sjap-tab {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 7px;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 11px;
+  border: 1px solid var(--sjap-line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--sjap-slate);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+
+  span {
+    display: inline-grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--sjap-soft);
+    color: var(--sjap-muted);
+    font-size: 11px;
+  }
+
+  &.is-active {
+    border-color: var(--sjap-blue);
+    background: #eff6ff;
+    color: #1d4ed8;
+
+    span {
+      background: var(--sjap-blue);
+      color: #fff;
+    }
+  }
+}
+
+.sjap-profit-card {
+  display: grid;
+  gap: 16px;
+  margin-top: 4px;
+  padding: 20px;
+  border: 1px solid #b7c5dc;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+}
+
+@media (min-width: 900px) {
+  .sjap-profit-card {
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  }
+}
+
+.sjap-profit-card__main {
+  h3,
+  p {
+    margin: 0;
+  }
+
+  h3 {
+    color: var(--sjap-ink);
+    font-size: clamp(24px, 4vw, 40px);
+    line-height: 1.12;
+    letter-spacing: 0;
+    word-break: keep-all;
+  }
+
+  > p:not(.sjap-eyebrow) {
+    margin-top: 10px;
+    color: var(--sjap-muted);
+    font-size: 15px;
+    line-height: 1.75;
+    word-break: keep-all;
+  }
+}
+
+.sjap-profit-card__numbers {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 18px;
+
+  div {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--sjap-line);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  span {
+    display: block;
+    color: var(--sjap-muted);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  strong {
+    display: block;
+    margin-top: 5px;
+    color: var(--sjap-red);
+    font-size: clamp(18px, 5vw, 28px);
+    line-height: 1.15;
+    word-break: keep-all;
+  }
+}
+
+@media (min-width: 560px) {
+  .sjap-profit-card__numbers {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.sjap-profit-card__meta {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background: #eff6ff;
+
+  dl {
+    display: grid;
+    gap: 10px;
+    margin: 14px 0;
+  }
+
+  div {
+    display: grid;
+    gap: 3px;
+  }
+
+  dt {
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  dd,
+  p,
+  small {
+    margin: 0;
+    color: var(--sjap-slate);
+    font-size: 13px;
+    line-height: 1.65;
+    word-break: keep-all;
+  }
+
+  dd {
+    font-weight: 900;
+  }
+
+  small {
+    display: block;
+    margin-top: 10px;
+    color: #475569;
+  }
+}
+
+.sjap-data-badge,
+.sjap-area-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.sjap-data-badge {
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.sjap-area-badge {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.sjap-sort-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  button {
+    min-height: 38px;
+    padding: 8px 11px;
+    border: 1px solid var(--sjap-line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--sjap-slate);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  button.is-active {
+    border-color: var(--sjap-teal);
+    background: #f0fdfa;
+    color: #0f766e;
+  }
+}
+
+.sjap-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--sjap-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.sjap-table {
+  width: 100%;
+  min-width: 1080px;
+  border-collapse: collapse;
+
+  caption {
+    padding: 12px 14px;
+    color: var(--sjap-muted);
+    font-size: 13px;
+    text-align: left;
+  }
+
+  th,
+  td {
+    padding: 13px 14px;
+    border-top: 1px solid var(--sjap-line);
+    color: var(--sjap-ink);
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: left;
+    vertical-align: top;
+    word-break: keep-all;
+  }
+
+  thead th {
+    background: var(--sjap-soft);
+    color: var(--sjap-slate);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  tbody th {
+    min-width: 130px;
+    background: #fbfcfe;
+
+    span {
+      display: block;
+      margin-top: 3px;
+      color: var(--sjap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+  }
+
+  tbody tr.is-active {
+    outline: 2px solid #93c5fd;
+    outline-offset: -2px;
+    background: #eff6ff;
+  }
+
+  small {
+    display: block;
+    margin-top: 2px;
+    color: var(--sjap-muted);
+    font-size: 11px;
+    font-weight: 900;
+  }
+}
+
+.sjap-table-note {
+  margin: 10px 0 0;
+  color: var(--sjap-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sjap-bar-list {
+  display: grid;
+  gap: 12px;
+}
+
+.sjap-bar-row {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--sjap-line);
+  border-radius: 8px;
+  background: #fff;
+
+  &.is-active {
+    border-color: #93c5fd;
+    background: #f8fbff;
+  }
+
+  p {
+    margin: 0;
+    color: var(--sjap-muted);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+}
+
+.sjap-bar-row__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+
+  strong {
+    color: var(--sjap-ink);
+    font-size: 16px;
+  }
+
+  span {
+    color: var(--sjap-blue);
+    font-size: 12px;
+    font-weight: 900;
+  }
+}
+
+.sjap-bar-track {
+  position: relative;
+  height: 28px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #e8edf5;
+}
+
+.sjap-bar-row__latest,
+.sjap-bar-row__low {
+  position: absolute;
+  left: 0;
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+}
+
+.sjap-bar-row__latest {
+  top: 0;
+  background: #bfdbfe;
+}
+
+.sjap-bar-row__low {
+  top: 9px;
+  height: 10px;
+  background: var(--sjap-teal);
+}
+
+.sjap-lifestyle-card {
+  padding: 16px;
+
+  h3,
+  p,
+  strong,
+  small {
+    margin: 0;
+  }
+
+  > span {
+    color: var(--sjap-blue);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  h3 {
+    margin-top: 6px;
+    color: var(--sjap-ink);
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  p {
+    display: block;
+    margin-top: 8px;
+    color: var(--sjap-muted);
+    font-size: 13px;
+    line-height: 1.65;
+    word-break: keep-all;
+  }
+
+  strong {
+    display: block;
+    margin-top: 8px;
+    color: var(--sjap-teal);
+    font-size: 13px;
+    line-height: 1.55;
+    word-break: keep-all;
+  }
+
+  small {
+    display: block;
+    margin-top: 8px;
+    color: #9a3412;
+    font-size: 12px;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+}
+
+.sjap-lifestyle-notice {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: var(--sjap-soft);
+  color: var(--sjap-slate);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+.sjap-context-card {
+  padding: 16px;
+
+  h3,
+  p {
+    margin: 0;
+  }
+
+  > span {
+    color: var(--sjap-teal);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  h3 {
+    margin-top: 6px;
+    color: var(--sjap-ink);
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  p {
+    margin-top: 8px;
+    color: var(--sjap-muted);
+    font-size: 13px;
+    line-height: 1.65;
+    word-break: keep-all;
+  }
+}
+
+.sjap-related-card {
+  padding: 16px;
+  color: inherit;
+  text-decoration: none;
+
+  strong {
+    display: block;
+    margin: 0;
+    color: var(--sjap-ink);
+    font-size: 15px;
+    line-height: 1.4;
+    word-break: keep-all;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: var(--sjap-muted);
+    font-size: 13px;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+}
+
+.sjap-risk-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 14px 16px;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #7c2d12;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+}
+
+@media (max-width: 920px) {
+  .sjap-lifestyle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sjap-context-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .sjap-profit-card {
+    padding: 16px;
+  }
+
+  .sjap-profit-card__numbers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sjap-sort-controls {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+
+    button {
+      flex: 0 0 auto;
+    }
+  }
+
+  .sjap-table {
+    min-width: 940px;
+  }
+
+  .sjap-lifestyle-grid,
+  .sjap-context-grid,
+  .sjap-related-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .sjap-profit-card__numbers {
+    grid-template-columns: 1fr;
+  }
+}

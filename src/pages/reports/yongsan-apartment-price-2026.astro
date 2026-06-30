@@ -1,0 +1,316 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  YSAP_APARTMENTS,
+  YSAP_AREA_CARDS,
+  YSAP_CONTEXT,
+  YSAP_FAQ,
+  YSAP_META,
+  YSAP_METHOD,
+  YSAP_RELATED_LINKS,
+  YSAP_RISKS,
+  YSAP_SEO_CRITERIA,
+  YSAP_SEO_INTRO,
+  formatEok,
+} from "../../data/yongsanApartmentPrice2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${YSAP_META.slug}/`;
+const defaultApartment = YSAP_APARTMENTS[0];
+const maxLatest = Math.max(...YSAP_APARTMENTS.map((row) => row.latestTradePriceManwon));
+const maxGain = YSAP_APARTMENTS.reduce((max, row) => (row.estimatedGainManwon > max.estimatedGainManwon ? row : max), defaultApartment);
+const hannamCount = YSAP_APARTMENTS.filter((row) => row.areaGroup.includes("한남") || row.areaGroup.includes("초고가")).length;
+const ichonCount = YSAP_APARTMENTS.filter((row) => row.areaGroup === "이촌·서빙고권").length;
+
+const summaryCards = [
+  { label: "데이터 기준", value: YSAP_META.updatedAt, note: YSAP_META.dataAsOf },
+  { label: "최고 기준가", value: formatEok(maxLatest), note: "초고가·대형 면적 직접 비교 주의" },
+  { label: "최대 평가차익(추정)", value: formatEok(maxGain.estimatedGainManwon), note: `${maxGain.complexName} 참고` },
+  { label: "한남권 후보", value: `${hannamCount}개`, note: "초고가·대형 면적 중심" },
+  { label: "이촌·한강변 후보", value: `${ichonCount}개`, note: "한강변 실거주 수요 중심" },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: YSAP_META.title,
+      description: YSAP_META.description,
+      dateModified: YSAP_META.updatedAt,
+      inLanguage: "ko-KR",
+      mainEntityOfPage: reportUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      about: ["용산 아파트", "용산 실거래가", "한남더힐", "나인원한남", "래미안첼리투스"],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: YSAP_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+        { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+        { "@type": "ListItem", position: 3, name: YSAP_META.title, item: reportUrl },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout title={YSAP_META.seoTitle} description={YSAP_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell report-page ysap-page" data-report="yongsan-apartment-price-2026">
+    <CalculatorHero
+      eyebrow="용산 실거래가 리포트"
+      title="용산 대장 아파트, 최저가일 때 샀다면 지금 얼마를 벌었을까?"
+      description={YSAP_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        YSAP_META.notice,
+        "이 리포트는 서울특별시 용산구 행정구역을 기준으로 하며, 생활권은 한남·이촌·용산역·원효로 등으로 나눠 표시합니다.",
+        "초고가·대형 면적 단지는 84㎡ 일반 아파트와 직접 비교가 어려울 수 있어 면적을 별도 표시합니다.",
+        "개발 기대감은 현재 실거래가와 분리해서 해석해야 하며, 사업 일정·수혜 금액은 확정값처럼 표시하지 않습니다.",
+        "최저가 대비 금액은 세금·중개보수·대출이자·보유비용을 반영하지 않은 평가차익(추정)입니다.",
+        "이 리포트는 투자 권유가 아니며, 실제 거래 판단은 국토교통부 실거래가 공개시스템과 현장 확인을 기준으로 해야 합니다.",
+      ]}
+    />
+
+    <section class="ysap-summary" aria-labelledby="ysap-summary-title">
+      <div class="ysap-section-head">
+        <p>요약</p>
+        <h2 id="ysap-summary-title">용산 Top10 실거래 기준 한눈에 보기</h2>
+      </div>
+      <div class="ysap-summary-grid">
+        {summaryCards.map((card) => (
+          <article class="ysap-summary-card">
+            <span>{card.label}</span>
+            <strong>{card.value}</strong>
+            <p>{card.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="ysap-picker" aria-labelledby="ysap-picker-title">
+      <div class="ysap-section-head">
+        <p>단지별 카드</p>
+        <h2 id="ysap-picker-title">최저가일 때 샀다면 지금 평가차익은?</h2>
+      </div>
+      <div class="ysap-tabs" role="tablist" aria-label="용산 아파트 단지 선택">
+        {YSAP_APARTMENTS.map((row, index) => (
+          <button
+            class={`ysap-tab${index === 0 ? " is-active" : ""}`}
+            type="button"
+            data-complex={row.id}
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+          >
+            {row.rank}. {row.complexName}
+          </button>
+        ))}
+      </div>
+
+      <article class="ysap-profit-card" aria-live="polite">
+        <div class="ysap-profit-card__main">
+          <span class="ysap-badge" data-ysap-field="badge">{defaultApartment.badge}</span>
+          <p class="ysap-kicker" data-ysap-field="areaGroup">{defaultApartment.areaGroup} · {defaultApartment.legalDongLabel}</p>
+          <h3 data-ysap-field="complexName">{defaultApartment.complexName}</h3>
+          <p data-ysap-field="profitSentence">
+            {defaultApartment.fiveYearLowDate} {formatEok(defaultApartment.fiveYearLowPriceManwon)}에 거래됐고, 현재 기준가는 {formatEok(defaultApartment.latestTradePriceManwon)}입니다.
+          </p>
+          <div class="ysap-profit-card__numbers">
+            <div>
+              <span>평가차익(추정)</span>
+              <strong data-ysap-field="gain">{formatEok(defaultApartment.estimatedGainManwon)}</strong>
+            </div>
+            <div>
+              <span>상승률(추정)</span>
+              <strong data-ysap-field="gainRate">{defaultApartment.estimatedGainRate}%</strong>
+            </div>
+          </div>
+        </div>
+        <dl class="ysap-profit-card__meta">
+          <div><dt>최근 기준가</dt><dd data-ysap-field="latest">{formatEok(defaultApartment.latestTradePriceManwon)}</dd></div>
+          <div><dt>거래월·면적</dt><dd data-ysap-field="latestMeta">{defaultApartment.latestTradeDate} · {defaultApartment.latestTradeArea}</dd></div>
+          <div><dt>5년 저점 참고</dt><dd data-ysap-field="low">{formatEok(defaultApartment.fiveYearLowPriceManwon)}</dd></div>
+          <div><dt>생활권 메모</dt><dd data-ysap-field="development">{defaultApartment.developmentNote}</dd></div>
+          <div><dt>주의</dt><dd data-ysap-field="note">{defaultApartment.note}</dd></div>
+        </dl>
+      </article>
+      <p class="ysap-plain-note">
+        이 금액은 취득세, 중개보수, 보유세, 대출이자, 양도소득세를 반영하지 않은 단순 시세 차이입니다. 같은 단지라도 동·층·향·면적·거래 시점에 따라 실제 가격은 크게 달라질 수 있습니다.
+      </p>
+    </section>
+
+    <section class="ysap-table-section" aria-labelledby="ysap-table-title">
+      <div class="ysap-section-head ysap-section-head--row">
+        <div>
+          <p>비교표</p>
+          <h2 id="ysap-table-title">용산 대장 아파트 Top10 실거래가</h2>
+        </div>
+        <div class="ysap-sort-controls" aria-label="정렬 기준">
+          <button class="is-active" type="button" data-sort="rank">순위</button>
+          <button type="button" data-sort="gain">평가차익</button>
+          <button type="button" data-sort="gainRate">상승률</button>
+          <button type="button" data-sort="latestPrice">최근가</button>
+          <button type="button" data-sort="area">생활권</button>
+        </div>
+      </div>
+      <div class="ysap-table-wrap">
+        <table class="ysap-table">
+          <caption>용산 아파트 Top10 최근 기준가와 5년 저점 대비 평가차익 비교</caption>
+          <thead>
+            <tr>
+              <th scope="col">순위</th>
+              <th scope="col">단지명</th>
+              <th scope="col">법정동</th>
+              <th scope="col">생활권</th>
+              <th scope="col">최근 기준가</th>
+              <th scope="col">거래월</th>
+              <th scope="col">2025 대비</th>
+              <th scope="col">5년 저점</th>
+              <th scope="col">평가차익(추정)</th>
+              <th scope="col">전세가율</th>
+              <th scope="col">주의</th>
+            </tr>
+          </thead>
+          <tbody data-ysap-table-body>
+            {YSAP_APARTMENTS.map((row) => (
+              <tr data-row-id={row.id}>
+                <td>{row.rank}</td>
+                <th scope="row">
+                  <strong>{row.complexName}</strong>
+                  <span>{row.mainAreaLabel}</span>
+                </th>
+                <td>{row.legalDongLabel}</td>
+                <td>{row.areaGroup}</td>
+                <td>{formatEok(row.latestTradePriceManwon)}</td>
+                <td>{row.latestTradeDate}</td>
+                <td>{row.previousYearPriceManwon ? `${formatEok(row.latestTradePriceManwon - row.previousYearPriceManwon)} 상승 참고` : "확인 필요"}</td>
+                <td>{formatEok(row.fiveYearLowPriceManwon)}</td>
+                <td>{formatEok(row.estimatedGainManwon)} · {row.estimatedGainRate}%</td>
+                <td>{row.jeonseRatio ? `${row.jeonseRatio}% 참고` : "확인 필요"}</td>
+                <td>{row.tradeCountNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ysap-area-map" aria-labelledby="ysap-area-title">
+      <div class="ysap-section-head">
+        <p>생활권</p>
+        <h2 id="ysap-area-title">한남·이촌·용산역 생활권 가격 차이</h2>
+      </div>
+      <div class="ysap-area-grid">
+        {YSAP_AREA_CARDS.map((card) => (
+          <article class="ysap-area-card">
+            <span>{card.badge}</span>
+            <h3>{card.title}</h3>
+            <strong>{card.priceInterpretation}</strong>
+            <p>{card.description}</p>
+            <small>{card.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="ysap-chart" aria-labelledby="ysap-chart-title">
+      <div class="ysap-section-head">
+        <p>막대 비교</p>
+        <h2 id="ysap-chart-title">현재 기준가 vs 5년 저점 참고가</h2>
+      </div>
+      <div class="ysap-bar-list" data-ysap-bars>
+        {YSAP_APARTMENTS.map((row) => (
+          <article class="ysap-bar-row" data-row-id={row.id}>
+            <div class="ysap-bar-row__label">
+              <strong>{row.complexName}</strong>
+              <span>{row.areaGroup}</span>
+            </div>
+            <div class="ysap-bar-row__bars">
+              <span class="ysap-bar ysap-bar--latest" style={`width: ${Math.max(12, (row.latestTradePriceManwon / maxLatest) * 100)}%`}>{formatEok(row.latestTradePriceManwon)}</span>
+              <span class="ysap-bar ysap-bar--low" style={`width: ${Math.max(12, (row.fiveYearLowPriceManwon / maxLatest) * 100)}%`}>{formatEok(row.fiveYearLowPriceManwon)}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="ysap-context" aria-labelledby="ysap-context-title">
+      <div class="ysap-section-head">
+        <p>가격 맥락</p>
+        <h2 id="ysap-context-title">용산 아파트가 비싼 이유</h2>
+      </div>
+      <div class="ysap-context-grid">
+        {YSAP_CONTEXT.map((card) => (
+          <article class="ysap-context-card">
+            <span>{card.badge}</span>
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="ysap-data-method" aria-labelledby="ysap-method-title">
+      <div class="ysap-section-head">
+        <p>데이터 기준</p>
+        <h2 id="ysap-method-title">용산 실거래가 데이터 기준</h2>
+      </div>
+      <ul class="ysap-risk-list">
+        {YSAP_METHOD.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="ysap-risk" aria-labelledby="ysap-risk-title">
+      <div class="ysap-section-head">
+        <p>리스크</p>
+        <h2 id="ysap-risk-title">평가차익보다 먼저 봐야 하는 변수</h2>
+      </div>
+      <ul class="ysap-risk-list">
+        {YSAP_RISKS.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="ysap-related" aria-labelledby="ysap-related-title">
+      <div class="ysap-section-head">
+        <p>다음 단계</p>
+        <h2 id="ysap-related-title">가격 확인 뒤 이어서 볼 리포트와 계산기</h2>
+      </div>
+      <div class="ysap-related-grid">
+        {YSAP_RELATED_LINKS.map((link) => (
+          <a class="ysap-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="용산 아파트 실거래가를 볼 때 먼저 확인할 것"
+      intro={YSAP_SEO_INTRO}
+      criteria={YSAP_SEO_CRITERIA}
+      faq={YSAP_FAQ}
+      related={YSAP_RELATED_LINKS}
+    />
+
+    <script type="application/json" id="ysap-data" set:html={JSON.stringify(YSAP_APARTMENTS)}></script>
+    <script src={withBase("/scripts/yongsan-apartment-price-2026.js")} defer></script>
+  </main>
+</BaseLayout>

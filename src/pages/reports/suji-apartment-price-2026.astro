@@ -1,0 +1,346 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SJAP_APARTMENTS,
+  SJAP_CONTEXT,
+  SJAP_FAQ,
+  SJAP_META,
+  SJAP_LIFESTYLE_CARDS,
+  SJAP_RELATED_LINKS,
+  SJAP_SEO_CRITERIA,
+  SJAP_SEO_INTRO,
+  SJAP_SOURCE_LINKS,
+  formatEok,
+} from "../../data/sujiApartmentPrice2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SJAP_META.slug}/`;
+const activeApartment = SJAP_APARTMENTS[0];
+const maxLatest = Math.max(...SJAP_APARTMENTS.map((item) => item.latestTradePriceManwon));
+const maxGain = Math.max(...SJAP_APARTMENTS.map((item) => item.estimatedGainManwon));
+const shinbundangCount = SJAP_APARTMENTS.filter((item) => item.stationLabel?.includes("신분당선")).length;
+const summaryCards = [
+  { label: "데이터 기준", value: SJAP_META.dataAsOf, note: "발행 전 국토부 원문 재확인 필요" },
+  { label: "대표 단지", value: `${SJAP_APARTMENTS.length}개`, note: "성복·동천·상현·풍덕천권 후보" },
+  { label: "최고 기준가", value: formatEok(maxLatest), note: "세부 동·층·향에 따라 달라짐" },
+  { label: "최대 평가차익", value: formatEok(maxGain), note: "세금·비용 미반영 추정" },
+  { label: "신분당선권 단지", value: `${shinbundangCount}개`, note: "역 접근 거리는 단지별로 다름" },
+];
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SJAP_META.title,
+    description: SJAP_META.description,
+    dateModified: SJAP_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    inLanguage: "ko-KR",
+    author: { "@type": "Organization", name: "비교계산소" },
+    about: ["수지 아파트", "수지 실거래가", "성복역 롯데캐슬", "신분당선 아파트"],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SJAP_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SJAP_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={SJAP_META.seoTitle} description={SJAP_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sjap-page" data-report="suji-apartment-price-2026">
+    <CalculatorHero
+      eyebrow="수지 실거래가 리포트"
+      title="수지 대장 아파트, 최저가일 때 샀다면 지금 얼마를 벌었을까?"
+      description={SJAP_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        SJAP_META.notice,
+        "이 리포트는 용인시 수지구 기준이며, 광교 생활권과 겹치는 상현역권 단지는 별도로 표시합니다.",
+        "최저가 대비 금액은 세금·중개보수·대출이자·보유비용을 반영하지 않은 평가차익(추정)입니다.",
+        "이 리포트는 투자 권유가 아니며, 실제 거래 판단은 국토교통부 실거래가 공개시스템과 현장 확인을 기준으로 해야 합니다.",
+      ]}
+    />
+
+    <section class="content-section sjap-summary" aria-labelledby="sjap-summary-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한눈에 보기</p>
+        <h2 id="sjap-summary-title">수지 Top10 기준 요약</h2>
+        <p class="section-header__description">가격보다 먼저 데이터 상태와 추정 범위를 확인하세요.</p>
+      </div>
+      <div class="sjap-summary-grid">
+        {summaryCards.map((card) => (
+          <article class="sjap-summary-card">
+            <span>{card.label}</span>
+            <strong>{card.value}</strong>
+            <p>{card.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sjap-interactive" aria-labelledby="sjap-tabs-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">단지별 보기</p>
+        <h2 id="sjap-tabs-title">수지 대장 아파트 Top10 실거래가</h2>
+      </div>
+
+      <div class="sjap-tabs" role="tablist" aria-label="수지 대표 단지 선택">
+        {SJAP_APARTMENTS.map((apartment, index) => (
+          <button
+            class={`sjap-tab${index === 0 ? " is-active" : ""}`}
+            type="button"
+            data-sjap-tab={apartment.id}
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+          >
+            <span>{apartment.rank}</span>
+            {apartment.complexName}
+          </button>
+        ))}
+      </div>
+
+      <article class="sjap-profit-card" aria-live="polite">
+        <div class="sjap-profit-card__main">
+          <p class="sjap-eyebrow" data-sjap-area>{activeApartment.areaGroup} · {activeApartment.legalDongLabel}</p>
+          <h3 data-sjap-name>{activeApartment.complexName}</h3>
+          <p data-sjap-sentence>
+            {activeApartment.fiveYearLowDate} {formatEok(activeApartment.fiveYearLowPriceManwon)}에 거래된 뒤,
+            현재 기준가는 {formatEok(activeApartment.latestTradePriceManwon)}입니다.
+          </p>
+          <div class="sjap-profit-card__numbers">
+            <div>
+              <span>최근 기준가</span>
+              <strong data-sjap-latest>{formatEok(activeApartment.latestTradePriceManwon)}</strong>
+            </div>
+            <div>
+              <span>5년 저점권</span>
+              <strong data-sjap-low>{formatEok(activeApartment.fiveYearLowPriceManwon)}</strong>
+            </div>
+            <div>
+              <span>평가차익(추정)</span>
+              <strong data-sjap-gain>{formatEok(activeApartment.estimatedGainManwon)}</strong>
+            </div>
+            <div>
+              <span>상승률(추정)</span>
+              <strong data-sjap-rate>{activeApartment.estimatedGainRate.toFixed(1)}%</strong>
+            </div>
+          </div>
+        </div>
+        <div class="sjap-profit-card__meta">
+          <span class="sjap-data-badge" data-sjap-badge>{activeApartment.badge}</span>
+          <dl>
+            <div>
+              <dt>기준 면적</dt>
+              <dd data-sjap-area-label>{activeApartment.mainAreaLabel}</dd>
+            </div>
+            <div>
+              <dt>최근 거래 시점</dt>
+              <dd data-sjap-date>{activeApartment.latestTradeDate}</dd>
+            </div>
+            <div>
+              <dt>역 접근성</dt>
+              <dd data-sjap-station>{activeApartment.stationLabel ?? "확인 필요"}</dd>
+            </div>
+            <div>
+              <dt>전세가율 참고</dt>
+              <dd data-sjap-jeonse>{activeApartment.jeonseRatio ? `${activeApartment.jeonseRatio}% 참고` : "거래 부족"}</dd>
+            </div>
+          </dl>
+          <p data-sjap-note>{activeApartment.note}</p>
+          <small data-sjap-trade-note>{activeApartment.tradeCountNote}</small>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section sjap-table-section" aria-labelledby="sjap-table-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교표</p>
+        <h2 id="sjap-table-title">최근 기준가와 평가차익(추정) 비교</h2>
+      </div>
+      <div class="sjap-sort-controls" aria-label="비교표 정렬">
+        <button class="is-active" type="button" data-sjap-sort="rank">기본 순위</button>
+        <button type="button" data-sjap-sort="gain">평가차익 큰 순</button>
+        <button type="button" data-sjap-sort="gainRate">상승률 큰 순</button>
+        <button type="button" data-sjap-sort="latestPrice">최근 기준가 높은 순</button>
+        <button type="button" data-sjap-sort="area">생활권별</button>
+      </div>
+      <div class="sjap-table-wrap">
+        <table class="sjap-table">
+          <caption>수지 대표 아파트 최근 기준가와 최근 5년 저점 대비 평가차익 비교</caption>
+          <thead>
+            <tr>
+              <th scope="col">순위</th>
+              <th scope="col">단지명</th>
+              <th scope="col">법정동</th>
+              <th scope="col">생활권</th>
+              <th scope="col">최근 기준가</th>
+              <th scope="col">거래 시점</th>
+              <th scope="col">2025 대비</th>
+              <th scope="col">5년 저점권</th>
+              <th scope="col">평가차익(추정)</th>
+              <th scope="col">전세가율</th>
+              <th scope="col">주의</th>
+            </tr>
+          </thead>
+          <tbody data-sjap-table-body>
+            {SJAP_APARTMENTS.map((row) => (
+              <tr data-sjap-row={row.id} class={row.id === activeApartment.id ? "is-active" : ""}>
+                <td>{row.rank}</td>
+                <th scope="row">{row.complexName}<span>{row.mainAreaLabel}</span></th>
+                <td>{row.legalDongLabel}</td>
+                <td><span class="sjap-area-badge">{row.areaGroup}</span></td>
+                <td>{formatEok(row.latestTradePriceManwon)}</td>
+                <td>{row.latestTradeDate}</td>
+                <td>{row.previousYearPriceManwon ? `+${formatEok(row.latestTradePriceManwon - row.previousYearPriceManwon)}` : "확인 필요"}</td>
+                <td>{formatEok(row.fiveYearLowPriceManwon)}</td>
+                <td>{formatEok(row.estimatedGainManwon)}<small>{row.estimatedGainRate.toFixed(1)}%</small></td>
+                <td>{row.jeonseRatio ? `${row.jeonseRatio}% 참고` : "거래 부족"}</td>
+                <td>{row.tradeCountNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="sjap-table-note">표의 금액은 공식 확정 시세가 아니라 발행 전 원문 재검증이 필요한 비교용 기준값입니다.</p>
+    </section>
+
+    <section class="content-section sjap-chart-section" aria-labelledby="sjap-chart-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">막대 비교</p>
+        <h2 id="sjap-chart-title">현재 기준가 vs 최근 5년 저점권</h2>
+      </div>
+      <div class="sjap-bar-list" data-sjap-bars>
+        {SJAP_APARTMENTS.map((row) => (
+          <article class="sjap-bar-row" data-sjap-bar-row={row.id}>
+            <div class="sjap-bar-row__head">
+              <strong>{row.complexName}</strong>
+              <span>{row.areaGroup}</span>
+            </div>
+            <div class="sjap-bar-track" aria-hidden="true">
+              <span class="sjap-bar-row__latest" style={`width: ${(row.latestTradePriceManwon / maxLatest) * 100}%`}></span>
+              <span class="sjap-bar-row__low" style={`width: ${(row.fiveYearLowPriceManwon / maxLatest) * 100}%`}></span>
+            </div>
+            <p>{formatEok(row.latestTradePriceManwon)} / 저점권 {formatEok(row.fiveYearLowPriceManwon)} / 평가차익(추정) {formatEok(row.estimatedGainManwon)}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="sjap-lifestyle-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">생활권 해석</p>
+        <h2 id="sjap-lifestyle-title">성복역·동천역·상현역·풍덕천권 가격 차이</h2>
+        <p class="section-header__description">수지는 같은 구 안에서도 신분당선 역과의 접근성, 생활 체감이 생활권별로 다릅니다.</p>
+      </div>
+      <div class="sjap-lifestyle-grid">
+        {SJAP_LIFESTYLE_CARDS.map((card) => (
+          <article class="sjap-lifestyle-card">
+            <span>{card.badge}</span>
+            <h3>{card.title}</h3>
+            <p>{card.description}</p>
+            <strong>{card.priceInterpretation}</strong>
+            <small>{card.caution}</small>
+          </article>
+        ))}
+      </div>
+      <p class="sjap-lifestyle-notice">수지는 신분당선 접근성이 핵심이지만, 성복·상현·동천·풍덕천은 실제 이동 동선과 도로 체감이 다릅니다. 같은 수지구라도 역 접근성과 생활권을 나눠 봐야 합니다.</p>
+    </section>
+
+    <section class="content-section" aria-labelledby="sjap-context-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">해석 포인트</p>
+        <h2 id="sjap-context-title">수지가 분당 대체지로 거론되는 이유</h2>
+      </div>
+      <div class="sjap-context-grid">
+        {SJAP_CONTEXT.map((card) => (
+          <article class="sjap-context-card">
+            <span>{card.badge}</span>
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sjap-risk-section" aria-labelledby="sjap-risk-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">주의할 점</p>
+        <h2 id="sjap-risk-title">수지 실거래가를 볼 때 반드시 확인할 점</h2>
+      </div>
+      <ul class="sjap-risk-list">
+        <li>취득세, 중개보수, 보유세, 대출이자, 양도소득세는 평가차익(추정)에 포함하지 않았습니다.</li>
+        <li>거래 건수가 적은 단지는 한 건의 가격이 평균처럼 보일 수 있습니다.</li>
+        <li>전용 84㎡가 아닌 유사 면적 거래는 같은 표 안에서도 직접 비교에 주의해야 합니다.</li>
+        <li>신분당선 역세권이라도 단지별 역까지 실제 도보 거리, 도로 정체, 버스 환승 체감은 다릅니다.</li>
+        <li>광교 생활권과 겹치는 상현역권 단지는 수지구 행정구역 기준으로 정리했으며, 광교 리포트와 함께 확인하는 편이 더 정확합니다.</li>
+        <li>실제 매수 판단은 자금 계획, 대출 조건, 현장 확인, 등기 확인을 별도로 거쳐야 합니다.</li>
+      </ul>
+    </section>
+
+    <section class="content-section" aria-labelledby="sjap-source-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">원문 확인</p>
+        <h2 id="sjap-source-title">발행 전 다시 확인할 데이터 출처</h2>
+      </div>
+      <div class="sjap-related-grid">
+        {SJAP_SOURCE_LINKS.map((link) => (
+          <a class="sjap-related-card" href={link.href} target="_blank" rel="noopener noreferrer">
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section sjap-related-section" aria-labelledby="sjap-related-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다음 단계</p>
+        <h2 id="sjap-related-title">수지 가격을 내 예산으로 다시 보기</h2>
+      </div>
+      <div class="sjap-related-grid">
+        {SJAP_RELATED_LINKS.map((link) => (
+          <a class="sjap-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="수지 아파트 실거래가를 볼 때 먼저 확인할 것"
+      intro={SJAP_SEO_INTRO}
+      criteria={SJAP_SEO_CRITERIA}
+      faq={SJAP_FAQ}
+      related={SJAP_RELATED_LINKS}
+    />
+
+    <script type="application/json" id="sjap-data" set:html={JSON.stringify(SJAP_APARTMENTS)} />
+    <script type="application/json" id="sjap-lifestyle-data" set:html={JSON.stringify(SJAP_LIFESTYLE_CARDS)} />
+    <script src={withBase("/scripts/suji-apartment-price-2026.js")} defer></script>
+  </main>
+</BaseLayout>

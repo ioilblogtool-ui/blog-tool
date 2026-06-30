@@ -1,0 +1,339 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SDAP_APARTMENTS,
+  SDAP_AREA_CARDS,
+  SDAP_CONTEXT,
+  SDAP_FAQ,
+  SDAP_META,
+  SDAP_METHOD,
+  SDAP_RELATED_LINKS,
+  SDAP_RISKS,
+  SDAP_SEO_CRITERIA,
+  SDAP_SEO_INTRO,
+} from "../../data/seongdongApartmentPrice2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SDAP_META.slug}/`;
+const defaultApartment = SDAP_APARTMENTS[0];
+const maxPrice = SDAP_APARTMENTS.reduce((max, row) => (row.latestTradePriceManwon > max.latestTradePriceManwon ? row : max), defaultApartment);
+const maxGain = SDAP_APARTMENTS.reduce((max, row) => (row.estimatedGainManwon > max.estimatedGainManwon ? row : max), defaultApartment);
+const seoulforestCount = SDAP_APARTMENTS.filter((row) => row.areaGroup === "서울숲·성수권").length;
+const oksuCount = SDAP_APARTMENTS.filter((row) => row.areaGroup === "옥수·금호권").length;
+const wangsimniCount = SDAP_APARTMENTS.filter((row) => row.areaGroup === "왕십리·행당권" || row.areaGroup === "응봉·마장권").length;
+
+const formatEok = (manwon: number) => {
+  const eok = manwon / 10000;
+  const fixed = eok >= 10 ? eok.toFixed(1) : eok.toFixed(2);
+  return `${fixed.replace(/\.0$/, "")}억원`;
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: SDAP_META.title,
+      description: SDAP_META.description,
+      dateModified: SDAP_META.updatedAt,
+      inLanguage: "ko-KR",
+      mainEntityOfPage: reportUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      about: ["성동 아파트", "성동 실거래가", "아크로서울포레스트", "트리마제", "래미안 옥수 리버젠"],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: SDAP_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+        { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+        { "@type": "ListItem", position: 3, name: SDAP_META.title, item: reportUrl },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout title={SDAP_META.seoTitle} description={SDAP_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page sdap-page" data-report="seongdong-apartment-price-2026">
+    <CalculatorHero
+      eyebrow="성동 실거래가 리포트"
+      title="성동 대장 아파트, 최저가일 때 샀다면 지금 얼마를 벌었을까?"
+      description={SDAP_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        SDAP_META.notice,
+        "이 리포트는 서울특별시 성동구 행정구역을 기준으로 하며, 생활권은 서울숲·성수·옥수·금호·왕십리 등으로 나눠 표시합니다.",
+        "초고가 주상복합(아크로서울포레스트·트리마제·갤러리아포레)과 일반 아파트는 면적·세대 타입이 달라 직접 비교에 주의해야 합니다.",
+        "최저가 대비 금액은 세금·중개보수·대출이자·보유비용을 반영하지 않은 평가차익(추정)입니다.",
+        "이 리포트는 투자 권유가 아니며, 실제 거래 판단은 국토교통부 실거래가 공개시스템과 현장 확인을 기준으로 해야 합니다.",
+      ]}
+    />
+
+    <section class="sdap-summary" aria-labelledby="sdap-summary-title">
+      <div class="sdap-section-head">
+        <p>요약</p>
+        <h2 id="sdap-summary-title">성동 Top10 실거래 기준 한눈에 보기</h2>
+      </div>
+      <div class="sdap-summary-grid">
+        <article class="sdap-summary-card">
+          <span>데이터 기준</span>
+          <strong>{SDAP_META.updatedAt}</strong>
+          <p>{SDAP_META.dataAsOf}</p>
+        </article>
+        <article class="sdap-summary-card">
+          <span>최고 기준가</span>
+          <strong>{formatEok(maxPrice.latestTradePriceManwon)}</strong>
+          <p>{maxPrice.complexName} 후보값</p>
+        </article>
+        <article class="sdap-summary-card">
+          <span>최대 평가차익(추정)</span>
+          <strong>{formatEok(maxGain.estimatedGainManwon)}</strong>
+          <p>{maxGain.complexName} 기준 단순 시세 차이</p>
+        </article>
+        <article class="sdap-summary-card">
+          <span>생활권 구성</span>
+          <strong>{seoulforestCount}/{oksuCount}/{wangsimniCount}</strong>
+          <p>서울숲·성수권 / 옥수·금호권 / 왕십리·행당권</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="sdap-picker" aria-labelledby="sdap-picker-title">
+      <div class="sdap-section-head">
+        <p>단지별 카드</p>
+        <h2 id="sdap-picker-title">최저가일 때 샀다면 지금 평가차익은?</h2>
+      </div>
+
+      <div class="sdap-tabs" role="tablist" aria-label="성동 아파트 단지 선택">
+        {SDAP_APARTMENTS.map((row, index) => (
+          <button
+            class={`sdap-tab${index === 0 ? " is-active" : ""}`}
+            type="button"
+            data-complex={row.id}
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+          >
+            {row.rank}. {row.complexName}
+          </button>
+        ))}
+      </div>
+
+      <article class="sdap-profit-card" aria-live="polite">
+        <div class="sdap-profit-card__main">
+          <span class="sdap-badge" data-sdap-field="badge">{defaultApartment.badge}</span>
+          <h3 data-sdap-field="complexName">{defaultApartment.complexName}</h3>
+          <p data-sdap-field="areaMeta" class="sdap-profit-card__area-meta">
+            {defaultApartment.legalDongLabel} · {defaultApartment.areaGroup}
+            {defaultApartment.stationLabel && ` · ${defaultApartment.stationLabel}`}
+          </p>
+          <p data-sdap-field="profitSentence">
+            {defaultApartment.fiveYearLowDate} {formatEok(defaultApartment.fiveYearLowPriceManwon)}에 거래된 뒤, 현재 기준가는 {formatEok(defaultApartment.latestTradePriceManwon)}입니다.
+          </p>
+          <div class="sdap-profit-card__numbers">
+            <div>
+              <span>평가차익(추정)</span>
+              <strong data-sdap-field="gain">{formatEok(defaultApartment.estimatedGainManwon)}</strong>
+            </div>
+            <div>
+              <span>상승률(추정)</span>
+              <strong data-sdap-field="gainRate">{defaultApartment.estimatedGainRate}%</strong>
+            </div>
+          </div>
+        </div>
+        <dl class="sdap-profit-card__meta">
+          <div><dt>최근 기준가</dt><dd data-sdap-field="latest">{formatEok(defaultApartment.latestTradePriceManwon)}</dd></div>
+          <div><dt>거래월·면적</dt><dd data-sdap-field="latestMeta">{defaultApartment.latestTradeDate} · {defaultApartment.latestTradeArea}</dd></div>
+          <div><dt>5년 저점 참고</dt><dd data-sdap-field="low">{formatEok(defaultApartment.fiveYearLowPriceManwon)}</dd></div>
+          <div><dt>전세가율</dt><dd data-sdap-field="jeonse">{defaultApartment.jeonseRatio ? `${defaultApartment.jeonseRatio}% 참고` : "확인 필요"}</dd></div>
+          <div><dt>면적 주의</dt><dd data-sdap-field="areaNote">{defaultApartment.mainAreaLabel}</dd></div>
+          <div><dt>주의</dt><dd data-sdap-field="note">{defaultApartment.note}</dd></div>
+        </dl>
+      </article>
+      <p class="sdap-plain-note">
+        이 금액은 취득세, 중개보수, 보유세, 대출이자, 양도소득세를 반영하지 않은 단순 시세 차이입니다. 실제 투자 성과나 매수 추천으로 해석하면 안 됩니다.
+      </p>
+    </section>
+
+    <section class="sdap-table-section" aria-labelledby="sdap-table-title">
+      <div class="sdap-section-head sdap-section-head--row">
+        <div>
+          <p>비교표</p>
+          <h2 id="sdap-table-title">성동 대장 아파트 Top10 실거래가</h2>
+        </div>
+        <div class="sdap-sort-controls" aria-label="정렬 기준">
+          <button class="is-active" type="button" data-sort="rank">순위</button>
+          <button type="button" data-sort="gain">평가차익</button>
+          <button type="button" data-sort="gainRate">상승률</button>
+          <button type="button" data-sort="latestPrice">최근가</button>
+          <button type="button" data-sort="area">생활권</button>
+        </div>
+      </div>
+      <div class="sdap-table-wrap">
+        <table class="sdap-table">
+          <caption>성동 아파트 Top10 후보의 최근 기준가와 5년 저점 대비 평가차익 비교</caption>
+          <thead>
+            <tr>
+              <th scope="col">순위</th>
+              <th scope="col">단지명</th>
+              <th scope="col">법정동</th>
+              <th scope="col">생활권</th>
+              <th scope="col">최근 실거래가</th>
+              <th scope="col">거래월</th>
+              <th scope="col">2025 대비</th>
+              <th scope="col">5년 저점 참고</th>
+              <th scope="col">평가차익(추정)</th>
+              <th scope="col">전세가율</th>
+              <th scope="col">주의</th>
+            </tr>
+          </thead>
+          <tbody data-sdap-table-body>
+            {SDAP_APARTMENTS.map((row) => (
+              <tr data-row-id={row.id}>
+                <td>{row.rank}</td>
+                <th scope="row">
+                  <strong>{row.complexName}</strong>
+                  <span>{row.mainAreaLabel}</span>
+                </th>
+                <td>{row.legalDongLabel}</td>
+                <td>{row.areaGroup}</td>
+                <td>{formatEok(row.latestTradePriceManwon)}</td>
+                <td>{row.latestTradeDate}</td>
+                <td>{row.previousYearPriceManwon ? `${formatEok(row.latestTradePriceManwon - row.previousYearPriceManwon)} 상승 참고` : "확인 필요"}</td>
+                <td>{formatEok(row.fiveYearLowPriceManwon)}</td>
+                <td>{formatEok(row.estimatedGainManwon)} · {row.estimatedGainRate}%</td>
+                <td>{row.jeonseRatio ? `${row.jeonseRatio}% 참고` : "확인 필요"}</td>
+                <td>{row.tradeCountNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sdap-area-map" aria-labelledby="sdap-area-title">
+      <div class="sdap-section-head">
+        <p>생활권 분해</p>
+        <h2 id="sdap-area-title">서울숲·성수·옥수·금호·왕십리 생활권 가격 차이</h2>
+      </div>
+      <div class="sdap-area-grid" data-sdap-area-cards>
+        {SDAP_AREA_CARDS.map((card) => (
+          <article
+            class={`sdap-area-card${card.areaGroup === defaultApartment.areaGroup ? " is-selected" : ""}`}
+            data-area-group={card.areaGroup}
+          >
+            <span class={`sdap-area-badge sdap-area-badge--${card.badge === "확인 필요" ? "check" : "estimate"}`}>{card.badge}</span>
+            <h3>{card.title}</h3>
+            <p>{card.description}</p>
+            <strong>{card.priceInterpretation}</strong>
+            <small>{card.caution}</small>
+          </article>
+        ))}
+      </div>
+      <p class="sdap-plain-note">
+        성동구는 서울숲 초고가축과 옥수·금호 실거주축, 왕십리 환승 생활권의 가격 논리가 다릅니다. 같은 성동구 안에서도 주상복합 여부, 면적대, 입주연식, 한강 조망, 역 접근성에 따라 가격 차이가 크게 나타날 수 있습니다.
+      </p>
+    </section>
+
+    <section class="sdap-chart" aria-labelledby="sdap-chart-title">
+      <div class="sdap-section-head">
+        <p>막대 비교</p>
+        <h2 id="sdap-chart-title">현재 기준가 vs 5년 저점 참고가</h2>
+      </div>
+      <div class="sdap-bar-list" data-sdap-bars>
+        {SDAP_APARTMENTS.map((row) => (
+          <article class={`sdap-bar-row${row.id === defaultApartment.id ? " is-selected" : ""}`} data-row-id={row.id}>
+            <div class="sdap-bar-row__label">
+              <strong>{row.complexName}</strong>
+              <span>{row.areaGroup} · {row.badge}</span>
+            </div>
+            <div class="sdap-bar-row__bars">
+              <span class="sdap-bar sdap-bar--latest" style={`width: ${Math.max(12, (row.latestTradePriceManwon / maxPrice.latestTradePriceManwon) * 100)}%`}>{formatEok(row.latestTradePriceManwon)}</span>
+              <span class="sdap-bar sdap-bar--low" style={`width: ${Math.max(12, (row.fiveYearLowPriceManwon / maxPrice.latestTradePriceManwon) * 100)}%`}>{formatEok(row.fiveYearLowPriceManwon)}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sdap-context" aria-labelledby="sdap-context-title">
+      <div class="sdap-section-head">
+        <p>가격 맥락</p>
+        <h2 id="sdap-context-title">성동 아파트가 비싼 이유와 해석 기준</h2>
+      </div>
+      <div class="sdap-context-grid">
+        {SDAP_CONTEXT.map((card) => (
+          <article class="sdap-context-card">
+            <span>{card.badge}</span>
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sdap-data-method" aria-labelledby="sdap-method-title">
+      <div class="sdap-section-head">
+        <p>데이터 기준</p>
+        <h2 id="sdap-method-title">성동 실거래가 데이터 기준</h2>
+      </div>
+      <ul class="sdap-risk-list">
+        {SDAP_METHOD.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="sdap-risk" aria-labelledby="sdap-risk-title">
+      <div class="sdap-section-head">
+        <p>리스크</p>
+        <h2 id="sdap-risk-title">평가차익보다 먼저 봐야 하는 변수</h2>
+      </div>
+      <ul class="sdap-risk-list">
+        {SDAP_RISKS.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="sdap-related" aria-labelledby="sdap-related-title">
+      <div class="sdap-section-head">
+        <p>다음 단계</p>
+        <h2 id="sdap-related-title">성동 가격 확인 뒤 이어서 볼 리포트와 계산기</h2>
+      </div>
+      <div class="sdap-related-grid">
+        {SDAP_RELATED_LINKS.map((link) => (
+          <a class="sdap-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="성동 아파트 실거래가를 볼 때 먼저 확인할 것"
+      intro={SDAP_SEO_INTRO}
+      criteria={SDAP_SEO_CRITERIA}
+      faq={SDAP_FAQ}
+      related={SDAP_RELATED_LINKS}
+    />
+
+    <script type="application/json" id="sdap-data" set:html={JSON.stringify(SDAP_APARTMENTS)}></script>
+    <script type="application/json" id="sdap-area-data" set:html={JSON.stringify(SDAP_AREA_CARDS)}></script>
+    <script src={withBase("/scripts/seongdong-apartment-price-2026.js")} defer></script>
+  </main>
+</BaseLayout>

@@ -1,0 +1,338 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  BDAP_APARTMENTS,
+  BDAP_CONTEXT,
+  BDAP_FAQ,
+  BDAP_META,
+  BDAP_REDEVELOPMENT_CARDS,
+  BDAP_RELATED_LINKS,
+  BDAP_SEO_CRITERIA,
+  BDAP_SEO_INTRO,
+  BDAP_SOURCE_LINKS,
+  formatEok,
+} from "../../data/bundangApartmentPrice2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${BDAP_META.slug}/`;
+const activeApartment = BDAP_APARTMENTS[0];
+const maxLatest = Math.max(...BDAP_APARTMENTS.map((item) => item.latestTradePriceManwon));
+const maxGain = Math.max(...BDAP_APARTMENTS.map((item) => item.estimatedGainManwon));
+const redevelopmentCount = BDAP_APARTMENTS.filter((item) => item.redevelopmentStatus.includes("관련") || item.redevelopmentStatus.includes("기대")).length;
+const summaryCards = [
+  { label: "데이터 기준", value: BDAP_META.dataAsOf, note: "발행 전 국토부 원문 재확인 필요" },
+  { label: "대표 단지", value: `${BDAP_APARTMENTS.length}개`, note: "정자·수내·서현·이매·분당동 후보" },
+  { label: "최고 기준가", value: formatEok(maxLatest), note: "세부 동·층·향에 따라 달라짐" },
+  { label: "최대 평가차익", value: formatEok(maxGain), note: "세금·비용·분담금 미반영 추정" },
+  { label: "재건축 기대 단지", value: `${redevelopmentCount}개`, note: "일정·분담금 확정 아님" },
+];
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: BDAP_META.title,
+    description: BDAP_META.description,
+    dateModified: BDAP_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    inLanguage: "ko-KR",
+    author: { "@type": "Organization", name: "비교계산소" },
+    about: ["분당 아파트", "분당 실거래가", "분당 재건축", "1기 신도시"],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: BDAP_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: BDAP_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={BDAP_META.seoTitle} description={BDAP_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page bdap-page" data-report="bundang-apartment-price-2026">
+    <CalculatorHero
+      eyebrow="분당 실거래가 리포트"
+      title="분당 대장 아파트, 최저가일 때 샀다면 지금 얼마를 벌었을까?"
+      description={BDAP_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        BDAP_META.notice,
+        "최저가 대비 금액은 세금·중개보수·대출이자·보유비용·양도소득세·재건축 분담금을 반영하지 않은 평가차익(추정)입니다.",
+        "재건축 단계와 분담금은 확정값이 아니며, 이 리포트는 투자 권유가 아닙니다.",
+      ]}
+    />
+
+    <section class="content-section bdap-summary" aria-labelledby="bdap-summary-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한눈에 보기</p>
+        <h2 id="bdap-summary-title">분당 Top10 기준 요약</h2>
+        <p class="section-header__description">가격보다 먼저 데이터 상태와 추정 범위를 확인하세요.</p>
+      </div>
+      <div class="bdap-summary-grid">
+        {summaryCards.map((card) => (
+          <article class="bdap-summary-card">
+            <span>{card.label}</span>
+            <strong>{card.value}</strong>
+            <p>{card.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section bdap-interactive" aria-labelledby="bdap-tabs-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">단지별 보기</p>
+        <h2 id="bdap-tabs-title">분당 대장 아파트 Top10 실거래가</h2>
+      </div>
+
+      <div class="bdap-tabs" role="tablist" aria-label="분당 대표 단지 선택">
+        {BDAP_APARTMENTS.map((apartment, index) => (
+          <button
+            class={`bdap-tab${index === 0 ? " is-active" : ""}`}
+            type="button"
+            data-bdap-tab={apartment.id}
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+          >
+            <span>{apartment.rank}</span>
+            {apartment.complexName}
+          </button>
+        ))}
+      </div>
+
+      <article class="bdap-profit-card" aria-live="polite">
+        <div class="bdap-profit-card__main">
+          <p class="bdap-eyebrow" data-bdap-area>{activeApartment.areaGroup} · {activeApartment.redevelopmentStatus}</p>
+          <h3 data-bdap-name>{activeApartment.complexName}</h3>
+          <p data-bdap-sentence>
+            {activeApartment.fiveYearLowDate} {formatEok(activeApartment.fiveYearLowPriceManwon)}에 거래된 뒤,
+            현재 기준가는 {formatEok(activeApartment.latestTradePriceManwon)}입니다.
+          </p>
+          <div class="bdap-profit-card__numbers">
+            <div>
+              <span>최근 기준가</span>
+              <strong data-bdap-latest>{formatEok(activeApartment.latestTradePriceManwon)}</strong>
+            </div>
+            <div>
+              <span>5년 저점권</span>
+              <strong data-bdap-low>{formatEok(activeApartment.fiveYearLowPriceManwon)}</strong>
+            </div>
+            <div>
+              <span>평가차익(추정)</span>
+              <strong data-bdap-gain>{formatEok(activeApartment.estimatedGainManwon)}</strong>
+            </div>
+            <div>
+              <span>상승률(추정)</span>
+              <strong data-bdap-rate>{activeApartment.estimatedGainRate.toFixed(1)}%</strong>
+            </div>
+          </div>
+        </div>
+        <div class="bdap-profit-card__meta">
+          <span class="bdap-data-badge" data-bdap-badge>{activeApartment.badge}</span>
+          <dl>
+            <div>
+              <dt>기준 면적</dt>
+              <dd data-bdap-area-label>{activeApartment.mainAreaLabel}</dd>
+            </div>
+            <div>
+              <dt>최근 거래 시점</dt>
+              <dd data-bdap-date>{activeApartment.latestTradeDate}</dd>
+            </div>
+            <div>
+              <dt>전세가율 참고</dt>
+              <dd data-bdap-jeonse>{activeApartment.jeonseRatio ? `${activeApartment.jeonseRatio}% 참고` : "거래 부족"}</dd>
+            </div>
+          </dl>
+          <p data-bdap-note>{activeApartment.note}</p>
+          <small data-bdap-trade-note>{activeApartment.tradeCountNote}</small>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section bdap-table-section" aria-labelledby="bdap-table-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교표</p>
+        <h2 id="bdap-table-title">최근 기준가와 평가차익(추정) 비교</h2>
+      </div>
+      <div class="bdap-sort-controls" aria-label="비교표 정렬">
+        <button class="is-active" type="button" data-bdap-sort="rank">기본 순위</button>
+        <button type="button" data-bdap-sort="gain">평가차익 큰 순</button>
+        <button type="button" data-bdap-sort="gainRate">상승률 큰 순</button>
+        <button type="button" data-bdap-sort="latestPrice">최근 기준가 높은 순</button>
+        <button type="button" data-bdap-sort="redevelopment">재건축 기대 우선</button>
+      </div>
+      <div class="bdap-table-wrap">
+        <table class="bdap-table">
+          <caption>분당 대표 아파트 최근 기준가와 최근 5년 저점 대비 평가차익 비교</caption>
+          <thead>
+            <tr>
+              <th scope="col">순위</th>
+              <th scope="col">단지명</th>
+              <th scope="col">권역</th>
+              <th scope="col">재건축 상태</th>
+              <th scope="col">최근 기준가</th>
+              <th scope="col">거래 시점</th>
+              <th scope="col">2025 대비</th>
+              <th scope="col">5년 저점권</th>
+              <th scope="col">평가차익(추정)</th>
+              <th scope="col">전세가율</th>
+              <th scope="col">주의</th>
+            </tr>
+          </thead>
+          <tbody data-bdap-table-body>
+            {BDAP_APARTMENTS.map((row) => (
+              <tr data-bdap-row={row.id} class={row.id === activeApartment.id ? "is-active" : ""}>
+                <td>{row.rank}</td>
+                <th scope="row">{row.complexName}<span>{row.mainAreaLabel}</span></th>
+                <td>{row.areaGroup}</td>
+                <td><span class="bdap-redevelopment-badge">{row.redevelopmentStatus}</span></td>
+                <td>{formatEok(row.latestTradePriceManwon)}</td>
+                <td>{row.latestTradeDate}</td>
+                <td>{row.previousYearPriceManwon ? `+${formatEok(row.latestTradePriceManwon - row.previousYearPriceManwon)}` : "확인 필요"}</td>
+                <td>{formatEok(row.fiveYearLowPriceManwon)}</td>
+                <td>{formatEok(row.estimatedGainManwon)}<small>{row.estimatedGainRate.toFixed(1)}%</small></td>
+                <td>{row.jeonseRatio ? `${row.jeonseRatio}% 참고` : "거래 부족"}</td>
+                <td>{row.tradeCountNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="bdap-table-note">표의 금액은 공식 확정 시세가 아니라 발행 전 원문 재검증이 필요한 비교용 기준값입니다.</p>
+    </section>
+
+    <section class="content-section bdap-chart-section" aria-labelledby="bdap-chart-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">막대 비교</p>
+        <h2 id="bdap-chart-title">현재 기준가 vs 최근 5년 저점권</h2>
+      </div>
+      <div class="bdap-bar-list" data-bdap-bars>
+        {BDAP_APARTMENTS.map((row) => (
+          <article class="bdap-bar-row" data-bdap-bar-row={row.id}>
+            <div class="bdap-bar-row__head">
+              <strong>{row.complexName}</strong>
+              <span>{row.redevelopmentStatus}</span>
+            </div>
+            <div class="bdap-bar-track" aria-hidden="true">
+              <span class="bdap-bar-row__latest" style={`width: ${(row.latestTradePriceManwon / maxLatest) * 100}%`}></span>
+              <span class="bdap-bar-row__low" style={`width: ${(row.fiveYearLowPriceManwon / maxLatest) * 100}%`}></span>
+            </div>
+            <p>{formatEok(row.latestTradePriceManwon)} / 저점권 {formatEok(row.fiveYearLowPriceManwon)} / 평가차익(추정) {formatEok(row.estimatedGainManwon)}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="bdap-redevelopment-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">재건축 변수</p>
+        <h2 id="bdap-redevelopment-title">재건축 기대가 반영된 단지는 어디인가</h2>
+        <p class="section-header__description">재건축 단계는 발행 시점 기준 정리이며 확정 일정이 아닙니다.</p>
+      </div>
+      <div class="bdap-redevelopment-grid">
+        {BDAP_REDEVELOPMENT_CARDS.map((card) => (
+          <article class="bdap-redevelopment-card">
+            <span>{card.badge}</span>
+            <h3>{card.title}</h3>
+            <strong>{card.statusLabel}</strong>
+            <p>{card.description}</p>
+            <small>{card.caution}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="bdap-context-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">해석 포인트</p>
+        <h2 id="bdap-context-title">분당 가격을 만드는 네 가지 축</h2>
+      </div>
+      <div class="bdap-context-grid">
+        {BDAP_CONTEXT.map((card) => (
+          <article class="bdap-context-card">
+            <span>{card.badge}</span>
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section bdap-risk-section" aria-labelledby="bdap-risk-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">주의할 점</p>
+        <h2 id="bdap-risk-title">분당 실거래가를 볼 때 반드시 확인할 점</h2>
+      </div>
+      <ul class="bdap-risk-list">
+        <li>취득세, 중개보수, 보유세, 대출이자, 양도소득세는 평가차익(추정)에 포함하지 않았습니다.</li>
+        <li>재건축 분담금, 이주 시점, 사업 일정은 확정값이 아니며 단지별로 크게 달라질 수 있습니다.</li>
+        <li>거래 건수가 적은 단지는 한 건의 가격이 평균처럼 보일 수 있습니다.</li>
+        <li>전용 84㎡가 아닌 유사 면적 거래는 같은 표 안에서도 직접 비교에 주의해야 합니다.</li>
+        <li>실제 매수 판단은 자금 계획, 대출 조건, 현장 확인, 등기 확인을 별도로 거쳐야 합니다.</li>
+      </ul>
+    </section>
+
+    <section class="content-section" aria-labelledby="bdap-source-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">원문 확인</p>
+        <h2 id="bdap-source-title">발행 전 다시 확인할 데이터 출처</h2>
+      </div>
+      <div class="bdap-related-grid">
+        {BDAP_SOURCE_LINKS.map((link) => (
+          <a class="bdap-related-card" href={link.href} target="_blank" rel="noopener noreferrer">
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section bdap-related-section" aria-labelledby="bdap-related-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다음 단계</p>
+        <h2 id="bdap-related-title">분당 가격을 내 예산으로 다시 보기</h2>
+      </div>
+      <div class="bdap-related-grid">
+        {BDAP_RELATED_LINKS.map((link) => (
+          <a class="bdap-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="분당 아파트 실거래가를 볼 때 먼저 확인할 것"
+      intro={BDAP_SEO_INTRO}
+      criteria={BDAP_SEO_CRITERIA}
+      faq={BDAP_FAQ}
+      related={BDAP_RELATED_LINKS}
+    />
+
+    <script type="application/json" id="bdap-data" set:html={JSON.stringify(BDAP_APARTMENTS)} />
+    <script src={withBase("/scripts/bundang-apartment-price-2026.js")} defer></script>
+  </main>
+</BaseLayout>

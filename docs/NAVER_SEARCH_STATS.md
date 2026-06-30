@@ -11,6 +11,93 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-06-29 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 570 | +23.3% |
+| 노출 | 18,000 | +33.7% |
+| CTR | 3.1% | -0.3%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 국회의원 재산순위 | 17 | 22 | 77.3 |
+| 2 | 아파트 보유세 계산기 | 15 | 29 | 51.7 |
+| 3 | 이강인 연봉 | 9 | 2,160 | 0.4 |
+| 4 | 최저시급 월급 세후 | 7 | 37 | 18.9 |
+| 5 | 2026 월드컵 포상금 | 5 | 118 | 4.2 |
+| 6 | 26년 재산세 확인방법 | 5 | 32 | 15.6 |
+| 7 | 삼성 tai | 4 | 53 | 7.5 |
+| 8 | 최저시급 2026 세후 | 4 | 52 | 7.7 |
+| 9 | 초등교사 월급 | 4 | 51 | 7.8 |
+| 10 | 삼성 성과급 계산기 | 4 | 33 | 12.1 |
+| 11 | 성과급 실수령액 계산 | 4 | 8 | 50.0 |
+| 12 | 배당주 계산기 | 4 | 8 | 50.0 |
+| 13 | 성과급 세금 계산기 | 3 | 57 | 5.3 |
+| 14 | 하이닉스 pi | 3 | 48 | 6.2 |
+| 15 | 삼성중공업 성과급 | 3 | 22 | 13.6 |
+| 16 | 실손 세대별 비교 | 3 | 13 | 23.1 |
+| 17 | 코레일 성과급 | 3 | 8 | 37.5 |
+| 18 | 월드컵 나라별 연봉 비교 | 3 | 4 | 75.0 |
+| 19 | 월드컵 국가 연봉 비교 | 3 | 3 | 100.0 |
+| 20 | 삼성전자 tai | 2 | 206 | 1.0 |
+| 21 | 아파트 재산세 계산기 | 2 | 132 | 1.5 |
+| 22 | 현대차 성과급 | 2 | 99 | 2.0 |
+| 23 | 삼성전자 tai 2026 | 2 | 50 | 4.0 |
+| 24 | 교사 월급 | 2 | 46 | 4.3 |
+| 25 | 대한항공 승무원 연봉 | 2 | 40 | 5.0 |
+| 26 | 고등학교 교사 월급 | 2 | 32 | 6.2 |
+| 27 | 초등학교 교사 연봉 | 2 | 26 | 7.7 |
+| 28 | 직장 건강보험료 계산기 | 2 | 23 | 8.7 |
+| 29 | 2026 산후도우미 비용 | 2 | 23 | 8.7 |
+| 30 | 육아기 단축근무 급여 계산기 | 2 | 22 | 9.1 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/teacher-salary-2026/ | 39 | 1,167 | 3.3 |
+| 2 | /reports/worldcup-squad-salary-total-comparison-2026/ | 25 | 213 | 11.7 |
+| 3 | /reports/national-assembly-wealth-2026/ | 21 | 32 | 65.6 |
+| 4 | /tools/apartment-holding-tax/ | 19 | 334 | 5.7 |
+| 5 | /tools/minimum-wage-2026/ | 17 | 390 | 4.4 |
+| 6 | /reports/samsung-ds-bonus-calculation-guide/ | 17 | 359 | 4.7 |
+| 7 | /reports/kleague-salary-comparison-2026/ | 16 | 406 | 3.9 |
+| 8 | /tools/worldcup-prize-money-calculator/ | 14 | 427 | 3.3 |
+| 9 | /reports/sk-hynix-shuttle-real-estate-2026/ | 14 | 277 | 5.1 |
+| 10 | /tools/childcare-short-time-pay-calculator/ | 14 | 267 | 5.2 |
+| 11 | /reports/kbo-salary-comparison-2026/ | 13 | 59 | 22.0 |
+| 12 | /tools/bonus-after-tax-calculator/ | 12 | 429 | 2.8 |
+| 13 | /tools/teacher-salary-calculator/ | 12 | 266 | 4.5 |
+| 14 | /reports/construction-salary-bonus-comparison-2026/ | 12 | 156 | 7.7 |
+| 15 | /tools/postnatal-care-income-eligibility/ | 12 | 151 | 7.9 |
+| 16 | /reports/professor-salary-2026/ | 10 | 120 | 8.3 |
+| 17 | /reports/lee-kang-in-psg-salary-2026/ | 9 | 2,343 | 0.4 |
+| 18 | /reports/military-salary-2026/ | 9 | 252 | 3.6 |
+| 19 | /reports/public-enterprise-bonus-comparison-2026/ | 9 | 69 | 13.0 |
+| 20 | /reports/samsung-bonus-rank-net-comparison-2026/ | 8 | 361 | 2.2 |
+| 21 | /compare/bonus/ | 8 | 253 | 3.2 |
+| 22 | /reports/silson-insurance-generation-comparison-2026/ | 8 | 69 | 11.6 |
+| 23 | /tools/samsung-bonus/ | 7 | 255 | 2.7 |
+| 24 | /reports/sk-hynix-bonus-2027/ | 7 | 119 | 5.9 |
+| 25 | /reports/samsung-shuttle-real-estate-2026/ | 7 | 52 | 13.5 |
+| 26 | /tools/car-accident-insurance-vs-cash-calculator/ | 6 | 107 | 5.6 |
+| 27 | /tools/stock-brokerage-fee-calculator/ | 6 | 84 | 7.1 |
+| 28 | /reports/pension-by-job-comparison-2026/ | 6 | 81 | 7.4 |
+| 29 | /tools/livelihood-benefit-income-recognition/ | 6 | 67 | 9.0 |
+| 30 | /reports/property-tax-payment-2026/ | 6 | 40 | 15.0 |
+
+### 주목 포인트
+- 클릭 +23.3%, 노출 +33.7%, CTR 3.3%→3.1%(-0.3%p) — 노출 증가폭이 클릭보다 커서 CTR 소폭 하락했지만, 절대 클릭·노출 모두 반등.
+- `국회의원 재산순위`(클릭 17·CTR 77.3%), `national-assembly-wealth-2026`(클릭 21·CTR 65.6%) — 정치인 재산 콘텐츠가 최상위 CTR 유지. 볼륨 대비 효율이 가장 좋은 클러스터.
+- `이강인 연봉`(노출 2,160·CTR 0.4%), `lee-kang-in-psg-salary-2026`(노출 2,343·CTR 0.4%) — 축구 연봉 클러스터 노출 규모는 비슷하게 유지되나 CTR 개선이 여전히 더딤.
+- `월드컵 국가 연봉 비교`(CTR 100%), `월드컵 나라별 연봉 비교`(CTR 75.0%) — 월드컵 국가별 연봉 비교형 키워드 신규 진입, CTR 강세. `worldcup-squad-salary-total-comparison-2026`(클릭 25·CTR 11.7%)와 함께 월드컵 콘텐츠 클러스터 전반 좋은 흐름.
+- `아파트 보유세 계산기`(CTR 51.7%), `apartment-holding-tax`(클릭 19·CTR 5.7%) — 재산세 시즌 효과로 보유세 계산기 클러스터 동반 강세. `26년 재산세 확인방법`(CTR 15.6%), `property-tax-payment-2026`(클릭 6·CTR 15.0%)도 신규 진입.
+- `실손 세대별 비교`(CTR 23.1%), `silson-insurance-generation-comparison-2026`(클릭 8·CTR 11.6%) — 실손보험 리포트가 TOP30 진입. 콘텐츠 보강 검토 여지.
+
+---
+
 ## 2026-06-28 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)

@@ -258,6 +258,33 @@ export type ProfileRecord = {
 - `public/sitemap.xml` 반영
 - 관련 계산기/리포트 내부 링크 연결
 
+### ⚠️ 메인 홈 카테고리 등록 필수 (미등록 시 "기타"로 표시됨)
+
+`src/pages/index.astro`의 `reportMetaBySlug` 객체에 반드시 슬러그를 추가해야 한다.
+누락하면 메인 홈 리포트 섹션에서 "기타"로 표시되므로 새 리포트 등록 시 **항상** 이 단계를 포함한다.
+
+```ts
+// src/pages/index.astro > reportMetaBySlug
+"<새-슬러그>": { category: "<카테고리>", isNew: true },
+```
+
+사용 가능한 카테고리:
+
+| category 값 | 표시 레이블 | 주요 대상 |
+|---|---|---|
+| `salary` | 연봉 | 직종별 연봉, 급여 비교 |
+| `bonus` | 성과급 | 기업별 성과급, 상여 |
+| `estate` | 부동산 | 아파트 실거래가, 청약, 주거 |
+| `asset` | 자산 | ETF, 연금, 주식, 재테크 |
+| `life` | 생활 | 육아, 여행, 결혼, 일상 비용 |
+| `culture` | 문화·엔터 | 영화, 스포츠 비용, 엔터 |
+| `support` | 복지·지원금 | 정부 지원금, 복지 제도 |
+| `insurance` | 보험 | 실손, 태아, 보험 비교 |
+| `tax` | 세금 | 증여세, 양도세, 연말정산 |
+| `politics` | 정치·선거 | 후보 재산, 선거 관련 |
+| `crypto` | 암호화폐 | 비트코인, 이더리움 |
+| `sports` | 스포츠 | KBO, 축구 선수 연봉 |
+
 ## SEO 체크
 - 강한 H1
 - 짧은 인트로

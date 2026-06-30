@@ -1,0 +1,581 @@
+.sytap-page {
+  --sytap-ink: #172033;
+  --sytap-muted: #667085;
+  --sytap-line: #d8e0ea;
+  --sytap-soft: #f6f8fb;
+  --sytap-blue: #2563eb;
+  --sytap-green: #138a5b;
+  --sytap-teal: #0f766e;
+  --sytap-amber: #b7791f;
+  --sytap-red: #c2410c;
+
+  .sytap-summary,
+  .sytap-picker,
+  .sytap-table-section,
+  .sytap-chart,
+  .sytap-area,
+  .sytap-context,
+  .sytap-data-method,
+  .sytap-risk,
+  .sytap-related {
+    margin-top: 28px;
+  }
+
+  .sytap-section-head {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 14px;
+
+    p,
+    h2 {
+      margin: 0;
+    }
+
+    p {
+      color: var(--sytap-blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    h2 {
+      color: var(--sytap-ink);
+      font-size: clamp(20px, 3vw, 28px);
+      letter-spacing: 0;
+    }
+  }
+
+  .sytap-section-head--row {
+    align-items: end;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .sytap-summary-grid,
+  .sytap-context-grid,
+  .sytap-related-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .sytap-area-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sytap-summary-card,
+  .sytap-context-card,
+  .sytap-area-card,
+  .sytap-related-card,
+  .sytap-profit-card {
+    border: 1px solid var(--sytap-line);
+    border-radius: 8px;
+    background: #ffffff;
+  }
+
+  .sytap-summary-card {
+    display: grid;
+    gap: 6px;
+    min-height: 132px;
+    padding: 16px;
+
+    span {
+      color: var(--sytap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    strong {
+      color: var(--sytap-ink);
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.1;
+    }
+
+    p {
+      margin: 0;
+      color: var(--sytap-muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+  }
+
+  .sytap-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .sytap-tab,
+  .sytap-sort-controls button {
+    border: 1px solid var(--sytap-line);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--sytap-muted);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    min-height: 38px;
+    padding: 9px 12px;
+    white-space: nowrap;
+  }
+
+  .sytap-tab.is-active,
+  .sytap-sort-controls button.is-active {
+    border-color: var(--sytap-teal);
+    background: #f0fdfa;
+    color: var(--sytap-teal);
+  }
+
+  .sytap-profit-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+    overflow: hidden;
+  }
+
+  .sytap-profit-card__main {
+    display: grid;
+    gap: 14px;
+    padding: 22px;
+    background: #f6fcfa;
+
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h3 {
+      color: var(--sytap-ink);
+      font-size: clamp(22px, 3vw, 32px);
+      letter-spacing: 0;
+    }
+
+    p {
+      color: var(--sytap-muted);
+      line-height: 1.7;
+    }
+  }
+
+  .sytap-profit-card__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .sytap-profit-card__area-meta {
+    font-size: 13px;
+  }
+
+  .sytap-badge {
+    width: fit-content;
+    border-radius: 999px;
+    background: #e9f7ef;
+    color: var(--sytap-green);
+    font-size: 12px;
+    font-weight: 900;
+    padding: 5px 9px;
+  }
+
+  .sytap-badge--overlap {
+    background: #fff4df;
+    color: var(--sytap-amber);
+  }
+
+  .sytap-profit-card__numbers {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    div {
+      border: 1px solid #ccf0ea;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    span {
+      display: block;
+      color: var(--sytap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--sytap-teal);
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .sytap-profit-card__meta {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+
+    div {
+      border-bottom: 1px solid var(--sytap-line);
+      padding: 15px 18px;
+    }
+
+    div:last-child {
+      border-bottom: 0;
+    }
+
+    dt {
+      color: var(--sytap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    dd {
+      margin: 5px 0 0;
+      color: var(--sytap-ink);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+  }
+
+  .sytap-plain-note {
+    margin: 10px 0 0;
+    border-left: 3px solid var(--sytap-amber);
+    color: var(--sytap-muted);
+    font-size: 13px;
+    line-height: 1.65;
+    padding: 2px 0 2px 12px;
+  }
+
+  .sytap-sort-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sytap-table-wrap {
+    border: 1px solid var(--sytap-line);
+    border-radius: 8px;
+    overflow-x: auto;
+    background: #ffffff;
+  }
+
+  .sytap-table {
+    border-collapse: collapse;
+    min-width: 980px;
+    width: 100%;
+
+    caption {
+      height: 1px;
+      overflow: hidden;
+      position: absolute;
+      width: 1px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--sytap-line);
+      color: var(--sytap-ink);
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead th {
+      background: var(--sytap-soft);
+      color: var(--sytap-muted);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    tbody tr.is-selected {
+      background: #f0fdfa;
+    }
+
+    tbody tr:last-child th,
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody th {
+      min-width: 190px;
+
+      strong,
+      span {
+        display: block;
+      }
+
+      span {
+        margin-top: 4px;
+        color: var(--sytap-muted);
+        font-size: 12px;
+      }
+    }
+  }
+
+  .sytap-overlap-badge {
+    display: inline-block;
+    margin-top: 4px;
+    border-radius: 4px;
+    background: #fff4df;
+    color: var(--sytap-amber);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+  }
+
+  .sytap-bar-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .sytap-bar-row {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 230px minmax(0, 1fr);
+    align-items: center;
+    border: 1px solid var(--sytap-line);
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 14px;
+  }
+
+  .sytap-bar-row.is-selected {
+    border-color: var(--sytap-teal);
+    background: #f6fcfa;
+  }
+
+  .sytap-bar-row__label {
+    display: grid;
+    gap: 4px;
+
+    strong {
+      color: var(--sytap-ink);
+      font-size: 14px;
+    }
+
+    span {
+      color: var(--sytap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+  }
+
+  .sytap-bar-row__bars {
+    display: grid;
+    gap: 6px;
+  }
+
+  .sytap-bar {
+    align-items: center;
+    border-radius: 6px;
+    color: #ffffff;
+    display: flex;
+    font-size: 12px;
+    font-weight: 900;
+    min-height: 28px;
+    min-width: 88px;
+    padding: 0 10px;
+    white-space: nowrap;
+  }
+
+  .sytap-bar--latest {
+    background: var(--sytap-teal);
+  }
+
+  .sytap-bar--low {
+    background: #94a3b8;
+  }
+
+  .sytap-area-notice {
+    border-left: 3px solid var(--sytap-teal);
+    color: var(--sytap-muted);
+    font-size: 13px;
+    line-height: 1.65;
+    margin: 0 0 14px;
+    padding: 2px 0 2px 12px;
+  }
+
+  .sytap-area-card {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h3 {
+      color: var(--sytap-ink);
+      font-size: 16px;
+    }
+
+    p {
+      color: var(--sytap-muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+  }
+
+  .sytap-area-badge {
+    width: fit-content;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 4px 8px;
+  }
+
+  .sytap-area-badge--estimate {
+    background: #e0f7f4;
+    color: var(--sytap-teal);
+  }
+
+  .sytap-area-badge--check {
+    background: #fff4df;
+    color: var(--sytap-amber);
+  }
+
+  .sytap-area-card__interpretation {
+    font-size: 13px;
+  }
+
+  .sytap-area-card__caution {
+    border-left: 2px solid var(--sytap-amber);
+    font-size: 12px;
+    padding-left: 8px;
+  }
+
+  .sytap-context-card {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+
+    span {
+      width: fit-content;
+      border-radius: 999px;
+      background: #fff4df;
+      color: var(--sytap-amber);
+      font-size: 12px;
+      font-weight: 900;
+      padding: 4px 8px;
+    }
+
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h3 {
+      color: var(--sytap-ink);
+      font-size: 16px;
+    }
+
+    p {
+      color: var(--sytap-muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+  }
+
+  .sytap-risk-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+
+    li {
+      border: 1px solid var(--sytap-line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--sytap-ink);
+      line-height: 1.65;
+      list-style: none;
+      padding: 13px 15px;
+    }
+  }
+
+  .sytap-related-card {
+    color: inherit;
+    display: grid;
+    gap: 6px;
+    min-height: 120px;
+    padding: 16px;
+    text-decoration: none;
+    transition: border-color 0.16s, transform 0.16s;
+
+    &:hover {
+      border-color: var(--sytap-teal);
+      transform: translateY(-1px);
+    }
+
+    strong {
+      color: var(--sytap-ink);
+      font-size: 15px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--sytap-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  @media (max-width: 920px) {
+    .sytap-summary-grid,
+    .sytap-context-grid,
+    .sytap-related-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sytap-profit-card {
+      grid-template-columns: 1fr;
+    }
+
+    .sytap-bar-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .sytap-summary-grid,
+    .sytap-context-grid,
+    .sytap-area-grid,
+    .sytap-related-grid,
+    .sytap-profit-card__numbers {
+      grid-template-columns: 1fr;
+    }
+
+    .sytap-section-head--row {
+      align-items: stretch;
+    }
+
+    .sytap-sort-controls {
+      width: 100%;
+    }
+
+    .sytap-sort-controls button {
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    .sytap-profit-card__main {
+      padding: 18px;
+    }
+
+    .sytap-bar {
+      font-size: 11px;
+      min-width: 74px;
+    }
+  }
+}
