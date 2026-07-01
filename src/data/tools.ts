@@ -553,6 +553,33 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "samsung-electro-mechanics-bonus-calculator-2026",
+    title: "삼성전기 성과급 계산기 2026",
+    description: "영업이익 10% 안 적용 시 직급별 예상 수령액 계산. SK하이닉스·삼성전자 DS 재원 비율 비교 포함.",
+    order: 8.1,
+    eyebrow: "삼성전기 성과급",
+    category: "simulator",
+    badges: ["NEW", "삼성전기"],
+    previewStats: [
+      { label: "1.5조 기준 1인 평균", value: "1,250만원" },
+      { label: "세후 추정", value: "838만원" },
+    ],
+  },
+  {
+    slug: "samsung-electronics-housing-loan-benefit-calculator",
+    title: "삼성전자 주택대출 복지 계산기",
+    description: "5억 원·연 1.5% 대표 시나리오를 기준으로 사내 주택대출 복지의 연간 이자 절감액, 월 절감액, 세전 연봉 환산액을 계산합니다.",
+    order: 8.2,
+    eyebrow: "삼성전자 복지",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "복지", "주택대출", "시뮬레이션"],
+    previewStats: [
+      { label: "5억·1.5%", value: "연 1,250만 원", context: "4.0% 비교" },
+      { label: "세전 환산", value: "약 1,645만 원", context: "세율 24%" }
+    ]
+  },
+  {
     slug: "sk-hynix-bonus",
     title: "하이닉스 성과급 계산기 2026",
     description: "SK하이닉스 PS·PI 성과급을 직급·연봉 기준으로 계산하고 세후 실수령, 부부 합산 총보상, 월 체감액을 확인하는 페이지",

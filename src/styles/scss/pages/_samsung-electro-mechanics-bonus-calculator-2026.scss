@@ -1,0 +1,458 @@
+// samsung-electro-mechanics-bonus-calculator-2026
+
+.semb-page {
+  --semb-ink:        #14213d;
+  --semb-muted:      #5d6b82;
+  --semb-line:       rgba(20, 33, 61, 0.12);
+  --semb-soft:       #f5f7fb;
+  --semb-primary:    #1a56db;
+  --semb-primary-bg: #eff4ff;
+  --semb-primary-dk: #1447bf;
+  --semb-teal:       #0891b2;
+  --semb-teal-bg:    #e0f2fe;
+  --semb-green:      #059669;
+  --semb-green-bg:   #d1fae5;
+  --semb-amber:      #d97706;
+  --semb-amber-bg:   #fef3c7;
+}
+
+// 미확정 배너
+.semb-status-banner {
+  background: var(--semb-amber-bg);
+  border: 1px solid #fcd34d;
+  border-left: 4px solid var(--semb-amber);
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #92400e;
+  line-height: 1.6;
+
+  &__icon { flex-shrink: 0; font-size: 1rem; }
+}
+
+// 계산기 입력 섹션
+.semb-calc-section {
+  background: #fff;
+  border: 1px solid var(--semb-line);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.semb-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.semb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--semb-ink);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: var(--semb-amber-bg);
+    color: #92400e;
+  }
+
+  &__value-display {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--semb-primary);
+  }
+
+  &__sub {
+    font-size: 0.775rem;
+    color: var(--semb-muted);
+    margin-top: 0.1rem;
+  }
+}
+
+.semb-slider {
+  width: 100%;
+  accent-color: var(--semb-primary);
+  height: 4px;
+  cursor: pointer;
+}
+
+.semb-slider-markers {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--semb-muted);
+  margin-top: 0.2rem;
+
+  &__mark--company {
+    color: var(--semb-primary);
+    font-weight: 600;
+  }
+
+  &__mark--union {
+    color: var(--semb-amber);
+    font-weight: 600;
+  }
+}
+
+.semb-number-input {
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid var(--semb-line);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--semb-ink);
+  background: #fff;
+  width: 160px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--semb-primary);
+  }
+}
+
+.semb-select {
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid var(--semb-line);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--semb-ink);
+  background: #fff;
+  cursor: pointer;
+  max-width: 200px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--semb-primary);
+  }
+}
+
+.semb-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// KPI 카드
+.semb-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.semb-kpi-card {
+  background: #fff;
+  border: 1px solid var(--semb-line);
+  border-radius: 12px;
+  padding: 1.1rem;
+  text-align: center;
+
+  &--highlight {
+    background: var(--semb-primary-bg);
+    border-color: #93c5fd;
+  }
+
+  &__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--semb-muted);
+    margin: 0 0 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  &__value {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--semb-primary);
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  &--highlight &__value {
+    color: var(--semb-primary-dk);
+  }
+
+  &__unit {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--semb-muted);
+    margin-left: 0.2rem;
+  }
+}
+
+// 세부 결과 행
+.semb-detail-rows {
+  background: var(--semb-soft);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.semb-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--semb-line);
+
+  &:last-child { border-bottom: none; }
+
+  &__label { color: var(--semb-muted); }
+  &__value { font-weight: 700; color: var(--semb-ink); }
+
+  &--accent &__value { color: var(--semb-teal); }
+}
+
+// 시나리오 표
+.semb-scenario-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--semb-line);
+}
+
+.semb-scenario-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead tr { background: var(--semb-soft); }
+
+  th {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--semb-muted);
+    text-align: left;
+    border-bottom: 1px solid var(--semb-line);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.6rem 1rem;
+    color: var(--semb-ink);
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+}
+
+.semb-scenario-row--active {
+  background: var(--semb-primary-bg);
+
+  td { color: var(--semb-primary-dk); font-weight: 700; }
+}
+
+.semb-scenario-col--10 { color: var(--semb-primary); }
+.semb-scenario-col--12 { color: var(--semb-amber); }
+
+.semb-th--10 {
+  color: var(--semb-primary) !important;
+  border-bottom: 2px solid var(--semb-primary) !important;
+}
+.semb-th--12 {
+  color: var(--semb-amber) !important;
+  border-bottom: 2px solid var(--semb-amber) !important;
+}
+
+.semb-scenario-note {
+  font-size: 0.775rem;
+  color: var(--semb-muted);
+  margin: 0.5rem 0 0;
+  line-height: 1.6;
+}
+
+// 경쟁사 비교 카드
+.semb-competitor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 1rem;
+}
+
+.semb-competitor-card {
+  background: #fff;
+  border: 1px solid var(--semb-line);
+  border-radius: 12px;
+  padding: 1.1rem;
+
+  &--self {
+    border-color: var(--semb-primary);
+    background: var(--semb-primary-bg);
+  }
+
+  &__company {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--semb-ink);
+    margin: 0 0 0.25rem;
+  }
+
+  &__method {
+    font-size: 0.78rem;
+    color: var(--semb-muted);
+    margin: 0 0 0.5rem;
+    line-height: 1.5;
+  }
+
+  &__rate {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--semb-primary);
+    margin: 0 0 0.35rem;
+  }
+
+  &--self &__rate { color: var(--semb-primary-dk); }
+
+  &__note {
+    font-size: 0.75rem;
+    color: var(--semb-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// 배지
+.semb-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 100px;
+  margin-bottom: 0.5rem;
+
+  &--official  { background: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; }
+  &--ref       { background: var(--semb-primary-bg); color: var(--semb-primary); border: 1px solid #bfdbfe; }
+  &--estimate  { background: var(--semb-amber-bg); color: #92400e; border: 1px solid #fcd34d; }
+}
+
+// EVA vs N% 설명
+.semb-method-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.semb-method-card {
+  background: #fff;
+  border: 1px solid var(--semb-line);
+  border-radius: 10px;
+  padding: 1.1rem;
+
+  &--new { border-color: var(--semb-primary); }
+
+  &__tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--semb-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.4rem;
+  }
+
+  &--new &__tag { color: var(--semb-primary); }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--semb-ink);
+    margin: 0 0 0.5rem;
+  }
+
+  &__desc {
+    font-size: 0.82rem;
+    color: var(--semb-muted);
+    line-height: 1.6;
+    margin: 0 0 0.5rem;
+  }
+
+  &__pros,
+  &__cons {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    margin: 0;
+    padding-left: 1rem;
+    color: var(--semb-ink);
+  }
+}
+
+// FAQ
+.semb-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__item {
+    background: #fff;
+    border: 1px solid var(--semb-line);
+    border-radius: 10px;
+    overflow: hidden;
+
+    &[open] summary {
+      background: var(--semb-soft);
+      border-bottom: 1px solid var(--semb-line);
+    }
+  }
+
+  &__q {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--semb-ink);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &::-webkit-details-marker { display: none; }
+
+    &::after {
+      content: "+";
+      font-size: 1.2rem;
+      color: var(--semb-muted);
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+    }
+
+    details[open] &::after { content: "−"; }
+  }
+
+  &__a {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    color: var(--semb-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+}

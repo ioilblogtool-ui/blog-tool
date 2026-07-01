@@ -1,0 +1,323 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SEMB_META,
+  SEMB_GRADE_MULTIPLIERS,
+  SEMB_SCENARIOS,
+  SEMB_COMPETITORS,
+  SEMB_FAQ,
+  SEMB_SEO_INTRO,
+  SEMB_SEO_CRITERIA,
+} from "../../data/samsungElectroMechanicsBonus2026";
+
+const fmtMan = (n: number) => n.toLocaleString("ko-KR") + "만원";
+
+const badgeClass = (badge: string) => {
+  if (badge === "공식") return "semb-badge--official";
+  if (badge === "보도 기반") return "semb-badge--ref";
+  return "semb-badge--estimate";
+};
+
+const faqItems = SEMB_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/tools/samsung-electro-mechanics-bonus-calculator-2026/`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "@id": pageUrl,
+  url: pageUrl,
+  name: SEMB_META.seoTitle,
+  description: SEMB_META.seoDescription,
+  applicationCategory: "FinanceApplication",
+  inLanguage: "ko-KR",
+};
+---
+
+<BaseLayout
+  title={SEMB_META.seoTitle}
+  description={SEMB_META.seoDescription}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main class="container page-shell semb-page">
+
+    <CalculatorHero
+      eyebrow="삼성전기 성과급"
+      title="2026 삼성전기 성과급 계산기"
+      description="영업이익 N% 방식 전환 시 직급별 예상 수령액을 바로 계산하세요. SK하이닉스·삼성전자 DS와 재원 비율도 비교합니다."
+    />
+
+    <!-- 미확정 배너 -->
+    <div class="semb-status-banner">
+      <span class="semb-status-banner__icon">⚠</span>
+      <span>{SEMB_META.notice}</span>
+    </div>
+
+    <!-- 계산기 입력 -->
+    <section class="semb-calc-section" aria-label="성과급 계산기">
+      <div class="semb-input-group">
+
+        <!-- 영업이익 슬라이더 -->
+        <div class="semb-field">
+          <label class="semb-field__label" for="semb-slider-profit">
+            영업이익
+            <span class="semb-field__badge">추정</span>
+          </label>
+          <span class="semb-field__value-display" id="semb-disp-profit">15,000억원</span>
+          <input
+            id="semb-slider-profit"
+            class="semb-slider"
+            type="range"
+            min="5000"
+            max="30000"
+            step="1000"
+            value={SEMB_META.defaultOperatingProfit}
+          />
+          <div class="semb-slider-markers">
+            <span>5,000억</span>
+            <span>3조</span>
+          </div>
+        </div>
+
+        <!-- 재원 비율 슬라이더 -->
+        <div class="semb-field">
+          <label class="semb-field__label" for="semb-slider-rate">
+            성과급 재원 비율
+            <span class="semb-field__badge">보도 기반</span>
+          </label>
+          <span class="semb-field__value-display" id="semb-disp-rate">10%</span>
+          <input
+            id="semb-slider-rate"
+            class="semb-slider"
+            type="range"
+            min="8"
+            max="15"
+            step="0.5"
+            value={SEMB_META.defaultRate}
+          />
+          <div class="semb-slider-markers">
+            <span>8%</span>
+            <span class="semb-slider-markers__mark--company">10% 회사안</span>
+            <span class="semb-slider-markers__mark--union">12% 노조안</span>
+            <span>15%</span>
+          </div>
+        </div>
+
+        <!-- 임직원 수 + 연봉 -->
+        <div class="semb-two-col">
+          <div class="semb-field">
+            <label class="semb-field__label" for="semb-input-headcount">
+              임직원 수
+              <span class="semb-field__badge">추정</span>
+            </label>
+            <input
+              id="semb-input-headcount"
+              class="semb-number-input"
+              type="number"
+              min="1000"
+              max="50000"
+              step="100"
+              value={SEMB_META.defaultHeadcount}
+            />
+            <span class="semb-field__sub" id="semb-disp-head">12,000명</span>
+          </div>
+          <div class="semb-field">
+            <label class="semb-field__label" for="semb-input-salary">내 연봉 (만원)</label>
+            <input
+              id="semb-input-salary"
+              class="semb-number-input"
+              type="number"
+              min="1000"
+              max="30000"
+              step="100"
+              value={SEMB_META.defaultSalary}
+            />
+          </div>
+        </div>
+
+        <!-- 직급 선택 -->
+        <div class="semb-field">
+          <label class="semb-field__label" for="semb-select-grade">
+            직급
+            <span class="semb-field__badge">추정 배수</span>
+          </label>
+          <select id="semb-select-grade" class="semb-select">
+            {SEMB_GRADE_MULTIPLIERS.map((g) => (
+              <option value={String(g.multiplier)} selected={g.key === "cl2"}>
+                {g.grade} (배수 {g.multiplier}×)
+              </option>
+            ))}
+          </select>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- KPI 카드 -->
+    <div class="semb-kpi-grid">
+      <div class="semb-kpi-card">
+        <p class="semb-kpi-card__label">성과급 총 재원</p>
+        <p class="semb-kpi-card__value" id="semb-kpi-fund">1,500억원</p>
+      </div>
+      <div class="semb-kpi-card">
+        <p class="semb-kpi-card__label">1인 평균 세전</p>
+        <p class="semb-kpi-card__value" id="semb-kpi-avg-pre">1,250만원</p>
+      </div>
+      <div class="semb-kpi-card semb-kpi-card--highlight">
+        <p class="semb-kpi-card__label">내 예상 세후</p>
+        <p class="semb-kpi-card__value" id="semb-kpi-my-after">838만원</p>
+      </div>
+    </div>
+
+    <!-- 세부 결과 -->
+    <div class="semb-detail-rows">
+      <div class="semb-detail-row">
+        <span class="semb-detail-row__label">1인 평균 세후 (세율 33% 적용)</span>
+        <span class="semb-detail-row__value" id="semb-detail-avg-after">838만원</span>
+      </div>
+      <div class="semb-detail-row">
+        <span class="semb-detail-row__label">내 예상 세전 (직급 배수 적용)</span>
+        <span class="semb-detail-row__value" id="semb-detail-my-pre">1,250만원</span>
+      </div>
+      <div class="semb-detail-row semb-detail-row--accent">
+        <span class="semb-detail-row__label">내 예상 세후</span>
+        <span class="semb-detail-row__value" id="semb-detail-my-after2">838만원</span>
+      </div>
+      <div class="semb-detail-row">
+        <span class="semb-detail-row__label">연봉 대비 성과급 비율</span>
+        <span class="semb-detail-row__value" id="semb-detail-ratio">14.0%</span>
+      </div>
+    </div>
+
+    <!-- 시나리오 비교표 -->
+    <section class="content-section" id="scenarios" aria-labelledby="scenarios-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">시나리오 비교</p>
+        <h2 id="scenarios-title">영업이익별 1인당 평균 세전 (임직원 1.2만 명 기준)</h2>
+      </div>
+      <div class="semb-scenario-table-wrap">
+        <table class="semb-scenario-table">
+          <thead>
+            <tr>
+              <th>영업이익</th>
+              <th class="semb-th--10">재원 10% (회사안)</th>
+              <th class="semb-th--12">재원 12% (노조안)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SEMB_SCENARIOS.map((s) => (
+              <tr class="semb-scenario-row" data-profit={s.operatingProfitHundredMillion}>
+                <td><strong>{s.operatingProfitLabel}</strong></td>
+                <td class="semb-scenario-col--10">{fmtMan(s.perPersonAt10pct)}</td>
+                <td class="semb-scenario-col--12">{fmtMan(s.perPersonAt12pct)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="semb-scenario-note">세전 기준. 세후는 약 33% 차감. 임직원 수 변동 시 1인당 금액이 달라집니다.</p>
+    </section>
+
+    <!-- 경쟁사 비교 -->
+    <section class="content-section" id="competitors" aria-labelledby="competitors-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">경쟁사 비교</p>
+        <h2 id="competitors-title">부품·반도체 대기업 성과급 재원 비율 비교</h2>
+      </div>
+      <div class="semb-competitor-grid">
+        {SEMB_COMPETITORS.map((c) => (
+          <article class={`semb-competitor-card${c.isSelf ? " semb-competitor-card--self" : ""}`}>
+            <span class={`semb-badge ${badgeClass(c.badge)}`}>{c.badge}</span>
+            <p class="semb-competitor-card__company">{c.company}</p>
+            <p class="semb-competitor-card__method">{c.method}</p>
+            <p class="semb-competitor-card__rate">{c.rateLabel}</p>
+            <p class="semb-competitor-card__note">{c.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- EVA vs 영업이익 N% 방식 설명 -->
+    <section class="content-section" id="method" aria-labelledby="method-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">성과급 방식</p>
+        <h2 id="method-title">OPI(EVA 기반) vs 영업이익 N% 방식 차이</h2>
+      </div>
+      <div class="semb-method-compare">
+        <div class="semb-method-card">
+          <p class="semb-method-card__tag">기존 방식</p>
+          <p class="semb-method-card__title">OPI — EVA 기반</p>
+          <p class="semb-method-card__desc">경제적 부가가치(EVA)를 기준으로 성과급 재원을 산정합니다. 자본비용을 차감하기 때문에 영업이익이 높아도 EVA가 낮으면 성과급이 줄 수 있습니다.</p>
+          <ul class="semb-method-card__cons">
+            <li>산식이 복잡해 예측이 어려움</li>
+            <li>자본비용 변동에 따라 결과가 달라짐</li>
+            <li>직원 입장에서 체감 불투명</li>
+          </ul>
+        </div>
+        <div class="semb-method-card semb-method-card--new">
+          <p class="semb-method-card__tag">전환 검토 중</p>
+          <p class="semb-method-card__title">영업이익 N% 방식</p>
+          <p class="semb-method-card__desc">영업이익의 N%를 직접 성과급 재원으로 배분합니다. SK하이닉스(10%), 삼성전자 DS(10.5%)가 이 방식을 사용하며 산식이 직관적입니다.</p>
+          <ul class="semb-method-card__pros">
+            <li>영업이익 발표만 봐도 예측 가능</li>
+            <li>실적 기여 체감 직결</li>
+            <li>업계 표준으로 확산 중</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="content-section" id="faq" aria-labelledby="faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">FAQ</p>
+        <h2 id="faq-title">자주 묻는 질문</h2>
+      </div>
+      <div class="semb-faq">
+        {SEMB_FAQ.map((f) => (
+          <details class="semb-faq__item">
+            <summary class="semb-faq__q">{f.q}</summary>
+            <p class="semb-faq__a">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="삼성전기 성과급 계산 기준"
+      intro={[SEMB_SEO_INTRO]}
+      criteria={SEMB_SEO_CRITERIA}
+      faq={faqItems}
+      related={[
+        { href: "/tools/samsung-bonus/", label: "삼성전자 DS 성과급 계산기" },
+        { href: "/tools/sk-hynix-bonus/", label: "SK하이닉스 성과급 계산기" },
+        { href: "/tools/bonus-after-tax-calculator/", label: "성과급 세후 실수령액 계산기" },
+        { href: "/reports/large-company-salary-growth-by-years-2026/", label: "대기업 연차별 연봉 성장 비교" },
+      ]}
+    />
+
+  </main>
+
+  <script
+    id="semb-data"
+    type="application/json"
+    set:html={JSON.stringify({
+      scenarios: SEMB_SCENARIOS,
+      gradeMultipliers: SEMB_GRADE_MULTIPLIERS,
+      defaults: {
+        operatingProfit: SEMB_META.defaultOperatingProfit,
+        rate: SEMB_META.defaultRate,
+        headcount: SEMB_META.defaultHeadcount,
+        salary: SEMB_META.defaultSalary,
+      },
+      taxRate: SEMB_META.effectiveTaxRate,
+    })}
+  />
+  <script src="/scripts/samsung-electro-mechanics-bonus-calculator-2026.js" defer></script>
+</BaseLayout>
