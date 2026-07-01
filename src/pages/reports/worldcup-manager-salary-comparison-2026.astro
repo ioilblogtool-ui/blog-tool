@@ -1,0 +1,360 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  WMCS_FAQ,
+  WMCS_MANAGERS,
+  WMCS_MANAGER_CONTEXT,
+  WMCS_META,
+  WMCS_RELATED_LINKS,
+  WMCS_SEO_CRITERIA,
+  WMCS_SEO_INTRO,
+  calcMatchCostKrw,
+  calcMonthlyKrw,
+  calcPointCostKrw,
+  formatKrw,
+  formatKrwRange,
+  getComparableSalaryKrw,
+} from "../../data/worldcupManagerSalaryComparison2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${WMCS_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const comparableManagers = WMCS_MANAGERS
+  .filter((manager) => manager.includeInDefaultRanking && getComparableSalaryKrw(manager) !== null)
+  .sort((a, b) => (getComparableSalaryKrw(b) ?? 0) - (getComparableSalaryKrw(a) ?? 0));
+const rankedManagers = comparableManagers.map((manager, index) => ({ ...manager, rank: index + 1 }));
+const focusManager = WMCS_MANAGERS.find((manager) => manager.id === WMCS_MANAGER_CONTEXT.koreaFocusManagerId)!;
+const koreaManagers = WMCS_MANAGERS.filter((manager) => manager.isKoreaManager);
+const topManager = rankedManagers[0];
+const klinsmann = WMCS_MANAGERS.find((manager) => manager.id === "jurgen-klinsmann");
+const bento = WMCS_MANAGERS.find((manager) => manager.id === "paulo-bento");
+const maxSalary = Math.max(...rankedManagers.map((manager) => getComparableSalaryKrw(manager) ?? 0));
+const badgeClass = (badge: string) =>
+  badge
+    .replace(/\s+/g, "-")
+    .replace(/[^\w가-힣-]/g, "")
+    .toLowerCase();
+const formatRankSalary = (manager: typeof rankedManagers[number]) => formatKrwRange(manager);
+const formatMatchSummary = (manager: typeof rankedManagers[number]) => {
+  const matchCost = calcMatchCostKrw(manager);
+  const pointCost = calcPointCostKrw(manager);
+  if (matchCost === null || pointCost === null) return "경기/승점 기준 미확정";
+  return `경기당 ${formatKrw(matchCost)}, 승점당 ${formatKrw(pointCost)}`;
+};
+const reportData = {
+  managers: WMCS_MANAGERS,
+  context: WMCS_MANAGER_CONTEXT,
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: WMCS_META.title,
+    description: WMCS_META.seoDescription,
+    dateModified: WMCS_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: WMCS_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: WMCS_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={WMCS_META.seoTitle} description={WMCS_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page wmcs-page" data-report={WMCS_META.slug}>
+    <CalculatorHero
+      eyebrow="스포츠 연봉 리포트"
+      title="월드컵 감독 연봉 비교 2026"
+      description="홍명보 체제를 출발점으로 한국 전임 감독과 주요 월드컵 국가대표 감독 연봉을 원화 기준으로 비교합니다. 공식·보도·추정 배지를 나누고 경기당 비용과 승점당 비용도 함께 봅니다."
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        WMCS_META.dataNote,
+        WMCS_MANAGER_CONTEXT.statusNote,
+        "모든 금액은 세전 또는 계약 보도 기준으로 해석하며, 보너스·수당·주거 지원·차량 지원·세후 실수령액은 확인되지 않으면 제외합니다.",
+      ]}
+    />
+
+    <section class="content-section wmcs-kpis" aria-label="월드컵 감독 연봉 핵심 요약">
+      <article class="wmcs-kpi wmcs-kpi--primary">
+        <span>홍명보 감독 연봉</span>
+        <strong>{formatKrwRange(focusManager)}</strong>
+        <small>{focusManager.evidenceBadge} · {WMCS_MANAGER_CONTEXT.currentStatusLabel}</small>
+      </article>
+      <article class="wmcs-kpi">
+        <span>최고 보도 연봉</span>
+        <strong>{formatKrwRange(topManager)}</strong>
+        <small>{topManager.managerNameKo} · {topManager.countryKo}</small>
+      </article>
+      <article class="wmcs-kpi">
+        <span>한국 전임 감독</span>
+        <strong>{klinsmann ? formatKrwRange(klinsmann) : "확인 필요"}</strong>
+        <small>클린스만 보도 기준 · 벤투 {bento ? formatKrwRange(bento) : "확인 필요"}</small>
+      </article>
+      <article class="wmcs-kpi">
+        <span>비교 대상</span>
+        <strong>{rankedManagers.length}명</strong>
+        <small>보도·추정 금액이 있는 감독 기준</small>
+      </article>
+    </section>
+
+    <section class="content-section wmcs-focus" aria-labelledby="wmcs-focus-title">
+      <div class="wmcs-section-heading">
+        <p>핵심 질문</p>
+        <h2 id="wmcs-focus-title">홍명보 감독 연봉 20억원 추정은 어느 구간일까</h2>
+        <span>약 20억원 안팎으로 알려진 값을 공식 확정이 아닌 추정 기준으로 두고, 클린스만·벤투와 함께 비교합니다.</span>
+      </div>
+      <div class="wmcs-focus-card">
+        <div>
+          <span class={`wmcs-badge wmcs-badge--${badgeClass(focusManager.evidenceBadge)}`}>{focusManager.evidenceBadge}</span>
+          <h3>{focusManager.managerNameKo} {focusManager.periodLabel}</h3>
+          <p>{focusManager.notes[0]}</p>
+          <p>{focusManager.notes[1]}</p>
+        </div>
+        <dl>
+          <div>
+            <dt>표시 금액</dt>
+            <dd>{focusManager.localSalaryLabel}</dd>
+          </div>
+          <div>
+            <dt>비교 방식</dt>
+            <dd>클린스만·벤투와 세계 주요 감독 보도값 비교</dd>
+          </div>
+          <div>
+            <dt>업데이트 기준</dt>
+            <dd>{WMCS_META.updatedAt}</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="content-section wmcs-controls" aria-labelledby="wmcs-controls-title">
+      <div class="wmcs-section-heading">
+        <p>필터</p>
+        <h2 id="wmcs-controls-title">대륙과 데이터 신뢰도로 골라 보기</h2>
+        <span>추정값까지 포함해 기본 순위를 만들고, 확인 필요 항목은 별도 확인용으로 남겼습니다.</span>
+      </div>
+      <div class="wmcs-control-grid">
+        <label>
+          <span>대륙</span>
+          <select data-wmcs-confed>
+            <option value="all">전체</option>
+            <option value="AFC">AFC</option>
+            <option value="UEFA">UEFA</option>
+            <option value="CONMEBOL">CONMEBOL</option>
+            <option value="CONCACAF">CONCACAF</option>
+          </select>
+        </label>
+        <label>
+          <span>데이터</span>
+          <select data-wmcs-source>
+            <option value="all">전체</option>
+            <option value="reported">보도 기준·보도 범위</option>
+            <option value="estimated">추정 포함</option>
+            <option value="korea">한국 감독만</option>
+          </select>
+        </label>
+        <label>
+          <span>정렬</span>
+          <select data-wmcs-sort>
+            <option value="salary-desc">연봉 높은 순</option>
+            <option value="salary-asc">연봉 낮은 순</option>
+            <option value="country">국가명</option>
+          </select>
+        </label>
+      </div>
+      <p class="wmcs-control-status" data-wmcs-status aria-live="polite">보도·추정 금액이 있는 감독을 연봉 높은 순으로 표시 중입니다.</p>
+    </section>
+
+    <section class="content-section wmcs-ranking" aria-labelledby="wmcs-ranking-title">
+      <div class="wmcs-section-heading">
+        <p>월드컵 감독 연봉 순위</p>
+        <h2 id="wmcs-ranking-title">안첼로티·투헬·나겔스만은 어느 구간일까</h2>
+        <span>순위는 확정 순위가 아니라 수집 가능한 보도·추정 금액 기준입니다. 확인 필요 계약은 기본 순위에서 제외합니다.</span>
+      </div>
+
+      <div class="wmcs-table-wrap">
+        <table class="wmcs-table">
+          <caption>2026 월드컵 주요 국가대표 감독 연봉 비교</caption>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>감독</th>
+              <th>국가</th>
+              <th>연봉 원문</th>
+              <th>원화 환산</th>
+              <th>체감 지표</th>
+              <th>배지</th>
+            </tr>
+          </thead>
+          <tbody data-wmcs-body>
+            {rankedManagers.map((manager) => {
+              const salary = getComparableSalaryKrw(manager) ?? 0;
+              return (
+                <tr
+                  data-manager-row
+                  data-confed={manager.confederation}
+                  data-source={manager.evidenceBadge}
+                  data-korea={manager.isKoreaManager ? "true" : "false"}
+                  data-salary={salary}
+                  data-country={manager.countryKo}
+                >
+                  <td><strong data-rank>{manager.rank}</strong></td>
+                  <td>
+                    <div class="wmcs-manager-cell">
+                      <strong>{manager.managerNameKo}</strong>
+                      <small>{manager.managerNameEn}</small>
+                    </div>
+                  </td>
+                  <td>{manager.countryKo}</td>
+                  <td>{manager.localSalaryLabel}</td>
+                  <td>
+                    <strong>{formatRankSalary(manager)}</strong>
+                    <div class="wmcs-bar" aria-hidden="true">
+                      <span style={`width: ${(salary / maxSalary) * 100}%`}></span>
+                    </div>
+                  </td>
+                  <td>{formatMatchSummary(manager)}</td>
+                  <td>
+                    <span class={`wmcs-badge wmcs-badge--${badgeClass(manager.evidenceBadge)}`}>{manager.evidenceBadge}</span>
+                    <small>{manager.sourceLabel}</small>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section wmcs-korea" aria-labelledby="wmcs-korea-title">
+      <div class="wmcs-section-heading">
+        <p>한국 대표팀 감독 히스토리</p>
+        <h2 id="wmcs-korea-title">홍명보·클린스만·벤투를 같은 표에 놓으면</h2>
+        <span>한국 감독 비교는 공식 확정 순위가 아니라 보도 기준의 시장 구간을 보는 용도입니다.</span>
+      </div>
+      <div class="wmcs-card-grid">
+        {koreaManagers.map((manager) => (
+          <article class="wmcs-profile-card">
+            <span class={`wmcs-badge wmcs-badge--${badgeClass(manager.evidenceBadge)}`}>{manager.evidenceBadge}</span>
+            <strong>{manager.managerNameKo}</strong>
+            <small>{manager.periodLabel}</small>
+            <em>{formatKrwRange(manager)}</em>
+            <p>{manager.notes[0]}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section wmcs-efficiency" aria-labelledby="wmcs-efficiency-title">
+      <div class="wmcs-section-heading">
+        <p>효율 지표</p>
+        <h2 id="wmcs-efficiency-title">경기당 비용과 승점당 비용은 참고용으로만</h2>
+        <span>상대 전력, 홈·원정, 대회 중요도는 반영하지 않은 단순 환산값입니다.</span>
+      </div>
+      <div class="wmcs-card-grid">
+        {rankedManagers.slice(0, 6).map((manager) => (
+          <article class="wmcs-eff-card">
+            <span>{manager.countryKo}</span>
+            <strong>{manager.managerNameKo}</strong>
+            <dl>
+              <div>
+                <dt>월급 환산</dt>
+                <dd>{formatKrw(calcMonthlyKrw(manager))}</dd>
+              </div>
+              <div>
+                <dt>경기당 비용</dt>
+                <dd>{formatKrw(calcMatchCostKrw(manager))}</dd>
+              </div>
+              <div>
+                <dt>승점당 비용</dt>
+                <dd>{formatKrw(calcPointCostKrw(manager))}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section wmcs-method" aria-labelledby="wmcs-method-title">
+      <div class="wmcs-section-heading">
+        <p>방법론</p>
+        <h2 id="wmcs-method-title">공식·보도·추정값을 섞지 않는 기준</h2>
+        <span>숫자의 자극성보다 데이터 배지를 먼저 보여주는 것이 이 페이지의 핵심 안전장치입니다.</span>
+      </div>
+      <div class="wmcs-method-grid">
+        <article>
+          <strong>추정</strong>
+          <p>홍명보 감독처럼 공식 확정값은 아니지만 시장에서 알려진 금액이 있는 경우 추정 배지를 붙이고 비교에 포함합니다.</p>
+        </article>
+        <article>
+          <strong>보도 기준</strong>
+          <p>주요 매체가 특정 금액을 보도한 경우 사용하되, 세전·세후·보너스 조건은 별도로 단정하지 않습니다.</p>
+        </article>
+        <article>
+          <strong>보도 범위</strong>
+          <p>투헬·포체티노처럼 매체별 차이가 있는 경우 범위값으로 보여주고, 단일 확정값처럼 정렬하지 않습니다.</p>
+        </article>
+        <article>
+          <strong>추정</strong>
+          <p>과거 공개 리스트나 데이터베이스 기반 값은 최신 계약 조건을 재확인하기 전까지 추정으로 표시합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section wmcs-related" aria-labelledby="wmcs-related-title">
+      <div class="wmcs-section-heading">
+        <p>관련 스포츠 연봉</p>
+        <h2 id="wmcs-related-title">선수단 연봉과 월드컵 상금까지 이어서 보기</h2>
+      </div>
+      <div class="wmcs-related-grid">
+        {WMCS_RELATED_LINKS.map((link) => (
+          <a class="wmcs-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            {link.description && <p>{link.description}</p>}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="월드컵 감독 연봉을 볼 때 먼저 확인할 기준"
+      intro={WMCS_SEO_INTRO}
+      criteria={WMCS_SEO_CRITERIA}
+      faq={WMCS_FAQ}
+      related={WMCS_RELATED_LINKS}
+    />
+
+    <script type="application/json" id="wmcs-data" set:html={JSON.stringify(reportData)} />
+    <script src={withBase("scripts/worldcup-manager-salary-comparison-2026.js")} defer></script>
+  </main>
+</BaseLayout>

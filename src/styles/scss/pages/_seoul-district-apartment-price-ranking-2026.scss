@@ -1,0 +1,351 @@
+// ─── seoul-district-apartment-price-ranking-2026 ─────────────────────────────
+// prefix: .sdar
+
+.sdar-page {
+  padding-bottom: 3rem;
+}
+
+// ─── Summary Cards ────────────────────────────────────────────────────────────
+
+.sdar-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.sdar-summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  span {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  strong {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 0.7rem;
+    color: var(--color-text-muted, var(--color-text-secondary));
+    margin: 0;
+  }
+}
+
+// ─── Sort Tabs ────────────────────────────────────────────────────────────────
+
+.sdar-sort-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.sdar-sort-tab {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 2rem;
+  background: transparent;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &.is-active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+  }
+}
+
+// ─── Ranking Table ────────────────────────────────────────────────────────────
+
+.sdar-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.sdar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 560px;
+
+  thead {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+
+    th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+
+      &.sdar-th-num { text-align: right; }
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.1s;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: var(--color-surface); }
+  }
+
+  td {
+    padding: 0.8rem 1rem;
+    vertical-align: middle;
+  }
+}
+
+.sdar-td-rank {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  text-align: right;
+  width: 2.5rem;
+}
+
+.sdar-td-district {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sdar-td-price {
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--color-text);
+}
+
+.sdar-td-change {
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 600;
+
+  &.is-up   { color: #e53e3e; }
+  &.is-down { color: #3182ce; }
+  &.is-none { color: var(--color-text-secondary); }
+}
+
+.sdar-td-jeonse {
+  text-align: right;
+  color: var(--color-text-secondary);
+}
+
+.sdar-td-complex {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.sdar-td-link {
+  text-align: center;
+  white-space: nowrap;
+
+  a {
+    font-size: 0.78rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    border: 1px solid var(--color-primary);
+    border-radius: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    display: inline-block;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: var(--color-primary);
+      color: #fff;
+    }
+  }
+
+  span {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, var(--color-text-secondary));
+  }
+}
+
+.sdar-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+
+  &--est { background: #fef3c7; color: #92400e; }
+  &--ref { background: #e0e7ff; color: #3730a3; }
+}
+
+// ─── Price Bands ──────────────────────────────────────────────────────────────
+
+.sdar-bands {
+  margin-bottom: 2rem;
+}
+
+.sdar-bands-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 960px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.sdar-band-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+
+  h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0 0 0.5rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  li {
+    font-size: 0.82rem;
+    color: var(--color-text);
+    background: var(--color-bg, #f8fafc);
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    padding: 0.15rem 0.5rem;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover { color: var(--color-primary); }
+    }
+  }
+
+  .sdar-band-empty {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+  }
+}
+
+// ─── Bar Chart ────────────────────────────────────────────────────────────────
+
+.sdar-chart-section {
+  margin-bottom: 2rem;
+}
+
+.sdar-chart-wrap {
+  margin-top: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: var(--color-surface);
+}
+
+#sdar-bar-chart {
+  max-height: 320px;
+}
+
+// ─── Related Report Cards ─────────────────────────────────────────────────────
+
+.sdar-related-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.sdar-related-card {
+  display: block;
+  text-decoration: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+  }
+
+  span {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+  }
+}
+
+// ─── Section Head ─────────────────────────────────────────────────────────────
+
+.sdar-section-head {
+  margin-bottom: 0.75rem;
+
+  p {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.2rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+  }
+}

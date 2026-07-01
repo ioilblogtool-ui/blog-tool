@@ -1,0 +1,239 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SDAR_META,
+  SDAR_DISTRICTS_BY_PRICE,
+  SDAR_PRICE_BANDS,
+  SDAR_FAQ,
+  SDAR_SEO_INTRO,
+  SDAR_SEO_CRITERIA,
+  SDAR_RELATED_LINKS,
+  formatEok,
+  formatChange,
+} from "../../data/seoulDistrictRanking2026";
+import { withBase } from "../../utils/base";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SDAR_META.slug}/`;
+
+const sorted = SDAR_DISTRICTS_BY_PRICE;
+const topDistrict = sorted[0];
+const botDistrict = sorted[sorted.length - 1];
+const gapMultiple = topDistrict && botDistrict && botDistrict.latestPriceManwon > 0
+  ? (topDistrict.latestPriceManwon / botDistrict.latestPriceManwon).toFixed(1)
+  : "-";
+const topGainer = [...sorted].filter((d) => d.yoyChangePercent > 0).sort((a, b) => b.yoyChangePercent - a.yoyChangePercent)[0] ?? null;
+const seoIntroParagraphs = Array.isArray(SDAR_SEO_INTRO)
+  ? SDAR_SEO_INTRO
+  : SDAR_SEO_INTRO.split(/\n\s*\n/).filter(Boolean);
+
+const summaryCards = [
+  { label: "가장 비싼 구", value: topDistrict?.districtName ?? "-", note: formatEok(topDistrict?.latestPriceManwon ?? 0) + " (대표 단지 기준)" },
+  { label: "가장 저렴한 구", value: botDistrict?.districtName ?? "-", note: formatEok(botDistrict?.latestPriceManwon ?? 0) + " (대표 단지 기준)" },
+  { label: "1위↔최하위 격차", value: gapMultiple + "배", note: "대표 단지 84㎡ 기준 추정" },
+  { label: "상승률 1위", value: topGainer ? topGainer.districtName : "-", note: topGainer ? formatChange(topGainer.yoyChangePercent) : "데이터 확보 중" },
+];
+
+function changeClass(pct: number) {
+  if (pct === 0) return "is-none";
+  return pct > 0 ? "is-up" : "is-down";
+}
+
+function badgeHtml(status: string) {
+  if (status === "추정") return '<span class="sdar-badge sdar-badge--est">추정</span>';
+  if (status === "참고") return '<span class="sdar-badge sdar-badge--ref">참고</span>';
+  return "";
+}
+
+// Band grouping
+const bandGroups = SDAR_PRICE_BANDS.map((band) => ({
+  ...band,
+  districts: sorted.filter((d) => {
+    if (band.maxManwon === null) return d.latestPriceManwon >= band.minManwon;
+    return d.latestPriceManwon >= band.minManwon && d.latestPriceManwon <= band.maxManwon;
+  }),
+})).filter((b) => b.districts.length > 0);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: SDAR_META.seoTitle,
+      description: SDAR_META.description,
+      dateModified: SDAR_META.updatedAt,
+      inLanguage: "ko-KR",
+      mainEntityOfPage: reportUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      about: ["서울 구별 집값", "서울 아파트 순위", "서울 구별 아파트 가격 비교"],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: SDAR_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+        { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+        { "@type": "ListItem", position: 3, name: SDAR_META.title, item: reportUrl },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout title={SDAR_META.seoTitle} description={SDAR_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell report-page sdar-page" data-report={SDAR_META.slug}>
+    <CalculatorHero
+      eyebrow="서울 부동산 리포트"
+      title="서울 구별 아파트 집값 순위 2026"
+      description={SDAR_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        SDAR_META.notice,
+        SDAR_META.dataAsOf,
+      ]}
+    />
+
+    {/* Summary Cards */}
+    <section class="sdar-summary" aria-labelledby="sdar-summary-title">
+      <div class="sdar-section-head">
+        <p>요약</p>
+        <h2 id="sdar-summary-title">서울 구별 집값 한눈에 보기</h2>
+      </div>
+      <div class="sdar-summary-grid">
+        {summaryCards.map((card) => (
+          <article class="sdar-summary-card">
+            <span>{card.label}</span>
+            <strong>{card.value}</strong>
+            <p>{card.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {/* Ranking Table */}
+    <section class="sdar-ranking" aria-labelledby="sdar-ranking-title">
+      <div class="sdar-section-head">
+        <p>구별 순위표</p>
+        <h2 id="sdar-ranking-title">서울 구별 매매가 순위 (84㎡ 대표 단지 기준)</h2>
+      </div>
+
+      <div class="sdar-sort-tabs" role="group" aria-label="정렬 기준 선택">
+        <button class="sdar-sort-tab is-active" type="button" data-sort="price">매매가 높은 순</button>
+        <button class="sdar-sort-tab" type="button" data-sort="change">상승률 높은 순</button>
+        <button class="sdar-sort-tab" type="button" data-sort="jeonse">전세가율 높은 순</button>
+      </div>
+
+      <div class="sdar-table-wrap">
+        <table class="sdar-table" aria-label="서울 구별 아파트 집값 순위">
+          <thead>
+            <tr>
+              <th class="sdar-th-num" scope="col">#</th>
+              <th scope="col">구</th>
+              <th class="sdar-th-num" scope="col">매매가 (84㎡)</th>
+              <th class="sdar-th-num" scope="col">전년 대비</th>
+              <th class="sdar-th-num" scope="col">전세가율</th>
+              <th scope="col">대표 단지</th>
+              <th scope="col">상세</th>
+            </tr>
+          </thead>
+          <tbody id="sdar-tbody">
+            {sorted.map((d, i) => (
+              <tr>
+                <td class="sdar-td-rank">{i + 1}</td>
+                <td class="sdar-td-district" set:html={d.districtName + badgeHtml(d.status)} />
+                <td class="sdar-td-price">{formatEok(d.latestPriceManwon)}</td>
+                <td class={`sdar-td-change ${changeClass(d.yoyChangePercent)}`}>{formatChange(d.yoyChangePercent)}</td>
+                <td class="sdar-td-jeonse">{d.jeonseRatio != null ? `${d.jeonseRatio}%` : "-"}</td>
+                <td class="sdar-td-complex">{d.representativeComplex}</td>
+                <td class="sdar-td-link">
+                  {d.reportSlug
+                    ? <a href={`/reports/${d.reportSlug}/`}>상세 보기</a>
+                    : <span>준비 중</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* Price Band Cards */}
+    <section class="sdar-bands" aria-labelledby="sdar-bands-title">
+      <div class="sdar-section-head">
+        <p>가격대별 분류</p>
+        <h2 id="sdar-bands-title">예산별로 보는 서울 구 분류</h2>
+      </div>
+      <div class="sdar-bands-grid">
+        {bandGroups.map((band) => (
+          <div class="sdar-band-card">
+            <h4>{band.label}</h4>
+            <ul>
+              {band.districts.map((d) => (
+                <li>
+                  {d.reportSlug
+                    ? <a href={`/reports/${d.reportSlug}/`}>{d.districtName}</a>
+                    : d.districtName}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* Bar Chart */}
+    <section class="sdar-chart-section" aria-labelledby="sdar-chart-title">
+      <div class="sdar-section-head">
+        <p>시각화</p>
+        <h2 id="sdar-chart-title">구별 매매가 비교 차트</h2>
+      </div>
+      <div class="sdar-chart-wrap">
+        <canvas id="sdar-bar-chart" aria-label="서울 구별 아파트 매매가 바 차트" role="img"></canvas>
+      </div>
+    </section>
+
+    {/* Related Report Cards */}
+    <section class="sdar-related-section" aria-labelledby="sdar-related-title">
+      <div class="sdar-section-head">
+        <p>상세 리포트</p>
+        <h2 id="sdar-related-title">구별 아파트 상세 리포트</h2>
+      </div>
+      <div class="sdar-related-grid">
+        {SDAR_RELATED_LINKS.map((link) => (
+          <a class="sdar-related-card" href={link.href}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="서울 구별 집값, 왜 이렇게 차이가 날까?"
+      intro={seoIntroParagraphs}
+      criteria={SDAR_SEO_CRITERIA}
+      faq={SDAR_FAQ}
+      related={SDAR_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+
+  {/* JSON data for client-side sort */}
+  <script type="application/json" id="sdar-data" set:text={JSON.stringify({ districts: sorted })} />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src={withBase("/scripts/seoul-district-apartment-price-ranking-2026.js")} defer></script>
+</BaseLayout>
