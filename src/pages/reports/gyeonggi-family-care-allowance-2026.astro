@@ -1,0 +1,377 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  GFCA_META,
+  GFCA_CONDITIONS,
+  GFCA_AMOUNTS,
+  GFCA_AGE_TABLE,
+  GFCA_DISABLED_CITIES,
+  GFCA_HELPER_CARDS,
+  GFCA_DOCUMENTS,
+  GFCA_FAQ,
+  GFCA_RELATED_LINKS,
+  GFCA_SEO_INTRO,
+  GFCA_SEO_CRITERIA,
+} from "../../data/gyeonggiCareFamilyAllowance2026";
+
+const fmtWon = (v: number) => (v / 10_000).toLocaleString("ko-KR") + "만원";
+const fmtWonAnnual = (v: number) => (v / 10_000).toLocaleString("ko-KR") + "만원";
+
+const docCategories = [
+  { key: "행정공동이용", label: "행정정보공동이용 (자동 조회)", icon: "🔍" },
+  { key: "돌봄조력자", label: "돌봄조력자 확인 서류", icon: "📋" },
+  { key: "양육공백", label: "양육공백 확인 서류", icon: "📝" },
+  { key: "기타", label: "기타 (최종 선정자 한정)", icon: "✅" },
+] as const;
+
+const notParticipating = GFCA_DISABLED_CITIES.filter((c) => c.reason === "미참여");
+const suspended = GFCA_DISABLED_CITIES.filter((c) => c.reason === "신규접수중단");
+
+const faqItems = GFCA_FAQ.map((f) => ({ question: f.q, answer: f.a }));
+const related = GFCA_RELATED_LINKS.map((r) => ({ href: r.href, label: r.label }));
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/gyeonggi-family-care-allowance-2026/`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": `${pageUrl}#article`,
+      url: pageUrl,
+      name: GFCA_META.seoTitle,
+      description: GFCA_META.seoDescription,
+      inLanguage: "ko-KR",
+      datePublished: GFCA_META.updatedAt,
+      dateModified: GFCA_META.updatedAt,
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${pageUrl}#faq`,
+      mainEntity: GFCA_FAQ.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={GFCA_META.seoTitle}
+  description={GFCA_META.seoDescription}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main class="container page-shell gfca-page">
+
+    <CalculatorHero
+      eyebrow="경기도 육아 지원금"
+      title="2026 경기도 가족돌봄수당"
+      description="맞벌이·다자녀 가정에서 조부모·친인척·이웃이 24~36개월 아이를 돌볼 때 받을 수 있는 수당입니다. 신청 조건, 신청 가능 월, 지원 금액을 빠르게 확인하세요."
+    />
+
+    <InfoNotice
+      title="이용 안내"
+      lines={[
+        GFCA_META.notice,
+        "서류 미비 시 접수·선정이 지연될 수 있습니다. 신청 전 경기민원24 원문 안내를 반드시 확인하세요.",
+      ]}
+    />
+
+    <!-- 신청 기간 배너 -->
+    <section class="gfca-apply-banner" aria-label="신청 기간">
+      <div class="gfca-apply-banner__inner">
+        <span class="gfca-apply-banner__badge">접수 중</span>
+        <p class="gfca-apply-banner__period">{GFCA_META.applyPeriodLabel}</p>
+        <a
+          href={GFCA_META.applyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="gfca-apply-banner__btn"
+        >경기민원24 신청하기 →</a>
+      </div>
+    </section>
+
+    <!-- 지원 조건 -->
+    <section class="content-section gfca-section" id="conditions" aria-labelledby="conditions-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">지원 조건</p>
+        <h2 id="conditions-title">신청 전 4가지 조건을 먼저 확인하세요</h2>
+      </div>
+      <div class="gfca-condition-grid">
+        {GFCA_CONDITIONS.map((c) => (
+          <article class="gfca-condition-card">
+            <span class="gfca-condition-card__icon">{c.icon}</span>
+            <p class="gfca-condition-card__label">{c.label}</p>
+            <p class="gfca-condition-card__value">{c.value}</p>
+            <p class="gfca-condition-card__detail">{c.detail}</p>
+            <span class={`gfca-badge gfca-badge--${c.badge === "공식" ? "official" : "ref"}`}>{c.badge}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 미참여 시군 경고 -->
+    <section class="gfca-disabled-block" aria-label="신청 불가 시군">
+      <div class="gfca-disabled-block__header">
+        <span class="gfca-disabled-block__icon">⚠</span>
+        <strong>아래 시군은 신청이 불가능합니다</strong>
+      </div>
+      <div class="gfca-disabled-block__rows">
+        <div class="gfca-disabled-block__row">
+          <span class="gfca-disabled-block__type">사업 미참여 (5곳)</span>
+          <span class="gfca-disabled-block__cities">
+            {notParticipating.map((c) => c.name).join(" · ")}
+          </span>
+        </div>
+        <div class="gfca-disabled-block__row">
+          <span class="gfca-disabled-block__type">신규 접수 중단 (2곳)</span>
+          <span class="gfca-disabled-block__cities">
+            {suspended.map((c) => c.name).join(" · ")}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 지원 금액 -->
+    <section class="content-section gfca-section" id="amounts" aria-labelledby="amounts-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">지원 금액</p>
+        <h2 id="amounts-title">아동 수별 월 수령액</h2>
+        <p class="section-header__desc">월 40시간 이상 돌봄 수행 시 계좌이체로 지급됩니다.</p>
+      </div>
+      <div class="gfca-amount-grid">
+        {GFCA_AMOUNTS.map((a) => (
+          <article class={`gfca-amount-card${a.isHighlight ? " gfca-amount-card--highlight" : ""}`}>
+            <p class="gfca-amount-card__label">{a.label}</p>
+            <p class="gfca-amount-card__value">{fmtWon(a.monthlyAmountWon)}</p>
+            <p class="gfca-amount-card__sub">월 지급액</p>
+            <p class="gfca-amount-card__annual">연간 최대 {fmtWonAnnual(a.annualEstimateWon)}</p>
+            <p class="gfca-amount-card__note">{a.note}</p>
+          </article>
+        ))}
+      </div>
+      <p class="gfca-amount-caution">연간 추정액은 12개월 만액 수령 시 기준입니다. 예산 소진 시 조기 종료될 수 있습니다.</p>
+    </section>
+
+    <!-- 신청 월 조견표 -->
+    <section class="content-section gfca-section" id="age-table" aria-labelledby="age-table-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">신청 가능 월</p>
+        <h2 id="age-table-title">우리 아이는 몇 월에 신청할 수 있을까</h2>
+        <p class="section-header__desc">아이 출생월을 선택하면 신청 가능 월을 바로 확인할 수 있습니다.</p>
+      </div>
+
+      <!-- 출생월 선택기 -->
+      <div class="gfca-selector" id="gfca-selector">
+        <div class="gfca-selector__row">
+          <label class="gfca-selector__label" for="birth-year">출생 연도</label>
+          <select id="birth-year" class="gfca-selector__select">
+            <option value="">연도 선택</option>
+            <option value="2023">2023년생</option>
+            <option value="2024">2024년생</option>
+          </select>
+        </div>
+        <div class="gfca-selector__row">
+          <label class="gfca-selector__label" for="birth-month">출생 월</label>
+          <select id="birth-month" class="gfca-selector__select">
+            <option value="">월 선택</option>
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+              <option value={String(m)}>{m}월생</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <!-- 선택 결과 KPI -->
+      <div class="gfca-result-kpi" id="gfca-result-kpi" aria-live="polite" hidden>
+        <div class="gfca-result-kpi__card">
+          <p class="gfca-result-kpi__label">신청 가능 월</p>
+          <p class="gfca-result-kpi__value" id="result-apply-month">—</p>
+        </div>
+        <div class="gfca-result-kpi__card">
+          <p class="gfca-result-kpi__label">돌봄 시작 월</p>
+          <p class="gfca-result-kpi__value" id="result-care-start">—</p>
+        </div>
+        <div class="gfca-result-kpi__card">
+          <p class="gfca-result-kpi__label">현재 접수</p>
+          <p class="gfca-result-kpi__value" id="result-status">—</p>
+        </div>
+      </div>
+
+      <!-- 전체 조견표 -->
+      <div class="gfca-table-wrap">
+        <table class="gfca-age-table">
+          <thead>
+            <tr>
+              <th>출생연월</th>
+              <th>신청 월</th>
+              <th>돌봄 시작</th>
+            </tr>
+          </thead>
+          <tbody>
+            {GFCA_AGE_TABLE.map((row) => (
+              <tr
+                id={row.id}
+                class={`gfca-age-row${row.isCurrent ? " gfca-age-row--current" : ""}`}
+                data-birth-year-start={row.birthYearStart}
+                data-birth-month-start={row.birthMonthStart}
+                data-birth-year-end={row.birthYearEnd}
+                data-birth-month-end={row.birthMonthEnd}
+              >
+                <td>{row.birthMonthRange}</td>
+                <td>
+                  {row.isCurrent
+                    ? <><strong>{row.applyMonth}</strong> <span class="gfca-tag-now">현재 접수</span></>
+                    : row.applyMonth
+                  }
+                </td>
+                <td>{row.careStartMonth}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 돌봄조력자 -->
+    <section class="content-section gfca-section" id="helpers" aria-labelledby="helpers-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">돌봄조력자</p>
+        <h2 id="helpers-title">누가 아이를 돌볼 수 있나요</h2>
+      </div>
+      <div class="gfca-helper-grid">
+        {GFCA_HELPER_CARDS.map((h) => (
+          <article class="gfca-helper-card">
+            <p class="gfca-helper-card__type">{h.type}</p>
+            <p class="gfca-helper-card__condition">{h.condition}</p>
+            <p class="gfca-helper-card__examples">{h.examples}</p>
+            {h.caution && <p class="gfca-helper-card__caution">⚠ {h.caution}</p>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 필요서류 -->
+    <section class="content-section gfca-section" id="documents" aria-labelledby="documents-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">필요서류</p>
+        <h2 id="documents-title">신청 전 서류 체크리스트</h2>
+      </div>
+      <div class="gfca-checklist">
+        {docCategories.map((cat) => {
+          const docs = GFCA_DOCUMENTS.filter((d) => d.category === cat.key);
+          return (
+            <div class="gfca-checklist__group">
+              <p class="gfca-checklist__group-title">
+                <span>{cat.icon}</span> {cat.label}
+              </p>
+              <ul class="gfca-checklist__list">
+                {docs.map((doc) => (
+                  <li class="gfca-checklist__item">
+                    <label class="gfca-checklist__label">
+                      <input type="checkbox" class="gfca-checklist__check" data-doc-id={doc.id} />
+                      <span class={doc.required ? "gfca-checklist__text--required" : "gfca-checklist__text"}>
+                        {doc.label}
+                        {doc.required && <span class="gfca-checklist__req">필수</span>}
+                      </span>
+                    </label>
+                    {doc.note && <p class="gfca-checklist__note">{doc.note}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+      <p class="gfca-checklist__caution">
+        서류 미비로 인한 보완 요청 시 접수 및 선정이 지연될 수 있습니다.<br />
+        신청 전 경기민원24에서 최신 서류 목록을 반드시 확인하세요.
+      </p>
+    </section>
+
+    <!-- 신청 CTA -->
+    <section class="gfca-cta-block" aria-label="신청 방법">
+      <div class="gfca-cta-block__inner">
+        <p class="gfca-cta-block__eyebrow">신청 방법</p>
+        <h2 class="gfca-cta-block__title">경기민원24에서 신청</h2>
+        <p class="gfca-cta-block__period">신청 기간 {GFCA_META.applyPeriodLabel}</p>
+        <p class="gfca-cta-block__browser">크롬 또는 엣지 브라우저 권장 · 양육자(부 또는 모)만 신청 가능</p>
+        <a
+          href={GFCA_META.applyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="gfca-cta-block__btn"
+        >경기민원24 신청하기</a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="content-section gfca-section gfca-faq-section" id="faq" aria-labelledby="faq-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">FAQ</p>
+        <h2 id="faq-title">자주 묻는 질문</h2>
+      </div>
+      <div class="gfca-faq">
+        {GFCA_FAQ.map((f, i) => (
+          <details class="gfca-faq__item">
+            <summary class="gfca-faq__q">{f.q}</summary>
+            <p class="gfca-faq__a">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- 관련 링크 -->
+    <section class="content-section gfca-section gfca-related" id="related" aria-labelledby="related-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">함께 보면 좋은 콘텐츠</p>
+        <h2 id="related-title">육아·지원금 관련 계산기</h2>
+      </div>
+      <div class="gfca-related__grid">
+        {GFCA_RELATED_LINKS.map((r) => (
+          <a href={r.href} class="gfca-related__card">
+            <p class="gfca-related__card-title">{r.label}</p>
+            <p class="gfca-related__card-desc">{r.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="경기도 가족돌봄수당 신청 기준"
+      intro={GFCA_SEO_INTRO}
+      criteria={GFCA_SEO_CRITERIA}
+      faq={faqItems}
+      related={related}
+    />
+
+  </main>
+
+  <script
+    id="gfca-data"
+    type="application/json"
+    set:html={JSON.stringify({
+      ageTable: GFCA_AGE_TABLE.map((r) => ({
+        id: r.id,
+        applyMonth: r.applyMonth,
+        careStartMonth: r.careStartMonth,
+        isCurrent: r.isCurrent,
+        birthYearStart: r.birthYearStart,
+        birthMonthStart: r.birthMonthStart,
+        birthYearEnd: r.birthYearEnd,
+        birthMonthEnd: r.birthMonthEnd,
+      })),
+      applyPeriodStart: GFCA_META.applyPeriodStart,
+      applyPeriodEnd: GFCA_META.applyPeriodEnd,
+    })}
+  />
+  <script src="/scripts/gyeonggi-family-care-allowance-2026.js" defer></script>
+</BaseLayout>

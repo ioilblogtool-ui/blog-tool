@@ -1,0 +1,677 @@
+// gyeonggi-family-care-allowance-2026
+
+.gfca-page {
+  // 로컬 토큰
+  --gfca-ink:        #14213d;
+  --gfca-muted:      #5d6b82;
+  --gfca-line:       rgba(20, 33, 61, 0.12);
+  --gfca-surface:    #ffffff;
+  --gfca-soft:       #f5f7fb;
+  --gfca-primary:    #1a56db;
+  --gfca-primary-bg: #eff4ff;
+  --gfca-primary-dk: #1447bf;
+  --gfca-teal:       #0891b2;
+  --gfca-teal-bg:    #e0f2fe;
+  --gfca-orange:     #f97316;
+  --gfca-orange-bg:  #fff7ed;
+  --gfca-orange-bdr: #fed7aa;
+  --gfca-orange-ink: #9a3412;
+  --gfca-orange-mid: #c2410c;
+}
+
+// 신청 기간 배너
+.gfca-apply-banner {
+  background: linear-gradient(135deg, #1a56db, #0891b2);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__badge {
+    background: #fff;
+    color: #1447bf;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  &__period {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    flex: 1;
+    margin: 0;
+  }
+
+  &__btn {
+    background: #fff;
+    color: #1447bf;
+    font-weight: 700;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover {
+      background: #eff4ff;
+    }
+  }
+}
+
+// 공통 섹션
+.gfca-section {
+  margin-bottom: 2.5rem;
+}
+
+// 배지
+.gfca-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+  margin-top: 0.5rem;
+  display: inline-block;
+
+  &--official {
+    background: #ccfbf1;
+    color: #0f766e;
+    border: 1px solid #99f6e4;
+  }
+
+  &--ref {
+    background: #eff4ff;
+    color: #1a56db;
+    border: 1px solid #bfdbfe;
+  }
+}
+
+// 지원 조건 카드
+.gfca-condition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.gfca-condition-card {
+  background: #fff;
+  border: 1px solid var(--gfca-line);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__icon {
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    color: var(--gfca-muted);
+    margin: 0.25rem 0 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  &__value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--gfca-ink);
+    margin: 0;
+  }
+
+  &__detail {
+    font-size: 0.8rem;
+    color: var(--gfca-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// 미참여 시군 경고
+.gfca-disabled-block {
+  background: var(--gfca-orange-bg);
+  border: 1px solid var(--gfca-orange-bdr);
+  border-left: 4px solid var(--gfca-orange);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    strong {
+      font-size: 0.9rem;
+      color: var(--gfca-orange-ink);
+    }
+  }
+
+  &__icon {
+    font-size: 1.1rem;
+  }
+
+  &__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  &__row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    font-size: 0.85rem;
+  }
+
+  &__type {
+    color: var(--gfca-orange-ink);
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 140px;
+  }
+
+  &__cities {
+    color: var(--gfca-orange-mid);
+  }
+}
+
+// 지원 금액 카드
+.gfca-amount-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gfca-amount-card {
+  background: #fff;
+  border: 1px solid var(--gfca-line);
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+
+  &--highlight {
+    border-color: #93c5fd;
+    background: var(--gfca-primary-bg);
+  }
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gfca-muted);
+    margin: 0 0 0.5rem;
+  }
+
+  &__value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--gfca-primary);
+    margin: 0;
+  }
+
+  &__sub {
+    font-size: 0.75rem;
+    color: var(--gfca-muted);
+    margin: 0.15rem 0 0.5rem;
+  }
+
+  &__annual {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: var(--gfca-teal);
+    margin: 0 0 0.25rem;
+  }
+
+  &__note {
+    font-size: 0.75rem;
+    color: var(--gfca-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.gfca-amount-caution {
+  font-size: 0.8rem;
+  color: var(--gfca-muted);
+  margin: 0.75rem 0 0;
+  line-height: 1.6;
+}
+
+// 출생월 선택기
+.gfca-selector {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gfca-ink);
+    white-space: nowrap;
+  }
+
+  &__select {
+    padding: 0.4rem 0.75rem;
+    border: 1.5px solid var(--gfca-line);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background: #fff;
+    color: var(--gfca-ink);
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--gfca-primary);
+    }
+  }
+}
+
+// 결과 KPI
+.gfca-result-kpi {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__card {
+    background: var(--gfca-primary-bg);
+    border: 1.5px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 0.875rem;
+    text-align: center;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    color: var(--gfca-primary);
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+  }
+
+  &__value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gfca-primary-dk);
+    margin: 0;
+  }
+}
+
+// 조견표
+.gfca-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+  border: 1px solid var(--gfca-line);
+}
+
+.gfca-age-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead tr {
+    background: var(--gfca-soft);
+  }
+
+  th {
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--gfca-muted);
+    border-bottom: 1px solid var(--gfca-line);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    color: var(--gfca-ink);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.gfca-age-row {
+  &--current {
+    background: var(--gfca-primary-bg);
+
+    td {
+      color: var(--gfca-primary-dk);
+      font-weight: 600;
+    }
+  }
+
+  &--highlighted {
+    background: #fefce8;
+
+    td {
+      color: #854d0e;
+      font-weight: 600;
+    }
+  }
+}
+
+.gfca-tag-now {
+  background: var(--gfca-primary);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}
+
+// 돌봄조력자
+.gfca-helper-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.gfca-helper-card {
+  background: #fff;
+  border: 1px solid var(--gfca-line);
+  border-radius: 10px;
+  padding: 1rem;
+
+  &__type {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gfca-primary);
+    margin: 0 0 0.35rem;
+  }
+
+  &__condition {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gfca-ink);
+    margin: 0 0 0.25rem;
+  }
+
+  &__examples {
+    font-size: 0.8rem;
+    color: var(--gfca-muted);
+    margin: 0 0 0.25rem;
+    line-height: 1.5;
+  }
+
+  &__caution {
+    font-size: 0.775rem;
+    color: var(--gfca-orange-mid);
+    margin: 0.25rem 0 0;
+    line-height: 1.5;
+  }
+}
+
+// 체크리스트
+.gfca-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  &__group {
+    background: #fff;
+    border: 1px solid var(--gfca-line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  &__group-title {
+    background: var(--gfca-soft);
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gfca-ink);
+    margin: 0;
+    border-bottom: 1px solid var(--gfca-line);
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  &__check {
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--gfca-primary);
+  }
+
+  &__text--required,
+  &__text {
+    font-size: 0.875rem;
+    color: var(--gfca-ink);
+    line-height: 1.5;
+  }
+
+  &__req {
+    background: var(--gfca-primary);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.05rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+
+  &__note {
+    font-size: 0.775rem;
+    color: var(--gfca-muted);
+    margin: 0.25rem 0 0 1.5rem;
+    line-height: 1.5;
+  }
+
+  &__caution {
+    font-size: 0.8rem;
+    color: var(--gfca-muted);
+    margin: 0.75rem 0 0;
+    line-height: 1.6;
+  }
+}
+
+// 신청 CTA
+.gfca-cta-block {
+  background: linear-gradient(135deg, #1a56db, #0891b2);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__eyebrow {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+  }
+
+  &__period {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__browser {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+  }
+
+  &__btn {
+    margin-top: 0.5rem;
+    background: #fff;
+    color: #1447bf;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-block;
+
+    &:hover {
+      background: #eff4ff;
+    }
+  }
+}
+
+// FAQ
+.gfca-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__item {
+    background: #fff;
+    border: 1px solid var(--gfca-line);
+    border-radius: 10px;
+    overflow: hidden;
+
+    &[open] summary {
+      border-bottom: 1px solid var(--gfca-line);
+      background: var(--gfca-soft);
+    }
+  }
+
+  &__q {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gfca-ink);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &::after {
+      content: "+";
+      font-size: 1.2rem;
+      color: var(--gfca-muted);
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+    }
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    details[open] &::after {
+      content: "−";
+    }
+  }
+
+  &__a {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    color: var(--gfca-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+}
+
+// 관련 링크
+.gfca-related {
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+
+  &__card {
+    background: #fff;
+    border: 1px solid var(--gfca-line);
+    border-radius: 10px;
+    padding: 1rem;
+    text-decoration: none;
+    display: block;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  &__card-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--gfca-primary);
+    margin: 0 0 0.25rem;
+  }
+
+  &__card-desc {
+    font-size: 0.8rem;
+    color: var(--gfca-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
