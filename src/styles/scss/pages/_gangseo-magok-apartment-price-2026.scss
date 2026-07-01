@@ -1,0 +1,525 @@
+.gmap-page {
+  --gmap-ink: #172033;
+  --gmap-muted: #667085;
+  --gmap-line: #d8e0ea;
+  --gmap-soft: #f6f8fb;
+  --gmap-blue: #2563eb;
+  --gmap-green: #138a5b;
+  --gmap-teal: #0f766e;
+  --gmap-amber: #b7791f;
+  --gmap-red: #c2410c;
+
+  .gmap-summary,
+  .gmap-picker,
+  .gmap-table-section,
+  .gmap-area-map,
+  .gmap-chart,
+  .gmap-context,
+  .gmap-data-method,
+  .gmap-risk,
+  .gmap-related {
+    margin-top: 28px;
+  }
+
+  .gmap-section-head {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 14px;
+
+    p,
+    h2 {
+      margin: 0;
+    }
+
+    p {
+      color: var(--gmap-blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    h2 {
+      color: var(--gmap-ink);
+      font-size: clamp(20px, 3vw, 28px);
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+  }
+
+  .gmap-section-head--row {
+    align-items: end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+  }
+
+  .gmap-summary-grid,
+  .gmap-area-grid,
+  .gmap-context-grid,
+  .gmap-related-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .gmap-summary-grid,
+  .gmap-area-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .gmap-summary-card,
+  .gmap-area-card,
+  .gmap-context-card,
+  .gmap-related-card,
+  .gmap-profit-card {
+    border: 1px solid var(--gmap-line);
+    border-radius: 8px;
+    background: #ffffff;
+  }
+
+  .gmap-summary-card {
+    display: grid;
+    gap: 6px;
+    min-height: 132px;
+    padding: 16px;
+
+    span {
+      color: var(--gmap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    strong {
+      color: var(--gmap-ink);
+      font-size: clamp(20px, 3vw, 28px);
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 0;
+      color: var(--gmap-muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+  }
+
+  .gmap-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .gmap-tab,
+  .gmap-sort-controls button {
+    border: 1px solid var(--gmap-line);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--gmap-muted);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    min-height: 38px;
+    padding: 9px 12px;
+    white-space: nowrap;
+  }
+
+  .gmap-tab.is-active,
+  .gmap-sort-controls button.is-active {
+    border-color: var(--gmap-teal);
+    background: #ecfdf5;
+    color: var(--gmap-teal);
+  }
+
+  .gmap-profit-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+    overflow: hidden;
+  }
+
+  .gmap-profit-card__main {
+    display: grid;
+    gap: 12px;
+    padding: 22px;
+    background: #f8fbff;
+
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h3 {
+      color: var(--gmap-ink);
+      font-size: clamp(24px, 3vw, 34px);
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+
+    p {
+      color: var(--gmap-muted);
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+  }
+
+  .gmap-kicker {
+    color: var(--gmap-teal) !important;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .gmap-badge {
+    width: fit-content;
+    border-radius: 999px;
+    background: #fff4df;
+    color: var(--gmap-amber);
+    font-size: 12px;
+    font-weight: 900;
+    padding: 5px 9px;
+  }
+
+  .gmap-profit-card__numbers {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    div {
+      border: 1px solid #d7e7ff;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    span {
+      display: block;
+      color: var(--gmap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--gmap-blue);
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .gmap-profit-card__meta {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+
+    div {
+      border-bottom: 1px solid var(--gmap-line);
+      padding: 14px 18px;
+    }
+
+    div:last-child {
+      border-bottom: 0;
+    }
+
+    dt {
+      color: var(--gmap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    dd {
+      margin: 5px 0 0;
+      color: var(--gmap-ink);
+      font-size: 14px;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+  }
+
+  .gmap-plain-note {
+    margin: 10px 0 0;
+    border-left: 3px solid var(--gmap-amber);
+    color: var(--gmap-muted);
+    font-size: 13px;
+    line-height: 1.65;
+    padding: 2px 0 2px 12px;
+  }
+
+  .gmap-sort-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .gmap-table-wrap {
+    border: 1px solid var(--gmap-line);
+    border-radius: 8px;
+    overflow-x: auto;
+    background: #ffffff;
+  }
+
+  .gmap-table {
+    border-collapse: collapse;
+    min-width: 1120px;
+    width: 100%;
+
+    caption {
+      height: 1px;
+      overflow: hidden;
+      position: absolute;
+      width: 1px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--gmap-line);
+      color: var(--gmap-ink);
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead th {
+      background: var(--gmap-soft);
+      color: var(--gmap-muted);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    tbody tr.is-selected {
+      background: #fff8e8;
+    }
+
+    tbody tr:last-child th,
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody th {
+      min-width: 190px;
+
+      strong,
+      span {
+        display: block;
+      }
+
+      span {
+        margin-top: 4px;
+        color: var(--gmap-muted);
+        font-size: 12px;
+      }
+    }
+  }
+
+  .gmap-area-card,
+  .gmap-context-card {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+
+    span {
+      width: fit-content;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--gmap-blue);
+      font-size: 12px;
+      font-weight: 900;
+      padding: 4px 8px;
+    }
+
+    h3,
+    p,
+    small {
+      margin: 0;
+    }
+
+    h3 {
+      color: var(--gmap-ink);
+      font-size: 17px;
+      line-height: 1.3;
+    }
+
+    strong {
+      color: var(--gmap-amber);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    p,
+    small {
+      color: var(--gmap-muted);
+      font-size: 13px;
+      line-height: 1.65;
+      word-break: keep-all;
+    }
+
+    small {
+      color: var(--gmap-red);
+    }
+  }
+
+  .gmap-bar-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .gmap-bar-row {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: center;
+    border: 1px solid var(--gmap-line);
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 14px;
+  }
+
+  .gmap-bar-row.is-selected {
+    border-color: var(--gmap-teal);
+    background: #f0fdfa;
+  }
+
+  .gmap-bar-row__label {
+    display: grid;
+    gap: 4px;
+
+    strong {
+      color: var(--gmap-ink);
+      font-size: 14px;
+    }
+
+    span {
+      color: var(--gmap-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+  }
+
+  .gmap-bar-row__bars {
+    display: grid;
+    gap: 6px;
+  }
+
+  .gmap-bar {
+    align-items: center;
+    border-radius: 6px;
+    color: #ffffff;
+    display: flex;
+    font-size: 12px;
+    font-weight: 900;
+    min-height: 28px;
+    min-width: 88px;
+    padding: 0 10px;
+    white-space: nowrap;
+  }
+
+  .gmap-bar--latest {
+    background: var(--gmap-teal);
+  }
+
+  .gmap-bar--low {
+    background: #94a3b8;
+  }
+
+  .gmap-risk-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+
+    li {
+      border: 1px solid var(--gmap-line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--gmap-ink);
+      line-height: 1.65;
+      list-style: none;
+      padding: 13px 15px;
+    }
+  }
+
+  .gmap-related-card {
+    color: inherit;
+    display: grid;
+    gap: 6px;
+    min-height: 120px;
+    padding: 16px;
+    text-decoration: none;
+    transition: border-color 0.16s, transform 0.16s;
+
+    &:hover {
+      border-color: var(--gmap-teal);
+      transform: translateY(-1px);
+    }
+
+    strong {
+      color: var(--gmap-ink);
+      font-size: 15px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--gmap-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  @media (max-width: 1080px) {
+    .gmap-summary-grid,
+    .gmap-area-grid,
+    .gmap-context-grid,
+    .gmap-related-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 920px) {
+    .gmap-profit-card {
+      grid-template-columns: 1fr;
+    }
+
+    .gmap-bar-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .gmap-summary-grid,
+    .gmap-area-grid,
+    .gmap-context-grid,
+    .gmap-related-grid,
+    .gmap-profit-card__numbers {
+      grid-template-columns: 1fr;
+    }
+
+    .gmap-section-head--row {
+      align-items: stretch;
+    }
+
+    .gmap-sort-controls {
+      width: 100%;
+    }
+
+    .gmap-sort-controls button {
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    .gmap-profit-card__main {
+      padding: 18px;
+    }
+
+    .gmap-bar {
+      font-size: 11px;
+      min-width: 74px;
+    }
+  }
+}
