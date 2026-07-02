@@ -745,10 +745,10 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "property-tax-payment-2026",
-    title: "2026 재산세 납부 완전 가이드",
-    description: "2026년 재산세 7월·9월 납부 일정, 공시가격별 예상 세액, 분납 기준, 절세 포인트를 한눈에 정리합니다.",
+    title: "2026 재산세 납부기간 총정리",
+    description: "2026년 재산세 납부기간을 아파트·주택·토지·건축물별로 정리합니다. 7월·9월 일정과 6월 1일 과세기준일을 확인하세요.",
     order: 37.1,
-    badges: ["재산세", "7월납부", "부동산세금", "2026"],
+    badges: ["재산세", "납부기간", "주택·토지", "2026"],
   },
   {
     slug: "child-lifetime-gift-plan",

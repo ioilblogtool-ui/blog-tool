@@ -28,6 +28,57 @@
     }
   }
 
+  // 핵심 요약
+  .ptx-overview-grid,
+  .ptx-owner-grid,
+  .ptx-late-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .ptx-overview-card,
+  .ptx-owner-card,
+  .ptx-late-card {
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    box-shadow: 0 12px 30px rgba(26, 86, 219, 0.06);
+    padding: 18px;
+    display: grid;
+    gap: 8px;
+
+    span {
+      width: fit-content;
+      min-height: 24px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #e9f0fb;
+      color: #1a56db;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    strong {
+      color: #111928;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+  }
+
+  .ptx-overview-card {
+    strong {
+      font-size: clamp(22px, 3vw, 30px);
+      color: #1a56db;
+    }
+  }
+
   // 납부 일정
   .ptx-schedule-grid {
     display: grid;
@@ -54,6 +105,17 @@
 
     p, small { margin: 0; }
 
+    em {
+      width: fit-content;
+      font-style: normal;
+      font-size: 12px;
+      font-weight: 900;
+      color: #1a56db;
+      background: #e9f0fb;
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+
     p {
       font-weight: 600;
       color: #374151;
@@ -63,6 +125,16 @@
       color: #6b7280;
       font-size: 12px;
       line-height: 1.55;
+    }
+
+    b {
+      width: fit-content;
+      border-radius: 6px;
+      background: #111928;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.3;
+      padding: 6px 9px;
     }
   }
 
@@ -159,6 +231,96 @@
     font-size: 12px;
     color: #9ca3af;
     margin-top: 6px;
+  }
+
+  // 재산 종류별 일정
+  .ptx-asset-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #f8faff;
+
+    caption {
+      caption-side: top;
+      text-align: left;
+      font-size: 12px;
+      color: #6b7280;
+      padding: 12px 14px 8px;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e9f5;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead th {
+      font-weight: 900;
+      color: #374151;
+      background: #eef2fb;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    td:first-child {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      strong {
+        color: #111928;
+        font-weight: 900;
+      }
+    }
+  }
+
+  .ptx-asset-month {
+    font-weight: 900;
+    color: #1a56db;
+    white-space: nowrap;
+  }
+
+  .ptx-mini-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #1a56db;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  // 과세기준일
+  .ptx-owner-card {
+    h3 {
+      margin: 0;
+      color: #111928;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    strong {
+      color: #1a56db;
+      font-size: 14px;
+    }
+
+    small {
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+  }
+
+  // 납부기한 체크
+  .ptx-late-card {
+    strong {
+      font-size: 16px;
+    }
   }
 
   // 공시가격별 예시
@@ -336,6 +498,20 @@
       margin: 0;
       line-height: 1.55;
     }
+
+    a {
+      color: #1a56db;
+      font-size: 12px;
+      font-weight: 900;
+      text-decoration: none;
+
+      &:hover { text-decoration: underline; }
+    }
+
+    &--primary {
+      border-color: #1a56db;
+      background: #f0f4ff;
+    }
   }
 
   .ptx-payment-channel {
@@ -380,6 +556,9 @@
 
   // 반응형
   @media (max-width: 768px) {
+    .ptx-overview-grid,
+    .ptx-owner-grid,
+    .ptx-late-grid,
     .ptx-schedule-grid,
     .ptx-reductions-grid,
     .ptx-related-grid { grid-template-columns: 1fr; }

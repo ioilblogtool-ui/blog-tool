@@ -1,35 +1,134 @@
 export const PTX_META = {
   slug: "property-tax-payment-2026",
-  title: "2026 재산세 납부 완전 가이드",
+  title: "2026 재산세 납부기간 총정리",
   description:
-    "2026년 재산세 납부 일정, 계산 방법, 분납 기준, 절세 포인트를 한눈에 정리합니다.",
-  seoTitle: "2026 재산세 납부 일정·계산 방법 | 7월·9월 기준 완전 가이드",
+    "아파트·주택·토지·건축물별 2026년 재산세 납부기간과 6월 1일 과세기준일을 정리합니다.",
+  seoTitle: "2026 재산세 납부기간 총정리 | 아파트·주택·토지 언제 내야 할까?",
   seoDescription:
-    "2026년 재산세 7월·9월 납부 일정, 공시가격별 예상 세액, 분납 기준 250만 원, 1세대1주택 감면까지 한눈에. 아파트 보유세 얼마 나오는지 미리 확인하세요.",
-  updatedAt: "2026-06",
+    "2026년 재산세 납부기간을 아파트·주택·토지·건축물별로 정리했습니다. 7월·9월 납부 일정, 6월 1일 과세기준일, 분납 기준과 위택스 납부방법까지 확인하세요.",
+  updatedAt: "2026-07-02",
   dataNote:
-    "이 리포트는 행정안전부 공개 자료와 지방세법 기준으로 작성한 참고 자료입니다. 실제 고지세액은 지자체 조례, 감면, 세부담상한에 따라 달라질 수 있습니다.",
+    "이 리포트는 행정안전부 지방세 안내, 위택스, 지방세법상 재산세 납부 구조를 바탕으로 정리한 참고 자료입니다. 실제 고지세액과 납부 가능 방식은 지자체 고지서와 위택스 조회 결과가 우선합니다.",
 };
 
 export type PaymentSchedule = {
+  id: "july" | "september";
   month: string;
   period: string;
+  weekday: string;
   target: string;
   note: string;
+  highlight: string;
 };
 
 export const PTX_SCHEDULE: PaymentSchedule[] = [
   {
+    id: "july",
     month: "7월",
-    period: "7월 16일 ~ 7월 31일",
-    target: "주택 재산세 1기분 (세액의 1/2)",
-    note: "건축물·선박·항공기도 7월 납부",
+    period: "2026년 7월 16일 ~ 7월 31일",
+    weekday: "목요일 ~ 금요일",
+    target: "주택 1기분, 건축물, 선박, 항공기",
+    note: "주택분 재산세의 절반과 건축물분 재산세가 고지됩니다.",
+    highlight: "7월 31일 금요일까지",
   },
   {
+    id: "september",
     month: "9월",
-    period: "9월 16일 ~ 9월 30일",
-    target: "주택 재산세 2기분 (세액의 1/2) + 토지",
-    note: "20만 원 이하 소액은 7월에 전액 납부",
+    period: "2026년 9월 16일 ~ 9월 30일",
+    weekday: "수요일 ~ 수요일",
+    target: "주택 2기분, 토지",
+    note: "주택분 나머지 절반과 토지분 재산세가 고지됩니다.",
+    highlight: "9월 30일 수요일까지",
+  },
+];
+
+export type OverviewItem = {
+  label: string;
+  value: string;
+  note: string;
+};
+
+export const PTX_OVERVIEW: OverviewItem[] = [
+  {
+    label: "과세기준일",
+    value: "6월 1일",
+    note: "이날 현재 소유자가 해당 연도 재산세 납세의무자가 됩니다.",
+  },
+  {
+    label: "7월 납부",
+    value: "7월 16일~31일",
+    note: "주택 1기분, 건축물, 선박, 항공기 재산세를 확인합니다.",
+  },
+  {
+    label: "9월 납부",
+    value: "9월 16일~30일",
+    note: "주택 2기분과 토지분 재산세를 확인합니다.",
+  },
+];
+
+export type AssetScheduleRow = {
+  assetType: string;
+  july: string;
+  september: string;
+  summary: string;
+  badge?: string;
+};
+
+export const PTX_ASSET_SCHEDULE: AssetScheduleRow[] = [
+  {
+    assetType: "아파트·주택",
+    july: "1기분",
+    september: "2기분",
+    summary: "주택분 재산세는 7월과 9월에 나누어 고지됩니다.",
+    badge: "가장 많음",
+  },
+  {
+    assetType: "토지",
+    july: "-",
+    september: "납부",
+    summary: "토지분 재산세는 9월에 납부합니다.",
+  },
+  {
+    assetType: "건축물",
+    july: "납부",
+    september: "-",
+    summary: "상가·일반 건축물분은 7월 납부 대상입니다.",
+  },
+  {
+    assetType: "선박·항공기",
+    july: "납부",
+    september: "-",
+    summary: "해당 자산 보유자에게만 부과됩니다.",
+  },
+];
+
+export type OwnershipCase = {
+  title: string;
+  dateLabel: string;
+  payer: string;
+  explanation: string;
+  caution?: string;
+};
+
+export const PTX_OWNERSHIP_CASES: OwnershipCase[] = [
+  {
+    title: "5월 31일 잔금·등기 완료",
+    dateLabel: "6월 1일 전",
+    payer: "새 소유자 부담 가능성 높음",
+    explanation: "6월 1일 현재 소유자가 새 매수자라면 해당 연도 재산세 납세의무자가 됩니다.",
+  },
+  {
+    title: "6월 1일 현재 보유",
+    dateLabel: "과세기준일",
+    payer: "그날 소유자가 납세의무자",
+    explanation: "재산세는 매년 6월 1일 현재 소유자를 기준으로 부과됩니다.",
+  },
+  {
+    title: "6월 2일 매수",
+    dateLabel: "6월 1일 후",
+    payer: "기존 소유자 부담 가능성 높음",
+    explanation: "매수일이 6월 1일 이후라면 법정 납세의무는 기존 소유자에게 남을 수 있습니다.",
+    caution: "단, 거래 당사자 간 정산 특약은 별도로 확인해야 합니다.",
   },
 ];
 
@@ -166,6 +265,8 @@ export type PaymentMethod = {
   method: string;
   channel: string;
   note: string;
+  priority: "primary" | "secondary";
+  url?: string;
 };
 
 export const PTX_PAYMENT_METHODS: PaymentMethod[] = [
@@ -173,59 +274,100 @@ export const PTX_PAYMENT_METHODS: PaymentMethod[] = [
     method: "위택스(WeTax)",
     channel: "www.wetax.go.kr",
     note: "PC·모바일 모두 가능. 카드·계좌이체",
+    priority: "primary",
+    url: "https://www.wetax.go.kr",
   },
   {
     method: "스마트위택스 앱",
     channel: "모바일 앱",
     note: "간편인증 로그인 후 납부",
+    priority: "primary",
   },
   {
     method: "ARS 전화",
     channel: "1588-2460",
     note: "카드 납부 가능",
+    priority: "secondary",
   },
   {
     method: "금융기관 CD/ATM",
     channel: "전국 은행 ATM",
     note: "고지서 지참 시 납부",
+    priority: "secondary",
   },
   {
     method: "편의점",
     channel: "CU·GS25 등",
     note: "납부 고지서 바코드 스캔",
+    priority: "secondary",
+  },
+];
+
+export type LatePaymentNote = {
+  title: string;
+  body: string;
+};
+
+export const PTX_LATE_PAYMENT_NOTES: LatePaymentNote[] = [
+  {
+    title: "기한 말일 전에 미리 납부",
+    body: "납부 마지막 날에는 위택스 접속이 몰릴 수 있으므로 가능하면 1~2일 전에 확인하는 편이 안전합니다.",
+  },
+  {
+    title: "전자고지·자동이체 확인",
+    body: "전자고지를 신청했다면 우편 고지서가 오지 않을 수 있습니다. 위택스 또는 지자체 앱에서 고지 내역을 확인하세요.",
+  },
+  {
+    title: "지연 부담 가능성",
+    body: "납부기한을 넘기면 납부지연 부담이 생길 수 있습니다. 실제 가산 여부와 금액은 고지서와 지자체 안내를 기준으로 확인해야 합니다.",
   },
 ];
 
 export const PTX_FAQ = [
   {
-    question: "재산세 납부 고지서는 언제 오나요?",
+    question: "2026년 재산세 납부기간은 언제인가요?",
     answer:
-      "7월 납부분은 6월 말~7월 초, 9월 납부분은 8월 말~9월 초에 우편 또는 전자 고지로 발송됩니다. 위택스에서도 조회 가능합니다.",
+      "2026년 재산세는 7월 16일부터 7월 31일까지, 9월 16일부터 9월 30일까지 납부합니다. 주택은 보통 7월과 9월에 나누어 고지되고, 토지는 9월, 건축물은 7월 납부 대상입니다.",
   },
   {
-    question: "재산세 공시가격은 어디서 확인하나요?",
+    question: "아파트 재산세는 7월에 내나요, 9월에 내나요?",
     answer:
-      "국토교통부 부동산 공시가격 알리미(realtyprice.kr)에서 연도별 공동주택 공시가격을 조회할 수 있습니다. 매년 4월 말 확정 공시됩니다.",
+      "아파트와 주택 재산세는 원칙적으로 7월 1기분과 9월 2기분으로 나누어 납부합니다. 다만 주택분 세액이 소액이면 7월에 한 번에 고지될 수 있으므로 실제 고지서는 위택스나 지자체 안내를 확인해야 합니다.",
   },
   {
-    question: "20만 원 이하 소액은 어떻게 납부하나요?",
+    question: "토지 재산세 납부기간은 언제인가요?",
     answer:
-      "주택 재산세 연간 합계가 20만 원 이하인 경우 7월에 전액 부과됩니다. 9월에 별도 고지서가 나오지 않습니다.",
+      "토지분 재산세는 9월 납부 대상입니다. 2026년에는 9월 16일부터 9월 30일까지가 납부기간입니다.",
   },
   {
-    question: "분납 신청은 따로 해야 하나요?",
+    question: "건축물 재산세는 언제 내나요?",
     answer:
-      "별도 신청 없이 납부기한 내 일부만 납부하면 됩니다. 250만 원 초과분에 대해 2개월 이내 나머지를 내면 가산세 없이 분납 처리됩니다.",
+      "건축물분 재산세는 7월 납부 대상입니다. 상가, 일반 건축물 등은 주택분과 구분되어 고지될 수 있습니다.",
   },
   {
-    question: "종부세와 재산세는 어떻게 다른가요?",
+    question: "재산세는 누가 내나요?",
     answer:
-      "재산세는 모든 부동산 보유자에게 지방세로 부과됩니다. 종합부동산세(종부세)는 공시가격 합계가 1세대 1주택 기준 12억 원(다주택 9억 원)을 초과할 때 국세로 추가 부과됩니다. 12월에 납부합니다.",
+      "재산세는 매년 6월 1일 현재 소유자를 기준으로 부과됩니다. 6월 1일 전후로 부동산을 사고팔았다면 잔금일, 등기일, 계약상 정산 특약을 함께 확인하는 것이 좋습니다.",
   },
   {
-    question: "재산세를 카드로 납부하면 포인트가 쌓이나요?",
+    question: "재산세 고지서를 못 받으면 어떻게 하나요?",
     answer:
-      "신용카드 납부 시 카드사 혜택에 따라 포인트 또는 캐시백이 적용됩니다. 단, 무이자 할부는 대부분 지방세 납부에 적용되지 않습니다. 납부 전 카드사 조건을 확인하세요.",
+      "우편 고지서를 받지 못했더라도 위택스나 스마트위택스에서 조회할 수 있습니다. 전자고지를 신청했다면 우편 고지서가 오지 않을 수 있으므로 온라인 고지 내역을 먼저 확인하세요.",
+  },
+  {
+    question: "재산세를 카드로 납부할 수 있나요?",
+    answer:
+      "위택스와 금융기관 납부 채널을 통해 카드 납부가 가능합니다. 카드사별 혜택, 무이자 할부, 납부 수수료 여부는 시점마다 다를 수 있어 납부 전 카드사 조건을 확인해야 합니다.",
+  },
+  {
+    question: "재산세 분납은 언제 가능한가요?",
+    answer:
+      "고액 고지서의 경우 일정 기준을 넘으면 분납이 가능할 수 있습니다. 분납 가능 금액과 절차는 실제 고지서와 위택스 안내가 우선이므로, 납부기한 전에 조회해 확인하는 것이 안전합니다.",
+  },
+  {
+    question: "재산세와 종합부동산세는 같은 세금인가요?",
+    answer:
+      "재산세는 지방세로 부동산 보유자에게 부과되고, 종합부동산세는 일정 공시가격 기준을 넘는 경우 별도로 부과되는 국세입니다. 납부 시기도 달라 재산세는 7월·9월, 종부세는 보통 12월에 확인합니다.",
   },
 ];
 
@@ -233,12 +375,22 @@ export const PTX_RELATED_LINKS = [
   {
     label: "아파트 보유세 계산기",
     href: "/tools/apartment-holding-tax/",
-    desc: "재산세+종부세 실부담 즉시 계산",
+    desc: "공시가격으로 재산세와 종부세를 추정합니다.",
+  },
+  {
+    label: "부동산 취득세 계산기",
+    href: "/tools/real-estate-acquisition-tax/",
+    desc: "집을 살 때 내는 취득세를 함께 확인합니다.",
   },
   {
     label: "2026 다주택자 세금 완전 분석",
     href: "/reports/multi-house-tax-2026/",
-    desc: "취득세·종부세·양도세 총정리",
+    desc: "취득세·보유세·양도세 구조를 함께 정리합니다.",
+  },
+  {
+    label: "서울 구별 아파트 집값 순위 2026",
+    href: "/reports/seoul-district-apartment-price-ranking-2026/",
+    desc: "보유세 부담과 함께 볼 서울 아파트 가격 리포트입니다.",
   },
 ];
 
