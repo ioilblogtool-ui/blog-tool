@@ -108,40 +108,18 @@ UI/스타일 수정?
 ### 구현 완료 후 검증 명령어
 
 ```bash
-# 누락 슬러그 자동 검출 (0개여야 정상)
-node -e "
-const fs = require('fs');
-const idx = fs.readFileSync('src/pages/index.astro', 'utf8');
-const ridx = fs.readFileSync('src/pages/reports/index.astro', 'utf8');
-const tools = fs.readFileSync('src/data/tools.ts', 'utf8');
-const reports = fs.readFileSync('src/data/reports.ts', 'utf8');
-
-const topicKeys = [...idx.matchAll(/[\"']([a-z0-9][a-z0-9-]+)[\"']\s*:\s*\"[^\"]+\"/g)].map(m=>m[1]);
-const homeReportKeys = [...idx.matchAll(/[\"']([a-z0-9][a-z0-9-]+)[\"']\s*:\s*\{[^}]*category/g)].map(m=>m[1]);
-const hubReportKeys = [...ridx.matchAll(/[\"']([a-z0-9][a-z0-9-]+)[\"']\s*:\s*\{[^}]*eyebrow/g)].map(m=>m[1]);
-
-const toolSlugs = [...tools.matchAll(/slug:\s*['\"]([^'\"]+)['\"]/g)].map(m=>m[1]).filter(s=>s!=='string');
-const reportSlugs = [...reports.matchAll(/slug:\s*['\"]([^'\"]+)['\"]/g)].map(m=>m[1]).filter(s=>s!=='string');
-
-const missingTopic = toolSlugs.filter(s=>!topicKeys.includes(s));
-const missingHomeReport = reportSlugs.filter(s=>!homeReportKeys.includes(s));
-const missingHubReport = reportSlugs.filter(s=>!hubReportKeys.includes(s));
-
-if(missingTopic.length) console.log('❌ topicBySlug 누락:', missingTopic);
-if(missingHomeReport.length) console.log('❌ index.astro reportMeta 누락:', missingHomeReport);
-if(missingHubReport.length) console.log('❌ reports/index.astro 누락:', missingHubReport);
-if(!missingTopic.length && !missingHomeReport.length && !missingHubReport.length) console.log('✅ 누락 없음');
-"
+npm run check:all
 ```
 
-실제 실행은 아래 명령어로 간단하게:
+> `astro check`(타입·임포트 오류) + `check:mapping`(카테고리 누락)을 순서대로 실행.
+> 둘 다 통과해야 커밋. 풀 빌드는 push 후 CI가 처리한다.
+
+카테고리 누락만 빠르게 보려면:
 
 ```bash
-npm run check:mapping
+npm run check:mapping        # 검사만
+npm run fix:mapping          # 자동 수정
 ```
-
-> `scripts/check-category-mapping.mjs` 가 tools/reports 슬러그 전체를 검사.
-> 누락 항목이 있으면 어떤 파일에 무엇을 추가해야 하는지 출력됨.
 
 ---
 
