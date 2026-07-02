@@ -1,0 +1,509 @@
+.nhc-page {
+  --nhc-ink:       #14213d;
+  --nhc-muted:     #5d6b82;
+  --nhc-line:      rgba(20, 33, 61, 0.12);
+  --nhc-soft:      #f5f7fb;
+
+  --nhc-purple:    #7c3aed;
+  --nhc-purple-bg: #ede9fe;
+  --nhc-purple-dk: #6d28d9;
+
+  --nhc-teal:      #0891b2;
+  --nhc-teal-bg:   #e0f2fe;
+  --nhc-teal-dk:   #0e7490;
+
+  --nhc-amber:     #d97706;
+  --nhc-amber-bg:  #fef3c7;
+
+  --nhc-green:     #059669;
+  --nhc-green-bg:  #d1fae5;
+
+  --nhc-red:       #dc2626;
+  --nhc-red-bg:    #fee2e2;
+}
+
+.nhc-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nhc-summary-card {
+  padding: 1.25rem;
+  border-radius: 14px;
+  border: 1.5px solid var(--nhc-line);
+
+  .nhc-summary-card__label {
+    font-size: 0.8125rem;
+    color: var(--nhc-muted);
+    margin: 0 0 0.25rem;
+  }
+
+  .nhc-summary-card__value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+
+  .nhc-summary-card__sub {
+    font-size: 0.75rem;
+    color: var(--nhc-muted);
+    margin: 0;
+  }
+
+  &--facility {
+    border-top: 3px solid var(--nhc-purple);
+    background: var(--nhc-purple-bg);
+    .nhc-summary-card__value { color: var(--nhc-purple-dk); }
+  }
+
+  &--home {
+    border-top: 3px solid var(--nhc-teal);
+    background: var(--nhc-teal-bg);
+    .nhc-summary-card__value { color: var(--nhc-teal-dk); }
+  }
+
+  &--diff {
+    border-top: 3px solid var(--nhc-amber);
+    background: var(--nhc-amber-bg);
+    .nhc-summary-card__value { color: var(--nhc-amber); }
+  }
+}
+
+.nhc-cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--nhc-line);
+    text-align: right;
+
+    &:first-child { text-align: left; }
+  }
+
+  th {
+    background: var(--nhc-soft);
+    font-weight: 600;
+  }
+
+  .nhc-col--facility { color: var(--nhc-purple-dk); }
+  .nhc-col--home     { color: var(--nhc-teal-dk); }
+
+  tr:last-child td { border-bottom: none; }
+
+  .nhc-cost-table__diff {
+    color: var(--nhc-amber);
+    font-weight: 600;
+  }
+
+  .nhc-cost-table__na {
+    color: #d1d5db;
+    font-style: italic;
+  }
+}
+
+.nhc-extra-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--nhc-line);
+    text-align: left;
+  }
+
+  th {
+    background: var(--nhc-soft);
+    font-weight: 600;
+  }
+
+  .nhc-extra-table__amount {
+    font-weight: 600;
+    color: var(--nhc-red);
+  }
+}
+
+.nhc-combo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nhc-combo-card {
+  padding: 1.125rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--nhc-line);
+
+  .nhc-combo-card__name {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    margin: 0 0 0.25rem;
+  }
+
+  .nhc-combo-card__content {
+    font-size: 0.8125rem;
+    color: var(--nhc-muted);
+    margin: 0 0 0.5rem;
+  }
+
+  .nhc-combo-card__amount {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--nhc-teal-dk);
+    margin: 0;
+  }
+}
+
+.nhc-combo-badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 99px;
+  margin-bottom: 0.5rem;
+  background: var(--nhc-teal-bg);
+  color: var(--nhc-teal-dk);
+
+  &--saving {
+    background: var(--nhc-green-bg);
+    color: var(--nhc-green);
+  }
+}
+
+.nhc-checklist {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--nhc-line);
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--nhc-soft);
+    font-weight: 600;
+  }
+
+  .nhc-checklist__facility { color: var(--nhc-purple-dk); }
+  .nhc-checklist__home     { color: var(--nhc-teal-dk); }
+}
+
+.nhc-family-box {
+  background: var(--nhc-green-bg);
+  border: 1.5px solid var(--nhc-green);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+
+  .nhc-family-box__title {
+    font-weight: 700;
+    color: var(--nhc-green);
+    margin: 0 0 0.5rem;
+  }
+
+  .nhc-family-box__body {
+    font-size: 0.9rem;
+    color: var(--nhc-ink);
+    line-height: 1.7;
+    margin: 0;
+  }
+}
+
+.nhc-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.nhc-timeline-item {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0 1rem;
+  position: relative;
+  padding-bottom: 1.25rem;
+
+  &:last-child { padding-bottom: 0; }
+
+  .nhc-timeline-item__dot {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--nhc-teal);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  &:not(:last-child) .nhc-timeline-item__dot::after {
+    content: "";
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: calc(100% + 0.5rem + 1.25rem);
+    background: var(--nhc-line);
+    z-index: 0;
+  }
+
+  .nhc-timeline-item__content { padding-top: 0.25rem; }
+
+  .nhc-timeline-item__title {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    margin: 0 0 0.25rem;
+  }
+
+  .nhc-timeline-item__desc {
+    font-size: 0.8125rem;
+    color: var(--nhc-muted);
+    margin: 0 0 0.375rem;
+  }
+
+  .nhc-timeline-item__duration {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--nhc-teal-bg);
+    color: var(--nhc-teal-dk);
+    padding: 0.125rem 0.5rem;
+    border-radius: 99px;
+  }
+}
+
+.nhc-cta-box {
+  background: var(--nhc-teal-bg);
+  border: 1.5px solid var(--nhc-teal);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .nhc-cta-box__text {
+    font-weight: 600;
+    color: var(--nhc-ink);
+    margin: 0;
+  }
+
+  .nhc-cta-box__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--nhc-teal);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+}
+
+.nhc-badge {
+  display: inline-block;
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--nhc-amber-bg);
+  color: var(--nhc-amber);
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+
+.nhc-page .section-desc {
+  font-size: 0.9rem;
+  color: var(--nhc-muted);
+  margin: -0.5rem 0 1rem;
+  line-height: 1.6;
+}
+
+// 감경별 월비용 비교 카드
+.nhc-burden-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nhc-burden-card {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--nhc-line);
+  background: var(--nhc-soft);
+
+  .nhc-burden-card__label {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--nhc-ink);
+    margin: 0 0 0.2rem;
+  }
+
+  .nhc-burden-card__type {
+    font-size: 0.75rem;
+    color: var(--nhc-muted);
+    margin: 0 0 0.75rem;
+    line-height: 1.4;
+  }
+
+  .nhc-burden-card__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem;
+    margin-bottom: 0.375rem;
+    flex-wrap: wrap;
+  }
+
+  .nhc-burden-card__tag {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+
+    &--facility {
+      background: var(--nhc-purple-bg);
+      color: var(--nhc-purple-dk);
+    }
+
+    &--home {
+      background: var(--nhc-teal-bg);
+      color: var(--nhc-teal-dk);
+    }
+  }
+
+  .nhc-burden-card__val {
+    font-weight: 700;
+    font-size: 0.875rem;
+
+    &--facility { color: var(--nhc-purple-dk); }
+    &--home     { color: var(--nhc-teal-dk); }
+  }
+
+  .nhc-burden-card__diff {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--nhc-amber);
+    margin: 0.5rem 0 0;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--nhc-line);
+  }
+}
+
+// 요양원 선택 체크리스트
+.nhc-facility-check-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nhc-facility-check-card {
+  background: var(--nhc-soft);
+  border: 1.5px solid var(--nhc-line);
+  border-radius: 12px;
+  padding: 1.125rem 1.25rem;
+
+  .nhc-facility-check-card__category {
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--nhc-purple-dk);
+    margin: 0 0 0.625rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1.5px solid var(--nhc-purple-bg);
+  }
+
+  .nhc-facility-check-card__list {
+    margin: 0;
+    padding: 0 0 0 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    li {
+      font-size: 0.8375rem;
+      color: var(--nhc-ink);
+      line-height: 1.5;
+    }
+  }
+}
+
+// 재가요양 기관 선택 팁
+.nhc-home-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.nhc-home-tip-item {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0 1rem;
+  align-items: start;
+
+  .nhc-home-tip-item__num {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--nhc-teal);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .nhc-home-tip-item__title {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--nhc-ink);
+    margin: 0 0 0.25rem;
+  }
+
+  .nhc-home-tip-item__body {
+    font-size: 0.8375rem;
+    color: var(--nhc-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+}
