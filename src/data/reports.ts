@@ -912,6 +912,13 @@ export const reports: ReportMeta[] = [
     badges: ["청년적금", "청년도약계좌", "정부지원", "2026"],
   },
   {
+    slug: "seoul-gyeonggi-youth-allowance-comparison-2026",
+    title: "서울 vs 경기 청년수당 비교 2026 | 청년수당·청년기본소득 조건 차이",
+    description: "서울 청년수당과 경기도 청년기본소득을 나이, 거주, 소득, 취업 상태, 지급 방식 기준으로 비교합니다. 경기 청년수당 검색어와 공식 제도명의 차이까지 정리했습니다.",
+    order: 25.11,
+    badges: ["청년수당", "청년기본소득", "서울·경기", "2026"],
+  },
+  {
     slug: "youth-future-savings-2026",
     title: "청년미래적금 금리 비교 2026",
     description: "2026년 6월 22일 비교공시 기준 청년미래적금 은행별 기본금리, 최고금리, 우대조건과 나에게 유리한 은행 선택 기준을 정리합니다.",
