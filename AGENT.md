@@ -75,6 +75,76 @@ UI/스타일 수정?
 
 ---
 
+## 5-1. 신규 페이지 등록 필수 체크포인트 ⚠️
+
+> 새 계산기·리포트를 구현할 때 아래 파일 등록을 **빠짐없이** 완료해야 한다.
+> 누락 시 메인/리포트 페이지에서 "기타" 표시 또는 목록에서 제외된다.
+
+### 계산기 (tools/) 신규 추가 시
+
+| 순서 | 파일 | 등록 내용 |
+|---|---|---|
+| 1 | `src/data/tools.ts` | `{ slug, title, order, badges }` 항목 추가 |
+| 2 | `src/pages/index.astro` → `topicBySlug` | `"<slug>": "<카테고리>"` 추가 |
+| 3 | `src/styles/app.scss` | `@use 'scss/pages/<slug>'` 추가 |
+| 4 | `public/sitemap.xml` | `<url>` 블록 추가 |
+
+**`topicBySlug` 카테고리 목록:**
+`"연봉·이직"` / `"성과급 비교"` / `"육아휴직·출산"` / `"육아·양육"` / `"복지·지원금"` / `"부동산·내집마련"` / `"투자·재테크"` / `"세금·연말정산"` / `"대출·금융"` / `"보험·의료비"` / `"결혼·웨딩"` / `"여행·생활"` / `"AI·생산성"` / `"스포츠"` / `"자동차"` / `"암호화폐"` / `"생활·유틸리티"`
+
+### 리포트 (reports/) 신규 추가 시
+
+| 순서 | 파일 | 등록 내용 |
+|---|---|---|
+| 1 | `src/data/reports.ts` | `{ slug, title, description, order, badges }` 항목 추가 |
+| 2 | `src/pages/index.astro` → `reportMetaBySlug` | `"<slug>": { category, isNew }` 추가 |
+| 3 | `src/pages/reports/index.astro` → `reportMetaBySlug` | `"<slug>": { eyebrow, tags, category, isNew }` 추가 |
+| 4 | `src/styles/app.scss` | `@use 'scss/pages/<slug>'` 추가 |
+| 5 | `public/sitemap.xml` | `<url>` 블록 추가 |
+
+**`category` 값 목록 (reports/index.astro 필터 기준):**
+`"salary"` / `"bonus"` / `"estate"` / `"asset"` / `"life"` / `"culture"` / `"support"` / `"insurance"` / `"tax"` / `"politics"` / `"crypto"` / `"sports"`
+
+### 구현 완료 후 검증 명령어
+
+```bash
+# 누락 슬러그 자동 검출 (0개여야 정상)
+node -e "
+const fs = require('fs');
+const idx = fs.readFileSync('src/pages/index.astro', 'utf8');
+const ridx = fs.readFileSync('src/pages/reports/index.astro', 'utf8');
+const tools = fs.readFileSync('src/data/tools.ts', 'utf8');
+const reports = fs.readFileSync('src/data/reports.ts', 'utf8');
+
+const topicKeys = [...idx.matchAll(/[\"']([a-z0-9][a-z0-9-]+)[\"']\s*:\s*\"[^\"]+\"/g)].map(m=>m[1]);
+const homeReportKeys = [...idx.matchAll(/[\"']([a-z0-9][a-z0-9-]+)[\"']\s*:\s*\{[^}]*category/g)].map(m=>m[1]);
+const hubReportKeys = [...ridx.matchAll(/[\"']([a-z0-9][a-z0-9-]+)[\"']\s*:\s*\{[^}]*eyebrow/g)].map(m=>m[1]);
+
+const toolSlugs = [...tools.matchAll(/slug:\s*['\"]([^'\"]+)['\"]/g)].map(m=>m[1]).filter(s=>s!=='string');
+const reportSlugs = [...reports.matchAll(/slug:\s*['\"]([^'\"]+)['\"]/g)].map(m=>m[1]).filter(s=>s!=='string');
+
+const missingTopic = toolSlugs.filter(s=>!topicKeys.includes(s));
+const missingHomeReport = reportSlugs.filter(s=>!homeReportKeys.includes(s));
+const missingHubReport = reportSlugs.filter(s=>!hubReportKeys.includes(s));
+
+if(missingTopic.length) console.log('❌ topicBySlug 누락:', missingTopic);
+if(missingHomeReport.length) console.log('❌ index.astro reportMeta 누락:', missingHomeReport);
+if(missingHubReport.length) console.log('❌ reports/index.astro 누락:', missingHubReport);
+if(!missingTopic.length && !missingHomeReport.length && !missingHubReport.length) console.log('✅ 누락 없음');
+"
+```
+
+실제 실행은 아래 명령어로 간단하게:
+
+```bash
+npm run check:mapping
+```
+
+> `scripts/check-category-mapping.mjs` 가 tools/reports 슬러그 전체를 검사.
+> 누락 항목이 있으면 어떤 파일에 무엇을 추가해야 하는지 출력됨.
+
+---
+
 ## 6. 파일 네이밍 컨벤션
 
 | 종류 | 패턴 | 예시 |
