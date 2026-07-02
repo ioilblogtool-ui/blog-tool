@@ -1,0 +1,203 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  LTCI_GRADES,
+  LTCI_BURDEN_TYPES,
+  LTCI_SERVICES,
+  LTCI_FAQ,
+  LTCI_SEO_INTRO,
+  LTCI_SEO_CRITERIA,
+} from "../../data/ltciGradeBenefit2026";
+
+const title = "장기요양등급 혜택·비용 계산기 2026 | 등급별 본인부담금 바로 계산";
+const description = "장기요양 1~5등급 입력하면 월 급여 한도·본인부담금·공단 지원액 바로 계산. 재가 vs 시설급여 비교 포함. 감경 대상 여부도 확인 가능.";
+---
+
+<BaseLayout {title} {description} ogType="website">
+  <SiteHeader />
+  <main class="container page-shell ltci-page">
+
+    <CalculatorHero
+      eyebrow="복지·지원금"
+      title="장기요양등급 혜택·비용 계산기 2026"
+      description="등급과 소득 조건을 입력하면 월 본인부담금과 공단 지원액을 즉시 계산합니다."
+    />
+
+    <!-- 계산기 -->
+    <section class="ltci-calculator">
+      <div class="ltci-inputs">
+        <p class="ltci-inputs__label">장기요양등급</p>
+        <div class="ltci-grade-selector">
+          {LTCI_GRADES.map(g => (
+            <button
+              class="ltci-grade-btn"
+              data-grade={g.grade}
+              data-home-limit={g.homeCareLimit}
+              data-facility-rate={g.facilityRate}
+              data-eligible={String(g.eligible)}
+            >
+              {g.label}
+            </button>
+          ))}
+        </div>
+
+        <p class="ltci-inputs__label" style="margin-top:1.25rem">급여 유형</p>
+        <div class="ltci-mode-toggle">
+          <button class="ltci-mode-btn ltci-mode-btn--active" data-mode="home">재가급여</button>
+          <button class="ltci-mode-btn" data-mode="facility">시설급여</button>
+          <button class="ltci-mode-btn" data-mode="compare">나란히 비교</button>
+        </div>
+
+        <p class="ltci-inputs__label" style="margin-top:1.25rem">건강보험 유형</p>
+        <select class="ltci-burden-select" id="ltci-burden">
+          {LTCI_BURDEN_TYPES.map(b => (
+            <option
+              value={b.type}
+              data-home-ratio={b.homeCareRatio}
+              data-facility-ratio={b.facilityRatio}
+            >
+              {b.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <!-- 단일 모드 결과 -->
+      <div class="ltci-results" id="ltci-results">
+        <div class="ltci-result-card ltci-result-card--limit">
+          <p class="ltci-result-card__label">월 급여 한도</p>
+          <p class="ltci-result-card__value" id="ltci-limit">—</p>
+          <p class="ltci-result-card__sub">공단 인정 한도</p>
+        </div>
+        <div class="ltci-result-card ltci-result-card--burden">
+          <p class="ltci-result-card__label">본인부담금</p>
+          <p class="ltci-result-card__value" id="ltci-burden-amount">—</p>
+          <p class="ltci-result-card__sub" id="ltci-burden-ratio">재가 15%</p>
+        </div>
+        <div class="ltci-result-card ltci-result-card--public">
+          <p class="ltci-result-card__label">공단 지원액</p>
+          <p class="ltci-result-card__value" id="ltci-public">—</p>
+          <p class="ltci-result-card__sub">국가 부담분</p>
+        </div>
+      </div>
+
+      <!-- 비교 모드 (기본 숨김) -->
+      <div class="ltci-compare-row" id="ltci-compare" style="display:none">
+        <div>
+          <p class="ltci-compare-col__header ltci-compare-col__header--home">재가급여</p>
+          <div id="ltci-compare-home"></div>
+        </div>
+        <div>
+          <p class="ltci-compare-col__header ltci-compare-col__header--facility">시설급여 (요양원)</p>
+          <div id="ltci-compare-facility"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.25rem">
+        <InfoNotice
+          title="참고 안내"
+          lines={[
+            "수가는 건강보험공단 고시(2026년 기준) 추정치이며 지역·시설에 따라 다를 수 있습니다.",
+            "시설급여에는 식비·이미용비 등 비급여 항목이 별도로 발생합니다.",
+          ]}
+        />
+      </div>
+    </section>
+
+    <!-- 섹션 1: 등급별 판정 기준 -->
+    <section class="content-section">
+      <h2 class="section-title">등급별 판정 기준</h2>
+      <div style="overflow-x:auto">
+        <table class="ltci-grade-table">
+          <thead>
+            <tr>
+              <th>등급</th>
+              <th>재가 월 한도</th>
+              <th>시설급여</th>
+              <th>판정 기준</th>
+            </tr>
+          </thead>
+          <tbody>
+            {LTCI_GRADES.map(g => (
+              <tr>
+                <td><strong>{g.label}</strong></td>
+                <td>{g.homeCareLimit.toLocaleString()}원</td>
+                <td style={g.eligible ? "color:#059669;font-weight:600" : "color:#d97706;font-weight:600"}>
+                  {g.eligible ? "가능" : "불가"}
+                </td>
+                <td style="font-size:0.8125rem;color:#5d6b82;white-space:normal">{g.desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 섹션 2: 서비스 종류 -->
+    <section class="content-section">
+      <h2 class="section-title">이용 가능한 서비스 종류</h2>
+      <div class="ltci-service-grid">
+        {LTCI_SERVICES.map(s => (
+          <article class="ltci-service-card">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+              <span class="ltci-service-card__name">{s.name}</span>
+              <span class={`ltci-service-badge ltci-service-badge--${s.badge === "재가" ? "home" : "facility"}`}>
+                {s.badge}
+              </span>
+            </div>
+            <p class="ltci-service-card__desc">{s.desc}</p>
+            <p class="ltci-service-card__rate">
+              단위당 약 {s.ratePerUnit.toLocaleString()}원/{s.unit}&nbsp;<span style="font-size:0.75rem;color:#9ca3af">(추정)</span>
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 섹션 3: 시설급여 안내 -->
+    <section class="content-section">
+      <h2 class="section-title">시설급여(요양원) 실제 비용 구조</h2>
+      <InfoNotice
+        title="시설 입소 시 추가 비용 발생"
+        lines={[
+          "급여 본인부담금 외에 식비(월 약 18만원), 이미용·간식·행사비(월 약 4만원) 등이 추가됩니다.",
+          "기저귀가 필요한 경우 월 5~8만원이 더 발생할 수 있습니다.",
+          "상급 침실(1인실) 선택 시 추가 비용이 발생합니다. 비용은 시설마다 다릅니다.",
+        ]}
+      />
+    </section>
+
+    <!-- 섹션 4: 내부 CTA -->
+    <section class="content-section">
+      <div class="ltci-cta-box">
+        <p class="ltci-cta-box__text">요양원 vs 재가요양 월비용, 얼마나 차이 날까?</p>
+        <a href="/reports/nursing-home-vs-home-care-cost-2026/" class="ltci-cta-box__btn">
+          비교 리포트 보기 →
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="노인 장기요양보험 제도 완전 가이드"
+      intro={LTCI_SEO_INTRO}
+      criteria={LTCI_SEO_CRITERIA}
+      faq={LTCI_FAQ.map(f => ({ question: f.q, answer: f.a }))}
+      related={[
+        { href: "/reports/nursing-home-vs-home-care-cost-2026/", label: "요양원 vs 재가요양 월비용 비교 리포트" },
+        { href: "/tools/basic-pension-eligibility-calculator-2026/", label: "기초연금 수급 가능성 계산기" },
+        { href: "/tools/welfare-benefit-eligibility-calculator/", label: "복지급여 수급 자격 계산기" },
+        { href: "/tools/livelihood-benefit-income-recognition-2026/", label: "생계급여 소득인정액 계산기" },
+        { href: "/reports/national-pension-generation-comparison-2026/", label: "국민연금 세대별 손익 비교 리포트" },
+      ]}
+    />
+
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script src="/scripts/ltci-grade-benefit-calculator-2026.js" defer></script>

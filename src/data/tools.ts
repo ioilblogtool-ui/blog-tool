@@ -2080,6 +2080,19 @@ export const tools: ToolMeta[] = [
       { label: "혼인·출산 추가공제", value: "최대 1억원" },
     ],
   },
+  {
+    slug: "ltci-grade-benefit-calculator-2026",
+    title: "장기요양등급 혜택·비용 계산기 2026",
+    description: "1~5등급 입력 시 월 급여 한도·본인부담금·공단지원액 바로 계산. 재가 vs 시설 비교 포함.",
+    order: 60.8,
+    eyebrow: "복지 계산기",
+    category: "복지·지원금",
+    badges: ["신규", "복지", "노인", "장기요양"],
+    previewStats: [
+      { label: "1등급 재가 한도", value: "230만원/월" },
+      { label: "일반 본인부담", value: "재가 15%" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)
