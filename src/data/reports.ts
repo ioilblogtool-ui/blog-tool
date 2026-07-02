@@ -1164,6 +1164,13 @@ export const reports: ReportMeta[] = [
     badges: ["월드컵", "감독연봉", "홍명보", "2026"],
   },
   {
+    slug: "samsung-skhynix-800t-investment-comparison-2026",
+    title: "삼성전자·SK하이닉스 800조 투자 비교 2026 | 직원·주주가 봐야 할 포인트",
+    description: "3대 메가프로젝트 발표를 직원·투자자 관점으로 분석합니다. 삼성전자 vs SK하이닉스 수혜 비교, 성과급 영향, 수혜 업종 TOP 5, 투자자 체크리스트 포함.",
+    order: 64,
+    badges: ["삼성전자", "SK하이닉스", "반도체", "투자", "2026"],
+  },
+  {
     slug: "gyeonggi-family-care-allowance-2026",
     title: "경기도 가족돌봄수당 2026 | 신청 조건·금액·서류 완전 정리",
     description: "맞벌이·다자녀 가정에서 조부모·친인척이 24~36개월 아이를 돌볼 때 받는 경기도 가족돌봄수당 신청 조건, 지원 금액, 신청 가능 월, 필요 서류를 한 번에 확인하세요.",

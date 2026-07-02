@@ -1,0 +1,483 @@
+// samsung-skhynix-800t-investment-comparison-2026
+
+.inv800t-page {
+  --inv-ink:        #14213d;
+  --inv-muted:      #5d6b82;
+  --inv-line:       rgba(20, 33, 61, 0.12);
+  --inv-soft:       #f5f7fb;
+  --inv-primary:    #1a56db;
+  --inv-primary-bg: #eff4ff;
+  --inv-primary-dk: #1447bf;
+  --inv-teal:       #0891b2;
+  --inv-teal-bg:    #e0f2fe;
+  --inv-green:      #059669;
+  --inv-green-bg:   #d1fae5;
+  --inv-amber:      #d97706;
+  --inv-amber-bg:   #fef3c7;
+  --inv-red:        #dc2626;
+  --inv-red-bg:     #fee2e2;
+}
+
+// 공통 섹션 헤더
+.inv800t-page .content-section {
+  margin-bottom: 2.5rem;
+}
+
+.inv800t-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--inv-primary);
+  margin: 0 0 0.3rem;
+}
+
+.inv800t-section-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--inv-ink);
+  margin: 0 0 0.5rem;
+  line-height: 1.35;
+}
+
+.inv800t-section-desc {
+  font-size: 0.82rem;
+  color: var(--inv-muted);
+  margin: 0 0 1.25rem;
+  line-height: 1.6;
+}
+
+.inv800t-note {
+  font-size: 0.775rem;
+  color: var(--inv-muted);
+  margin: 0.5rem 0 0;
+  line-height: 1.6;
+}
+
+// 뱃지
+.inv800t-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 100px;
+
+  &--official  { background: var(--inv-green-bg); color: #065f46; border: 1px solid #6ee7b7; }
+  &--ref       { background: var(--inv-primary-bg); color: var(--inv-primary); border: 1px solid #bfdbfe; }
+  &--estimate  { background: var(--inv-amber-bg); color: #92400e; border: 1px solid #fcd34d; }
+  &--immediate { background: var(--inv-red-bg); color: #991b1b; border: 1px solid #fca5a5; }
+  &--short     { background: var(--inv-amber-bg); color: #92400e; border: 1px solid #fcd34d; }
+  &--mid       { background: var(--inv-primary-bg); color: var(--inv-primary); border: 1px solid #bfdbfe; }
+  &--long      { background: var(--inv-green-bg); color: #065f46; border: 1px solid #6ee7b7; }
+}
+
+// ── 3대 메가프로젝트 그리드 ───────────────────────────
+.inv800t-mega-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.inv800t-mega-card {
+  background: #fff;
+  border: 1px solid var(--inv-line);
+  border-radius: 14px;
+  padding: 1.25rem;
+
+  &__icon {
+    font-size: 2rem;
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  &__name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--inv-ink);
+    margin: 0 0 0.4rem;
+  }
+
+  &__desc {
+    font-size: 0.8rem;
+    color: var(--inv-muted);
+    line-height: 1.6;
+    margin: 0 0 0.6rem;
+  }
+
+  &__point {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--inv-primary);
+    padding: 0.3rem 0.6rem;
+    background: var(--inv-primary-bg);
+    border-radius: 6px;
+    display: inline-block;
+  }
+}
+
+// ── 요약 표 ───────────────────────────────────────────
+.inv800t-summary-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--inv-line);
+}
+
+.inv800t-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    vertical-align: middle;
+
+    &:first-child {
+      font-weight: 600;
+      color: var(--inv-muted);
+      white-space: nowrap;
+      width: 40%;
+    }
+
+    &:last-child { color: var(--inv-ink); }
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(odd) { background: var(--inv-soft); }
+}
+
+// ── 삼성 vs 하이닉스 비교 표 ──────────────────────────
+.inv800t-compare-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--inv-line);
+  margin-bottom: 1.25rem;
+}
+
+.inv800t-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead tr { background: var(--inv-soft); }
+
+  th {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: left;
+    border-bottom: 2px solid var(--inv-line);
+    white-space: nowrap;
+
+    &.inv800t-th--samsung { color: var(--inv-primary); border-bottom-color: var(--inv-primary); }
+    &.inv800t-th--hynix   { color: var(--inv-teal);    border-bottom-color: var(--inv-teal); }
+  }
+
+  td {
+    padding: 0.6rem 1rem;
+    color: var(--inv-ink);
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    vertical-align: middle;
+
+    &:first-child { font-weight: 600; color: var(--inv-muted); white-space: nowrap; }
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(odd) { background: rgba(245, 247, 251, 0.5); }
+}
+
+.inv800t-col--samsung { color: var(--inv-primary) !important; }
+.inv800t-col--hynix   { color: var(--inv-teal) !important; }
+
+// 강도 바
+.inv800t-score-bar {
+  display: flex;
+  gap: 3px;
+  margin-top: 0.25rem;
+}
+
+.inv800t-score-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--inv-line);
+
+  &--on-samsung { background: var(--inv-primary); }
+  &--on-hynix   { background: var(--inv-teal); }
+}
+
+// ── CTA 그룹 ──────────────────────────────────────────
+.inv800t-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.inv800t-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.15s;
+  border: 1.5px solid;
+
+  &:hover { opacity: 0.8; }
+
+  &--primary {
+    background: var(--inv-primary);
+    color: #fff;
+    border-color: var(--inv-primary);
+  }
+
+  &--outline {
+    background: #fff;
+    color: var(--inv-primary);
+    border-color: var(--inv-primary);
+  }
+
+  &--teal {
+    background: var(--inv-teal-bg);
+    color: var(--inv-teal);
+    border-color: #7dd3f0;
+  }
+}
+
+// ── CAPEX 영향 3-카드 ─────────────────────────────────
+.inv800t-capex-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.inv800t-capex-card {
+  background: #fff;
+  border: 1px solid var(--inv-line);
+  border-radius: 12px;
+  padding: 1.1rem;
+  border-top: 4px solid;
+
+  &--short { border-top-color: var(--inv-red); }
+  &--mid   { border-top-color: var(--inv-amber); }
+  &--long  { border-top-color: var(--inv-green); }
+
+  &__icon { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
+  &__phase {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--inv-muted);
+    margin: 0 0 0.25rem;
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--inv-ink);
+    margin: 0 0 0.4rem;
+  }
+
+  &__desc {
+    font-size: 0.8rem;
+    color: var(--inv-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+// ── 수혜 업종 그리드 ──────────────────────────────────
+.inv800t-sector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1rem;
+}
+
+.inv800t-sector-card {
+  background: #fff;
+  border: 1px solid var(--inv-line);
+  border-radius: 12px;
+  padding: 1.1rem;
+
+  &__sector {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--inv-ink);
+    margin: 0 0 0.3rem;
+  }
+
+  &__strength {
+    font-size: 0.75rem;
+    color: var(--inv-muted);
+    margin: 0 0 0.5rem;
+  }
+
+  &__reason {
+    font-size: 0.78rem;
+    color: var(--inv-muted);
+    line-height: 1.55;
+    margin: 0 0 0.6rem;
+  }
+
+  &__timing {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--inv-ink);
+    margin: 0;
+  }
+}
+
+// ── 투자자 체크리스트 ─────────────────────────────────
+.inv800t-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.inv800t-checklist__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #fff;
+  border: 1px solid var(--inv-line);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-size: 0.875rem;
+  color: var(--inv-ink);
+  line-height: 1.55;
+}
+
+.inv800t-checklist__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+// ── 리스크 카드 ───────────────────────────────────────
+.inv800t-risk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inv800t-risk-card {
+  background: #fff;
+  border: 1px solid var(--inv-line);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+
+  &--high   { border-left-color: var(--inv-red); }
+  &--mid    { border-left-color: var(--inv-amber); }
+  &--low    { border-left-color: var(--inv-green); }
+
+  &__risk {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--inv-ink);
+    margin: 0 0 0.2rem;
+  }
+
+  &__content {
+    font-size: 0.82rem;
+    color: var(--inv-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  &__severity {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    white-space: nowrap;
+  }
+
+  &--high &__severity { background: var(--inv-red-bg); color: #991b1b; }
+  &--mid  &__severity { background: var(--inv-amber-bg); color: #92400e; }
+  &--low  &__severity { background: var(--inv-green-bg); color: #065f46; }
+}
+
+// ── ETF CTA 박스 ──────────────────────────────────────
+.inv800t-etf-box {
+  background: var(--inv-soft);
+  border: 1px solid var(--inv-line);
+  border-radius: 12px;
+  padding: 1.25rem;
+
+  &__desc {
+    font-size: 0.875rem;
+    color: var(--inv-muted);
+    line-height: 1.7;
+    margin: 0 0 1rem;
+  }
+}
+
+// ── FAQ ───────────────────────────────────────────────
+.inv800t-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__item {
+    background: #fff;
+    border: 1px solid var(--inv-line);
+    border-radius: 10px;
+    overflow: hidden;
+
+    &[open] summary {
+      background: var(--inv-soft);
+      border-bottom: 1px solid var(--inv-line);
+    }
+  }
+
+  &__q {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--inv-ink);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &::-webkit-details-marker { display: none; }
+
+    &::after {
+      content: "+";
+      font-size: 1.2rem;
+      color: var(--inv-muted);
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+    }
+
+    details[open] &::after { content: "−"; }
+  }
+
+  &__a {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    color: var(--inv-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+}

@@ -1,0 +1,403 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import { withBase } from "../../utils/base";
+import {
+  SEHL_DEFAULT_SCENARIO,
+  SEHL_DETAIL_GUIDE,
+  SEHL_FAQ,
+  SEHL_INFO_LINES,
+  SEHL_MARKET_RATE_PRESETS,
+  SEHL_META,
+  SEHL_PRINCIPAL_PRESETS,
+  SEHL_RELATED_LINKS,
+  SEHL_SEO_CRITERIA,
+  SEHL_SEO_INTRO,
+  SEHL_TAX_RATE_PRESETS,
+  buildMarketRateRows,
+  buildPrincipalRows,
+  calculateSimpleInterestBenefit,
+  formatKoreanWon,
+  formatPercent,
+} from "../../data/samsungElectronicsHousingLoanBenefit";
+
+const defaultResult = calculateSimpleInterestBenefit(
+  SEHL_DEFAULT_SCENARIO.principalKrw,
+  SEHL_DEFAULT_SCENARIO.benefitRatePercent,
+  SEHL_DEFAULT_SCENARIO.marketRatePercent,
+  SEHL_DEFAULT_SCENARIO.years,
+  SEHL_DEFAULT_SCENARIO.taxRatePercent
+);
+const marketRows = buildMarketRateRows();
+const principalRows = buildPrincipalRows();
+const faqItems = SEHL_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${SEHL_META.slug}/`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: SEHL_META.title,
+      url: pageUrl,
+      description: SEHL_META.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Web",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+      offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: SEHL_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={SEHL_META.seoTitle}
+  description={SEHL_META.description}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={SEHL_META.slug} pageClass="sehl-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="연봉·복지 계산기"
+        title={SEHL_META.title}
+        description="5억 원을 연 1.5%로 빌릴 수 있다면 시중금리 대비 이자를 얼마나 아낄 수 있을까요? 사내대출 복지를 월 절감액, 연 절감액, 세전 연봉 환산액으로 계산합니다."
+      />
+      <InfoNotice title="시뮬레이션 계산 안내" lines={SEHL_INFO_LINES} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="sehlResetBtn" copyId="sehlCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel sehl-input-card">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력값</p>
+            <h2 class="panel__title">내 조건으로 계산하기</h2>
+          </div>
+        </div>
+
+        <div class="sehl-form-grid" id="sehlInputs">
+          <label class="sehl-field" for="sehlPrincipal">
+            <span>대출원금</span>
+            <input id="sehlPrincipal" data-sehl-input="principal" type="text" inputmode="numeric" value="500,000,000" />
+            <small>숫자만 입력해도 자동으로 계산합니다.</small>
+          </label>
+          <div class="sehl-preset-row" aria-label="대출원금 빠른 선택">
+            {SEHL_PRINCIPAL_PRESETS.map((preset) => (
+              <button
+                type="button"
+                class:list={["sehl-preset-btn", preset.value === SEHL_DEFAULT_SCENARIO.principalKrw && "is-active"]}
+                data-sehl-preset="principal"
+                data-value={preset.value}
+                aria-pressed={preset.value === SEHL_DEFAULT_SCENARIO.principalKrw ? "true" : "false"}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+
+          <label class="sehl-field" for="sehlBenefitRate">
+            <span>복지금리</span>
+            <input id="sehlBenefitRate" data-sehl-input="benefit-rate" type="number" min="0" max="10" step="0.1" value={SEHL_DEFAULT_SCENARIO.benefitRatePercent} />
+            <small>대표 시나리오 기본값은 연 1.5%입니다.</small>
+          </label>
+
+          <label class="sehl-field" for="sehlMarketRate">
+            <span>비교 시중금리</span>
+            <input id="sehlMarketRate" data-sehl-input="market-rate" type="number" min="0" max="15" step="0.1" value={SEHL_DEFAULT_SCENARIO.marketRatePercent} />
+            <small>현재 대출금리나 은행 예상금리를 넣어보세요.</small>
+          </label>
+          <div class="sehl-preset-row" aria-label="시중금리 빠른 선택">
+            {SEHL_MARKET_RATE_PRESETS.map((rate) => (
+              <button
+                type="button"
+                class:list={["sehl-preset-btn", rate === SEHL_DEFAULT_SCENARIO.marketRatePercent && "is-active"]}
+                data-sehl-preset="market-rate"
+                data-value={rate}
+                aria-pressed={rate === SEHL_DEFAULT_SCENARIO.marketRatePercent ? "true" : "false"}
+              >
+                {formatPercent(rate)}
+              </button>
+            ))}
+          </div>
+
+          <label class="sehl-field" for="sehlYears">
+            <span>대출기간</span>
+            <input id="sehlYears" data-sehl-input="years" type="number" min="1" max="40" step="1" value={SEHL_DEFAULT_SCENARIO.years} />
+            <small>단순 이자 차이의 누적 기간입니다.</small>
+          </label>
+
+          <label class="sehl-field" for="sehlTaxRate">
+            <span>추정 세율</span>
+            <input id="sehlTaxRate" data-sehl-input="tax-rate" type="number" min="0" max="60" step="1" value={SEHL_DEFAULT_SCENARIO.taxRatePercent} />
+            <small>세전 연봉 환산에만 사용합니다.</small>
+          </label>
+          <div class="sehl-preset-row" aria-label="세율 빠른 선택">
+            {SEHL_TAX_RATE_PRESETS.map((rate) => (
+              <button
+                type="button"
+                class:list={["sehl-preset-btn", rate === SEHL_DEFAULT_SCENARIO.taxRatePercent && "is-active"]}
+                data-sehl-preset="tax-rate"
+                data-value={rate}
+                aria-pressed={rate === SEHL_DEFAULT_SCENARIO.taxRatePercent ? "true" : "false"}
+              >
+                {rate}%
+              </button>
+            ))}
+          </div>
+        </div>
+      </article>
+
+      <article class="panel sehl-assumption-card">
+        <p class="panel-heading__eyebrow">대표 시나리오</p>
+        <h2 class="panel__title">{SEHL_DEFAULT_SCENARIO.label}</h2>
+        <dl class="sehl-mini-list">
+          <div>
+            <dt>대출원금</dt>
+            <dd>{formatKoreanWon(SEHL_DEFAULT_SCENARIO.principalKrw)}</dd>
+          </div>
+          <div>
+            <dt>복지금리</dt>
+            <dd>{formatPercent(SEHL_DEFAULT_SCENARIO.benefitRatePercent)}</dd>
+          </div>
+          <div>
+            <dt>시중금리</dt>
+            <dd>{formatPercent(SEHL_DEFAULT_SCENARIO.marketRatePercent)}</dd>
+          </div>
+          <div>
+            <dt>데이터 배지</dt>
+            <dd><span class="sehl-badge sehl-badge--simulation">{SEHL_DEFAULT_SCENARIO.evidenceBadge}</span></dd>
+          </div>
+        </dl>
+        <p class="sehl-note">{SEHL_DEFAULT_SCENARIO.note}</p>
+      </article>
+    </Fragment>
+
+    <section class="sehl-results" aria-labelledby="sehl-results-title">
+      <div class="sehl-section-head">
+        <p class="sehl-eyebrow">계산 결과</p>
+        <h2 id="sehl-results-title">5억 연 1.5%면 실제 이득 얼마?</h2>
+        <p data-sehl-output="summary">
+          시중금리 {formatPercent(SEHL_DEFAULT_SCENARIO.marketRatePercent)}와 복지금리 {formatPercent(SEHL_DEFAULT_SCENARIO.benefitRatePercent)}의 차이 {formatPercent(defaultResult.rateGapPercentPoint)}p 기준입니다.
+        </p>
+      </div>
+
+      <div class="sehl-result-grid">
+        <article class="sehl-result-card sehl-result-card--primary">
+          <p>연간 이자 절감액</p>
+          <strong data-sehl-output="annual-saving" aria-live="polite">{formatKoreanWon(defaultResult.annualSavingKrw)}</strong>
+          <span>시중대출 연 이자와 복지대출 연 이자의 차이입니다.</span>
+        </article>
+        <article class="sehl-result-card">
+          <p>월 이자 절감액</p>
+          <strong data-sehl-output="monthly-saving" aria-live="polite">{formatKoreanWon(defaultResult.monthlySavingKrw)}</strong>
+          <span>월평균 현금흐름으로 환산한 값입니다.</span>
+        </article>
+        <article class="sehl-result-card">
+          <p>기간 총 절감액</p>
+          <strong data-sehl-output="total-saving" aria-live="polite">{formatKoreanWon(defaultResult.totalSavingKrw)}</strong>
+          <span>입력한 대출기간 동안 단순 누적한 금액입니다.</span>
+        </article>
+        <article class="sehl-result-card">
+          <p>세전 연봉 환산액</p>
+          <strong data-sehl-output="gross-salary" aria-live="polite">
+            {defaultResult.grossSalaryEquivalentKrw === null ? "계산 불가" : formatKoreanWon(defaultResult.grossSalaryEquivalentKrw)}
+          </strong>
+          <span>추정 세율을 적용한 참고 환산값입니다.</span>
+        </article>
+      </div>
+
+      <p class="sehl-warning" data-sehl-output="warning">
+        실제 순이득은 과세 여부, 대출 실행 조건, 기존 대출 수수료에 따라 달라질 수 있습니다.
+      </p>
+    </section>
+
+    <section class="sehl-section" aria-labelledby="sehl-detail-title">
+      <div class="sehl-section-head">
+        <p class="sehl-eyebrow">이자 구조</p>
+        <h2 id="sehl-detail-title">복지대출과 시중대출을 나눠 보면</h2>
+      </div>
+      <div class="sehl-detail-grid">
+        <article class="sehl-detail-card">
+          <span>복지대출 연 이자</span>
+          <strong data-sehl-output="benefit-interest">{formatKoreanWon(defaultResult.benefitAnnualInterestKrw)}</strong>
+          <p>대출원금 × 복지금리</p>
+        </article>
+        <article class="sehl-detail-card">
+          <span>시중대출 연 이자</span>
+          <strong data-sehl-output="market-interest">{formatKoreanWon(defaultResult.marketAnnualInterestKrw)}</strong>
+          <p>대출원금 × 시중금리</p>
+        </article>
+        <article class="sehl-detail-card">
+          <span>금리 차이</span>
+          <strong data-sehl-output="rate-gap">{formatPercent(defaultResult.rateGapPercentPoint)}p</strong>
+          <p>시중금리 - 복지금리</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="sehl-section" aria-labelledby="sehl-market-title">
+      <div class="sehl-section-head">
+        <p class="sehl-eyebrow">민감도</p>
+        <h2 id="sehl-market-title">시중금리가 오르면 복지 가치는 커집니다</h2>
+      </div>
+      <div class="sehl-table-wrap">
+        <table class="sehl-table">
+          <caption>5억 원·복지금리 1.5% 기준 시중금리별 이자 절감액</caption>
+          <thead>
+            <tr>
+              <th scope="col">시중금리</th>
+              <th scope="col">금리 차이</th>
+              <th scope="col">연간 절감액</th>
+              <th scope="col">월 절감액</th>
+            </tr>
+          </thead>
+          <tbody data-sehl-table="market-rate">
+            {marketRows.map((row) => (
+              <tr>
+                <td>{formatPercent(row.marketRatePercent)}</td>
+                <td>{formatPercent(row.marketRatePercent - row.benefitRatePercent)}p</td>
+                <td>{formatKoreanWon(row.annualSavingKrw)}</td>
+                <td>{formatKoreanWon(row.monthlySavingKrw)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sehl-section" aria-labelledby="sehl-principal-title">
+      <div class="sehl-section-head">
+        <p class="sehl-eyebrow">대출원금별 비교</p>
+        <h2 id="sehl-principal-title">원금이 커질수록 금리 차이의 체감도 커집니다</h2>
+      </div>
+      <div class="sehl-table-wrap">
+        <table class="sehl-table">
+          <caption>복지금리 1.5%, 시중금리 4.0% 기준 대출원금별 절감액</caption>
+          <thead>
+            <tr>
+              <th scope="col">대출원금</th>
+              <th scope="col">연간 절감액</th>
+              <th scope="col">월 절감액</th>
+            </tr>
+          </thead>
+          <tbody data-sehl-table="principal">
+            {principalRows.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{formatKoreanWon(row.annualSavingKrw)}</td>
+                <td>{formatKoreanWon(row.monthlySavingKrw)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sehl-section sehl-explain" aria-labelledby="sehl-explain-title">
+      <div class="sehl-section-head">
+        <p class="sehl-eyebrow">해석</p>
+        <h2 id="sehl-explain-title">사내대출 복지는 연봉표 밖의 총보상입니다</h2>
+      </div>
+      <div class="sehl-copy-grid">
+        <article>
+          <h3>5억 원을 1.5%로 빌리는 게 왜 큰가</h3>
+          <p>
+            대출금리가 1%p 낮아지는 효과는 생각보다 큽니다. 원금 5억 원 기준으로 금리 1%p는 연간 500만 원, 월 약 42만 원의 이자 차이입니다. 복지금리가 1.5%이고 시중금리가 4.0%라면 차이는 2.5%p이므로 연간 약 1,250만 원의 현금흐름 차이가 생깁니다.
+          </p>
+        </article>
+        <article>
+          <h3>세전 연봉 환산은 참고 지표입니다</h3>
+          <p>
+            세후로 매년 1,250만 원을 아끼는 효과라면, 세율 24% 가정에서는 세전 연봉 약 1,645만 원의 가치로 환산할 수 있습니다. 다만 실제 세율과 과세 여부에 따라 순이득은 달라지므로 확정 연봉 인상처럼 해석하면 안 됩니다.
+          </p>
+        </article>
+        <article>
+          <h3>실제 조건은 반드시 확인해야 합니다</h3>
+          <p>
+            재직기간, 직급, 주택 보유 여부, 용도, 보증 조건, 내부 한도, 실행 시점의 규정에 따라 실제 가능 금액은 달라질 수 있습니다. 이 페이지는 특정 회사 복지의 경제적 가치를 이해하기 위한 계산 도구입니다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="sehl-section sehl-guide" aria-labelledby="sehl-guide-title">
+      <div class="sehl-section-head">
+        <p class="sehl-eyebrow">상세안내</p>
+        <h2 id="sehl-guide-title">삼성전자 주택대출 복지, 어디까지 돈으로 봐야 할까?</h2>
+        <p>
+          아래 내용은 5억 원·연 1.5% 대표 시나리오를 기준으로 사내대출 복지를 해석하는 방법입니다.
+          실제 삼성전자 복지 조건은 공식 안내와 개인별 신청 조건을 별도로 확인해야 합니다.
+        </p>
+      </div>
+
+      <div class="sehl-guide-list">
+        {SEHL_DETAIL_GUIDE.map((section) => (
+          <article class="sehl-guide-card">
+            <p class="sehl-guide-card__eyebrow">{section.eyebrow}</p>
+            <h3>{section.title}</h3>
+            <div class="sehl-guide-card__body">
+              {section.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+            </div>
+            {section.points && (
+              <ul class="sehl-guide-points">
+                {section.points.map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sehl-section" aria-labelledby="sehl-related-title">
+      <div class="sehl-section-head">
+        <p class="sehl-eyebrow">관련 계산</p>
+        <h2 id="sehl-related-title">성과급과 대출 조건도 함께 비교해보세요</h2>
+      </div>
+      <div class="sehl-related-grid">
+        {SEHL_RELATED_LINKS.map((link) => (
+          <a class="sehl-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="삼성전자 주택대출 복지 계산 기준"
+        intro={SEHL_SEO_INTRO}
+        criteria={SEHL_SEO_CRITERIA}
+        faq={faqItems}
+        related={SEHL_RELATED_LINKS.map((item) => ({ href: item.href, label: item.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script type="application/json" id="sehl-defaults" set:text={JSON.stringify({ scenario: SEHL_DEFAULT_SCENARIO })} />
+  <script src={withBase("/scripts/samsung-electronics-housing-loan-benefit-calculator.js")} defer></script>
+</BaseLayout>

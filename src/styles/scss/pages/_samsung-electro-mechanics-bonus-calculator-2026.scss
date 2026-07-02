@@ -406,6 +406,326 @@
   }
 }
 
+// 섹션 헤더 공통
+.section-header--compact {
+  margin-bottom: 1.25rem;
+
+  p.section-header__eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--semb-primary);
+    margin: 0 0 0.3rem;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--semb-ink);
+    margin: 0 0 0.4rem;
+    line-height: 1.35;
+  }
+}
+
+.semb-section-desc {
+  font-size: 0.82rem;
+  color: var(--semb-muted);
+  margin: 0 0 1rem;
+  line-height: 1.6;
+}
+
+.content-section {
+  margin-bottom: 2.5rem;
+}
+
+// 타임라인
+.semb-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: var(--semb-line);
+    border-radius: 2px;
+  }
+}
+
+.semb-timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0 0 1.25rem;
+  position: relative;
+
+  &__dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--semb-soft);
+    border: 2px solid var(--semb-line);
+    margin-top: 0.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__body {
+    flex: 1;
+    padding-top: 0.05rem;
+  }
+
+  &__date {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--semb-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.2rem;
+  }
+
+  &__event {
+    font-size: 0.9rem;
+    color: var(--semb-ink);
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 0 0 0.35rem;
+  }
+
+  &__status {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.55rem;
+    border-radius: 100px;
+    background: var(--semb-soft);
+    color: var(--semb-muted);
+  }
+
+  &--done &__dot {
+    background: var(--semb-green);
+    border-color: var(--semb-green);
+  }
+
+  &--done &__status {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  &--active &__dot {
+    background: var(--semb-primary);
+    border-color: var(--semb-primary);
+    box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.15);
+  }
+
+  &--active &__status {
+    background: var(--semb-primary-bg);
+    color: var(--semb-primary-dk);
+  }
+
+  &--pending &__status {
+    background: var(--semb-amber-bg);
+    color: #92400e;
+  }
+}
+
+// 연도별 이력 표
+.semb-history-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--semb-line);
+  margin-bottom: 0.5rem;
+}
+
+.semb-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead tr { background: var(--semb-soft); }
+
+  th {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--semb-muted);
+    text-align: left;
+    border-bottom: 1px solid var(--semb-line);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.6rem 1rem;
+    color: var(--semb-ink);
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+}
+
+.semb-history-row--highlight {
+  background: var(--semb-primary-bg);
+
+  td { color: var(--semb-primary-dk); }
+  td strong { color: var(--semb-primary); }
+}
+
+// 사업부 그리드
+.semb-division-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.semb-division-card {
+  background: #fff;
+  border: 1px solid var(--semb-line);
+  border-radius: 14px;
+  padding: 1.25rem;
+
+  &__icon {
+    font-size: 2rem;
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  &__name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--semb-ink);
+    margin: 0 0 0.15rem;
+  }
+
+  &__english {
+    font-size: 0.72rem;
+    color: var(--semb-muted);
+    margin: 0 0 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  &__revenue {
+    font-size: 0.82rem;
+    color: var(--semb-ink);
+    margin: 0 0 0.3rem;
+
+    strong { color: var(--semb-primary); }
+  }
+
+  &__products {
+    font-size: 0.78rem;
+    color: var(--semb-muted);
+    margin: 0 0 0.5rem;
+    line-height: 1.5;
+  }
+
+  &__note {
+    font-size: 0.775rem;
+    color: var(--semb-muted);
+    line-height: 1.6;
+    margin: 0;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--semb-line);
+  }
+}
+
+// 직급별 총보상 표
+.semb-salary-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--semb-line);
+  margin-bottom: 0.5rem;
+}
+
+.semb-salary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead tr { background: var(--semb-soft); }
+
+  th {
+    padding: 0.65rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--semb-muted);
+    text-align: left;
+    border-bottom: 1px solid var(--semb-line);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.6rem 1rem;
+    color: var(--semb-ink);
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--semb-soft); }
+}
+
+.semb-salary-col--pre  { color: var(--semb-amber); }
+.semb-salary-col--after { color: var(--semb-teal); }
+.semb-salary-col--total strong { color: var(--semb-primary-dk); }
+
+// diff summary (EVA vs N%)
+.semb-diff-summary {
+  margin-top: 1.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--semb-line);
+  overflow: hidden;
+  font-size: 0.85rem;
+}
+
+.semb-diff-summary__row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1.4fr;
+  gap: 0;
+
+  & > span {
+    padding: 0.55rem 0.9rem;
+    border-right: 1px solid var(--semb-line);
+    border-bottom: 1px solid var(--semb-line);
+    vertical-align: middle;
+
+    &:last-child { border-right: none; }
+  }
+
+  &:last-child > span { border-bottom: none; }
+}
+
+.semb-diff-summary__row--header {
+  background: var(--semb-soft);
+
+  span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--semb-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.semb-diff-summary__label { color: var(--semb-ink); font-weight: 600; }
+.semb-diff-summary__old   { color: var(--semb-muted); }
+.semb-diff-summary__new   { color: var(--semb-primary); font-weight: 500; }
+
 // FAQ
 .semb-faq {
   display: flex;

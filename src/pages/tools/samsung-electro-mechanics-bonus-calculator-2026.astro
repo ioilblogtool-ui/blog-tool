@@ -9,6 +9,10 @@ import {
   SEMB_GRADE_MULTIPLIERS,
   SEMB_SCENARIOS,
   SEMB_COMPETITORS,
+  SEMB_DIVISIONS,
+  SEMB_HISTORY,
+  SEMB_SALARY_TABLE,
+  SEMB_TIMELINE,
   SEMB_FAQ,
   SEMB_SEO_INTRO,
   SEMB_SEO_CRITERIA,
@@ -20,6 +24,12 @@ const badgeClass = (badge: string) => {
   if (badge === "공식") return "semb-badge--official";
   if (badge === "보도 기반") return "semb-badge--ref";
   return "semb-badge--estimate";
+};
+
+const timelineStatusClass = (status: string) => {
+  if (status === "완료") return "semb-timeline-item--done";
+  if (status === "진행 중") return "semb-timeline-item--active";
+  return "semb-timeline-item--pending";
 };
 
 const faqItems = SEMB_FAQ.map((f) => ({ question: f.q, answer: f.a }));
@@ -59,48 +69,32 @@ const jsonLd = {
       <span>{SEMB_META.notice}</span>
     </div>
 
-    <!-- 계산기 입력 -->
+    <!-- ── 계산기 입력 ─────────────────────────── -->
     <section class="semb-calc-section" aria-label="성과급 계산기">
       <div class="semb-input-group">
 
-        <!-- 영업이익 슬라이더 -->
         <div class="semb-field">
           <label class="semb-field__label" for="semb-slider-profit">
             영업이익
             <span class="semb-field__badge">추정</span>
           </label>
           <span class="semb-field__value-display" id="semb-disp-profit">15,000억원</span>
-          <input
-            id="semb-slider-profit"
-            class="semb-slider"
-            type="range"
-            min="5000"
-            max="30000"
-            step="1000"
-            value={SEMB_META.defaultOperatingProfit}
-          />
+          <input id="semb-slider-profit" class="semb-slider" type="range"
+            min="5000" max="30000" step="1000" value={SEMB_META.defaultOperatingProfit} />
           <div class="semb-slider-markers">
             <span>5,000억</span>
             <span>3조</span>
           </div>
         </div>
 
-        <!-- 재원 비율 슬라이더 -->
         <div class="semb-field">
           <label class="semb-field__label" for="semb-slider-rate">
             성과급 재원 비율
             <span class="semb-field__badge">보도 기반</span>
           </label>
           <span class="semb-field__value-display" id="semb-disp-rate">10%</span>
-          <input
-            id="semb-slider-rate"
-            class="semb-slider"
-            type="range"
-            min="8"
-            max="15"
-            step="0.5"
-            value={SEMB_META.defaultRate}
-          />
+          <input id="semb-slider-rate" class="semb-slider" type="range"
+            min="8" max="15" step="0.5" value={SEMB_META.defaultRate} />
           <div class="semb-slider-markers">
             <span>8%</span>
             <span class="semb-slider-markers__mark--company">10% 회사안</span>
@@ -109,39 +103,23 @@ const jsonLd = {
           </div>
         </div>
 
-        <!-- 임직원 수 + 연봉 -->
         <div class="semb-two-col">
           <div class="semb-field">
             <label class="semb-field__label" for="semb-input-headcount">
               임직원 수
               <span class="semb-field__badge">추정</span>
             </label>
-            <input
-              id="semb-input-headcount"
-              class="semb-number-input"
-              type="number"
-              min="1000"
-              max="50000"
-              step="100"
-              value={SEMB_META.defaultHeadcount}
-            />
+            <input id="semb-input-headcount" class="semb-number-input" type="number"
+              min="1000" max="50000" step="100" value={SEMB_META.defaultHeadcount} />
             <span class="semb-field__sub" id="semb-disp-head">12,000명</span>
           </div>
           <div class="semb-field">
             <label class="semb-field__label" for="semb-input-salary">내 연봉 (만원)</label>
-            <input
-              id="semb-input-salary"
-              class="semb-number-input"
-              type="number"
-              min="1000"
-              max="30000"
-              step="100"
-              value={SEMB_META.defaultSalary}
-            />
+            <input id="semb-input-salary" class="semb-number-input" type="number"
+              min="1000" max="30000" step="100" value={SEMB_META.defaultSalary} />
           </div>
         </div>
 
-        <!-- 직급 선택 -->
         <div class="semb-field">
           <label class="semb-field__label" for="semb-select-grade">
             직급
@@ -159,7 +137,7 @@ const jsonLd = {
       </div>
     </section>
 
-    <!-- KPI 카드 -->
+    <!-- ── KPI 카드 ─────────────────────────────── -->
     <div class="semb-kpi-grid">
       <div class="semb-kpi-card">
         <p class="semb-kpi-card__label">성과급 총 재원</p>
@@ -175,7 +153,7 @@ const jsonLd = {
       </div>
     </div>
 
-    <!-- 세부 결과 -->
+    <!-- ── 세부 결과 ─────────────────────────────── -->
     <div class="semb-detail-rows">
       <div class="semb-detail-row">
         <span class="semb-detail-row__label">1인 평균 세후 (세율 33% 적용)</span>
@@ -195,7 +173,27 @@ const jsonLd = {
       </div>
     </div>
 
-    <!-- 시나리오 비교표 -->
+    <!-- ── 전환 타임라인 ────────────────────────── -->
+    <section class="content-section" id="timeline" aria-labelledby="timeline-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">전환 과정</p>
+        <h2 id="timeline-title">성과급 방식 전환 타임라인</h2>
+      </div>
+      <ol class="semb-timeline">
+        {SEMB_TIMELINE.map((t) => (
+          <li class={`semb-timeline-item ${timelineStatusClass(t.status)}`}>
+            <span class="semb-timeline-item__dot"></span>
+            <div class="semb-timeline-item__body">
+              <p class="semb-timeline-item__date">{t.date}</p>
+              <p class="semb-timeline-item__event">{t.event}</p>
+              <span class="semb-timeline-item__status">{t.status}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- ── 시나리오 비교표 ──────────────────────── -->
     <section class="content-section" id="scenarios" aria-labelledby="scenarios-title">
       <div class="section-header--compact">
         <p class="section-header__eyebrow">시나리오 비교</p>
@@ -224,7 +222,97 @@ const jsonLd = {
       <p class="semb-scenario-note">세전 기준. 세후는 약 33% 차감. 임직원 수 변동 시 1인당 금액이 달라집니다.</p>
     </section>
 
-    <!-- 경쟁사 비교 -->
+    <!-- ── 연도별 이력 ──────────────────────────── -->
+    <section class="content-section" id="history" aria-labelledby="history-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">연도별 이력</p>
+        <h2 id="history-title">삼성전기 연도별 영업이익·성과급 추이</h2>
+        <p class="semb-section-desc">모든 수치는 추정치입니다. 실제 OPI 지급액은 공개되지 않습니다.</p>
+      </div>
+      <div class="semb-history-table-wrap">
+        <table class="semb-history-table">
+          <thead>
+            <tr>
+              <th>연도</th>
+              <th>영업이익</th>
+              <th>OPI 지급률</th>
+              <th>1인 평균 추정</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SEMB_HISTORY.map((row) => (
+              <tr class={row.highlight ? "semb-history-row--highlight" : ""}>
+                <td><strong>{row.year}</strong></td>
+                <td>{row.operatingProfitLabel}</td>
+                <td>
+                  <span class={`semb-badge ${badgeClass(row.badge)}`}>{row.badge}</span>
+                  {" "}{row.opiRateLabel}
+                </td>
+                <td>{row.perPersonEstLabel}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="semb-scenario-note">OPI 지급률은 월 기본급 대비 비율 기준 추정. 영업이익 수치는 공시 기준, 성과급은 추정입니다.</p>
+    </section>
+
+    <!-- ── 사업부 소개 ──────────────────────────── -->
+    <section class="content-section" id="divisions" aria-labelledby="divisions-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">삼성전기 사업부</p>
+        <h2 id="divisions-title">3대 사업부와 성과급 연관성</h2>
+        <p class="semb-section-desc">삼성전기 영업이익은 3개 사업부 합산입니다. 사업부별 실적이 성과급 재원 규모를 결정합니다.</p>
+      </div>
+      <div class="semb-division-grid">
+        {SEMB_DIVISIONS.map((d) => (
+          <article class="semb-division-card">
+            <span class="semb-division-card__icon">{d.icon}</span>
+            <p class="semb-division-card__name">{d.name}</p>
+            <p class="semb-division-card__english">{d.englishName}</p>
+            <p class="semb-division-card__revenue">매출 비중 <strong>{d.revenueShare}</strong></p>
+            <p class="semb-division-card__products">주요 제품: {d.mainProducts}</p>
+            <p class="semb-division-card__note">{d.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 직급별 총보상 추정 ───────────────────── -->
+    <section class="content-section" id="salary-table" aria-labelledby="salary-table-title">
+      <div class="section-header--compact">
+        <p class="section-header__eyebrow">총보상 추정</p>
+        <h2 id="salary-table-title">직급별 연봉 + 성과급 총보상 (영업이익 1.5조, 10% 기준)</h2>
+        <p class="semb-section-desc">기본 연봉 추정치에 성과급 예상 세후를 합산한 연간 총보상입니다. 모든 수치는 추정이며 실제와 다를 수 있습니다.</p>
+      </div>
+      <div class="semb-salary-table-wrap">
+        <table class="semb-salary-table">
+          <thead>
+            <tr>
+              <th>직급</th>
+              <th>기본 연봉 추정</th>
+              <th>성과급 세전</th>
+              <th>성과급 세후</th>
+              <th>총보상 추정</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SEMB_SALARY_TABLE.map((row) => (
+              <tr>
+                <td><strong>{row.grade}</strong></td>
+                <td>{row.baseSalaryLabel}</td>
+                <td class="semb-salary-col--pre">{row.bonusPreTaxLabel}</td>
+                <td class="semb-salary-col--after">{row.bonusAfterTaxLabel}</td>
+                <td class="semb-salary-col--total"><strong>{row.totalLabel}</strong></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="semb-scenario-note">추정 기준: 영업이익 1.5조 × 10% 재원 ÷ 임직원 1.2만 명 × 직급 배수. 기본 연봉은 공시 평균·업계 추정치 기반.</p>
+    </section>
+
+    <!-- ── 경쟁사 비교 ──────────────────────────── -->
     <section class="content-section" id="competitors" aria-labelledby="competitors-title">
       <div class="section-header--compact">
         <p class="section-header__eyebrow">경쟁사 비교</p>
@@ -243,7 +331,7 @@ const jsonLd = {
       </div>
     </section>
 
-    <!-- EVA vs 영업이익 N% 방식 설명 -->
+    <!-- ── EVA vs 영업이익 N% 방식 설명 ──────────── -->
     <section class="content-section" id="method" aria-labelledby="method-title">
       <div class="section-header--compact">
         <p class="section-header__eyebrow">성과급 방식</p>
@@ -271,9 +359,31 @@ const jsonLd = {
           </ul>
         </div>
       </div>
+
+      <!-- 핵심 차이 요약 -->
+      <div class="semb-diff-summary">
+        <div class="semb-diff-summary__row semb-diff-summary__row--header">
+          <span>구분</span>
+          <span>OPI (EVA 기반)</span>
+          <span>영업이익 N%</span>
+        </div>
+        {[
+          ["산식 투명도", "낮음 — 자본비용 차감 복잡", "높음 — 영업이익 × 비율"],
+          ["예측 가능성", "어려움", "쉬움 (분기 실적 발표 후 예측)"],
+          ["업계 동향", "점진적 폐지 흐름", "SK하이닉스·삼성DS 등 확산"],
+          ["지급 빈도", "연 2회 (1월·7월)", "합의에 따라 변경 가능"],
+          ["적용 사례", "기존 삼성 계열사", "SK하이닉스·삼성전자 DS"],
+        ].map(([label, old, next]) => (
+          <div class="semb-diff-summary__row">
+            <span class="semb-diff-summary__label">{label}</span>
+            <span class="semb-diff-summary__old">{old}</span>
+            <span class="semb-diff-summary__new">{next}</span>
+          </div>
+        ))}
+      </div>
     </section>
 
-    <!-- FAQ -->
+    <!-- ── FAQ ─────────────────────────────────── -->
     <section class="content-section" id="faq" aria-labelledby="faq-title">
       <div class="section-header--compact">
         <p class="section-header__eyebrow">FAQ</p>
