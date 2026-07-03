@@ -1,0 +1,262 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  NADW_META,
+  NADW_ALL_MEMBERS,
+  NADW_REGION_SUMMARY,
+  NADW_FAQ,
+  NADW_RELATED_LINKS,
+} from "../../data/nationalAssemblyDistrictWealth2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${NADW_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const sortedByWealth = [...NADW_ALL_MEMBERS].sort((a, b) => b.totalBillion - a.totalBillion);
+const richest = sortedByWealth[0];
+const poorest = sortedByWealth[sortedByWealth.length - 1];
+const topRegion = NADW_REGION_SUMMARY[0];
+
+const metro = NADW_REGION_SUMMARY.find((r) => r.region === "수도권");
+const nonMetro = NADW_REGION_SUMMARY.filter((r) => r.region !== "수도권" && r.region !== "비례대표");
+const nonMetroWeightedSum = nonMetro.reduce((sum, r) => sum + r.avgBillionInSample * r.memberCountInSample, 0);
+const nonMetroCount = nonMetro.reduce((sum, r) => sum + r.memberCountInSample, 0);
+const nonMetroAvg = nonMetroCount > 0 ? nonMetroWeightedSum / nonMetroCount : 0;
+const metroGapRatio = metro && nonMetroAvg > 0 ? (metro.avgBillionInSample / nonMetroAvg).toFixed(1) : "-";
+
+const regionTabs = [{ region: "all", label: "전체" }, ...NADW_REGION_SUMMARY.map((r) => ({ region: r.region, label: r.region }))];
+
+const chartLabels = JSON.stringify(NADW_REGION_SUMMARY.map((r) => r.region));
+const chartValues = JSON.stringify(NADW_REGION_SUMMARY.map((r) => r.avgBillionInSample));
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: NADW_META.title,
+    description: NADW_META.seoDescription,
+    dateModified: NADW_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: NADW_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: NADW_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={NADW_META.seoTitle} description={NADW_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page nadw-page" data-report="national-assembly-district-wealth-2026">
+
+    <CalculatorHero
+      eyebrow="정치·공직자 재산 리포트"
+      title={NADW_META.title}
+      description="공개된 TOP30·하위 10명 국회의원 데이터를 지역구·권역(수도권/영남/호남/충청/강원·제주/비례대표) 단위로 재구성했습니다. 검색으로 우리 지역 의원 재산을 바로 확인하세요."
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내"
+      lines={[
+        NADW_META.sampleNote,
+        "공직자윤리위원회 2026년 정기 재산변동 공개(관보 기준) 추정치이며, 실제 공시 내역과 차이가 있을 수 있습니다. 투자 판단이나 정치적 평가의 근거로 사용하지 마십시오.",
+      ]}
+    />
+
+    <!-- Summary -->
+    <section class="content-section nadw-summary" aria-labelledby="nadw-summary-title">
+      <div class="nadw-section-heading">
+        <p>요약</p>
+        <h2 id="nadw-summary-title">표본 내 재산 최고·최저 지역구</h2>
+        <span>공개된 TOP30·하위 10명 표본 기준</span>
+      </div>
+      <div class="nadw-summary-grid">
+        <article class="nadw-summary-card">
+          <span>표본 내 최고 재산</span>
+          <strong>{richest.name}</strong>
+          <small>{richest.district} · {richest.totalBillion.toLocaleString()}억</small>
+        </article>
+        <article class="nadw-summary-card">
+          <span>표본 내 최저 재산</span>
+          <strong>{poorest.name}</strong>
+          <small>{poorest.district} · {poorest.totalBillion}억</small>
+        </article>
+        <article class="nadw-summary-card">
+          <span>평균 재산 최고 권역</span>
+          <strong>{topRegion.region}</strong>
+          <small>표본 평균 {topRegion.avgBillionInSample}억</small>
+        </article>
+        <article class="nadw-summary-card">
+          <span>수도권 vs 비수도권</span>
+          <strong>약 {metroGapRatio}배</strong>
+          <small>표본 평균 격차 (비례대표 제외)</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- 권역별 비교표 -->
+    <section class="content-section nadw-region-table" aria-labelledby="nadw-region-title">
+      <div class="nadw-section-heading">
+        <p>권역별 비교</p>
+        <h2 id="nadw-region-title">권역별 표본 평균 재산</h2>
+        <span>표본({NADW_ALL_MEMBERS.length}명) 기준이며 해당 권역 전체 지역구 평균이 아닙니다.</span>
+      </div>
+      <div class="nadw-region-table-wrap">
+        <table class="nadw-region-table-el">
+          <thead>
+            <tr>
+              <th>권역</th>
+              <th>표본 인원</th>
+              <th>표본 평균 재산</th>
+              <th>최고 의원</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {NADW_REGION_SUMMARY.map((r) => (
+              <tr>
+                <td>{r.region}</td>
+                <td>{r.memberCountInSample}명</td>
+                <td>{r.avgBillionInSample}억</td>
+                <td>{r.topMember.name} ({r.topMember.district})</td>
+                <td class="nadw-note">표본 기준</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 검색 -->
+    <section class="content-section nadw-search" aria-labelledby="nadw-search-title">
+      <div class="nadw-section-heading">
+        <p>지역구 검색</p>
+        <h2 id="nadw-search-title">우리 지역 의원 재산 검색</h2>
+        <span>지역구명 또는 의원 이름으로 검색해보세요.</span>
+      </div>
+      <div class="nadw-search-bar">
+        <input type="text" id="nadwSearchInput" placeholder="지역구 또는 의원 이름 검색 (예: 종로구, 김재원)" />
+      </div>
+      <div class="nadw-region-tabs">
+        {regionTabs.map((t, i) => (
+          <button class:list={["nadw-region-tab", i === 0 && "is-active"]} data-region={t.region}>{t.label}</button>
+        ))}
+      </div>
+      <div class="nadw-table-wrap">
+        <table class="nadw-member-table">
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>이름</th>
+              <th>정당</th>
+              <th>지역구</th>
+              <th>권역</th>
+              <th>재산</th>
+              <th>상세</th>
+            </tr>
+          </thead>
+          <tbody id="nadwMemberRows">
+            {NADW_ALL_MEMBERS.map((m) => (
+              <tr data-region={m.region} data-name={m.name} data-district={m.district}>
+                <td>{m.rank}</td>
+                <td>{m.name}</td>
+                <td>{m.party}</td>
+                <td>{m.district}</td>
+                <td>{m.region}</td>
+                <td>{m.totalBillion.toLocaleString()}억</td>
+                <td><a href={withBase(`/reports/${NADW_META.sourceReportSlug}/`)}>TOP30에서 보기</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="nadw-empty" id="nadwEmptyState" hidden>
+        검색 결과가 없습니다. 표본({NADW_ALL_MEMBERS.length}명)에 포함되지 않은 지역구일 수 있어요 —{" "}
+        <a href={withBase(`/reports/${NADW_META.sourceReportSlug}/`)}>전체 TOP30 리포트</a>에서 확인해보세요.
+      </p>
+    </section>
+
+    <!-- 차트 -->
+    <section class="content-section nadw-chart" aria-labelledby="nadw-chart-title">
+      <div class="nadw-section-heading">
+        <p>시각화</p>
+        <h2 id="nadw-chart-title">권역별 표본 평균 재산 비교</h2>
+      </div>
+      <div class="nadw-chart-canvas-wrap">
+        <canvas id="nadwChartCanvas" data-labels={chartLabels} data-values={chartValues} height="260"></canvas>
+      </div>
+    </section>
+
+    <!-- 원본 리포트 연결 -->
+    <section class="content-section nadw-source-link" aria-labelledby="nadw-source-title">
+      <a class="nadw-source-link-card" href={withBase(`/reports/${NADW_META.sourceReportSlug}/`)}>
+        전체 TOP30 순위와 정당별·직업별 분석 자세히 보기 →
+      </a>
+    </section>
+
+    <!-- 관련 리포트 -->
+    <section class="content-section nadw-related" aria-labelledby="nadw-related-title">
+      <div class="nadw-section-heading">
+        <p>관련 리포트</p>
+        <h2 id="nadw-related-title">함께 보면 좋은 공직자 재산 비교</h2>
+      </div>
+      <div class="nadw-related-grid">
+        {NADW_RELATED_LINKS.map((link) => (
+          <a class="nadw-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="지역구별 국회의원 재산 — 자주 묻는 질문"
+      intro={[
+        "국회의원 재산 순위 TOP30·하위 10명 데이터를 지역구·권역 단위로 다시 살펴보면, 같은 재산 규모라도 어느 지역 의원인지에 따라 체감이 달라집니다. 이 리포트는 공개된 40명(지역구 확인 기준) 표본을 수도권·영남·호남·충청·강원제주·비례대표 6개 권역으로 재구성했습니다.",
+        `표본 내에서는 ${topRegion.region} 권역의 평균 재산이 ${topRegion.avgBillionInSample}억 원으로 가장 높게 나타납니다. 다만 이는 공개된 상위·하위 40명이라는 제한된 표본 안에서의 경향이며, 전체 253개 지역구를 대표하는 값은 아닙니다.`,
+        "지역구 검색창에 지역명이나 의원 이름을 입력하면 해당 데이터를 바로 찾을 수 있습니다. 검색 결과가 없다면 표본에 포함되지 않은 지역구라는 뜻이며, 전체 TOP30 리포트에서 추가 정보를 확인할 수 있습니다.",
+      ]}
+      inputPoints={[
+        "지역구명 또는 의원 이름으로 검색해 재산 데이터를 바로 찾을 수 있습니다.",
+        "권역 탭을 눌러 수도권·영남·호남·충청·강원제주·비례대표별로 필터링할 수 있습니다.",
+        "권역별 표본 평균과 최고 재산 의원을 비교표와 차트로 확인할 수 있습니다.",
+      ]}
+      criteria={[
+        "공직자윤리위원회 2026년 정기 재산변동 공개(관보 기준) 추정치",
+        `공개된 TOP30·하위 10명 중 지역구가 확인된 ${NADW_ALL_MEMBERS.length}명 표본 기준 (전체 253개 지역구 아님)`,
+        "본인·배우자·직계존비속 합산 신고 기준이며 비상장주식은 취득가액 신고로 시세와 차이가 있을 수 있음",
+        "이 리포트는 공개 데이터 기반 참고 정보이며 정치적 평가나 투자 권유가 아닙니다",
+      ]}
+      faq={NADW_FAQ}
+      related={NADW_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+
+  <script type="application/json" id="nadw-data" set:html={JSON.stringify({ members: NADW_ALL_MEMBERS })}></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src={withBase("/scripts/national-assembly-district-wealth-2026.js")} defer></script>
+</BaseLayout>

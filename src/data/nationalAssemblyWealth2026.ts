@@ -683,6 +683,11 @@ export const NAW_FAQ = [
 // ─── 관련 링크 ────────────────────────────────────────────────
 export const NAW_RELATED_LINKS = [
   {
+    href: "/reports/national-assembly-district-wealth-2026/",
+    label: "우리 지역 국회의원 재산은?",
+    desc: "지역구·권역별로 다시 보는 재산 순위",
+  },
+  {
     href: "/reports/lee-jaemyung-government-officials-assets-salary-2026/",
     label: "이재명 정부 공직자 재산 비교",
     desc: "핵심 공직자 15명 재산·보수 완전 분석",

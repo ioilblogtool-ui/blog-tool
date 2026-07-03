@@ -737,6 +737,14 @@ export const reports: ReportMeta[] = [
     badges: ["국회의원 재산", "공직자 재산", "정당별 비교", "2026"],
   },
   {
+    slug: "national-assembly-district-wealth-2026",
+    title: "지역구별 국회의원 재산 순위 2026 | 우리 지역 의원은 몇 위",
+    description:
+      "TOP30·하위 10명 국회의원의 지역구·수도권/영남/호남/충청 권역별 재산을 순위로 비교. 우리 지역 의원 재산과 권역 평균까지 한눈에 확인하세요.",
+    order: 37.121,
+    badges: ["국회의원 재산", "지역구별", "권역 비교", "2026"],
+  },
+  {
     slug: "kleague-salary-comparison-2026",
     title: "K리그1 12구단 연봉 비교 2026 — 팀별 총액·에이스·외국인 선수 완전 분석",
     description: "2026년 K리그1 12구단 연봉 총액 순위, 구스타보·나상호·세징야 최고 연봉, 포지션별 평균, KBO 비교까지 구단별로 완전 분석합니다.",
