@@ -746,7 +746,7 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "kleague-salary-comparison-2026",
-    title: "K리그1 12구단 연봉 비교 2026 — 팀별 총액·에이스·외국인 선수 완전 분석",
+    title: "K리그1 연봉 순위 2026 | 구단별 총액·최고연봉 비교",
     description: "2026년 K리그1 12구단 연봉 총액 순위, 구스타보·나상호·세징야 최고 연봉, 포지션별 평균, KBO 비교까지 구단별로 완전 분석합니다.",
     order: 37.12,
     badges: ["K리그", "구단별 연봉", "스포츠", "2026"],
