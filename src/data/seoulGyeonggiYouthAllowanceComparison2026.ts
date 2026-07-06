@@ -317,6 +317,10 @@ export const SGYA_SEO_CRITERIA = [
 
 export const SGYA_RELATED_LINKS = [
   {
+    href: "/tools/gyeonggi-youth-worker-support-calculator-2026/",
+    label: "경기 청년 재직자 지원금 계산기 2026",
+  },
+  {
     href: "/reports/youth-savings-comparison-2026/",
     label: "청년미래적금 vs 청년도약계좌 비교",
   },

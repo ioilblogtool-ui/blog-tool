@@ -1,0 +1,200 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  GYWS_META,
+  GYWS_PROGRAMS,
+  GYWS_COMPANY_TYPES,
+  GYWS_INCOME_LIMIT,
+  GYWS_FAQ,
+  GYWS_CHECKLIST,
+  GYWS_RELATED_LINKS,
+  GYWS_SEO_CONTENT,
+} from "../../data/gyeonggiYouthWorkerSupport2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  programs: GYWS_PROGRAMS,
+  companyTypes: GYWS_COMPANY_TYPES,
+  incomeLimit: GYWS_INCOME_LIMIT,
+};
+
+const faqSchema = GYWS_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.q,
+  acceptedAnswer: { "@type": "Answer", text: item.a },
+}));
+---
+
+<BaseLayout
+  title={GYWS_META.seoTitle}
+  description={GYWS_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: GYWS_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: GYWS_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${GYWS_META.slug}/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={GYWS_META.slug} pageClass="gyws-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="경기 청년 지원금"
+        title="경기 청년 재직자 지원금 계산기 2026"
+        description="청년 복지포인트와 중소기업 청년노동자 지원사업, 두 사업을 조건 하나로 동시에 확인합니다."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          GYWS_META.dataNote,
+          "입력한 정보는 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="gywsResetBtn" copyId="gywsCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">나이·거주·근무 조건</h2>
+          </div>
+        </div>
+
+        <section class="gyws-input-section">
+          <div class="form-grid">
+            <label class="field">
+              <span>만 나이</span>
+              <input data-gyws="age" type="number" min="15" max="45" class="input-number" value="27" />
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-gyws="livesInGyeonggi" checked />
+              <span>경기도에 거주하고 있습니다</span>
+            </label>
+            <label class="field">
+              <span>재직 중인 기업 형태</span>
+              <select data-gyws="companyType">
+                {GYWS_COMPANY_TYPES.map((c) => <option value={c.value}>{c.label}</option>)}
+              </select>
+            </label>
+            <label class="field">
+              <span>주 근무시간</span>
+              <input data-gyws="weeklyHours" type="number" min="1" max="60" class="input-number" value="40" />
+              <small>시간</small>
+            </label>
+            <label class="field">
+              <span>월급여 (세전)</span>
+              <input data-gyws="monthlyIncome" type="text" inputmode="numeric" class="input-number" value="3,000,000" />
+              <small>청년 복지포인트 소득기준(385만원) 판정에 사용합니다.</small>
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="gyws-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>사업별 대상 여부와 예상 지원금</h2>
+      </div>
+
+      <div class="gyws-kpi-grid" aria-live="polite">
+        <article class="gyws-kpi-card gyws-kpi-card--welfare-point">
+          <p class="gyws-kpi-card__label">청년 복지포인트 <span class="gyws-badge gyws-badge--confirmed">공식</span></p>
+          <strong class="gyws-kpi-card__value" id="gywsWelfarePointResult">-</strong>
+          <p class="gyws-kpi-card__reason" id="gywsWelfarePointReason"></p>
+        </article>
+        <article class="gyws-kpi-card gyws-kpi-card--worker-support">
+          <p class="gyws-kpi-card__label">중소기업 청년노동자 지원사업 <span class="gyws-badge gyws-badge--verify">확인 필요</span></p>
+          <strong class="gyws-kpi-card__value" id="gywsWorkerSupportResult">-</strong>
+          <p class="gyws-kpi-card__reason" id="gywsWorkerSupportReason"></p>
+        </article>
+        <article class="gyws-kpi-card gyws-kpi-card--total">
+          <p class="gyws-kpi-card__label">합산 예상 수령액 (연 환산)</p>
+          <strong class="gyws-kpi-card__value" id="gywsTotalResult">-</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="gyws-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">사업 비교</p>
+        <h2>청년 복지포인트 vs 중소기업 청년노동자 지원사업</h2>
+      </div>
+      <table class="gyws-compare-table">
+        <thead>
+          <tr><th>항목</th><th>청년 복지포인트</th><th>중소기업 청년노동자 지원사업</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>지원 금액</td><td>연 최대 120만원</td><td>2년간 최대 480만원</td></tr>
+          <tr><td>지급 주기</td><td>반기별 60만원</td><td>반기별 120만원</td></tr>
+          <tr><td>대상 기업</td><td>중소·중견·소상공인·비영리</td><td>중소기업</td></tr>
+          <tr><td>소득 기준</td><td>월급여 385만원 이하</td><td>확인 필요</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="gyws-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">신청 준비</p>
+        <h2>신청 전 체크리스트</h2>
+      </div>
+      <div class="gyws-checklist-grid">
+        {GYWS_CHECKLIST.map((item) => (
+          <article class="gyws-checklist-card">
+            <span aria-hidden="true">✓</span>
+            <p>{item}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <CompareCta
+      variant="welfare"
+      eyebrow="청년 정책 계산기"
+      title="다른 청년 지원 제도도 같이 확인하세요"
+      description="월세·적금·기초생활수급까지, 경기·전국 청년 정책을 한 곳에서 비교합니다."
+      links={[
+        { href: "/tools/youth-rent-support-calculator/", label: "청년월세지원 계산기 2026" },
+        { href: "/tools/youth-savings-maturity-calculator/", label: "청년 적금 만기 수령액 계산기" },
+        { href: "/reports/seoul-gyeonggi-youth-allowance-comparison-2026/", label: "서울 vs 경기 청년수당 비교" },
+        { href: "/tools/welfare-benefit-eligibility/", label: "복지급여 수급 자격 계산기" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={GYWS_SEO_CONTENT.introTitle}
+        intro={GYWS_SEO_CONTENT.intro}
+        inputPoints={GYWS_SEO_CONTENT.inputPoints}
+        criteria={GYWS_SEO_CONTENT.criteria}
+        faq={GYWS_FAQ.map((f) => ({ question: f.q, answer: f.a }))}
+        related={GYWS_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="gyws-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/gyeonggi-youth-worker-support-calculator-2026.js")}></script>
+</BaseLayout>

@@ -790,6 +790,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "gyeonggi-youth-worker-support-calculator-2026",
+    title: "경기 청년 재직자 지원금 계산기 2026",
+    description: "나이·재직 기업 형태·근무시간·월급여 입력하면 경기 청년 복지포인트와 중소기업 청년노동자 지원사업 예상 지원금을 동시에 계산합니다.",
+    order: 11.75,
+    eyebrow: "경기 청년 지원금",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "경기도", "청년", "복지포인트"],
+    previewStats: [
+      { label: "복지포인트", value: "연 120만원" },
+      { label: "청년노동자 지원", value: "2년 480만원" }
+    ]
+  },
+  {
     slug: "housing-benefit-income-recognition",
     title: "주거급여 계산기 2026",
     description: "가구원 수, 월소득, 재산, 거주 형태를 입력하면 주거급여 선정기준 통과 여부와 예상 기준임대료·수선비용을 바로 계산합니다.",

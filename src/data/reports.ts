@@ -1186,6 +1186,13 @@ export const reports: ReportMeta[] = [
     badges: ["월드컵", "감독연봉", "홍명보", "2026"],
   },
   {
+    slug: "soccer-innovation-committee-2026",
+    title: "축구혁신위원회란? 한국 축구 개혁 과제 7가지",
+    description: "대표팀 운영, 감독 선임, K리그, 유소년, 심판, 예산 공개 기준으로 한국 축구 개혁 과제를 정리한 리포트입니다.",
+    order: 62.1,
+    badges: ["축구혁신위원회", "축구협회", "K리그", "2026"],
+  },
+  {
     slug: "samsung-skhynix-800t-investment-comparison-2026",
     title: "삼성전자·SK하이닉스 800조 투자 비교 2026 | 직원·주주가 봐야 할 포인트",
     description: "3대 메가프로젝트 발표를 직원·투자자 관점으로 분석합니다. 삼성전자 vs SK하이닉스 수혜 비교, 성과급 영향, 수혜 업종 TOP 5, 투자자 체크리스트 포함.",

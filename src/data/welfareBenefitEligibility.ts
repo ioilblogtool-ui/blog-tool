@@ -216,6 +216,7 @@ export const WBE_FAQ = [
 ];
 
 export const WBE_RELATED_LINKS = [
+  { href: "/tools/gyeonggi-youth-worker-support-calculator-2026/", label: "경기 청년 재직자 지원금 계산기" },
   { href: "/tools/livelihood-benefit-income-recognition/", label: "생계급여 소득인정액 계산기" },
   { href: "/tools/housing-benefit-income-recognition/", label: "주거급여 계산기" },
   { href: "/tools/daycare-vs-kindergarten-cost/", label: "어린이집 vs 유치원 비용 계산기" },
