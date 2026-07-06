@@ -746,10 +746,10 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "kleague-salary-comparison-2026",
-    title: "K리그1 연봉 순위 2026 | 구단별 총액·최고연봉 비교",
-    description: "2026년 K리그1 12구단 연봉 총액 순위, 구스타보·나상호·세징야 최고 연봉, 포지션별 평균, KBO 비교까지 구단별로 완전 분석합니다.",
+    title: "K리그1 구단순위·연봉순위 2026 | 12구단 총액 비교",
+    description: "2026년 K리그1 구단순위 흐름과 12구단 연봉 총액 순위, 구스타보·나상호·세징야 최고 연봉, KBO 비교까지 정리합니다.",
     order: 37.12,
-    badges: ["K리그", "구단별 연봉", "스포츠", "2026"],
+    badges: ["K리그", "구단순위", "연봉순위", "2026"],
   },
   {
     slug: "kbo-fa-top10",
@@ -1033,10 +1033,10 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "han-seong-sook-pm-nominee-career-assets-2026",
-    title: "한성숙 재산·경력 2026｜네이버 대표에서 총리 후보까지",
-    description: "한성숙 국무총리 후보자의 네이버 대표이사~중기부 장관 커리어 타임라인과 공개 재산 223억원 상세를 정리합니다.",
+    title: "한성숙 국무총리 후보자 프로필 2026｜경력·재산 223억",
+    description: "한성숙 국무총리 후보자 프로필, 네이버 대표이사~중기부 장관 경력과 공개 재산 223억원, 인사청문회 절차를 정리합니다.",
     order: 61.4,
-    badges: ["한성숙", "총리 후보자", "재산", "2026"],
+    badges: ["한성숙", "프로필", "재산", "2026"],
   },
   {
     slug: "seoul-housing-affordability-map-2026",
@@ -1205,5 +1205,12 @@ export const reports: ReportMeta[] = [
     description: "장기요양 1~5등급별 요양원·재가요양 월비용 나란히 비교. 식비·추가비용 포함 실제 부담액, 선택 기준 체크리스트 포함.",
     order: 65,
     badges: ["복지", "노인", "요양원", "재가요양", "장기요양", "2026"],
+  },
+  {
+    slug: "samsung-q2-earnings-bonus-outlook-2026",
+    title: "삼성전자 2분기 실적 성과급 전망 2026 | 하반기 OPI 얼마나 늘까",
+    description: "삼성전자 2026년 2분기 잠정실적(7/8)·확정실적(7/31) 발표 일정과 DS부문 영업이익 전망을 바탕으로 하반기 OPI 변화를 분석합니다. 성과급 계산기 연동.",
+    order: 66,
+    badges: ["삼성전자", "성과급", "실적 발표", "2026"],
   },
 ];

@@ -1,0 +1,160 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  SQE_META,
+  SQE_EARNINGS_CALENDAR,
+  SQE_PROGRESS_CARDS,
+  SQE_OPI_STRUCTURE,
+  SQE_SCENARIO_OUTLOOK,
+  SQE_CHECKPOINTS,
+  SQE_PRECEDENT_NOTE,
+  SQE_FAQ,
+  SQE_SEO_INTRO,
+  SQE_SEO_CRITERIA,
+  SQE_RELATED_LINKS,
+} from "../../data/samsungQ2EarningsBonusOutlook2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SQE_META.slug}/`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SQE_META.title,
+    description: SQE_META.seoDescription,
+    dateModified: SQE_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SQE_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SQE_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={SQE_META.seoTitle} description={SQE_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page sqe-page" data-report="samsung-q2-earnings-bonus-outlook-2026">
+    <CalculatorHero
+      eyebrow="실적 발표 시즌"
+      title={SQE_META.title}
+      description={SQE_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내 (중요)"
+      lines={[
+        SQE_META.dataNote,
+        "확정실적(7/31) 발표 전까지 하반기 전망은 컨센서스·시나리오 기준 추정입니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>2분기 실적 발표 캘린더</h2>
+      <div class="sqe-calendar-grid">
+        {SQE_EARNINGS_CALENDAR.map((item) => (
+          <article class="sqe-calendar-card" data-status={item.status}>
+            <strong>{item.dateLabel}</strong>
+            <p>{item.event}</p>
+            <small>{item.scope}</small>
+          </article>
+        ))}
+      </div>
+      <p class="op-message">잠정실적은 사업부문별 실적을 공개하지 않으므로, 성과급 근거를 확인하려면 7/31 확정실적을 봐야 합니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>연간 컨센서스 대비 상반기 진행률</h2>
+      <div class="sqe-progress-grid">
+        {SQE_PROGRESS_CARDS.map((card) => (
+          <article class={`sqe-progress-card ${card.isPlaceholder ? "sqe-progress-card--placeholder" : ""}`}>
+            <strong>{card.label}</strong>
+            <p>{card.value}</p>
+            <small>{card.note}</small>
+            {card.isPlaceholder && <span class="sqe-badge sqe-badge--pending">미확정</span>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>DS부문 실적이 성과급에 미치는 구조</h2>
+      <div class="sqe-table-wrap">
+        <table class="sqe-structure-table">
+          <thead><tr><th>구분</th><th>산정 기준</th><th>지급 한도</th></tr></thead>
+          <tbody>
+            {SQE_OPI_STRUCTURE.map((row) => (
+              <tr><td>{row.item}</td><td>{row.basis}</td><td>{row.capLabel}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>시나리오별 하반기 OPI 전망</h2>
+      <div class="sqe-table-wrap">
+        <table class="sqe-scenario-table">
+          <thead><tr><th>시나리오</th><th>가정</th><th>DS부문 예상 OPI</th></tr></thead>
+          <tbody>
+            {SQE_SCENARIO_OUTLOOK.map((row) => (
+              <tr><td>{row.scenarioLabel}</td><td>{row.assumption}</td><td>{row.dsOpiRange}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="sqe-cta-group">
+        <a href={withBase("/tools/samsung-bonus/")}>삼성전자 DS 성과급 계산기로 내 예상 수령액 계산 →</a>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>SK하이닉스와 비교하면?</h2>
+      <p class="op-message">SK하이닉스는 HBM 호실적을 바탕으로 이미 OPI 상한에 근접했다는 평가가 나옵니다. 삼성전자·SK하이닉스 실적·성과급 상세 비교는 아래에서 확인하세요.</p>
+      <div class="sqe-cta-group">
+        <a href={withBase("/reports/samsung-vs-skhynix-earnings-bonus-2026/")}>삼성전자 vs SK하이닉스 성과급 2026 비교 →</a>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>재직자 체크포인트</h2>
+      <ul class="sqe-checklist">
+        {SQE_CHECKPOINTS.map((c) => <li class="sqe-checklist__item">{c.text}</li>)}
+      </ul>
+    </section>
+
+    <section class="op-section">
+      <h2>과거 실적 발표 후 성과급 반응 패턴</h2>
+      <p class="sqe-precedent-card op-message">{SQE_PRECEDENT_NOTE}</p>
+    </section>
+
+    <SeoContent
+      introTitle="삼성전자 2분기 실적·하반기 성과급 핵심 정리"
+      intro={SQE_SEO_INTRO}
+      criteria={SQE_SEO_CRITERIA}
+      faq={SQE_FAQ}
+      related={SQE_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

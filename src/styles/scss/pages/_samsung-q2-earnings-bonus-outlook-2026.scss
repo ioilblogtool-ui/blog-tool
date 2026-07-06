@@ -1,0 +1,196 @@
+.sqe-page {
+  --sqe-ink: #172033;
+  --sqe-muted: #667085;
+  --sqe-line: #d8e0ea;
+  --sqe-primary: #1a56db;
+  --sqe-done: #059669;
+  --sqe-pending: #d97706;
+  --sqe-unknown: #94a3b8;
+
+  .sqe-calendar-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sqe-calendar-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--sqe-line);
+    border-top: 3px solid var(--sqe-unknown);
+    border-radius: 8px;
+    background: #fff;
+
+    strong {
+      color: var(--sqe-ink);
+      font-size: 14px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--sqe-ink);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    small {
+      color: var(--sqe-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    &[data-status="완료"] {
+      border-top-color: var(--sqe-done);
+    }
+
+    &[data-status="예정"] {
+      border-top-color: var(--sqe-pending);
+    }
+
+    &[data-status="미정"] {
+      border-top-color: var(--sqe-unknown);
+    }
+  }
+
+  .sqe-progress-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sqe-progress-card {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--sqe-line);
+    border-radius: 8px;
+    background: #fff;
+
+    strong {
+      color: var(--sqe-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      color: var(--sqe-ink);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    small {
+      color: var(--sqe-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    &--placeholder {
+      border-style: dashed;
+      background: transparent;
+    }
+  }
+
+  .sqe-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+
+    &--pending {
+      color: var(--sqe-pending);
+      background: #fef3c7;
+    }
+  }
+
+  .sqe-table-wrap {
+    overflow-x: auto;
+  }
+
+  .sqe-structure-table,
+  .sqe-scenario-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--sqe-line);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--sqe-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    td {
+      color: var(--sqe-ink);
+    }
+  }
+
+  .sqe-cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border: 1px solid var(--sqe-primary);
+      border-radius: 8px;
+      color: var(--sqe-primary);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.16s, color 0.16s;
+
+      &:hover {
+        background: var(--sqe-primary);
+        color: #fff;
+      }
+    }
+  }
+
+  .sqe-checklist {
+    list-style: none;
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+
+    &__item {
+      padding: 10px 14px;
+      border: 1px solid var(--sqe-line);
+      border-radius: 8px;
+      color: var(--sqe-ink);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+
+  .sqe-precedent-card {
+    padding: 14px;
+    border: 1px solid var(--sqe-line);
+    border-radius: 8px;
+    background: #f5f7fb;
+  }
+
+  @media (max-width: 720px) {
+    .sqe-calendar-grid,
+    .sqe-progress-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
