@@ -116,6 +116,7 @@ export const BPEC_FAQ = [
 ];
 
 export const BPEC_RELATED_LINKS = [
+  { href: "/tools/senior-rental-housing-eligibility-calculator-2026/", label: "고령자 임대아파트 당첨 가능성 계산기" },
   { href: "/tools/national-pension-calculator/", label: "국민연금 수령액 계산기" },
   { href: "/tools/livelihood-benefit-income-recognition/", label: "생계급여 소득인정액 계산기" },
   { href: "/tools/basic-livelihood-recipient-asset-standard/", label: "기초생활수급자 재산 기준 계산기" },

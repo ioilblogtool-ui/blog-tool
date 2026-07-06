@@ -1,0 +1,239 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SJSC_META,
+  SJSC_JOB_PROFILES,
+  SJSC_GOVERNMENT_JOBS,
+  SJSC_FAQ,
+  SJSC_SEO_INTRO,
+  SJSC_SEO_CRITERIA,
+  SJSC_RELATED_LINKS,
+} from "../../data/seniorJobSalaryCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${SJSC_META.slug}/`;
+---
+
+<BaseLayout
+  title={SJSC_META.seoTitle}
+  description={SJSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: SJSC_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: SJSC_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: SJSC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={SJSC_META.slug} pageClass="sjsc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="60대 일자리 추천"
+        title={SJSC_META.title}
+        description="나이·체력·희망 월수입을 입력하면 맞는 일자리와 예상 월급을 바로 계산합니다."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          SJSC_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+          "노인일자리 공공형·사회서비스형은 민간 계산값과 다른 정부 고정 지원금입니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="sjscResetBtn" copyId="sjscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel sjsc-preset-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 선택</p>
+            <h2 class="panel__title">관심 있는 일자리부터</h2>
+          </div>
+        </div>
+        <div class="sjsc-preset-grid">
+          {SJSC_JOB_PROFILES.map((job) => (
+            <button type="button" class="sjsc-preset-btn" data-sjsc-preset={job.jobCode}>
+              <strong>{job.jobName}</strong>
+              <span>{job.tags.join(" · ")}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel sjsc-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">나이·체력·희망 조건</h2>
+          </div>
+        </div>
+
+        <section class="sjsc-input-section" aria-labelledby="sjsc-basic-title">
+          <h3 id="sjsc-basic-title">기본 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>나이대</span>
+              <select data-sjsc="ageBand">
+                <option value="60-64">60~64세</option>
+                <option value="65-69">65~69세</option>
+                <option value="70+">70세 이상</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>체력 상태</span>
+              <select data-sjsc="physicalCondition">
+                <option value="LOW">약함</option>
+                <option value="MEDIUM" selected>보통</option>
+                <option value="HIGH">좋음</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="sjsc-input-section" aria-labelledby="sjsc-condition-title">
+          <h3 id="sjsc-condition-title">희망 근무 조건</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>희망 월수입</span>
+              <input data-sjsc="targetMonthlyPay" type="text" inputmode="numeric" class="input-number" value="800,000" />
+            </label>
+            <div class="calc-slider-row">
+              <input type="range" data-sjsc-slider="targetMonthlyPay" class="calc-slider" min="300000" max="2500000" step="50000" value="800000" />
+              <span data-sjsc-slider-val="targetMonthlyPay" class="calc-slider-val">80만원</span>
+            </div>
+            <label class="field">
+              <span>희망 하루 근무시간</span>
+              <select data-sjsc="dailyHours">
+                <option value="3">3시간</option>
+                <option value="4" selected>4~5시간</option>
+                <option value="8">8시간</option>
+                <option value="24">격일제(24시간)</option>
+              </select>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-sjsc="canNightShift" />
+              <span>야간근무 가능합니다</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="sjsc-input-section" aria-labelledby="sjsc-trait-title">
+          <h3 id="sjsc-trait-title">자격·성향</h3>
+          <div class="form-grid">
+            <label class="checkbox-option">
+              <input type="checkbox" data-sjsc="hasCertificate" />
+              <span>요양보호사 등 관련 자격증이 있습니다</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-sjsc="canCareWork" />
+              <span>돌봄 업무도 가능합니다</span>
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="sjsc-section sjsc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">추천 결과</p>
+        <h2>내 조건에 맞는 일자리 TOP 3</h2>
+        <p>입력값을 바꾸면 추천 순위와 예상 월급이 즉시 다시 계산됩니다.</p>
+      </div>
+      <div class="sjsc-rank-grid" data-sjsc-rank-grid></div>
+    </section>
+
+    <section class="sjsc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">상세 계산</p>
+        <h2>선택한 직업의 월급 상세</h2>
+      </div>
+      <div class="sjsc-kpi-grid">
+        <article class="sjsc-kpi sjsc-kpi--main"><span>월 근무시간</span><strong data-sjsc-result="monthlyHours">-</strong></article>
+        <article class="sjsc-kpi"><span>기본급</span><strong data-sjsc-result="basePay">-</strong></article>
+        <article class="sjsc-kpi"><span>주휴수당</span><strong data-sjsc-result="weeklyHolidayPay">-</strong></article>
+        <article class="sjsc-kpi sjsc-kpi--accent"><span>세전 합계</span><strong data-sjsc-result="total">-</strong></article>
+      </div>
+    </section>
+
+    <section class="sjsc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">정부 지원형</p>
+        <h2>노인일자리 및 사회활동지원사업</h2>
+        <p>민간 일자리 계산값과는 다른 정부 고정 지원금입니다.</p>
+      </div>
+      <div class="sjsc-gov-table-wrap">
+        <table class="sjsc-gov-table">
+          <thead><tr><th>유형</th><th>대상</th><th>활동비</th><th>활동시간</th></tr></thead>
+          <tbody>
+            {SJSC_GOVERNMENT_JOBS.map((gov) => (
+              <tr>
+                <td>{gov.typeName}</td>
+                <td>{gov.target}</td>
+                <td>{gov.monthlyPayLabel}</td>
+                <td>{gov.hoursNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sjsc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>직업별 상세 계산기·비교 리포트</h2>
+      </div>
+      <div class="sjsc-cta-grid">
+        {SJSC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="sjsc-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="60대 일자리 월급 계산기, 이렇게 읽으면 됩니다"
+        intro={SJSC_SEO_INTRO}
+        criteria={SJSC_SEO_CRITERIA}
+        faq={SJSC_FAQ}
+        related={SJSC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="sjsc-data" type="application/json" set:html={JSON.stringify(SJSC_JOB_PROFILES)} />
+  <script type="module" src={withBase("/scripts/senior-job-salary-calculator-2026.js")}></script>
+</BaseLayout>

@@ -216,6 +216,7 @@ export const WBE_FAQ = [
 ];
 
 export const WBE_RELATED_LINKS = [
+  { href: "/tools/senior-rental-housing-eligibility-calculator-2026/", label: "고령자 임대아파트 당첨 가능성 계산기" },
   { href: "/tools/gyeonggi-youth-worker-support-calculator-2026/", label: "경기 청년 재직자 지원금 계산기" },
   { href: "/tools/livelihood-benefit-income-recognition/", label: "생계급여 소득인정액 계산기" },
   { href: "/tools/housing-benefit-income-recognition/", label: "주거급여 계산기" },

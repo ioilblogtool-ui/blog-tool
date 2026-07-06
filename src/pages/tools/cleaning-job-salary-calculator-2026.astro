@@ -1,0 +1,168 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CJSC_META,
+  CJSC_DEFAULT_HOURLY_WAGE,
+  CJSC_PRESET_HOURS,
+  CJSC_PRESET_DAYS,
+  CJSC_FAQ,
+  CJSC_SEO_INTRO,
+  CJSC_SEO_CRITERIA,
+  CJSC_RELATED_LINKS,
+} from "../../data/cleaningJobSalaryCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${CJSC_META.slug}/`;
+---
+
+<BaseLayout
+  title={CJSC_META.seoTitle}
+  description={CJSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: CJSC_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: CJSC_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: CJSC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={CJSC_META.slug} pageClass="cjsc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="미화 월급 계산"
+        title={CJSC_META.title}
+        description="하루 근무시간·주 근무일수를 입력하면 건물 미화 파트타임 예상 월급을 계산합니다."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          CJSC_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="cjscResetBtn" copyId="cjscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel cjsc-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">근무시간·일수</h2>
+          </div>
+        </div>
+
+        <section class="cjsc-input-section">
+          <h3>하루 근무시간</h3>
+          <div class="toggle-grid">
+            {CJSC_PRESET_HOURS.map((h, i) => (
+              <label class="mode-chip">
+                <input type="radio" name="cjscHours" value={h} checked={i === 1} />
+                <span>{h}시간</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        <section class="cjsc-input-section">
+          <h3>주 근무일수</h3>
+          <div class="toggle-grid">
+            {CJSC_PRESET_DAYS.map((d, i) => (
+              <label class="mode-chip">
+                <input type="radio" name="cjscDays" value={d} checked={i === 1} />
+                <span>주 {d}일</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        <section class="cjsc-input-section">
+          <h3>시급</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>시급</span>
+              <input data-cjsc="hourlyWage" type="text" inputmode="numeric" class="input-number" value={CJSC_DEFAULT_HOURLY_WAGE.toLocaleString("ko-KR")} />
+              <small>기본값은 2026년 최저임금입니다.</small>
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="cjsc-section cjsc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>예상 세전 월급</h2>
+      </div>
+      <div class="cjsc-kpi-grid">
+        <article class="cjsc-kpi"><span>주 근무시간</span><strong data-cjsc-result="weeklyHours">-</strong></article>
+        <article class="cjsc-kpi"><span>주휴수당</span><strong data-cjsc-result="holidayStatus">-</strong></article>
+        <article class="cjsc-kpi cjsc-kpi--accent"><span>월 예상 세전</span><strong data-cjsc-result="total">-</strong></article>
+      </div>
+    </section>
+
+    <section class="cjsc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">왜 주 15시간인가</p>
+        <h2>주휴수당 기준 (근로기준법 제55조)</h2>
+      </div>
+      <p class="cjsc-note">주 소정근로시간이 15시간 이상이면 주휴수당이 발생하고, 15시간 미만이면 발생하지 않습니다. 하루 3시간씩 주 5일(15시간)은 대상이지만, 주 3일(9시간)은 대상이 아닙니다.</p>
+    </section>
+
+    <section class="cjsc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>관련 계산기·리포트</h2>
+      </div>
+      <div class="cjsc-cta-grid">
+        {CJSC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="cjsc-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="건물 미화 월급, 주휴수당까지 이렇게 계산합니다"
+        intro={CJSC_SEO_INTRO}
+        criteria={CJSC_SEO_CRITERIA}
+        faq={CJSC_FAQ}
+        related={CJSC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script type="module" src={withBase("/scripts/cleaning-job-salary-calculator-2026.js")}></script>
+</BaseLayout>

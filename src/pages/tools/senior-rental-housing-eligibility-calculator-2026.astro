@@ -1,0 +1,257 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import CompareCta from "../../components/CompareCta.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SRH_META,
+  SRH_HOUSING_TYPES,
+  SRH_JUDGMENT_BANDS,
+  SRH_FAQ,
+  SRH_CHECKLIST,
+  SRH_RELATED_LINKS,
+  SRH_SEO_CONTENT,
+} from "../../data/seniorRentalHousingEligibility2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  housingTypes: SRH_HOUSING_TYPES,
+  judgmentBands: SRH_JUDGMENT_BANDS,
+};
+
+const faqSchema = SRH_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.q,
+  acceptedAnswer: { "@type": "Answer", text: item.a },
+}));
+---
+
+<BaseLayout
+  title={SRH_META.seoTitle}
+  description={SRH_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: SRH_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: SRH_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${SRH_META.slug}/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={SRH_META.slug} pageClass="srh-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="고령자 임대주택"
+        title="고령자 임대아파트 당첨 가능성 계산기 2026"
+        description="나이·소득·거주기간·수급자여부를 입력하면 당첨 가능성 점수와 추천 유형을 바로 계산합니다."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          SRH_META.dataNote,
+          "입력한 정보는 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="srhResetBtn" copyId="srhCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">조건 입력</h2>
+          </div>
+        </div>
+
+        <section class="srh-input-section">
+          <div class="form-grid">
+            <label class="field">
+              <span>나이</span>
+              <select data-srh="age">
+                <option value="62">60~64세</option>
+                <option value="67" selected>65~69세</option>
+                <option value="72">70세 이상</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>주택 보유 여부</span>
+              <select data-srh="housingOwnership">
+                <option value="none" selected>무주택</option>
+                <option value="past">과거 보유 (현재 없음)</option>
+                <option value="current">현재 보유</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>무주택 기간</span>
+              <select data-srh="homelessYears">
+                <option value="under1">1년 미만</option>
+                <option value="1to5">1~5년</option>
+                <option value="5to10">5~10년</option>
+                <option value="10plus" selected>10년 이상</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>해당 지역 거주기간</span>
+              <select data-srh="residenceYears">
+                <option value="under1">1년 미만</option>
+                <option value="1to3">1~3년</option>
+                <option value="3to5">3~5년</option>
+                <option value="5plus" selected>5년 이상</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>소득 수준</span>
+              <select data-srh="incomeLevel">
+                <option value="livelihood">기초생활수급자</option>
+                <option value="nearPoverty">차상위계층</option>
+                <option value="basicPensionOnly">기초연금만 수급</option>
+                <option value="veryLow" selected>소득이 매우 낮음</option>
+                <option value="general">일반</option>
+              </select>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-srh="isDisabled" />
+              <span>장애인으로 등록되어 있습니다</span>
+            </label>
+            <label class="field">
+              <span>청약통장 납입횟수</span>
+              <select data-srh="subscriptionCount">
+                <option value="none">없음</option>
+                <option value="under6">6회 미만</option>
+                <option value="6to23">6~23회</option>
+                <option value="24plus" selected>24회 이상</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>자동차 보유</span>
+              <select data-srh="carOwnership">
+                <option value="noneOrCheap" selected>없음 또는 저가 차량</option>
+                <option value="general">일반 차량</option>
+                <option value="expensive">고가 차량</option>
+              </select>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-srh="isSeparatedFromChildren" checked />
+              <span>자녀와 세대가 분리되어 있습니다</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="srh-input-section">
+          <h3>신청 전략 (해당하면 체크)</h3>
+          <div class="form-grid">
+            <label class="checkbox-option">
+              <input type="checkbox" data-srh="strategyPopularAreaOnly" />
+              <span>인기 지역만 고집할 계획입니다</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-srh="strategyNewBuildOnly" />
+              <span>신축만 고집할 계획입니다</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-srh="strategySingleApplicationOnly" />
+              <span>한 공고에만 신청할 계획입니다</span>
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="srh-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>당첨 가능성 점수와 판정</h2>
+      </div>
+      <div class="srh-score-card" id="srhScoreCard">
+        <p class="srh-score-card__value" id="srhScoreValue">-</p>
+        <p class="srh-score-card__label" id="srhScoreLabel"></p>
+        <p class="srh-score-card__message" id="srhScoreMessage"></p>
+      </div>
+
+      <h3>점수 구성 내역</h3>
+      <div class="srh-breakdown-list" id="srhBreakdownList"></div>
+
+      <h3>지금 바로 보완할 수 있는 항목</h3>
+      <div class="srh-actionable-grid" id="srhActionableGrid"></div>
+
+      <h3>추천 유형 순서</h3>
+      <div class="srh-type-rank-list" id="srhTypeRankList"></div>
+    </section>
+
+    <section class="srh-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">유형 비교</p>
+        <h2>고령자 임대주택 6종 비교</h2>
+      </div>
+      <table class="srh-compare-table">
+        <thead>
+          <tr><th>유형</th><th>대상</th><th>당첨 난이도</th></tr>
+        </thead>
+        <tbody>
+          {SRH_HOUSING_TYPES.map((t) => (
+            <tr><td>{t.name}</td><td>{t.target}</td><td>{t.difficulty}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="srh-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">신청 준비</p>
+        <h2>준비서류 체크리스트</h2>
+      </div>
+      <div class="srh-checklist-grid">
+        {SRH_CHECKLIST.map((item) => (
+          <article class="srh-checklist-card">
+            <span aria-hidden="true">✓</span>
+            <p>{item}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <CompareCta
+      variant="welfare"
+      eyebrow="고령자·복지 계산기"
+      title="부모님 복지 혜택도 함께 확인하세요"
+      description="장기요양, 기초연금, 생계급여까지 고령자 관련 복지 제도를 한 곳에서 비교합니다."
+      links={[
+        { href: "/tools/welfare-benefit-eligibility/", label: "복지급여 수급 자격 계산기" },
+        { href: "/tools/basic-pension-eligibility-calculator/", label: "기초연금 수급 가능성 계산기" },
+        { href: "/tools/ltci-grade-benefit-calculator-2026/", label: "장기요양등급 혜택 계산기" },
+        { href: "/tools/housing-benefit-income-recognition/", label: "주거급여 계산기" },
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={SRH_SEO_CONTENT.introTitle}
+        intro={SRH_SEO_CONTENT.intro}
+        inputPoints={SRH_SEO_CONTENT.inputPoints}
+        criteria={SRH_SEO_CONTENT.criteria}
+        faq={SRH_FAQ.map((f) => ({ question: f.q, answer: f.a }))}
+        related={SRH_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="srh-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/senior-rental-housing-eligibility-calculator-2026.js")}></script>
+</BaseLayout>

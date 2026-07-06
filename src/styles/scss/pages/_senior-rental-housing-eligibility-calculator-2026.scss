@@ -1,0 +1,225 @@
+.srh-page {
+  --srh-ink: #14213d;
+  --srh-muted: #5d6b82;
+  --srh-line: rgba(20, 33, 61, 0.12);
+  --srh-soft: #f5f7fb;
+
+  --srh-primary: #1a56db;
+  --srh-primary-bg: #eff4ff;
+
+  --srh-green: #059669; // 80점 이상 — 적극 신청
+  --srh-green-bg: #d1fae5;
+
+  --srh-amber: #d97706; // 50~79점 — 병행 신청
+  --srh-amber-bg: #fef3c7;
+
+  --srh-orange: #ea580c; // 30~49점 — 지역 확대
+  --srh-orange-bg: #ffedd5;
+
+  --srh-red: #dc2626; // 30점 미만 — 재점검
+  --srh-red-bg: #fee2e2;
+
+  .srh-section {
+    border: 1px solid var(--srh-line);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 18px;
+    background: #fff;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: var(--srh-ink);
+      margin: 1.25rem 0 0.75rem;
+
+      &:first-of-type {
+        margin-top: 1.5rem;
+      }
+    }
+  }
+
+  .srh-input-section {
+    .form-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+    }
+  }
+
+  // 판정 카드
+  .srh-score-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1.5px solid var(--srh-line);
+    text-align: center;
+
+    &--band-high {
+      background: var(--srh-green-bg);
+      border-color: var(--srh-green);
+    }
+
+    &--band-mid {
+      background: var(--srh-amber-bg);
+      border-color: var(--srh-amber);
+    }
+
+    &--band-low {
+      background: var(--srh-orange-bg);
+      border-color: var(--srh-orange);
+    }
+
+    &--band-warn {
+      background: var(--srh-red-bg);
+      border-color: var(--srh-red);
+    }
+
+    &__value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0;
+      color: var(--srh-ink);
+    }
+
+    &__label {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0.5rem 0 0;
+      color: var(--srh-ink);
+    }
+
+    &__message {
+      font-size: 0.875rem;
+      color: var(--srh-muted);
+      margin: 0.5rem 0 0;
+    }
+  }
+
+  // 점수 구성 내역
+  .srh-breakdown-list {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .srh-breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+
+    &--positive {
+      background: var(--srh-green-bg);
+      color: var(--srh-green);
+    }
+
+    &--negative {
+      background: var(--srh-red-bg);
+      color: var(--srh-red);
+    }
+  }
+
+  // 보완 가능 항목
+  .srh-actionable-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+
+    p {
+      grid-column: 1 / -1;
+      font-size: 0.875rem;
+      color: var(--srh-muted);
+      margin: 0;
+    }
+  }
+
+  // 추천 유형 순위
+  .srh-type-rank-list {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .srh-type-rank-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--srh-line);
+
+    strong {
+      display: block;
+      font-size: 0.9375rem;
+      color: var(--srh-ink);
+    }
+
+    p {
+      margin: 0.2rem 0 0;
+      font-size: 0.8125rem;
+      color: var(--srh-muted);
+    }
+
+    &__badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 50%;
+      background: var(--srh-primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.8125rem;
+      flex-shrink: 0;
+    }
+  }
+
+  // 유형 비교표
+  .srh-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+
+    th,
+    td {
+      padding: 0.625rem 0.75rem;
+      border-bottom: 1px solid var(--srh-line);
+      text-align: left;
+    }
+
+    th {
+      background: var(--srh-soft);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  // 체크리스트
+  .srh-checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .srh-checklist-card {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--srh-line);
+
+    span {
+      color: var(--srh-primary);
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--srh-ink);
+    }
+  }
+}

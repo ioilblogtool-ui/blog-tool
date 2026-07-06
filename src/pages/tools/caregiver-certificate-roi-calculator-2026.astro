@@ -1,0 +1,184 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  CCRC_META,
+  CCRC_EDUCATION_TRACKS,
+  CCRC_FAQ,
+  CCRC_SEO_INTRO,
+  CCRC_SEO_CRITERIA,
+  CCRC_RELATED_LINKS,
+} from "../../data/caregiverCertificateRoiCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${CCRC_META.slug}/`;
+---
+
+<BaseLayout
+  title={CCRC_META.seoTitle}
+  description={CCRC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: CCRC_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: CCRC_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: CCRC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={CCRC_META.slug} pageClass="ccrc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="자격증 투자비 회수"
+        title={CCRC_META.title}
+        description="교육비·취득기간을 입력하면 자격증 취득 후 몇 개월 만에 투자비를 회수하는지 계산합니다."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          CCRC_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="ccrcResetBtn" copyId="ccrcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel ccrc-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">교육 조건·월급</h2>
+          </div>
+        </div>
+
+        <section class="ccrc-input-section">
+          <h3>교육 트랙</h3>
+          <div class="toggle-grid">
+            {CCRC_EDUCATION_TRACKS.map((track, i) => (
+              <label class="mode-chip" id={`ccrcTrackChip-${track.code}`}>
+                <input type="radio" name="ccrcTrack" value={track.code} checked={i === 0} />
+                <span>{track.label} ({track.hours}시간)</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        <section class="ccrc-input-section">
+          <h3>비용·시간</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>교육비</span>
+              <input data-ccrc="educationCost" type="text" inputmode="numeric" class="input-number" value="500,000" />
+            </label>
+            <div class="calc-slider-row">
+              <input type="range" data-ccrc-slider="educationCost" class="calc-slider" min="0" max="2000000" step="50000" value="500000" />
+              <span data-ccrc-slider-val="educationCost" class="calc-slider-val">50만원</span>
+            </div>
+            <label class="field">
+              <span>하루 학습 가능 시간</span>
+              <input data-ccrc="dailyStudyHours" type="text" inputmode="numeric" class="input-number" value="4" />
+            </label>
+          </div>
+        </section>
+
+        <section class="ccrc-input-section">
+          <h3>월급</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>취득 후 예상 월급</span>
+              <input data-ccrc="expectedMonthlyPay" type="text" inputmode="numeric" class="input-number" value="1,800,000" />
+            </label>
+            <label class="field">
+              <span>현재(자격증 전) 월급</span>
+              <input data-ccrc="currentMonthlyPay" type="text" inputmode="numeric" class="input-number" value="1,000,000" />
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="ccrc-section ccrc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>투자비 회수 예상 기간</h2>
+      </div>
+      <div class="ccrc-kpi-grid">
+        <article class="ccrc-kpi ccrc-kpi--accent"><span>회수 예상 기간</span><strong data-ccrc-result="roiMonths">-</strong></article>
+        <article class="ccrc-kpi"><span>월 추가 수입</span><strong data-ccrc-result="additionalIncome">-</strong></article>
+        <article class="ccrc-kpi"><span>예상 학습 소요일</span><strong data-ccrc-result="studyDays">-</strong></article>
+      </div>
+    </section>
+
+    <section class="ccrc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">교육 트랙 비교</p>
+        <h2>일반 320시간 vs 국가자격 소지자 단축과정</h2>
+      </div>
+      <div class="ccrc-table-wrap">
+        <table class="ccrc-table">
+          <thead><tr><th>트랙</th><th>총 시간</th><th>구성</th></tr></thead>
+          <tbody>
+            {CCRC_EDUCATION_TRACKS.map((t) => (
+              <tr><td>{t.label}</td><td>{t.hours}시간</td><td>{t.breakdown}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ccrc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>관련 계산기·리포트</h2>
+      </div>
+      <div class="ccrc-cta-grid">
+        {CCRC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="ccrc-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="요양보호사 자격증, 투자비 회수까지 이렇게 계산합니다"
+        intro={CCRC_SEO_INTRO}
+        criteria={CCRC_SEO_CRITERIA}
+        faq={CCRC_FAQ}
+        related={CCRC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script type="module" src={withBase("/scripts/caregiver-certificate-roi-calculator-2026.js")}></script>
+</BaseLayout>

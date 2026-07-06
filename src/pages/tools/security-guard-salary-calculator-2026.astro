@@ -1,0 +1,168 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import { MINIMUM_WAGE_2026 } from "../../data/minimumWage2026";
+import {
+  SGSC_META,
+  SGSC_WORK_PATTERNS,
+  SGSC_FAQ,
+  SGSC_SEO_INTRO,
+  SGSC_SEO_CRITERIA,
+  SGSC_RELATED_LINKS,
+} from "../../data/securityGuardSalaryCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${SGSC_META.slug}/`;
+---
+
+<BaseLayout
+  title={SGSC_META.seoTitle}
+  description={SGSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: SGSC_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: SGSC_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: SGSC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={SGSC_META.slug} pageClass="sgsc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="경비 월급 계산"
+        title={SGSC_META.title}
+        description="격일제·야간근무 조건을 입력하면 아파트 경비 예상 월급과 실수령액을 계산합니다."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          SGSC_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="sgscResetBtn" copyId="sgscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel sgsc-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">근무 형태·조건</h2>
+          </div>
+        </div>
+
+        <section class="sgsc-input-section">
+          <h3>근무 형태</h3>
+          <div class="toggle-grid">
+            {Object.entries(SGSC_WORK_PATTERNS).map(([code, info], i) => (
+              <label class="mode-chip">
+                <input type="radio" name="sgscPattern" value={code} checked={i === 0} />
+                <span>{info.label}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        <section class="sgsc-input-section">
+          <h3>시급·수당</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>시급</span>
+              <input data-sgsc="hourlyWage" type="text" inputmode="numeric" class="input-number" value={MINIMUM_WAGE_2026.toLocaleString("ko-KR")} />
+              <small>기본값은 2026년 최저임금입니다.</small>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-sgsc="includeNightShift" checked />
+              <span>야간근무(22시~06시) 포함</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-sgsc="isMonitoringApproved" />
+              <span>감시적 근로자로 승인된 사업장입니다 (야간수당 면제 가능)</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" data-sgsc="applyInsurance" checked />
+              <span>4대보험 공제 적용</span>
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="sgsc-section sgsc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>예상 월급과 실수령액</h2>
+      </div>
+      <div class="sgsc-kpi-grid">
+        <article class="sgsc-kpi"><span>월 근무시간</span><strong data-sgsc-result="monthlyHours">-</strong></article>
+        <article class="sgsc-kpi"><span>기본급</span><strong data-sgsc-result="basePay">-</strong></article>
+        <article class="sgsc-kpi"><span>야간수당</span><strong data-sgsc-result="nightPremium">-</strong></article>
+        <article class="sgsc-kpi sgsc-kpi--accent"><span>실수령액</span><strong data-sgsc-result="netPay">-</strong></article>
+      </div>
+    </section>
+
+    <section class="sgsc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">근무 구조 이해</p>
+        <h2>격일제 근무란?</h2>
+      </div>
+      <p class="sgsc-note">격일제는 24시간 근무 후 24시간을 쉬는 구조로, 한 달에 약 15번의 근무 사이클이 발생합니다. 근무 중 휴게시간 처리 방식은 사업장마다 다를 수 있습니다.</p>
+    </section>
+
+    <section class="sgsc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>관련 계산기·리포트</h2>
+      </div>
+      <div class="sgsc-cta-grid">
+        {SGSC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="sgsc-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="아파트 경비 월급, 격일제 기준으로 이렇게 계산합니다"
+        intro={SGSC_SEO_INTRO}
+        criteria={SGSC_SEO_CRITERIA}
+        faq={SGSC_FAQ}
+        related={SGSC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script type="module" src={withBase("/scripts/security-guard-salary-calculator-2026.js")}></script>
+</BaseLayout>

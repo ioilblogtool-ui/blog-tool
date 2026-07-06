@@ -1,0 +1,216 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  SJC_META,
+  SJC_CALC_EXAMPLES,
+  SJC_MAX_PAY,
+  SJC_OVERVIEW_STATS,
+  SJC_PATTERN_INSIGHTS,
+  SJC_SELECTION_CHECKLIST,
+  SJC_SOURCES,
+  SJSC_GOVERNMENT_JOBS,
+  SJC_FAQ,
+  SJC_SEO_INTRO,
+  SJC_SEO_CRITERIA,
+  SJC_RELATED_LINKS,
+} from "../../data/seniorJobComparison2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SJC_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SJC_META.title,
+    description: SJC_META.seoDescription,
+    dateModified: SJC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SJC_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SJC_META.title, item: reportUrl },
+    ],
+  },
+];
+
+const detailCards = SJC_CALC_EXAMPLES.filter((j) => j.pros?.length);
+---
+<BaseLayout title={SJC_META.seoTitle} description={SJC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page sjc-page" data-report={SJC_META.slug}>
+    <CalculatorHero
+      eyebrow="60대 일자리 비교"
+      title={SJC_META.title}
+      description={SJC_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내 (중요)"
+      lines={[
+        SJC_META.dataNote,
+        "민간 일자리 표(계산값)와 노인일자리 표(정부 고정 지원금)는 서로 다른 성격이라 같은 기준으로 비교하지 않습니다.",
+      ]}
+    />
+
+    <section class="op-section sjc-overview-section">
+      <h2>한눈에 보는 비교 개요</h2>
+      <div class="sjc-overview-grid">
+        {SJC_OVERVIEW_STATS.map((stat) => (
+          <article class="sjc-overview-card">
+            <span>{stat.label}</span>
+            <strong>{stat.value}</strong>
+            <small>{stat.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>직업별 월급 계산 예시 (막대 비교)</h2>
+      <div class="sjc-bar-list">
+        {SJC_CALC_EXAMPLES.map((job) => (
+          <div class="sjc-bar-row">
+            <span class="sjc-bar-row__label">{job.jobName}</span>
+            <div class="sjc-bar-row__track">
+              <div class="sjc-bar-row__fill" style={`width:${Math.max((job.exampleCalc.total / SJC_MAX_PAY) * 100, 4)}%`}></div>
+            </div>
+            <span class="sjc-bar-row__value">{won(job.exampleCalc.total)}</span>
+          </div>
+        ))}
+      </div>
+      <p class="op-message">막대 길이는 각 직업의 대표 근무시간 기준 계산 예시 금액을 비교한 것입니다 (실제 시장 평균이 아님).</p>
+    </section>
+
+    <section class="op-section">
+      <h2>민간 일자리 월급 비교 (계산 예시)</h2>
+      <div class="sjc-table-wrap">
+        <table class="sjc-table">
+          <thead>
+            <tr><th>직업</th><th>월급 계산 예시</th><th>준비기간</th><th>자격증</th><th>체력부담</th><th>야간근무</th></tr>
+          </thead>
+          <tbody>
+            {SJC_CALC_EXAMPLES.map((job) => (
+              <tr>
+                <td><strong>{job.jobName}</strong></td>
+                <td>{won(job.exampleCalc.total)}</td>
+                <td>{job.prepPeriodDays === 0 ? "즉시" : `${job.prepPeriodDays}일`}</td>
+                <td>{job.requiresCertificate ? `필요(${job.educationHours ?? "-"}시간)` : "불필요"}</td>
+                <td>{job.physicalLoad}</td>
+                <td>{job.nightShift ? "있음" : "없음"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">월급 계산 예시는 2026년 최저임금(시급 10,320원) 기준이며, 실제 채용 공고와 다를 수 있습니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>노인일자리 및 사회활동지원사업 (정부 고정 지원금)</h2>
+      <div class="sjc-table-wrap">
+        <table class="sjc-table">
+          <thead><tr><th>유형</th><th>대상</th><th>활동비</th><th>활동시간</th></tr></thead>
+          <tbody>
+            {SJSC_GOVERNMENT_JOBS.map((gov) => (
+              <tr>
+                <td><strong>{gov.typeName}</strong></td>
+                <td>{gov.target}</td>
+                <td>{gov.monthlyPayLabel}</td>
+                <td>{gov.hoursNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>직업별 장단점</h2>
+      <div class="sjc-card-grid">
+        {detailCards.map((job) => (
+          <article class="sjc-detail-card">
+            <strong>{job.jobName}</strong>
+            <div class="sjc-detail-card__group">
+              <p>장점</p>
+              <ul>{job.pros.map((p: string) => <li>{p}</li>)}</ul>
+            </div>
+            <div class="sjc-detail-card__group">
+              <p>주의</p>
+              <ul>{job.cautions.map((c: string) => <li>{c}</li>)}</ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>표로는 안 보이는 패턴</h2>
+      <div class="sjc-insight-grid">
+        {SJC_PATTERN_INSIGHTS.map((insight) => (
+          <article class="sjc-insight-card">
+            <strong>{insight.title}</strong>
+            <p>{insight.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>나에게 맞는 일자리 선택 체크리스트</h2>
+      <ul class="sjc-checklist">
+        {SJC_SELECTION_CHECKLIST.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="op-section">
+      <h2>방법론·출처</h2>
+      <ul class="sjc-source-list">
+        {SJC_SOURCES.map((src) => (
+          <li><strong>{src.label}</strong><span>{src.note}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="op-section">
+      <h2>같이 보면 좋은 계산기와 리포트</h2>
+      <div class="sjc-related-grid">
+        {SJC_RELATED_LINKS.map((link) => (
+          <a class="sjc-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="60대 일자리 비교, 이렇게 읽으면 됩니다"
+      intro={SJC_SEO_INTRO}
+      criteria={SJC_SEO_CRITERIA}
+      faq={SJC_FAQ}
+      related={SJC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

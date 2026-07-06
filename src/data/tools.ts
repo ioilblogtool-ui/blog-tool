@@ -804,6 +804,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "senior-rental-housing-eligibility-calculator-2026",
+    title: "고령자 임대아파트 당첨 가능성 계산기 2026",
+    description: "나이·주택보유·소득수준·거주기간·수급자여부 입력하면 영구임대·매입임대·국민임대 당첨 가능성 점수와 추천 유형을 동시에 계산합니다.",
+    order: 11.76,
+    eyebrow: "고령자 임대주택",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "고령자", "임대주택", "당첨확률"],
+    previewStats: [
+      { label: "핵심 결과", value: "당첨 가능성 점수" },
+      { label: "추천 유형", value: "6종 우선순위" }
+    ]
+  },
+  {
     slug: "housing-benefit-income-recognition",
     title: "주거급여 계산기 2026",
     description: "가구원 수, 월소득, 재산, 거주 형태를 입력하면 주거급여 선정기준 통과 여부와 예상 기준임대료·수선비용을 바로 계산합니다.",
@@ -2106,6 +2120,62 @@ export const tools: ToolMeta[] = [
       { label: "1등급 재가 한도", value: "230만원/월" },
       { label: "일반 본인부담", value: "재가 15%" },
     ],
+  },
+  {
+    slug: "senior-job-salary-calculator-2026",
+    title: "60대 일자리 월급 계산기 2026",
+    description: "나이·체력·희망 월수입 입력하면 맞는 일자리와 예상 월급 바로 계산. 경비·미화·요양보호사·주차관리 비교 포함.",
+    order: 71,
+    eyebrow: "60대 일자리 추천",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "60대 일자리", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "추천 직업 TOP3" },
+      { label: "기준", value: "2026 최저임금" }
+    ]
+  },
+  {
+    slug: "caregiver-certificate-roi-calculator-2026",
+    title: "요양보호사 자격증 계산기 2026",
+    description: "교육비·취득기간 입력하면 자격증 취득 후 몇 개월 만에 투자비를 회수하는지 바로 계산. 320시간 표준교육과정 기준 안내 포함.",
+    order: 71.1,
+    eyebrow: "자격증 투자비 회수",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "요양보호사", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "회수 예상 개월" },
+      { label: "기준", value: "표준교육 320시간" }
+    ]
+  },
+  {
+    slug: "security-guard-salary-calculator-2026",
+    title: "아파트 경비 월급 계산기 2026",
+    description: "격일제·야간근무 조건 입력하면 아파트 경비 예상 월급과 실수령액 바로 계산. 2026 최저임금·4대보험 공제 반영.",
+    order: 71.2,
+    eyebrow: "경비 월급 계산",
+    category: "salary",
+    iframeReady: true,
+    badges: ["신규", "경비", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "격일제 실수령" },
+      { label: "기준", value: "2026 최저임금" }
+    ]
+  },
+  {
+    slug: "cleaning-job-salary-calculator-2026",
+    title: "건물 미화 월급 계산기 2026",
+    description: "하루 근무시간·주 근무일수 입력하면 건물 미화 파트타임 예상 월급 바로 계산. 주휴수당 적용 여부 포함.",
+    order: 71.3,
+    eyebrow: "미화 월급 계산",
+    category: "salary",
+    iframeReady: true,
+    badges: ["신규", "건물 미화", "2026"],
+    previewStats: [
+      { label: "핵심 결과", value: "파트타임 월급" },
+      { label: "기준", value: "주휴수당 반영" }
+    ]
   },
 ];
 
