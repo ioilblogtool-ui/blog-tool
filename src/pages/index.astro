@@ -3,6 +3,7 @@ import { tools } from "../data/tools";
 import { reports } from "../data/reports";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import BackToTop from "../components/BackToTop.astro";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -965,22 +966,43 @@ const homeFaqJsonLd = {
     </section>
   </main>
 
+  <BackToTop />
+
   <script is:inline>
     var searchInput = document.getElementById("hero-search-input");
     var toolRows = document.querySelectorAll(".home-tool-row");
+    var reportCards = document.querySelectorAll(".home-report-card");
 
     function filterToolsByQuery(q) {
       var normalized = q.trim().toLowerCase();
+
       toolRows.forEach(function (row) {
         var titleEl = row.querySelector(".home-tool-row__title");
         var catEl = row.querySelector(".home-tool-row__cat");
         var text = ((titleEl ? titleEl.textContent : "") + " " + (catEl ? catEl.textContent : "")).toLowerCase();
         row.style.display = !normalized || text.includes(normalized) ? "" : "none";
       });
+
+      reportCards.forEach(function (card) {
+        var titleEl = card.querySelector(".home-report-card__title");
+        var descEl = card.querySelector(".home-report-card__desc");
+        var catEl = card.querySelector(".home-report-card__cat-label");
+        var text = (
+          (titleEl ? titleEl.textContent : "") + " " +
+          (descEl ? descEl.textContent : "") + " " +
+          (catEl ? catEl.textContent : "")
+        ).toLowerCase();
+        card.style.display = !normalized || text.includes(normalized) ? "" : "none";
+      });
+
       if (normalized) {
         document.querySelectorAll('.home-filter__chip[data-cat]').forEach(function (b) { b.classList.remove("is-active"); });
         var allChip = document.querySelector('.home-filter__chip[data-cat="전체"]');
         if (allChip) allChip.classList.add("is-active");
+
+        document.querySelectorAll('.home-filter__chip[data-report-filter]').forEach(function (b) { b.classList.remove("is-active"); });
+        var allReportChip = document.querySelector('.home-filter__chip[data-report-filter="all"]');
+        if (allReportChip) allReportChip.classList.add("is-active");
       }
     }
 
@@ -1014,6 +1036,8 @@ const homeFaqJsonLd = {
           document.querySelectorAll(".home-tool-row").forEach(function (row) {
             row.style.display = cat === "전체" || row.getAttribute("data-category") === cat ? "" : "none";
           });
+          var toolsList = document.querySelector(".home-tools-list");
+          if (toolsList) toolsList.scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
         if (btn.hasAttribute("data-report-filter")) {
@@ -1027,6 +1051,8 @@ const homeFaqJsonLd = {
             var matchesNew = reportFilter === "new" && card.getAttribute("data-report-is-new") === "true";
             card.style.display = matchesCategory || matchesNew ? "" : "none";
           });
+          var reportsList = document.querySelector(".home-reports");
+          if (reportsList) reportsList.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       });
     });

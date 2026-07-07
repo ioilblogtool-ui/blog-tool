@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
 import CompareCta from "../../components/CompareCta.astro";
+import BackToTop from "../../components/BackToTop.astro";
 import { reports } from "../../data/reports";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
@@ -1991,6 +1992,8 @@ const reportFaqJsonLd = {
       리포트의 수치와 해석은 공개 자료를 기준으로 정리한 참고용 정보입니다. 실제 의사결정 전에는 원출처 데이터를 다시 확인해 주세요.
     </div>
   </main>
+
+  <BackToTop />
 </BaseLayout>
 
 <script>
@@ -2009,6 +2012,7 @@ const reportFaqJsonLd = {
         }
       }
 
+      let firstVisibleSeries = null;
       document.querySelectorAll('.reports-series').forEach((series) => {
         let hasVisible = false;
         series.querySelectorAll('.report-card-item').forEach((card) => {
@@ -2017,7 +2021,15 @@ const reportFaqJsonLd = {
           if (show) hasVisible = true;
         });
         series.style.display = hasVisible ? '' : 'none';
+        if (hasVisible && !firstVisibleSeries) firstVisibleSeries = series;
       });
+
+      if (filter !== 'all') {
+        const targetSeries = document.querySelector(`.reports-series[data-series="${filter}"]`) || firstVisibleSeries;
+        if (targetSeries) targetSeries.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        document.querySelector('.reports-picks')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
   });
 </script>
