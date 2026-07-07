@@ -3,10 +3,10 @@ export const BSH_META = {
   title: "비트코인은 누가 갖고 있나 — 채굴량·국가·기업·사토시 보유 현황 2026",
   seoTitle: "비트코인 보유 현황 2026 | 국가·기업·사토시·채굴량 완전 분석",
   seoDescription:
-    "비트코인 2,100만 개 중 지금까지 1,974만 개 채굴. 미국·중국·엘살바도르 국가 보유, Strategy 57만 BTC·테슬라·메타플래닛 기업 트레저리, 사토시 나카모토 잠든 110만 BTC까지 2026년 기준 완전 정리.",
+    "비트코인 2,100만 개 중 지금까지 1,974만 개 채굴. 미국·중국·엘살바도르 국가 보유, Strategy 85만 BTC·테슬라·메타플래닛 기업 트레저리, 사토시 나카모토 잠든 110만 BTC까지 2026년 기준 완전 정리.",
   description:
     "비트코인 총 발행 한도 2,100만 개의 분포를 채굴 현황, 국가, 기업, 개인 보유 기준으로 분석합니다.",
-  updatedAt: "2026-06",
+  updatedAt: "2026-07",
   dataNote:
     "이 리포트의 보유 수량은 Bitcoin Treasuries, CoinGecko, 각국 공식 발표 자료를 기준으로 정리한 추정치입니다. 실제 보유량은 공개 범위에 따라 다를 수 있습니다.",
 };
@@ -217,11 +217,11 @@ export const BSH_CORPORATES: CorporateHolder[] = [
     country: "미국",
     flag: "🇺🇸",
     ticker: "MSTR",
-    btcHeld: 576_230,
-    avgCostUsd: 36_798,
-    currentValueUsd: 34_573_800_000,
+    btcHeld: 847_363,
+    avgCostUsd: 75_651,
+    currentValueUsd: 50_841_780_000,
     strategy: "BTC 표준 전략 — 회사채·전환사채 발행해 BTC 매수. '비트코인 재무부' 모델",
-    note: "마이클 세일러 공동창업자. 2020년 8월 최초 매수 시작. 현재 세계 최대 기업 BTC 보유자.",
+    note: "마이클 세일러 공동창업자. 2020년 8월 최초 매수 시작. 현재 세계 최대 기업 BTC 보유자. (2026-06 말 기준)",
     type: "listed",
   },
   {

@@ -1,0 +1,87 @@
+.bvs-page {
+  --bvs-ink: #172033;
+  --bvs-muted: #667085;
+  --bvs-line: #d8e0ea;
+  --bvs-eth: #627eea;
+  --bvs-btc: #f7931a;
+  --bvs-risk: #dc2626;
+
+  .bvs-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bvs-profile-card {
+    border: 1px solid var(--bvs-line);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border-top: 4px solid transparent;
+
+    &[data-asset="ETH"] { border-top-color: var(--bvs-eth); }
+    &[data-asset="BTC"] { border-top-color: var(--bvs-btc); }
+  }
+
+  .bvs-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    th, td {
+      border-bottom: 1px solid var(--bvs-line);
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+    }
+
+    th:nth-child(2), td:nth-child(2) { color: var(--bvs-eth); }
+    th:nth-child(3), td:nth-child(3) { color: var(--bvs-btc); }
+  }
+
+  .bvs-leader-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bvs-target-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bvs-target-card {
+    border: 1px solid var(--bvs-line);
+    border-radius: 12px;
+    padding: 1rem;
+    border-left: 4px solid transparent;
+
+    &[data-asset="ETH"] { border-left-color: var(--bvs-eth); }
+    &[data-asset="BTC"] { border-left-color: var(--bvs-btc); }
+  }
+
+  .bvs-staking-card {
+    border: 1px solid var(--bvs-line);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .bvs-risk-banner {
+    border: 1px solid var(--bvs-risk);
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: #fef2f2;
+    color: #7f1d1d;
+  }
+}
