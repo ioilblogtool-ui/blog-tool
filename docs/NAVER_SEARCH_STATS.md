@@ -35,6 +35,95 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-07-07 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 870 | +70.1% |
+| 노출 | 44,000 | +74.1% |
+| CTR | 2.0% | 0%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 삼성전기 성과급 | 65 | 213 | 30.5 |
+| 2 | 삼성전자 tai | 50 | 6,601 | 0.8 |
+| 3 | 월드컵 감독 연봉 순위 | 26 | 210 | 12.4 |
+| 4 | 삼성전자 tai 계산 | 14 | 57 | 24.6 |
+| 5 | 삼성 tai | 11 | 1,232 | 0.9 |
+| 6 | 국회의원 재산순위 | 11 | 32 | 34.4 |
+| 7 | 성과급 계산기 | 9 | 112 | 8.0 |
+| 8 | 하이닉스 pi | 8 | 261 | 3.1 |
+| 9 | 삼성전자 성과급 | 7 | 1,368 | 0.5 |
+| 10 | 야간수당 계산기 | 7 | 125 | 5.6 |
+| 11 | 현대자동차 성과급 2026 | 7 | 102 | 6.9 |
+| 12 | k리그 연봉 순위 | 7 | 39 | 17.9 |
+| 13 | 삼성전기성과급 2026 | 7 | 12 | 58.3 |
+| 14 | 하이닉스 성과급 | 5 | 707 | 0.7 |
+| 15 | 재산세가 부과되는 기준일은 언제인가요 | 5 | 129 | 3.9 |
+| 16 | 최저시급 월급 세후 | 5 | 42 | 11.9 |
+| 17 | 이강인 주급 | 5 | 35 | 14.3 |
+| 18 | 초등학교 교사 연봉 | 5 | 15 | 33.3 |
+| 19 | 2026 k리그1 구단순위 | 4 | 1,443 | 0.3 |
+| 20 | 비니시우스 주니오르 연봉 | 4 | 381 | 1.0 |
+| 21 | 삼성전자 성과급 계산기 | 4 | 168 | 2.4 |
+| 22 | 삼성 e&a 연봉 | 4 | 29 | 13.8 |
+| 23 | 월드컵 선수 연봉 비교 | 4 | 22 | 18.2 |
+| 24 | lg전자 성과급 | 4 | 18 | 22.2 |
+| 25 | 음바페 연봉 | 4 | 15 | 26.7 |
+| 26 | 생계급여 소득인정액 계산기 | 4 | 8 | 50.0 |
+| 27 | 아파트 보유세 계산기 | 4 | 5 | 80.0 |
+| 28 | 손흥민 연봉 | 3 | 2,052 | 0.1 |
+| 29 | sk하이닉스 성과급 | 3 | 610 | 0.5 |
+| 30 | 삼성전자 tai 2026 | 3 | 607 | 0.5 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/samsung-ds-bonus-calculation-guide/ | 111 | 5,358 | 2.1 |
+| 2 | /tools/samsung-electro-mechanics-bonus-calculator-2026/ | 80 | 270 | 29.6 |
+| 3 | /reports/teacher-salary-2026/ | 47 | 1,120 | 4.2 |
+| 4 | /compare/bonus/ | 34 | 1,384 | 2.5 |
+| 5 | /reports/worldcup-manager-salary-comparison-2026/ | 30 | 342 | 8.8 |
+| 6 | /reports/worldcup-squad-salary-total-comparison-2026/ | 22 | 529 | 4.2 |
+| 7 | /reports/construction-salary-bonus-comparison-2026/ | 19 | 211 | 9.0 |
+| 8 | /tools/samsung-bonus/ | 18 | 6,472 | 0.3 |
+| 9 | /reports/kleague-salary-comparison-2026/ | 18 | 1,650 | 1.1 |
+| 10 | /reports/property-tax-payment-2026/ | 16 | 444 | 3.6 |
+| 11 | /tools/bonus-after-tax-calculator/ | 15 | 793 | 1.9 |
+| 12 | /reports/national-assembly-wealth-2026/ | 15 | 33 | 45.5 |
+| 13 | /reports/sk-hynix-bonus-2027/ | 14 | 408 | 3.4 |
+| 14 | /tools/worldcup-prize-money-calculator/ | 13 | 1,181 | 1.1 |
+| 15 | /reports/brazil-worldcup-squad-salary-2026/ | 13 | 601 | 2.2 |
+| 16 | /reports/corporate-bonus-comparison-2026/ | 12 | 2,990 | 0.4 |
+| 17 | /tools/teacher-salary-calculator/ | 12 | 336 | 3.6 |
+| 18 | /tools/childcare-short-time-pay-calculator/ | 12 | 307 | 3.9 |
+| 19 | /tools/postnatal-care-income-eligibility/ | 12 | 199 | 6.0 |
+| 20 | /tools/minimum-wage-2026/ | 10 | 276 | 3.6 |
+| 21 | /tools/overtime-pay-calculator/ | 10 | 238 | 4.2 |
+| 22 | /tools/apartment-holding-tax/ | 8 | 226 | 3.5 |
+| 23 | /reports/lee-kang-in-psg-salary-2026/ | 8 | 213 | 3.8 |
+| 24 | /reports/military-salary-2026/ | 8 | 194 | 4.1 |
+| 25 | /reports/police-salary-2026/ | 8 | 175 | 4.6 |
+| 26 | /tools/shipbuilding-bonus-comparison/ | 8 | 133 | 6.0 |
+| 27 | /tools/car-accident-insurance-vs-cash-calculator/ | 8 | 110 | 7.3 |
+| 28 | /reports/public-enterprise-bonus-comparison-2026/ | 8 | 92 | 8.7 |
+| 29 | /reports/professor-salary-2026/ | 8 | 63 | 12.7 |
+| 30 | /reports/argentina-worldcup-squad-salary-2026/ | 7 | 364 | 1.9 |
+
+### 주목 포인트
+- 클릭 870(+70.1%), 노출 44,000(+74.1%), CTR 2.0%(변동 없음) — 노출·클릭이 거의 같은 비율로 동반 급증하며 CTR은 전일과 정확히 동일하게 유지. 규모만 커진 하루.
+- `삼성전기 성과급`(클릭 65·CTR 30.5%)이 신규로 키워드 1위 등극. `samsung-electro-mechanics-bonus-calculator-2026`(클릭 80·CTR 29.6%) URL도 신규 2위 진입 — 삼성전기 성과급 지급 시즌 도래로 신규 계산기 콘텐츠가 즉시 최상위 트래픽원으로 부상.
+- `samsung-ds-bonus-calculation-guide`(클릭 111·노출 5,358·CTR 2.1%)가 URL 1위 등극. `삼성전자 tai`(노출 6,601·CTR 0.8%)가 전일(노출 402) 대비 노출이 급증하며 오늘 전체 노출 증가의 핵심 요인.
+- `월드컵 감독 연봉 순위`(클릭 26·CTR 12.4%) — 전일 키워드 1위였으나 삼성전기 성과급 이슈에 밀려 3위로. `worldcup-manager-salary-comparison-2026`(클릭 30·CTR 8.8%) URL은 5위 유지.
+- `국회의원 재산순위`(CTR 34.4%), `national-assembly-wealth-2026`(CTR 45.5%) — 정치인 재산 클러스터 CTR이 전일(27.3%/34.8%) 대비 회복세.
+- `property-tax-payment-2026`(클릭 16·CTR 3.6%) 신규 TOP10 URL 진입 — 재산세 시즌(7~8월) 콘텐츠 효과 본격화 시작.
+- `k리그 연봉 순위`(신규, CTR 17.9%), `월드컵 선수 연봉 비교`(신규, CTR 18.2%) — 스포츠 연봉 비교형 롱테일 키워드 지속 다변화.
+- `아파트 보유세 계산기`(CTR 80.0%), `생계급여 소득인정액 계산기`(CTR 50.0%) — 소볼륨 고CTR 복지·부동산 계산기 키워드 꾸준히 유지.
+
+---
+
 ## 2026-07-06 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)

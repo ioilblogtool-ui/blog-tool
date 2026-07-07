@@ -540,8 +540,8 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "samsung-bonus",
-    title: "삼성전자 성과급 협의안 계산기",
-    description: "2026년 잠정합의안 기준 삼성전자 DS 특별경영성과급, 자사주 지급, 개인·부부 총보상을 계산하는 페이지",
+    title: "삼성전자 성과급 계산기 2026 | TAI·OPI 실수령 바로 계산",
+    description: "기본급과 직급을 입력하면 삼성전자 TAI·OPI 성과급 실수령액을 바로 계산합니다. 개인·부부 총보상 비교와 세후 실수령 시뮬레이션까지 포함되어 있습니다.",
     order: 8,
     eyebrow: "Samsung Tool",
     category: "simulator",
