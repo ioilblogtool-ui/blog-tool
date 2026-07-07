@@ -1241,4 +1241,11 @@ export const reports: ReportMeta[] = [
     order: 69,
     badges: ["비트마인", "스트래티지", "이더리움", "비트코인", "2026"],
   },
+  {
+    slug: "ethereum-undervaluation-thesis-2026",
+    title: "이더리움은 왜 저평가일까 2026 | 스테이블코인·RWA 근거 정리",
+    description: "이더리움 저평가론의 핵심 근거(스테이블코인 점유율 50~60%, RWA 토큰화 전망, ETH/BTC 비율)와 반대로 제기되는 회의론(L2 가치 유출, ETF 유출)까지 균형 있게 정리했습니다.",
+    order: 70,
+    badges: ["이더리움", "스테이블코인", "RWA", "2026"],
+  },
 ];

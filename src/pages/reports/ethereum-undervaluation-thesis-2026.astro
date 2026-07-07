@@ -1,0 +1,113 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  EUT_META,
+  EUT_BULL_POINTS,
+  EUT_SKEPTIC_POINTS,
+  EUT_FAQ,
+  EUT_RELATED_LINKS,
+} from "../../data/ethereumUndervaluationThesis2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${EUT_META.slug}/`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: EUT_META.title,
+    description: EUT_META.seoDescription,
+    dateModified: EUT_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: EUT_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: EUT_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={EUT_META.seoTitle} description={EUT_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page eut-page" data-report="ethereum-undervaluation-thesis-2026">
+    <CalculatorHero
+      eyebrow="이더리움 투자 논리"
+      title={EUT_META.title}
+      description={EUT_META.description}
+    />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        EUT_META.dataNote,
+        "이 리포트는 이더리움 투자를 추천하지 않습니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>저평가론의 근거</h2>
+      <div class="eut-argument-grid">
+        {EUT_BULL_POINTS.map((p) => (
+          <article class="eut-argument-card" data-tone="bull">
+            <strong>{p.label}</strong>
+            <p>{p.value}</p>
+            <p>{p.detail}</p>
+            <small>{p.sourceLabel}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>반대로 제기되는 회의론</h2>
+      <div class="eut-argument-grid">
+        {EUT_SKEPTIC_POINTS.map((p) => (
+          <article class="eut-argument-card" data-tone="skeptic">
+            <strong>{p.label}</strong>
+            <p>{p.value}</p>
+            <p>{p.detail}</p>
+            <small>{p.sourceLabel}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>정리 — 두 시각을 어떻게 봐야 하나</h2>
+      <p class="eut-balance-banner op-message">
+        스테이블코인·RWA는 이더리움의 실사용 근거로 자주 언급되지만, 가격은 L2 가치 포착 구조, 기관 수급, 조직 안정성 등 다른 변수에도 함께 영향을 받습니다. 저평가론과 회의론 모두 특정 시점의 해석이며, 이 리포트의 결론이 아닙니다.
+      </p>
+    </section>
+
+    <SeoContent
+      introTitle="이더리움 저평가론 핵심 정리"
+      intro={[EUT_META.description, EUT_META.dataNote]}
+      criteria={[
+        "스테이블코인 점유율·RWA 전망·ETH/BTC 비율은 2026년 상반기 보도·조회 시점 기준입니다.",
+        "이 리포트는 이더리움 투자를 추천하지 않으며, 근거와 반대 논거를 동일 비중으로 소개합니다.",
+        "2026년 가격 흐름은 이 사이트의 이더리움 역사 수익률 리포트와 동일 출처를 인용했습니다.",
+      ]}
+      faq={EUT_FAQ}
+      related={EUT_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>
