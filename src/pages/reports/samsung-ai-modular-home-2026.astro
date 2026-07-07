@@ -1,0 +1,152 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  SAMH_META,
+  SAMH_PRICE_TABLE,
+  SAMH_SUPPLY_TIMELINE,
+  SAMH_OVERSEAS,
+  SAMH_FAQ,
+  SAMH_SEO_INTRO,
+  SAMH_SEO_CRITERIA,
+  SAMH_RELATED_LINKS,
+} from "../../data/samsungAiModularHome2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SAMH_META.slug}/`;
+const formatWon = (value: number) => {
+  const manwon = Math.round(value / 10000);
+  const eok = Math.floor(manwon / 10000);
+  const remainder = manwon % 10000;
+  if (eok === 0) return `${manwon.toLocaleString("ko-KR")}만원`;
+  if (remainder === 0) return `${eok}억원`;
+  return `${eok}억 ${remainder.toLocaleString("ko-KR")}만원`;
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SAMH_META.title,
+    description: SAMH_META.seoDescription,
+    dateModified: SAMH_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SAMH_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SAMH_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={SAMH_META.seoTitle} description={SAMH_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page samh-page" data-report="samsung-ai-modular-home-2026">
+    <CalculatorHero
+      eyebrow="삼성전자 주거 사업"
+      title={SAMH_META.title}
+      description={SAMH_META.description}
+    />
+
+    <InfoNotice
+      title="가격 정보 안내 (중요)"
+      lines={[
+        SAMH_META.dataNote,
+        "평형별 비용표는 부지·인허가·기초공사 등 부대비용을 제외한 단순 계산입니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>삼성 AI 모듈러 홈이란?</h2>
+      <div class="op-card-grid">
+        <article>
+          <strong>모듈러 방식</strong>
+          <p>공장에서 방·욕실 단위 모듈을 제작한 뒤 부지에서 조립해 공사 기간을 줄이는 건축 방식입니다.</p>
+        </article>
+        <article>
+          <strong>시공 파트너 공간제작소</strong>
+          <p>모듈러 목조주택 전문사인 공간제작소가 실제 시공을 맡습니다.</p>
+        </article>
+        <article>
+          <strong>삼성전자의 역할</strong>
+          <p>완성된 주택에 AI 가전과 스마트싱스 기반 홈 솔루션을 패키지로 결합합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>평형별 예상 비용</h2>
+      <table class="samh-price-table">
+        <thead>
+          <tr><th>평형</th><th>기본형 (평당 500만원)</th><th class="samh-price-table__package">AI 가전 패키지 포함 (평당 650만원)</th></tr>
+        </thead>
+        <tbody>
+          {SAMH_PRICE_TABLE.map((row) => (
+            <tr>
+              <td>{row.size}{row.note && <small> ({row.note})</small>}</td>
+              <td>{formatWon(row.basicPrice)}</td>
+              <td class="samh-price-table__package">{formatWon(row.packagePrice)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">부지 매입비, 기초공사, 인허가, 상하수도 인입 등 부대비용은 포함되지 않습니다.</p>
+      <div class="samh-cta-group">
+        <a href={withBase("/tools/home-purchase-fund/")}>내 집 마련 자금 계산기로 예산 확인하기 →</a>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>공급 계획 타임라인</h2>
+      <div class="samh-timeline">
+        {SAMH_SUPPLY_TIMELINE.map((item) => (
+          <article class="samh-timeline__item" data-status={item.status}>
+            <strong>{item.period}</strong>
+            <div>
+              <p>{item.label}</p>
+              <small>{item.detail}</small>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>해외 사업 — 클레이턴 협업</h2>
+      {SAMH_OVERSEAS.map((row) => (
+        <article class="samh-overseas-card">
+          <strong>{row.region}: {row.partner}</strong>
+          <p>{row.model}</p>
+        </article>
+      ))}
+      <p class="op-message">국내는 삼성전자가 직접 시공에 관여하지만, 북미는 가전 패키지 공급 중심으로 사업 모델이 다릅니다.</p>
+    </section>
+
+    <SeoContent
+      introTitle="삼성 AI 모듈러 홈 핵심 정리"
+      intro={SAMH_SEO_INTRO}
+      criteria={SAMH_SEO_CRITERIA}
+      faq={SAMH_FAQ}
+      related={SAMH_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>
