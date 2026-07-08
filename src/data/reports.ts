@@ -310,6 +310,13 @@ export const reports: ReportMeta[] = [
     badges: ["ETF", "반도체", "투자"],
   },
   {
+    slug: "korea-semiconductor-etf-2026",
+    title: "국내 반도체 ETF 2026 | SOL·KODEX·ACE 뭐가 다를까 총정리",
+    description: "SOL·KODEX AI반도체TOP2플러스, ACE AI반도체TOP3+, TIGER 반도체TOP10 등 국내 상장 반도체 ETF 10종의 구성종목·보수·순자산을 비교. 연금계좌용 채권혼합형까지 포함.",
+    order: 18.1,
+    badges: ["NEW", "반도체", "ETF", "국내"],
+  },
+  {
     slug: "semiconductor-stocks-forecast-2026-2028",
     title: "삼성전자·SK하이닉스·마이크론·TSMC 2026~2028 실적 전망 비교",
     description: "삼성전자, SK하이닉스, 마이크론, TSMC의 2026~2028년 매출·영업이익·밸류에이션 시나리오를 비교하는 반도체 주식 리포트입니다.",
