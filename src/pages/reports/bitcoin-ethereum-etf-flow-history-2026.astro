@@ -1,0 +1,153 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  BEF_META,
+  BEF_LAUNCH_PROFILES,
+  BEF_CUMULATIVE_SNAPSHOT,
+  BEF_EVENT_TIMELINE,
+  BEF_ISSUER_FLOWS,
+  BEF_PRICE_COMPARISON,
+  BEF_FAQ,
+  BEF_RELATED_LINKS,
+} from "../../data/bitcoinEthereumEtfFlowHistory2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${BEF_META.slug}/`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: BEF_META.title,
+    description: BEF_META.seoDescription,
+    dateModified: BEF_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: BEF_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: BEF_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={BEF_META.seoTitle} description={BEF_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page bef-page" data-report="bitcoin-ethereum-etf-flow-history-2026">
+    <CalculatorHero
+      eyebrow="ETF 자금 흐름"
+      title={BEF_META.title}
+      description={BEF_META.description}
+    />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        BEF_META.dataNote,
+        "이 리포트는 투자를 추천하지 않습니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>출시 시점과 배경</h2>
+      <div class="bef-launch-grid">
+        {BEF_LAUNCH_PROFILES.map((p) => (
+          <article class="bef-card" data-asset={p.asset}>
+            <strong>{p.asset} 현물 ETF</strong>
+            <p>{p.launchDate} 출시</p>
+            <small>{p.products}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>누적 순유입 스냅샷</h2>
+      <div class="bef-snapshot-grid">
+        {BEF_CUMULATIVE_SNAPSHOT.map((s) => (
+          <article class="bef-card" data-asset={s.asset}>
+            <strong>{s.asset}: {s.label}</strong>
+            <p>{s.note}</p>
+            <small>{s.asOfLabel} — 실시간 수치가 아닙니다</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>핵심 사건 타임라인</h2>
+      <div class="bef-timeline">
+        {BEF_EVENT_TIMELINE.map((e) => (
+          <article class="bef-timeline__item">
+            <strong>{e.dateLabel}</strong>
+            <div>
+              <p>{e.title}</p>
+              <small>{e.detail}</small>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>승자와 패자 — 발행사별 자금 흐름</h2>
+      <p class="op-message">같은 비트코인을 담아도 운용보수 구조에 따라 자금 흐름은 극명하게 갈렸습니다.</p>
+      <div class="bef-issuer-grid">
+        {BEF_ISSUER_FLOWS.map((f) => (
+          <article class="bef-issuer-card" data-role={f.role}>
+            <strong>{f.ticker} ({f.issuer})</strong>
+            <p>{f.flowLabel}</p>
+            <small>{f.detail}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>가격으로 보면 — BTC vs ETH</h2>
+      <table class="bef-price-table">
+        <thead>
+          <tr><th>자산</th><th>ETF 출시 시점 가격</th><th>2026년 7월 현재</th><th>출시 이후 누적</th></tr>
+        </thead>
+        <tbody>
+          {BEF_PRICE_COMPARISON.map((row) => (
+            <tr><td>{row.asset}</td><td>{row.launchPriceLabel}</td><td>{row.currentPriceLabel}</td><td>{row.cumulativeLabel}</td></tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">가격은 ETF 자금 흐름 외에도 거시경제, 규제, 기업 트레저리 수요 등 다양한 변수의 영향을 받습니다.</p>
+    </section>
+
+    <SeoContent
+      introTitle="비트코인·이더리움 ETF 자금 흐름 핵심 정리"
+      intro={[BEF_META.description, BEF_META.dataNote]}
+      criteria={[
+        "누적 순유입액·월별 유출입은 2026년 7월 초 보도 기준 스냅샷이며 실시간 데이터가 아닙니다.",
+        "가격 데이터는 이 사이트의 비트코인·이더리움 연도별 수익률 리포트와 동일 출처를 인용했습니다.",
+        "ETF 자금 흐름과 가격의 상관관계를 소개하지만, 인과관계를 단정하지 않습니다.",
+        "발행사별 순유입·순유출(IBIT 약 653억 달러 유입, GBTC 약 246억 달러 유출)은 운용보수 차이가 주요 원인으로 분석된 결과이며, 상품 성과를 보장하지 않습니다.",
+        "이 리포트는 투자를 추천하지 않습니다.",
+      ]}
+      faq={BEF_FAQ}
+      related={BEF_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

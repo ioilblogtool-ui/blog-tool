@@ -1,0 +1,75 @@
+.bef-page {
+  --bef-line: #d8e0ea;
+  --bef-btc: #f7931a;
+  --bef-eth: #627eea;
+  --bef-winner: #059669;
+  --bef-loser: #dc2626;
+
+  .bef-launch-grid,
+  .bef-snapshot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bef-card {
+    border: 1px solid var(--bef-line);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border-top: 4px solid transparent;
+
+    &[data-asset="BTC"] { border-top-color: var(--bef-btc); }
+    &[data-asset="ETH"] { border-top-color: var(--bef-eth); }
+  }
+
+  .bef-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    &__item {
+      border: 1px solid var(--bef-line);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+  }
+
+  .bef-issuer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .bef-issuer-card {
+    border: 1px solid var(--bef-line);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border-top: 4px solid transparent;
+
+    &[data-role="winner"] { border-top-color: var(--bef-winner); }
+    &[data-role="loser"] { border-top-color: var(--bef-loser); }
+  }
+
+  .bef-price-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    th, td {
+      border-bottom: 1px solid var(--bef-line);
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+    }
+  }
+}

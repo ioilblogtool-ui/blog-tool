@@ -1248,4 +1248,11 @@ export const reports: ReportMeta[] = [
     order: 70,
     badges: ["이더리움", "스테이블코인", "RWA", "2026"],
   },
+  {
+    slug: "bitcoin-ethereum-etf-flow-history-2026",
+    title: "비트코인·이더리움 ETF 2026 | 출시부터 지금까지 자금 흐름 총정리",
+    description: "2024년 출시된 비트코인·이더리움 현물 ETF의 누적 순유입액과 주요 유출입 사건을 정리하고, 같은 기간 가격 흐름과 나란히 대조했습니다. BTC는 여전히 플러스, ETH는 마이너스입니다.",
+    order: 71,
+    badges: ["비트코인", "이더리움", "ETF", "2026"],
+  },
 ];
