@@ -1262,4 +1262,11 @@ export const reports: ReportMeta[] = [
     order: 71,
     badges: ["비트코인", "이더리움", "ETF", "2026"],
   },
+  {
+    slug: "newlywed-government-support-2026",
+    title: "2026 신혼부부 정부지원 총정리 | 혼인세액공제·전세대출·특별공급",
+    description: "혼인세액공제, 신혼부부 전세대출, 신생아 특례대출, 특별공급, 생애최초 취득세 감면, 출산·육아 지원금과 지역별 지원 확인법까지 한눈에 비교합니다.",
+    order: 72,
+    badges: ["신혼부부", "정부지원", "대출", "청약", "출산지원"],
+  },
 ];

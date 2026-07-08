@@ -1,0 +1,405 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  NGS_BADGE_LABEL,
+  NGS_BIRTH_SUPPORTS,
+  NGS_FAQ,
+  NGS_LOCAL_SUPPORTS,
+  NGS_META,
+  NGS_MISTAKES,
+  NGS_OVERLAP_ROWS,
+  NGS_OVERVIEW_CARDS,
+  NGS_PURCHASE_LOAN_COMPARE,
+  NGS_RELATED_LINKS,
+  NGS_RENT_LOAN_COMPARE,
+  NGS_SCENARIOS,
+  NGS_SOURCE_LINKS,
+  NGS_SUBSCRIPTION_COMPARE,
+  NGS_SUPPORT_ITEMS,
+  NGS_TAX_CHECKS,
+  NGS_TIMELINE_CHECKS,
+} from "../../data/newlywedGovernmentSupport2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${NGS_META.slug}/`;
+const supportById = Object.fromEntries(NGS_SUPPORT_ITEMS.map((item) => [item.id, item]));
+const defaultScenario = NGS_SCENARIOS[0];
+const sourceHref = (href: string) => href.startsWith("/") ? withBase(href) : href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: NGS_META.seoTitle,
+      description: NGS_META.seoDescription,
+      inLanguage: "ko-KR",
+      dateModified: NGS_META.updatedAt,
+      mainEntityOfPage: reportUrl,
+      author: { "@type": "Organization", name: "비교계산소" },
+      publisher: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: NGS_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={NGS_META.seoTitle} description={NGS_META.seoDescription} ogImage="/og/og-home.png" jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page ngs-page" data-report="newlywed-government-support-2026">
+    <CalculatorHero
+      eyebrow="신혼부부 정책 가이드"
+      title={NGS_META.title}
+      description={NGS_META.description}
+      badges={["2026", "신혼부부", "대출", "청약", "출산지원"]}
+    />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        NGS_META.dataNote,
+        "금액 계산값이 들어가는 경우에는 공식 수치가 아니라 추정 또는 참고로 표시합니다.",
+        "혼인신고일, 대출 신청일, 모집공고일, 출산일처럼 제도별 기준일이 서로 다를 수 있습니다.",
+      ]}
+    />
+
+    <section class="content-section ngs-overview-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">5대 묶음</p>
+        <h2>신혼부부 정부지원 한눈에 보기</h2>
+        <p>결혼신고, 전세, 매매, 청약, 출산 단계마다 먼저 확인할 제도가 다릅니다.</p>
+      </div>
+      <div class="ngs-overview-grid">
+        {NGS_OVERVIEW_CARDS.map((card) => (
+          <article class={`ngs-overview-card ngs-overview-card--${card.category}`}>
+            <strong>{card.title}</strong>
+            <p>{card.summary}</p>
+            <small>{card.target}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ngs-scenario-section" id="scenario-guide">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">상황별 안내</p>
+        <h2>내 상황별 먼저 볼 지원</h2>
+        <p>가장 가까운 상황을 선택하면 우선 확인할 지원 3개와 바로가기 CTA가 바뀝니다.</p>
+      </div>
+
+      <div class="ngs-scenario-tabs" role="tablist" aria-label="신혼부부 상황 선택">
+        {NGS_SCENARIOS.map((scenario, index) => (
+          <button
+            class={`ngs-scenario-tab${index === 0 ? " is-active" : ""}`}
+            type="button"
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+            data-scenario-id={scenario.id}
+          >
+            {scenario.shortLabel}
+          </button>
+        ))}
+      </div>
+
+      <div
+        class="ngs-scenario-result"
+        id="ngs-scenario-result"
+        data-scenarios={JSON.stringify(NGS_SCENARIOS)}
+        data-supports={JSON.stringify(NGS_SUPPORT_ITEMS)}
+        data-badge-labels={JSON.stringify(NGS_BADGE_LABEL)}
+      >
+        <div class="ngs-scenario-copy">
+          <strong id="ngs-scenario-title">{defaultScenario.label}</strong>
+          <p id="ngs-scenario-description">{defaultScenario.description}</p>
+          <small id="ngs-scenario-caution">{defaultScenario.caution}</small>
+        </div>
+
+        <div class="ngs-recommend-grid" id="ngs-recommend-grid">
+          {defaultScenario.recommendedSupportIds.map((supportId) => {
+            const item = supportById[supportId];
+            return (
+              <article class="ngs-recommend-card">
+                <span class={`ngs-badge ngs-badge--${item.badge}`}>{NGS_BADGE_LABEL[item.badge]}</span>
+                <strong>{item.shortTitle}</strong>
+                <p>{item.summary}</p>
+                <small>{item.timing}</small>
+              </article>
+            );
+          })}
+        </div>
+
+        <a class="ngs-scenario-cta" id="ngs-scenario-cta" href={withBase(defaultScenario.ctaHref)}>
+          {defaultScenario.ctaLabel}
+        </a>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">제도 목록</p>
+        <h2>주요 지원제도 상세</h2>
+        <p>공식 수치가 필요한 제도는 구현·신청 시점에 최신 공고를 다시 확인하도록 배지를 분리했습니다.</p>
+      </div>
+      <div class="ngs-support-grid">
+        {NGS_SUPPORT_ITEMS.map((item) => (
+          <article class={`ngs-support-card ngs-support-card--${item.category}`} id={item.id}>
+            <div class="ngs-support-card__head">
+              <span class={`ngs-badge ngs-badge--${item.badge}`}>{NGS_BADGE_LABEL[item.badge]}</span>
+              <strong>{item.title}</strong>
+            </div>
+            <p>{item.summary}</p>
+            <dl class="ngs-mini-defs">
+              <div><dt>대상</dt><dd>{item.target}</dd></div>
+              <div><dt>혜택</dt><dd>{item.benefit}</dd></div>
+              <div><dt>신청·확인</dt><dd>{item.applyWhere.join(", ")}</dd></div>
+            </dl>
+            <ul class="ngs-condition-list">
+              {item.keyConditions.map((condition) => <li>{condition}</li>)}
+            </ul>
+            {item.caution && <p class="ngs-card-caution">{item.caution}</p>}
+            <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceName} 확인</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">전세대출</p>
+        <h2>신혼부부 전세대출 vs 신생아 특례 버팀목</h2>
+        <p>자녀가 없거나 출산 요건을 충족하지 않는다면 신혼부부전용 전세자금을 먼저 보고, 최근 출산한 가구라면 신생아 특례를 함께 비교합니다.</p>
+      </div>
+      <div class="ngs-compare-table-wrap">
+        <table class="ngs-compare-table">
+          <thead><tr><th>비교 항목</th><th>신혼부부전용 전세자금</th><th>신생아 특례 버팀목</th></tr></thead>
+          <tbody>
+            {NGS_RENT_LOAN_COMPARE.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                {row.columns.map((column) => (
+                  <td>
+                    {column.badge && <span class={`ngs-badge ngs-badge--${column.badge}`}>{NGS_BADGE_LABEL[column.badge]}</span>}
+                    <p>{column.value}</p>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="ngs-inline-cta">
+        <p>전세와 월세 중 실제 부담이 궁금하다면 비용을 먼저 비교하세요.</p>
+        <a href={withBase("/tools/jeonse-vs-wolse-calculator/")}>전세 vs 월세 비용 비교하기</a>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">구입대출</p>
+        <h2>신혼부부 구입자금 vs 신생아 특례 디딤돌</h2>
+        <p>출산가구라면 신생아 특례가 더 유리할 수 있지만, 주택가격·소득·자산 기준을 반드시 같이 봐야 합니다.</p>
+      </div>
+      <div class="ngs-compare-table-wrap">
+        <table class="ngs-compare-table">
+          <thead><tr><th>비교 항목</th><th>신혼부부전용 구입자금</th><th>신생아 특례 디딤돌</th></tr></thead>
+          <tbody>
+            {NGS_PURCHASE_LOAN_COMPARE.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                {row.columns.map((column) => (
+                  <td>
+                    {column.badge && <span class={`ngs-badge ngs-badge--${column.badge}`}>{NGS_BADGE_LABEL[column.badge]}</span>}
+                    <p>{column.value}</p>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">세금 체크</p>
+        <h2>혼인세액공제와 취득세 감면은 기준일이 핵심입니다</h2>
+        <p>혼인세액공제는 연말정산 기준을, 생애최초·출산가구 취득세 감면은 취득일과 세대 기준을 따로 확인해야 합니다.</p>
+      </div>
+      <div class="ngs-check-grid">
+        {NGS_TAX_CHECKS.map((item) => (
+          <article class="ngs-check-card">
+            <strong>{item.title}</strong>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+      <div class="ngs-inline-cta">
+        <p>주택 구입을 앞두고 있다면 감면 전후 취득세를 보수적으로 계산하세요.</p>
+        <a href={withBase("/tools/real-estate-acquisition-tax/")}>취득세 계산기 열기</a>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">청약</p>
+        <h2>신혼부부 특별공급 vs 생애최초 특별공급 vs 신생아 공급</h2>
+        <p>특별공급은 "결혼했다"만으로 되는 제도가 아닙니다. 모집공고일 기준 자격과 중복 청약 제한을 확인하세요.</p>
+      </div>
+      <div class="ngs-subscription-grid">
+        {NGS_SUBSCRIPTION_COMPARE.map((item) => (
+          <article>
+            <strong>{item.title}</strong>
+            <p>{item.bestFor}</p>
+            <ul>{item.checks.map((check) => <li>{check}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출산·육아</p>
+        <h2>출산 예정 신혼부부가 바로 확인할 지원</h2>
+        <p>중앙정부 보편지원과 지자체 현금성 지원은 분리해서 확인하는 것이 안전합니다.</p>
+      </div>
+      <div class="ngs-birth-grid">
+        {NGS_BIRTH_SUPPORTS.map((item) => (
+          <article>
+            <span>{item.type}</span>
+            <strong>{item.title}</strong>
+            <p>{item.check}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">지역지원</p>
+        <h2>지역별 특이 지원은 확인 경로가 더 중요합니다</h2>
+        <p>모든 시군구 지원금을 한 번에 단정하기보다, 거주지 기준으로 정확한 공고를 확인해야 합니다.</p>
+      </div>
+      <div class="ngs-compare-table-wrap">
+        <table class="ngs-compare-table ngs-compare-table--local">
+          <thead><tr><th>지원 유형</th><th>대표 예시</th><th>확인 경로</th></tr></thead>
+          <tbody>
+            {NGS_LOCAL_SUPPORTS.map((item) => (
+              <tr><th>{item.title}</th><td>{item.example}</td><td>{item.where}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">중복 가능성</p>
+        <h2>지원 성격이 다르면 함께 볼 수 있지만, 중복 가능성을 단정하면 안 됩니다</h2>
+      </div>
+      <div class="ngs-compare-table-wrap">
+        <table class="ngs-compare-table ngs-compare-table--overlap">
+          <thead><tr><th>조합</th><th>가능성</th><th>주의</th></tr></thead>
+          <tbody>
+            {NGS_OVERLAP_ROWS.map((row) => (
+              <tr><th>{row.combo}</th><td>{row.likelihood}</td><td>{row.caution}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">신청 순서</p>
+        <h2>신청 시기별 체크리스트</h2>
+      </div>
+      <ol class="ngs-step-list">
+        {NGS_TIMELINE_CHECKS.map((item) => (
+          <li>
+            <strong>{item.time}</strong>
+            <p>{item.checks.join(" · ")}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">실수 예방</p>
+        <h2>놓치기 쉬운 실수 TOP 7</h2>
+      </div>
+      <div class="ngs-mistake-grid">
+        {NGS_MISTAKES.map((item, index) => (
+          <article><span>{index + 1}</span><p>{item}</p></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section ngs-related-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">다음 단계</p>
+        <h2>리포트 다음에는 계산기로 실제 부담을 확인하세요</h2>
+      </div>
+      <div class="ngs-related-grid">
+        {NGS_RELATED_LINKS.map((item) => (
+          <a href={withBase(item.href)}>
+            <strong>{item.label}</strong>
+            <p>{item.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공식 출처</p>
+        <h2>최종 신청 전 확인할 공식 페이지</h2>
+      </div>
+      <div class="ngs-source-grid">
+        {NGS_SOURCE_LINKS.map((item) => (
+          <a href={sourceHref(item.href)} target="_blank" rel="noopener noreferrer">
+            <span>{item.source}</span>
+            <strong>{item.title}</strong>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="2026 신혼부부 정부지원 핵심 정리"
+      intro={[
+        NGS_META.description,
+        "신혼부부 지원은 하나의 제도가 아니라 혼인신고, 주거 계약, 주택 구입, 청약, 출산 단계마다 다른 제도를 조합하는 문제입니다.",
+        NGS_META.dataNote,
+      ]}
+      inputPoints={[
+        "혼인신고 예정, 전세 예정, 첫 집 매수, 청약 준비, 임신·출산처럼 상황별로 먼저 볼 지원을 구분합니다.",
+        "정책대출은 금리만 보지 않고 소득, 자산, 주택가격, 대출한도, 신청 기한을 함께 봅니다.",
+        "지자체 지원은 금액보다 주소지, 거주 기간, 신청 기한, 예산 소진 여부를 먼저 확인합니다.",
+      ]}
+      criteria={[
+        "정책대출 금리와 한도는 신청 시점과 우대금리에 따라 달라질 수 있습니다.",
+        "청약 특별공급은 모집공고별 기준이 중요하므로 공고문 확인이 필수입니다.",
+        "추정 계산값은 공식 지급액이나 대출 승인 결과가 아닙니다.",
+      ]}
+      faq={NGS_FAQ}
+      related={NGS_RELATED_LINKS}
+    />
+  </main>
+
+  <script type="module" src={withBase("/scripts/newlywed-government-support-2026.js")}></script>
+</BaseLayout>
