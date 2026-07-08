@@ -1,0 +1,421 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  BABY_MEDICINE_META,
+  BABY_MEDICINE_CHECKLIST,
+  BABY_MEDICINE_DANGER_SIGNALS,
+  BABY_MEDICINE_ANTIPYRETICS,
+  BABY_MEDICINE_STORAGE_TIPS,
+  BABY_MEDICINE_FAQ,
+  BABY_MEDICINE_REFERENCES,
+  BABY_MEDICINE_RELATED,
+} from "../../data/babyMedicineChecklist";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+
+const groupedChecklist = BABY_MEDICINE_CHECKLIST.reduce<Record<string, typeof BABY_MEDICINE_CHECKLIST>>((acc, item) => {
+  acc[item.categoryLabel] = acc[item.categoryLabel] ?? [];
+  acc[item.categoryLabel].push(item);
+  return acc;
+}, {});
+
+const faqSchema = BABY_MEDICINE_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: {
+    "@type": "Answer",
+    text: item.answer,
+  },
+}));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: BABY_MEDICINE_META.pageTitle,
+      url: `${siteUrl}/tools/baby-medicine-checklist/`,
+      description: BABY_MEDICINE_META.description,
+      applicationCategory: "HealthApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "홈", item: `${siteUrl}/` },
+        { "@type": "ListItem", position: 2, name: "도구", item: `${siteUrl}/tools/` },
+        { "@type": "ListItem", position: 3, name: BABY_MEDICINE_META.pageTitle, item: `${siteUrl}/tools/baby-medicine-checklist/` },
+      ],
+    },
+  ],
+};
+
+const pageData = {
+  checklist: BABY_MEDICINE_CHECKLIST,
+  dangerSignals: BABY_MEDICINE_DANGER_SIGNALS,
+};
+---
+
+<BaseLayout
+  title={BABY_MEDICINE_META.title}
+  description={BABY_MEDICINE_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="baby-medicine-checklist" pageClass="bmc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="육아 상비약 체크"
+        title="아기 상비약 체크리스트"
+        description="해열제, 체온계, ORS, 생리식염수, 복약 기록표까지 집에 준비할 항목을 점검하고 병원 상담이 필요한 신호를 확인하세요."
+      />
+      <div class="bmc-hero-note" aria-label="페이지 핵심 안내">
+        <span>0~36개월 보호자용</span>
+        <span>복용량 계산 없음</span>
+        <span>복약 기록 지원</span>
+        <span>의료 판단 아님</span>
+      </div>
+      <InfoNotice
+        title="먼저 확인하세요"
+        lines={[
+          "이 체크리스트는 집에 준비할 아기 상비약과 복약 기록을 정리하는 참고용 도구입니다.",
+          "복용량, 복용 가능 여부, 진단을 자동으로 판단하지 않습니다.",
+          "제품 설명서와 약사·의사 안내를 우선하고, 위험 신호가 있으면 즉시 진료 또는 응급 상담을 받으세요.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="bmcResetBtn" copyId="bmcCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">준비율 체크</p>
+            <h2 class="panel__title">우리 집 상비약 점검</h2>
+          </div>
+          <p class="panel-heading__summary">가지고 있는 항목을 체크하면 준비율과 빠진 필수 항목을 바로 보여줍니다.</p>
+        </div>
+
+        <div class="bmc-checklist-group">
+          {Object.entries(groupedChecklist).map(([category, items]) => (
+            <section class="bmc-checklist-category">
+              <h3 class="panel__title" style="font-size:0.98rem;margin:0 0 0.55rem;">{category}</h3>
+              <div class="bmc-checklist-group">
+                {items.map((item, index) => (
+                  <label class="bmc-check-item">
+                    <input
+                      type="checkbox"
+                      data-bmc-item={item.id}
+                      data-bmc-default={item.required && index === 0 ? "true" : "false"}
+                      checked={item.required && index === 0}
+                    />
+                    <span>
+                      <strong>{item.label}</strong>
+                      <small>{item.purpose}</small>
+                      <small>{item.caution}</small>
+                      <span class="bmc-check-meta">
+                        <span>{item.required ? "필수 우선" : "상황별"}</span>
+                        <span>{item.score}점</span>
+                      </span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="content-section">
+      <div id="bmcScoreCard" class="bmc-score-card" aria-live="polite">
+        <span id="bmcScoreValue" class="bmc-score-value">0점</span>
+        <p id="bmcScoreLevel" class="bmc-score-level">준비율 계산 중</p>
+        <p id="bmcScoreMessage" class="bmc-score-message">체크한 항목에 따라 결과가 바뀝니다.</p>
+        <div>
+          <strong>빠진 항목</strong>
+          <ul id="bmcMissingList" class="bmc-pill-list"></ul>
+        </div>
+        <div>
+          <strong>필수 항목 중 빠진 것</strong>
+          <ul id="bmcRequiredList" class="bmc-pill-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 리스트</p>
+            <h2 class="panel__title">아기 상비약은 약만 준비하는 것이 아닙니다</h2>
+          </div>
+          <p class="panel-heading__summary">체온을 재고, 시간을 기록하고, 상담할 연락처까지 있어야 실제 상황에서 덜 당황합니다.</p>
+        </div>
+        <div class="bmc-mini-grid">
+          <article class="bmc-mini-card">
+            <strong>체온계와 기록</strong>
+            <span>체온, 측정 시간, 증상 변화를 같이 남겨야 진료 상담 때 설명이 쉬워집니다.</span>
+          </article>
+          <article class="bmc-mini-card">
+            <strong>성분명 확인</strong>
+            <span>제품명보다 아세트아미노펜, 이부프로펜 같은 성분명을 확인하는 습관이 중요합니다.</span>
+          </article>
+          <article class="bmc-mini-card">
+            <strong>탈수 대비</strong>
+            <span>설사나 구토 때는 먹은 양, 소변량, 눈물, 입마름을 함께 살펴보세요.</span>
+          </article>
+          <article class="bmc-mini-card">
+            <strong>응급 연락처</strong>
+            <span>밤이나 주말에 소아 진료기관과 119 안내를 바로 찾을 수 있게 저장해 두세요.</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">복약 기록표</p>
+            <h2 class="panel__title">시간·성분·체온을 남기세요</h2>
+          </div>
+          <p class="panel-heading__summary">입력한 내용은 서버로 전송되지 않습니다. 기본적으로 브라우저 저장도 하지 않습니다.</p>
+        </div>
+
+        <div class="bmc-form-grid">
+          <label class="field">
+            <span>아이 이름 또는 별칭</span>
+            <input id="bmcLogChild" class="input-number" type="text" placeholder="예: 지우" />
+          </label>
+          <label class="field">
+            <span>체온</span>
+            <input id="bmcLogTemp" class="input-number" type="number" min="34" max="43" step="0.1" placeholder="38.5" />
+          </label>
+          <label class="field bmc-field-full">
+            <span>증상</span>
+            <input id="bmcLogSymptoms" class="input-number" type="text" placeholder="예: 열, 콧물, 기침, 설사" />
+          </label>
+          <label class="field">
+            <span>복용 성분</span>
+            <select id="bmcLogIngredient" class="select">
+              <option value="">선택</option>
+              <option value="아세트아미노펜">아세트아미노펜</option>
+              <option value="이부프로펜">이부프로펜</option>
+              <option value="덱시부프로펜">덱시부프로펜</option>
+              <option value="기타 또는 상담 필요">기타 또는 상담 필요</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>제품명</span>
+            <input id="bmcLogProduct" class="input-number" type="text" placeholder="선택 입력" />
+          </label>
+          <label class="field">
+            <span>복용 시간</span>
+            <input id="bmcLogTime" class="input-number" type="time" />
+          </label>
+          <label class="field">
+            <span>복용량</span>
+            <input id="bmcLogAmount" class="input-number" type="text" placeholder="제품 설명서 기준으로 직접 입력" />
+          </label>
+          <label class="field bmc-field-full">
+            <span>메모</span>
+            <textarea id="bmcLogMemo" class="input-number" rows="3" placeholder="예: 물을 잘 못 마심, 소변량 줄어듦"></textarea>
+          </label>
+        </div>
+
+        <InfoNotice
+          title="복약 기록 안내"
+          lines={[
+            "이 기록표는 진료나 약국 상담 때 전달할 내용을 정리하는 용도입니다.",
+            "복용량은 자동 계산하지 않으며 제품 설명서와 전문가 안내 기준으로 직접 확인해야 합니다.",
+            "같은 성분을 중복으로 먹이지 않도록 성분명과 시간을 함께 남기세요.",
+          ]}
+        />
+
+        <pre id="bmcLogOutput" class="bmc-log-output" aria-live="polite"></pre>
+        <div class="bmc-inline-actions">
+          <button id="bmcCopyLogBtn" class="bmc-small-button" type="button">기록 복사</button>
+          <button id="bmcPrintLogBtn" class="bmc-small-button bmc-small-button--ghost" type="button">인쇄하기</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">병원 상담 신호</p>
+            <h2 class="panel__title">하나라도 해당하면 상담을 미루지 마세요</h2>
+          </div>
+          <p class="panel-heading__summary">이 체크는 응급 여부를 확정하지 않습니다. 불안하거나 상태가 나빠지면 상담이 우선입니다.</p>
+        </div>
+
+        <div class="bmc-checklist-group">
+          {BABY_MEDICINE_DANGER_SIGNALS.map((item) => (
+            <label class="bmc-danger-item">
+              <input type="checkbox" data-bmc-danger={item.id} />
+              <span>
+                <strong>{item.label}</strong>
+                <small>{item.message}</small>
+              </span>
+            </label>
+          ))}
+        </div>
+
+        <div id="bmcDangerResult" class="bmc-danger-result" aria-live="polite">
+          <h3 id="bmcDangerHeadline">체크된 위험 신호는 없습니다</h3>
+          <p id="bmcDangerText">다만 아이 상태가 변하거나 보호자가 불안하면 체크 결과와 관계없이 상담을 우선하세요.</p>
+          <ul id="bmcDangerMessages" class="bmc-message-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">해열제 성분 비교</p>
+            <h2 class="panel__title">제품명보다 성분명을 먼저 확인하세요</h2>
+          </div>
+          <p class="panel-heading__summary">아래 표는 성분 구분을 돕는 참고 자료입니다. 복용 가능 여부와 용량은 전문가 안내를 우선하세요.</p>
+        </div>
+        <div class="bmc-table-wrap">
+          <table class="bmc-table">
+            <thead>
+              <tr>
+                <th>성분</th>
+                <th>일반적 용도</th>
+                <th>확인할 점</th>
+                <th>주의</th>
+              </tr>
+            </thead>
+            <tbody>
+              {BABY_MEDICINE_ANTIPYRETICS.map((row) => (
+                <tr>
+                  <td>{row.ingredient}</td>
+                  <td>{row.useCase}</td>
+                  <td>{row.checkPoint}</td>
+                  <td>{row.caution}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="bmc-card-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">설사·구토</p>
+              <h2 class="panel__title">탈수 신호를 같이 봅니다</h2>
+            </div>
+          </div>
+          <div class="bmc-info-card">
+            <strong>집에서 적어둘 것</strong>
+            <p>마신 양, 구토 횟수, 설사 횟수, 소변량, 눈물 여부, 입마름, 체온을 함께 기록하세요.</p>
+          </div>
+          <div class="bmc-info-card">
+            <strong>상담을 우선할 때</strong>
+            <p>반복 구토로 물도 못 마시거나 소변량이 줄고 축 처지면 체크리스트보다 진료 상담이 우선입니다.</p>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">보관·유효기간</p>
+              <h2 class="panel__title">먹이기 전 보관 상태부터 봅니다</h2>
+            </div>
+          </div>
+          <ul class="seo-list">
+            {BABY_MEDICINE_STORAGE_TIPS.map((tip) => <li>{tip}</li>)}
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">공식 참고 링크</p>
+            <h2 class="panel__title">복용과 진료 판단은 공식 안내를 함께 보세요</h2>
+          </div>
+          <p class="panel-heading__summary">이 페이지는 정리를 돕는 도구이며, 실제 판단은 제품 설명서와 전문가 상담이 우선입니다.</p>
+        </div>
+        <div class="bmc-reference-grid">
+          {BABY_MEDICINE_REFERENCES.map((item) => (
+            <a class="bmc-reference-link" href={item.url} target="_blank" rel="noopener noreferrer">
+              <strong>{item.title}</strong>
+              <span>{item.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <InfoNotice
+      title="의료 안전 안내"
+      lines={[
+        "이 페이지는 아기 상비약 준비 상태와 복약 기록을 정리하는 참고용 도구입니다.",
+        "복용 가능 여부, 복용량, 진단, 응급실 방문 여부를 확정하지 않습니다.",
+        `데이터 기준: ${BABY_MEDICINE_META.updatedAt}`,
+      ]}
+    />
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="아기 상비약 체크리스트를 보는 방법"
+        intro={[
+          "아기 상비약은 많이 사두는 것보다 필요할 때 바로 확인할 수 있게 정리해 두는 것이 중요합니다. 특히 아기가 밤에 열이 나거나 설사·구토를 하면 보호자는 당황하기 쉽고, 체온·복용 시간·성분을 제대로 기억하지 못할 수 있습니다. 이 페이지는 아기 상비약 리스트를 단순히 나열하는 데서 끝내지 않고, 집에 준비된 항목과 빠진 항목을 바로 확인하도록 만든 체크리스트입니다.",
+          "아기 해열제는 제품명보다 성분명을 확인하는 습관이 중요합니다. 아세트아미노펜, 이부프로펜, 덱시부프로펜처럼 성분이 다르면 확인해야 할 점도 달라질 수 있고, 감기약이나 복합제 안에 같은 성분이 들어 있을 수도 있습니다. 그래서 이 페이지는 해열제 용량을 계산하지 않고, 성분과 복용 시간을 기록해 중복 복용을 피하는 데 초점을 둡니다.",
+          "아기 열날 때 가장 중요한 기록은 체온, 측정 시간, 복용 성분, 복용 시간, 복용량, 동반 증상입니다. 병원이나 약국에 문의할 때 이 기록이 있으면 보호자의 기억에만 의존하지 않아도 됩니다. 복약 기록표는 서버로 전송되지 않으며, 보호자가 직접 복사하거나 인쇄해 상담 때 사용할 수 있도록 설계했습니다.",
+          "체크리스트 준비율이 높아도 아이가 축 처지거나 숨쉬기 힘들어 보이거나 경련, 반복 구토, 탈수 의심 같은 신호가 있으면 집에서 지켜볼 문제가 아닐 수 있습니다. 이 페이지의 병원 상담 신호 체크는 응급 여부를 확정하는 기능이 아니라, 상담을 미루지 않도록 돕는 안전 장치입니다.",
+          "상비약 보관도 중요합니다. 원래 용기와 제품 설명서를 함께 보관해야 성분명과 유효기간을 확인할 수 있고, 성인용 약과 아이 약을 분리하면 혼동을 줄일 수 있습니다. 유효기간이 지난 약은 임의로 사용하지 말고 약국 수거함 등 안전한 폐기 방법을 확인하세요.",
+        ]}
+        inputPoints={[
+          "가지고 있는 항목을 체크하면 아기 상비약 준비율과 빠진 필수 항목이 바로 표시됩니다.",
+          "체온, 증상, 복용 성분, 복용 시간을 입력해 진료나 약국 상담용 복약 기록을 만들 수 있습니다.",
+          "처짐, 호흡 곤란, 경련, 반복 구토, 탈수 의심 같은 병원 상담 신호를 빠르게 점검할 수 있습니다.",
+        ]}
+        criteria={[
+          "준비율 점수는 의료 판단이 아니라 상비약과 기록 도구 준비 상태를 정리한 참고 점수입니다.",
+          "이 페이지는 해열제 용량과 복용 가능 여부를 자동 계산하지 않습니다.",
+          "아기 상태가 나빠지거나 보호자가 불안하면 점수와 관계없이 소아청소년과, 약국, 응급 상담을 우선하세요.",
+          "공식 안내는 식품의약품안전처 어린이 약 복용지침, 의약품안전나라, 응급의료포털을 함께 확인하는 방식으로 연결했습니다.",
+        ]}
+        faq={BABY_MEDICINE_FAQ}
+        related={BABY_MEDICINE_RELATED}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="babyMedicineData" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script src={withBase("/scripts/baby-medicine-checklist.js")} defer></script>
+</BaseLayout>

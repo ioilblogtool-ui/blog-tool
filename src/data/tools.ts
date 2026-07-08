@@ -2064,6 +2064,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "baby-medicine-checklist",
+    title: "아기 상비약 체크리스트",
+    description: "해열제, 체온계, ORS, 생리식염수, 복약 기록표까지 아기 상비약 준비 상태를 점검하고 병원 상담이 필요한 신호를 확인합니다.",
+    order: 55.65,
+    eyebrow: "아기 상비약",
+    category: "육아·양육",
+    badges: ["NEW", "상비약", "의료 판단 아님"],
+    previewStats: [
+      { label: "준비율", value: "100점 체크" },
+      { label: "복약 기록", value: "복사·인쇄" },
+      { label: "상담 신호", value: "8개 문항" },
+    ],
+  },
+  {
     slug: "pet-monthly-cost-calculator",
     title: "강아지·고양이 월 양육비 계산기",
     description: "강아지·고양이 사료, 병원비, 미용, 간식 등 항목별 월 양육비를 계산하고 연간·10년 누적 비용을 확인하세요.",
