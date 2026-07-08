@@ -225,9 +225,9 @@ export const SECOND_HAND_GUIDE = [
 // ── 섹션 11: 정부 지원금 ──
 export const GOV_SUPPORTS = [
   {
-    name: '결혼 세액공제 (2026 신설)',
-    target: '2026년 이후 혼인신고',
-    amount: '50만원 (1회)',
+    name: '결혼 세액공제',
+    target: '2024.1.1~2026.12.31 혼인신고',
+    amount: '1인당 50만원 (부부 합산 최대 100만원, 생애 1회)',
     timing: '연말정산',
     category: 'national',
     sourceUrl: 'https://www.nts.go.kr',
@@ -251,7 +251,7 @@ export const GOV_SUPPORTS = [
   {
     name: '첫만남이용권',
     target: '신생아 출생',
-    amount: '200만원 (바우처)',
+    amount: '첫째 200만원 / 둘째 이상 300만원 (바우처)',
     timing: '출생신고 후',
     category: 'national',
     sourceUrl: 'https://www.bokjiro.go.kr',
@@ -333,7 +333,7 @@ export const NWC_FAQ = [
   },
   {
     question: '신혼부부가 받을 수 있는 정부 지원금을 모두 합치면 얼마인가요?',
-    answer: '결혼 세액공제(50만), 취득세 감면(최대 200만), 출산 후 첫만남이용권(200만)+부모급여(0세 기준 연 1,200만)를 합산하면 첫 2년간 1,600만 원 이상 지원을 받을 수 있습니다.',
+    answer: '결혼 세액공제(부부 합산 최대 100만원), 취득세 감면(최대 200만원), 출산 후 첫만남이용권(첫째 200만원)+부모급여(0세 기준 연 1,200만원)를 합산하면 첫 2년간 약 1,700만원 이상 지원을 받을 수 있습니다. 둘째 이상이면 첫만남이용권이 300만원으로 늘어나 지원액이 더 커집니다.',
   },
   {
     question: '전세 보증금 마련까지 보통 몇 년 걸리나요?',
