@@ -1491,6 +1491,19 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "international-school-tuition-calculator-2026",
+    title: "국제학교 학비 계산기 2026 | 연간 비용 바로 계산",
+    description: "지역·학교·학년·자녀 수 입력하면 국제학교 연간 학비와 월 부담액, 재학 기간 총비용까지 바로 계산. 제주·서울·송도 7개교 데이터 포함.",
+    order: 26.1,
+    eyebrow: "국제학교 학비",
+    category: "parenting",
+    badges: ["신규"],
+    previewStats: [
+      { label: "제주 4개교", value: "학비 비교" },
+      { label: "서울·송도 3개교", value: "학비 비교" },
+    ],
+  },
+  {
     slug: "daycare-vs-kindergarten-cost",
     title: "어린이집 vs 유치원 비용 계산기",
     description: "아이 나이, 거주 지역, 맞벌이 여부, 기관 유형을 입력하면 보육료·유아학비 지원금 차감 후 어린이집과 유치원 월 실부담금을 비교합니다.",

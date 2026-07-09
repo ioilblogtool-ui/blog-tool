@@ -1,0 +1,184 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  ISG_META,
+  ISG_TIMELINE,
+  ISG_DOCUMENTS,
+  ISG_AGE_GUIDE,
+  ISG_INTERVIEW_QUESTIONS,
+  ISG_ENGLISH_LEVEL_GUIDE,
+  ISG_FAQ,
+  ISG_RELATED_LINKS,
+} from "../../data/internationalSchoolAdmissionGuide2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${ISG_META.slug}/`;
+
+const faqItems = ISG_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: ISG_META.title,
+    description: ISG_META.seoDescription,
+    dateModified: ISG_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: ISG_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: ISG_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={ISG_META.seoTitle} description={ISG_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page isg-page" data-report="international-school-admission-guide-2026">
+    <CalculatorHero
+      eyebrow="입학 준비"
+      title={ISG_META.title}
+      description={ISG_META.description}
+    />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[ISG_META.verificationNote, "이 페이지는 일반적인 준비 절차를 정리한 것으로 학교별 세부 요강과 다를 수 있습니다."]}
+    />
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">준비 타임라인</p>
+        <h2>입학까지 언제 뭘 준비해야 할까</h2>
+      </div>
+      <div class="isg-timeline">
+        {ISG_TIMELINE.map((step) => (
+          <article class="isg-timeline__item">
+            <strong>{step.timing}</strong>
+            <div>
+              <p><strong>{step.title}</strong></p>
+              <p>{step.detail}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">서류 체크리스트</p>
+        <h2>준비해야 할 서류</h2>
+      </div>
+      <div class="isg-doc-grid">
+        {ISG_DOCUMENTS.map((doc) => (
+          <article class="isg-doc-card">
+            <h3>{doc.category}</h3>
+            <ul>{doc.items.map((item) => <li>{item}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">나이·학년별</p>
+        <h2>학년에 따라 준비 포인트가 다릅니다</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="isg-age-table">
+          <thead>
+            <tr><th>연령대</th><th>준비 포인트</th><th>참고</th></tr>
+          </thead>
+          <tbody>
+            {ISG_AGE_GUIDE.map((row) => (
+              <tr><td>{row.ageGroup}</td><td>{row.focus}</td><td>{row.note}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">인터뷰 준비</p>
+        <h2>인터뷰 예상 질문</h2>
+        <p>학교마다 세부 질문은 다르지만, 아래 유형은 공통적으로 자주 나옵니다.</p>
+      </div>
+      <div class="isg-interview-grid">
+        {ISG_INTERVIEW_QUESTIONS.map((group) => (
+          <article class="isg-interview-card">
+            <h3>{group.target}</h3>
+            <ul>{group.questions.map((q) => <li>{q}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">영어 준비</p>
+        <h2>연령대별 필요한 영어 수준</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="isg-age-table">
+          <thead>
+            <tr><th>연령대</th><th>필요 수준</th><th>참고</th></tr>
+          </thead>
+          <tbody>
+            {ISG_ENGLISH_LEVEL_GUIDE.map((row) => (
+              <tr><td>{row.ageGroup}</td><td>{row.level}</td><td>{row.note}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="isg-warning-note">
+        <p>미인가 국제학교는 학력이 인정되지 않아 국내 대학 진학·병역을 위해 검정고시가 필요합니다. 지원 전 학교의 정식 인가 여부를 꼭 확인하세요 — <a href={withBase("/reports/international-school-vs-foreign-school-2026/")}>자세히 보기</a></p>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="국제학교 입학 준비, 순서대로 이렇게"
+      intro={[
+        "국제학교 입학은 서류 하나만 잘 챙긴다고 되는 일이 아닙니다. 학교 리스트업부터 시험, 인터뷰, 등록까지 최소 1년의 준비 기간이 필요한 경우가 많아, 미리 타임라인을 파악해두는 것이 중요합니다.",
+        "서류는 크게 공통 서류(성적표, 추천서 등), 내국인이 외국인학교에 지원할 때 추가로 필요한 서류(해외 거주 증빙), 시험·인터뷰 준비로 나눌 수 있습니다. 제주 국제학교는 해외 거주 증빙이 필요 없어 서류 부담이 상대적으로 적습니다.",
+        "학년이 올라갈수록 빈 자리가 줄어드는 경향이 있어, 저학년일수록 여유 있게 준비를 시작하는 것이 유리합니다. 반대로 유치부는 시험보다 부모 인터뷰와 적응 가능성을 더 비중 있게 보는 경우가 많습니다.",
+        "가장 주의해야 할 것은 미인가 국제학교입니다. 학비를 다 내고도 학력이 인정되지 않을 수 있으므로, 지원 전 반드시 학교의 정식 인가 여부를 확인해야 합니다. 이 페이지의 절차는 일반적인 안내이며, 최종 서류·시험 요건은 학교별 최신 입학 요강을 확인하세요.",
+      ]}
+      criteria={[
+        "이 페이지는 여러 학교의 공통적인 절차를 일반화한 것으로, 학교별 세부 요강과 다를 수 있습니다.",
+        "내국인 외국인학교 지원 요건(해외 거주 3년 이상)은 2026-07-08 웹검색 기준이며 재검증을 권장합니다.",
+        "이 페이지는 특정 학교를 추천하지 않으며 준비 절차 안내 목적입니다.",
+      ]}
+      faq={faqItems}
+      related={ISG_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

@@ -1,0 +1,206 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  ISK_META,
+  ISK_KINDERGARTEN_ROWS,
+  ISK_SCHOOL_ENTRY_ROWS,
+  ISK_COST_LADDER,
+  ISK_FAQ,
+  ISK_RELATED_LINKS,
+} from "../../data/internationalSchoolVsKindergarten2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${ISK_META.slug}/`;
+
+const faqItems = ISK_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+const fmtMan = (n: number) => `${(n / 10000).toLocaleString("ko-KR")}만원`;
+
+const premiumKinder = ISK_KINDERGARTEN_ROWS.find((r) => r.isHighest)!;
+const cheapestSchool = ISK_SCHOOL_ENTRY_ROWS.reduce((min, cur) =>
+  cur.krwPortion > 0 && (min.krwPortion === 0 || cur.krwPortion < min.krwPortion) ? cur : min
+);
+
+const chartSeed = {
+  labels: ISK_COST_LADDER.map((r) => r.label),
+  values: ISK_COST_LADDER.map((r) => Math.round(r.annualKrw / 10000)),
+  groups: ISK_COST_LADDER.map((r) => r.group),
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: ISK_META.title,
+    description: ISK_META.seoDescription,
+    dateModified: ISK_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: ISK_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: ISK_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={ISK_META.seoTitle} description={ISK_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page isk-page" data-report="international-school-vs-kindergarten-2026">
+    <CalculatorHero
+      eyebrow="대안 비교"
+      title={ISK_META.title}
+      description={ISK_META.description}
+    />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[ISK_META.dataSourceNote, "이 페이지는 특정 기관을 추천하지 않으며 비용 비교 정보만 제공합니다."]}
+    />
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">영어유치원</p>
+        <h2>영어유치원 3년 누적 비용</h2>
+        <p>기존 영어유치원 리포트 데이터를 그대로 인용했습니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="isk-kinder-table">
+          <thead>
+            <tr><th>구분</th><th>월 순부담액</th><th>3년 누적</th></tr>
+          </thead>
+          <tbody>
+            {ISK_KINDERGARTEN_ROWS.map((row) => (
+              <tr>
+                <td>{row.option}</td>
+                <td>{fmtMan(row.monthlyNetFee)}</td>
+                <td>{fmtMan(row.threeYearTotal)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">국제학교</p>
+        <h2>국제학교 초등 진학 학비 (1년 기준)</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="isk-school-table">
+          <thead>
+            <tr><th>학교</th><th>지역</th><th>학비</th></tr>
+          </thead>
+          <tbody>
+            {ISK_SCHOOL_ENTRY_ROWS.map((row) => (
+              <tr>
+                <td>{row.schoolName}</td>
+                <td>{row.region}</td>
+                <td>
+                  {row.krwPortion > 0 ? fmtMan(row.krwPortion) : `$${row.usdPortion.toLocaleString("en-US")}`}
+                  {row.usdPortion > 0 && row.krwPortion > 0 ? ` + $${row.usdPortion.toLocaleString("en-US")}` : ""}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">나란히 비교</p>
+        <h2>영어유치원 3년 vs 국제학교 1년</h2>
+      </div>
+      <div class="isk-vs-compare">
+        <article class="isk-vs-card">
+          <span>영어유치원(프리미엄형) 3년 누적</span>
+          <strong>{fmtMan(premiumKinder.threeYearTotal)}</strong>
+        </article>
+        <span class="isk-vs-divider">VS</span>
+        <article class="isk-vs-card">
+          <span>{cheapestSchool.schoolName} 초등 1년</span>
+          <strong>{fmtMan(cheapestSchool.krwPortion)}</strong>
+        </article>
+      </div>
+      <p class="op-message">
+        국제학교는 초등 이후에도 매년 학비가 발생하므로, 장기 총비용은 <a href={withBase("/tools/international-school-tuition-calculator-2026/")}>학비 계산기</a>에서 재학 기간을 늘려 확인하세요.
+      </p>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비용 사다리</p>
+        <h2>영어유치원 4단계 + 국제학교 7개교, 연간 비용으로 줄 세우면</h2>
+        <p>영어유치원은 월 순부담액을 연 환산, 국제학교는 대표 학년 연간 학비(기본 환율 기준)로 맞춰 낮은 순으로 정렬했습니다.</p>
+      </div>
+      <article class="isk-chart-panel">
+        <div class="isk-chart-wrap">
+          <canvas id="iskLadderChart" aria-label="영어유치원과 국제학교 연간 비용 사다리 차트"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">선택 가이드</p>
+        <h2>어떤 가정에 어느 쪽이 맞을까</h2>
+      </div>
+      <div class="isk-guide-grid">
+        <article class="isk-guide-card">
+          <h3>영어유치원이 맞는 경우</h3>
+          <p>유아기 영어 노출을 원하지만 초·중·고까지 장기 고정비를 감당하기 어려운 가정. 이후 국내 초등학교로 진학할 계획이 있는 경우.</p>
+        </article>
+        <article class="isk-guide-card">
+          <h3>국제학교가 맞는 경우</h3>
+          <p>초·중·고까지 국제 커리큘럼과 해외 대학 진학을 목표로 하고, 장기간 학비를 안정적으로 감당할 수 있는 가정.</p>
+        </article>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="영어유치원과 국제학교, 어떻게 비교해야 할까"
+      intro={[
+        "자녀 영어 교육을 고민하는 학부모는 영어유치원과 국제학교를 종종 같은 선택지처럼 비교하지만, 둘은 기간과 비용 구조가 근본적으로 다릅니다. 영어유치원은 보통 3년(만 3~5세) 한정이지만 국제학교는 초·중·고까지 이어지는 장기 지출입니다.",
+        "단순히 '한 해 비용'만 비교하면 국제학교가 더 비싸 보일 수 있지만, 영어유치원 프리미엄형 3년 누적 비용도 이미 국제학교 초등 1년 학비에 근접하거나 이를 넘어서는 경우가 많습니다. 총비용을 비교하려면 기간을 맞춰야 정확합니다.",
+        "이 페이지는 이미 발행된 영어유치원 리포트의 비용 데이터를 그대로 인용해 국제학교 학비와 나란히 배치했습니다. 영어유치원 등급별·지역별 상세 비교가 필요하다면 관련 리포트를 참고하세요.",
+        "결정은 비용만으로 내릴 수 없습니다. 자녀가 이후 국내 교육과정으로 돌아올지, 해외 대학 진학을 목표로 할지에 따라 적합한 선택이 달라집니다.",
+      ]}
+      criteria={[
+        `영어유치원 비용은 기존 리포트 데이터를 인용했습니다.`,
+        "국제학교 학비는 2026-07-08 각 학교 공식 페이지 확인 기준입니다.",
+        "이 페이지는 특정 기관을 추천하지 않으며 비용 비교 정보만 제공합니다.",
+      ]}
+      faq={faqItems}
+      related={ISK_RELATED_LINKS}
+    />
+  </main>
+
+  <script id="iskChartSeed" type="application/json" set:html={JSON.stringify(chartSeed)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/international-school-vs-kindergarten-2026.js")}></script>
+</BaseLayout>

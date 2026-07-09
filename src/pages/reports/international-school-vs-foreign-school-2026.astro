@@ -1,0 +1,177 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  ISF_META,
+  ISF_TYPE_ROWS,
+  ISF_MISCONCEPTIONS,
+  ISF_SCHOOL_CLASSIFICATION,
+  ISF_SCHOOLS,
+  ISF_FAQ,
+  ISF_RELATED_LINKS,
+} from "../../data/internationalSchoolVsForeignSchool2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${ISF_META.slug}/`;
+
+const faqItems = ISF_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+
+const classificationWithNames = ISF_SCHOOL_CLASSIFICATION.map((c) => ({
+  ...c,
+  name: ISF_SCHOOLS.find((s) => s.id === c.schoolId)?.name ?? c.schoolId,
+  isJeju: c.typeLabel.includes("외국교육기관"),
+}));
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: ISF_META.title,
+    description: ISF_META.seoDescription,
+    dateModified: ISF_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: ISF_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: ISF_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={ISF_META.seoTitle} description={ISF_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page isf-page" data-report="international-school-vs-foreign-school-2026">
+    <CalculatorHero
+      eyebrow="입학자격"
+      title={ISF_META.title}
+      description={ISF_META.description}
+    />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[ISF_META.verificationNote, "이 페이지는 법령 요약이며 실제 지원 전 학교·교육청 공식 확인이 필요합니다."]}
+    />
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">용어부터 정리</p>
+        <h2>국제학교·외국인학교·외국교육기관, 뭐가 다를까</h2>
+      </div>
+      <div class="isf-term-grid">
+        <article class="isf-term-card">
+          <h3>외국인학교</h3>
+          <p>외국인 자녀 교육을 위해 설립된 각종학교. 내국인은 정원 30%까지 제한적으로 입학 가능.</p>
+        </article>
+        <article class="isf-term-card">
+          <h3>국제학교(외국교육기관)</h3>
+          <p>경제자유구역·제주특별법 근거로 설립. 내국인 입학 제한이 없음.</p>
+        </article>
+        <article class="isf-term-card">
+          <h3>미인가 국제학교</h3>
+          <p>법적 근거 없는 사설 교육시설. 정식 학력으로 인정되지 않음.</p>
+        </article>
+        <article class="isf-term-card">
+          <h3>제주국제학교</h3>
+          <p>국제학교(외국교육기관)의 대표 사례. 이 클러스터의 제주 4개교가 해당.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">유형별 비교</p>
+        <h2>법적 근거·내국인 정원·학력인정 한눈에 보기</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="isf-type-table">
+          <thead>
+            <tr><th>유형</th><th>법적 근거</th><th>내국인 정원</th><th>거주 요건</th><th>학력 인정</th></tr>
+          </thead>
+          <tbody>
+            {ISF_TYPE_ROWS.map((row) => (
+              <tr>
+                <td>{row.type}</td>
+                <td>{row.legalBasis}</td>
+                <td>{row.koreanQuota}</td>
+                <td>{row.residencyRequirement}</td>
+                <td>{row.academicRecognition}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">이 클러스터 7개교</p>
+        <h2>어떤 유형에 속할까</h2>
+      </div>
+      <div class="isf-classification-list">
+        {classificationWithNames.map((c) => (
+          <span class={`isf-classification-chip ${c.isJeju ? "isf-classification-chip--jeju" : "isf-classification-chip--foreign"}`}>
+            {c.name} · {c.typeLabel}
+          </span>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <article class="isf-warning-card">
+        <h2>미인가 국제학교, 지원 전 꼭 확인하세요</h2>
+        <p>전국에 약 120여 개로 추산되는 미인가 국제학교는 초중등교육법상 정식 학교가 아니라 학력이 인정되지 않습니다. 국내 대학 진학이나 병역 관련 학력 증빙을 위해서는 검정고시에 별도로 응시해야 합니다. 정부는 최근 미인가 국제학교에 대한 관리를 강화하고 있습니다.</p>
+      </article>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">오해 바로잡기</p>
+        <h2>부모들이 자주 하는 오해 TOP 5</h2>
+      </div>
+      <div class="isf-misconception-list">
+        {ISF_MISCONCEPTIONS.map((row) => (
+          <article class="isf-misconception-card">
+            <p class="isf-misconception-card__wrong">✕ {row.misconception}</p>
+            <p class="isf-misconception-card__right">✓ {row.reality}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="국제학교 용어, 왜 이렇게 헷갈릴까"
+      intro={[
+        "'국제학교'라는 말은 실제로는 법적 근거가 다른 여러 유형의 학교를 뭉뚱그려 부르는 경우가 많습니다. 제주의 NLCS나 Branksome Hall Asia는 국제학교(외국교육기관)이고, 서울의 SFS나 Dulwich는 외국인학교인데, 두 유형은 내국인 입학 가능 여부가 완전히 다릅니다.",
+        "외국인학교는 「외국인학교 및 외국인유치원 설립·운영에 관한 규정」에 따라 내국인 정원이 30%(교육감 재량 시 50%)로 제한되고, 해외 거주 3년 이상 요건도 있습니다. 반면 제주국제학교는 「경제자유구역 및 제주국제자유도시의 외국교육기관 설립·운영에 관한 특별법」에 따라 이런 제한이 전혀 없습니다.",
+        "가장 주의해야 할 것은 미인가 국제학교입니다. 학비가 저렴하지 않은데도 초중등교육법상 정식 학교로 인정되지 않아 학력이 인정되지 않고, 대학 진학이나 병역을 위해서는 검정고시를 따로 봐야 합니다. '국제학교'라는 이름만 보고 정식 학교로 오해하지 않도록 주의해야 합니다.",
+        "이 페이지의 법령명과 수치는 웹검색 기준으로 정리한 것이며, 실제 지원 전에는 국가법령정보센터 원문과 각 학교·교육청의 공식 안내로 다시 확인하는 것이 안전합니다.",
+      ]}
+      criteria={[
+        "법령명과 수치는 2026-07-08 웹검색 기준이며 재검증을 권장합니다.",
+        "이 클러스터 7개교의 유형 분류 중 일부는 학교 공식 확인이 추가로 필요합니다.",
+        "이 페이지는 법률 자문이 아니며 정보 비교 목적입니다.",
+      ]}
+      faq={faqItems}
+      related={ISF_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

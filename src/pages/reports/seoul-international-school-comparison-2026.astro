@@ -1,0 +1,195 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SISC_META,
+  SISC_SCHOOLS,
+  SISC_EXPANSION_CANDIDATES,
+  SISC_RANKING,
+  SISC_RECOMMEND_FOR,
+  SISC_FAQ,
+  SISC_RELATED_LINKS,
+} from "../../data/seoulInternationalSchoolComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SISC_META.slug}/`;
+
+const faqItems = SISC_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+
+const formatTier = (t: (typeof SISC_SCHOOLS)[number]["tuitionTiers"][number]) => {
+  if (t.krwPortion > 0 && t.usdPortion > 0) {
+    return `${(t.krwPortion / 10000).toLocaleString("ko-KR")}만원 + $${t.usdPortion.toLocaleString("en-US")}`;
+  }
+  if (t.krwPortion > 0) {
+    return `${(t.krwPortion / 10000).toLocaleString("ko-KR")}만원`;
+  }
+  return `$${t.usdPortion.toLocaleString("en-US")}`;
+};
+
+const chartSeed = {
+  labels: SISC_RANKING.map((r) => r.school.name),
+  values: SISC_RANKING.map((r) => Math.round(r.representativeAnnualKrw / 10000)),
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SISC_META.title,
+    description: SISC_META.seoDescription,
+    dateModified: SISC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SISC_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SISC_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={SISC_META.seoTitle} description={SISC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page sisc-page" data-report="seoul-international-school-comparison-2026">
+    <CalculatorHero
+      eyebrow="서울·경기·송도 국제학교"
+      title={SISC_META.title}
+      description={SISC_META.description}
+    />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={["학비는 각 학교 공식 홈페이지 2026-07-08 확인 기준입니다.", SISC_META.admissionNote]}
+    />
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">입학자격 배경</p>
+        <h2>서울권은 왜 내국인 정원이 제한될까</h2>
+      </div>
+      <article class="sisc-admission-card">
+        <p>{SISC_META.admissionNote}</p>
+        <p>제주 국제학교는 이런 제한이 없습니다 — <a href={withBase("/reports/jeju-international-school-comparison-2026/")}>제주 국제학교 비교 보기</a></p>
+      </article>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 비교</p>
+        <h2>서울·경기·송도 3개교 학년별 학비</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="sisc-compare-table">
+          <thead>
+            <tr><th>학교</th><th>학년 구간</th><th>학비</th></tr>
+          </thead>
+          <tbody>
+            {SISC_SCHOOLS.flatMap((school) =>
+              school.tuitionTiers.map((tier) => (
+                <tr>
+                  <td>{school.name}</td>
+                  <td>{tier.tierLabel}</td>
+                  <td>{formatTier(tier)}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 랭킹</p>
+        <h2>대표 학년 기준, 저렴한 순 랭킹</h2>
+        <p>대표 학년(첫 번째 학년 구간) 학비를 계산기 기본 환율(1,380원/달러)로 환산해 정렬했습니다.</p>
+      </div>
+      <ol class="sisc-ranking-list">
+        {SISC_RANKING.map((row) => (
+          <li class="sisc-ranking-item">
+            <span class="sisc-ranking-item__rank">{row.rank}</span>
+            <span class="sisc-ranking-item__name">{row.school.name}</span>
+            <span class="sisc-ranking-item__value">{Math.round(row.representativeAnnualKrw / 10000).toLocaleString("ko-KR")}만원</span>
+          </li>
+        ))}
+      </ol>
+      <article class="sisc-chart-panel">
+        <div class="sisc-chart-wrap">
+          <canvas id="siscRankingChart" aria-label="서울·경기·송도 국제학교 3개교 연간 학비 랭킹 차트"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학교별 상세</p>
+        <h2>3개교 한 줄 요약</h2>
+      </div>
+      <div class="sisc-school-card-grid">
+        {SISC_SCHOOLS.map((school) => (
+          <article class="sisc-school-card">
+            <h3>{school.name}</h3>
+            <p>{school.tuitionTiers.length}단계 학년 구간, {school.tuitionTiers[0].tierLabel} 기준 대표 학비.</p>
+            <p class="sisc-school-card__recommend">추천: {SISC_RECOMMEND_FOR[school.id]}</p>
+            {school.dataNote && <p>{school.dataNote}</p>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">확장 예정</p>
+        <h2>이 지역에 더 있는 학교</h2>
+      </div>
+      <div class="sisc-expansion-list">
+        {SISC_EXPANSION_CANDIDATES.map((c) => <span>{c.name} ({c.area})</span>)}
+      </div>
+      <p class="op-message">학비 데이터 확보 후 순차적으로 이 페이지에 추가할 예정입니다.</p>
+    </section>
+
+    <SeoContent
+      introTitle="서울·경기 국제학교 비교, 이렇게 읽으세요"
+      intro={[
+        "서울·경기·송도 국제학교를 검토하는 학부모가 가장 먼저 부딪히는 벽은 학비가 아니라 '내국인이 지원할 수 있는가'입니다. 이 3개교는 모두 외국인학교로 분류되어 내국인 정원이 제한되므로, 학비를 보기 전에 지원 자격부터 확인하는 것이 순서입니다.",
+        "자격을 충족한다는 전제 하에 학비를 비교하면, 학교마다 학제 구분(Village/Middle/Upper 또는 Year 단위)과 원화·달러 혼합 비율이 달라 단순 숫자 비교보다는 학년 구간을 맞춰 보는 것이 정확합니다.",
+        "Dulwich College Seoul처럼 전액 원화로 청구하는 학교는 환율 변동 영향을 받지 않는 대신, 나머지 학교는 환율이 오르면 실제 부담도 함께 오릅니다. 학비 계산기에서 환율을 조정해보며 민감도를 확인하는 것을 추천합니다.",
+        "이 페이지는 검색 수요가 높은 3개교를 우선 반영했습니다. Dwight, YISS, KIS Pangyo 등은 데이터가 확보되는 대로 추가할 예정이며, 실제 지원 전에는 반드시 학교 공식 입학처에서 최신 학비와 입학 요건을 재확인하세요.",
+      ]}
+      criteria={[
+        "학비는 각 학교 공식 홈페이지 2026-07-08 확인 기준입니다.",
+        "내국인 입학 정원 제한(30%, 교육감 재량 시 50%)은 「외국인학교 및 외국인유치원 설립·운영에 관한 규정」 기준입니다.",
+        "이 페이지는 특정 학교를 추천하지 않으며 비교 정보만 제공합니다.",
+      ]}
+      faq={faqItems}
+      related={SISC_RELATED_LINKS}
+    />
+  </main>
+
+  <script id="siscChartSeed" type="application/json" set:html={JSON.stringify(chartSeed)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/seoul-international-school-comparison-2026.js")}></script>
+</BaseLayout>

@@ -1,0 +1,247 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import SummaryCards from "../../components/SummaryCards.astro";
+import {
+  IST_META,
+  IST_SCHOOLS,
+  IST_FAQ,
+  IST_SEO_INTRO,
+  IST_SEO_CRITERIA,
+  IST_RELATED_LINKS,
+} from "../../data/internationalSchoolTuitionCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${IST_META.slug}/`;
+
+const jejuSchools = IST_SCHOOLS.filter((s) => s.region === "jeju");
+const seoulSchools = IST_SCHOOLS.filter((s) => s.region === "seoul_songdo");
+const firstSchool = jejuSchools[0];
+
+const faqItems = IST_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "@id": pageUrl,
+    url: pageUrl,
+    name: IST_META.seoTitle,
+    description: IST_META.seoDescription,
+    applicationCategory: "FinanceApplication",
+    inLanguage: "ko-KR",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: IST_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout title={IST_META.seoTitle} description={IST_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={IST_META.slug} pageClass="ist-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="국제학교 학비"
+        title={IST_META.title}
+        description={IST_META.description}
+      />
+      <InfoNotice
+        title="계산 전 꼭 확인하세요"
+        lines={[IST_META.dataNote, "이 계산 결과는 학비 감당 가능 여부를 위한 참고용이며, 입학 자격과는 무관합니다."]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="istResetBtn" copyId="istCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel ist-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">지역·학교·학년</h2>
+          </div>
+        </div>
+
+        <section class="ist-input-section">
+          <div class="form-grid">
+            <label class="field">
+              <span>지역</span>
+              <select data-ist="region" class="input-select">
+                <option value="jeju">제주</option>
+                <option value="seoul_songdo">서울·경기·송도</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>학교</span>
+              <select data-ist="school" class="input-select">
+                {jejuSchools.map((s) => <option value={s.id}>{s.name}</option>)}
+              </select>
+            </label>
+            <label class="field">
+              <span>학년 구간</span>
+              <select data-ist="grade" class="input-select">
+                {firstSchool.tuitionTiers.map((t) => <option value={t.tierKey}>{t.tierLabel}</option>)}
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="ist-input-section">
+          <label class="mode-chip" id="istBoardingRow">
+            <input type="checkbox" data-ist="boarding" />
+            <span>기숙 선택</span>
+          </label>
+        </section>
+
+        <section class="ist-input-section">
+          <div class="form-grid">
+            <label class="field">
+              <span>자녀 수</span>
+              <input data-ist="children" type="number" min="1" max="4" value="1" class="input-number" />
+            </label>
+            <label class="field">
+              <span>가구 연소득 (만원, 선택)</span>
+              <input data-ist="income" type="number" min="0" step="100" placeholder="예: 15000" class="input-number" />
+            </label>
+            <label class="field">
+              <span>환율 (원/달러)</span>
+              <input data-ist="fxrate" type="number" min="1000" max="2000" value={IST_META.defaultExchangeRate} class="input-number" />
+            </label>
+            <label class="field">
+              <span>예상 재학 기간 (년)</span>
+              <input data-ist="years" type="number" min="1" max="15" value={firstSchool.tuitionTiers[0].suggestedYears} class="input-number" />
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="ist-section ist-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>예상 학비</h2>
+      </div>
+      <SummaryCards
+        columns={4}
+        items={[
+          { label: "연간 총비용", id: "ist-result-annual" },
+          { label: "월 환산 비용", id: "ist-result-monthly" },
+          { label: "소득 대비 비율", id: "ist-result-ratio" },
+          { label: "부담 등급", id: "ist-result-burden" },
+        ]}
+      />
+      <p class="ist-total-years-line" data-ist-result="totalYearsLine"></p>
+      <p class="ist-insight" data-ist-result="insight"></p>
+    </section>
+
+    <section class="ist-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">첫해 추가비용</p>
+        <h2>입학금·예치금 등 최초 1회성 비용</h2>
+      </div>
+      <p class="ist-first-year-total" data-ist-result="firstYearTotal">-</p>
+      <p class="ist-note" data-ist-result="firstYearNote"></p>
+    </section>
+
+    <section class="ist-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">학비 비교</p>
+        <h2>선택한 학교, 7개교 중 어디쯤일까</h2>
+        <p>같은 환율 기준으로 7개교 대표 학년 연간 학비를 나란히 비교했습니다. 선택한 학교가 강조 표시됩니다.</p>
+      </div>
+      <article class="ist-chart-panel">
+        <div class="ist-chart-wrap">
+          <canvas id="istCompareChart" aria-label="국제학교 7개교 연간 학비 비교 차트"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="ist-section">
+      <div class="ist-source-row">
+        <span class="ist-source-badge">
+          출처: <a data-ist-result="sourceLink" href="#" target="_blank" rel="noopener noreferrer nofollow">학교 공식 페이지</a>
+          <span data-ist-result="sourceDate"></span>
+        </span>
+      </div>
+      <div class="ist-data-warning is-hidden" data-ist-result="dataWarning"></div>
+      <p class="ist-note" data-ist-result="multiChildNote"></p>
+    </section>
+
+    <section class="ist-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">지역별 비교</p>
+        <h2>지역별 대표 학교 한눈에 보기</h2>
+      </div>
+      <div class="ist-region-tab-row" id="istMiniCompareTabs">
+        <button type="button" class="ist-tab-btn is-active" data-region-tab="jeju">제주</button>
+        <button type="button" class="ist-tab-btn" data-region-tab="seoul_songdo">서울·경기·송도</button>
+      </div>
+      <div class="table-wrap">
+        <table class="ist-mini-compare-table">
+          <thead>
+            <tr><th>학교</th><th>대표 학년 학비</th><th>기숙 가능</th></tr>
+          </thead>
+          <tbody>
+            {IST_SCHOOLS.map((school) => (
+              <tr data-region-row={school.region}>
+                <td>{school.name}</td>
+                <td>{school.tuitionTiers[0].krwPortion > 0
+                  ? `${Math.round(school.tuitionTiers[0].krwPortion / 10000).toLocaleString("ko-KR")}만원~`
+                  : `$${school.tuitionTiers[0].usdPortion.toLocaleString("en-US")}~`}</td>
+                <td>{school.boardingAvailable ? "가능" : "확인 필요"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ist-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>관련 리포트</h2>
+      </div>
+      <div class="ist-cta-grid">
+        {IST_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="ist-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="국제학교 학비 계산기 이용 가이드"
+        intro={IST_SEO_INTRO}
+        criteria={IST_SEO_CRITERIA}
+        faq={faqItems}
+        related={IST_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="ist-data" type="application/json" set:html={JSON.stringify({ schools: IST_SCHOOLS })}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src={withBase("/scripts/international-school-tuition-calculator-2026.js")}></script>
+</BaseLayout>
