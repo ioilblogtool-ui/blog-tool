@@ -2216,6 +2216,20 @@ export const tools: ToolMeta[] = [
       { label: "3개국 6개 도시", value: "쿠알라룸푸르·조호바루·방콕·치앙마이·호치민·하노이" },
     ],
   },
+  {
+    slug: "sk-hynix-adr-premium-calculator",
+    title: "SK하이닉스 ADR 계산기 2026 | 김치프리미엄 바로 계산",
+    description:
+      "국내 주가와 나스닥 SKHY 주가·환율 입력하면 SK하이닉스 김치프리미엄(할증·할인) % 바로 계산. ADS 10주=보통주 1주 비율 자동 반영.",
+    order: 71.5,
+    eyebrow: "ADR 프리미엄 계산",
+    category: "투자·재테크",
+    badges: ["신규", "SK하이닉스", "ADR"],
+    previewStats: [
+      { label: "핵심 결과", value: "김치프리미엄 %" },
+      { label: "기준", value: "매일 바뀌는 환율·SKHY 주가 반영" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

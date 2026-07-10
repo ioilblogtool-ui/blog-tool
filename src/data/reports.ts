@@ -1339,4 +1339,18 @@ export const reports: ReportMeta[] = [
     order: 74.3,
     badges: ["NEW", "베트남", "국제학교", "학비"],
   },
+  {
+    slug: "sk-hynix-adr-listing-2026",
+    title: "SK하이닉스 나스닥 ADR 상장 완전 정리 | SKHY 티커·조달금액 총정리",
+    description: "SK하이닉스 나스닥 ADR(SKHY) 상장 배경과 공모가 149달러·조달 265억 달러 규모, 국내 투자자 세금·수급 영향을 정리. ADR 프리미엄 계산기 연결 포함.",
+    order: 75,
+    badges: ["신규", "SK하이닉스", "ADR", "SKHY"],
+  },
+  {
+    slug: "sk-hynix-korea-vs-adr-investment-2026",
+    title: "SK하이닉스 국내투자 vs ADR 2026 | 세금·환전 비용 한눈에 비교",
+    description: "SK하이닉스를 국내 직접투자 vs 나스닥 ADR(SKHY)로 살 때 양도세·배당세·환전 수수료·거래시간 차이를 표로 비교. 실제 투자금 기준 예시 계산 포함.",
+    order: 75.1,
+    badges: ["신규", "SK하이닉스", "ADR", "SKHY", "비교"],
+  },
 ];
