@@ -1,0 +1,251 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  VIS_META,
+  VIS_HCMC_SCHOOLS,
+  VIS_HANOI_SCHOOLS,
+  VIS_SCHOOL_NOTES,
+  VIS_HCMC_LIVING_COST,
+  VIS_HANOI_LIVING_COST,
+  VIS_FX_RATE,
+  VIS_FAQ,
+  VIS_RELATED_LINKS,
+} from "../../data/vietnamInternationalSchoolGuide2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${VIS_META.slug}/`;
+
+const faqItems = VIS_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+const allSchools = [...VIS_HCMC_SCHOOLS, ...VIS_HANOI_SCHOOLS];
+const badgeAttr = (s: (typeof allSchools)[number]) => (s.dataConfidence === "official_confirmed" ? "official" : "snippet");
+const badgeLabel = (s: (typeof allSchools)[number]) => (s.dataConfidence === "official_confirmed" ? "공식 확인" : "검색 요약");
+
+const fmtKrw = (n: number) => {
+  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(2)}억원`;
+  if (n >= 10_000) return `${Math.round(n / 10_000).toLocaleString("ko-KR")}만원`;
+  return `${Math.round(n).toLocaleString("ko-KR")}원`;
+};
+const krwFor = (annualLocal: number) => (VIS_FX_RATE.krwPerUnit ? fmtKrw(annualLocal * VIS_FX_RATE.krwPerUnit) : "-");
+
+// 9개교 대표 학년(첫 tier) 기준 원화 환산 오름차순 랭킹
+const rankedSchools = allSchools
+  .map((school) => ({ school, krw: VIS_FX_RATE.krwPerUnit ? school.tuitionTiers[0].annualLocal * VIS_FX_RATE.krwPerUnit : 0 }))
+  .sort((a, b) => a.krw - b.krw);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: VIS_META.title,
+    description: VIS_META.seoDescription,
+    dateModified: VIS_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: VIS_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: VIS_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={VIS_META.seoTitle} description={VIS_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page vis-page" data-report="vietnam-international-school-guide-2026">
+    <CalculatorHero eyebrow="베트남 국제학교" title={VIS_META.title} description={VIS_META.description} />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        "AIS Saigon(호치민)·BIS/BVIS/Concordia(하노이)는 학교 공식 자료로 확인했고, 나머지는 검색 결과 요약 기준입니다.",
+        "이 페이지는 특정 학교를 추천하지 않으며 비교 정보만 제공합니다.",
+      ]}
+    />
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 비교 · 호치민</p>
+        <h2>호치민 4개교 학년별 학비</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="vis-compare-table">
+          <thead>
+            <tr><th>학교</th><th>학년 구간</th><th>학비(VND)</th><th>원화 환산</th><th>커리큘럼</th><th>확인</th></tr>
+          </thead>
+          <tbody>
+            {VIS_HCMC_SCHOOLS.flatMap((school) =>
+              school.tuitionTiers.map((tier) => (
+                <tr>
+                  <td>{school.name}</td>
+                  <td>{tier.tierLabel}</td>
+                  <td>{tier.annualLocal.toLocaleString("en-US")}</td>
+                  <td>{krwFor(tier.annualLocal)}</td>
+                  <td>{school.curriculum}</td>
+                  <td><span class="vis-confidence-badge" data-confidence={badgeAttr(school)}>{badgeLabel(school)}</span></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 비교 · 하노이</p>
+        <h2>하노이 5개교 학년별 학비</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="vis-compare-table">
+          <thead>
+            <tr><th>학교</th><th>학년 구간</th><th>학비(VND)</th><th>원화 환산</th><th>커리큘럼</th><th>확인</th></tr>
+          </thead>
+          <tbody>
+            {VIS_HANOI_SCHOOLS.flatMap((school) =>
+              school.tuitionTiers.map((tier) => (
+                <tr>
+                  <td>{school.name}</td>
+                  <td>{tier.tierLabel}</td>
+                  <td>{tier.annualLocal.toLocaleString("en-US")}</td>
+                  <td>{krwFor(tier.annualLocal)}</td>
+                  <td>{school.curriculum}</td>
+                  <td><span class="vis-confidence-badge" data-confidence={badgeAttr(school)}>{badgeLabel(school)}</span></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">원화 환산은 {VIS_FX_RATE.asOfDate} 기준 환율(1 VND ≈ {VIS_FX_RATE.krwPerUnit}원)을 적용했습니다.</p>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 랭킹</p>
+        <h2>9개교, 대표 학년 원화 환산 저렴한 순</h2>
+        <p>대표 학년(첫 번째 학년 구간) 학비를 같은 환율로 환산해 정렬했습니다. 실제 순위는 학년·거주 형태에 따라 달라질 수 있습니다.</p>
+      </div>
+      <ol class="vis-ranking-list">
+        {rankedSchools.map((row, idx) => (
+          <li class="vis-ranking-item">
+            <span class="vis-ranking-item__rank">{idx + 1}</span>
+            <span class="vis-ranking-item__name">{row.school.name} <small>({row.school.cityLabel})</small></span>
+            <span class="vis-ranking-item__value">{fmtKrw(row.krw)}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학교별 상세</p>
+        <h2>9개교 한 줄 요약</h2>
+      </div>
+      <div class="vis-school-card-grid">
+        {allSchools.map((school) => {
+          const note = VIS_SCHOOL_NOTES.find((n) => n.schoolId === school.id)!;
+          return (
+            <article class="vis-school-card">
+              <h3>{school.name} <small>({school.cityLabel})</small></h3>
+              <p class="vis-card-value">{school.tuitionTiers[0].tierLabel} 기준 {krwFor(school.tuitionTiers[0].annualLocal)} ({school.tuitionTiers[0].annualLocal.toLocaleString("en-US")} VND)</p>
+              <p>{note.oneLinerKo}</p>
+              <p><strong>추천:</strong> {note.bestFor}</p>
+              {school.dataNote && <p class="vis-data-note">⚠ {school.dataNote}</p>}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">주재원 가족 참고</p>
+        <h2>회사 교육수당이 있다면 실부담은 달라집니다</h2>
+      </div>
+      <article class="vis-expat-note-card">
+        <p>호치민·하노이는 한국 기업 주재원 가족 수요가 많은 지역입니다. 회사에서 자녀 교육수당(학자금)을 지원한다면 실제 가계 부담은 이 페이지의 학비보다 크게 낮아질 수 있습니다. 이 계산기·리포트의 수치는 교육수당을 반영하지 않은 총학비 기준입니다.</p>
+      </article>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">⚠ 주의</p>
+        <h2>학교 선택 시 확인할 것</h2>
+      </div>
+      <article class="vis-risk-card">
+        <h3>학비가 유난히 저렴하다면 재정 건전성을 꼭 확인하세요</h3>
+        <p>{VIS_META.aisvnRiskNote}</p>
+      </article>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">생활비</p>
+        <h2>호치민 vs 하노이 가족 생활비</h2>
+      </div>
+      <div class="vis-living-cost-grid">
+        <article class="vis-living-cost-card">
+          <h3>호치민</h3>
+          <p>외국인 4인 가족 기준 월 생활비(주거비 제외) 약 {VIS_HCMC_LIVING_COST.monthlyFamilyExclRentLocal?.toLocaleString("en-US")} VND</p>
+          <p>3베드룸 아파트 월세: 외곽 약 {VIS_HCMC_LIVING_COST.monthlyRentLocal.budget?.toLocaleString("en-US")} VND ~ 시내중심 약 {VIS_HCMC_LIVING_COST.monthlyRentLocal.premium?.toLocaleString("en-US")} VND</p>
+        </article>
+        <article class="vis-living-cost-card">
+          <h3>하노이</h3>
+          <p>외국인 4인 가족 기준 월 생활비(주거비 제외) 약 {VIS_HANOI_LIVING_COST.monthlyFamilyExclRentLocal?.toLocaleString("en-US")} VND</p>
+          <p>3베드룸 아파트 월세: 외곽 약 {VIS_HANOI_LIVING_COST.monthlyRentLocal.budget?.toLocaleString("en-US")} VND ~ 시내중심 약 {VIS_HANOI_LIVING_COST.monthlyRentLocal.premium?.toLocaleString("en-US")} VND</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="vis-calc-cta">
+        <div>
+          <h3>우리 가족 조건으로 직접 계산해보세요</h3>
+          <p>학교·학년·자녀 수를 입력하면 총비용을 바로 확인할 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/southeast-asia-international-school-cost-calculator-2026/")}>계산기 바로가기</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="베트남 호치민·하노이 국제학교 비교, 이렇게 읽으세요"
+      intro={[
+        "호치민과 하노이는 한국 기업 주재원 가족이 많아 국제학교 정보 교류가 활발한 두 도시입니다. 이 페이지는 확인된 9개교의 학비를 비교하고, 학교 선택 시 반드시 짚어야 할 리스크를 함께 안내합니다.",
+        "이번 조사에서 학비 데이터의 신뢰 수준은 학교마다 다릅니다. Australian International School Vietnam(AIS Saigon, 호치민), British International School Hanoi·British Vietnamese International School Hanoi·Concordia International School Hanoi(하노이)는 학교 공식 자료로 직접 확인했고, 나머지는 검색 결과 요약을 기반으로 합니다.",
+        "베트남 국제학교 시장은 성장이 빠른 만큼 재정 부실 리스크도 존재합니다. American International School Vietnam(AISVN)은 재정 스캔들로 실제 폐교했으며, 이는 학비만 보고 학교를 고르면 안 되는 이유를 보여주는 실제 사례입니다.",
+        "회사 교육수당을 받는 주재원 가정이라면 이 페이지의 학비 수치보다 실제 부담이 낮을 수 있습니다. 정확한 총비용은 회사 지원 정책을 먼저 확인한 뒤 계산기로 나머지를 계산하는 것을 권장합니다.",
+      ]}
+      criteria={[
+        `학비는 ${VIS_META.updatedAt} 기준이며, 학교별로 확인 수준이 다릅니다(공식 확인/검색 요약 배지 참고).`,
+        "AISVN은 폐교(2026-01-12 공식 해산)로 데이터에서 제외했습니다.",
+        "이 페이지는 특정 학교를 추천하지 않으며 비교 정보만 제공합니다.",
+      ]}
+      faq={faqItems}
+      related={VIS_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

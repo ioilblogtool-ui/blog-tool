@@ -1311,4 +1311,32 @@ export const reports: ReportMeta[] = [
     order: 73.6,
     badges: ["NEW", "국제학교", "허브", "총정리"],
   },
+  {
+    slug: "korea-vs-southeast-asia-international-school-2026",
+    title: "한국 vs 동남아 국제학교 2026 | 1년 총비용 한눈에 비교",
+    description: "한국과 말레이시아·태국·베트남 국제학교의 학비, 생활비, 5년 누적 비용을 비교합니다. 계산기로 우리 가족 비용도 바로 확인하세요.",
+    order: 74,
+    badges: ["NEW", "국제학교", "동남아", "비교"],
+  },
+  {
+    slug: "malaysia-international-school-guide-2026",
+    title: "말레이시아 국제학교 2026 완전 정리 | 학비·생활비 총정리",
+    description: "쿠알라룸푸르·조호바루 국제학교의 학비와 생활비를 비교합니다. 한국 국제학교 대비 비용 차이까지 확인하세요.",
+    order: 74.1,
+    badges: ["NEW", "말레이시아", "국제학교", "학비"],
+  },
+  {
+    slug: "thailand-international-school-guide-2026",
+    title: "태국 국제학교 2026 완전 정리 | 방콕·치앙마이 학비 비교",
+    description: "방콕·치앙마이 국제학교의 학비와 등급별 구간을 비교합니다. 한국 국제학교 대비 비용 차이까지 한눈에 확인하세요.",
+    order: 74.2,
+    badges: ["NEW", "태국", "국제학교", "학비"],
+  },
+  {
+    slug: "vietnam-international-school-guide-2026",
+    title: "베트남 국제학교 2026 완전 정리 | 호치민·하노이 학비 비교",
+    description: "호치민·하노이 국제학교의 학비를 비교합니다. 학교 선택 시 반드시 확인해야 할 재정 안정성 체크포인트도 정리했습니다.",
+    order: 74.3,
+    badges: ["NEW", "베트남", "국제학교", "학비"],
+  },
 ];

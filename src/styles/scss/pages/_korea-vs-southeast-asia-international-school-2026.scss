@@ -1,0 +1,174 @@
+.kvsa-page {
+  --kvsa-line: #d8e0ea;
+  --kvsa-accent: #534ab7;
+
+  .kvsa-kr-card-grid,
+  .kvsa-country-card-grid,
+  .kvsa-report-link-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .kvsa-kr-card,
+  .kvsa-country-card,
+  .kvsa-report-link-card {
+    border: 1px solid var(--kvsa-line);
+    border-radius: 12px;
+    padding: 1.1rem;
+
+    h3 {
+      margin: 0 0 0.4rem;
+    }
+
+    p {
+      margin: 0 0 0.4rem;
+      color: #4b5563;
+      font-size: 0.88rem;
+    }
+  }
+
+  .kvsa-kr-card__value {
+    font-weight: 700;
+    color: var(--kvsa-accent);
+  }
+
+  .kvsa-country-card {
+    &__pros::before {
+      content: "✓ ";
+      color: #0f6e56;
+    }
+
+    &__cons::before {
+      content: "⚠ ";
+      color: #ba7517;
+    }
+  }
+
+  .kvsa-concept-card {
+    border: 1px solid var(--kvsa-line);
+    border-left: 4px solid var(--kvsa-accent);
+    border-radius: 12px;
+    padding: 1.25rem;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .kvsa-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    th,
+    td {
+      border-bottom: 1px solid var(--kvsa-line);
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+  }
+
+  .kvsa-calc-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: flex-start;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: rgba(83, 74, 183, 0.06);
+    border: 1px solid var(--kvsa-line);
+
+    h3 {
+      margin: 0 0 0.3rem;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    @media (min-width: 640px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .kvsa-report-link-card {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+
+    &:hover {
+      border-color: var(--kvsa-accent);
+    }
+  }
+
+  .kvsa-ranking-list {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .kvsa-ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid var(--kvsa-line);
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+
+    &--korea {
+      border-color: var(--kvsa-accent);
+      background: rgba(83, 74, 183, 0.05);
+    }
+
+    &__rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 999px;
+      background: var(--kvsa-accent);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    &__name {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.9rem;
+
+      small {
+        font-weight: 400;
+        color: #6b7280;
+      }
+    }
+
+    &__value {
+      font-weight: 700;
+      color: var(--kvsa-accent);
+    }
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+}

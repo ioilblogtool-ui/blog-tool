@@ -1,0 +1,229 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  MIS_META,
+  MIS_KL_SCHOOLS,
+  MIS_JB_SCHOOLS,
+  MIS_SCHOOL_NOTES,
+  MIS_KL_LIVING_COST,
+  MIS_FX_RATE,
+  MIS_FAQ,
+  MIS_RELATED_LINKS,
+} from "../../data/malaysiaInternationalSchoolGuide2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${MIS_META.slug}/`;
+
+const faqItems = MIS_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+const allSchools = [...MIS_KL_SCHOOLS, ...MIS_JB_SCHOOLS];
+const badgeAttr = (s: (typeof allSchools)[number]) => (s.dataConfidence === "official_confirmed" ? "official" : "snippet");
+const badgeLabel = (s: (typeof allSchools)[number]) => (s.dataConfidence === "official_confirmed" ? "공식 확인" : "검색 요약");
+
+const fmtKrw = (n: number) => {
+  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(2)}억원`;
+  if (n >= 10_000) return `${Math.round(n / 10_000).toLocaleString("ko-KR")}만원`;
+  return `${Math.round(n).toLocaleString("ko-KR")}원`;
+};
+const krwFor = (annualLocal: number) => (MIS_FX_RATE.krwPerUnit ? fmtKrw(annualLocal * MIS_FX_RATE.krwPerUnit) : "-");
+
+// 8개교 대표 학년(첫 tier) 기준 원화 환산 오름차순 랭킹
+const rankedSchools = allSchools
+  .map((school) => ({ school, krw: MIS_FX_RATE.krwPerUnit ? school.tuitionTiers[0].annualLocal * MIS_FX_RATE.krwPerUnit : 0 }))
+  .sort((a, b) => a.krw - b.krw);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: MIS_META.title,
+    description: MIS_META.seoDescription,
+    dateModified: MIS_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: MIS_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: MIS_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={MIS_META.seoTitle} description={MIS_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page mis-page" data-report="malaysia-international-school-guide-2026">
+    <CalculatorHero eyebrow="말레이시아 국제학교" title={MIS_META.title} description={MIS_META.description} />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        "학비는 학교 공식 페이지 또는 검색 결과 기준(2026-07-09)이며, 학교별로 확인 수준이 다릅니다.",
+        "조호바루는 학교 학비만 확인되었고 생활비는 아직 준비 중입니다.",
+      ]}
+    />
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 비교 · 쿠알라룸푸르</p>
+        <h2>쿠알라룸푸르 5개교 학년별 학비</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="mis-compare-table">
+          <thead>
+            <tr><th>학교</th><th>학년 구간</th><th>학비(MYR)</th><th>원화 환산</th><th>커리큘럼</th><th>확인</th></tr>
+          </thead>
+          <tbody>
+            {MIS_KL_SCHOOLS.flatMap((school) =>
+              school.tuitionTiers.map((tier) => (
+                <tr>
+                  <td>{school.name}</td>
+                  <td>{tier.tierLabel}</td>
+                  <td>{tier.annualLocal.toLocaleString("en-US")}</td>
+                  <td>{krwFor(tier.annualLocal)}</td>
+                  <td>{school.curriculum}</td>
+                  <td><span class="mis-confidence-badge" data-confidence={badgeAttr(school)}>{badgeLabel(school)}</span></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 비교 · 조호바루</p>
+        <h2>조호바루 3개교 학년별 학비</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="mis-compare-table">
+          <thead>
+            <tr><th>학교</th><th>학년 구간</th><th>학비(MYR)</th><th>원화 환산</th><th>커리큘럼</th><th>확인</th></tr>
+          </thead>
+          <tbody>
+            {MIS_JB_SCHOOLS.flatMap((school) =>
+              school.tuitionTiers.map((tier) => (
+                <tr>
+                  <td>{school.name}</td>
+                  <td>{tier.tierLabel}</td>
+                  <td>{tier.annualLocal.toLocaleString("en-US")}</td>
+                  <td>{krwFor(tier.annualLocal)}</td>
+                  <td>{school.curriculum}</td>
+                  <td><span class="mis-confidence-badge" data-confidence={badgeAttr(school)}>{badgeLabel(school)}</span></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">조호바루 3개교는 전부 학교 공식 페이지 원문으로 확인했습니다. 원화 환산은 {MIS_FX_RATE.asOfDate} 기준 환율(1 MYR ≈ {MIS_FX_RATE.krwPerUnit}원)을 적용했습니다.</p>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 랭킹</p>
+        <h2>8개교, 대표 학년 원화 환산 저렴한 순</h2>
+        <p>대표 학년(첫 번째 학년 구간) 학비를 같은 환율로 환산해 정렬했습니다. 실제 순위는 학년·거주 형태에 따라 달라질 수 있습니다.</p>
+      </div>
+      <ol class="mis-ranking-list">
+        {rankedSchools.map((row, idx) => (
+          <li class="mis-ranking-item">
+            <span class="mis-ranking-item__rank">{idx + 1}</span>
+            <span class="mis-ranking-item__name">{row.school.name} <small>({row.school.cityLabel})</small></span>
+            <span class="mis-ranking-item__value">{fmtKrw(row.krw)}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학교별 상세</p>
+        <h2>8개교 한 줄 요약</h2>
+      </div>
+      <div class="mis-school-card-grid">
+        {allSchools.map((school) => {
+          const note = MIS_SCHOOL_NOTES.find((n) => n.schoolId === school.id)!;
+          return (
+            <article class="mis-school-card">
+              <h3>{school.name} <small>({school.cityLabel})</small></h3>
+              <p class="mis-card-value">{school.tuitionTiers[0].tierLabel} 기준 {krwFor(school.tuitionTiers[0].annualLocal)} ({school.tuitionTiers[0].annualLocal.toLocaleString("en-US")} MYR)</p>
+              <p>{note.oneLinerKo}</p>
+              <p><strong>추천:</strong> {note.bestFor}</p>
+              {school.dataNote && <p class="mis-data-note">⚠ {school.dataNote}</p>}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">생활비</p>
+        <h2>쿠알라룸푸르 vs 조호바루 가족 생활비</h2>
+      </div>
+      <div class="mis-living-cost-grid">
+        <article class="mis-living-cost-card">
+          <h3>쿠알라룸푸르</h3>
+          <p>외국인 4인 가족 기준 월 생활비(주거비 제외) 약 {MIS_KL_LIVING_COST.monthlyFamilyExclRentLocal?.toLocaleString("en-US")} MYR</p>
+          <p>3베드룸 콘도 월세: 외곽 약 {MIS_KL_LIVING_COST.monthlyRentLocal.budget?.toLocaleString("en-US")} MYR ~ 시내중심 약 {MIS_KL_LIVING_COST.monthlyRentLocal.premium?.toLocaleString("en-US")} MYR</p>
+        </article>
+        <article class="mis-living-cost-card mis-living-cost-card--pending">
+          <h3>조호바루</h3>
+          <p>생활비 데이터는 아직 준비 중입니다. 데이터가 확보되면 쿠알라룸푸르와 동일한 형식으로 업데이트합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="mis-calc-cta">
+        <div>
+          <h3>우리 가족 조건으로 직접 계산해보세요</h3>
+          <p>학교·학년·자녀 수·동반 형태를 입력하면 총비용을 바로 확인할 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/southeast-asia-international-school-cost-calculator-2026/")}>계산기 바로가기</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="말레이시아 국제학교 비교, 이렇게 읽으세요"
+      intro={[
+        "말레이시아는 동남아 국제학교 중 학교 선택지가 가장 많고 학비 스펙트럼도 넓습니다. 쿠알라룸푸르는 영국식·미국식·IB 커리큘럼을 모두 갖춘 학교가 있고, 싱가포르와 가까운 조호바루는 상대적으로 저렴한 선택지로 꼽힙니다.",
+        "실제로 조호바루 3개교의 학비를 확인해보면, 같은 도시 안에서도 R.E.A.L Schools(약 1만3,760 MYR부터)와 Marlborough College(약 6만3,000 MYR부터)의 격차가 4배 이상 납니다. '조호바루=저렴하다'는 인식은 학교를 특정하지 않으면 정확하지 않을 수 있습니다.",
+        "이 페이지의 학비 데이터는 학교마다 확인 수준이 다릅니다. 조호바루 3개교는 전부 공식 페이지 원문으로 확인했지만, 쿠알라룸푸르 5개교는 대부분 검색 결과 요약을 기반으로 합니다. 실제 지원 전에는 반드시 학교 공식 입학처에서 최신 학비를 재확인하세요.",
+        "생활비는 쿠알라룸푸르만 확인되었습니다. 조호바루 생활비 데이터가 보강되면 두 도시의 총비용을 나란히 비교할 수 있도록 업데이트할 예정입니다. 정확한 총비용은 계산기에서 확인하세요.",
+      ]}
+      criteria={[
+        `학비는 학교 공식 페이지 또는 검색 결과 기준 ${MIS_META.updatedAt} 확인입니다.`,
+        "조호바루 3개교는 공식 페이지 원문으로 확인했고, 쿠알라룸푸르는 대부분 검색 요약 기준입니다.",
+        "조호바루 생활비는 미확보 상태로, 총비용 비교는 데이터 보강 후 가능합니다.",
+        "이 페이지는 특정 학교를 추천하지 않으며 비교 정보만 제공합니다.",
+      ]}
+      faq={faqItems}
+      related={MIS_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

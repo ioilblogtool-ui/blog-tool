@@ -2204,6 +2204,18 @@ export const tools: ToolMeta[] = [
       { label: "기준", value: "주휴수당 반영" }
     ]
   },
+  {
+    slug: "southeast-asia-international-school-cost-calculator-2026",
+    title: "동남아 국제학교 비용 계산기 2026 | 학비·생활비 총비용 바로 계산",
+    description: "국가·도시·학년·자녀 수 입력하면 동남아 국제학교 연간 학비와 가족 생활비를 합산해 바로 계산. 한국 국제학교 대비 절감액 비교 포함.",
+    order: 71.4,
+    eyebrow: "동남아 국제학교",
+    category: "parenting",
+    badges: ["신규"],
+    previewStats: [
+      { label: "3개국 6개 도시", value: "쿠알라룸푸르·조호바루·방콕·치앙마이·호치민·하노이" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

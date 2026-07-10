@@ -1,0 +1,231 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  TIS_META,
+  TIS_BANGKOK_SCHOOLS,
+  TIS_CHIANGMAI_SCHOOLS,
+  TIS_SCHOOL_NOTES,
+  TIS_BANGKOK_LIVING_COST,
+  TIS_CHIANGMAI_LIVING_COST,
+  TIS_FX_RATE,
+  TIS_FAQ,
+  TIS_RELATED_LINKS,
+} from "../../data/thailandInternationalSchoolGuide2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${TIS_META.slug}/`;
+
+const faqItems = TIS_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+const allSchools = [...TIS_BANGKOK_SCHOOLS, ...TIS_CHIANGMAI_SCHOOLS];
+const badgeAttr = (s: (typeof allSchools)[number]) => (s.dataConfidence === "official_confirmed" ? "official" : "snippet");
+const badgeLabel = (s: (typeof allSchools)[number]) => (s.dataConfidence === "official_confirmed" ? "공식 확인" : "검색 요약");
+
+const fmtKrw = (n: number) => {
+  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(2)}억원`;
+  if (n >= 10_000) return `${Math.round(n / 10_000).toLocaleString("ko-KR")}만원`;
+  return `${Math.round(n).toLocaleString("ko-KR")}원`;
+};
+const krwFor = (annualLocal: number) => (TIS_FX_RATE.krwPerUnit ? fmtKrw(annualLocal * TIS_FX_RATE.krwPerUnit) : "-");
+
+// 11개교 대표 학년(첫 tier) 기준 원화 환산 오름차순 랭킹
+const rankedSchools = allSchools
+  .map((school) => ({ school, krw: TIS_FX_RATE.krwPerUnit ? school.tuitionTiers[0].annualLocal * TIS_FX_RATE.krwPerUnit : 0 }))
+  .sort((a, b) => a.krw - b.krw);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: TIS_META.title,
+    description: TIS_META.seoDescription,
+    dateModified: TIS_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: TIS_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: TIS_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={TIS_META.seoTitle} description={TIS_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page tis-page" data-report="thailand-international-school-guide-2026">
+    <CalculatorHero eyebrow="태국 국제학교" title={TIS_META.title} description={TIS_META.description} />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        "학비는 학교 공식 페이지 또는 검색 결과 기준(2026-07-09)이며, 학교별로 확인 수준이 다릅니다.",
+        TIS_META.nistExcludedNote,
+      ]}
+    />
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 비교 · 방콕</p>
+        <h2>방콕 7개교 학년별 학비</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="tis-compare-table">
+          <thead>
+            <tr><th>학교</th><th>학년 구간</th><th>학비(THB)</th><th>원화 환산</th><th>커리큘럼</th><th>확인</th></tr>
+          </thead>
+          <tbody>
+            {TIS_BANGKOK_SCHOOLS.flatMap((school) =>
+              school.tuitionTiers.map((tier) => (
+                <tr>
+                  <td>{school.name}</td>
+                  <td>{tier.tierLabel}</td>
+                  <td>{tier.annualLocal.toLocaleString("en-US")}</td>
+                  <td>{krwFor(tier.annualLocal)}</td>
+                  <td>{school.curriculum}</td>
+                  <td><span class="tis-confidence-badge" data-confidence={badgeAttr(school)}>{badgeLabel(school)}</span></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 비교 · 치앙마이</p>
+        <h2>치앙마이 4개교 학년별 학비</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="tis-compare-table">
+          <thead>
+            <tr><th>학교</th><th>학년 구간</th><th>학비(THB)</th><th>원화 환산</th><th>커리큘럼</th><th>확인</th></tr>
+          </thead>
+          <tbody>
+            {TIS_CHIANGMAI_SCHOOLS.flatMap((school) =>
+              school.tuitionTiers.map((tier) => (
+                <tr>
+                  <td>{school.name}</td>
+                  <td>{tier.tierLabel}</td>
+                  <td>{tier.annualLocal.toLocaleString("en-US")}</td>
+                  <td>{krwFor(tier.annualLocal)}</td>
+                  <td>{school.curriculum}</td>
+                  <td><span class="tis-confidence-badge" data-confidence={badgeAttr(school)}>{badgeLabel(school)}</span></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">⚠ Prem Tinsulanonda International School(PTIS)은 2024-2025학년도 공식 자료 기준입니다. 실제 2026-27학년도 학비는 연 5~8% 인상을 감안해 이보다 높을 수 있습니다. 원화 환산은 {TIS_FX_RATE.asOfDate} 기준 환율(1 THB ≈ {TIS_FX_RATE.krwPerUnit}원)을 적용했습니다.</p>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 랭킹</p>
+        <h2>11개교, 대표 학년 원화 환산 저렴한 순</h2>
+        <p>대표 학년(첫 번째 학년 구간) 학비를 같은 환율로 환산해 정렬했습니다. 실제 순위는 학년·거주 형태에 따라 달라질 수 있습니다.</p>
+      </div>
+      <ol class="tis-ranking-list">
+        {rankedSchools.map((row, idx) => (
+          <li class="tis-ranking-item">
+            <span class="tis-ranking-item__rank">{idx + 1}</span>
+            <span class="tis-ranking-item__name">{row.school.name} <small>({row.school.cityLabel})</small></span>
+            <span class="tis-ranking-item__value">{fmtKrw(row.krw)}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학교별 상세</p>
+        <h2>11개교 한 줄 요약</h2>
+      </div>
+      <div class="tis-school-card-grid">
+        {allSchools.map((school) => {
+          const note = TIS_SCHOOL_NOTES.find((n) => n.schoolId === school.id)!;
+          return (
+            <article class="tis-school-card">
+              <h3>{school.name} <small>({school.cityLabel})</small></h3>
+              <p class="tis-card-value">{school.tuitionTiers[0].tierLabel} 기준 {krwFor(school.tuitionTiers[0].annualLocal)} ({school.tuitionTiers[0].annualLocal.toLocaleString("en-US")} THB)</p>
+              <p>{note.oneLinerKo}</p>
+              <p><strong>추천:</strong> {note.bestFor}</p>
+              {school.dataNote && <p class="tis-data-note">⚠ {school.dataNote}</p>}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">생활비</p>
+        <h2>방콕 vs 치앙마이 가족 생활비</h2>
+      </div>
+      <div class="tis-living-cost-grid">
+        <article class="tis-living-cost-card">
+          <h3>방콕</h3>
+          <p>외국인 4인 가족 기준 월 생활비(주거비 제외) 약 {TIS_BANGKOK_LIVING_COST.monthlyFamilyExclRentLocal?.toLocaleString("en-US")} THB</p>
+          <p>3베드룸 콘도 월세: 외곽 약 {TIS_BANGKOK_LIVING_COST.monthlyRentLocal.budget?.toLocaleString("en-US")} THB ~ 시내중심 약 {TIS_BANGKOK_LIVING_COST.monthlyRentLocal.premium?.toLocaleString("en-US")} THB</p>
+        </article>
+        <article class="tis-living-cost-card">
+          <h3>치앙마이</h3>
+          <p>외국인 4인 가족 기준 월 생활비(주거비 제외) 약 {TIS_CHIANGMAI_LIVING_COST.monthlyFamilyExclRentLocal?.toLocaleString("en-US")} THB</p>
+          <p>3베드룸 콘도 월세: 외곽 약 {TIS_CHIANGMAI_LIVING_COST.monthlyRentLocal.budget?.toLocaleString("en-US")} THB ~ 시내중심 약 {TIS_CHIANGMAI_LIVING_COST.monthlyRentLocal.premium?.toLocaleString("en-US")} THB</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="tis-calc-cta">
+        <div>
+          <h3>우리 가족 조건으로 직접 계산해보세요</h3>
+          <p>학교·학년·자녀 수를 입력하면 총비용을 바로 확인할 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/southeast-asia-international-school-cost-calculator-2026/")}>계산기 바로가기</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="태국 방콕·치앙마이 국제학교 비교, 이렇게 읽으세요"
+      intro={[
+        "방콕은 동남아에서 국제학교 밀도가 가장 높은 도시 중 하나로, 저가형부터 프리미엄까지 폭넓은 등급의 학교가 있습니다. 치앙마이는 저비용·느린 육아 콘셉트로 최근 관심이 높아지는 지역으로, 방콕보다 전반적으로 학비가 낮습니다.",
+        "이번 조사로 방콕은 7개교, 치앙마이는 4개교의 학비를 확인했습니다. 다만 확인 수준은 학교마다 다릅니다 — Bangkok Patana·Bangkok Prep·PTIS·CMIS는 학교 공식 자료로 직접 확인했고, 나머지는 검색 결과 요약을 기반으로 합니다.",
+        "치앙마이 데이터 중 PTIS는 2024-2025학년도 자료로 다소 오래되었습니다. 국제학교 학비는 보통 매년 인상되므로, 실제 2026-27학년도 학비는 이 페이지 수치보다 높을 가능성이 있습니다.",
+        "NIST International School은 공식 페이지에서 학비를 확인할 수 없어 이 페이지에서 제외했습니다. 방콕 국제학교를 검토할 때는 이 페이지에 없는 학교도 있다는 점을 감안하고, 실제 지원 전에는 반드시 학교 공식 입학처에서 최신 학비를 재확인하세요.",
+      ]}
+      criteria={[
+        `학비는 학교 공식 페이지 또는 검색 결과 기준 ${TIS_META.updatedAt} 확인입니다.`,
+        "NIST International School은 데이터 신뢰도 문제로 이 페이지에서 제외했습니다.",
+        "PTIS(치앙마이)는 2024-25학년도 자료 기준으로, 최신 학비와 차이가 있을 수 있습니다.",
+        "이 페이지는 특정 학교를 추천하지 않으며 비교 정보만 제공합니다.",
+      ]}
+      faq={faqItems}
+      related={TIS_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

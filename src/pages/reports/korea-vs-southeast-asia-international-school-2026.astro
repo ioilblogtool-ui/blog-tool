@@ -1,0 +1,242 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  KVSA_META,
+  KVSA_KR_SCHOOLS,
+  KVSA_SEA_SCHOOLS,
+  KVSA_SEA_FX_RATES,
+  KVSA_COUNTRY_SUMMARY,
+  KVSA_FAQ,
+  KVSA_RELATED_LINKS,
+} from "../../data/koreaVsSoutheastAsiaInternationalSchool2026";
+import { IST_META } from "../../data/internationalSchoolTuitionCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${KVSA_META.slug}/`;
+
+const faqItems = KVSA_FAQ.map((f) => ({ question: f.question, answer: f.answer }));
+
+const formatKrTier = (t: (typeof KVSA_KR_SCHOOLS)[number]["tuitionTiers"][number]) => {
+  if (t.krwPortion > 0 && t.usdPortion > 0) return `${(t.krwPortion / 10000).toLocaleString("ko-KR")}만원 + $${t.usdPortion.toLocaleString("en-US")}`;
+  if (t.krwPortion > 0) return `${(t.krwPortion / 10000).toLocaleString("ko-KR")}만원`;
+  return `$${t.usdPortion.toLocaleString("en-US")}`;
+};
+
+const fmtKrw = (n: number) => {
+  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(2)}억원`;
+  if (n >= 10_000) return `${Math.round(n / 10_000).toLocaleString("ko-KR")}만원`;
+  return `${Math.round(n).toLocaleString("ko-KR")}원`;
+};
+const krwForKrTier = (t: (typeof KVSA_KR_SCHOOLS)[number]["tuitionTiers"][number]) =>
+  t.krwPortion + t.usdPortion * IST_META.defaultExchangeRate;
+const krwForSeaSchool = (s: (typeof KVSA_SEA_SCHOOLS)[number]) => {
+  const fx = KVSA_SEA_FX_RATES.find((f) => f.currency === s.currency);
+  return fx?.krwPerUnit ? s.tuitionTiers[0].annualLocal * fx.krwPerUnit : null;
+};
+
+// 한국 3개교 + 동남아 6개 도시 대표 학교, 대표 학년 기준 원화 환산 오름차순 랭킹 — 이 페이지의 핵심 비교
+const rankedAll = [
+  ...KVSA_KR_SCHOOLS.map((s) => ({ name: s.name, place: `한국·${s.regionLabel}`, krw: krwForKrTier(s.tuitionTiers[0]), isKorea: true })),
+  ...KVSA_SEA_SCHOOLS.map((s) => ({ name: s.name, place: s.cityLabel, krw: krwForSeaSchool(s) ?? 0, isKorea: false })),
+].sort((a, b) => a.krw - b.krw);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: KVSA_META.title,
+    description: KVSA_META.seoDescription,
+    dateModified: KVSA_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: KVSA_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: KVSA_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={KVSA_META.seoTitle} description={KVSA_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page kvsa-page" data-report="korea-vs-southeast-asia-international-school-2026">
+    <CalculatorHero eyebrow="한국 vs 동남아" title={KVSA_META.title} description={KVSA_META.description} />
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        "학비·생활비는 학교 공식 페이지 또는 검색 결과 기준이며, 국가·학교별로 확인 수준이 다릅니다.",
+        "이 페이지는 특정 국가나 학교를 추천하지 않으며 비교 정보만 제공합니다.",
+      ]}
+    />
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">한국</p>
+        <h2>한국 국제학교 대표 학비</h2>
+      </div>
+      <div class="kvsa-kr-card-grid">
+        {KVSA_KR_SCHOOLS.map((school) => (
+          <article class="kvsa-kr-card">
+            <h3>{school.name}</h3>
+            <p>{school.regionLabel} · {school.tuitionTiers[0].tierLabel}</p>
+            <p class="kvsa-kr-card__value">{formatKrTier(school.tuitionTiers[0])}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">동남아 3개국</p>
+        <h2>나라별 장단점과 추천 대상</h2>
+      </div>
+      <div class="kvsa-country-card-grid">
+        {KVSA_COUNTRY_SUMMARY.map((c) => (
+          <article class="kvsa-country-card">
+            <h3>{c.countryLabel} <small>({c.cityLabel})</small></h3>
+            <p class="kvsa-country-card__pros">{c.prosNote}</p>
+            <p class="kvsa-country-card__cons">{c.consNote}</p>
+            <p><strong>추천:</strong> {c.bestFor}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 포인트</p>
+        <h2>학비만 비교하면 안 되는 이유</h2>
+      </div>
+      <article class="kvsa-concept-card">
+        <p>동남아 국제학교의 학비만 놓고 보면 한국보다 저렴한 경우가 많습니다. 하지만 부모가 자녀와 함께 거주한다면 주거비·식비·교통비 같은 생활비가 새로 발생합니다. 반대로 자녀만 기숙사에 보낸다면 학비 외 추가 비용이 크지 않을 수 있습니다. 즉 "동남아가 무조건 싸다"가 아니라 "가족의 동반 형태에 따라 다르다"가 정확한 결론입니다.</p>
+      </article>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">비교표</p>
+        <h2>한국 vs 동남아 대표 학교 학비</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="kvsa-compare-table">
+          <thead>
+            <tr><th>국가</th><th>학교</th><th>대표 학년</th><th>학비(현지 표기)</th><th>원화 환산</th></tr>
+          </thead>
+          <tbody>
+            {KVSA_KR_SCHOOLS.map((s) => (
+              <tr>
+                <td>한국 ({s.regionLabel})</td>
+                <td>{s.name}</td>
+                <td>{s.tuitionTiers[0].tierLabel}</td>
+                <td>{formatKrTier(s.tuitionTiers[0])}</td>
+                <td>{fmtKrw(krwForKrTier(s.tuitionTiers[0]))}</td>
+              </tr>
+            ))}
+            {KVSA_SEA_SCHOOLS.map((s) => (
+              <tr>
+                <td>{s.cityLabel}</td>
+                <td>{s.name}</td>
+                <td>{s.tuitionTiers[0].tierLabel}</td>
+                <td>{s.tuitionTiers[0].annualLocal.toLocaleString("en-US")} {s.currency}</td>
+                <td>{krwForSeaSchool(s) !== null ? fmtKrw(krwForSeaSchool(s) as number) : "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">
+        학비만의 원화 환산이며, 생활비 포함 총비용은 <a href={withBase("/tools/southeast-asia-international-school-cost-calculator-2026/")}>동남아 국제학교 비용 계산기</a>에서 확인하세요.
+      </p>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">학비 랭킹</p>
+        <h2>한국 vs 동남아, 대표 학년 원화 환산 저렴한 순</h2>
+        <p>한국 3개교 + 동남아 6개 도시 대표 학교의 학비만 같은 기준(원화 환산)으로 정렬했습니다. 생활비는 포함되지 않은 순위입니다.</p>
+      </div>
+      <ol class="kvsa-ranking-list">
+        {rankedAll.map((row, idx) => (
+          <li class={`kvsa-ranking-item ${row.isKorea ? "kvsa-ranking-item--korea" : ""}`}>
+            <span class="kvsa-ranking-item__rank">{idx + 1}</span>
+            <span class="kvsa-ranking-item__name">{row.name} <small>({row.place})</small></span>
+            <span class="kvsa-ranking-item__value">{fmtKrw(row.krw)}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="kvsa-calc-cta">
+        <div>
+          <h3>우리 가족 조건으로 직접 계산해보세요</h3>
+          <p>국가·도시·학년·자녀 수·동반 형태를 입력하면 총비용을 바로 확인할 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/southeast-asia-international-school-cost-calculator-2026/")}>계산기 바로가기</a>
+      </div>
+    </section>
+
+    <section class="content-section op-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">국가별 상세</p>
+        <h2>나라별 자세히 보기</h2>
+      </div>
+      <div class="kvsa-report-link-grid">
+        <a class="kvsa-report-link-card" href={withBase("/reports/malaysia-international-school-guide-2026/")}>
+          <h3>말레이시아</h3>
+          <p>쿠알라룸푸르·조호바루 학비·생활비 총정리</p>
+        </a>
+        <a class="kvsa-report-link-card" href={withBase("/reports/thailand-international-school-guide-2026/")}>
+          <h3>태국</h3>
+          <p>방콕·치앙마이 학비·생활비 총정리</p>
+        </a>
+        <a class="kvsa-report-link-card" href={withBase("/reports/vietnam-international-school-guide-2026/")}>
+          <h3>베트남</h3>
+          <p>호치민·하노이 학비·생활비 총정리</p>
+        </a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="한국 vs 동남아 국제학교, 이렇게 비교하세요"
+      intro={[
+        "국제학교 학비 부담 때문에 동남아 이주를 검토하는 학부모가 많습니다. 하지만 대부분의 비교 콘텐츠는 학비만 보여줄 뿐 생활비를 빠뜨려 실제보다 낙관적인 인상을 줍니다. 이 페이지는 학비와 생활비를 함께 놓고 비교합니다.",
+        "말레이시아·태국·베트남은 각각 학교 선택지, 생활 인프라, 커뮤니티 환경이 다릅니다. 단순히 '가장 싼 나라'를 찾기보다 가족의 우선순위(예산, 편의성, 기존 네트워크)에 맞는 나라를 고르는 것이 중요합니다.",
+        "동반 형태(부모 전체 동반, 엄마만 동반, 자녀만 기숙)에 따라 총비용이 크게 달라집니다. 학비만 보고 결정하면 실제 이주 후 생활비 부담을 과소평가하기 쉽습니다.",
+        "이 페이지의 학비 데이터는 학교 공식 페이지 또는 검색 결과 기준이며 확인 수준이 학교마다 다릅니다. 실제 지원 전에는 반드시 각 학교 공식 입학처에서 최신 정보를 재확인하세요.",
+      ]}
+      criteria={[
+        `학비 데이터는 ${KVSA_META.updatedAt} 기준이며 학교별 확인 수준이 다릅니다.`,
+        "조호바루는 생활비 데이터가 없어 학비만 비교 대상에 포함됩니다.",
+        "이 페이지는 특정 국가·학교를 추천하지 않으며 비교 정보만 제공합니다.",
+      ]}
+      faq={faqItems}
+      related={KVSA_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>
