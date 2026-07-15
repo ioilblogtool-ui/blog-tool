@@ -1,0 +1,170 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  HSPEC_META,
+  SCHOOL_LEVEL_STATS,
+  SCHOOL_LEVEL_MAX,
+  OVERVIEW_STATS,
+  HSPEC_FAQ,
+  HSPEC_SEO_INTRO,
+  HSPEC_SEO_CRITERIA,
+  HSPEC_RELATED_LINKS,
+} from "../../data/highSchoolPrivateEducationCost2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${HSPEC_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: HSPEC_META.title,
+    description: HSPEC_META.seoDescription,
+    dateModified: HSPEC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: HSPEC_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: HSPEC_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={HSPEC_META.seoTitle} description={HSPEC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page hspec-page" data-report={HSPEC_META.slug}>
+    <CalculatorHero
+      eyebrow="사교육비 비교"
+      title={HSPEC_META.title}
+      description={HSPEC_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내 (중요)"
+      lines={[
+        HSPEC_META.dataNote,
+        "학년별(초1~고3 개별) 세부 수치는 학교급 단위로만 공개돼 있어 이 리포트도 학교급 기준으로 비교합니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>한눈에 보는 개요</h2>
+      <div class="hspec-overview-grid">
+        <article class="hspec-overview-card">
+          <span>전체 학생 평균(전 학년)</span>
+          <strong>{won(OVERVIEW_STATS.allStudentsOverallAverage)}</strong>
+          <small>미참여 포함, 전년 대비 -3.5%</small>
+        </article>
+        <article class="hspec-overview-card hspec-overview-card--accent">
+          <span>참여 학생만 평균(전 학년)</span>
+          <strong>{won(OVERVIEW_STATS.participatingStudentsOverallAverage)}</strong>
+          <small>전년 대비 +2.0%, 역대 최고</small>
+        </article>
+        <article class="hspec-overview-card hspec-overview-card--accent">
+          <span>고등학교 참여 학생 평균</span>
+          <strong>{won(OVERVIEW_STATS.highSchoolParticipatingAverage)}</strong>
+          <small>전년 대비 +2.6%</small>
+        </article>
+        <article class="hspec-overview-card">
+          <span>전체 사교육비 시장 규모</span>
+          <strong>{OVERVIEW_STATS.totalMarketSize}</strong>
+          <small>2025년, 5년 만에 감소</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>학교급별 사교육비 비교 (전체 학생 평균)</h2>
+      <div class="hspec-bar-list">
+        {SCHOOL_LEVEL_STATS.map((stat) => (
+          <div class="hspec-bar-row">
+            <span class="hspec-bar-row__label">{stat.level}</span>
+            <div class="hspec-bar-row__track">
+              <div class="hspec-bar-row__fill" style={`width:${Math.max((stat.allStudentsAverage / SCHOOL_LEVEL_MAX) * 100, 4)}%`}></div>
+            </div>
+            <span class="hspec-bar-row__value">{won(stat.allStudentsAverage)}</span>
+          </div>
+        ))}
+      </div>
+      <p class="op-message">미참여 학생을 포함한 전체 학생 평균 기준입니다. 사교육 참여 학생만의 평균은 이보다 높습니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>학교급별 최고 참여율 학년</h2>
+      <div class="hspec-table-wrap">
+        <table class="hspec-table">
+          <thead><tr><th>학교급</th><th>최고 참여율 학년</th><th>참여율</th><th>학교급 전체 평균</th></tr></thead>
+          <tbody>
+            {SCHOOL_LEVEL_STATS.map((stat) => (
+              <tr>
+                <td><strong>{stat.level}</strong></td>
+                <td>{stat.peakParticipationGrade}</td>
+                <td>{stat.peakParticipationRate}</td>
+                <td>{won(stat.allStudentsAverage)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>표로는 안 보이는 패턴</h2>
+      <div class="hspec-insight-grid">
+        <article class="hspec-insight-card">
+          <strong>참여율은 저학년이 높고, 지출액은 고학년이 높다</strong>
+          <p>초3 참여율(86.5%)이 고1(66.3%)보다 높지만, 1인당 지출액은 고등학교가 가장 큽니다. 저학년은 널리 참여하고 적게 쓰고, 고학년은 소수가 집중적으로 쓰는 구조입니다.</p>
+        </article>
+        <article class="hspec-insight-card">
+          <strong>고3 체감 사교육비는 전체 평균의 1.6배 이상</strong>
+          <p>고등학교 참여 학생만의 평균(79만 3,000원)은 고등학교 전체 평균(49만 9,000원)보다 1.6배 가까이 높습니다. 사교육을 받고 있다면 전체 평균보다 참여 학생 평균과 비교하는 것이 더 현실적입니다.</p>
+        </article>
+        <article class="hspec-insight-card">
+          <strong>전체 시장은 줄었지만 참여자 지출은 늘었다</strong>
+          <p>전체 사교육비 총액은 5년 만에 감소했지만, 실제로 사교육을 받는 학생들의 1인당 지출은 오히려 역대 최고를 기록했습니다. 참여자와 미참여자 간 격차가 커지고 있다는 뜻입니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>같이 보면 좋은 계산기</h2>
+      <div class="hspec-related-grid">
+        {HSPEC_RELATED_LINKS.map((link) => (
+          <a class="hspec-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="고3 사교육비, 이렇게 읽으면 됩니다"
+      intro={HSPEC_SEO_INTRO}
+      criteria={HSPEC_SEO_CRITERIA}
+      faq={HSPEC_FAQ}
+      related={HSPEC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

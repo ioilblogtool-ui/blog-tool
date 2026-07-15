@@ -1374,4 +1374,18 @@ export const reports: ReportMeta[] = [
     order: 76.2,
     badges: ["신규", "대학생 지원금", "2026"],
   },
+  {
+    slug: "retake-vs-college-tuition-2026",
+    title: "재수 vs 대학 등록금 2026 | 1년 비용이 등록금보다 클까",
+    description: "재수 1년 비용(통학/기숙학원)과 대학 4년 등록금을 나란히 비교합니다.",
+    order: 76.3,
+    badges: ["신규", "재수", "등록금", "2026"],
+  },
+  {
+    slug: "high-school-private-education-cost-2026",
+    title: "고3 사교육비 2026 | 학년별 평균 한눈에 비교",
+    description: "초·중·고 학교급별 월평균 사교육비와 참여 학생 기준 평균을 비교합니다.",
+    order: 76.4,
+    badges: ["신규", "사교육비", "2026"],
+  },
 ];

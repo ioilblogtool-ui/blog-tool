@@ -1,0 +1,163 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  RVC_META,
+  RETAKE_CALC_EXAMPLES,
+  COMPARISON_ROWS,
+  COMPARISON_MAX_ONE_YEAR,
+  RVC_FAQ,
+  RVC_SEO_INTRO,
+  RVC_SEO_CRITERIA,
+  RVC_RELATED_LINKS,
+} from "../../data/retakeVsCollegeTuition2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${RVC_META.slug}/`;
+const man = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만원`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: RVC_META.title,
+    description: RVC_META.seoDescription,
+    dateModified: RVC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: RVC_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: RVC_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={RVC_META.seoTitle} description={RVC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page rvc-page" data-report={RVC_META.slug}>
+    <CalculatorHero
+      eyebrow="재수 vs 등록금 비교"
+      title={RVC_META.title}
+      description={RVC_META.description}
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[
+        RVC_META.dataNote,
+        "재수 비용은 1년, 등록금은 1년·4년을 함께 표기했습니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>한눈에 보는 개요</h2>
+      <div class="rvc-overview-grid">
+        {RETAKE_CALC_EXAMPLES.map((r) => (
+          <article class="rvc-overview-card">
+            <span>재수 1년 — {r.label}</span>
+            <strong>{man(r.exampleCalc.grandTotal)}</strong>
+          </article>
+        ))}
+        <article class="rvc-overview-card rvc-overview-card--tuition">
+          <span>국공립대 4년 등록금</span>
+          <strong>{man(COMPARISON_ROWS.find((r) => r.label === "국공립대 등록금")!.fourYearValue)}</strong>
+        </article>
+        <article class="rvc-overview-card rvc-overview-card--tuition">
+          <span>사립대 4년 등록금</span>
+          <strong>{man(COMPARISON_ROWS.find((r) => r.label === "사립대 등록금")!.fourYearValue)}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>1년 비용 막대 비교</h2>
+      <div class="rvc-bar-list">
+        {COMPARISON_ROWS.map((row) => (
+          <div class={`rvc-bar-row rvc-bar-row--${row.type.toLowerCase()}`}>
+            <span class="rvc-bar-row__label">{row.label}</span>
+            <div class="rvc-bar-row__track">
+              <div class="rvc-bar-row__fill" style={`width:${Math.max((row.oneYearValue / COMPARISON_MAX_ONE_YEAR) * 100, 4)}%`}></div>
+            </div>
+            <span class="rvc-bar-row__value">{man(row.oneYearValue)}</span>
+          </div>
+        ))}
+      </div>
+      <p class="op-message">재수 항목은 1년 지출, 등록금 항목은 1년치 등록금 기준입니다. 등록금 4년 누적액은 아래 표에서 확인하세요.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>1년 vs 4년 환산 비교표</h2>
+      <div class="rvc-table-wrap">
+        <table class="rvc-table">
+          <thead><tr><th>구분</th><th>1년</th><th>4년 환산</th></tr></thead>
+          <tbody>
+            {COMPARISON_ROWS.map((row) => (
+              <tr class={row.type === "RETAKE" ? "rvc-row-retake" : "rvc-row-tuition"}>
+                <td><strong>{row.label}</strong></td>
+                <td>{man(row.oneYearValue)}</td>
+                <td>{row.type === "RETAKE" ? "해당 없음(1년 지출)" : man(row.fourYearValue)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>표로는 안 보이는 패턴</h2>
+      <div class="rvc-insight-grid">
+        <article class="rvc-insight-card">
+          <strong>통학 재종반 ≈ 사립대 4년 등록금</strong>
+          <p>통학 재종반 1년 비용(약 3,000만 원)은 사립대 4년 등록금(약 3,300만 원)과 비슷한 수준입니다.</p>
+        </article>
+        <article class="rvc-insight-card">
+          <strong>기숙학원 &gt; 사립대 4년 등록금</strong>
+          <p>기숙학원 1년 비용(약 4,000만 원)은 사립대 4년 등록금보다도 더 큽니다.</p>
+        </article>
+        <article class="rvc-insight-card">
+          <strong>국공립대 4년 &lt; 재수 1년의 절반</strong>
+          <p>국공립대 4년 등록금(약 1,700만 원)은 재수 1년 비용(3,000만~4,000만 원대)의 절반에도 못 미칩니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>같이 보면 좋은 계산기</h2>
+      <div class="rvc-related-grid">
+        {RVC_RELATED_LINKS.map((link) => (
+          <a class="rvc-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="재수 비용과 대학 등록금, 이렇게 비교하면 됩니다"
+      intro={RVC_SEO_INTRO}
+      criteria={RVC_SEO_CRITERIA}
+      faq={RVC_FAQ}
+      related={RVC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

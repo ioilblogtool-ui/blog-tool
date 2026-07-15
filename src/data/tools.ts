@@ -2282,6 +2282,32 @@ export const tools: ToolMeta[] = [
       { label: "상환기준소득", value: "3,037만원" },
     ],
   },
+  {
+    slug: "retake-exam-cost-calculator-2026",
+    title: "재수 비용 계산기 2026",
+    description: "재수 유형·기간 입력하면 학원비·부대비용 합산한 1년 총비용 바로 계산.",
+    order: 72.4,
+    eyebrow: "재수 비용",
+    category: "support",
+    badges: ["신규"],
+    previewStats: [
+      { label: "기숙학원 평균", value: "월 350만" },
+      { label: "통학 재종반", value: "월 200만~" },
+    ],
+  },
+  {
+    slug: "college-application-fee-calculator-2026",
+    title: "대입 원서비 계산기 2026",
+    description: "수시·정시 지원 개수와 전형료 구간 입력하면 원서비 총액 바로 계산.",
+    order: 72.5,
+    eyebrow: "대입 원서비",
+    category: "support",
+    badges: ["신규"],
+    previewStats: [
+      { label: "수시 최대", value: "6개" },
+      { label: "정시 최대", value: "3개" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

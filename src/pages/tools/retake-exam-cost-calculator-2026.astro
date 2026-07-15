@@ -1,0 +1,195 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  RETAKE_META,
+  RETAKE_FAQ,
+  RETAKE_SEO_CONTENT,
+  RETAKE_RELATED_LINKS,
+  RETAKE_PRESETS,
+  RETAKE_DEFAULT_INPUT,
+} from "../../data/retakeExamCostCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${RETAKE_META.slug}/`;
+const man = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만원`;
+
+const config = { presets: RETAKE_PRESETS, defaultInput: RETAKE_DEFAULT_INPUT };
+---
+
+<BaseLayout
+  title={RETAKE_META.seoTitle}
+  description={RETAKE_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: RETAKE_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: RETAKE_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: RETAKE_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={RETAKE_META.slug} pageClass="retake-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="재수 비용 계산"
+        title={RETAKE_META.title}
+        description="재수 유형과 기간을 입력하면 학원비·부대비용을 합산한 1년 총비용을 바로 계산합니다."
+        badges={["재수", "기숙학원", "2026", "1년 총비용"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          RETAKE_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="retakeResetBtn" copyId="retakeCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel retake-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">재수 유형·기간·비용</h2>
+          </div>
+        </div>
+
+        <section class="retake-input-section">
+          <h3>재수 유형</h3>
+          <div class="toggle-grid">
+            {RETAKE_PRESETS.map((preset, i) => (
+              <label class="mode-chip">
+                <input type="radio" name="retakeType" value={preset.type} checked={i === 0} />
+                <span>{preset.label}</span>
+              </label>
+            ))}
+          </div>
+          <p class="retake-note" data-retake-type-note>{RETAKE_PRESETS[0].note}</p>
+        </section>
+
+        <section class="retake-input-section">
+          <h3>월 수강료·기간</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>월 수강료</span>
+              <input data-retake="monthlyTuition" type="text" inputmode="numeric" class="input-number" value={RETAKE_DEFAULT_INPUT.monthlyTuition.toLocaleString("ko-KR")} />
+            </label>
+            <div class="calc-slider-row">
+              <input type="range" id="retakeTuitionSlider" class="calc-slider" min="0" max="5000000" step="50000" value={RETAKE_DEFAULT_INPUT.monthlyTuition} />
+              <span id="retakeTuitionSliderVal" class="calc-slider-val">{man(RETAKE_DEFAULT_INPUT.monthlyTuition)}</span>
+            </div>
+
+            <label class="field">
+              <span>재수 기간(개월)</span>
+              <input data-retake="months" type="text" inputmode="numeric" class="input-number" value={RETAKE_DEFAULT_INPUT.months} />
+              <small>기본값은 2~11월 기준 10개월입니다.</small>
+            </label>
+          </div>
+        </section>
+
+        <section class="retake-input-section">
+          <h3>부대비용</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>특강·교재·단체복·모의고사 등(기간 합계)</span>
+              <input data-retake="extraFee" type="text" inputmode="numeric" class="input-number" value={RETAKE_DEFAULT_INPUT.extraFee.toLocaleString("ko-KR")} />
+            </label>
+          </div>
+          <div class="calc-slider-row">
+            <input type="range" id="retakeExtraSlider" class="calc-slider" min="0" max="20000000" step="500000" value={RETAKE_DEFAULT_INPUT.extraFee} />
+            <span id="retakeExtraSliderVal" class="calc-slider-val">{man(RETAKE_DEFAULT_INPUT.extraFee)}</span>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="retake-section retake-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>재수 1년 총비용</h2>
+        <p>입력값을 바꾸면 학원비·부대비용 반영 결과가 즉시 다시 계산됩니다.</p>
+      </div>
+      <div class="retake-kpi-grid">
+        <article class="retake-kpi"><span>학원비 총액</span><strong data-retake-result="tuitionTotal">-</strong></article>
+        <article class="retake-kpi"><span>부대비용 총액</span><strong data-retake-result="extraTotal">-</strong></article>
+        <article class="retake-kpi retake-kpi--accent"><span>1년 총비용</span><strong data-retake-result="grandTotal">-</strong></article>
+        <article class="retake-kpi"><span>월평균 비용</span><strong data-retake-result="monthlyAverage">-</strong></article>
+      </div>
+    </section>
+
+    <section class="retake-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">참고 데이터</p>
+        <h2>재수 유형별 비용 구조</h2>
+      </div>
+      <div class="retake-table-wrap">
+        <table class="retake-table">
+          <thead><tr><th>유형</th><th>월 수강료 기본값</th><th>부대비용 기본값</th><th>비고</th></tr></thead>
+          <tbody>
+            {RETAKE_PRESETS.map((preset) => (
+              <tr><td>{preset.label}</td><td>{man(preset.monthlyTuitionDefault)}</td><td>{man(preset.extraFeeDefault)}</td><td>{preset.note}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="retake-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>관련 계산기</h2>
+      </div>
+      <div class="retake-cta-grid">
+        {RETAKE_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="retake-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={RETAKE_SEO_CONTENT.introTitle}
+        intro={RETAKE_SEO_CONTENT.intro}
+        inputPoints={RETAKE_SEO_CONTENT.inputPoints}
+        criteria={RETAKE_SEO_CONTENT.criteria}
+        faq={RETAKE_FAQ}
+        related={RETAKE_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="retake-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/retake-exam-cost-calculator-2026.js")}></script>
+</BaseLayout>
