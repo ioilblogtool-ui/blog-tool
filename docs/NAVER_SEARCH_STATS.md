@@ -35,6 +35,269 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-07-14 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 660 | -6% |
+| 노출 | 25,000 | -8.4% |
+| CTR | 2.6% | -0.1%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 아파트 보유세 계산기 | 13 | 47 | 27.7 |
+| 2 | 대학교수 연봉 | 13 | 46 | 28.3 |
+| 3 | 삼성전자 성과급 계산기 | 12 | 94 | 12.8 |
+| 4 | 성과급 계산기 | 12 | 94 | 12.8 |
+| 5 | 한성숙 프로필 | 11 | 3,576 | 0.3 |
+| 6 | 초등교사 월급 | 10 | 108 | 9.3 |
+| 7 | 분유 가격 비교표 | 8 | 31 | 25.8 |
+| 8 | 삼성 성과급 계산기 | 7 | 20 | 35.0 |
+| 9 | 제주 국제학교 순위 | 6 | 15 | 40.0 |
+| 10 | 삼성전기 성과급 예상 | 6 | 11 | 54.5 |
+| 11 | 최저시급 월급 세후 | 5 | 52 | 9.6 |
+| 12 | 손흥민 재산 | 5 | 42 | 11.9 |
+| 13 | 삼성e&a 연봉 | 4 | 22 | 18.2 |
+| 14 | 중학교 교사 월급 | 4 | 20 | 20.0 |
+| 15 | 삼성중공업 성과급 | 4 | 20 | 20.0 |
+| 16 | 삼성 tai | 4 | 14 | 28.6 |
+| 17 | 코레일 성과급 | 4 | 12 | 33.3 |
+| 18 | 이강인 연봉 | 3 | 984 | 0.3 |
+| 19 | sk하이닉스 성과급 | 3 | 410 | 0.7 |
+| 20 | 이강인 주급 | 3 | 59 | 5.1 |
+| 21 | 국립대 교수 연봉 | 3 | 54 | 5.6 |
+| 22 | 교수 연봉 | 3 | 43 | 7.0 |
+| 23 | 삼성 e&a 연봉 | 3 | 32 | 9.4 |
+| 24 | 1인가구 식비 평균 | 3 | 30 | 10.0 |
+| 25 | 서울 청년기본소득 | 3 | 23 | 13.0 |
+| 26 | 전공의 급여비교 | 3 | 10 | 30.0 |
+| 27 | 사학연금 수령나이 | 3 | 9 | 33.3 |
+| 28 | 손흥민 자산 | 3 | 8 | 37.5 |
+| 29 | 삼성e&a 연봉은 삼성그룹 내 다른 계열사와 비교해 어떻게 되나요? | 3 | 5 | 60.0 |
+| 30 | 서울 구청장 정당 | 3 | 4 | 75.0 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/teacher-salary-2026/ | 52 | 1,268 | 4.1 |
+| 2 | /reports/professor-salary-2026/ | 30 | 302 | 9.9 |
+| 3 | /tools/samsung-bonus/ | 26 | 777 | 3.3 |
+| 4 | /compare/bonus/ | 22 | 1,506 | 1.5 |
+| 5 | /reports/construction-salary-bonus-comparison-2026/ | 20 | 256 | 7.8 |
+| 6 | /tools/bonus-after-tax-calculator/ | 19 | 703 | 2.7 |
+| 7 | /tools/teacher-salary-calculator/ | 19 | 305 | 6.2 |
+| 8 | /tools/military-salary-calculator/ | 17 | 162 | 10.5 |
+| 9 | /tools/apartment-holding-tax/ | 16 | 429 | 3.7 |
+| 10 | /reports/baby-formula-brand-cost-comparison-2026/ | 13 | 105 | 12.4 |
+| 11 | /reports/kleague-salary-comparison-2026/ | 12 | 846 | 1.4 |
+| 12 | /tools/minimum-wage-2026/ | 12 | 380 | 3.2 |
+| 13 | /reports/han-seong-sook-pm-nominee-career-assets-2026/ | 11 | 3,615 | 0.3 |
+| 14 | /reports/samsung-ds-bonus-calculation-guide/ | 10 | 285 | 3.5 |
+| 15 | /reports/military-salary-2026/ | 9 | 462 | 1.9 |
+| 16 | /tools/real-estate-acquisition-tax/ | 8 | 484 | 1.7 |
+| 17 | /tools/childcare-short-time-pay-calculator/ | 8 | 277 | 2.9 |
+| 18 | /tools/auto-bonus-comparison/ | 8 | 227 | 3.5 |
+| 19 | /tools/postnatal-care-income-eligibility/ | 8 | 161 | 5.0 |
+| 20 | /tools/public-servant-salary-calculator/ | 8 | 134 | 6.0 |
+| 21 | /reports/son-heung-min-lafc-salary-net-worth-2026/ | 8 | 74 | 10.8 |
+| 22 | /reports/seoul-district-apartment-price-ranking-2026/ | 8 | 63 | 12.7 |
+| 23 | /tools/sk-hynix-bonus/ | 7 | 322 | 2.2 |
+| 24 | /reports/public-enterprise-bonus-comparison-2026/ | 7 | 88 | 8.0 |
+| 25 | /reports/doctor-salary-2026/ | 7 | 86 | 8.1 |
+| 26 | /reports/jeju-international-school-comparison-2026/ | 7 | 40 | 17.5 |
+| 27 | /tools/samsung-electro-mechanics-bonus-calculator-2026/ | 7 | 37 | 18.9 |
+| 28 | /reports/korea-football-legends-salary-comparison-2026/ | 6 | 588 | 1.0 |
+| 29 | /reports/pension-by-job-comparison-2026/ | 6 | 96 | 6.2 |
+| 30 | /reports/samsung-shuttle-real-estate-2026/ | 6 | 62 | 9.7 |
+
+### 주목 포인트
+- 클릭 660(-6%), 노출 25,000(-8.4%), CTR 2.6%(-0.1%p) — 07-10 스냅샷(클릭690·노출28,000·CTR2.4%) 대비 전체 규모는 소폭 축소됐지만 CTR은 2%대 후반으로 유지. 이강인·월드컵발 노출 버블이 완전히 빠지고 안정화 단계.
+- `아파트 보유세 계산기`(클릭13·CTR27.7%)·`대학교수 연봉`(클릭13·CTR28.3%)이 신규로 키워드 1·2위 등극 — 성과급 키워드를 제치고 재산세 시즌 콘텐츠와 교수 연봉 리포트가 상위권 장악. `professor-salary-2026`(URL 2위, 클릭30·CTR9.9%)도 동반 강세.
+- `제주 국제학교 순위`(키워드 9위, CTR40.0%)·`jeju-international-school-comparison-2026`(URL 26위, CTR17.5%) — 최근 추가한 국제학교 콘텐츠 클러스터가 TOP30에 처음 안착. 국제학교 콘텐츠 확장 전략의 초기 성과 신호.
+- `한성숙 프로필`(노출3,576·CTR0.3%)·`han-seong-sook-pm-nominee-career-assets-2026`(노출3,615·CTR0.3%) — 07-10(노출1,742) 대비 노출이 2배 이상 급증했으나 CTR은 여전히 0.3%로 구조적 저CTR 지속, 전체 CTR 하방 압력의 최대 요인.
+- `teacher-salary-2026`(URL 1위, 클릭52·CTR4.1%) 부동의 1위 유지. `bonus-after-tax-calculator`·`teacher-salary-calculator`·`military-salary-calculator`·`apartment-holding-tax` 등 스테디셀러 계산기가 안정적으로 TOP10 유지.
+- `1인가구 식비 평균`·`서울 청년기본소득`·`전공의 급여비교`·`사학연금 수령나이`·`서울 구청장 정당` 등 소볼륨 신규 롱테일 키워드 다수 진입 — 콘텐츠 다각화가 검색 유입원 확대로 이어지는 흐름 지속.
+- `pension-by-job-comparison-2026`·`samsung-shuttle-real-estate-2026`(신규 URL 진입) — 최근 추가 리포트 콘텐츠가 꾸준히 TOP30에 안착.
+
+---
+
+## 2026-07-10 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 690 | -0.7% |
+| 노출 | 28,000 | -5% |
+| CTR | 2.4% | +0.1%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 삼성전자 성과급 계산기 | 35 | 240 | 14.6 |
+| 2 | 성과급 계산기 | 24 | 130 | 18.5 |
+| 3 | 삼성전기 성과급 | 17 | 45 | 37.8 |
+| 4 | 삼성 성과급 계산기 | 13 | 42 | 31.0 |
+| 5 | 국회의원 재산순위 | 12 | 24 | 50.0 |
+| 6 | 한성숙 프로필 | 10 | 1,742 | 0.6 |
+| 7 | 대학교수 연봉 | 10 | 46 | 21.7 |
+| 8 | 성과급 세금 | 7 | 88 | 8.0 |
+| 9 | 초등교사 월급 | 7 | 80 | 8.8 |
+| 10 | 손흥민 재산 | 7 | 69 | 10.1 |
+| 11 | 2026 증권사 수수료 비교 | 6 | 80 | 7.5 |
+| 12 | 최저시급 월급 세후 | 5 | 55 | 9.1 |
+| 13 | 이강인 연봉 | 4 | 2,154 | 0.2 |
+| 14 | sk하이닉스 성과급 | 4 | 568 | 0.7 |
+| 15 | 성과급 세금 계산기 | 4 | 87 | 4.6 |
+| 16 | 현대자동차 성과급 2026 | 4 | 68 | 5.9 |
+| 17 | 연장수당 계산기 | 4 | 53 | 7.5 |
+| 18 | 삼성중공업 성과급 금액 | 4 | 52 | 7.7 |
+| 19 | 성과급계산기 | 4 | 16 | 25.0 |
+| 20 | 월드컵 감독 연봉 순위 | 3 | 64 | 4.7 |
+| 21 | 삼성중공업 성과급 | 3 | 60 | 5.0 |
+| 22 | 분유 가격 비교표 | 3 | 13 | 23.1 |
+| 23 | 코레일 성과급 | 3 | 12 | 25.0 |
+| 24 | 삼성전기 성과급 예상 | 3 | 11 | 27.3 |
+| 25 | 주거급여 계산기 | 3 | 10 | 30.0 |
+| 26 | 은행 성과급 | 3 | 9 | 33.3 |
+| 27 | 분유 한달 가격 | 3 | 8 | 37.5 |
+| 28 | lh 성과급 | 3 | 7 | 42.9 |
+| 29 | 대기업 초봉 연봉 순위 | 3 | 6 | 50.0 |
+| 30 | 공무원 호봉 계산기 | 3 | 6 | 50.0 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /tools/samsung-bonus/ | 61 | 1,019 | 6.0 |
+| 2 | /compare/bonus/ | 47 | 1,824 | 2.6 |
+| 3 | /reports/teacher-salary-2026/ | 33 | 1,076 | 3.1 |
+| 4 | /tools/samsung-electro-mechanics-bonus-calculator-2026/ | 27 | 115 | 23.5 |
+| 5 | /tools/bonus-after-tax-calculator/ | 19 | 766 | 2.5 |
+| 6 | /reports/professor-salary-2026/ | 19 | 126 | 15.1 |
+| 7 | /tools/teacher-salary-calculator/ | 18 | 346 | 5.2 |
+| 8 | /reports/construction-salary-bonus-comparison-2026/ | 17 | 194 | 8.8 |
+| 9 | /reports/stock-brokerage-fee-comparison-2026/ | 16 | 202 | 7.9 |
+| 10 | /reports/national-assembly-wealth-2026/ | 15 | 27 | 55.6 |
+| 11 | /reports/han-seong-sook-pm-nominee-career-assets-2026/ | 14 | 2,465 | 0.6 |
+| 12 | /tools/overtime-pay-calculator/ | 13 | 377 | 3.4 |
+| 13 | /tools/military-salary-calculator/ | 12 | 139 | 8.6 |
+| 14 | /reports/kleague-salary-comparison-2026/ | 11 | 632 | 1.7 |
+| 15 | /reports/public-enterprise-bonus-comparison-2026/ | 11 | 86 | 12.8 |
+| 16 | /reports/son-heung-min-lafc-salary-net-worth-2026/ | 9 | 1,809 | 0.5 |
+| 17 | /reports/samsung-ds-bonus-calculation-guide/ | 9 | 487 | 1.8 |
+| 18 | /tools/minimum-wage-2026/ | 9 | 379 | 2.4 |
+| 19 | /tools/postnatal-care-income-eligibility/ | 9 | 190 | 4.7 |
+| 20 | /tools/shipbuilding-bonus-comparison/ | 9 | 140 | 6.4 |
+| 21 | /reports/seoul-district-apartment-price-ranking-2026/ | 9 | 64 | 14.1 |
+| 22 | /tools/doctor-salary-calculator/ | 9 | 63 | 14.3 |
+| 23 | /tools/childcare-short-time-pay-calculator/ | 7 | 248 | 2.8 |
+| 24 | /reports/new-employee-salary-2026/ | 7 | 128 | 5.5 |
+| 25 | /reports/doctor-salary-2026/ | 7 | 76 | 9.2 |
+| 26 | /tools/finance-bonus-comparison/ | 7 | 63 | 11.1 |
+| 27 | /reports/corporate-bonus-comparison-2026/ | 6 | 982 | 0.6 |
+| 28 | /tools/real-estate-acquisition-tax/ | 6 | 123 | 4.9 |
+| 29 | /reports/baby-formula-brand-cost-comparison-2026/ | 6 | 105 | 5.7 |
+| 30 | /tools/public-servant-salary-calculator/ | 6 | 102 | 5.9 |
+
+### 주목 포인트
+- 클릭 690(-0.7%), 노출 28,000(-5%), CTR 2.4%(+0.1%p) — 노출이 클릭보다 더 줄면서 CTR이 이틀 연속 개선. 이강인·월드컵발 일시적 노출 급증이 계속 정상화되는 흐름.
+- `삼성전자 성과급 계산기`(클릭 35·CTR 14.6%)가 전일(24·11.0%) 대비 클릭·CTR 모두 상승하며 키워드 1위 굳히기. URL도 `/tools/samsung-bonus/`(클릭 61·CTR 6.0%)가 전일 4위(27·3.3%)에서 1위로 급상승 — 삼성 성과급 계산기 클러스터가 확실히 트래픽 중심축으로 자리잡음.
+- `/compare/bonus/`(클릭 47·노출 1,824·CTR 2.6%)는 노출은 오히려 늘었지만(전일 1,294) 클릭·CTR은 하락(전일 58·4.5%) — 비교 페이지 자체보다 개별 계산기 페이지로 트래픽이 이동하는 양상.
+- `한성숙 프로필`(노출 1,742·CTR 0.6%)·`han-seong-sook-pm-nominee-career-assets-2026`(노출 2,465·CTR 0.6%) — 대량 노출·저CTR 구조 지속. `이강인 연봉`(노출 2,154·CTR 0.2%)과 함께 여전히 CTR 하방 압력의 주요 원인.
+- `국회의원 재산순위`(CTR 50.0%), `national-assembly-wealth-2026`(CTR 55.6%) — 정치인 재산 클러스터 고CTR 유지.
+- `stock-brokerage-fee-comparison-2026`(신규 URL 9위, 클릭 16·CTR 7.9%), `seoul-district-apartment-price-ranking-2026`·`doctor-salary-calculator`(신규 진입, CTR 14%대) — 신규 콘텐츠가 꾸준히 TOP30 안착.
+- `손흥민 재산`(신규, CTR 10.1%), `2026 증권사 수수료 비교`(신규, CTR 7.5%) — 롱테일 키워드 다변화 지속.
+
+---
+
+## 2026-07-09 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 690 | -15.4% |
+| 노출 | 30,000 | -27.9% |
+| CTR | 2.3% | +0.3%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 삼성전자 성과급 계산기 | 24 | 218 | 11.0 |
+| 2 | 삼성전기 성과급 | 22 | 85 | 25.9 |
+| 3 | 성과급 계산기 | 14 | 114 | 12.3 |
+| 4 | 국회의원 재산순위 | 12 | 34 | 35.3 |
+| 5 | 하이닉스 성과급 | 11 | 852 | 1.3 |
+| 6 | 삼성 성과급 계산기 | 10 | 40 | 25.0 |
+| 7 | 메시 호날두 비교 | 9 | 89 | 10.1 |
+| 8 | 손흥민 재산 | 9 | 87 | 10.3 |
+| 9 | 현대자동차 성과급 2026 | 9 | 76 | 11.8 |
+| 10 | 성과급 세금 | 8 | 82 | 9.8 |
+| 11 | 이강인 연봉 | 7 | 3,698 | 0.2 |
+| 12 | sk하이닉스 성과급 | 7 | 462 | 1.5 |
+| 13 | 현대차 임단협 2026 | 5 | 766 | 0.7 |
+| 14 | 한성숙 국무총리 프로필 | 5 | 653 | 0.8 |
+| 15 | 초등교사 월급 | 5 | 92 | 5.4 |
+| 16 | 삼성중공업 성과급 | 5 | 48 | 10.4 |
+| 17 | 대학교수 연봉 | 4 | 47 | 8.5 |
+| 18 | 삼성전기 성과급 예상 | 4 | 13 | 30.8 |
+| 19 | 삼성e&a 연봉은 삼성그룹 내 다른 계열사와 비교해 어떻게 되나요? | 4 | 9 | 44.4 |
+| 20 | 현대건설 성과급 | 4 | 6 | 66.7 |
+| 21 | 이승모 연봉 | 4 | 4 | 100.0 |
+| 22 | 한성숙 프로필 | 3 | 1,916 | 0.2 |
+| 23 | 하이닉스 pi | 3 | 72 | 4.2 |
+| 24 | 삼성중공업 성과급 금액 | 3 | 38 | 7.9 |
+| 25 | 이강인 선수의 예상 연봉은 얼마인가요? | 3 | 13 | 23.1 |
+| 26 | 분유 가격 비교표 | 3 | 10 | 30.0 |
+| 27 | 현대자동차 성과급 2025 얼마 | 3 | 7 | 42.9 |
+| 28 | 인터넷+tv위약금 계산기 | 3 | 1 | 300.0 |
+| 29 | 삼성전자 pi | 2 | 252 | 0.8 |
+| 30 | 성과급 세금 계산기 | 2 | 69 | 2.9 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /compare/bonus/ | 58 | 1,294 | 4.5 |
+| 2 | /tools/samsung-electro-mechanics-bonus-calculator-2026/ | 32 | 155 | 20.6 |
+| 3 | /reports/teacher-salary-2026/ | 30 | 944 | 3.2 |
+| 4 | /tools/samsung-bonus/ | 27 | 824 | 3.3 |
+| 5 | /tools/bonus-after-tax-calculator/ | 24 | 673 | 3.6 |
+| 6 | /reports/professor-salary-2026/ | 20 | 153 | 13.1 |
+| 7 | /reports/construction-salary-bonus-comparison-2026/ | 18 | 201 | 9.0 |
+| 8 | /reports/kleague-salary-comparison-2026/ | 17 | 727 | 2.3 |
+| 9 | /reports/national-assembly-wealth-2026/ | 17 | 33 | 51.5 |
+| 10 | /reports/corporate-bonus-comparison-2026/ | 15 | 1,145 | 1.3 |
+| 11 | /reports/samsung-ds-bonus-calculation-guide/ | 15 | 987 | 1.5 |
+| 12 | /reports/argentina-worldcup-squad-salary-2026/ | 14 | 427 | 3.3 |
+| 13 | /reports/worldcup-squad-salary-total-comparison-2026/ | 14 | 91 | 15.4 |
+| 14 | /reports/lee-kang-in-psg-salary-2026/ | 13 | 2,316 | 0.6 |
+| 15 | /reports/hyundai-motor-union-bonus-2026/ | 11 | 493 | 2.2 |
+| 16 | /reports/messi-ronaldo-career-comparison-2026/ | 11 | 382 | 2.9 |
+| 17 | /tools/teacher-salary-calculator/ | 11 | 302 | 3.6 |
+| 18 | /reports/son-heung-min-lafc-salary-net-worth-2026/ | 10 | 516 | 1.9 |
+| 19 | /tools/postnatal-care-income-eligibility/ | 10 | 165 | 6.1 |
+| 20 | /reports/public-enterprise-bonus-comparison-2026/ | 10 | 71 | 14.1 |
+| 21 | /reports/han-seong-sook-pm-nominee-career-assets-2026/ | 9 | 2,737 | 0.3 |
+| 22 | /reports/stock-brokerage-fee-comparison-2026/ | 9 | 220 | 4.1 |
+| 23 | /reports/samsung-bonus-rank-net-comparison-2026/ | 8 | 127 | 6.3 |
+| 24 | /tools/shipbuilding-bonus-comparison/ | 8 | 118 | 6.8 |
+| 25 | /reports/kbo-salary-comparison-2026/ | 8 | 48 | 16.7 |
+| 26 | /reports/birth-support-by-region-2026/ | 8 | 32 | 25.0 |
+| 27 | /reports/military-salary-2026/ | 7 | 278 | 2.5 |
+| 28 | /reports/semiconductor-stocks-forecast-2026-2028/ | 7 | 56 | 12.5 |
+| 29 | /tools/minimum-wage-2026/ | 6 | 296 | 2.0 |
+| 30 | /reports/police-salary-2026/ | 6 | 190 | 3.2 |
+
+### 주목 포인트
+- 클릭 690(-15.4%), 노출 30,000(-27.9%), CTR 2.3%(+0.3%p) — 노출이 클릭보다 더 큰 폭으로 줄며 CTR은 소폭 개선. 전일(07-08) 이강인 주급 이슈로 인한 일시적 노출 급증(41,000)이 정상화되는 흐름.
+- `삼성전자 성과급 계산기`(클릭 24·CTR 11.0%)가 키워드 1위로 복귀. `compare/bonus/`(클릭 58·CTR 4.5%)와 `samsung-electro-mechanics-bonus-calculator-2026`(클릭 32·CTR 20.6%)이 URL 1·2위 — 삼성 성과급 계산기 클러스터가 이강인 이슈에 밀렸다가 재차 상위권 장악.
+- `이강인 연봉`(노출 3,698·CTR 0.2%)·`lee-kang-in-psg-salary-2026`(노출 2,316·CTR 0.6%), `한성숙 프로필`(노출 1,916·CTR 0.2%)·`han-seong-sook-pm-nominee-career-assets-2026`(노출 2,737·CTR 0.3%) — 대량 노출·초저CTR 구조 여전히 지속. 타이틀·디스크립션 보강 우선순위 후보.
+- `국회의원 재산순위`(CTR 35.3%), `national-assembly-wealth-2026`(CTR 51.5%) — 정치인 재산 클러스터 CTR 강세 지속.
+- `birth-support-by-region-2026`(신규, CTR 25.0%), `semiconductor-stocks-forecast-2026-2028`(신규, CTR 12.5%) — 신규 콘텐츠가 TOP30 URL에 안착.
+- `메시 호날두 비교`·`손흥민 재산`(신규 진입, CTR 10%대) — 스포츠 연봉 비교 롱테일 키워드 다변화 지속.
+
+---
+
 ## 2026-07-08 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)
