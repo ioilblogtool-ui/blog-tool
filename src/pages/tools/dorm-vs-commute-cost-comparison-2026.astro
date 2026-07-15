@@ -1,0 +1,192 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  DVC_META,
+  DVC_FAQ,
+  DVC_SEO_CONTENT,
+  DVC_RELATED_LINKS,
+  DVC_CONFIG,
+  DVC_DEFAULT_INPUT,
+} from "../../data/dormVsCommuteCostComparison2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${DVC_META.slug}/`;
+const man = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만원`;
+
+const residenceLabels: Record<string, string> = { PARENTS: "부모님 집(통학)", DORM: "기숙사", OFFCAMPUS: "자취" };
+---
+
+<BaseLayout
+  title={DVC_META.seoTitle}
+  description={DVC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: DVC_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: DVC_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: DVC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={DVC_META.slug} pageClass="dvc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="거주 형태 비교"
+        title={DVC_META.title}
+        description="기숙사·자취·통학(부모님 집) 월 주거비·생활비를 입력하면 대학 4년 총비용과 통학 시간까지 한 번에 비교합니다."
+        badges={["기숙사", "자취", "통학", "2026"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          DVC_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="dvcResetBtn" copyId="dvcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel dvc-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">재학 기간·통학 조건</h2>
+          </div>
+        </div>
+
+        <section class="dvc-input-section">
+          <h3>재학 기간</h3>
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input type="radio" name="dvcYears" value="4" checked />
+              <span>4년</span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="dvcYears" value="6" />
+              <span>6년(약학 등)</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="dvc-input-section">
+          <h3>통학(부모님 집) 조건</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>편도 통학시간(분)</span>
+              <input data-dvc-commute="oneWayMinutes" type="text" inputmode="numeric" class="input-number" value={DVC_DEFAULT_INPUT.oneWayMinutes.toLocaleString("ko-KR")} />
+            </label>
+            <label class="field">
+              <span>연간 등교일수</span>
+              <input data-dvc-commute="schoolDaysPerYear" type="text" inputmode="numeric" class="input-number" value={DVC_DEFAULT_INPUT.schoolDaysPerYear.toLocaleString("ko-KR")} />
+              <small>방학 제외 참고값(180일)이며 자유롭게 조정할 수 있습니다.</small>
+            </label>
+          </div>
+        </section>
+      </article>
+
+      <article class="panel dvc-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">거주 형태별 월 비용</h2>
+          </div>
+        </div>
+        {DVC_CONFIG.residencePresets.map((preset) => (
+          <section class="dvc-input-section">
+            <h3>{residenceLabels[preset.type]}</h3>
+            <div class="form-grid">
+              <label class="field">
+                <span>월 주거비</span>
+                <input data-dvc-residence={preset.type} data-dvc-field="housing" type="text" inputmode="numeric" class="input-number" value={preset.monthlyHousingDefault.toLocaleString("ko-KR")} />
+              </label>
+              <label class="field">
+                <span>월 생활비</span>
+                <input data-dvc-residence={preset.type} data-dvc-field="living" type="text" inputmode="numeric" class="input-number" value={preset.monthlyLivingDefault.toLocaleString("ko-KR")} />
+              </label>
+            </div>
+            <p class="dvc-note">{preset.note}</p>
+          </section>
+        ))}
+      </article>
+    </Fragment>
+
+    <section class="dvc-section dvc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>거주 형태별 4년 총비용</h2>
+        <p>입력값을 바꾸면 세 카드가 동시에 다시 계산됩니다.</p>
+      </div>
+      <div class="dvc-compare-grid">
+        {DVC_CONFIG.residencePresets.map((preset) => (
+          <article class="dvc-compare-card" data-dvc-card={preset.type}>
+            <p class="dvc-compare-card__label">{residenceLabels[preset.type]}</p>
+            <strong class="dvc-compare-card__total" data-dvc-result={`${preset.type}-total4y`}>-</strong>
+            <span class="dvc-compare-card__monthly" data-dvc-result={`${preset.type}-monthly`}>월 -</span>
+            {preset.type === "PARENTS" && (
+              <p class="dvc-compare-card__commute" data-dvc-result="commuteHours">통학시간 계산 중</p>
+            )}
+          </article>
+        ))}
+      </div>
+      <div class="dvc-bar-list" data-dvc-bar-list></div>
+    </section>
+
+    <section class="dvc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>관련 계산기·리포트</h2>
+      </div>
+      <div class="dvc-cta-grid">
+        {DVC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="dvc-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={DVC_SEO_CONTENT.introTitle}
+        intro={DVC_SEO_CONTENT.intro}
+        inputPoints={DVC_SEO_CONTENT.inputPoints}
+        criteria={DVC_SEO_CONTENT.criteria}
+        faq={DVC_FAQ}
+        related={DVC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="dvc-data" type="application/json" set:html={JSON.stringify(DVC_CONFIG)} />
+  <script type="module" src={withBase("/scripts/dorm-vs-commute-cost-comparison-2026.js")}></script>
+</BaseLayout>

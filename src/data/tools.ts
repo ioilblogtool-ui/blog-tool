@@ -2230,6 +2230,58 @@ export const tools: ToolMeta[] = [
       { label: "기준", value: "매일 바뀌는 환율·SKHY 주가 반영" },
     ],
   },
+  {
+    slug: "university-cost-calculator-2026",
+    title: "대학 등록금 계산기 2026",
+    description: "등록금·주거비·생활비·통학비 입력하고 장학금 빼면 대학 4년 실제 부담금 바로 계산.",
+    order: 72,
+    eyebrow: "대학 등록금",
+    category: "support",
+    badges: ["신규"],
+    previewStats: [
+      { label: "4년제 평균 등록금", value: "727만" },
+      { label: "자취 월세 평균", value: "62만" },
+    ],
+  },
+  {
+    slug: "national-scholarship-calculator-2026",
+    title: "국가장학금 계산기 2026",
+    description: "가구 소득 입력하면 예상 학자금 지원구간과 국가장학금 지원금 바로 계산.",
+    order: 72.1,
+    eyebrow: "국가장학금",
+    category: "support",
+    badges: ["신규"],
+    previewStats: [
+      { label: "1~3구간 지원", value: "연 600만" },
+      { label: "2026 수혜 인원", value: "150만명" },
+    ],
+  },
+  {
+    slug: "dorm-vs-commute-cost-comparison-2026",
+    title: "기숙사 vs 자취 vs 통학 비교 2026",
+    description: "거주 형태별 월 주거비·생활비 입력하면 대학 4년 총비용과 통학 시간까지 한 번에 비교.",
+    order: 72.2,
+    eyebrow: "거주 형태 비교",
+    category: "support",
+    badges: ["신규"],
+    previewStats: [
+      { label: "기숙사 평균", value: "월 32만" },
+      { label: "자취 평균", value: "월 70만" },
+    ],
+  },
+  {
+    slug: "student-loan-repayment-calculator-2026",
+    title: "학자금대출 계산기 2026",
+    description: "대출 원금·거치기간·졸업 후 예상 연봉 입력하면 학자금대출 의무상환액 바로 계산.",
+    order: 72.3,
+    eyebrow: "학자금대출",
+    category: "support",
+    badges: ["신규"],
+    previewStats: [
+      { label: "2026 대출금리", value: "연 1.7%" },
+      { label: "상환기준소득", value: "3,037만원" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

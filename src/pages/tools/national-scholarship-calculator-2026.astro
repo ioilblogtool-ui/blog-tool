@@ -1,0 +1,238 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  NS_META,
+  NS_FAQ,
+  NS_SEO_CONTENT,
+  NS_RELATED_LINKS,
+  NS_CONFIG,
+  NS_DEFAULT_INPUT,
+} from "../../data/nationalScholarship2026";
+import { TUITION_NATIONAL_2026, TUITION_PRIVATE_2026 } from "../../data/universityTuition2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${NS_META.slug}/`;
+const man = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만원`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+---
+
+<BaseLayout
+  title={NS_META.seoTitle}
+  description={NS_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: NS_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: NS_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: NS_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={NS_META.slug} pageClass="ns-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="국가장학금 계산"
+        title={NS_META.title}
+        description="가구원 수·소득을 입력하면 2026년 학자금 지원구간과 예상 국가장학금 지원금을 바로 계산합니다."
+        badges={["국가장학금", "소득분위", "2026", "다자녀 혜택"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          NS_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="nsResetBtn" copyId="nsCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel ns-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">가구·소득·등록금</h2>
+          </div>
+        </div>
+
+        <section class="ns-input-section">
+          <h3>가구 정보</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>가구원 수 (표시용, 계산에는 미반영)</span>
+              <select data-ns="householdSize">
+                {[2, 3, 4, 5, 6].map((n) => (
+                  <option value={n} selected={n === NS_DEFAULT_INPUT.householdSize}>{n}인{n === 6 ? " 이상" : ""}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="ns-input-section">
+          <h3>가구 월 소득</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>가구 월 소득</span>
+              <input data-ns="householdMonthlyIncome" type="text" inputmode="numeric" class="input-number" value={NS_DEFAULT_INPUT.householdMonthlyIncome.toLocaleString("ko-KR")} />
+              <small>근로·사업·연금 등 가구 전체 월 소득 합계를 입력하세요.</small>
+            </label>
+          </div>
+          <div class="calc-slider-row">
+            <input type="range" id="nsIncomeSlider" class="calc-slider" min="0" max="15000000" step="100000" value={NS_DEFAULT_INPUT.householdMonthlyIncome} />
+            <span id="nsIncomeSliderVal" class="calc-slider-val">{man(NS_DEFAULT_INPUT.householdMonthlyIncome)}</span>
+          </div>
+        </section>
+
+        <section class="ns-input-section">
+          <h3>다자녀 여부</h3>
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input type="radio" name="nsMultiChild" value="NONE" checked />
+              <span>없음</span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="nsMultiChild" value="SECOND" />
+              <span>둘째</span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="nsMultiChild" value="THIRD_OR_MORE" />
+              <span>셋째 이상</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="ns-input-section">
+          <h3>대학 유형·등록금</h3>
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input type="radio" name="nsUnivType" value="NATIONAL" data-ns-tuition={TUITION_NATIONAL_2026} />
+              <span>국공립</span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="nsUnivType" value="PRIVATE" data-ns-tuition={TUITION_PRIVATE_2026} checked />
+              <span>사립</span>
+            </label>
+          </div>
+          <div class="form-grid">
+            <label class="field">
+              <span>연간 등록금</span>
+              <input data-ns="annualTuition" type="text" inputmode="numeric" class="input-number" value={NS_DEFAULT_INPUT.annualTuition.toLocaleString("ko-KR")} />
+              <small>대학 유형 선택 시 자동으로 채워지며, 직접 수정할 수 있습니다.</small>
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="ns-section ns-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>예상 학자금 지원구간과 지원금</h2>
+        <p>입력값을 바꾸면 예상 구간과 지원금이 즉시 다시 계산됩니다.</p>
+      </div>
+      <div class="ns-kpi-grid">
+        <article class="ns-kpi ns-kpi--accent"><span>예상 지원구간</span><strong data-ns-result="bracket">-</strong></article>
+        <article class="ns-kpi"><span>예상 연간 지원금</span><strong data-ns-result="annualAmount">-</strong></article>
+        <article class="ns-kpi"><span>등록금 대비 지원 비율</span><strong data-ns-result="tuitionCoverageRatio">-</strong></article>
+      </div>
+      <p class="ns-summary" data-ns-result="householdSizeNote">가구원 수는 참고용이며, 실제 소득인정액 산정에는 재산·부채 등이 함께 반영됩니다.</p>
+    </section>
+
+    <section class="ns-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">기준표</p>
+        <h2>2026년 학자금 지원구간 경곗값</h2>
+      </div>
+      <div class="ns-table-wrap">
+        <table class="ns-table" data-ns-bracket-table>
+          <thead><tr><th>구간</th><th>월 소득인정액 상한</th><th>기준중위소득</th></tr></thead>
+          <tbody>
+            {NS_CONFIG.incomeBrackets.map((row) => (
+              <tr data-ns-bracket-row={row.bracket}>
+                <td>{row.bracket}구간</td>
+                <td>{row.monthlyIncomeCap !== null ? won(row.monthlyIncomeCap) : "상한 없음"}</td>
+                <td>{row.medianIncomeRatio}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ns-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">지원금표</p>
+        <h2>구간별 지원금액 (국가장학금 I유형)</h2>
+      </div>
+      <div class="ns-table-wrap">
+        <table class="ns-table">
+          <thead><tr><th>구간</th><th>연간 지원금</th></tr></thead>
+          <tbody>
+            {NS_CONFIG.scholarshipAmounts.map((row) => (
+              <tr><td>{row.label}</td><td>{row.annualAmount > 0 ? man(row.annualAmount) : "미지원"}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="ns-note">다자녀 가구: 첫째·둘째 1~3구간 610만 원 / 4~8구간 505만 원, 셋째 이상 자녀는 8구간까지 등록금 전액 지원(2026년 확대 적용).</p>
+    </section>
+
+    <section class="ns-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>관련 계산기·리포트</h2>
+      </div>
+      <div class="ns-cta-grid">
+        {NS_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="ns-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={NS_SEO_CONTENT.introTitle}
+        intro={NS_SEO_CONTENT.intro}
+        inputPoints={NS_SEO_CONTENT.inputPoints}
+        criteria={NS_SEO_CONTENT.criteria}
+        faq={NS_FAQ}
+        related={NS_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="ns-data" type="application/json" set:html={JSON.stringify(NS_CONFIG)} />
+  <script type="module" src={withBase("/scripts/national-scholarship-calculator-2026.js")}></script>
+</BaseLayout>

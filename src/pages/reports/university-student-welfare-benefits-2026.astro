@@ -1,0 +1,123 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  WSB_META,
+  WSB_BENEFITS,
+  WSB_CATEGORY_LABELS,
+  WSB_FAQ,
+  WSB_SEO_INTRO,
+  WSB_SEO_CRITERIA,
+  WSB_RELATED_LINKS,
+  type BenefitCategory,
+} from "../../data/universityStudentWelfareBenefits2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${WSB_META.slug}/`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: WSB_META.title,
+    description: WSB_META.seoDescription,
+    dateModified: WSB_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: WSB_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: WSB_META.title, item: reportUrl },
+    ],
+  },
+];
+
+const categories: BenefitCategory[] = ["TUITION", "HOUSING", "JOB_PREP"];
+const grouped = categories.map((category) => ({
+  category,
+  label: WSB_CATEGORY_LABELS[category],
+  items: WSB_BENEFITS.filter((b) => b.category === category),
+}));
+---
+<BaseLayout title={WSB_META.seoTitle} description={WSB_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page wsb-page" data-report={WSB_META.slug}>
+    <CalculatorHero
+      eyebrow="대학생 지원금 총정리"
+      title={WSB_META.title}
+      description={WSB_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내 (중요)"
+      lines={[
+        WSB_META.dataNote,
+        "제도별 소득·자산 기준은 갱신 시점이 달라 카드마다 기준 연도를 함께 표기했습니다.",
+      ]}
+    />
+
+    {grouped.map((group) => (
+      <section class="op-section">
+        <h2>{group.label} 지원제도</h2>
+        <div class="wsb-card-grid">
+          {group.items.map((benefit) =>
+            benefit.relatedHref ? (
+              <a class="wsb-benefit-card wsb-benefit-card--link" href={withBase(benefit.relatedHref)}>
+                <strong>{benefit.name}</strong>
+                <p class="wsb-benefit-card__target">{benefit.target}</p>
+                <p class="wsb-benefit-card__amount">{benefit.amount}</p>
+                {benefit.note && <p class="wsb-benefit-card__note">{benefit.note}</p>}
+                <span class="wsb-benefit-card__cta">계산기에서 바로 확인 →</span>
+              </a>
+            ) : (
+              <article class="wsb-benefit-card">
+                <strong>{benefit.name}</strong>
+                <p class="wsb-benefit-card__target">{benefit.target}</p>
+                <p class="wsb-benefit-card__amount">{benefit.amount}</p>
+                {benefit.note && <p class="wsb-benefit-card__note">{benefit.note}</p>}
+              </article>
+            )
+          )}
+        </div>
+      </section>
+    ))}
+
+    <section class="op-section">
+      <h2>같이 보면 좋은 계산기와 리포트</h2>
+      <div class="wsb-related-grid">
+        {WSB_RELATED_LINKS.map((link) => (
+          <a class="wsb-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="대학생 지원금, 카테고리별로 이렇게 정리했습니다"
+      intro={WSB_SEO_INTRO}
+      criteria={WSB_SEO_CRITERIA}
+      faq={WSB_FAQ}
+      related={WSB_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

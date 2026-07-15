@@ -1,0 +1,154 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  WSC_META,
+  WSC_CALC_EXAMPLES,
+  WSC_MAX_INCOME,
+  WSC_INSIGHTS,
+  WSC_FAQ,
+  WSC_SEO_INTRO,
+  WSC_SEO_CRITERIA,
+  WSC_RELATED_LINKS,
+} from "../../data/workStudyVsPartTime2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${WSC_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: WSC_META.title,
+    description: WSC_META.seoDescription,
+    dateModified: WSC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: WSC_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: WSC_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={WSC_META.seoTitle} description={WSC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page wsc-page" data-report={WSC_META.slug}>
+    <CalculatorHero
+      eyebrow="국가근로 vs 알바 비교"
+      title={WSC_META.title}
+      description={WSC_META.description}
+    />
+
+    <InfoNotice
+      title="데이터 기준 안내 (중요)"
+      lines={[
+        WSC_META.dataNote,
+        "월 근로시간은 학교·기관마다 다르므로 이 표의 시간은 비교용 참고 시나리오입니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>시급 비교</h2>
+      <div class="wsc-wage-grid">
+        {WSC_CALC_EXAMPLES.map((p) => (
+          <article class="wsc-wage-card">
+            <span>{p.label}</span>
+            <strong>{won(p.hourlyWage)}</strong>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>월 예상수입 계산 예시 (막대 비교)</h2>
+      <div class="wsc-bar-list">
+        {WSC_CALC_EXAMPLES.map((p) => (
+          <div class="wsc-bar-row">
+            <span class="wsc-bar-row__label">{p.label}</span>
+            <div class="wsc-bar-row__track">
+              <div class="wsc-bar-row__fill" style={`width:${Math.max((p.monthlyIncome / WSC_MAX_INCOME) * 100, 4)}%`}></div>
+            </div>
+            <span class="wsc-bar-row__value">{won(p.monthlyIncome)}</span>
+          </div>
+        ))}
+      </div>
+      <p class="op-message">막대 길이는 참고 시나리오(국가근로 월 40시간, 알바 월 70시간·주휴수당 포함) 기준 예상 월수입입니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>조건 비교표</h2>
+      <div class="wsc-table-wrap">
+        <table class="wsc-table">
+          <thead>
+            <tr><th>유형</th><th>근무 장소</th><th>학업 병행</th><th>통근 비용</th><th>이용 가능 기간</th></tr>
+          </thead>
+          <tbody>
+            {WSC_CALC_EXAMPLES.map((p) => (
+              <tr>
+                <td><strong>{p.label}</strong></td>
+                <td>{p.location}</td>
+                <td>{p.studyCompat}</td>
+                <td>{p.commuteCost}</td>
+                <td>{p.durationLimit}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">근로시간 시나리오: {WSC_CALC_EXAMPLES.map((p) => `${p.label} — ${p.scenarioNote}`).join(" / ")}</p>
+    </section>
+
+    <section class="op-section">
+      <h2>표로는 안 보이는 패턴</h2>
+      <div class="wsc-insight-grid">
+        {WSC_INSIGHTS.map((insight) => (
+          <article class="wsc-insight-card">
+            <strong>{insight.title}</strong>
+            <p>{insight.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>같이 보면 좋은 계산기와 리포트</h2>
+      <div class="wsc-related-grid">
+        {WSC_RELATED_LINKS.map((link) => (
+          <a class="wsc-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="국가근로 vs 알바, 이렇게 비교하면 됩니다"
+      intro={WSC_SEO_INTRO}
+      criteria={WSC_SEO_CRITERIA}
+      faq={WSC_FAQ}
+      related={WSC_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>

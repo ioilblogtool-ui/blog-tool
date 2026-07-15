@@ -1,0 +1,214 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SLR_META,
+  SLR_FAQ,
+  SLR_SEO_CONTENT,
+  SLR_RELATED_LINKS,
+  SLR_DEFAULT_INPUT,
+  LOAN_INTEREST_RATE_2026,
+  REPAYMENT_THRESHOLD_INCOME_2026,
+} from "../../data/studentLoanRepaymentCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${SLR_META.slug}/`;
+const man = (value: number) => `${Math.round(value / 10000).toLocaleString("ko-KR")}만원`;
+
+const config = {
+  defaultInput: SLR_DEFAULT_INPUT,
+  interestRateDefault: LOAN_INTEREST_RATE_2026,
+  thresholdIncome: REPAYMENT_THRESHOLD_INCOME_2026,
+};
+---
+
+<BaseLayout
+  title={SLR_META.seoTitle}
+  description={SLR_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: SLR_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: SLR_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: SLR_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={SLR_META.slug} pageClass="slr-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="학자금대출 계산"
+        title={SLR_META.title}
+        description="대출 원금·거치기간·졸업 후 예상 연봉을 입력하면 소득연계 의무상환액과 균등분할 참고액을 함께 계산합니다."
+        badges={["학자금대출", "ICL", "2026", "취업 후 상환"]}
+      />
+      <InfoNotice
+        title="계산 전 확인 (중요)"
+        lines={[
+          SLR_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="slrResetBtn" copyId="slrCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel slr-input-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">대출 조건·예상 소득</h2>
+          </div>
+        </div>
+
+        <section class="slr-input-section">
+          <h3>과정</h3>
+          <div class="toggle-grid">
+            <label class="mode-chip">
+              <input type="radio" name="slrCourse" value="UNDERGRAD" checked />
+              <span>학부(20%)</span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="slrCourse" value="GRAD" />
+              <span>대학원(25%)</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="slr-input-section">
+          <h3>대출 원금·금리</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>대출 원금(등록금+생활비 합산)</span>
+              <input data-slr="principal" type="text" inputmode="numeric" class="input-number" value={config.defaultInput.principal.toLocaleString("ko-KR")} />
+            </label>
+            <div class="calc-slider-row">
+              <input type="range" id="slrPrincipalSlider" class="calc-slider" min="0" max="80000000" step="1000000" value={config.defaultInput.principal} />
+              <span id="slrPrincipalSliderVal" class="calc-slider-val">{man(config.defaultInput.principal)}</span>
+            </div>
+
+            <label class="field">
+              <span>대출 금리(%)</span>
+              <input data-slr="interestRate" type="text" inputmode="decimal" class="input-number" value={config.interestRateDefault} />
+              <small>기본값은 2026년 확정 금리 연 1.7%입니다.</small>
+            </label>
+          </div>
+        </section>
+
+        <section class="slr-input-section">
+          <h3>거치기간·상환기간</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>거치기간(년)</span>
+              <input data-slr="graceYears" type="text" inputmode="numeric" class="input-number" value={config.defaultInput.graceYears} />
+            </label>
+            <label class="field">
+              <span>상환기간(년, 균등분할 참고치용)</span>
+              <input data-slr="repayYears" type="text" inputmode="numeric" class="input-number" value={config.defaultInput.repayYears} />
+              <small>거치+상환 합계 최장 20년(학점은행제는 거치 최대 8년)입니다.</small>
+            </label>
+          </div>
+        </section>
+
+        <section class="slr-input-section">
+          <h3>졸업 후 예상 연봉</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>졸업 후 예상 연소득</span>
+              <input data-slr="expectedAnnualIncome" type="text" inputmode="numeric" class="input-number" value={config.defaultInput.expectedAnnualIncome.toLocaleString("ko-KR")} />
+              <small>2026년 상환기준소득은 연 {man(config.thresholdIncome)}입니다.</small>
+            </label>
+          </div>
+          <div class="calc-slider-row">
+            <input type="range" id="slrIncomeSlider" class="calc-slider" min="0" max="100000000" step="1000000" value={config.defaultInput.expectedAnnualIncome} />
+            <span id="slrIncomeSliderVal" class="calc-slider-val">{man(config.defaultInput.expectedAnnualIncome)}</span>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="slr-section slr-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과 1</p>
+        <h2>소득연계 의무상환액 (실제 제도)</h2>
+        <p>연소득이 상환기준소득을 넘는 만큼만 상환합니다.</p>
+      </div>
+      <div class="slr-kpi-grid">
+        <article class="slr-kpi"><span>거치기간 이자</span><strong data-slr-result="graceInterest">-</strong></article>
+        <article class="slr-kpi"><span>거치 후 대출잔액</span><strong data-slr-result="balanceAfterGrace">-</strong></article>
+        <article class="slr-kpi slr-kpi--accent"><span>연 의무상환액</span><strong data-slr-result="annualMandatoryRepay">-</strong></article>
+        <article class="slr-kpi slr-kpi--accent"><span>월 의무상환액</span><strong data-slr-result="monthlyMandatoryRepay">-</strong></article>
+      </div>
+      <p class="slr-summary" data-slr-result="mandatoryPayoffNote">연 의무상환액 기준 단순 완제 예상 기간을 계산 중입니다.</p>
+    </section>
+
+    <section class="slr-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과 2</p>
+        <h2>균등분할 상환 참고치 (실제 제도 아님)</h2>
+        <p>일반 대출처럼 매달 똑같은 금액을 갚는다고 가정한 비교용 수치입니다.</p>
+      </div>
+      <div class="slr-kpi-grid">
+        <article class="slr-kpi"><span>월 상환액(참고)</span><strong data-slr-result="monthlyEqualPayment">-</strong></article>
+        <article class="slr-kpi"><span>총 상환액(참고)</span><strong data-slr-result="totalEqualPaid">-</strong></article>
+        <article class="slr-kpi"><span>총 이자(참고)</span><strong data-slr-result="totalEqualInterest">-</strong></article>
+      </div>
+    </section>
+
+    <section class="slr-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>관련 계산기·리포트</h2>
+      </div>
+      <div class="slr-cta-grid">
+        {SLR_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="slr-cta-card">
+            <strong>{link.label}</strong>
+            <span>{link.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={SLR_SEO_CONTENT.introTitle}
+        intro={SLR_SEO_CONTENT.intro}
+        inputPoints={SLR_SEO_CONTENT.inputPoints}
+        criteria={SLR_SEO_CONTENT.criteria}
+        faq={SLR_FAQ}
+        related={SLR_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="slr-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/student-loan-repayment-calculator-2026.js")}></script>
+</BaseLayout>

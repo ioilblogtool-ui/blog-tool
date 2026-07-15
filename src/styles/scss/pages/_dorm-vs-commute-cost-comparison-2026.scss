@@ -1,0 +1,266 @@
+.dvc-page {
+  .dvc-section,
+  .dvc-input-panel {
+    border: 1px solid #dbe7e2;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  }
+
+  .dvc-section {
+    display: grid;
+    gap: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .dvc-input-panel {
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .dvc-input-section {
+    display: grid;
+    gap: 10px;
+    padding-top: 14px;
+    margin-top: 14px;
+    border-top: 1px solid #edf2ef;
+
+    &:first-child {
+      padding-top: 0;
+      margin-top: 0;
+      border-top: none;
+    }
+
+    h3 {
+      margin: 0;
+      color: #111827;
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+  }
+
+  .toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: 8px;
+  }
+
+  .mode-chip {
+    display: flex;
+
+    input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    span {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid #dbe7e2;
+      border-radius: 8px;
+      background: #f7fbfa;
+      color: #475569;
+    }
+
+    input:checked + span {
+      border-color: #0f766e;
+      background: #e8f6f2;
+      color: #0f766e;
+    }
+  }
+
+  .form-grid {
+    display: grid;
+    gap: 11px;
+
+    @media (min-width: 720px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+    color: #334155;
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .field input {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #cfdcd7;
+    border-radius: 8px;
+    padding: 10px 11px;
+    background: #fff;
+    color: #111827;
+    font: inherit;
+    font-weight: 700;
+  }
+
+  .field small {
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .dvc-note {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.76rem;
+    line-height: 1.5;
+  }
+
+  .dvc-compare-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+
+    @media (max-width: 760px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .dvc-compare-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid #dbe7e2;
+    border-radius: 8px;
+    background: #f8fbfa;
+
+    &__label {
+      margin: 0;
+      color: #64748b;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    &__total {
+      color: #111827;
+      font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    &__monthly {
+      color: #475569;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    &__commute {
+      margin: 4px 0 0;
+      color: #0f766e;
+      font-size: 0.76rem;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    &.is-lowest {
+      border-color: #0f766e;
+      background: #eef8f5;
+
+      .dvc-compare-card__total {
+        color: #0f766e;
+      }
+
+      &::after {
+        content: "최저 비용";
+        justify-self: start;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #0f766e;
+        color: #fff;
+        font-size: 0.68rem;
+        font-weight: 800;
+      }
+    }
+  }
+
+  .dvc-bar-list {
+    display: grid;
+    gap: 9px;
+  }
+
+  .dvc-breakdown-row {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.8fr) minmax(100px, 1.4fr) minmax(80px, auto);
+    gap: 10px;
+    align-items: center;
+    color: #334155;
+    font-size: 0.82rem;
+
+    span {
+      display: block;
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #edf2ef;
+    }
+
+    i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #14b8a6;
+    }
+
+    em {
+      color: #0f172a;
+      font-style: normal;
+      font-weight: 900;
+      text-align: right;
+    }
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr;
+
+      em {
+        text-align: left;
+      }
+    }
+  }
+
+  .dvc-cta-grid {
+    display: grid;
+    gap: 12px;
+
+    @media (min-width: 680px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .dvc-cta-card {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    border: 1px solid #dbe7e2;
+    border-radius: 8px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+
+    strong {
+      color: #111827;
+      font-size: 0.92rem;
+    }
+
+    span {
+      color: #64748b;
+      font-size: 0.78rem;
+    }
+
+    &:hover {
+      border-color: #0f766e;
+    }
+  }
+}

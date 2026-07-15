@@ -1353,4 +1353,25 @@ export const reports: ReportMeta[] = [
     order: 75.1,
     badges: ["신규", "SK하이닉스", "ADR", "SKHY", "비교"],
   },
+  {
+    slug: "university-tuition-ranking-2026",
+    title: "대학 등록금 순위 2026 | 국공립·사립 등록금 비교",
+    description: "2026학년도 설립유형별·계열별 평균 등록금과 등록금 상위 대학 예시, 최근 5년 인상·동결 현황을 한 번에 비교합니다.",
+    order: 76,
+    badges: ["신규", "대학 등록금", "2026"],
+  },
+  {
+    slug: "work-study-vs-part-time-comparison-2026",
+    title: "국가근로 vs 알바 2026 | 월 수입 얼마 차이날까",
+    description: "국가근로장학금과 편의점·카페 알바의 시급·월 근로 참고 시나리오·예상 월수입을 비교합니다.",
+    order: 76.1,
+    badges: ["신규", "국가근로", "알바", "2026"],
+  },
+  {
+    slug: "university-student-welfare-benefits-2026",
+    title: "대학생 지원금 총정리 2026 | 등록금·주거·취업 뭐 받을 수 있나",
+    description: "등록금·주거·취업준비 카테고리별로 대학생이 받을 수 있는 2026년 지원제도를 한 번에 정리합니다.",
+    order: 76.2,
+    badges: ["신규", "대학생 지원금", "2026"],
+  },
 ];
