@@ -1,10 +1,10 @@
 export const MW27_CURRENT = {
   year: 2027,
-  hourly: 12000,       // 노동계 요구안 (확정 후 교체)
-  prevHourly: 10030,   // 2026 시급
-  announced: false,    // 발표 후 true로 변경
-  announcedDate: "",
-  laborRequest: 12000, // 노동계 요구안
+  hourly: 10700,       // 2027년 확정 최저임금
+  prevHourly: 10320,   // 2026 시급
+  announced: true,
+  announcedDate: "2026-07-16",
+  laborRequest: 12000, // 노동계 최초 요구안 (참고용, 확정치 아님)
 };
 
 export const MW27_HISTORY = [
@@ -14,8 +14,8 @@ export const MW27_HISTORY = [
   { year: 2023, hourly: 9620,  changeRate: 5.0 },
   { year: 2024, hourly: 9860,  changeRate: 2.5 },
   { year: 2025, hourly: 10030, changeRate: 1.7 },
-  { year: 2026, hourly: 10030, changeRate: 0.0 },
-  { year: 2027, hourly: 10030, changeRate: 0.0 }, // 발표 후 업데이트
+  { year: 2026, hourly: 10320, changeRate: 2.9 },
+  { year: 2027, hourly: 10700, changeRate: 3.7 },
 ];
 
 // OECD 주요국 최저임금 (달러 환산 / PPP 환산 / 빅맥 현지가격 USD)
@@ -53,15 +53,15 @@ export const MW27_DEFAULTS = {
 export const MW27_META = {
   slug: "minimum-wage-2027",
   title: "2027 최저임금 계산기 | 세후 월급 + 세계 최저임금 순위 비교",
-  description: "2027년 최저임금 시급으로 세후 월급 바로 계산. OECD 국가별 최저임금 순위와 빅맥으로 보는 구매력 비교 포함.",
-  updatedAt: "2026-06-18",
+  description: "2027년 확정 최저임금 시급 10,700원 기준 세후 월급 바로 계산. OECD 국가별 최저임금 순위와 빅맥으로 보는 구매력 비교 포함.",
+  updatedAt: "2026-07-16",
   caution: "글로벌 데이터는 OECD·이코노미스트 빅맥지수 기준 추정값입니다. 환율·물가에 따라 달라질 수 있습니다.",
 };
 
 export const MW27_FAQ = [
   {
-    question: "2027 최저임금은 언제 발표되나요?",
-    answer: "최저임금위원회가 매년 6~7월 심의를 거쳐 8월 5일 이전 고시합니다. 2027년 적용 최저임금은 2026년 7월 중 발표 예정입니다. 발표 즉시 이 계산기에 반영됩니다.",
+    question: "2027 최저임금은 얼마로 확정됐나요?",
+    answer: "2027년 적용 최저임금은 시간당 10,700원으로 확정됐습니다. 2026년 시급 10,320원 대비 3.7% 인상된 금액입니다. 주 40시간·유급주휴 포함 월 209시간 기준 월 환산액은 2,236,300원입니다.",
   },
   {
     question: "주휴수당은 어떤 경우에 받나요?",
