@@ -1,0 +1,300 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PSC_META,
+  PSC_UNIVERSITY_TYPES,
+  PSC_RANKS,
+  PSC_RANK_YEARS,
+  PSC_PRESETS,
+  PSC_FAQ,
+  PSC_RELATED_LINKS,
+  PSC_SEO_CONTENT,
+  PSC_DEFAULT_INPUT,
+  PSC_CLIENT_CONFIG,
+  RESEARCH_INCOME,
+  getRankBand,
+} from "../../data/professorSalaryCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${PSC_META.slug}/`;
+
+const man = (value: number) => `${Math.round(value / 10_000).toLocaleString("ko-KR")}만 원`;
+
+// SSR 초기 비교표 (기본 입력값 = 국립대 조교수 기준 4개 유형)
+const initialCompareRows = PSC_UNIVERSITY_TYPES.map((t) => ({
+  ...t,
+  band: getRankBand(t.id, PSC_DEFAULT_INPUT.rank),
+}));
+
+const faqSchema = PSC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={PSC_META.seoTitle}
+  description={PSC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: PSC_META.title,
+      applicationCategory: "UtilityApplication",
+      operatingSystem: "All",
+      description: PSC_META.seoDescription,
+      url: pageUrl,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={PSC_META.slug} pageClass="psc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="교수 연봉"
+        title="대학교수 연봉 계산기 2026"
+        description="대학유형·직급·연차를 입력하면 예상 연봉 범위를 바로 계산합니다. 시간강사 강의료도 별도로 확인할 수 있습니다."
+        badges={["국립대", "사립대", "시간강사", "2026"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          PSC_META.dataNote,
+          "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="pscResetBtn" copyId="pscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 입력</p>
+            <h2 class="panel__title">자주 찾는 케이스</h2>
+          </div>
+          <p class="panel-heading__summary">대표 케이스를 먼저 선택한 뒤 대학유형·직급·연차를 조정하세요.</p>
+        </div>
+        <div class="psc-preset-grid">
+          {PSC_PRESETS.map((preset, index) => (
+            <button type="button" class={`psc-preset-btn${index === 0 ? " is-active" : ""}`} data-psc-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">전임교원 · 시간강사</h2>
+          </div>
+          <p class="panel-heading__summary">근무 형태에 따라 아래 입력 항목이 달라집니다.</p>
+        </div>
+
+        <div class="toggle-grid psc-mode-toggle" role="group" aria-label="근무 형태 선택">
+          <label class="mode-chip" id="pscModeFulltimeChip">
+            <input type="radio" name="pscMode" value="fulltime" checked />
+            <span>전임교원</span>
+          </label>
+          <label class="mode-chip" id="pscModeAdjunctChip">
+            <input type="radio" name="pscMode" value="adjunct" />
+            <span>시간강사</span>
+          </label>
+        </div>
+
+        <section class="psc-input-section" id="pscFulltimeFields">
+          <h3>대학 유형</h3>
+          <div class="toggle-grid psc-type-toggle" role="group" aria-label="대학 유형 선택">
+            {PSC_UNIVERSITY_TYPES.map((type, index) => (
+              <label class="mode-chip" data-psc-type-chip={type.id}>
+                <input type="radio" name="pscTypeId" value={type.id} checked={index === 0} />
+                <span>{type.label}</span>
+              </label>
+            ))}
+          </div>
+
+          <h3>직급</h3>
+          <div class="toggle-grid psc-rank-toggle" role="group" aria-label="직급 선택">
+            {PSC_RANKS.map((rank, index) => (
+              <label class="mode-chip" data-psc-rank-chip={rank}>
+                <input type="radio" name="pscRank" value={rank} checked={index === 0} />
+                <span>{rank}</span>
+              </label>
+            ))}
+          </div>
+
+          <label class="field" id="pscYearsField">
+            <span>근속 연차</span>
+            <input id="pscYearsInput" type="number" inputmode="numeric" class="input-number" value={PSC_DEFAULT_INPUT.years} />
+            <div class="calc-slider-row">
+              <input type="range" id="pscYearsSlider" class="calc-slider" min="1" max="6" step="1" value={PSC_DEFAULT_INPUT.years} />
+              <span id="pscYearsSliderVal" class="calc-slider-val">{PSC_DEFAULT_INPUT.years}년차</span>
+            </div>
+            <small>직급의 연차 구간 안에서 밴드 내 상대적 위치를 계산합니다.</small>
+          </label>
+
+          <p class="psc-distinguished-note is-hidden" id="pscDistinguishedNote">
+            석좌교수는 연차에 따라 자동 승진하는 자리가 아니라 대학의 개별 협상으로 영입되는 별도 계약직이라 연차를 입력하지 않고 밴드 중간값을 보여줍니다.
+          </p>
+        </section>
+
+        <section class="psc-input-section is-hidden" id="pscAdjunctFields">
+          <h3>시간강사 강의료 입력</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>학점당 단가</span>
+              <input id="pscPerCreditInput" type="text" inputmode="numeric" class="input-number" value={PSC_DEFAULT_INPUT.perCredit.toLocaleString("ko-KR")} />
+              <small>기본값은 리포트 기준 학점당 65만 원입니다.</small>
+            </label>
+            <label class="field">
+              <span>학기당 강의 학점수</span>
+              <input id="pscCreditsInput" type="number" inputmode="numeric" class="input-number" value={PSC_DEFAULT_INPUT.creditsPerSemester} />
+              <div class="calc-slider-row">
+                <input type="range" id="pscCreditsSlider" class="calc-slider" min="1" max="9" step="1" value={PSC_DEFAULT_INPUT.creditsPerSemester} />
+                <span id="pscCreditsSliderVal" class="calc-slider-val">{PSC_DEFAULT_INPUT.creditsPerSemester}학점</span>
+              </div>
+            </label>
+          </div>
+          <div class="toggle-grid psc-semester-toggle" role="group" aria-label="연간 학기 수 선택">
+            <label class="mode-chip">
+              <input type="radio" name="pscSemesters" value="1" />
+              <span>1학기만</span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="pscSemesters" value="2" checked />
+              <span>2학기 (연중)</span>
+            </label>
+          </div>
+        </section>
+      </article>
+    </Fragment>
+
+    <section class="psc-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2 id="pscResultTitle">예상 연봉</h2>
+        <p id="pscResultSubtitle">대학유형·직급·연차를 바꾸면 즉시 다시 계산됩니다.</p>
+      </div>
+      <div class="psc-kpi-grid">
+        <article class="psc-kpi psc-kpi--main">
+          <span id="pscMainLabel">예상 연봉 (포인트 추정)</span>
+          <strong id="pscMainValue">-</strong>
+          <small>추정</small>
+        </article>
+        <article class="psc-kpi" id="pscBandCard">
+          <span>밴드 범위</span>
+          <strong id="pscBandValue">-</strong>
+          <small id="pscSourceKindBadge">-</small>
+        </article>
+      </div>
+
+      <div class="psc-gauge" id="pscGaugeWrap" aria-hidden="true">
+        <span class="psc-gauge__bar"><i data-psc-gauge-fill></i></span>
+        <div class="psc-gauge__labels"><span>최솟값</span><span>최댓값</span></div>
+      </div>
+    </section>
+
+    <section class="psc-section" id="pscCompareSection">
+      <div class="section-header">
+        <p class="section-header__eyebrow">대학유형 비교</p>
+        <h2>같은 직급, 4개 대학유형 비교</h2>
+        <p>국립대·사립상위권은 공시 기반, 사립중위권·지방사립은 추정 보간값입니다.</p>
+      </div>
+      <div class="psc-table-wrap">
+        <table class="psc-compare-table">
+          <thead>
+            <tr>
+              <th>대학 유형</th>
+              <th>연봉 범위 (추정)</th>
+              <th>근거</th>
+            </tr>
+          </thead>
+          <tbody id="pscCompareRows">
+            {initialCompareRows.map((row) => (
+              <tr data-psc-compare-row={row.id}>
+                <td><strong>{row.label}</strong></td>
+                <td>{man(row.band.min)} ~ {man(row.band.max)}</td>
+                <td>
+                  <span class={`psc-badge ${row.sourceKind === "공시 기반" ? "psc-badge--official" : "psc-badge--estimated"}`}>
+                    {row.sourceKind}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="psc-section" id="pscResearchSection">
+      <div class="section-header">
+        <p class="section-header__eyebrow">참고 자료</p>
+        <h2>연구비 등 기본급 외 추가 수입</h2>
+        <p>개인별 편차가 매우 커서 위 계산에는 반영하지 않은 참고용 데이터입니다.</p>
+      </div>
+      <div class="psc-research-grid">
+        {RESEARCH_INCOME.map((r) => (
+          <article class="psc-research-card">
+            <p class="psc-research-card__source">{r.source}</p>
+            <p class="psc-research-card__amount">{r.amount}</p>
+            <p class="psc-research-card__cond">{r.condition}</p>
+            <span class="psc-research-card__freq">{r.frequency}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="psc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">다음 확인</p>
+        <h2>같이 보면 좋은 계산기·리포트</h2>
+      </div>
+      <div class="psc-action-grid">
+        {PSC_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)} class="psc-action-card">
+            <strong>{link.label}</strong>
+            {link.description && <span>{link.description}</span>}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={PSC_SEO_CONTENT.introTitle}
+        intro={PSC_SEO_CONTENT.intro}
+        inputPoints={PSC_SEO_CONTENT.inputPoints}
+        criteria={PSC_SEO_CONTENT.criteria}
+        faq={PSC_FAQ}
+        related={PSC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="psc-data" type="application/json" set:html={JSON.stringify(PSC_CLIENT_CONFIG)} />
+  <script type="module" src={withBase("/scripts/professor-salary-calculator-2026.js")}></script>
+</BaseLayout>

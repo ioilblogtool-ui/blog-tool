@@ -303,6 +303,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "professor-salary-calculator-2026",
+    title: "대학교수 연봉 계산기 2026",
+    description: "대학 유형(국립·사립상위·사립중위·지방사립)과 직급·연차를 입력하면 2026년 예상 연봉 범위를 계산하는 페이지",
+    order: 1.71,
+    eyebrow: "교수 연봉",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "교수", "연봉"],
+    previewStats: [
+      { label: "국립대 조교수", value: "5,800만~" },
+      { label: "사립상위 정교수", value: "~1억6,000만" }
+    ]
+  },
+  {
     slug: "bonus-after-tax-calculator",
     title: "성과급 세후 실수령액 계산기",
     description: "성과급 총액과 연봉을 입력해 소득세, 지방소득세, 4대보험을 뺀 통장 입금액을 간이 추정하는 계산기",
@@ -417,14 +431,14 @@ export const tools: ToolMeta[] = [
   {
     slug: "minimum-wage-2027",
     title: "2027 최저임금 계산기",
-    description: "2027년 최저임금 시급으로 세후 월급 계산. OECD 국가별 순위와 빅맥으로 보는 구매력 비교 포함.",
+    description: "2027년 확정 최저임금 시급 10,700원으로 세후 월급 계산. OECD 국가별 순위와 빅맥으로 보는 구매력 비교 포함.",
     order: 4.1,
     eyebrow: "최저임금",
     category: "calculator",
     iframeReady: false,
     badges: ["NEW", "2027", "글로벌비교"],
     previewStats: [
-      { label: "2027 시급", value: "발표예정" },
+      { label: "2027 시급", value: "10,700원" },
       { label: "OECD 순위", value: "PPP 15위" }
     ]
   },
