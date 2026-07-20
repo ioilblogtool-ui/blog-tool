@@ -1,0 +1,442 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import OwnershipTree from "../../components/OwnershipTree.astro";
+import {
+  LS_META,
+  LS_TREE_NODES,
+  LS_OWNERSHIP_FACTS,
+  LS_FAQ,
+  LS_SEO_INTRO,
+  LS_SEO_CRITERIA,
+  LS_KPI_CARDS,
+  LS_AXIS_COMPARISON,
+  LS_COSIN_MANAGEMENT_COMPARISON,
+  LS_CABLE_STRUCTURE,
+  LS_THREE_STOCK_COMPARISON,
+  LS_POWER_VALUE_CHAIN,
+  LS_E1_AXIS_POINTS,
+  LS_INVENI_AXIS_POINTS,
+  LS_NAV_FORMULA_ROWS,
+  LS_CABLE_VALUATION_ROWS,
+  LS_LISTED_DETAIL_ROWS,
+  LS_GROUP_COMPARISON,
+} from "../../data/lsGroupOwnership2026";
+import type { SourceConfidence } from "../../data/groupOwnershipTypes";
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/ls-group-ownership-2026/`;
+
+const title = "LS그룹 지분구조 2026 완전 정리 | 사촌경영·LS전선·전력망 구조";
+const description =
+  "㈜LS·E1·인베니 병렬형 사촌경영부터 비상장 LS전선, LS ELECTRIC, 해저케이블·전력망 밸류체인까지 정리.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": pageUrl,
+  url: pageUrl,
+  headline: title,
+  description,
+  inLanguage: "ko-KR",
+  datePublished: LS_META.updatedAt,
+  dateModified: LS_META.updatedAt,
+};
+
+function confidenceLabel(c: SourceConfidence): string {
+  if (c === "HIGH") return "높음";
+  if (c === "MEDIUM") return "중간";
+  return "낮음";
+}
+function confidenceClass(c: SourceConfidence): string {
+  if (c === "HIGH") return "high";
+  if (c === "MEDIUM") return "medium";
+  return "low";
+}
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell lso-page">
+
+    <CalculatorHero
+      eyebrow="LS그룹"
+      title="LS그룹 지분구조 2026 완전 정리"
+      description="㈜LS·E1·인베니 병렬형 사촌경영과 비상장 LS전선·전력망 밸류체인까지 함께 정리했습니다."
+    />
+
+    <InfoNotice
+      title="데이터 안내"
+      lines={[
+        LS_META.dataSourceNotice,
+        `계열사·상장사 수 기준일: ${LS_META.affiliateCountBaseDate} (공정거래위원회 지정)`,
+        `콘텐츠 업데이트: ${LS_META.updatedAt}`,
+      ]}
+    />
+
+    <!-- 섹션 1: 지주회사 체제인가 -->
+    <section class="content-section lso-holding-note" aria-labelledby="holding-title">
+      <h2 id="holding-title">LS는 지주회사 체제인가?</h2>
+      <p>{LS_META.holdingCompanyNote}</p>
+    </section>
+
+    <section class="content-section" aria-labelledby="kpi-title">
+      <h2 id="kpi-title">LS 지배구조 핵심 KPI</h2>
+      <div class="lso-kpi-grid">
+        {
+          LS_KPI_CARDS.map((card) => (
+            <article class="lso-kpi-card">
+              <span>{card.label}</span>
+              <strong>{card.value}</strong>
+              <p>{card.note}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="lso-small-note">위 평가는 비교계산소가 공개 지분관계를 기준으로 분류한 참고 지표입니다.</p>
+    </section>
+
+    <!-- 섹션 1-2: 왜 3개 지주사인가? (LS그룹 전용 섹션) -->
+    <section class="content-section lso-cousin-note" aria-labelledby="cousin-title">
+      <h2 id="cousin-title">LS그룹은 왜 3개의 독립 경영축으로 나뉘어 있나?</h2>
+      <p>
+        LS그룹은 구태회·구평회·구두회 3형제의 후손들이 각자 다른 지주회사를 나눠 맡는 "사촌경영"으로 잘 알려져
+        있습니다. ㈜LS·E1·인베니는 동일한 상하 지배관계로 연결된 단일 지주회사 체계가 아니라, 각각 별도의
+        사업축과 주주구조를 가진 병렬형 구조로 이해하는 것이 적절합니다.
+      </p>
+      <div class="lso-cousin-grid">
+        <article>
+          <h3>㈜LS</h3>
+          <p>구자열 외 특수관계인 중심. LS일렉트릭·LS전선 등 전력·전선 계열을 지배합니다.</p>
+        </article>
+        <article>
+          <h3>E1</h3>
+          <p>구자열·구자용(E1 회장) 중심. 가스·에너지 유통 계열을 담당합니다.</p>
+        </article>
+        <article>
+          <h3>인베니 (구 예스코홀딩스)</h3>
+          <p>구자은 회장(LS그룹 현 총수) 계열. 도시가스 자회사 예스코를 보유한 투자형 지주회사입니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="cousin-compare-title">
+      <h2 id="cousin-compare-title">일반 지주회사 그룹과 사촌경영의 차이</h2>
+      <table class="lso-fact-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>일반적인 지주회사 그룹</th>
+            <th>LS그룹</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LS_COSIN_MANAGEMENT_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.common}</td>
+                <td>{row.ls}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="axis-title">
+      <h2 id="axis-title">㈜LS·E1·인베니 3개 경영축 비교</h2>
+      <table class="lso-fact-table">
+        <thead>
+          <tr>
+            <th>축</th>
+            <th>핵심 산업</th>
+            <th>대표 상장사</th>
+            <th>핵심 비상장사</th>
+            <th>투자 해석</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LS_AXIS_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.axis}</td>
+                <td>{row.industry}</td>
+                <td>{row.listed}</td>
+                <td>{row.unlisted}</td>
+                <td>{row.relation}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 2: 지분 연결도 -->
+    <section class="content-section" aria-labelledby="tree-title">
+      <h2 id="tree-title">지분 연결도 (3개 병렬 축)</h2>
+      <OwnershipTree nodes={LS_TREE_NODES} ariaLabel="LS그룹 지분 연결도" />
+      <p class="lso-tree-note">
+        나란히 보이는 3그루의 나무는 단일 상하 지배구조가 아닙니다. ㈜LS가 E1·인베니를 일반적인 자회사처럼
+        지배하는 것이 아니라, 각각 별도 사업축과 주주구조를 가진 병렬 구조입니다.
+      </p>
+    </section>
+
+    <section class="content-section" aria-labelledby="cable-title">
+      <h2 id="cable-title">㈜LS 아래 비상장 LS전선 구조</h2>
+      <p class="lso-section-lead">
+        ㈜LS 주식을 보는 투자자는 실제로 LS전선과 그 아래 상장 계열사 가치에 관심이 큽니다. LS전선은 비상장회사라 직접 시가총액이 없고,
+        대신 일부 자회사·관계회사들이 별도로 상장돼 있습니다.
+      </p>
+      <div class="lso-flow-card">
+        <span>㈜LS</span>
+        <b>→</b>
+        <span>LS전선 비상장</span>
+        <b>→</b>
+        <span>가온전선·LS에코에너지·LS마린솔루션</span>
+      </div>
+      <table class="lso-fact-table">
+        <thead>
+          <tr>
+            <th>회사</th>
+            <th>역할</th>
+            <th>투자 노출</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LS_CABLE_STRUCTURE.map((row) => (
+              <tr>
+                <td>{row.company}</td>
+                <td>{row.role}</td>
+                <td>{row.exposure}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="stock-compare-title">
+      <h2 id="stock-compare-title">㈜LS·LS전선·LS ELECTRIC 차이</h2>
+      <table class="lso-fact-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>㈜LS</th>
+            <th>LS전선</th>
+            <th>LS ELECTRIC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LS_THREE_STOCK_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.item}</td>
+                <td>{row.ls}</td>
+                <td>{row.cable}</td>
+                <td>{row.electric}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="value-chain-title">
+      <h2 id="value-chain-title">전력망·해저케이블 밸류체인</h2>
+      <div class="lso-value-chain">
+        {
+          LS_POWER_VALUE_CHAIN.map((row) => (
+            <article>
+              <span>{row.stage}</span>
+              <strong>{row.companies}</strong>
+              <p>{row.role}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 섹션 3: 오너·핵심 연결 표 -->
+    <section class="content-section" aria-labelledby="facts-title">
+      <h2 id="facts-title">오너 및 핵심 지분 연결</h2>
+      <table class="lso-fact-table">
+        <thead>
+          <tr>
+            <th>연결</th>
+            <th>지분율</th>
+            <th>기준일</th>
+            <th>출처</th>
+            <th>신뢰도</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LS_OWNERSHIP_FACTS.map((f) => (
+              <tr>
+                <td>{f.label}</td>
+                <td>{f.ratePercent}%</td>
+                <td>{f.baseDate}</td>
+                <td><a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">{f.sourceLabel}</a></td>
+                <td>
+                  <span class={`lso-confidence-badge lso-confidence-badge--${confidenceClass(f.confidence)}`}>
+                    {confidenceLabel(f.confidence)}
+                  </span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="e1-title">
+      <h2 id="e1-title">E1 축은 무엇을 보나?</h2>
+      <table class="lso-fact-table lso-compact-table">
+        <tbody>
+          {
+            LS_E1_AXIS_POINTS.map((row) => (
+              <tr>
+                <th>{row.item}</th>
+                <td>{row.value}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="lso-small-note">E1은 LS 기업집단 소속이지만 ㈜LS가 지배하는 자회사는 아닙니다.</p>
+    </section>
+
+    <section class="content-section" aria-labelledby="inveni-title">
+      <h2 id="inveni-title">인베니 축은 무엇을 보나?</h2>
+      <table class="lso-fact-table lso-compact-table">
+        <tbody>
+          {
+            LS_INVENI_AXIS_POINTS.map((row) => (
+              <tr>
+                <th>{row.item}</th>
+                <td>{row.value}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="valuation-title">
+      <h2 id="valuation-title">비상장 LS전선 가치와 ㈜LS NAV는 어떻게 보나?</h2>
+      <div class="lso-formula-grid">
+        <article>
+          <h3>LS전선 가치 추정</h3>
+          {LS_CABLE_VALUATION_ROWS.map((row) => <p>{row}</p>)}
+        </article>
+        <article>
+          <h3>㈜LS 추정 NAV</h3>
+          {LS_NAV_FORMULA_ROWS.map((row) => <p>{row}</p>)}
+        </article>
+      </div>
+      <p class="lso-small-note">
+        비교기업 배수와 비상장 할인율을 사용하는 가정형 시뮬레이션이며, 실제 기업가치나 IPO 공모가를 의미하지 않습니다.
+      </p>
+    </section>
+
+    <!-- 섹션 4: 상장 계열사 목록 -->
+    <section class="content-section" aria-labelledby="listed-title">
+      <h2 id="listed-title">상장 계열사 전체 목록 ({LS_META.listedAffiliateCount}개)</h2>
+      <table class="lso-listed-table">
+        <thead>
+          <tr>
+            <th>회사명</th>
+            <th>종목코드</th>
+            <th>소속 경영축</th>
+            <th>핵심 사업</th>
+            <th>상위 지분 연결</th>
+            <th>투자 노출</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LS_LISTED_DETAIL_ROWS.map((c) => (
+              <tr>
+                <td>{c.name}</td>
+                <td>{c.code}</td>
+                <td>{c.axis}</td>
+                <td>{c.business}</td>
+                <td>{c.parent}</td>
+                <td>{c.exposure}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="compare-title">
+      <h2 id="compare-title">다른 그룹과 비교</h2>
+      <table class="lso-fact-table">
+        <thead>
+          <tr>
+            <th>그룹</th>
+            <th>최상위 구조</th>
+            <th>가족경영 특징</th>
+            <th>투자 핵심</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LS_GROUP_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.group}</td>
+                <td>{row.structure}</td>
+                <td>{row.family}</td>
+                <td>{row.issue}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 5: CTA -->
+    <section class="content-section" aria-labelledby="cta-title">
+      <h2 id="cta-title">이어서 확인하면 좋은 콘텐츠</h2>
+      <div class="lso-cta-group">
+        <a href="/reports/samsung-group-ownership-2026/">삼성그룹 지분구조 →</a>
+        <a href="/reports/sk-group-ownership-2026/">SK그룹 지분구조 →</a>
+        <a href="/reports/hyundai-motor-group-ownership-2026/">현대차그룹 지분구조 →</a>
+        <a href="/reports/lg-group-ownership-2026/">LG그룹 지분구조 →</a>
+        <a href="/reports/hanwha-group-ownership-2026/">한화그룹 지분구조 →</a>
+        <a href="/reports/lotte-group-ownership-2026/">롯데그룹 지분구조 →</a>
+        <a href="/reports/hd-hyundai-group-ownership-2026/">HD현대그룹 지분구조 →</a>
+        <a href="/reports/doosan-group-ownership-2026/">두산그룹 지분구조 →</a>
+        <a href="/reports/group-ownership-hub-2026/">9개 그룹 비교 허브 →</a>
+        <a href="/tools/">계산기 전체 보기 →</a>
+        <a href="/reports/">리포트 전체 보기 →</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="LS그룹 지분구조, 지주사가 3개인 이유"
+      intro={LS_SEO_INTRO}
+      criteria={LS_SEO_CRITERIA}
+      faq={LS_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/reports/samsung-group-ownership-2026/", label: "삼성그룹 지분구조 2026" },
+        { href: "/reports/sk-group-ownership-2026/", label: "SK그룹 지분구조 2026" },
+        { href: "/reports/hyundai-motor-group-ownership-2026/", label: "현대차그룹 지분구조 2026" },
+        { href: "/reports/lg-group-ownership-2026/", label: "LG그룹 지분구조 2026" },
+        { href: "/reports/hanwha-group-ownership-2026/", label: "한화그룹 지분구조 2026" },
+        { href: "/reports/lotte-group-ownership-2026/", label: "롯데그룹 지분구조 2026" },
+        { href: "/reports/hd-hyundai-group-ownership-2026/", label: "HD현대그룹 지분구조 2026" },
+        { href: "/reports/doosan-group-ownership-2026/", label: "두산그룹 지분구조 2026" },
+        { href: "/reports/group-ownership-hub-2026/", label: "9개 그룹 지분구조 비교 허브" },
+        { href: "/reports/", label: "리포트 전체 보기" },
+        { href: "/tools/", label: "계산기 전체 보기" },
+      ]}
+    />
+  </main>
+</BaseLayout>

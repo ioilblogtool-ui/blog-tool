@@ -1,0 +1,466 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import OwnershipTree from "../../components/OwnershipTree.astro";
+import {
+  HMO_META,
+  HMO_TREE_NODES,
+  HMO_OWNERSHIP_FACTS,
+  HMO_KPI_CARDS,
+  HMO_CIRCULAR_CONNECTIONS,
+  HMO_CORE_COMPANY_ROLES,
+  HMO_CONTROL_INTERPRETATION,
+  HMO_UNWINDING_BARRIERS,
+  HMO_RESTRUCTURING_SCENARIOS,
+  HMO_INVESTOR_IMPACT,
+  HMO_BUSINESS_ECOSYSTEM,
+  HMO_LISTED_DETAIL_ROWS,
+  HMO_STRUCTURE_TIMELINE,
+  HMO_GROUP_COMPARISON,
+  HMO_LISTED_AFFILIATES,
+  HMO_FAQ,
+  HMO_SEO_INTRO,
+  HMO_SEO_CRITERIA,
+} from "../../data/hyundaiMotorGroupOwnership2026";
+import type { SourceConfidence } from "../../data/groupOwnershipTypes";
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/hyundai-motor-group-ownership-2026/`;
+
+const title = "현대차그룹 지분구조 2026 완전 정리 | 현대모비스·현대차·기아 순환출자";
+const description =
+  "정의선 회장 지분부터 현대모비스→현대차→기아로 돌아오는 순환출자 고리까지 정리. 4대그룹 중 유일하게 남은 구조입니다.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": pageUrl,
+  url: pageUrl,
+  headline: title,
+  description,
+  inLanguage: "ko-KR",
+  datePublished: HMO_META.updatedAt,
+  dateModified: HMO_META.updatedAt,
+};
+
+function confidenceLabel(c: SourceConfidence): string {
+  if (c === "HIGH") return "높음";
+  if (c === "MEDIUM") return "중간";
+  return "낮음";
+}
+function confidenceClass(c: SourceConfidence): string {
+  if (c === "HIGH") return "high";
+  if (c === "MEDIUM") return "medium";
+  return "low";
+}
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell hmo-page">
+
+    <CalculatorHero
+      eyebrow="현대차그룹"
+      title="현대차그룹 지분구조 2026 완전 정리"
+      description="현대모비스·현대차·기아로 이어지는 순환출자 고리와 상장 계열사를 정리했습니다."
+    />
+
+    <InfoNotice
+      title="데이터 안내"
+      lines={[
+        HMO_META.dataSourceNotice,
+        `계열사·상장사 수 기준일: ${HMO_META.affiliateCountBaseDate} (공정거래위원회 지정)`,
+        `콘텐츠 업데이트: ${HMO_META.updatedAt}`,
+      ]}
+    />
+
+    <section class="content-section" aria-labelledby="kpi-title">
+      <h2 id="kpi-title">핵심 숫자 먼저 보기</h2>
+      <div class="hmo-kpi-grid">
+        {
+          HMO_KPI_CARDS.map((item) => (
+            <article class={`hmo-kpi-card hmo-kpi-card--${item.tone}`}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <p>{item.note}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="hmo-small-note">핵심 순환 고리와 순환출자 상태는 비교계산소 자체 분류이며 공식 지표가 아닙니다.</p>
+    </section>
+
+    <!-- 섹션 1: 지주회사 체제인가 -->
+    <section class="content-section hmo-holding-note" aria-labelledby="holding-title">
+      <h2 id="holding-title">현대차그룹은 지주회사 체제인가?</h2>
+      <p>{HMO_META.holdingCompanyNote}</p>
+    </section>
+
+    <!-- 섹션 1-2: 순환출자란? (현대차그룹 전용 섹션) -->
+    <section class="content-section hmo-circular-note" aria-labelledby="circular-title">
+      <h2 id="circular-title">순환출자란?</h2>
+      <p>
+        A사가 B사 지분을, B사가 C사 지분을, C사가 다시 A사 지분을 보유해 지분이 원을 그리며 돌아오는 구조입니다.
+        현대차그룹은 현대모비스→현대차→기아→현대모비스로 이어지며, 적은 지분으로도 순환 전체에 지배력을 행사할 수
+        있다는 점이 특징이자 오랜 규제 이슈였습니다. 4대그룹 중 이 구조가 남아있는 곳은 현대차그룹이 유일합니다.
+      </p>
+    </section>
+
+    <!-- 섹션 2: 지분 연결도 -->
+    <section class="content-section" aria-labelledby="tree-title">
+      <h2 id="tree-title">지분 연결도</h2>
+      <OwnershipTree nodes={HMO_TREE_NODES} ariaLabel="현대차그룹 지분 연결도" />
+      <p class="hmo-tree-note">
+        가장 비중이 큰 상위 지분(주 연결선)만 표시했습니다. 순환출자 고리를 닫는 마지막 간선(기아→현대모비스)은
+        그래프가 순환하지 않도록 화살표로 그리지 않고 "🔁 순환출자 있음" 표시와 아래 설명으로 대체했습니다.
+      </p>
+    </section>
+
+    <section class="content-section" aria-labelledby="circular-calc-title">
+      <h2 id="circular-calc-title">순환 고리 단순 연결값 계산</h2>
+      <div class="hmo-flow" aria-label="현대차그룹 핵심 순환출자 고리">
+        <span>현대모비스</span>
+        <span>현대자동차</span>
+        <span>기아</span>
+        <span>현대모비스</span>
+      </div>
+      <div class="hmo-formula-card">
+        <p class="hmo-formula-card__eyebrow">단순 연결 계산</p>
+        <strong>21.43% × 35.17% × 18.10% = 약 1.36%</strong>
+        <p>
+          순환 연결값은 세 회사가 서로 이어지는 지분 경로를 이해하기 위한 단순 계산값입니다.
+          특정 주주의 직접 지분, 법적 의결권 또는 실질 지배력 수치를 의미하지 않습니다.
+        </p>
+      </div>
+      <table class="hmo-fact-table">
+        <thead>
+          <tr>
+            <th>단계</th>
+            <th>지분 연결</th>
+            <th>지분율</th>
+            <th>해석</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HMO_CIRCULAR_CONNECTIONS.map((row) => (
+              <tr>
+                <td>{row.step}</td>
+                <td>{row.label}</td>
+                <td>{row.rate}</td>
+                <td>{row.description}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="roles-title">
+      <h2 id="roles-title">현대모비스·현대차·기아는 각각 무슨 역할인가</h2>
+      <table class="hmo-role-table">
+        <thead>
+          <tr>
+            <th>회사</th>
+            <th>주요 역할</th>
+            <th>지배구조 위치</th>
+            <th>투자자가 보는 포인트</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HMO_CORE_COMPANY_ROLES.map((row) => (
+              <tr>
+                <td>{row.company}</td>
+                <td>{row.role}</td>
+                <td>{row.position}</td>
+                <td>{row.investorPoint}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="control-title">
+      <h2 id="control-title">정의선 회장의 직접 지분이 낮아도 지배력이 유지되는 이유</h2>
+      <p class="hmo-section-lead">
+        오너 일가의 직접 지분과 계열사 간 지분 연결이 결합돼 그룹 경영권의 기반을 형성합니다.
+        현대차그룹은 개인 지분 하나보다 현대모비스·현대차·기아의 상호 연결을 함께 봐야 합니다.
+      </p>
+      <ul class="hmo-check-list">
+        {HMO_CONTROL_INTERPRETATION.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 섹션 3: 오너·핵심 연결 표 -->
+    <section class="content-section" aria-labelledby="facts-title">
+      <h2 id="facts-title">오너 및 핵심 지분 연결</h2>
+      <table class="hmo-fact-table">
+        <thead>
+          <tr>
+            <th>연결</th>
+            <th>지분율</th>
+            <th>기준일</th>
+            <th>신뢰도</th>
+            <th>출처</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HMO_OWNERSHIP_FACTS.map((f) => (
+              <tr>
+                <td>{f.label}</td>
+                <td>{f.ratePercent}%</td>
+                <td>{f.baseDate}</td>
+                <td>
+                  <span class={`hmo-confidence-badge hmo-confidence-badge--${confidenceClass(f.confidence)}`}>
+                    {confidenceLabel(f.confidence)}
+                  </span>
+                </td>
+                <td>
+                  <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">
+                    {f.sourceLabel}
+                  </a>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 4: 상장 계열사 목록 -->
+    <section class="content-section" aria-labelledby="listed-title">
+      <h2 id="listed-title">상장 계열사 전체 목록 ({HMO_META.listedAffiliateCount}개)</h2>
+      <table class="hmo-listed-table">
+        <thead>
+          <tr>
+            <th>회사명</th>
+            <th>종목코드</th>
+            <th>시장</th>
+            <th>구분</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HMO_LISTED_AFFILIATES.map((c) => (
+              <tr>
+                <td>{c.name}</td>
+                <td>{c.stockCode}</td>
+                <td>{c.market}</td>
+                <td>
+                  <span class={`hmo-sector-tag hmo-sector-tag--${c.sector === "FINANCIAL" ? "financial" : "non-financial"}`}>
+                    {c.sector === "FINANCIAL" ? "금융" : "비금융"}
+                  </span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="listed-detail-title">
+      <h2 id="listed-detail-title">상장 계열사와 그룹 내 위치</h2>
+      <table class="hmo-detail-table">
+        <thead>
+          <tr>
+            <th>회사</th>
+            <th>코드</th>
+            <th>핵심 주주</th>
+            <th>사업 분야</th>
+            <th>그룹 내 위치</th>
+            <th>순환 고리</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HMO_LISTED_DETAIL_ROWS.map((row) => (
+              <tr>
+                <td>{row.company}</td>
+                <td>{row.stockCode}</td>
+                <td>{row.shareholder}</td>
+                <td>{row.business}</td>
+                <td>{row.position}</td>
+                <td>{row.circular}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="ecosystem-title">
+      <h2 id="ecosystem-title">지배구조와 함께 봐야 할 사업 생태계</h2>
+      <div class="hmo-ecosystem-grid">
+        {
+          HMO_BUSINESS_ECOSYSTEM.map((item) => (
+            <article>
+              <span>{item.axis}</span>
+              <strong>{item.companies}</strong>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="barriers-title">
+      <h2 id="barriers-title">순환출자 해소가 어려운 이유</h2>
+      <table class="hmo-fact-table">
+        <thead>
+          <tr>
+            <th>이유</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HMO_UNWINDING_BARRIERS.map((row) => (
+              <tr>
+                <td>{row.reason}</td>
+                <td>{row.description}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="scenario-title">
+      <h2 id="scenario-title">지배구조 개편 4개 가상 시나리오</h2>
+      <p class="hmo-section-lead">
+        아래 내용은 확정 계획이 아니라 교육용 가상 시나리오입니다. 실제 개편 방식은 회사 발표와 공시를 기준으로 확인해야 합니다.
+      </p>
+      <div class="hmo-scenario-grid">
+        {
+          HMO_RESTRUCTURING_SCENARIOS.map((item) => (
+            <article>
+              <h3>{item.title}</h3>
+              <p>{item.summary}</p>
+              <dl>
+                <dt>장점</dt>
+                <dd>{item.upside}</dd>
+                <dt>리스크</dt>
+                <dd>{item.risk}</dd>
+              </dl>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="impact-title">
+      <h2 id="impact-title">지배구조가 바뀌면 어떤 주주가 영향을 받을까</h2>
+      <table class="hmo-role-table">
+        <thead>
+          <tr>
+            <th>보유 종목</th>
+            <th>긍정 가능성</th>
+            <th>주요 리스크</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HMO_INVESTOR_IMPACT.map((row) => (
+              <tr>
+                <td>{row.stock}</td>
+                <td>{row.positive}</td>
+                <td>{row.risk}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="hmo-small-note">
+        지배구조 개편은 방식에 따라 회사별 이해관계가 크게 달라집니다. 특정 회사가 지배구조 핵심에 있다는 이유만으로 주가 상승을 보장하지 않습니다.
+      </p>
+    </section>
+
+    <section class="content-section" aria-labelledby="timeline-title">
+      <h2 id="timeline-title">현대차그룹 지배구조 주요 변화</h2>
+      <ol class="hmo-timeline">
+        {
+          HMO_STRUCTURE_TIMELINE.map((item) => (
+            <li>
+              <time>{item.year}</time>
+              <div>
+                <strong>{item.event}</strong>
+                <p>{item.impact}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="content-section" aria-labelledby="comparison-title">
+      <h2 id="comparison-title">삼성·SK·LG와 비교하면</h2>
+      <table class="hmo-role-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>삼성</th>
+            <th>SK</th>
+            <th>현대차</th>
+            <th>LG</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HMO_GROUP_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.metric}</td>
+                <td>{row.samsung}</td>
+                <td>{row.sk}</td>
+                <td>{row.hyundai}</td>
+                <td>{row.lg}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 5: CTA -->
+    <section class="content-section" aria-labelledby="cta-title">
+      <h2 id="cta-title">이어서 확인하면 좋은 콘텐츠</h2>
+      <div class="hmo-cta-group">
+        <a href="/reports/samsung-group-ownership-2026/">삼성그룹 지분구조 →</a>
+        <a href="/reports/sk-group-ownership-2026/">SK그룹 지분구조 →</a>
+        <a href="/reports/lg-group-ownership-2026/">LG그룹 지분구조 →</a>
+        <a href="/reports/hanwha-group-ownership-2026/">한화그룹 지분구조 →</a>
+        <a href="/reports/lotte-group-ownership-2026/">롯데그룹 지분구조 →</a>
+        <a href="/reports/hd-hyundai-group-ownership-2026/">HD현대그룹 지분구조 →</a>
+        <a href="/reports/ls-group-ownership-2026/">LS그룹 지분구조 →</a>
+        <a href="/reports/doosan-group-ownership-2026/">두산그룹 지분구조 →</a>
+        <a href="/reports/group-ownership-hub-2026/">9개 그룹 비교 허브 →</a>
+        <a href="/tools/">계산기 전체 보기 →</a>
+        <a href="/reports/">리포트 전체 보기 →</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="현대차그룹 지분구조, 순환출자를 이해해야 보인다"
+      intro={HMO_SEO_INTRO}
+      criteria={HMO_SEO_CRITERIA}
+      faq={HMO_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/reports/samsung-group-ownership-2026/", label: "삼성그룹 지분구조 2026" },
+        { href: "/reports/sk-group-ownership-2026/", label: "SK그룹 지분구조 2026" },
+        { href: "/reports/lg-group-ownership-2026/", label: "LG그룹 지분구조 2026" },
+        { href: "/reports/hanwha-group-ownership-2026/", label: "한화그룹 지분구조 2026" },
+        { href: "/reports/lotte-group-ownership-2026/", label: "롯데그룹 지분구조 2026" },
+        { href: "/reports/hd-hyundai-group-ownership-2026/", label: "HD현대그룹 지분구조 2026" },
+        { href: "/reports/ls-group-ownership-2026/", label: "LS그룹 지분구조 2026" },
+        { href: "/reports/doosan-group-ownership-2026/", label: "두산그룹 지분구조 2026" },
+        { href: "/reports/group-ownership-hub-2026/", label: "9개 그룹 지분구조 비교 허브" },
+        { href: "/reports/", label: "리포트 전체 보기" },
+        { href: "/tools/", label: "계산기 전체 보기" },
+      ]}
+    />
+  </main>
+</BaseLayout>

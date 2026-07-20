@@ -1,0 +1,175 @@
+---
+import type { GroupCompany } from "../data/groupOwnershipTypes";
+
+interface Props {
+  nodes: GroupCompany[];
+  ariaLabel: string;
+}
+
+const { nodes, ariaLabel } = Astro.props;
+
+interface LayoutNode extends GroupCompany {
+  depth: number;
+  x: number;
+  y: number;
+}
+
+const NODE_W = 148;
+const NODE_H = 64;
+const COL_GAP = 24;
+const ROW_H = 118;
+
+function buildLayout(companies: GroupCompany[]): { flat: LayoutNode[]; width: number; height: number } {
+  const byId = new Map(companies.map((n) => [n.id, n]));
+  const childrenOf = new Map<string, GroupCompany[]>();
+  companies.forEach((n) => {
+    if (n.primaryParentId) {
+      const arr = childrenOf.get(n.primaryParentId) ?? [];
+      arr.push(n);
+      childrenOf.set(n.primaryParentId, arr);
+    }
+  });
+
+  const unitCache = new Map<string, number>();
+  function unitsOf(id: string): number {
+    if (unitCache.has(id)) return unitCache.get(id)!;
+    const kids = childrenOf.get(id) ?? [];
+    const u = kids.length === 0 ? 1 : kids.reduce((sum, k) => sum + unitsOf(k.id), 0);
+    unitCache.set(id, u);
+    return u;
+  }
+  companies.forEach((n) => unitsOf(n.id));
+
+  const flat: LayoutNode[] = [];
+  let cursor = 0;
+
+  function place(id: string, depth: number): LayoutNode {
+    const raw = byId.get(id)!;
+    const kids = childrenOf.get(id) ?? [];
+    let x: number;
+    if (kids.length === 0) {
+      x = cursor * (NODE_W + COL_GAP);
+      cursor += 1;
+    } else {
+      const placedKids = kids.map((k) => place(k.id, depth + 1));
+      x = (placedKids[0].x + placedKids[placedKids.length - 1].x) / 2;
+    }
+    const laidOut: LayoutNode = { ...raw, depth, x, y: depth * ROW_H };
+    flat.push(laidOut);
+    return laidOut;
+  }
+
+  const roots = companies.filter((n) => n.primaryParentId === null);
+  roots.forEach((r) => place(r.id, 0));
+
+  function depthOf(n: GroupCompany): number {
+    let d = 0;
+    let cur: GroupCompany | undefined = n;
+    while (cur?.primaryParentId) {
+      d += 1;
+      cur = byId.get(cur.primaryParentId);
+    }
+    return d;
+  }
+  const maxDepth = Math.max(0, ...companies.map(depthOf));
+
+  return {
+    flat,
+    width: Math.max(cursor * (NODE_W + COL_GAP) - COL_GAP, NODE_W),
+    height: (maxDepth + 1) * ROW_H + NODE_H - (ROW_H - NODE_H),
+  };
+}
+
+const { flat, width, height } = buildLayout(nodes);
+const byId = new Map(flat.map((n) => [n.id, n]));
+const PAD = 16;
+const viewBox = `${-PAD} ${-PAD} ${width + PAD * 2} ${height + PAD * 2}`;
+
+function roleClass(role: GroupCompany["role"]): string {
+  return `ownership-tree__node--${role.toLowerCase()}`;
+}
+---
+
+<div class="ownership-tree-wrap">
+  <svg viewBox={viewBox} class="ownership-tree" role="img" aria-label={ariaLabel} style={`min-width:${Math.min(width, 960)}px`}>
+    <defs>
+      <marker id="ownershipTreeArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 z" class="ownership-tree__arrow-head" />
+      </marker>
+    </defs>
+
+    <g class="ownership-tree__edges">
+      {
+        flat
+          .filter((n) => n.primaryParentId)
+          .map((n) => {
+            const parent = byId.get(n.primaryParentId as string);
+            if (!parent) return null;
+            const x1 = parent.x + NODE_W / 2;
+            const y1 = parent.y + NODE_H;
+            const x2 = n.x + NODE_W / 2;
+            const y2 = n.y;
+            const midY = (y1 + y2) / 2;
+            return (
+              <g>
+                <path
+                  d={`M ${x1} ${y1} V ${midY} H ${x2} V ${y2}`}
+                  class="ownership-tree__edge"
+                  marker-end="url(#ownershipTreeArrow)"
+                />
+                <text x={x2} y={midY - 6} class="ownership-tree__edge-label">
+                  {n.primaryRatePercent}%
+                </text>
+              </g>
+            );
+          })
+      }
+    </g>
+
+    <g class="ownership-tree__nodes">
+      {
+        flat.map((n) => (
+          <g transform={`translate(${n.x}, ${n.y})`} class={`ownership-tree__node ${roleClass(n.role)}`}>
+            <rect width={NODE_W} height={NODE_H} rx="10" />
+            <text x={NODE_W / 2} y="22" class="ownership-tree__node-name">
+              {n.name}
+            </text>
+            {n.listed && (
+              <text x={NODE_W / 2} y="38" class="ownership-tree__node-code">
+                {n.stockCode}
+              </text>
+            )}
+            {n.secondaryStakes?.map((s, i) => (
+              <text x={NODE_W / 2} y={38 + (n.listed ? 14 : 0) + i * 12} class="ownership-tree__node-secondary">
+                + {s.holderName} {s.ratePercent}%
+              </text>
+            ))}
+            {n.circularNote && (
+              <text
+                x={NODE_W / 2}
+                y={38 + (n.listed ? 14 : 0) + (n.secondaryStakes?.length ?? 0) * 12}
+                class="ownership-tree__node-circular"
+              >
+                🔁 순환출자 있음
+              </text>
+            )}
+          </g>
+        ))
+      }
+    </g>
+  </svg>
+
+  {
+    flat.some((n) => n.circularNote) && (
+      <ul class="ownership-tree__notes">
+        {flat
+          .filter((n) => n.circularNote)
+          .map((n) => (
+            <li>
+              <strong>{n.name}</strong> — {n.circularNote}
+            </li>
+          ))}
+      </ul>
+    )
+  }
+</div>

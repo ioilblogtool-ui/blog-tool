@@ -1,0 +1,424 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import OwnershipTree from "../../components/OwnershipTree.astro";
+import {
+  HANWHA_META,
+  HANWHA_TREE_NODES,
+  HANWHA_OWNERSHIP_FACTS,
+  HANWHA_LISTED_AFFILIATES,
+  HANWHA_FAQ,
+  HANWHA_SEO_INTRO,
+  HANWHA_SEO_CRITERIA,
+  HANWHA_KPI_CARDS,
+  HANWHA_SPLIT_SCHEDULE,
+  HANWHA_SHARE_ALLOCATION_EXAMPLES,
+  HANWHA_BEFORE_AFTER_SPLIT,
+  HANWHA_ENERGY_CONNECTIONS,
+  HANWHA_BROTHER_BUSINESS_AXES,
+  HANWHA_SPLIT_IMPACT_ROWS,
+  HANWHA_HOLDING_COMPANY_COMPARISON,
+  HANWHA_GROUP_COMPARISON,
+} from "../../data/hanwhaGroupOwnership2026";
+import type { SourceConfidence } from "../../data/groupOwnershipTypes";
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/hanwha-group-ownership-2026/`;
+
+const title = "한화그룹 지분구조 2026 완전 정리 | 김승연 3형제 인적분할 지배관계";
+const description =
+  "김승연 회장과 3형제 지분, 한화에너지 간접 연결, 2026년 ㈜한화 인적분할 일정과 주식 배정 구조까지 정리.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": pageUrl,
+  url: pageUrl,
+  headline: title,
+  description,
+  inLanguage: "ko-KR",
+  datePublished: HANWHA_META.updatedAt,
+  dateModified: HANWHA_META.updatedAt,
+};
+
+function confidenceLabel(c: SourceConfidence): string {
+  if (c === "HIGH") return "높음";
+  if (c === "MEDIUM") return "중간";
+  return "낮음";
+}
+function confidenceClass(c: SourceConfidence): string {
+  if (c === "HIGH") return "high";
+  if (c === "MEDIUM") return "medium";
+  return "low";
+}
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell hwo-page">
+
+    <CalculatorHero
+      eyebrow="한화그룹"
+      title="한화그룹 지분구조 2026 완전 정리"
+      description="김승연 회장 및 3형제 지분, 한화에너지 연결, 2026년 인적분할 이후 두 상장사로 나뉘는 구조를 정리했습니다."
+    />
+
+    <InfoNotice
+      title="데이터 안내 — 지배구조 개편 진행 중"
+      lines={[
+        HANWHA_META.dataSourceNotice,
+        `계열사·상장사 수 기준일: ${HANWHA_META.affiliateCountBaseDate} (공정거래위원회 지정)`,
+        `콘텐츠 업데이트: ${HANWHA_META.updatedAt}`,
+      ]}
+    />
+
+    <!-- 섹션 1: 지주회사 체제인가 -->
+    <section class="content-section hwo-holding-note" aria-labelledby="holding-title">
+      <h2 id="holding-title">한화는 지주회사 체제인가?</h2>
+      <p>{HANWHA_META.holdingCompanyNote}</p>
+      <table class="hwo-fact-table hwo-compact-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>법적 지주회사</th>
+            <th>㈜한화</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HANWHA_HOLDING_COMPANY_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.legalHolding}</td>
+                <td>{row.hanwha}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="kpi-title">
+      <h2 id="kpi-title">현재 진행 상태 한눈에 보기</h2>
+      <div class="hwo-kpi-grid">
+        {
+          HANWHA_KPI_CARDS.map((card) => (
+            <article class="hwo-kpi-card">
+              <span>{card.label}</span>
+              <strong>{card.value}</strong>
+              <p>{card.note}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 섹션 1-2: 2026년 인적분할 (한화그룹 전용 섹션) -->
+    <section class="content-section hwo-split-note" aria-labelledby="split-title">
+      <h2 id="split-title">2026년 인적분할, 무엇이 바뀌나?</h2>
+      <p>
+        2026년 1월 이사회에서 ㈜한화 인적분할을 의결했고, 2026년 7월 15일 임시주주총회에서 분할계획서가
+        승인됐습니다(존속 75.63533% : 신설 24.36467%). 이 페이지 작성 시점(2026-07-16)은 주총 승인 직후로,
+        분할이 아직 효력을 발생하기 전입니다 — 아래 지분 연결도는 <strong>분할 전 현재 구조</strong>를 기준으로 합니다.
+      </p>
+      <div class="hwo-split-grid">
+        <article>
+          <h3>존속법인 (김동관 중심)</h3>
+          <p>방산·조선·에너지·금융 — 한화에어로스페이스·한화솔루션·한화생명보험·한화시스템·한화오션</p>
+        </article>
+        <article>
+          <h3>신설법인 (김동선 중심)</h3>
+          <p>유통·호텔·레저+테크 — 한화비전·한화모멘텀·한화세미텍·한화로보틱스·한화호텔앤드리조트·한화갤러리아·아워홈</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="schedule-title">
+      <h2 id="schedule-title">인적분할 일정과 상태</h2>
+      <div class="hwo-timeline">
+        {
+          HANWHA_SPLIT_SCHEDULE.map((item) => (
+            <article>
+              <time>{item.date}</time>
+              <strong>{item.event}</strong>
+              <p>{item.meaning}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="hwo-small-note">
+        일정은 공시와 거래소 안내에 따라 달라질 수 있습니다. 실제 매매 가능일, 거래정지, 단주 처리 방식은 최종 공시와 증권사 안내를 확인해야 합니다.
+      </p>
+    </section>
+
+    <section class="content-section" aria-labelledby="allocation-title">
+      <h2 id="allocation-title">기존 주주는 주식을 어떻게 받나?</h2>
+      <p class="hwo-section-lead">
+        인적분할은 기존 주주가 존속법인과 신설법인 주식을 나누어 받는 구조입니다. 단순 예시로 보통주 100주를 보유했다면 존속법인 약 75.63533주,
+        신설법인 약 24.36467주에 해당합니다.
+      </p>
+      <div class="hwo-formula-card">
+        <strong>배정 계산식</strong>
+        <p>존속법인 주식 = 기존 주식 수 × 0.7563533</p>
+        <p>신설법인 주식 = 기존 주식 수 × 0.2436467</p>
+      </div>
+      <table class="hwo-fact-table">
+        <thead>
+          <tr>
+            <th>기존 보유</th>
+            <th>존속법인 예상</th>
+            <th>신설법인 예상</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HANWHA_SHARE_ALLOCATION_EXAMPLES.map((row) => (
+              <tr>
+                <td>{row.ownedShares.toLocaleString()}주</td>
+                <td>{row.survivingShares.toLocaleString()}주</td>
+                <td>{row.newCompanyShares.toLocaleString()}주</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="before-after-title">
+      <h2 id="before-after-title">분할 전후 사업 구조 비교</h2>
+      <div class="hwo-axis-grid">
+        {
+          HANWHA_BEFORE_AFTER_SPLIT.map((group) => (
+            <article class="hwo-axis-card">
+              <h3>{group.label}</h3>
+              <ul>
+                {group.items.map((item) => <li>{item}</li>)}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+      <p class="hwo-small-note">
+        핵심은 기존 ㈜한화 안에 함께 묶여 있던 사업군을 두 상장회사로 나누어, 투자자가 방산·조선·금융 축과 테크·라이프 축을 따로 평가할 수 있게 되는 점입니다.
+      </p>
+    </section>
+
+    <!-- 섹션 2: 지분 연결도 -->
+    <section class="content-section" aria-labelledby="tree-title">
+      <h2 id="tree-title">지분 연결도 (분할 전 현재 구조)</h2>
+      <OwnershipTree nodes={HANWHA_TREE_NODES} ariaLabel="한화그룹 지분 연결도" />
+      <p class="hwo-tree-note">
+        가장 비중이 큰 상위 지분(주 연결선)만 표시했습니다. "+"로 표기된 항목은 다른 계열사가 보유한 보조 지분입니다.
+        루트 노드의 20.51%는 김승연 회장이 아니라 3형제 합산 지분이며, 한화에너지 22.16% 연결은 보조 지분으로 함께 표시했습니다.
+      </p>
+    </section>
+
+    <section class="content-section" aria-labelledby="energy-title">
+      <h2 id="energy-title">한화에너지까지 봐야 하는 이유</h2>
+      <p class="hwo-section-lead">
+        한화그룹은 ㈜한화 직접 지분만 보면 연결이 단순해 보이지만, 한화에너지가 ㈜한화의 주요 주주로 올라와 있어 오너 일가의 간접 연결을 함께 봐야 합니다.
+      </p>
+      <div class="hwo-flow-card" aria-label="한화에너지 지분 연결">
+        <span>김동관·김동원·김동선</span>
+        <b>→</b>
+        <span>한화에너지</span>
+        <b>22.16%</b>
+        <span>㈜한화</span>
+      </div>
+      <table class="hwo-fact-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>한화에너지 지분</th>
+            <th>㈜한화 간접 연결값</th>
+            <th>계산</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HANWHA_ENERGY_CONNECTIONS.map((row) => (
+              <tr>
+                <td>{row.owner}</td>
+                <td>{row.energyStake}</td>
+                <td>{row.hanwhaStakeViaEnergy}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="hwo-small-note">
+        위 값은 단순 경제적 연결을 보여주는 참고 계산입니다. 한화에너지가 보유한 주식의 의결권이 개인에게 직접 귀속된다는 뜻은 아닙니다.
+      </p>
+    </section>
+
+    <section class="content-section" aria-labelledby="brothers-title">
+      <h2 id="brothers-title">3형제 사업축은 어떻게 나뉘나?</h2>
+      <div class="hwo-insight-grid">
+        {
+          HANWHA_BROTHER_BUSINESS_AXES.map((row) => (
+            <article class="hwo-insight-card">
+              <span>{row.person}</span>
+              <h3>{row.axis}</h3>
+              <p>{row.companies}</p>
+              <small>{row.interpretation}</small>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 섹션 3: 오너·핵심 연결 표 -->
+    <section class="content-section" aria-labelledby="facts-title">
+      <h2 id="facts-title">오너 및 핵심 지분 연결</h2>
+      <table class="hwo-fact-table">
+        <thead>
+          <tr>
+            <th>연결</th>
+            <th>지분율</th>
+            <th>기준일</th>
+            <th>출처</th>
+            <th>신뢰도</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HANWHA_OWNERSHIP_FACTS.map((f) => (
+              <tr>
+                <td>{f.label}</td>
+                <td>{f.ratePercent}%</td>
+                <td>{f.baseDate}</td>
+                <td><a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">{f.sourceLabel}</a></td>
+                <td>
+                  <span class={`hwo-confidence-badge hwo-confidence-badge--${confidenceClass(f.confidence)}`}>
+                    {confidenceLabel(f.confidence)}
+                  </span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="impact-title">
+      <h2 id="impact-title">인적분할이 종목별로 미치는 영향</h2>
+      <table class="hwo-fact-table">
+        <thead>
+          <tr>
+            <th>종목</th>
+            <th>기대 요소</th>
+            <th>위험 요소</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HANWHA_SPLIT_IMPACT_ROWS.map((row) => (
+              <tr>
+                <td>{row.stock}</td>
+                <td>{row.upside}</td>
+                <td>{row.risk}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 4: 상장 계열사 목록 -->
+    <section class="content-section" aria-labelledby="listed-title">
+      <h2 id="listed-title">상장 계열사 목록 ({HANWHA_META.listedAffiliateCount}개 확인)</h2>
+      <table class="hwo-listed-table">
+        <thead>
+          <tr>
+            <th>회사명</th>
+            <th>종목코드</th>
+            <th>시장</th>
+            <th>구분</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HANWHA_LISTED_AFFILIATES.map((c) => (
+              <tr>
+                <td>{c.name}</td>
+                <td>{c.stockCode}</td>
+                <td>{c.market}</td>
+                <td>
+                  <span class={`hwo-sector-tag hwo-sector-tag--${c.sector === "FINANCIAL" ? "financial" : "non-financial"}`}>
+                    {c.sector === "FINANCIAL" ? "금융" : "비금융"}
+                  </span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="compare-title">
+      <h2 id="compare-title">다른 그룹과 무엇이 다른가?</h2>
+      <table class="hwo-fact-table">
+        <thead>
+          <tr>
+            <th>그룹</th>
+            <th>핵심 키워드</th>
+            <th>해석 포인트</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            HANWHA_GROUP_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.group}</td>
+                <td>{row.keyword}</td>
+                <td>{row.difference}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 5: CTA -->
+    <section class="content-section" aria-labelledby="cta-title">
+      <h2 id="cta-title">이어서 확인하면 좋은 콘텐츠</h2>
+      <div class="hwo-cta-group">
+        <a href="/reports/samsung-group-ownership-2026/">삼성그룹 지분구조 →</a>
+        <a href="/reports/sk-group-ownership-2026/">SK그룹 지분구조 →</a>
+        <a href="/reports/hyundai-motor-group-ownership-2026/">현대차그룹 지분구조 →</a>
+        <a href="/reports/lg-group-ownership-2026/">LG그룹 지분구조 →</a>
+        <a href="/reports/lotte-group-ownership-2026/">롯데그룹 지분구조 →</a>
+        <a href="/reports/hd-hyundai-group-ownership-2026/">HD현대그룹 지분구조 →</a>
+        <a href="/reports/ls-group-ownership-2026/">LS그룹 지분구조 →</a>
+        <a href="/reports/doosan-group-ownership-2026/">두산그룹 지분구조 →</a>
+        <a href="/reports/group-ownership-hub-2026/">9개 그룹 비교 허브 →</a>
+        <a href="/tools/">계산기 전체 보기 →</a>
+        <a href="/reports/">리포트 전체 보기 →</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="한화그룹 지분구조, 지금 이 순간 바뀌는 중"
+      intro={HANWHA_SEO_INTRO}
+      criteria={HANWHA_SEO_CRITERIA}
+      faq={HANWHA_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/reports/samsung-group-ownership-2026/", label: "삼성그룹 지분구조 2026" },
+        { href: "/reports/sk-group-ownership-2026/", label: "SK그룹 지분구조 2026" },
+        { href: "/reports/hyundai-motor-group-ownership-2026/", label: "현대차그룹 지분구조 2026" },
+        { href: "/reports/lg-group-ownership-2026/", label: "LG그룹 지분구조 2026" },
+        { href: "/reports/lotte-group-ownership-2026/", label: "롯데그룹 지분구조 2026" },
+        { href: "/reports/hd-hyundai-group-ownership-2026/", label: "HD현대그룹 지분구조 2026" },
+        { href: "/reports/ls-group-ownership-2026/", label: "LS그룹 지분구조 2026" },
+        { href: "/reports/doosan-group-ownership-2026/", label: "두산그룹 지분구조 2026" },
+        { href: "/reports/group-ownership-hub-2026/", label: "9개 그룹 지분구조 비교 허브" },
+        { href: "/reports/", label: "리포트 전체 보기" },
+        { href: "/tools/", label: "계산기 전체 보기" },
+      ]}
+    />
+  </main>
+</BaseLayout>

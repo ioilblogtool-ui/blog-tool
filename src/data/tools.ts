@@ -2322,6 +2322,19 @@ export const tools: ToolMeta[] = [
       { label: "정시 최대", value: "3개" },
     ],
   },
+  {
+    slug: "indirect-ownership-calculator",
+    title: "간접 지분율·다중 경로 계산기 2026",
+    description: "직접 지분, 단일·다중 간접 경로, 순환출자 연결값을 구분해 계산. 삼성·SK·LG 등 9개 그룹 지분구조 예시 포함.",
+    order: 77.9,
+    eyebrow: "지분구조",
+    category: "calculator",
+    badges: ["신규", "지분구조", "2026"],
+    previewStats: [
+      { label: "계산 방식", value: "단계 곱셈" },
+      { label: "예시", value: "9개 그룹" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

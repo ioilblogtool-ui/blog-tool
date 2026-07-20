@@ -1,0 +1,100 @@
+.ownership-tree-wrap {
+  overflow-x: auto;
+  padding: 0.5rem 0 1rem;
+}
+
+.ownership-tree {
+  --ot-line: #cbd5e1;
+  --ot-ink: #14213d;
+  --ot-muted: #64748b;
+  --ot-owner-bg: #f5f7fb;
+  --ot-owner-border: #94a3b8;
+  --ot-core-bg: #eff4ff;
+  --ot-core-border: #1a56db;
+  --ot-affiliate-bg: #ffffff;
+  --ot-affiliate-border: #cbd5e1;
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.ownership-tree__edge {
+  fill: none;
+  stroke: var(--ot-line);
+  stroke-width: 1.5;
+}
+
+.ownership-tree__arrow-head {
+  fill: var(--ot-line);
+}
+
+.ownership-tree__edge-label {
+  font-size: 11px;
+  fill: var(--ot-ink);
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.ownership-tree__node rect {
+  fill: var(--ot-affiliate-bg);
+  stroke: var(--ot-affiliate-border);
+  stroke-width: 1.5;
+}
+
+.ownership-tree__node--owner_family rect {
+  fill: var(--ot-owner-bg);
+  stroke: var(--ot-owner-border);
+  stroke-dasharray: 3 2;
+}
+
+.ownership-tree__node--core_company rect {
+  fill: var(--ot-core-bg);
+  stroke: var(--ot-core-border);
+  stroke-width: 2;
+}
+
+.ownership-tree__node-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  fill: var(--ot-ink);
+  text-anchor: middle;
+}
+
+.ownership-tree__node-code,
+.ownership-tree__node-secondary {
+  font-size: 10px;
+  fill: var(--ot-muted);
+  text-anchor: middle;
+}
+
+.ownership-tree__node-circular {
+  font-size: 9.5px;
+  fill: #d97706;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.ownership-tree__notes {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--ot-muted);
+
+  li {
+    padding-left: 1.1em;
+    position: relative;
+  }
+  li::before {
+    content: "🔁";
+    position: absolute;
+    left: 0;
+    font-size: 0.85em;
+  }
+  strong {
+    color: var(--ot-ink);
+  }
+}

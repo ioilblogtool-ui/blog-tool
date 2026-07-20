@@ -1,0 +1,348 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import OwnershipTree from "../../components/OwnershipTree.astro";
+import {
+  SAMSUNG_META,
+  SAMSUNG_TREE_NODES,
+  SAMSUNG_OWNERSHIP_FACTS,
+  SAMSUNG_KPI_CARDS,
+  SAMSUNG_ELECTRONICS_CONNECTIONS,
+  SAMSUNG_LISTED_AFFILIATES,
+  SAMSUNG_LISTED_STAGE_ROWS,
+  SAMSUNG_GROUP_COMPARISON,
+  SAMSUNG_INVESTOR_INSIGHTS,
+  SAMSUNG_STRUCTURE_TIMELINE,
+  SAMSUNG_FAQ,
+  SAMSUNG_SEO_INTRO,
+  SAMSUNG_SEO_CRITERIA,
+} from "../../data/samsungGroupOwnership2026";
+import type { SourceConfidence } from "../../data/groupOwnershipTypes";
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/samsung-group-ownership-2026/`;
+
+const title = "삼성그룹 지분구조 2026 완전 정리 | 삼성물산·삼성생명·삼성전자 지배관계";
+const description =
+  "이재용 및 특수관계인 지분부터 삼성물산→삼성생명→삼성전자 연결까지 지분구조를 정리. 상장 계열사 18개 전체 목록 포함.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": pageUrl,
+  url: pageUrl,
+  headline: title,
+  description,
+  inLanguage: "ko-KR",
+  datePublished: SAMSUNG_META.updatedAt,
+  dateModified: SAMSUNG_META.updatedAt,
+};
+
+function confidenceLabel(c: SourceConfidence): string {
+  if (c === "HIGH") return "높음";
+  if (c === "MEDIUM") return "중간";
+  return "낮음";
+}
+function confidenceClass(c: SourceConfidence): string {
+  if (c === "HIGH") return "high";
+  if (c === "MEDIUM") return "medium";
+  return "low";
+}
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell sgo-page">
+
+    <CalculatorHero
+      eyebrow="삼성그룹"
+      title="삼성그룹 지분구조 2026 완전 정리"
+      description="삼성물산·삼성생명·삼성전자로 이어지는 지분 연결과 상장 계열사 18개를 정리했습니다."
+    />
+
+    <InfoNotice
+      title="데이터 안내"
+      lines={[
+        SAMSUNG_META.dataSourceNotice,
+        `계열사·상장사 수 기준일: ${SAMSUNG_META.affiliateCountBaseDate} (공정거래위원회 지정)`,
+        `콘텐츠 업데이트: ${SAMSUNG_META.updatedAt}`,
+      ]}
+    />
+
+    <section class="content-section" aria-labelledby="kpi-title">
+      <h2 id="kpi-title">핵심 숫자 먼저 보기</h2>
+      <div class="sgo-kpi-grid">
+        {
+          SAMSUNG_KPI_CARDS.map((item) => (
+            <article class={`sgo-kpi-card sgo-kpi-card--${item.tone}`}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <p>{item.note}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="sgo-small-note">상장사 비율과 최대 연결 단계는 비교계산소 자체 산정 지표이며 공식 지표가 아닙니다.</p>
+    </section>
+
+    <!-- 섹션 1: 지주회사 체제인가 -->
+    <section class="content-section sgo-holding-note" aria-labelledby="holding-title">
+      <h2 id="holding-title">삼성은 지주회사 체제인가?</h2>
+      <p>{SAMSUNG_META.holdingCompanyNote}</p>
+    </section>
+
+    <!-- 섹션 2: 지분 연결도 -->
+    <section class="content-section" aria-labelledby="tree-title">
+      <h2 id="tree-title">지분 연결도</h2>
+      <OwnershipTree nodes={SAMSUNG_TREE_NODES} ariaLabel="삼성그룹 지분 연결도" />
+      <p class="sgo-tree-note">
+        가장 비중이 큰 상위 지분(주 연결선)만 표시했습니다. "+"로 표기된 항목은 다른 계열사가 보유한 보조 지분입니다.
+      </p>
+    </section>
+
+    <!-- 섹션 3: 오너·핵심 연결 표 -->
+    <section class="content-section" aria-labelledby="facts-title">
+      <h2 id="facts-title">오너 및 핵심 지분 연결</h2>
+      <table class="sgo-fact-table">
+        <thead>
+          <tr>
+            <th>연결</th>
+            <th>지분율</th>
+            <th>기준일</th>
+            <th>신뢰도</th>
+            <th>출처</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SAMSUNG_OWNERSHIP_FACTS.map((f) => (
+              <tr>
+                <td>{f.label}</td>
+                <td>{f.ratePercent}%</td>
+                <td>{f.baseDate}</td>
+                <td>
+                  <span class={`sgo-confidence-badge sgo-confidence-badge--${confidenceClass(f.confidence)}`}>
+                    {confidenceLabel(f.confidence)}
+                  </span>
+                </td>
+                <td>
+                  <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">
+                    {f.sourceLabel}
+                  </a>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="electronics-title">
+      <h2 id="electronics-title">삼성전자 지분 연결을 단계별로 보면</h2>
+      <div class="sgo-flow" aria-label="이재용 외 특수관계인에서 삼성전자까지 이어지는 지분 연결">
+        <span>이재용 외 특수관계인</span>
+        <span>삼성물산</span>
+        <span>삼성생명</span>
+        <span>삼성전자</span>
+      </div>
+      <div class="sgo-formula-card">
+        <p class="sgo-formula-card__eyebrow">단순 간접 연결값</p>
+        <strong>19.34% × 8.51% = 약 1.65%</strong>
+        <p>
+          삼성물산→삼성생명→삼성전자로 이어지는 단순 간접 지분 연결값입니다.
+          직접 보유 지분이나 법적 의결권을 의미하지 않습니다.
+        </p>
+      </div>
+      <table class="sgo-fact-table">
+        <thead>
+          <tr>
+            <th>연결 방식</th>
+            <th>지분율</th>
+            <th>해석</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SAMSUNG_ELECTRONICS_CONNECTIONS.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.rate}</td>
+                <td>{row.description}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 4: 상장 계열사 목록 -->
+    <section class="content-section" aria-labelledby="listed-title">
+      <h2 id="listed-title">상장 계열사 전체 목록 ({SAMSUNG_META.listedAffiliateCount}개)</h2>
+      <table class="sgo-listed-table">
+        <thead>
+          <tr>
+            <th>회사명</th>
+            <th>종목코드</th>
+            <th>시장</th>
+            <th>구분</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SAMSUNG_LISTED_AFFILIATES.map((c) => (
+              <tr>
+                <td>{c.name}</td>
+                <td>{c.stockCode}</td>
+                <td>{c.market}</td>
+                <td>
+                  <span class={`sgo-sector-tag sgo-sector-tag--${c.sector === "FINANCIAL" ? "financial" : "non-financial"}`}>
+                    {c.sector === "FINANCIAL" ? "금융" : "비금융"}
+                  </span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="listed-stage-title">
+      <h2 id="listed-stage-title">그룹 내 상장 단계와 역할</h2>
+      <p class="sgo-section-lead">
+        같은 상장사라도 그룹 안에서 하는 역할은 다릅니다. 핵심 지배구조 회사인지, 금융 연결축인지,
+        상장 자회사인지 구분해서 보면 삼성그룹 상장 구조가 더 선명해집니다.
+      </p>
+      <table class="sgo-stage-table">
+        <thead>
+          <tr>
+            <th>회사</th>
+            <th>코드</th>
+            <th>핵심 주주</th>
+            <th>그룹 내 역할</th>
+            <th>상장 단계</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SAMSUNG_LISTED_STAGE_ROWS.map((row) => (
+              <tr>
+                <td>
+                  <strong>{row.company}</strong>
+                  <span class="sgo-tag-row">
+                    {row.tags.map((tag) => (
+                      <span>{tag}</span>
+                    ))}
+                  </span>
+                </td>
+                <td>{row.stockCode}</td>
+                <td>{row.shareholder}</td>
+                <td>{row.role}</td>
+                <td>{row.stage}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="comparison-title">
+      <h2 id="comparison-title">삼성 vs SK·LG·현대차 지배구조 비교</h2>
+      <table class="sgo-comparison-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>삼성</th>
+            <th>SK</th>
+            <th>LG</th>
+            <th>현대차</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SAMSUNG_GROUP_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.metric}</td>
+                <td>{row.samsung}</td>
+                <td>{row.sk}</td>
+                <td>{row.lg}</td>
+                <td>{row.hyundai}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="investor-title">
+      <h2 id="investor-title">투자자 관점에서 봐야 할 해석 포인트</h2>
+      <div class="sgo-insight-grid">
+        {
+          SAMSUNG_INVESTOR_INSIGHTS.map((item) => (
+            <article>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="timeline-title">
+      <h2 id="timeline-title">주요 지배구조 타임라인</h2>
+      <ol class="sgo-timeline">
+        {
+          SAMSUNG_STRUCTURE_TIMELINE.map((item) => (
+            <li>
+              <time>{item.year}</time>
+              <div>
+                <strong>{item.event}</strong>
+                <p>{item.impact}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- 섹션 5: CTA -->
+    <section class="content-section" aria-labelledby="cta-title">
+      <h2 id="cta-title">이어서 확인하면 좋은 콘텐츠</h2>
+      <div class="sgo-cta-group">
+        <a href="/reports/sk-group-ownership-2026/">SK그룹 지분구조 →</a>
+        <a href="/reports/hyundai-motor-group-ownership-2026/">현대차그룹 지분구조 →</a>
+        <a href="/reports/lg-group-ownership-2026/">LG그룹 지분구조 →</a>
+        <a href="/reports/hanwha-group-ownership-2026/">한화그룹 지분구조 →</a>
+        <a href="/reports/lotte-group-ownership-2026/">롯데그룹 지분구조 →</a>
+        <a href="/reports/hd-hyundai-group-ownership-2026/">HD현대그룹 지분구조 →</a>
+        <a href="/reports/ls-group-ownership-2026/">LS그룹 지분구조 →</a>
+        <a href="/reports/doosan-group-ownership-2026/">두산그룹 지분구조 →</a>
+        <a href="/reports/group-ownership-hub-2026/">9개 그룹 비교 허브 →</a>
+        <a href="/tools/">계산기 전체 보기 →</a>
+        <a href="/reports/">리포트 전체 보기 →</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="삼성그룹 지분구조, 숫자 하나로 안 끝나는 이유"
+      intro={SAMSUNG_SEO_INTRO}
+      criteria={SAMSUNG_SEO_CRITERIA}
+      faq={SAMSUNG_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/reports/sk-group-ownership-2026/", label: "SK그룹 지분구조 2026" },
+        { href: "/reports/hyundai-motor-group-ownership-2026/", label: "현대차그룹 지분구조 2026" },
+        { href: "/reports/lg-group-ownership-2026/", label: "LG그룹 지분구조 2026" },
+        { href: "/reports/hanwha-group-ownership-2026/", label: "한화그룹 지분구조 2026" },
+        { href: "/reports/lotte-group-ownership-2026/", label: "롯데그룹 지분구조 2026" },
+        { href: "/reports/hd-hyundai-group-ownership-2026/", label: "HD현대그룹 지분구조 2026" },
+        { href: "/reports/ls-group-ownership-2026/", label: "LS그룹 지분구조 2026" },
+        { href: "/reports/doosan-group-ownership-2026/", label: "두산그룹 지분구조 2026" },
+        { href: "/reports/group-ownership-hub-2026/", label: "9개 그룹 지분구조 비교 허브" },
+        { href: "/reports/", label: "리포트 전체 보기" },
+        { href: "/tools/", label: "계산기 전체 보기" },
+      ]}
+    />
+  </main>
+</BaseLayout>

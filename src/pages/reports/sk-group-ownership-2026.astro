@@ -1,0 +1,456 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import OwnershipTree from "../../components/OwnershipTree.astro";
+import {
+  SK_META,
+  SK_TREE_NODES,
+  SK_OWNERSHIP_FACTS,
+  SK_KPI_CARDS,
+  SK_BUSINESS_AXES,
+  SK_HOLDING_VS_SQUARE,
+  SK_HYNIX_CONNECTIONS,
+  SK_OWNER_TO_HYNIX_CONNECTIONS,
+  SK_LISTED_AFFILIATES,
+  SK_LISTED_STAGE_ROWS,
+  SK_TREASURY_STOCK_NOTES,
+  SK_STRUCTURE_TIMELINE,
+  SK_GROUP_COMPARISON,
+  SK_INVESTOR_INSIGHTS,
+  SK_FAQ,
+  SK_SEO_INTRO,
+  SK_SEO_CRITERIA,
+} from "../../data/skGroupOwnership2026";
+import type { SourceConfidence } from "../../data/groupOwnershipTypes";
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/sk-group-ownership-2026/`;
+
+const title = "SK그룹 지분구조 2026 완전 정리 | SK㈜·SK스퀘어·SK하이닉스 지배관계";
+const description =
+  "최태원 회장 지분부터 SK㈜→SK스퀘어→SK하이닉스 연결까지 지분구조를 정리. 중간지주 구조와 상장 계열사 목록 포함.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": pageUrl,
+  url: pageUrl,
+  headline: title,
+  description,
+  inLanguage: "ko-KR",
+  datePublished: SK_META.updatedAt,
+  dateModified: SK_META.updatedAt,
+};
+
+function confidenceLabel(c: SourceConfidence): string {
+  if (c === "HIGH") return "높음";
+  if (c === "MEDIUM") return "중간";
+  return "낮음";
+}
+function confidenceClass(c: SourceConfidence): string {
+  if (c === "HIGH") return "high";
+  if (c === "MEDIUM") return "medium";
+  return "low";
+}
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell sko-page">
+
+    <CalculatorHero
+      eyebrow="SK그룹"
+      title="SK그룹 지분구조 2026 완전 정리"
+      description="SK㈜·SK스퀘어·SK하이닉스로 이어지는 중간지주 구조와 상장 계열사를 정리했습니다."
+    />
+
+    <InfoNotice
+      title="데이터 안내"
+      lines={[
+        SK_META.dataSourceNotice,
+        `계열사 수 기준일: ${SK_META.affiliateCountBaseDate} (공정거래위원회 지정)`,
+        `콘텐츠 업데이트: ${SK_META.updatedAt}`,
+      ]}
+    />
+
+    <section class="content-section" aria-labelledby="kpi-title">
+      <h2 id="kpi-title">핵심 숫자 먼저 보기</h2>
+      <div class="sko-kpi-grid">
+        {
+          SK_KPI_CARDS.map((item) => (
+            <article class={`sko-kpi-card sko-kpi-card--${item.tone}`}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <p>{item.note}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="sko-small-note">최대 연결 단계와 상장구조 복잡도는 비교계산소 자체 산정 지표이며 공식 지표가 아닙니다.</p>
+    </section>
+
+    <!-- 섹션 1: 지주회사 체제인가 -->
+    <section class="content-section sko-holding-note" aria-labelledby="holding-title">
+      <h2 id="holding-title">SK는 지주회사 체제인가?</h2>
+      <p>{SK_META.holdingCompanyNote}</p>
+    </section>
+
+    <!-- 섹션 2: 지분 연결도 -->
+    <section class="content-section" aria-labelledby="tree-title">
+      <h2 id="tree-title">지분 연결도</h2>
+      <OwnershipTree nodes={SK_TREE_NODES} ariaLabel="SK그룹 지분 연결도" />
+      <p class="sko-tree-note">
+        가장 비중이 큰 상위 지분(주 연결선)만 표시했습니다. SK하이닉스는 SK㈜가 아니라 SK스퀘어를 거쳐 연결됩니다.
+      </p>
+    </section>
+
+    <section class="content-section" aria-labelledby="axis-title">
+      <h2 id="axis-title">SK그룹을 4개 사업축으로 나누면</h2>
+      <p class="sko-section-lead">
+        SK는 한 장의 지분 트리만으로 이해하기 어렵습니다. SK㈜ 아래에 반도체·ICT, 통신,
+        에너지·화학, 소재·바이오 축이 나뉘고 각 축 안에 다시 상장 자회사가 붙습니다.
+      </p>
+      <div class="sko-axis-grid">
+        {
+          SK_BUSINESS_AXES.map((axis) => (
+            <article>
+              <span>{axis.axis}</span>
+              <h3>{axis.coreCompany}</h3>
+              <p>{axis.companies}</p>
+              <small>{axis.point}</small>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="square-title">
+      <h2 id="square-title">SK㈜와 SK스퀘어는 무엇이 다른가?</h2>
+      <table class="sko-comparison-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>SK㈜</th>
+            <th>SK스퀘어</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SK_HOLDING_VS_SQUARE.map((row) => (
+              <tr>
+                <td>{row.metric}</td>
+                <td>{row.skHoldings}</td>
+                <td>{row.skSquare}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 3: 오너·핵심 연결 표 -->
+    <section class="content-section" aria-labelledby="facts-title">
+      <h2 id="facts-title">오너 및 핵심 지분 연결</h2>
+      <table class="sko-fact-table">
+        <thead>
+          <tr>
+            <th>연결</th>
+            <th>지분율</th>
+            <th>기준일</th>
+            <th>신뢰도</th>
+            <th>출처</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SK_OWNERSHIP_FACTS.map((f) => (
+              <tr>
+                <td>{f.label}</td>
+                <td>{f.ratePercent}%</td>
+                <td>{f.baseDate}</td>
+                <td>
+                  <span class={`sko-confidence-badge sko-confidence-badge--${confidenceClass(f.confidence)}`}>
+                    {confidenceLabel(f.confidence)}
+                  </span>
+                </td>
+                <td>
+                  <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">
+                    {f.sourceLabel}
+                  </a>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="hynix-title">
+      <h2 id="hynix-title">SK㈜에서 SK하이닉스까지 이어지는 간접 지분 계산</h2>
+      <div class="sko-flow" aria-label="SK㈜에서 SK하이닉스까지 이어지는 지분 연결">
+        <span>SK㈜</span>
+        <span>SK스퀘어</span>
+        <span>SK하이닉스</span>
+      </div>
+      <div class="sko-formula-card">
+        <p class="sko-formula-card__eyebrow">단순 간접 연결값</p>
+        <strong>32.14% × 20.50% = 약 6.59%</strong>
+        <p>
+          위 수치는 지분 연결 구조를 단순 곱셈한 참고값입니다.
+          SK㈜가 SK하이닉스 지분 6.59%를 직접 보유하거나 동일한 의결권을 행사한다는 의미는 아닙니다.
+        </p>
+      </div>
+      <table class="sko-fact-table">
+        <thead>
+          <tr>
+            <th>연결 경로</th>
+            <th>지분율</th>
+            <th>해석</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SK_HYNIX_CONNECTIONS.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.rate}</td>
+                <td>{row.description}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="owner-hynix-title">
+      <h2 id="owner-hynix-title">최태원 회장 기준 SK하이닉스 연결값</h2>
+      <p class="sko-section-lead">
+        아래 값은 최태원 회장 또는 특수관계인 지분이 SK㈜와 SK스퀘어를 거쳐 SK하이닉스에 닿는 정도를
+        단순 곱셈으로 본 참고값입니다. 직접 지분·법적 의결권·실질 지배력을 의미하지 않습니다.
+      </p>
+      <table class="sko-fact-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>계산식</th>
+            <th>단순 간접 연결값</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SK_OWNER_TO_HYNIX_CONNECTIONS.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.formula}</td>
+                <td>{row.value}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 4: 상장 계열사 목록 -->
+    <section class="content-section" aria-labelledby="listed-title">
+      <h2 id="listed-title">상장 계열사 목록 ({SK_META.listedAffiliateCount}개 확인)</h2>
+      <table class="sko-listed-table">
+        <thead>
+          <tr>
+            <th>회사명</th>
+            <th>종목코드</th>
+            <th>시장</th>
+            <th>구분</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SK_LISTED_AFFILIATES.map((c) => (
+              <tr>
+                <td>{c.name}</td>
+                <td>{c.stockCode}</td>
+                <td>{c.market}</td>
+                <td>
+                  <span class={`sko-sector-tag sko-sector-tag--${c.sector === "FINANCIAL" ? "financial" : "non-financial"}`}>
+                    {c.sector === "FINANCIAL" ? "금융" : "비금융"}
+                  </span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="listed-stage-title">
+      <h2 id="listed-stage-title">상장 단계와 중복상장 구조</h2>
+      <p class="sko-section-lead">
+        SK의 특징은 상장 지주회사 아래 상장 중간지주회사, 다시 그 아래 상장 핵심 자회사가 놓이는 구조입니다.
+        그래서 단순히 상장사 수보다 “몇 단계 아래에 있는 상장사인가”가 더 중요합니다.
+      </p>
+      <table class="sko-stage-table">
+        <thead>
+          <tr>
+            <th>회사명</th>
+            <th>종목코드</th>
+            <th>핵심 주주</th>
+            <th>연결 상위사</th>
+            <th>상장 단계</th>
+            <th>사업 분야</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SK_LISTED_STAGE_ROWS.map((row) => (
+              <tr>
+                <td>{row.company}</td>
+                <td>{row.stockCode}</td>
+                <td>{row.shareholder}</td>
+                <td>{row.upperPath}</td>
+                <td>{row.stage}</td>
+                <td>{row.business}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="treasury-title">
+      <h2 id="treasury-title">SK㈜ 자사주 24.8%는 어떻게 봐야 하나</h2>
+      <p class="sko-section-lead">
+        자사주는 최대주주·특수관계인 지분과 다릅니다. 회사가 자기 주식을 보유한 것이며,
+        일반적으로 의결권이 제한되므로 오너 지분과 단순 합산하면 안 됩니다.
+      </p>
+      <table class="sko-fact-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>의미</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SK_TREASURY_STOCK_NOTES.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.meaning}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="discount-title">
+      <h2 id="discount-title">SK㈜ 지주회사 할인은 어떻게 계산하나</h2>
+      <div class="sko-formula-card sko-formula-card--muted">
+        <p class="sko-formula-card__eyebrow">개념식</p>
+        <strong>할인율 = 1 - SK㈜ 시가총액 ÷ 추정 NAV</strong>
+        <p>
+          추정 NAV는 보유 상장 자회사 지분가치, 비상장 자회사 가치, 현금성 자산에서 순차입금을 뺀 값으로 계산합니다.
+          실제 할인율은 기준일의 시가총액과 각 자회사 가치에 따라 달라집니다.
+        </p>
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="timeline-title">
+      <h2 id="timeline-title">분할·재편 타임라인</h2>
+      <ol class="sko-timeline">
+        {
+          SK_STRUCTURE_TIMELINE.map((item) => (
+            <li>
+              <time>{item.year}</time>
+              <div>
+                <strong>{item.event}</strong>
+                <p>{item.impact}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="content-section" aria-labelledby="comparison-title">
+      <h2 id="comparison-title">삼성·LG·현대차와 비교하면</h2>
+      <table class="sko-comparison-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>삼성</th>
+            <th>SK</th>
+            <th>LG</th>
+            <th>현대차</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SK_GROUP_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.metric}</td>
+                <td>{row.samsung}</td>
+                <td>{row.sk}</td>
+                <td>{row.lg}</td>
+                <td>{row.hyundai}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="investor-title">
+      <h2 id="investor-title">투자자 관점에서 봐야 할 해석 포인트</h2>
+      <div class="sko-insight-grid">
+        {
+          SK_INVESTOR_INSIGHTS.map((item) => (
+            <article>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 섹션 5: CTA -->
+    <section class="content-section" aria-labelledby="cta-title">
+      <h2 id="cta-title">이어서 확인하면 좋은 콘텐츠</h2>
+      <div class="sko-cta-group">
+        <a href="/reports/samsung-group-ownership-2026/">삼성그룹 지분구조 →</a>
+        <a href="/reports/hyundai-motor-group-ownership-2026/">현대차그룹 지분구조 →</a>
+        <a href="/reports/lg-group-ownership-2026/">LG그룹 지분구조 →</a>
+        <a href="/reports/hanwha-group-ownership-2026/">한화그룹 지분구조 →</a>
+        <a href="/reports/lotte-group-ownership-2026/">롯데그룹 지분구조 →</a>
+        <a href="/reports/hd-hyundai-group-ownership-2026/">HD현대그룹 지분구조 →</a>
+        <a href="/reports/ls-group-ownership-2026/">LS그룹 지분구조 →</a>
+        <a href="/reports/doosan-group-ownership-2026/">두산그룹 지분구조 →</a>
+        <a href="/reports/group-ownership-hub-2026/">9개 그룹 비교 허브 →</a>
+        <a href="/tools/">계산기 전체 보기 →</a>
+        <a href="/reports/">리포트 전체 보기 →</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="SK그룹 지분구조, 중간지주 두 개를 봐야 하는 이유"
+      intro={SK_SEO_INTRO}
+      criteria={SK_SEO_CRITERIA}
+      faq={SK_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/reports/samsung-group-ownership-2026/", label: "삼성그룹 지분구조 2026" },
+        { href: "/reports/hyundai-motor-group-ownership-2026/", label: "현대차그룹 지분구조 2026" },
+        { href: "/reports/lg-group-ownership-2026/", label: "LG그룹 지분구조 2026" },
+        { href: "/reports/hanwha-group-ownership-2026/", label: "한화그룹 지분구조 2026" },
+        { href: "/reports/lotte-group-ownership-2026/", label: "롯데그룹 지분구조 2026" },
+        { href: "/reports/hd-hyundai-group-ownership-2026/", label: "HD현대그룹 지분구조 2026" },
+        { href: "/reports/ls-group-ownership-2026/", label: "LS그룹 지분구조 2026" },
+        { href: "/reports/doosan-group-ownership-2026/", label: "두산그룹 지분구조 2026" },
+        { href: "/reports/group-ownership-hub-2026/", label: "9개 그룹 지분구조 비교 허브" },
+        { href: "/reports/", label: "리포트 전체 보기" },
+        { href: "/tools/", label: "계산기 전체 보기" },
+      ]}
+    />
+  </main>
+</BaseLayout>

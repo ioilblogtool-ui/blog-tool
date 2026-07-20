@@ -1,0 +1,245 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  IOC_CONCEPT_ROWS,
+  IOC_DEFAULT_COMPANIES,
+  IOC_DEFAULT_STEPS,
+  IOC_FAQ,
+  IOC_META,
+  IOC_PRESETS,
+  IOC_SEO_CRITERIA,
+  IOC_SEO_INTRO,
+} from "../../data/indirectOwnershipCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/tools/${IOC_META.slug}/`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: IOC_META.title,
+  description: IOC_META.description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "All",
+  url: pageUrl,
+};
+
+const config = {
+  presets: IOC_PRESETS,
+  defaultCompanies: IOC_DEFAULT_COMPANIES,
+  defaultSteps: IOC_DEFAULT_STEPS,
+};
+---
+
+<BaseLayout title={IOC_META.title} description={IOC_META.description} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={IOC_META.slug} pageClass="ioc-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="간접 지분율·다중 경로 계산기"
+        title="간접 지분율·다중 지분 경로 계산기 2026"
+        description="직접 지분, 여러 간접 경로, 순환출자를 구분하고 각 단계에서 지분율이 어떻게 줄어드는지 확인해보세요."
+      />
+      <InfoNotice title="계산 결과 안내" lines={[IOC_META.notice, `업데이트 기준: ${IOC_META.updatedAt}`]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="iocResetBtn" copyId="iocCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <script id="iocConfig" type="application/json" set:html={JSON.stringify(config)} />
+
+      <section class="ioc-section">
+        <h3>실제 사례 프리셋</h3>
+        <p class="ioc-section-lead">프리셋 지분율은 기준일에 따라 달라질 수 있어 상세 리포트와 함께 확인하는 용도입니다.</p>
+        <div class="ioc-preset-list">
+          {
+            IOC_PRESETS.map((preset) => (
+              <article class="ioc-preset-card">
+                <button type="button" data-ioc-preset={preset.id}>
+                  <span>{preset.label}</span>
+                  <strong>{preset.structureType}</strong>
+                </button>
+                <dl>
+                  <div>
+                    <dt>단계</dt>
+                    <dd>{preset.steps.length}단계</dd>
+                  </div>
+                  <div>
+                    <dt>기준일</dt>
+                    <dd>{preset.baseDate}</dd>
+                  </div>
+                </dl>
+                <a href={preset.reportHref}>상세 리포트 보기</a>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+    </Fragment>
+
+    <section class="ioc-mode-section" aria-labelledby="ioc-mode-title">
+      <h3 id="ioc-mode-title">계산 모드</h3>
+      <div class="ioc-mode-tabs" role="tablist" aria-label="계산 모드 선택">
+        <button class="is-active" type="button" data-ioc-mode="single">단일 경로</button>
+        <button type="button" data-ioc-mode="multi">다중 경로</button>
+        <button type="button" data-ioc-mode="circular">순환출자</button>
+      </div>
+      <p id="iocModeHelp" class="ioc-mode-help">한 개의 지분 경로를 순서대로 곱해 최종 간접 연결값을 계산합니다.</p>
+    </section>
+
+    <section class="ioc-direct-section" aria-labelledby="ioc-direct-title">
+      <div>
+        <h3 id="ioc-direct-title">직접 보유 지분율</h3>
+        <p>최종 회사 주식을 직접 보유한 비율이 있으면 함께 입력하세요.</p>
+      </div>
+      <label class="ioc-direct-input">
+        <span>직접 지분</span>
+        <input id="iocDirectRate" type="number" min="0" max="100" step="0.01" value="0" />
+        <em>%</em>
+      </label>
+    </section>
+
+    <section class="ioc-steps-section" aria-labelledby="ioc-path-title">
+      <div class="ioc-section-heading">
+        <div>
+          <h3 id="ioc-path-title">회사명·지분 연결 단계</h3>
+          <p id="iocPathHelp">출발 회사부터 최종 회사까지 이어지는 회사명과 단계별 지분율을 입력하세요.</p>
+        </div>
+        <button id="iocAddPathBtn" class="ioc-add-btn" type="button">+ 새 경로 추가</button>
+      </div>
+      <div id="iocPathList" class="ioc-path-list" aria-live="polite"></div>
+      <p id="iocError" class="ioc-error" role="status"></p>
+    </section>
+
+    <section class="ioc-result-panel" aria-labelledby="ioc-result-title">
+      <div class="ioc-result-card">
+        <span class="ioc-result-card__label" id="iocMainResultLabel">최종 간접 연결값</span>
+        <strong id="iocResultValue" class="ioc-result-card__value">-</strong>
+        <p id="iocResultFormula" class="ioc-result-card__formula"></p>
+      </div>
+      <div class="ioc-result-grid">
+        <article>
+          <span>연결 단계</span>
+          <strong id="iocStepCount">-</strong>
+        </article>
+        <article>
+          <span>단계별 평균 지분율</span>
+          <strong id="iocAverageRate">-</strong>
+        </article>
+        <article>
+          <span>가장 낮은 지분 단계</span>
+          <strong id="iocLowestRate">-</strong>
+        </article>
+        <article>
+          <span>최초 대비 감소 폭</span>
+          <strong id="iocDecreaseRate">-</strong>
+        </article>
+        <article>
+          <span>직접+간접 단순 합계</span>
+          <strong id="iocTotalWithDirect">-</strong>
+        </article>
+        <article>
+          <span>구조 유형</span>
+          <strong id="iocStructureType">단일 경로</strong>
+        </article>
+      </div>
+      <p id="iocResultNote" class="ioc-result-note"></p>
+    </section>
+
+    <section class="ioc-visual-section" aria-labelledby="ioc-visual-title">
+      <h3 id="ioc-visual-title">단계별 누적 결과</h3>
+      <div class="ioc-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>입력 지분율</th>
+              <th>누적 연결값</th>
+            </tr>
+          </thead>
+          <tbody id="iocCumulativeBody"></tbody>
+        </table>
+      </div>
+      <div id="iocBarList" class="ioc-bar-list"></div>
+    </section>
+
+    <section class="ioc-explain-card">
+      <h3>계산식</h3>
+      <p>
+        40%는 0.4, 50%는 0.5로 바꿔 계산합니다. 최종 간접 연결값은
+        (지분율1 ÷ 100) × (지분율2 ÷ 100) × ... × 100입니다.
+      </p>
+    </section>
+
+    <section class="ioc-explain-card">
+      <h3>다중 경로와 순환출자 해석</h3>
+      <p>
+        여러 경로가 있다면 경로별 계산 결과를 먼저 나눠 본 뒤 단순 합계를 참고합니다.
+        순환출자는 끝점이 다시 출발점으로 돌아오므로 이 계산기에서는 한 바퀴 순환 연결값만 표시합니다.
+      </p>
+    </section>
+
+    <section class="ioc-concept-section" aria-labelledby="ioc-concept-title">
+      <h3 id="ioc-concept-title">직접 지분·간접 지분·의결권 차이</h3>
+      <div class="ioc-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>개념</th>
+              <th>의미</th>
+              <th>계산기에서 제공</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              IOC_CONCEPT_ROWS.map((row) => (
+                <tr>
+                  <td>{row.concept}</td>
+                  <td>{row.meaning}</td>
+                  <td>{row.provided}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ioc-cta-group">
+      <a href="/reports/group-ownership-hub-2026/">9개 그룹 지분구조 비교 허브</a>
+      <a href="/reports/samsung-group-ownership-2026/">삼성그룹 지분구조</a>
+      <a href="/reports/hyundai-motor-group-ownership-2026/">현대차그룹 순환출자 사례</a>
+      <a href="/reports/hd-hyundai-group-ownership-2026/">HD현대 중간지주 사례</a>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="간접 지분율, 왜 계산해야 하나"
+        intro={IOC_SEO_INTRO}
+        criteria={IOC_SEO_CRITERIA}
+        faq={IOC_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+        related={[
+          { href: "/reports/group-ownership-hub-2026/", label: "9개 그룹 지분구조 비교 허브" },
+          { href: "/reports/samsung-group-ownership-2026/", label: "삼성그룹 지분구조 2026" },
+          { href: "/reports/sk-group-ownership-2026/", label: "SK그룹 지분구조 2026" },
+          { href: "/reports/hyundai-motor-group-ownership-2026/", label: "현대차그룹 지분구조 2026" },
+          { href: "/reports/lg-group-ownership-2026/", label: "LG그룹 지분구조 2026" },
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+</BaseLayout>
+
+<script type="module" src={withBase("/scripts/indirect-ownership-calculator.js")}></script>

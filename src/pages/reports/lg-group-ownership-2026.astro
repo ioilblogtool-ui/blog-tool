@@ -1,0 +1,489 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import OwnershipTree from "../../components/OwnershipTree.astro";
+import {
+  LG_META,
+  LG_TREE_NODES,
+  LG_OWNERSHIP_FACTS,
+  LG_KPI_CARDS,
+  LG_DIRECT_INDIRECT_ROWS,
+  LG_ENSOL_CONNECTIONS,
+  LG_OWNER_TO_ENSOL_CONNECTIONS,
+  LG_THREE_STOCK_COMPARISON,
+  LG_CHEM_DISCOUNT_REASONS,
+  LG_SPINOFF_COMPARISON,
+  LG_NAV_FORMULA_ROWS,
+  LG_LISTED_DEPTH_ROWS,
+  LG_BUSINESS_AXES,
+  LG_CNS_LISTING_POINTS,
+  LG_GROUP_COMPARISON,
+  LG_LISTED_AFFILIATES,
+  LG_FAQ,
+  LG_SEO_INTRO,
+  LG_SEO_CRITERIA,
+} from "../../data/lgGroupOwnership2026";
+import type { SourceConfidence } from "../../data/groupOwnershipTypes";
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/lg-group-ownership-2026/`;
+
+const title = "LG그룹 지분구조 2026 완전 정리 | ㈜LG·LG전자·LG화학 지배관계";
+const description =
+  "구광모 회장 지분부터 ㈜LG→LG전자·LG화학·LG유플러스로 뻗는 순수지주회사 구조를 정리. 상장 계열사 12개 목록 포함.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": pageUrl,
+  url: pageUrl,
+  headline: title,
+  description,
+  inLanguage: "ko-KR",
+  datePublished: LG_META.updatedAt,
+  dateModified: LG_META.updatedAt,
+};
+
+function confidenceLabel(c: SourceConfidence): string {
+  if (c === "HIGH") return "높음";
+  if (c === "MEDIUM") return "중간";
+  return "낮음";
+}
+function confidenceClass(c: SourceConfidence): string {
+  if (c === "HIGH") return "high";
+  if (c === "MEDIUM") return "medium";
+  return "low";
+}
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell lgo-page">
+
+    <CalculatorHero
+      eyebrow="LG그룹"
+      title="LG그룹 지분구조 2026 완전 정리"
+      description="㈜LG에서 LG전자·LG화학·LG유플러스로 뻗는 순수지주회사 구조와 상장 계열사를 정리했습니다."
+    />
+
+    <InfoNotice
+      title="데이터 안내"
+      lines={[
+        LG_META.dataSourceNotice,
+        `계열사·상장사 수 기준일: ${LG_META.affiliateCountBaseDate} (공정거래위원회 지정)`,
+        `콘텐츠 업데이트: ${LG_META.updatedAt}`,
+      ]}
+    />
+
+    <section class="content-section" aria-labelledby="kpi-title">
+      <h2 id="kpi-title">핵심 숫자 먼저 보기</h2>
+      <div class="lgo-kpi-grid">
+        {
+          LG_KPI_CARDS.map((item) => (
+            <article class={`lgo-kpi-card lgo-kpi-card--${item.tone}`}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <p>{item.note}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="lgo-small-note">핵심 상장 깊이는 비교계산소가 지분 연결 단계를 기준으로 분류한 참고값입니다.</p>
+    </section>
+
+    <!-- 섹션 1: 지주회사 체제인가 -->
+    <section class="content-section lgo-holding-note" aria-labelledby="holding-title">
+      <h2 id="holding-title">LG는 지주회사 체제인가?</h2>
+      <p>{LG_META.holdingCompanyNote}</p>
+    </section>
+
+    <!-- 섹션 2: 지분 연결도 -->
+    <section class="content-section" aria-labelledby="tree-title">
+      <h2 id="tree-title">지분 연결도</h2>
+      <OwnershipTree nodes={LG_TREE_NODES} ariaLabel="LG그룹 지분 연결도" />
+      <p class="lgo-tree-note">
+        ㈜LG에서 주요 자회사로 한 방향으로 내려가는 구조입니다. 다만 LG화학→LG에너지솔루션처럼
+        사업회사 아래 상장 자회사가 있어 투자구조까지 모두 단순한 것은 아닙니다.
+      </p>
+    </section>
+
+    <section class="content-section" aria-labelledby="layers-title">
+      <h2 id="layers-title">직계 자회사와 손자회사를 구분해서 보기</h2>
+      <p class="lgo-section-lead">
+        LG의 최상위 구조는 단순하지만, 모든 상장사가 ㈜LG의 직접 자회사는 아닙니다.
+        LG에너지솔루션은 ㈜LG가 아니라 LG화학을 거쳐 연결되는 대표 상장 손자회사입니다.
+      </p>
+      <table class="lgo-layer-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>회사</th>
+            <th>연결 방식</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_DIRECT_INDIRECT_ROWS.map((row) => (
+              <tr>
+                <td>{row.type}</td>
+                <td>{row.company}</td>
+                <td>{row.connection}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 3: 오너·핵심 연결 표 -->
+    <section class="content-section" aria-labelledby="facts-title">
+      <h2 id="facts-title">오너 및 핵심 지분 연결</h2>
+      <table class="lgo-fact-table">
+        <thead>
+          <tr>
+            <th>연결</th>
+            <th>지분율</th>
+            <th>기준일</th>
+            <th>신뢰도</th>
+            <th>출처</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_OWNERSHIP_FACTS.map((f) => (
+              <tr>
+                <td>{f.label}</td>
+                <td>{f.ratePercent}%</td>
+                <td>{f.baseDate}</td>
+                <td>
+                  <span class={`lgo-confidence-badge lgo-confidence-badge--${confidenceClass(f.confidence)}`}>
+                    {confidenceLabel(f.confidence)}
+                  </span>
+                </td>
+                <td>
+                  <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">
+                    {f.sourceLabel}
+                  </a>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="ensol-title">
+      <h2 id="ensol-title">㈜LG에서 LG에너지솔루션까지 이어지는 간접 지분 계산</h2>
+      <div class="lgo-flow" aria-label="㈜LG에서 LG에너지솔루션까지 이어지는 지분 연결">
+        <span>㈜LG</span>
+        <span>LG화학</span>
+        <span>LG에너지솔루션</span>
+      </div>
+      <div class="lgo-formula-card">
+        <p class="lgo-formula-card__eyebrow">단순 간접 연결값</p>
+        <strong>34.95% × 79.38% = 약 27.74%</strong>
+        <p>
+          약 27.74%는 지분 경로를 단순 곱한 경제적 연결 참고값입니다.
+          ㈜LG가 LG에너지솔루션 주식 27.74%를 직접 보유하거나 해당 비율의 의결권을 직접 행사한다는 의미는 아닙니다.
+        </p>
+      </div>
+      <table class="lgo-fact-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>값</th>
+            <th>해석</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_ENSOL_CONNECTIONS.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.rate}</td>
+                <td>{row.description}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="owner-ensol-title">
+      <h2 id="owner-ensol-title">최대주주 등 기준 LG에너지솔루션 연결값</h2>
+      <p class="lgo-section-lead">
+        아래 계산은 ㈜LG 최대주주 등 지분율 42.5%를 적용한 참고값입니다.
+        구광모 개인의 직접 지분이나 실질 의결권을 의미하지 않습니다.
+      </p>
+      <table class="lgo-fact-table">
+        <thead>
+          <tr>
+            <th>연결 기준</th>
+            <th>계산값</th>
+            <th>표시</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_OWNER_TO_ENSOL_CONNECTIONS.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.formula}</td>
+                <td>{row.value}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="stock-compare-title">
+      <h2 id="stock-compare-title">㈜LG·LG화학·LG에너지솔루션은 무엇이 다른가</h2>
+      <table class="lgo-comparison-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>㈜LG</th>
+            <th>LG화학</th>
+            <th>LG에너지솔루션</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_THREE_STOCK_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.metric}</td>
+                <td>{row.lgCorp}</td>
+                <td>{row.lgChem}</td>
+                <td>{row.lgEnsol}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="discount-title">
+      <h2 id="discount-title">LG에너지솔루션이 올라도 LG화학은 왜 덜 오를 수 있나</h2>
+      <div class="lgo-insight-grid">
+        {
+          LG_CHEM_DISCOUNT_REASONS.map((item) => (
+            <article>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="spinoff-title">
+      <h2 id="spinoff-title">LG화학 물적분할과 중복상장 구조</h2>
+      <div class="lgo-flow" aria-label="LG화학 배터리 사업 물적분할과 LG에너지솔루션 상장 흐름">
+        <span>LG화학 배터리 사업부</span>
+        <span>물적분할</span>
+        <span>LG에너지솔루션 설립</span>
+        <span>상장</span>
+      </div>
+      <table class="lgo-layer-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>분할 전</th>
+            <th>분할·상장 후</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_SPINOFF_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.item}</td>
+                <td>{row.before}</td>
+                <td>{row.after}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="nav-title">
+      <h2 id="nav-title">㈜LG 지주회사 할인은 어떻게 계산하나</h2>
+      <div class="lgo-formula-card lgo-formula-card--muted">
+        <p class="lgo-formula-card__eyebrow">개념식</p>
+        <strong>할인율 = 1 - ㈜LG 시가총액 ÷ 추정 NAV</strong>
+        <p>
+          추정 NAV는 보유 상장 자회사 지분가치, 비상장 자회사 추정가치, 순현금에서
+          지주회사 비용과 순차입금을 반영해 계산합니다. 시가총액은 계속 변하므로 사용자 직접 입력 방식의 계산기로 확장하기 좋습니다.
+        </p>
+      </div>
+      <table class="lgo-fact-table">
+        <thead>
+          <tr>
+            <th>입력값</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_NAV_FORMULA_ROWS.map((row) => (
+              <tr>
+                <td>{row.input}</td>
+                <td>{row.description}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="depth-title">
+      <h2 id="depth-title">LG그룹 상장 깊이 분석</h2>
+      <p class="lgo-section-lead">
+        LG는 최상위 지분구조는 단순하지만, 사업회사 아래 상장 자회사가 존재해 상장구조까지 모두 단순한 것은 아닙니다.
+      </p>
+      <table class="lgo-layer-table">
+        <thead>
+          <tr>
+            <th>단계</th>
+            <th>회사</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_LISTED_DEPTH_ROWS.map((row) => (
+              <tr>
+                <td>{row.stage}</td>
+                <td>{row.companies}</td>
+                <td>{row.note}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="business-title">
+      <h2 id="business-title">사업축별 LG그룹 지도</h2>
+      <div class="lgo-business-grid">
+        {
+          LG_BUSINESS_AXES.map((item) => (
+            <article>
+              <span>{item.axis}</span>
+              <strong>{item.companies}</strong>
+              <p>{item.business}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="cns-title">
+      <h2 id="cns-title">LG CNS 상장이 ㈜LG에 미치는 영향</h2>
+      <ul class="lgo-check-list">
+        {LG_CNS_LISTING_POINTS.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 섹션 4: 상장 계열사 목록 -->
+    <section class="content-section" aria-labelledby="listed-title">
+      <h2 id="listed-title">상장 계열사 전체 목록 ({LG_META.listedAffiliateCount}개)</h2>
+      <table class="lgo-listed-table">
+        <thead>
+          <tr>
+            <th>회사명</th>
+            <th>종목코드</th>
+            <th>시장</th>
+            <th>구분</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_LISTED_AFFILIATES.map((c) => (
+              <tr>
+                <td>{c.name}</td>
+                <td>{c.stockCode}</td>
+                <td>{c.market}</td>
+                <td>
+                  <span class={`lgo-sector-tag lgo-sector-tag--${c.sector === "FINANCIAL" ? "financial" : "non-financial"}`}>
+                    {c.sector === "FINANCIAL" ? "금융" : "비금융"}
+                  </span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="content-section" aria-labelledby="group-comparison-title">
+      <h2 id="group-comparison-title">삼성·SK·현대차와 비교하면</h2>
+      <table class="lgo-comparison-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>LG</th>
+            <th>삼성</th>
+            <th>SK</th>
+            <th>현대차</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            LG_GROUP_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.metric}</td>
+                <td>{row.lg}</td>
+                <td>{row.samsung}</td>
+                <td>{row.sk}</td>
+                <td>{row.hyundai}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 섹션 5: CTA -->
+    <section class="content-section" aria-labelledby="cta-title">
+      <h2 id="cta-title">이어서 확인하면 좋은 콘텐츠</h2>
+      <div class="lgo-cta-group">
+        <a href="/reports/samsung-group-ownership-2026/">삼성그룹 지분구조 →</a>
+        <a href="/reports/sk-group-ownership-2026/">SK그룹 지분구조 →</a>
+        <a href="/reports/hyundai-motor-group-ownership-2026/">현대차그룹 지분구조 →</a>
+        <a href="/reports/hanwha-group-ownership-2026/">한화그룹 지분구조 →</a>
+        <a href="/reports/lotte-group-ownership-2026/">롯데그룹 지분구조 →</a>
+        <a href="/reports/hd-hyundai-group-ownership-2026/">HD현대그룹 지분구조 →</a>
+        <a href="/reports/ls-group-ownership-2026/">LS그룹 지분구조 →</a>
+        <a href="/reports/doosan-group-ownership-2026/">두산그룹 지분구조 →</a>
+        <a href="/reports/group-ownership-hub-2026/">9개 그룹 비교 허브 →</a>
+        <a href="/tools/">계산기 전체 보기 →</a>
+        <a href="/reports/">리포트 전체 보기 →</a>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="LG그룹 지분구조, 왜 가장 단순하다고 하는가"
+      intro={LG_SEO_INTRO}
+      criteria={LG_SEO_CRITERIA}
+      faq={LG_FAQ.map((f) => ({ question: f.question, answer: f.answer }))}
+      related={[
+        { href: "/reports/samsung-group-ownership-2026/", label: "삼성그룹 지분구조 2026" },
+        { href: "/reports/sk-group-ownership-2026/", label: "SK그룹 지분구조 2026" },
+        { href: "/reports/hyundai-motor-group-ownership-2026/", label: "현대차그룹 지분구조 2026" },
+        { href: "/reports/hanwha-group-ownership-2026/", label: "한화그룹 지분구조 2026" },
+        { href: "/reports/lotte-group-ownership-2026/", label: "롯데그룹 지분구조 2026" },
+        { href: "/reports/hd-hyundai-group-ownership-2026/", label: "HD현대그룹 지분구조 2026" },
+        { href: "/reports/ls-group-ownership-2026/", label: "LS그룹 지분구조 2026" },
+        { href: "/reports/doosan-group-ownership-2026/", label: "두산그룹 지분구조 2026" },
+        { href: "/reports/group-ownership-hub-2026/", label: "9개 그룹 지분구조 비교 허브" },
+        { href: "/reports/", label: "리포트 전체 보기" },
+        { href: "/tools/", label: "계산기 전체 보기" },
+      ]}
+    />
+  </main>
+</BaseLayout>
