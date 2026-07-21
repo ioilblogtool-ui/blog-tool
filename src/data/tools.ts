@@ -457,6 +457,20 @@ export const tools: ToolMeta[] = [
     ]
   },
   {
+    slug: "health-insurance-rate-increase-2026",
+    title: "건강보험료 인상 계산기 2026",
+    description: "2026년 건강보험료율 인상 기준으로 월급·연봉별 2025년 대비 월 증가액과 연간 부담 변화를 비교합니다.",
+    order: 4.35,
+    eyebrow: "건보료 인상",
+    category: "calculator",
+    iframeReady: true,
+    badges: ["신규", "2026", "4대보험"],
+    previewStats: [
+      { label: "건강보험료율", value: "7.19%", context: "2026년" },
+      { label: "비교 기준", value: "2025→2026", context: "월·연 증가액" }
+    ]
+  },
+  {
     slug: "health-insurance-premium-calculator",
     title: "건강보험료 계산기 2026",
     description: "2026년 건강보험료율과 장기요양보험료율을 기준으로 직장가입자·지역가입자 월 보험료와 퇴직 전환 부담을 계산합니다.",
@@ -1532,6 +1546,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "school-uniform-cost-calculator-2026",
+    title: "중학교 교복비 계산기 2026",
+    description: "동복·하복·생활복·체육복 품목과 수량을 입력하면 첫 교복 구매 총액과 지원금 차감 후 본인부담액을 계산합니다.",
+    order: 26.2,
+    eyebrow: "교복비",
+    category: "parenting",
+    iframeReady: true,
+    badges: ["신규", "교육비", "2026"],
+    previewStats: [
+      { label: "정장형 평균", value: "26.6만", context: "교육부 전수조사" },
+      { label: "생활형 평균", value: "15.3만", context: "교육부 전수조사" }
+    ],
+  },
+  {
     slug: "daycare-vs-babysitter-cost-2026",
     title: "어린이집 vs 가정보육 비용 비교 계산기 2026",
     description: "자녀 나이와 보육 형태를 입력하면 어린이집 순부담액과 베이비시터·단축근무 가정보육 비용을 정부지원금까지 반영해 바로 비교합니다.",
@@ -2268,6 +2296,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "1~3구간 지원", value: "연 600만" },
       { label: "2026 수혜 인원", value: "150만명" },
+    ],
+  },
+  {
+    slug: "education-benefit-eligibility-calculator-2026",
+    title: "2026 교육급여 계산기",
+    description: "가구원 수와 월 소득인정액, 초중고 학생 수를 입력하면 교육급여 기준 통과 여부와 예상 교육활동지원비를 계산합니다.",
+    order: 72.15,
+    eyebrow: "교육급여",
+    category: "support",
+    iframeReady: true,
+    badges: ["신규", "교육비", "2026"],
+    previewStats: [
+      { label: "초등", value: "50.2만", context: "교육활동지원비" },
+      { label: "중·고등", value: "69.9만~86만", context: "연 1회" }
     ],
   },
   {

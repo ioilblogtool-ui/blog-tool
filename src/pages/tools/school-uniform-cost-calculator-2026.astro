@@ -1,0 +1,290 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SUC_DEFAULT_INPUT,
+  SUC_DEFAULT_ITEMS,
+  SUC_FAQ,
+  SUC_GROUP_LABELS,
+  SUC_META,
+  SUC_OFFICIAL_AVERAGES,
+  SUC_PRESETS,
+  SUC_RELATED_LINKS,
+  SUC_SCENARIOS,
+  SUC_SEO_CONTENT,
+  SUC_SOURCES,
+  calcSchoolUniformCost,
+} from "../../data/schoolUniformCostCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${SUC_META.slug}/`;
+const defaultResult = calcSchoolUniformCost(SUC_DEFAULT_INPUT);
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const groupEntries = Object.entries(SUC_GROUP_LABELS);
+const pageData = {
+  defaultInput: SUC_DEFAULT_INPUT,
+  items: SUC_DEFAULT_ITEMS,
+  presets: SUC_PRESETS,
+  scenarios: SUC_SCENARIOS,
+  groupLabels: SUC_GROUP_LABELS,
+};
+---
+
+<BaseLayout
+  title={SUC_META.seoTitle}
+  description={SUC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: SUC_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: SUC_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: SUC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={SUC_META.slug} pageClass="suc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="2026 교육비"
+        title={SUC_META.title}
+        description="동복·하복·생활복·체육복 단가와 수량을 입력하면 첫 교복 구매 총액과 지원금 차감 후 본인부담액을 계산합니다."
+        badges={["교복비", "중·고등학교", "2026"]}
+      />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          SUC_META.dataNote,
+          `교육부 조사 기준 정장형 평균 낙찰가는 ${won(SUC_OFFICIAL_AVERAGES.formalAverageBidPrice)}, 생활형 평균 낙찰가는 ${won(SUC_OFFICIAL_AVERAGES.casualAverageBidPrice)}입니다.`,
+          "지원금은 지역과 학교별 차이가 커서 자동 판정하지 않고 직접 입력합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="sucResetBtn" copyId="sucCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 설정</p>
+            <h2 class="panel__title">학교급·교복 유형</h2>
+          </div>
+        </div>
+
+        <section class="suc-input-section">
+          <h3>학교급</h3>
+          <div class="suc-segment">
+            <button type="button" class="is-active" data-suc-level="middle">중학교</button>
+            <button type="button" data-suc-level="high">고등학교</button>
+          </div>
+        </section>
+
+        <section class="suc-input-section">
+          <h3>교복 유형</h3>
+          <div class="suc-option-grid">
+            {SUC_PRESETS.map((preset) => (
+              <button
+                type="button"
+                class:list={["suc-option-card", preset.id === SUC_DEFAULT_INPUT.uniformType && "is-active"]}
+                data-suc-type={preset.id}
+              >
+                <strong>{preset.label}</strong>
+                <span>{preset.description}</span>
+                <em>{won(preset.averageBidPrice)} 평균</em>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section class="suc-input-section">
+          <h3>구매 시나리오</h3>
+          <div class="suc-option-grid">
+            {Object.entries(SUC_SCENARIOS).map(([id, scenario]) => (
+              <button
+                type="button"
+                class:list={["suc-option-card", id === SUC_DEFAULT_INPUT.scenario && "is-active"]}
+                data-suc-scenario={id}
+              >
+                <strong>{scenario.label}</strong>
+                <span>{scenario.description}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">지원금</p>
+            <h2 class="panel__title">지원금 차감</h2>
+          </div>
+          <p class="panel-heading__summary">지역별 교복 지원금이 있으면 직접 입력하세요.</p>
+        </div>
+        <label class="suc-check-field">
+          <input type="checkbox" data-suc-support-enabled checked />
+          <span>교복 지원금 적용</span>
+        </label>
+        <label class="field">
+          <span>지원금 금액</span>
+          <input type="text" inputmode="numeric" data-suc-support-amount value={SUC_DEFAULT_INPUT.supportAmount.toLocaleString("ko-KR")} />
+          <small>실제 지급 방식은 학교 안내문과 교육청 공지를 확인하세요.</small>
+        </label>
+        <label class="field">
+          <span>추가 구매 예비비</span>
+          <input type="range" min="0" max="30" step="1" data-suc-extra-ratio value={SUC_DEFAULT_INPUT.extraRiskRatio * 100} />
+          <small><strong data-suc-extra-label>5%</strong>를 첫 구매 총액에 추가 예산으로 반영합니다.</small>
+        </label>
+      </article>
+    </Fragment>
+
+    <article class="panel suc-result-panel" aria-live="polite">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 결과</p>
+          <h2 class="panel__title">첫 교복 구매 예상액</h2>
+        </div>
+        <p class="panel-heading__summary" data-suc-summary>중학교 혼합형 표준 구매 기준</p>
+      </div>
+      <div class="suc-kpi-grid">
+        <article class="suc-kpi suc-kpi--main">
+          <span>첫 구매 총액</span>
+          <strong data-suc-result="uniformSubtotal">{won(defaultResult.uniformSubtotal)}</strong>
+          <small>품목별 단가 × 수량 합계</small>
+        </article>
+        <article class="suc-kpi">
+          <span>지원금 차감 후</span>
+          <strong data-suc-result="outOfPocket">{won(defaultResult.outOfPocket)}</strong>
+          <small data-suc-result="supportApplied">지원금 {won(defaultResult.supportApplied)} 반영</small>
+        </article>
+        <article class="suc-kpi">
+          <span>추가 구매 예비비</span>
+          <strong data-suc-result="extraRiskBudget">{won(defaultResult.extraRiskBudget)}</strong>
+          <small>세탁·분실·성장 여유분</small>
+        </article>
+        <article class="suc-kpi">
+          <span>1년차 준비 예산</span>
+          <strong data-suc-result="firstYearBudget">{won(defaultResult.firstYearBudget)}</strong>
+          <small>본인부담액 + 예비비</small>
+        </article>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">품목 입력</p>
+          <h2 class="panel__title">학교 안내문 단가로 수정</h2>
+        </div>
+        <p class="panel-heading__summary">단가와 수량을 바꾸면 결과가 즉시 다시 계산됩니다.</p>
+      </div>
+
+      <div class="suc-item-list">
+        {groupEntries.map(([group, label]) => (
+          <section class="suc-item-group" data-suc-group={group}>
+            <h3>{label}</h3>
+            {SUC_DEFAULT_ITEMS.filter((item) => item.group === group).map((item) => (
+              <div class="suc-item-row" data-suc-item-row={item.id}>
+                <div class="suc-item-row__meta">
+                  <strong>{item.label}</strong>
+                  <span>{item.badge}</span>
+                  {item.note && <small>{item.note}</small>}
+                </div>
+                <label>
+                  <span>단가</span>
+                  <input type="text" inputmode="numeric" data-suc-item-price={item.id} value={item.defaultUnitPrice.toLocaleString("ko-KR")} />
+                </label>
+                <label>
+                  <span>수량</span>
+                  <input type="number" min={item.minQuantity} max={item.maxQuantity} step="1" data-suc-item-quantity={item.id} value={item.defaultQuantity} />
+                </label>
+                <em data-suc-item-total={item.id}>-</em>
+              </div>
+            ))}
+          </section>
+        ))}
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">구성 분석</p>
+          <h2 class="panel__title">그룹별 합계와 평균 대비</h2>
+        </div>
+      </div>
+      <div class="suc-breakdown-grid" data-suc-group-breakdown></div>
+      <div class="suc-average-card">
+        <strong data-suc-result="averageLabel">평균권</strong>
+        <p data-suc-result="averageDescription">선택한 교복 유형 평균 낙찰가와 비교한 참고 판정입니다.</p>
+      </div>
+    </article>
+
+    <article class="panel suc-checklist">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">안내문 체크</p>
+          <h2 class="panel__title">학교 안내문에서 확인할 것</h2>
+        </div>
+      </div>
+      <ul>
+        <li>동복·하복·생활복·체육복이 필수인지 선택인지 확인</li>
+        <li>학교주관구매 단가와 개별 추가 구매 단가가 같은지 확인</li>
+        <li>교복 지원금이 현금인지, 바우처인지, 학교 납부금 차감인지 확인</li>
+        <li>명찰, 마크, 수선비, 배송비가 별도인지 확인</li>
+      </ul>
+    </article>
+
+    <article class="panel suc-source-list">
+      <h2>공식 자료</h2>
+      <ul>
+        {SUC_SOURCES.map((source) => (
+          <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a></li>
+        ))}
+      </ul>
+    </article>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={SUC_SEO_CONTENT.introTitle}
+        intro={SUC_SEO_CONTENT.intro}
+        inputPoints={SUC_SEO_CONTENT.inputPoints}
+        criteria={SUC_SEO_CONTENT.criteria}
+        faq={SUC_FAQ}
+        related={SUC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="suc-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script src={withBase("/scripts/school-uniform-cost-calculator-2026.js")} defer></script>
+</BaseLayout>

@@ -1,0 +1,287 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  HIRI_DEFAULT_INPUT,
+  HIRI_EXAMPLE_WAGES,
+  HIRI_FAQ,
+  HIRI_META,
+  HIRI_PRESETS,
+  HIRI_RATES,
+  HIRI_SEO_CONTENT,
+  HIRI_SOURCES,
+  calculateHiriIncrease,
+} from "../../data/healthInsuranceRateIncrease2026";
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const faqSchema = HIRI_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+
+const defaultResult = calculateHiriIncrease(HIRI_DEFAULT_INPUT.monthlyWage);
+const pageData = {
+  rates: HIRI_RATES,
+  presets: HIRI_PRESETS,
+  exampleWages: HIRI_EXAMPLE_WAGES,
+  defaultInput: HIRI_DEFAULT_INPUT,
+};
+---
+
+<BaseLayout
+  title={HIRI_META.title}
+  description={HIRI_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "건강보험료 인상 계산기 2026",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    inLanguage: "ko-KR",
+    isAccessibleForFree: true,
+    url: `${siteUrl}${HIRI_META.canonical}`,
+    description: HIRI_META.description,
+    provider: { "@type": "Organization", name: "비교계산소" },
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="health-insurance-rate-increase-2026" pageClass="hiri-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="2026 건강보험료 인상"
+        title="건강보험료 인상 계산기 2026"
+        description="월 보수월액이나 세전 연봉을 입력하면 2025년 대비 2026년 건강보험료와 장기요양보험료가 매달 얼마나 늘어나는지 계산합니다."
+      />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          "2026년 건강보험료율 7.19%, 근로자 부담 3.595%, 장기요양보험료율 건강보험료 대비 13.14%를 적용합니다.",
+          "2025년 기준은 건강보험료율 7.09%, 근로자 부담 3.545%, 장기요양보험료율 12.95%로 비교합니다.",
+          "실제 급여명세서 금액은 보수월액 신고, 비과세 급여, 정산, 감면 여부에 따라 달라질 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="hiriResetBtn" copyId="hiriCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력 방식</p>
+            <h2 class="panel__title">월급 또는 연봉 입력</h2>
+          </div>
+          <p class="panel-heading__summary">월 보수월액을 알고 있으면 월급 기준이 가장 정확합니다.</p>
+        </div>
+
+        <div class="hiri-segment" role="tablist" aria-label="소득 입력 방식">
+          <button type="button" class="hiri-segment__button is-active" data-hiri-mode="monthlyWage">월 보수월액</button>
+          <button type="button" class="hiri-segment__button" data-hiri-mode="annualSalary">세전 연봉</button>
+        </div>
+
+        <div class="form-grid">
+          <label class="field hiri-monthly-field">
+            <span>월 보수월액</span>
+            <input type="text" inputmode="numeric" data-hiri-input="monthlyWage" value="3,000,000" />
+            <small>건강보험료 산정에 쓰는 월 보수 기준 금액입니다.</small>
+          </label>
+          <label class="field hiri-annual-field" hidden>
+            <span>세전 연봉</span>
+            <input type="text" inputmode="numeric" data-hiri-input="annualSalary" value="36,000,000" />
+            <small>12개월로 나눈 값을 월 보수월액으로 계산합니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">월급 프리셋</h2>
+          </div>
+        </div>
+        <div class="hiri-preset-grid">
+          {HIRI_PRESETS.map((preset, index) => (
+            <button
+              type="button"
+              class={`hiri-preset-btn${index === 1 ? " is-active" : ""}`}
+              data-hiri-preset={preset.monthlyWage}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">보기 옵션</p>
+            <h2 class="panel__title">부담 주체 선택</h2>
+          </div>
+        </div>
+        <div class="hiri-view-options" aria-label="부담 주체 보기">
+          <button type="button" data-hiri-view="employeeOnly">근로자만</button>
+          <button type="button" class="is-active" data-hiri-view="employeeAndEmployer">근로자·사업주</button>
+          <button type="button" data-hiri-view="total">총 부담</button>
+        </div>
+      </article>
+    </Fragment>
+
+    <article class="panel hiri-result-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">인상 결과</p>
+          <h2 class="panel__title">2025년 대비 월 부담 증가액</h2>
+        </div>
+        <p class="panel-heading__summary" id="hiriBasisText">월 보수월액 3,000,000원 기준</p>
+      </div>
+
+      <div class="hiri-kpi-grid">
+        <div class="hiri-kpi-card hiri-kpi-card--main">
+          <p class="hiri-kpi-label">근로자 월 증가액</p>
+          <strong class="hiri-kpi-value" id="hiriMonthlyIncrease">
+            +{defaultResult.increase.employee.toLocaleString("ko-KR")}원
+          </strong>
+          <span>건강보험료와 장기요양보험료 합산</span>
+        </div>
+        <div class="hiri-kpi-card">
+          <p class="hiri-kpi-label">근로자 연간 증가액</p>
+          <strong class="hiri-kpi-value" id="hiriAnnualIncrease">
+            +{(defaultResult.increase.employee * 12).toLocaleString("ko-KR")}원
+          </strong>
+          <span>월 증가액을 12개월로 환산</span>
+        </div>
+        <div class="hiri-kpi-card">
+          <p class="hiri-kpi-label">2026년 근로자 부담</p>
+          <strong class="hiri-kpi-value" id="hiriEmployee2026">
+            {defaultResult.current.employee.total.toLocaleString("ko-KR")}원
+          </strong>
+          <span>월 건강보험료 + 장기요양보험료</span>
+        </div>
+        <div class="hiri-kpi-card">
+          <p class="hiri-kpi-label">2025년 근로자 부담</p>
+          <strong class="hiri-kpi-value" id="hiriEmployee2025">
+            {defaultResult.previous.employee.total.toLocaleString("ko-KR")}원
+          </strong>
+          <span>같은 보수월액 기준 비교</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">상세 비교</p>
+          <h2 class="panel__title">건강보험료·장기요양보험료 분해</h2>
+        </div>
+      </div>
+      <div class="hiri-table-wrap">
+        <table class="hiri-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>2025년</th>
+              <th>2026년</th>
+              <th>월 증가액</th>
+              <th>연 증가액</th>
+            </tr>
+          </thead>
+          <tbody id="hiriBreakdownTable"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">소득 구간 예시</p>
+          <h2 class="panel__title">월급별 인상분 빠른 비교</h2>
+        </div>
+      </div>
+      <div class="hiri-table-wrap">
+        <table class="hiri-table">
+          <thead>
+            <tr>
+              <th>월 보수월액</th>
+              <th>2025년 근로자 부담</th>
+              <th>2026년 근로자 부담</th>
+              <th>월 증가액</th>
+              <th>연 증가액</th>
+            </tr>
+          </thead>
+          <tbody id="hiriExampleTable"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="panel hiri-rate-card">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">공식 요율</p>
+          <h2 class="panel__title">2025년과 2026년 적용 기준</h2>
+        </div>
+      </div>
+      <div class="hiri-rate-grid">
+        <div>
+          <span>건강보험료율</span>
+          <strong>7.09% → 7.19%</strong>
+        </div>
+        <div>
+          <span>근로자 부담률</span>
+          <strong>3.545% → 3.595%</strong>
+        </div>
+        <div>
+          <span>장기요양보험료율</span>
+          <strong>12.95% → 13.14%</strong>
+        </div>
+        <div>
+          <span>지역가입자 점수당 금액</span>
+          <strong>208.4원 → 211.5원</strong>
+        </div>
+      </div>
+      <p class="hiri-rate-note">
+        지역가입자 점수당 금액은 2026년에 3.1원 증가합니다. 다만 이 계산기는 직장가입자 보수월액 기준 인상분 비교에 초점을 둡니다.
+      </p>
+    </article>
+
+    <article class="panel hiri-source-list">
+      <h2>공식 자료</h2>
+      <ul>
+        {HIRI_SOURCES.map((source) => (
+          <li><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a></li>
+        ))}
+      </ul>
+    </article>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="건강보험료 인상 계산기 활용법"
+        intro={HIRI_SEO_CONTENT.intro}
+        inputPoints={HIRI_SEO_CONTENT.inputPoints}
+        criteria={HIRI_SEO_CONTENT.criteria}
+        faq={HIRI_FAQ}
+        related={HIRI_SEO_CONTENT.related}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="hiri-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script src={withBase("/scripts/health-insurance-rate-increase-2026.js")} defer></script>
+</BaseLayout>

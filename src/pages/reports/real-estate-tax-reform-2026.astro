@@ -1,0 +1,388 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  RTR_META,
+  RTR_TIMELINE,
+  RTR_REVIEW_ITEMS,
+  RTR_CURRENT_POLICY,
+  RTR_EXPLAINERS,
+  RTR_FAIR_MARKET_SIMULATION,
+  RTR_SIMULATION_NOTE,
+  RTR_LTD_CURRENT,
+  RTR_LAW_VS_DECREE,
+  RTR_IMPACT_BY_TYPE,
+  RTR_CHECKLIST,
+  RTR_FAQ,
+  RTR_RELATED_LINKS,
+  RTR_SOURCE_TABLE,
+} from "../../data/realEstateTaxReform2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${RTR_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: RTR_META.title,
+    description: RTR_META.description,
+    dateModified: RTR_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: RTR_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: RTR_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={RTR_META.seoTitle}
+  description={RTR_META.seoDescription}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page rtr-page" data-report="real-estate-tax-reform-2026">
+    <CalculatorHero
+      eyebrow="부동산 세금 리포트"
+      title={RTR_META.title}
+      description="종합부동산세 과세 기준, 공정시장가액비율, 장기보유특별공제 개편 방안이 논의되고 있습니다. 구체적인 세율과 공제율은 아직 확정되지 않았습니다."
+      badges={["정부 의견수렴 중", "7월 23일 대토론회", "종부세", "장특공제"]}
+    />
+
+    <InfoNotice
+      title="검토 단계 안내"
+      lines={[
+        RTR_META.dataNote,
+        `현재 단계: ${RTR_META.policyStatusLabel} · ${RTR_META.nextMilestone}`,
+      ]}
+    />
+
+    <!-- 1. 한눈에 보는 현재 단계 -->
+    <section class="content-section rtr-status-section" aria-labelledby="rtr-status-title">
+      <div class="rtr-status-card">
+        <span class="rtr-status-badge" data-status={RTR_META.policyStatus}>
+          {RTR_META.policyStatusLabel}
+        </span>
+        <h2 id="rtr-status-title">2026 부동산 세제개편은 아직 확정되지 않았습니다</h2>
+        <p>{RTR_META.nextMilestone}. 이 페이지는 정부 확정안이 아니라 재정경제부 토론회, 대통령 발언, 주요 보도를 바탕으로 정리한 사전 분석 자료입니다.</p>
+      </div>
+      <ol class="rtr-timeline">
+        {RTR_TIMELINE.map((step) => (
+          <li
+            class:list={[
+              "rtr-timeline-step",
+              step.isCurrent && "rtr-timeline-step--current",
+              step.isDone && "rtr-timeline-step--done",
+            ]}
+          >
+            <span class="rtr-timeline-dot" aria-hidden="true"></span>
+            <strong>{step.label}{step.isCurrent && <em class="sr-only"> (현재 단계)</em>}</strong>
+            <span>{step.dateLabel}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- 2. 현행 vs 논의되는 방향 -->
+    <section class="content-section rtr-compare-section" aria-labelledby="rtr-compare-title">
+      <div class="rtr-section-heading">
+        <p>정부안과 전문가 의견 구분</p>
+        <h2 id="rtr-compare-title">현행 vs 논의되는 방향</h2>
+        <span>"논의되는 방향"은 확정된 정부안이 아닙니다. 항목마다 근거 성격(전문가 제언 / 정부·국회 논의 / 원칙 제시 / 전망 단계)이 다릅니다.</span>
+      </div>
+      <div class="table-wrap rtr-table-wrap" aria-label="2026 부동산 세제개편 논의 항목 비교">
+        <table class="rtr-compare-table">
+          <caption>2026 부동산 세제개편 논의 항목 비교표</caption>
+          <thead>
+            <tr>
+              <th>쟁점</th>
+              <th>현행 제도</th>
+              <th>논의되는 방향</th>
+              <th>근거 성격</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RTR_REVIEW_ITEMS.map((item) => (
+              <tr>
+                <td><strong>{item.category}</strong></td>
+                <td>{item.current}</td>
+                <td>{item.reviewDirection}</td>
+                <td>
+                  <span class="rtr-source-type-badge" data-source-type={item.sourceType}>{item.sourceType}</span>
+                  <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel}</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="rtr-table-note">※ 특히 공정시장가액비율 80%와 보유가액 중심 과세는 2026년 7월 16일 토론회에서 나온 전문가 의견이며, 정부가 채택을 확정한 것이 아닙니다.</p>
+    </section>
+
+    <!-- 3. 이미 시행 중인 제도 -->
+    <section class="content-section rtr-current-section" aria-labelledby="rtr-current-title">
+      <div class="rtr-current-box">
+        <span class="rtr-current-badge">현행 제도 (시행 완료)</span>
+        <h2 id="rtr-current-title">{RTR_CURRENT_POLICY.title}</h2>
+        <p>{RTR_CURRENT_POLICY.body}</p>
+        <a href={RTR_CURRENT_POLICY.sourceUrl} target="_blank" rel="noopener noreferrer">{RTR_CURRENT_POLICY.sourceLabel}</a>
+      </div>
+    </section>
+
+    <!-- 4. 개념 설명 -->
+    <section class="content-section rtr-explainer-section" aria-labelledby="rtr-explainer-title">
+      <div class="rtr-section-heading">
+        <p>용어가 낯설다면</p>
+        <h2 id="rtr-explainer-title">공정시장가액비율·과세기준·장특공제, 쉽게 설명하면</h2>
+      </div>
+      <div class="rtr-explainer-grid">
+        {RTR_EXPLAINERS.map((item) => (
+          <article class="rtr-explainer-card">
+            <h3>{item.question}</h3>
+            <p>{item.answer}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 5. 공정시장가액비율 시뮬레이션 -->
+    <section class="content-section rtr-simulation-section" aria-labelledby="rtr-simulation-title">
+      <div class="rtr-section-heading">
+        <p>숫자로 보기</p>
+        <h2 id="rtr-simulation-title">공정시장가액비율 60% · 70% · 80% 과세표준 비교</h2>
+        <span>공시가격에서 공정시장가액비율을 곱한 과세표준만 비교한 참고용 시뮬레이션입니다.</span>
+      </div>
+      <div class="table-wrap rtr-table-wrap" aria-label="공정시장가액비율별 과세표준 시뮬레이션">
+        <table class="rtr-simulation-table">
+          <caption>공정시장가액비율 60%·70%·80% 적용 시 과세표준 비교 (참고용)</caption>
+          <thead>
+            <tr>
+              <th>과세표준 계산 전 금액</th>
+              <th>60% 적용</th>
+              <th>70% 적용</th>
+              <th>80% 적용</th>
+              <th>60% 대비 증가</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RTR_FAIR_MARKET_SIMULATION.map((row) => (
+              <tr>
+                <td>{row.baseAmount}</td>
+                <td>{row.at60}</td>
+                <td>{row.at70}</td>
+                <td>{row.at80}</td>
+                <td class="rtr-simulation-increase">{row.increaseVs60}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="rtr-table-note">{RTR_SIMULATION_NOTE}</p>
+      <div class="rtr-cta-band">
+        <div>
+          <strong>내 공시가격 기준으로 직접 확인하세요</strong>
+          <p>아파트 보유세 계산기에서 공정시장가액비율을 직접 조정해 재산세·종부세를 계산할 수 있습니다.</p>
+        </div>
+        <a class="button button--primary" href={withBase("/tools/apartment-holding-tax/")}>보유세 계산하기</a>
+      </div>
+    </section>
+
+    <!-- 6. 장기보유특별공제 현행 구조 -->
+    <section class="content-section rtr-ltd-section" aria-labelledby="rtr-ltd-title">
+      <div class="rtr-section-heading">
+        <p>현행 기준 먼저 확인</p>
+        <h2 id="rtr-ltd-title">1세대 1주택 장기보유특별공제 현행 구조</h2>
+        <span>보유기간과 거주기간에 각각 공제율이 적용되며, 합계 최대 80%까지 공제됩니다.</span>
+      </div>
+      <div class="table-wrap rtr-table-wrap" aria-label="1세대 1주택 장기보유특별공제 현행 구조">
+        <table class="rtr-ltd-table">
+          <caption>1세대 1주택 장기보유특별공제 현행 공제율</caption>
+          <thead>
+            <tr>
+              <th>기간</th>
+              <th>보유기간 공제율</th>
+              <th>거주기간 공제율</th>
+              <th>합계</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RTR_LTD_CURRENT.map((row) => (
+              <tr>
+                <td>{row.period}</td>
+                <td>{row.holdingRate}</td>
+                <td>{row.residenceRate}</td>
+                <td class="rtr-ltd-total">{row.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="rtr-table-note">2026년 논의는 이 중 단순 보유에 따른 공제를 줄이고, 실제 거주에 더 큰 가중치를 두는 방향입니다. 구체적인 개편 공제율은 확정되지 않았습니다.</p>
+    </section>
+
+    <!-- 7. 법 개정 vs 시행령 개정 -->
+    <section class="content-section rtr-procedure-section" aria-labelledby="rtr-procedure-title">
+      <div class="rtr-section-heading">
+        <p>실제 시행 가능성 판단</p>
+        <h2 id="rtr-procedure-title">법 개정이 필요한 항목, 시행령만으로 되는 항목</h2>
+        <span>정부 발표안에 포함되더라도 즉시 시행되는 것은 아닙니다.</span>
+      </div>
+      <div class="table-wrap rtr-table-wrap" aria-label="개편 항목별 필요 절차">
+        <table class="rtr-procedure-table">
+          <caption>개편 항목별 필요 절차와 상대적 속도</caption>
+          <thead>
+            <tr>
+              <th>개편 항목</th>
+              <th>필요한 절차</th>
+              <th>상대적 속도</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RTR_LAW_VS_DECREE.map((row) => (
+              <tr>
+                <td>{row.item}</td>
+                <td>{row.procedure}</td>
+                <td>{row.speed}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="rtr-table-note">법률 개정이 필요한 항목은 국회 심의를 거쳐야 하며, 시행령으로 조정할 수 있는 항목은 정부 절차만으로 변경될 수 있습니다.</p>
+    </section>
+
+    <!-- 8. 유형별 예상 영향 -->
+    <section class="content-section rtr-impact-section" aria-labelledby="rtr-impact-title">
+      <div class="rtr-section-heading">
+        <p>나는 어디에 해당하나</p>
+        <h2 id="rtr-impact-title">유형별로 어떻게 달라질 수 있나</h2>
+        <span>세제개편 영향은 주택 수만으로 판단하기 어렵습니다. 주택 가액, 실거주 기간, 보유 기간에 따라 달라질 수 있습니다.</span>
+      </div>
+      <div class="rtr-impact-grid">
+        {RTR_IMPACT_BY_TYPE.map((card) => (
+          <article class="rtr-impact-card" data-direction={card.direction}>
+            <span class="rtr-impact-direction">{card.direction}</span>
+            <h3>{card.title}</h3>
+            <p>{card.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 9. 체크리스트 -->
+    <section class="content-section rtr-checklist-section" aria-labelledby="rtr-checklist-title">
+      <div class="rtr-section-heading">
+        <p>지금 확인할 것</p>
+        <h2 id="rtr-checklist-title">사용자 행동 체크리스트</h2>
+      </div>
+      <ul class="rtr-checklist">
+        {RTR_CHECKLIST.map((item) => (
+          <li class="rtr-checklist-item">
+            <span class="rtr-checklist-box" aria-hidden="true"></span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- 10. 계산기 연결 -->
+    <section class="content-section rtr-cta-section" aria-labelledby="rtr-cta-title">
+      <div class="rtr-section-heading">
+        <p>지금 기준으로 먼저 확인</p>
+        <h2 id="rtr-cta-title">내 세금은 현재 기준으로 미리 계산해보세요</h2>
+        <span>개편안이 확정되기 전까지는 현재 제도가 그대로 적용됩니다.</span>
+      </div>
+      <div class="rtr-cta-grid">
+        <a class="rtr-cta-card" href={withBase("/tools/apartment-holding-tax/")}>
+          <strong>아파트 보유세 계산기</strong>
+          <p>공정시장가액비율을 직접 조정해 재산세·종부세를 계산합니다.</p>
+        </a>
+        <a class="rtr-cta-card" href={withBase("/tools/capital-gains-tax-calculator/")}>
+          <strong>양도소득세 계산기</strong>
+          <p>장기보유특별공제를 반영한 양도세를 계산합니다.</p>
+        </a>
+        <a class="rtr-cta-card" href={withBase("/tools/real-estate-acquisition-tax/")}>
+          <strong>부동산 취득세 계산기</strong>
+          <p>매수 시 취득세를 미리 계산합니다.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- 11. 출처 및 업데이트 이력 -->
+    <section class="content-section rtr-source-section" aria-labelledby="rtr-source-title">
+      <div class="rtr-section-heading">
+        <p>출처 및 업데이트 이력</p>
+        <h2 id="rtr-source-title">이 페이지가 참고한 자료</h2>
+      </div>
+      <div class="table-wrap rtr-table-wrap" aria-label="출처 목록">
+        <table class="rtr-source-table">
+          <caption>이 리포트가 인용한 출처 목록</caption>
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>출처</th>
+              <th>확인 내용</th>
+              <th>자료 성격</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RTR_SOURCE_TABLE.map((row) => (
+              <tr>
+                <td>{row.date}</td>
+                <td><a href={row.url} target="_blank" rel="noopener noreferrer">{row.source}</a></td>
+                <td>{row.content}</td>
+                <td>{row.nature}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FAQ + 관련 링크 -->
+    <SeoContent
+      introTitle="2026 부동산 세제개편, 지금까지 나온 이야기"
+      intro={[
+        "2026년 부동산 세제개편을 앞두고 종합부동산세 과세 기준, 공정시장가액비율, 양도소득세 장기보유특별공제 개편 방안이 논의되고 있습니다. 재정경제부는 7월 14일부터 16일까지 국토교통부·금융위원회와 함께 공급·금융·세제 주제별 공개 토론회를 열었고, 7월 23일에는 대통령이 주재하는 부동산 국민 대토론회가 예정되어 있습니다.",
+        "다만 2026년 7월 21일 현재 구체적인 세율과 공제율은 확정되지 않았습니다. 이 페이지는 정부 확정안이 아니라 토론회, 대통령 발언, 주요 보도를 바탕으로 정리한 사전 분석 자료이며, 정부 발표 이후 실제 내용으로 갱신됩니다.",
+      ]}
+      inputPoints={[
+        "정부안과 전문가 제언을 구분해 어떤 논의가 어느 단계에 있는지 확인할 수 있습니다.",
+        "공정시장가액비율 60·70·80% 시뮬레이션으로 과세표준 변화를 직접 비교할 수 있습니다.",
+        "법 개정과 시행령 개정 항목을 구분해 실제 시행 가능성을 가늠할 수 있습니다.",
+      ]}
+      criteria={[
+        "종부세 공정시장가액비율: 80% 인상은 전문가 제언이며 정부 확정 수치가 아닙니다.",
+        "인구감소지역 세컨드홈 특례(공시가격 9억 원)는 2025년부터 이미 시행 중인 현행 제도입니다.",
+        "장기보유특별공제 개편은 소득세법 개정이 필요해 국회 심의를 거쳐야 합니다.",
+      ]}
+      faq={RTR_FAQ}
+      related={RTR_RELATED_LINKS.map((link) => ({ href: link.href, label: link.label }))}
+    />
+  </main>
+</BaseLayout>

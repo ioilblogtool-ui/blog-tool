@@ -35,6 +35,93 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-07-20 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 630 | +30% |
+| 노출 | 28,000 | +36.3% |
+| CTR | 2.3% | -0.1%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 성과급 계산기 | 15 | 93 | 16.1 |
+| 2 | 초등교사 월급 | 15 | 84 | 17.9 |
+| 3 | 주거급여 계산기 | 12 | 49 | 24.5 |
+| 4 | 대학교수 연봉 | 11 | 38 | 28.9 |
+| 5 | 삼성전자 성과급 계산기 | 7 | 71 | 9.9 |
+| 6 | 국회의원 재산순위 | 7 | 20 | 35.0 |
+| 7 | 2026 k리그1 구단순위 | 6 | 1,305 | 0.5 |
+| 8 | 이마트 성과급 | 6 | 69 | 8.7 |
+| 9 | 중학교 교사 월급 | 6 | 22 | 27.3 |
+| 11 | 교수 연봉 | 5 | 52 | 9.6 |
+| 12 | 최저시급 월급 세후 | 5 | 43 | 11.6 |
+| 13 | 삼성전기 성과급 예상 | 5 | 15 | 33.3 |
+| 14 | 초등학교 교사 연봉 | 4 | 72 | 5.6 |
+| 15 | 메시 호날두 비교 | 4 | 60 | 6.7 |
+| 16 | 성과급 세금 계산기 | 4 | 44 | 9.1 |
+| 17 | 영통 대장아파트 | 4 | 6 | 66.7 |
+| 18 | 킬리안 음바페 연봉 | 3 | 188 | 1.6 |
+| 19 | 현대자동차 성과급 2026 | 3 | 38 | 7.9 |
+| 20 | 아파트 보유세 계산기 | 3 | 31 | 9.7 |
+| 21 | 아파트 매매 세금 계산기 | 3 | 26 | 11.5 |
+| 22 | 국립대 교수 연봉 | 3 | 22 | 13.6 |
+| 23 | 2026 k리그 연봉순위 | 3 | 10 | 30.0 |
+| 24 | sk하이닉스 성과급 | 2 | 1,647 | 0.1 |
+| 25 | 아파트 경비 월급 | 2 | 115 | 1.7 |
+| 26 | 대한항공 승무원 연봉 | 2 | 35 | 5.7 |
+| 27 | 아르헨티나 연봉 비교 | 2 | 19 | 10.5 |
+| 28 | 2027년 군인 월급 | 2 | 18 | 11.1 |
+| 29 | 생계급여 계산기 | 2 | 17 | 11.8 |
+| 30 | 한화에어로스페이스 성과급 | 2 | 13 | 15.4 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/teacher-salary-2026/ | 51 | 1,270 | 4.0 |
+| 2 | /reports/professor-salary-2026/ | 30 | 256 | 11.7 |
+| 3 | /compare/bonus/ | 23 | 2,747 | 0.8 |
+| 4 | /reports/kleague-salary-comparison-2026/ | 22 | 1,450 | 1.5 |
+| 5 | /tools/bonus-after-tax-calculator/ | 17 | 662 | 2.6 |
+| 6 | /reports/worldcup-squad-salary-total-comparison-2026/ | 17 | 101 | 16.8 |
+| 7 | /tools/postnatal-care-income-eligibility/ | 15 | 179 | 8.4 |
+| 8 | /tools/samsung-electro-mechanics-bonus-calculator-2026/ | 15 | 51 | 29.4 |
+| 9 | /tools/worldcup-prize-money-calculator/ | 14 | 5,382 | 0.3 |
+| 10 | /tools/minimum-wage-2026/ | 14 | 373 | 3.8 |
+| 11 | /tools/teacher-salary-calculator/ | 14 | 325 | 4.3 |
+| 12 | /reports/argentina-worldcup-squad-salary-2026/ | 14 | 109 | 12.8 |
+| 13 | /tools/housing-benefit-income-recognition/ | 14 | 68 | 20.6 |
+| 14 | /tools/samsung-bonus/ | 12 | 614 | 2.0 |
+| 15 | /tools/military-salary-calculator/ | 12 | 139 | 8.6 |
+| 16 | /reports/national-assembly-wealth-2026/ | 11 | 52 | 21.2 |
+| 17 | /tools/apartment-holding-tax/ | 10 | 353 | 2.8 |
+| 18 | /reports/construction-salary-bonus-comparison-2026/ | 9 | 153 | 5.9 |
+| 19 | /reports/retail-food-bonus-comparison-2026/ | 9 | 134 | 6.7 |
+| 20 | /tools/real-estate-acquisition-tax/ | 7 | 525 | 1.3 |
+| 21 | /tools/childcare-short-time-pay-calculator/ | 7 | 240 | 2.9 |
+| 22 | /reports/doctor-salary-2026/ | 7 | 80 | 8.8 |
+| 23 | /tools/sk-hynix-bonus/ | 6 | 725 | 0.8 |
+| 24 | /reports/military-salary-2026/ | 6 | 441 | 1.4 |
+| 25 | /reports/corporate-bonus-comparison-2026/ | 6 | 397 | 1.5 |
+| 26 | /tools/four-insurance-calculator/ | 6 | 221 | 2.7 |
+| 27 | /reports/police-salary-2026/ | 6 | 156 | 3.8 |
+| 28 | /reports/new-employee-salary-2026/ | 6 | 152 | 3.9 |
+| 29 | /reports/flight-attendant-salary-2026/ | 6 | 123 | 4.9 |
+| 30 | /reports/lee-jaemyung-government-officials-assets-salary-2026/ | 6 | 78 | 7.7 |
+
+### 주목 포인트
+- 클릭 630(+30%), 노출 28,000(+36.3%), CTR 2.3%(-0.1%p) — 07-19(클릭480·노출20,000·CTR2.4%) 대비 클릭·노출 모두 반등했지만 노출 증가폭이 더 커 CTR은 소폭 하락.
+- `성과급 계산기`(클릭15·CTR16.1%)·`초등교사 월급`(클릭15·CTR17.9%)이 신규로 키워드 1·2위 등극 — 07-19까지 1위였던 `삼성전자 성과급 계산기`는 5위(클릭7·CTR9.9%)로 밀림. `주거급여 계산기`(3위·CTR24.5%)·`대학교수 연봉`(4위·CTR28.9%)은 상위권 꾸준히 유지.
+- `/tools/worldcup-prize-money-calculator/`(URL 9위, 노출5,382·CTR0.3%)가 신규로 대량노출·저CTR 최상위권 진입 — 노출 규모가 이번 스냅샷 전체 URL 중 1위, 타이틀·디스크립션 보강 최우선 후보.
+- `sk하이닉스 성과급`(키워드 24위, 노출1,647·CTR0.1%)·`2026 k리그1 구단순위`(키워드 7위, 노출1,305·CTR0.5%)·`/compare/bonus/`(URL 3위, 노출2,747·CTR0.8%) — 대량노출·저CTR 구조가 계속 반복되는 3대 축, 지속 모니터링 필요.
+- `이마트 성과급`·`영통 대장아파트`(CTR66.7%)·`킬리안 음바페 연봉`·`한화에어로스페이스 성과급`·`대한항공 승무원 연봉` 등 신규 롱테일 다수 진입. `/tools/housing-benefit-income-recognition/`·`/tools/four-insurance-calculator/`·`/reports/lee-jaemyung-government-officials-assets-salary-2026/`도 URL TOP30 신규 안착 — 콘텐츠 다각화 지속.
+- `제주 국제학교 순위` 관련 키워드가 이번 스냅샷에서 TOP30 이탈 — 최근 며칠간의 안착 흐름이 끊김, 추이 확인 필요.
+- ⚠️ 원본 데이터에 키워드 TOP30 중 10위 항목이 누락되어(9위 다음 11위로 이어짐) 표에 그대로 반영함.
+
+---
+
 ## 2026-07-19 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)

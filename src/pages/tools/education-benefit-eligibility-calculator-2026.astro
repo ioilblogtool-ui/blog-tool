@@ -1,0 +1,310 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  EBE_DEFAULT_INPUT,
+  EBE_FAQ,
+  EBE_META,
+  EBE_PRESETS,
+  EBE_RELATED_LINKS,
+  EBE_SEO_CONTENT,
+  EBE_SOURCES,
+  EBE_SUPPORT_AMOUNTS,
+  EBE_THRESHOLDS,
+  calcEducationBenefit,
+} from "../../data/educationBenefitEligibility2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${EBE_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const defaultResult = calcEducationBenefit(EBE_DEFAULT_INPUT);
+const pageData = {
+  thresholds: EBE_THRESHOLDS,
+  supportAmounts: EBE_SUPPORT_AMOUNTS,
+  defaultInput: EBE_DEFAULT_INPUT,
+  presets: EBE_PRESETS,
+};
+---
+
+<BaseLayout
+  title={EBE_META.seoTitle}
+  description={EBE_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: EBE_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: EBE_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: EBE_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={EBE_META.slug} pageClass="ebe-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="2026 교육급여"
+        title={EBE_META.title}
+        description="가구원 수, 월 소득인정액, 초중고 학생 수를 입력하면 교육급여 가능성과 예상 교육활동지원비를 확인합니다."
+        badges={["교육급여", "교육비 지원", "2026"]}
+      />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          EBE_META.dataNote,
+          "교육급여는 기준 중위소득 50% 이하 가구의 초·중·고 학생이 대상입니다.",
+          "교육비 지원은 시도교육청별 기준이 다르므로 결과에서 확인 후보로만 안내합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="ebeResetBtn" copyId="ebeCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">프리셋으로 바로 계산</h2>
+          </div>
+        </div>
+        <div class="ebe-preset-grid">
+          {EBE_PRESETS.map((preset, index) => (
+            <button type="button" class:list={["ebe-preset-btn", index === 0 && "is-active"]} data-ebe-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">가구 정보</p>
+            <h2 class="panel__title">소득인정액 입력</h2>
+          </div>
+          <p class="panel-heading__summary">소득인정액은 월 소득과 재산 환산액을 함께 반영한 값입니다.</p>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>가구원 수</span>
+            <select data-ebe-input="householdSize">
+              {EBE_THRESHOLDS.map((item) => (
+                <option value={item.householdSize} selected={item.householdSize === EBE_DEFAULT_INPUT.householdSize}>
+                  {item.householdSize}인 가구
+                </option>
+              ))}
+            </select>
+          </label>
+          <label class="field">
+            <span>월 소득인정액</span>
+            <input type="text" inputmode="numeric" data-ebe-input="monthlyRecognizedIncome" value={EBE_DEFAULT_INPUT.monthlyRecognizedIncome.toLocaleString("ko-KR")} />
+            <small>정확한 값은 신청 후 소득·재산 조사로 결정됩니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">학생 수</p>
+            <h2 class="panel__title">학교급별 자녀 입력</h2>
+          </div>
+        </div>
+        <div class="ebe-student-grid">
+          <label class="field">
+            <span>초등학생</span>
+            <input type="number" min="0" max="5" step="1" data-ebe-input="elementaryCount" value={EBE_DEFAULT_INPUT.elementaryCount} />
+            <small>1인당 연 {won(502000)}</small>
+          </label>
+          <label class="field">
+            <span>중학생</span>
+            <input type="number" min="0" max="5" step="1" data-ebe-input="middleCount" value={EBE_DEFAULT_INPUT.middleCount} />
+            <small>1인당 연 {won(699000)}</small>
+          </label>
+          <label class="field">
+            <span>고등학생</span>
+            <input type="number" min="0" max="5" step="1" data-ebe-input="highCount" value={EBE_DEFAULT_INPUT.highCount} />
+            <small>1인당 연 {won(860000)}</small>
+          </label>
+        </div>
+        <label class="ebe-check-field">
+          <input type="checkbox" data-ebe-input="showEducationCostSupport" checked />
+          <span>교육비 지원 확인 후보도 함께 보기</span>
+        </label>
+      </article>
+    </Fragment>
+
+    <article class="panel ebe-result-panel" aria-live="polite">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 결과</p>
+          <h2 class="panel__title">교육급여 가능성</h2>
+        </div>
+        <p class="panel-heading__summary" data-ebe-result="summary">4인 가구 기준</p>
+      </div>
+      <div class="ebe-kpi-grid">
+        <article class="ebe-kpi ebe-kpi--main" data-ebe-status-card>
+          <span>교육급여 가능성</span>
+          <strong data-ebe-result="statusLabel">기준 안</strong>
+          <small data-ebe-result="statusDescription">교육급여 기준 안에 들어올 가능성이 있습니다.</small>
+        </article>
+        <article class="ebe-kpi">
+          <span>기준 대비 차이</span>
+          <strong data-ebe-result="gap">{won(defaultResult.gap)}</strong>
+          <small data-ebe-result="thresholdText">교육급여 기준 {won(defaultResult.threshold.educationThreshold)}</small>
+        </article>
+        <article class="ebe-kpi">
+          <span>선정 시 교육활동지원비</span>
+          <strong data-ebe-result="expectedActivitySupport">{won(defaultResult.expectedActivitySupport)}</strong>
+          <small data-ebe-result="studentCount">학생 2명 기준</small>
+        </article>
+        <article class="ebe-kpi">
+          <span>교육비 지원 확인</span>
+          <strong data-ebe-result="educationCostStatus">확인 권장</strong>
+          <small>지역 교육청 기준으로 별도 심사</small>
+        </article>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">기준선</p>
+          <h2 class="panel__title">소득인정액 위치</h2>
+        </div>
+      </div>
+      <div class="ebe-meter">
+        <span data-ebe-meter-fill style="width: 0%"></span>
+      </div>
+      <p class="ebe-meter-caption" data-ebe-result="meterCaption">교육급여 기준 대비 86% 수준입니다.</p>
+      <div class="ebe-support-breakdown" data-ebe-support-breakdown></div>
+    </article>
+
+    <article class="panel" data-ebe-education-cost-card>
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">교육비 지원</p>
+          <h2 class="panel__title">교육급여 기준을 넘는 경우도 확인</h2>
+        </div>
+      </div>
+      <p class="ebe-notice" data-ebe-result="educationCostDescription">
+        교육급여와 함께 교육비 지원 항목도 확인해보세요.
+      </p>
+      <ul class="ebe-checklist">
+        <li>급식비, 방과후학교 자유수강권, 교육정보화비 지원 여부</li>
+        <li>고등학생은 고교 학비, 입학금, 수업료, 교과서비 지원 여부</li>
+        <li>시도교육청별 소득 기준과 학교별 안내문</li>
+      </ul>
+    </article>
+
+    <article class="panel" data-ebe-high-card hidden>
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">고등학생 안내</p>
+          <h2 class="panel__title">고교 학비 항목을 함께 확인하세요</h2>
+        </div>
+      </div>
+      <p class="ebe-notice">
+        고등학생이 있는 경우 교육활동지원비 외에 무상교육 제외 학교의 입학금·수업료·교과서비 지원 여부를 확인해야 합니다.
+      </p>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">신청 절차</p>
+          <h2 class="panel__title">교육급여 신청 후 바우처까지</h2>
+        </div>
+      </div>
+      <ol class="ebe-timeline">
+        <li><strong>교육급여 신청</strong><span>행정복지센터, 복지로, 교육비 원클릭 신청 시스템</span></li>
+        <li><strong>소득·재산 조사</strong><span>가구 소득인정액과 학생 정보 확인</span></li>
+        <li><strong>급여 결정</strong><span>학교·교육청 통보와 지원 대상 확정</span></li>
+        <li><strong>바우처 별도 신청</strong><span>교육급여 바우처 누리집에서 이용권 신청</span></li>
+      </ol>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">2026 기준표</p>
+          <h2 class="panel__title">가구원 수별 교육급여 기준</h2>
+        </div>
+      </div>
+      <div class="ebe-table-wrap">
+        <table class="ebe-table">
+          <thead>
+            <tr>
+              <th>가구원 수</th>
+              <th>기준 중위소득</th>
+              <th>교육급여 기준</th>
+              <th>교육비 확인선</th>
+            </tr>
+          </thead>
+          <tbody>
+            {EBE_THRESHOLDS.map((row) => (
+              <tr data-ebe-threshold-row={row.householdSize}>
+                <td>{row.householdSize}인</td>
+                <td>{won(row.medianIncome)}</td>
+                <td>{won(row.educationThreshold)}</td>
+                <td>{won(row.educationCostCheckLine)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="panel ebe-source-list">
+      <h2>공식 자료</h2>
+      <ul>
+        {EBE_SOURCES.map((source) => (
+          <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a></li>
+        ))}
+      </ul>
+    </article>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={EBE_SEO_CONTENT.introTitle}
+        intro={EBE_SEO_CONTENT.intro}
+        inputPoints={EBE_SEO_CONTENT.inputPoints}
+        criteria={EBE_SEO_CONTENT.criteria}
+        faq={EBE_FAQ}
+        related={EBE_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="ebe-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script src={withBase("/scripts/education-benefit-eligibility-calculator-2026.js")} defer></script>
+</BaseLayout>
