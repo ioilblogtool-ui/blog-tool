@@ -1,0 +1,348 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  BCC_META,
+  BCC_DEFAULT_INPUT,
+  BCC_TERRAIN_OPTIONS,
+  BCC_ACCESS_OPTIONS,
+  BCC_AREA_OPTIONS,
+  BCC_DISTANCE_OPTIONS,
+  BCC_TIMING_OPTIONS,
+  BCC_DEBRIS_OPTIONS,
+  BCC_ADDON_ITEMS,
+  BCC_PRESETS,
+  BCC_COMPARE_TABLE,
+  BCC_PREP_CHECKLIST,
+  BCC_FAQ,
+  BCC_RELATED_LINKS,
+  BCC_SOURCES,
+  BCC_SEO_CONTENT,
+  calcBeolchoCost,
+} from "../../data/beolchoCostCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${BCC_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const wonSigned = (value: number) => (value === 0 ? "0원" : `${value > 0 ? "+" : "-"}${Math.abs(Math.round(value)).toLocaleString("ko-KR")}원`);
+const defaultResult = calcBeolchoCost(BCC_DEFAULT_INPUT);
+const pageData = {
+  defaultInput: BCC_DEFAULT_INPUT,
+  presets: BCC_PRESETS,
+  addonItems: BCC_ADDON_ITEMS,
+};
+---
+
+<BaseLayout
+  title={BCC_META.seoTitle}
+  description={BCC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: BCC_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: BCC_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: BCC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={BCC_META.slug} pageClass="bcc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="벌초 대행"
+        title={BCC_META.title}
+        description="봉분 수, 전체 묘역 면적, 경사도와 차량 접근성 등을 입력하면 벌초 대행 예상 비용 범위를 계산합니다."
+        badges={["추석", "벌초", "견적 참고용", "2026"]}
+      />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          BCC_META.dataNote,
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="bccResetBtn" copyId="bccCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">프리셋으로 바로 계산</h2>
+          </div>
+        </div>
+        <div class="bcc-preset-grid">
+          {BCC_PRESETS.map((preset, index) => (
+            <button type="button" class:list={["bcc-preset-btn", index === 0 && "is-active"]} data-bcc-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">기본 입력</p>
+            <h2 class="panel__title">봉분 수·묘역 관계</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>봉분 기수</span>
+            <input type="number" min="1" max="20" step="1" data-bcc-input="graveCount" value={BCC_DEFAULT_INPUT.graveCount} />
+          </label>
+          <label class="field">
+            <span>묘소들이 같은 묘역 안에 있나요?</span>
+            <select data-bcc-input="siteGrouping">
+              <option value="same" selected={BCC_DEFAULT_INPUT.siteGrouping === "same"}>같은 묘역에 모여 있음</option>
+              <option value="separate" selected={BCC_DEFAULT_INPUT.siteGrouping === "separate"}>서로 떨어져 있음</option>
+              <option value="unsure" selected={BCC_DEFAULT_INPUT.siteGrouping === "unsure"}>잘 모름</option>
+            </select>
+            <small>같은 묘역이면 추가 봉분당 단가가 낮아지고, 떨어져 있으면 각각 기본요금이 적용됩니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">현장 조건</p>
+            <h2 class="panel__title">지형·접근성·면적</h2>
+          </div>
+        </div>
+        <div class="bcc-option-group">
+          {Object.entries(BCC_TERRAIN_OPTIONS).map(([key, item]) => (
+            <label class="bcc-option">
+              <input type="radio" name="bcc-terrain" value={key} data-bcc-input="terrain" checked={key === BCC_DEFAULT_INPUT.terrain} />
+              <span><strong>{item.label}</strong><small>{item.desc}</small></span>
+            </label>
+          ))}
+        </div>
+        <div class="bcc-option-group">
+          {Object.entries(BCC_ACCESS_OPTIONS).map(([key, item]) => (
+            <label class="bcc-option">
+              <input type="radio" name="bcc-access" value={key} data-bcc-input="access" checked={key === BCC_DEFAULT_INPUT.access} />
+              <span><strong>{item.label}</strong><small>{item.desc}</small></span>
+            </label>
+          ))}
+        </div>
+        <label class="field">
+          <span>전체 벌초 면적</span>
+          <select data-bcc-input="areaBand">
+            {Object.entries(BCC_AREA_OPTIONS).map(([key, item]) => (
+              <option value={key} selected={key === BCC_DEFAULT_INPUT.areaBand}>{item.label}</option>
+            ))}
+          </select>
+          <small>봉분 크기가 아니라 실제로 풀을 베고 정리해야 하는 전체 묘역 면적을 선택하세요.</small>
+        </label>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">이동·시기·정리</p>
+            <h2 class="panel__title">출장비·성수기·예초물</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>업체 출발지에서 묘소까지 거리</span>
+            <select data-bcc-input="distanceBand">
+              {Object.entries(BCC_DISTANCE_OPTIONS).map(([key, item]) => (
+                <option value={key} selected={key === BCC_DEFAULT_INPUT.distanceBand}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+          <label class="field">
+            <span>작업 희망 시기</span>
+            <select data-bcc-input="timing">
+              {Object.entries(BCC_TIMING_OPTIONS).map(([key, item]) => (
+                <option value={key} selected={key === BCC_DEFAULT_INPUT.timing}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+          <label class="field">
+            <span>예초한 풀 정리</span>
+            <select data-bcc-input="debrisHandling">
+              {Object.entries(BCC_DEBRIS_OPTIONS).map(([key, item]) => (
+                <option value={key} selected={key === BCC_DEFAULT_INPUT.debrisHandling}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">부가 작업</p>
+            <h2 class="panel__title">추가로 필요한 작업</h2>
+          </div>
+        </div>
+        <div class="bcc-addon-grid">
+          {BCC_ADDON_ITEMS.map((addon) => (
+            <label class="bcc-addon-option">
+              <input type="checkbox" data-bcc-addon={addon.id} />
+              <span>
+                <strong>{addon.label}</strong>
+                <small>{won(addon.minAmount)}~{won(addon.maxAmount)}</small>
+              </span>
+            </label>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <article class="panel bcc-quote-warning" data-bcc-quote-warning hidden>
+      <strong>이 면적은 현장 확인 후 견적을 받는 것이 안전합니다</strong>
+      <p>50평 초과이거나 면적을 정확히 모르는 경우, 계산기 범위보다 실제 견적이 크게 달라질 수 있습니다. 아래 결과는 11~20평 기준으로 계산된 참고값입니다.</p>
+    </article>
+
+    <article class="panel bcc-result-panel" aria-live="polite">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">예상 비용</p>
+          <h2 class="panel__title">벌초 대행 예상 견적</h2>
+        </div>
+      </div>
+      <div class="bcc-result-grid">
+        <article class="bcc-result-card">
+          <span>최소 예상 비용</span>
+          <strong data-bcc-result="totalMin">{won(defaultResult.totalMin)}</strong>
+        </article>
+        <article class="bcc-result-card bcc-result-card--main">
+          <span>대표 예상 비용</span>
+          <strong data-bcc-result="representative">{won(defaultResult.representative)}</strong>
+        </article>
+        <article class="bcc-result-card">
+          <span>최대 예상 비용</span>
+          <strong data-bcc-result="totalMax">{won(defaultResult.totalMax)}</strong>
+        </article>
+      </div>
+      <small>봉분 1기당 평균 <span data-bcc-result="perGraveAvgMin">{won(defaultResult.perGraveAvgMin)}</span> ~ <span data-bcc-result="perGraveAvgMax">{won(defaultResult.perGraveAvgMax)}</span></small>
+      <p class="bcc-disclaimer">실제 견적은 업체별로 달라질 수 있는 참고용 범위이며, 업체의 확정 견적이 아닙니다.</p>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">항목별 분해</p>
+          <h2 class="panel__title">견적 범위가 달라지는 이유</h2>
+        </div>
+      </div>
+      <div class="bcc-breakdown">
+        <div class="bcc-breakdown-row">
+          <span>기본 벌초비 (봉분·지형·접근성 반영)</span>
+          <strong><span data-bcc-result="graveSubtotalMin">{won(defaultResult.graveSubtotalMin)}</span> ~ <span data-bcc-result="graveSubtotalMax">{won(defaultResult.graveSubtotalMax)}</span></strong>
+        </div>
+        <div class="bcc-breakdown-row">
+          <span>면적 가산</span>
+          <strong><span data-bcc-result="areaSurchargeMin">{wonSigned(defaultResult.areaSurchargeMin)}</span> ~ <span data-bcc-result="areaSurchargeMax">{wonSigned(defaultResult.areaSurchargeMax)}</span></strong>
+        </div>
+        <div class="bcc-breakdown-row">
+          <span>출장비</span>
+          <strong><span data-bcc-result="distanceMin">{won(defaultResult.distanceMin)}</span> ~ <span data-bcc-result="distanceMax">{won(defaultResult.distanceMax)}</span></strong>
+        </div>
+        <div class="bcc-breakdown-row">
+          <span>예초물 처리</span>
+          <strong><span data-bcc-result="debrisMin">{won(defaultResult.debrisMin)}</span> ~ <span data-bcc-result="debrisMax">{won(defaultResult.debrisMax)}</span></strong>
+        </div>
+        <div class="bcc-breakdown-row">
+          <span>부가 작업</span>
+          <strong><span data-bcc-result="addonMin">{won(defaultResult.addonMin)}</span> ~ <span data-bcc-result="addonMax">{won(defaultResult.addonMax)}</span></strong>
+        </div>
+        <div class="bcc-breakdown-row">
+          <span>성수기 가산</span>
+          <strong><span data-bcc-result="timingSurchargeMin">{won(defaultResult.timingSurchargeMin)}</span> ~ <span data-bcc-result="timingSurchargeMax">{won(defaultResult.timingSurchargeMax)}</span></strong>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">비교</p>
+          <h2 class="panel__title">직접 벌초 vs 농협·산림조합 vs 사설업체</h2>
+        </div>
+      </div>
+      <div class="table-wrap bcc-table-wrap">
+        <table class="bcc-compare-table">
+          <thead><tr><th>항목</th><th>직접 벌초</th><th>농협·산림조합</th><th>사설 전문업체</th></tr></thead>
+          <tbody>
+            {BCC_COMPARE_TABLE.map((row) => (
+              <tr><td>{row.aspect}</td><td>{row.self}</td><td>{row.agency}</td><td>{row.private_}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="bcc-table-note">농협 벌초대행은 지역농협별로 운영 여부와 비용이 다르고, 묘소 위치·거리·면적에 따라 추가비용이 발생할 수 있습니다.</p>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">견적 요청 전</p>
+          <h2 class="panel__title">벌초 대행 견적 요청 체크리스트</h2>
+        </div>
+      </div>
+      <ul class="bcc-checklist">
+        {BCC_PREP_CHECKLIST.map((item) => (
+          <li class="bcc-checklist-item"><span class="bcc-checklist-box" aria-hidden="true"></span>{item}</li>
+        ))}
+      </ul>
+    </article>
+
+    <article class="panel bcc-source-list">
+      <h2>공식 자료</h2>
+      <ul>
+        {BCC_SOURCES.map((source) => (
+          <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a></li>
+        ))}
+      </ul>
+    </article>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={BCC_SEO_CONTENT.introTitle}
+        intro={BCC_SEO_CONTENT.intro}
+        criteria={BCC_SEO_CONTENT.criteria}
+        faq={BCC_FAQ}
+        related={BCC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="bcc-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script src={withBase("/scripts/beolcho-cost-calculator.js")} defer></script>
+</BaseLayout>

@@ -2377,6 +2377,58 @@ export const tools: ToolMeta[] = [
       { label: "예시", value: "9개 그룹" },
     ],
   },
+  {
+    slug: "flood-car-insurance-calculator",
+    title: "침수차 보험처리 계산기",
+    description: "차량가액과 예상 인정 손해액을 입력해 전손·분손 가능성, 자기부담금과 예상 보험금을 계산합니다.",
+    order: 78,
+    eyebrow: "침수차 보험처리",
+    category: "자동차·보험",
+    badges: ["신규", "장마·태풍", "2026"],
+    previewStats: [
+      { label: "자기부담금", value: "20%(20만~50만)" },
+      { label: "보장 확인", value: "자차+단독사고" },
+    ],
+  },
+  {
+    slug: "holiday-bonus-after-tax-calculator",
+    title: "명절 상여금 실수령액 계산기",
+    description: "설·추석 상여금과 떡값에서 세금이 얼마나 공제되는지 계산하세요. 연봉과 지급월을 반영해 추가 실수령액을 추정합니다.",
+    order: 78.1,
+    eyebrow: "명절 상여금 실수령",
+    category: "성과급·세금",
+    badges: ["신규", "추석", "설", "2026"],
+    previewStats: [
+      { label: "간이 추정", value: "시나리오 3종" },
+      { label: "기본 지급월", value: "9월(추석)" },
+    ],
+  },
+  {
+    slug: "beolcho-cost-calculator",
+    title: "벌초 대행비용 계산기",
+    description: "봉분 수, 묘역 면적, 경사도와 접근성을 입력하면 벌초 대행 예상 비용 범위를 계산합니다.",
+    order: 78.2,
+    eyebrow: "벌초 대행",
+    category: "생활비",
+    badges: ["신규", "추석", "2026"],
+    previewStats: [
+      { label: "1기 기본", value: "8만~12만원" },
+      { label: "추가 봉분", value: "기당 4만~7만원" },
+    ],
+  },
+  {
+    slug: "hometown-trip-cost-calculator",
+    title: "추석 귀성길 교통수단 비교 계산기",
+    description: "KTX·SRT·고속버스·자가용의 왕복 총비용과 문전 이동시간을 인원수 기준으로 비교합니다.",
+    order: 78.3,
+    eyebrow: "추석 귀성길",
+    category: "여행·교통",
+    badges: ["신규", "추석", "2026"],
+    previewStats: [
+      { label: "KTX vs SRT", value: "출발역부터 비교" },
+      { label: "문전 기준", value: "역 이동비 포함" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

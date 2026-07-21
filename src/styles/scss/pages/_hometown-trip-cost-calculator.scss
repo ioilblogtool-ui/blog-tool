@@ -1,0 +1,189 @@
+.htc-page {
+  .htc-route-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .htc-route-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fff;
+    color: #111928;
+    cursor: pointer;
+
+    strong { font-size: 0.9rem; font-weight: 900; }
+    span { color: #6b7280; font-size: 0.78rem; }
+
+    &.is-active,
+    &:hover {
+      border-color: #1a56db;
+      background: #f0f4ff;
+      color: #1a56db;
+    }
+  }
+
+  .htc-compare-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .htc-compare-card {
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    padding: 18px;
+    display: grid;
+    gap: 6px;
+    position: relative;
+
+    .htc-mode-label {
+      font-size: 12px;
+      font-weight: 900;
+      color: #6b7280;
+    }
+
+    strong {
+      font-size: clamp(18px, 2.4vw, 24px);
+      color: #111928;
+      font-weight: 900;
+    }
+
+    span:not(.htc-mode-label) {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    &.is-cheapest {
+      border-color: #16a34a;
+
+      &::before {
+        content: "최저비용";
+        position: absolute;
+        top: -10px;
+        left: 12px;
+        background: #16a34a;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 900;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+    }
+
+    &.is-fastest {
+      border-color: #1a56db;
+      background: #f0f4ff;
+    }
+
+    &.is-fastest::after {
+      content: "최단시간";
+      position: absolute;
+      top: -10px;
+      right: 12px;
+      background: #1a56db;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+  }
+
+  .htc-breakeven {
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #f8faff;
+    font-size: 13px;
+    color: #374151;
+    font-weight: 700;
+  }
+
+  .htc-result-note {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  .htc-source-note {
+    margin: 0;
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .htc-notice {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.6;
+  }
+
+  .htc-check-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 14px;
+    color: #111928;
+    font-size: 0.86rem;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .htc-maintenance-field {
+    margin-top: 10px;
+  }
+
+  .htc-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+  }
+
+  .htc-hidden-cost-table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #f8faff;
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e9f5;
+      text-align: left;
+    }
+
+    thead th {
+      font-weight: 900;
+      color: #374151;
+      background: #eef2fb;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+  }
+
+  .htc-link-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    a {
+      color: #1a56db;
+      font-weight: 800;
+      font-size: 13px;
+      text-decoration: none;
+
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .htc-compare-grid { grid-template-columns: 1fr; }
+  }
+}

@@ -1,0 +1,320 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  HTC_META,
+  HTC_ROUTES,
+  HTC_CAR_DEFAULTS,
+  HTC_TRAFFIC_SCENARIOS,
+  HTC_DEFAULT_INPUT,
+  HTC_FAQ,
+  HTC_RELATED_LINKS,
+  HTC_HIDDEN_COST_TABLE,
+  HTC_SEO_CONTENT,
+  calcTripCost,
+} from "../../data/hometownTripCostCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${HTC_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const defaultRoute = HTC_ROUTES.find((r) => r.id === HTC_DEFAULT_INPUT.routeId) || HTC_ROUTES[0];
+const defaultResult = calcTripCost(defaultRoute, HTC_DEFAULT_INPUT);
+const durationLabel = (min: number) => `${Math.floor(min / 60)}시간 ${Math.round(min % 60)}분`;
+const pageData = {
+  routes: HTC_ROUTES,
+  carDefaults: HTC_CAR_DEFAULTS,
+  trafficScenarios: HTC_TRAFFIC_SCENARIOS,
+  defaultInput: HTC_DEFAULT_INPUT,
+};
+---
+
+<BaseLayout
+  title={HTC_META.seoTitle}
+  description={HTC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: HTC_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: HTC_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: HTC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={HTC_META.slug} pageClass="htc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="추석 귀성길"
+        title={HTC_META.title}
+        description="KTX·SRT·고속버스·자가용의 왕복 총비용과 문전 이동시간을 인원수 기준으로 비교하세요."
+        badges={["추석", "귀성길", "KTX vs SRT vs 버스 vs 자차", "2026"]}
+      />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[HTC_META.dataNote]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="htcResetBtn" copyId="htcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">구간 선택</p>
+            <h2 class="panel__title">어디로 귀성하시나요?</h2>
+          </div>
+        </div>
+        <div class="htc-route-grid">
+          {HTC_ROUTES.map((route, index) => (
+            <button type="button" class:list={["htc-route-btn", index === 0 && "is-active"]} data-htc-route={route.id}>
+              <strong>{route.label}</strong>
+              <span>{route.distanceKm}km{!route.srt && " · SRT 미제공"}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">인원</p>
+            <h2 class="panel__title">성인·어린이 인원수</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>성인 (명)</span>
+            <input type="number" min="1" max="8" step="1" data-htc-input="adultCount" value={HTC_DEFAULT_INPUT.adultCount} />
+          </label>
+          <label class="field">
+            <span>어린이 (명)</span>
+            <input type="number" min="0" max="6" step="1" data-htc-input="childCount" value={HTC_DEFAULT_INPUT.childCount} />
+            <small>철도 어린이 요금은 일반적으로 성인의 약 50% 수준입니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">역·터미널 이동</p>
+            <h2 class="panel__title">집→역 / 역→목적지 (편도)</h2>
+          </div>
+          <p class="panel-heading__summary">거주지에 따라 다르니 직접 수정하세요. KTX·SRT·고속버스에 공통 적용됩니다.</p>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>집→출발역 이동시간(분)</span>
+            <input type="number" min="0" max="180" step="5" data-htc-input="homeToStationMinutes" value={HTC_DEFAULT_INPUT.homeToStationMinutes} />
+          </label>
+          <label class="field">
+            <span>집→출발역 이동비용(원)</span>
+            <input type="text" inputmode="numeric" data-htc-input="homeToStationCost" value={HTC_DEFAULT_INPUT.homeToStationCost.toLocaleString("ko-KR")} />
+          </label>
+          <label class="field">
+            <span>도착역→목적지 이동시간(분)</span>
+            <input type="number" min="0" max="180" step="5" data-htc-input="stationToDestMinutes" value={HTC_DEFAULT_INPUT.stationToDestMinutes} />
+          </label>
+          <label class="field">
+            <span>도착역→목적지 이동비용(원)</span>
+            <input type="text" inputmode="numeric" data-htc-input="stationToDestCost" value={HTC_DEFAULT_INPUT.stationToDestCost.toLocaleString("ko-KR")} />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">고속버스</p>
+            <h2 class="panel__title">버스 등급</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>등급</span>
+            <select data-htc-input="busTier">
+              <option value="general" selected={HTC_DEFAULT_INPUT.busTier === "general"}>일반고속</option>
+              <option value="premium" selected={HTC_DEFAULT_INPUT.busTier === "premium"}>우등·프리미엄</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">자가용 옵션</p>
+            <h2 class="panel__title">차종·유가·정체 시나리오</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>차종</span>
+            <select data-htc-input="carType">
+              {Object.entries(HTC_CAR_DEFAULTS).map(([key, item]) => (
+                <option value={key} selected={key === HTC_DEFAULT_INPUT.carType}>{item.label} (연비 {item.fuelEfficiencyKmPerLiter}km/L)</option>
+              ))}
+            </select>
+          </label>
+          <label class="field">
+            <span>유가(원/L)</span>
+            <input type="text" inputmode="numeric" data-htc-input="fuelPricePerLiter" value={HTC_DEFAULT_INPUT.fuelPricePerLiter.toLocaleString("ko-KR")} />
+          </label>
+          <label class="field">
+            <span>목적지 주차비(원)</span>
+            <input type="text" inputmode="numeric" data-htc-input="parkingCost" value={HTC_DEFAULT_INPUT.parkingCost.toLocaleString("ko-KR")} />
+          </label>
+          <label class="field">
+            <span>출발 시기 (정체 시나리오)</span>
+            <select data-htc-input="trafficScenario">
+              {Object.entries(HTC_TRAFFIC_SCENARIOS).map(([key, item]) => (
+                <option value={key} selected={key === HTC_DEFAULT_INPUT.trafficScenario}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <label class="htc-check-field">
+          <input type="checkbox" data-htc-input="tollFreeAssumption" checked={HTC_DEFAULT_INPUT.tollFreeAssumption} />
+          <span>명절 통행료 면제 가정 (공식 발표 전 참고용)</span>
+        </label>
+        <label class="htc-check-field">
+          <input type="checkbox" data-htc-input="includeVehicleMaintenance" checked={HTC_DEFAULT_INPUT.includeVehicleMaintenance} />
+          <span>차량 소모비(감가상각 등) 포함</span>
+        </label>
+        <div class="form-grid htc-maintenance-field" data-htc-maintenance-field>
+          <label class="field">
+            <span>소모비 단가(원/km)</span>
+            <input type="number" min="0" max="1000" step="10" data-htc-input="maintenanceCostPerKm" value={HTC_DEFAULT_INPUT.maintenanceCostPerKm} />
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <article class="panel htc-result-panel" aria-live="polite">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">비교 결과</p>
+          <h2 class="panel__title" data-htc-result="routeLabel">{defaultRoute.label} · 왕복·문전 기준</h2>
+        </div>
+      </div>
+      <div class="htc-compare-grid" data-htc-compare-grid>
+        <article class="htc-compare-card" data-htc-mode="KTX" hidden={!defaultResult.ktx}>
+          <span class="htc-mode-label">KTX (서울역)</span>
+          <strong data-htc-result="ktx.totalCost">{defaultResult.ktx ? won(defaultResult.ktx.totalCost) : "-"}</strong>
+          <span data-htc-result="ktx.perPersonCost">1인당 {defaultResult.ktx ? won(defaultResult.ktx.perPersonCost) : "-"}</span>
+          <span data-htc-result="ktx.totalDurationMin">{defaultResult.ktx ? `문전 총 ${durationLabel(defaultResult.ktx.totalDurationMin)}` : ""}</span>
+        </article>
+        <article class="htc-compare-card" data-htc-mode="SRT" hidden={!defaultResult.srt}>
+          <span class="htc-mode-label">SRT (수서역)</span>
+          <strong data-htc-result="srt.totalCost">{defaultResult.srt ? won(defaultResult.srt.totalCost) : "-"}</strong>
+          <span data-htc-result="srt.perPersonCost">1인당 {defaultResult.srt ? won(defaultResult.srt.perPersonCost) : "-"}</span>
+          <span data-htc-result="srt.totalDurationMin">{defaultResult.srt ? `문전 총 ${durationLabel(defaultResult.srt.totalDurationMin)}` : ""}</span>
+        </article>
+        <article class="htc-compare-card" data-htc-mode="고속버스">
+          <span class="htc-mode-label">고속버스</span>
+          <strong data-htc-result="bus.totalCost">{won(defaultResult.bus.totalCost)}</strong>
+          <span data-htc-result="bus.perPersonCost">1인당 {won(defaultResult.bus.perPersonCost)}</span>
+          <span data-htc-result="bus.totalDurationMin">{`문전 총 ${durationLabel(defaultResult.bus.totalDurationMin)}`}</span>
+        </article>
+        <article class="htc-compare-card" data-htc-mode="자가용">
+          <span class="htc-mode-label">자가용</span>
+          <strong data-htc-result="car.totalCost">{won(defaultResult.car.totalCost)}</strong>
+          <span data-htc-result="car.perPersonCost">1인당 {won(defaultResult.car.perPersonCost)}</span>
+          <span data-htc-result="car.duration">{`${durationLabel(defaultResult.car.durationMinLow)} ~ ${durationLabel(defaultResult.car.durationMinHigh)}`}</span>
+        </article>
+      </div>
+      <p class="htc-breakeven" data-htc-result="breakeven">
+        {defaultResult.breakevenPassengers ? `성인 ${defaultResult.breakevenPassengers}명 이상이면 자가용이 대중교통보다 저렴해질 수 있습니다.` : "현재 조건에서는 인원이 늘어도 자가용이 더 저렴해지지 않습니다."}
+      </p>
+      <small class="htc-result-note">왕복·역 이동비 포함 문전 기준입니다. 요금·시간은 참고용이며 예매 시점·교통상황에 따라 달라질 수 있습니다.</small>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">구간 상세</p>
+          <h2 class="panel__title">참고 요금·거리</h2>
+        </div>
+      </div>
+      <p class="htc-source-note" data-htc-result="sourceNote">{defaultRoute.sourceNote}</p>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">숨은 비용 비교</p>
+          <h2 class="panel__title">승차권 외에 뭐가 더 드나</h2>
+        </div>
+      </div>
+      <div class="table-wrap htc-table-wrap">
+        <table class="htc-hidden-cost-table">
+          <thead><tr><th>비용</th><th>KTX·SRT</th><th>고속버스</th><th>자가용</th></tr></thead>
+          <tbody>
+            {HTC_HIDDEN_COST_TABLE.map((row) => (
+              <tr><td>{row.item}</td><td>{row.ktx}</td><td>{row.bus}</td><td>{row.car}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">예매 타임라인</p>
+          <h2 class="panel__title">추석 기차표는 언제부터 예매할 수 있나요?</h2>
+        </div>
+      </div>
+      <p class="htc-notice">
+        2026년 추석(9월 25일) 특별 예매 일정은 아직 공식 발표되지 않았습니다. 과거에는 명절 3~4주 전에 예매가 시작된 경우가 많았지만 매년 다를 수 있으므로, 코레일과 SR 공지사항을 직접 확인하는 것이 정확합니다. KTX는 코레일, SRT는 SR에서 별도로 공지합니다.
+      </p>
+      <div class="htc-link-row">
+        <a href="https://www.korail.com" target="_blank" rel="noopener noreferrer">코레일(KTX) 승차권예매</a>
+        <a href="https://etk.srail.kr" target="_blank" rel="noopener noreferrer">SR(SRT) 승차권예매</a>
+        <a href="https://www.ex.co.kr" target="_blank" rel="noopener noreferrer">한국도로공사 통행료·교통정보</a>
+      </div>
+    </article>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={HTC_SEO_CONTENT.introTitle}
+        intro={HTC_SEO_CONTENT.intro}
+        criteria={HTC_SEO_CONTENT.criteria}
+        faq={HTC_FAQ}
+        related={HTC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="htc-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script src={withBase("/scripts/hometown-trip-cost-calculator.js")} defer></script>
+</BaseLayout>
