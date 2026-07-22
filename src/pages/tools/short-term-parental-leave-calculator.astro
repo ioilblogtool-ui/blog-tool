@@ -1,0 +1,234 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  STPL_META,
+  STPL_POLICY_META,
+  STPL_GENERAL_LEAVE_TIERS,
+  STPL_SIX_PLUS_SIX_CAPS,
+  STPL_PRESETS,
+  STPL_LEAVE_COMPARISON_TABLE,
+  STPL_FAQ,
+  STPL_SEO_CONTENT,
+  STPL_RELATED_LINKS,
+} from "../../data/shortTermParentalLeaveCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  policyMeta: STPL_POLICY_META,
+  generalTiers: STPL_GENERAL_LEAVE_TIERS,
+  sixPlusSixCaps: STPL_SIX_PLUS_SIX_CAPS,
+  presets: STPL_PRESETS,
+};
+
+const faqSchema = STPL_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={STPL_META.seoTitle}
+  description={STPL_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: STPL_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: STPL_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/short-term-parental-leave-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="short-term-parental-leave-calculator" pageClass="stpl-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="급여 계산"
+        title="단기 육아휴직 급여 계산기"
+        description="2026년 8월 20일 시행, 1주·2주 쓰면 월급이 얼마나 줄어드는지 확인하세요."
+      />
+      <p class="stpl-effective-badge" data-stpl-target="effective-badge">확인 중...</p>
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          STPL_META.dataNote,
+          "생후 18개월 내 부모 모두 사용하는 6+6 특례에 해당하면 더 높은 지급률·상한액이 적용됩니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="stplResetBtn" copyId="stplCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">프리셋으로 바로 계산</h2>
+          </div>
+          <p class="panel-heading__summary">상황에 가까운 예시를 고른 뒤 금액을 조정하세요.</p>
+        </div>
+        <div class="stpl-preset-grid">
+          {STPL_PRESETS.map((preset) => (
+            <button type="button" class="stpl-preset-btn" data-stpl-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">통상임금과 사용 조건</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>월 통상임금</span>
+            <input data-stpl="monthlyWage" type="text" inputmode="numeric" class="input-number" value="3,000,000" />
+            <small>세전 월 통상임금을 입력하세요.</small>
+          </label>
+
+          <label class="field">
+            <span>사용 단위(강조 표시용)</span>
+            <select data-stpl="leaveUnit">
+              <option value="1week">1주(7일)</option>
+              <option value="2weeks">2주(14일)</option>
+            </select>
+            <small>결과 화면에는 1주·2주가 항상 함께 비교 표시됩니다.</small>
+          </label>
+
+          <label class="checkbox-option">
+            <input type="checkbox" data-stpl="isSixPlusSixEligible" />
+            <span>생후 18개월 내 부모 모두 사용하는 6+6 특례에 해당합니다</span>
+          </label>
+
+          <label class="field" data-stpl-conditional="sixPlusSix" hidden>
+            <span>6+6 특례 개월차</span>
+            <select data-stpl="sixPlusSixMonthNumber">
+              {[1, 2, 3, 4, 5, 6].map((month) => <option value={month}>{month}개월차</option>)}
+            </select>
+          </label>
+
+          <label class="checkbox-option">
+            <input type="checkbox" data-stpl="hasUsedGeneralLeaveThisYear" />
+            <span>올해 일반 육아휴직(30일 이상)을 이미 사용했습니다</span>
+          </label>
+
+          <label class="field" data-stpl-conditional="generalLeave" hidden>
+            <span>일반 육아휴직 개월차</span>
+            <select data-stpl="generalLeaveMonthNumber">
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => <option value={month}>{month}개월차</option>)}
+            </select>
+            <small>이미 사용한 개월 수에 따라 지급률(100%/80%)이 달라집니다.</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="stpl-section">
+      <div class="stpl-section__head">
+        <p class="stpl-section__eyebrow">계산 결과</p>
+        <h2>이번 달 실수령 추정액</h2>
+        <p class="stpl-section__sub">1주·2주 사용 시 근무일 급여와 육아휴직급여를 합산해 정상 근무 대비 감소액을 보여줍니다.</p>
+      </div>
+
+      <div class="stpl-kpi-grid" aria-live="polite">
+        <article class="stpl-kpi-card stpl-kpi-card--main">
+          <p>이번 달 실수령 추정액</p>
+          <strong id="stplTotalPay">-</strong>
+          <span id="stplUnitLabel">1주(7일) 기준</span>
+        </article>
+        <article class="stpl-kpi-card stpl-kpi-card--accent">
+          <p>정상 근무 대비 감소액</p>
+          <strong id="stplReductionAmount">-</strong>
+          <span id="stplReductionRate">-</span>
+        </article>
+        <article class="stpl-kpi-card">
+          <p>적용 지급률·상한액</p>
+          <strong id="stplAppliedRatio">-</strong>
+          <span id="stplAppliedCap">-</span>
+        </article>
+        <article class="stpl-kpi-card">
+          <p>남은 육아휴직 기간</p>
+          <strong id="stplRemainingNote">-</strong>
+          <span>전체 육아휴직 가능 기간 기준</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="stpl-section">
+      <div class="stpl-section__head">
+        <p class="stpl-section__eyebrow">비교</p>
+        <h2>1주 vs 2주, 얼마나 차이날까</h2>
+      </div>
+      <div class="stpl-compare-grid" id="stplCompareGrid"></div>
+    </section>
+
+    <section class="stpl-section">
+      <div class="stpl-section__head">
+        <p class="stpl-section__eyebrow">제도 비교</p>
+        <h2>아이가 아플 때 쓸 수 있는 제도 비교</h2>
+      </div>
+      <div class="stpl-comparison-table-wrap">
+        <table class="stpl-comparison-table">
+          <thead>
+            <tr>
+              <th>제도</th>
+              <th>사용 사유</th>
+              <th>기간</th>
+              <th>유급 여부</th>
+              <th>급여 지급</th>
+            </tr>
+          </thead>
+          <tbody>
+            {STPL_LEAVE_COMPARISON_TABLE.map((row) => (
+              <tr>
+                <td>{row.system}</td>
+                <td>{row.reason}</td>
+                <td>{row.period}</td>
+                <td>{row.isPaid}</td>
+                <td>{row.payLabel}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="stpl-message" id="stplMessage"></div>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={STPL_SEO_CONTENT.introTitle}
+        intro={STPL_SEO_CONTENT.intro}
+        inputPoints={STPL_SEO_CONTENT.inputPoints}
+        criteria={STPL_SEO_CONTENT.criteria}
+        faq={STPL_FAQ}
+        related={STPL_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="stpl-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/short-term-parental-leave-calculator.js")}></script>
+</BaseLayout>

@@ -1465,4 +1465,11 @@ export const reports: ReportMeta[] = [
     order: 78,
     badges: ["신규", "세금", "종부세", "2026"],
   },
+  {
+    slug: "hbm4-vs-hbm5-beneficiary-comparison",
+    title: "HBM4 vs HBM5 차이 2026 | 스펙 비교와 수혜기업 총정리",
+    description: "HBM3E부터 HBM5까지 세대별 인터페이스 폭·전송속도·대역폭 변화를 비교하고, 삼성전자·SK하이닉스부터 패키징·테스트 기업까지 수혜기업을 정리했습니다.",
+    order: 79,
+    badges: ["신규", "반도체", "HBM", "2026"],
+  },
 ];

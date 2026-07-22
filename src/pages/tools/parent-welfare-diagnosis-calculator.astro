@@ -1,0 +1,326 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PWD_META,
+  PWD_REGION_LABELS,
+  PWD_LTCI_GRADE_LABELS,
+  PWD_PRESETS,
+  PWD_MISSING_INPUT_HINTS,
+  PWD_APPLICATION_AGENCY,
+  PWD_FAQ,
+  PWD_SEO_CONTENT,
+  PWD_RELATED_LINKS,
+} from "../../data/parentWelfareDiagnosisCalculator";
+import {
+  BPEC_SELECTION_THRESHOLD,
+  BPEC_MAX_BENEFIT,
+  BPEC_BASIC_ASSET_DEDUCTION,
+  BPEC_FINANCIAL_ASSET_DEDUCTION,
+  BPEC_ASSET_CONVERSION_RATE_ANNUAL,
+  BPEC_WORK_INCOME_DEDUCTION,
+  BPEC_WORK_INCOME_RATE,
+} from "../../data/basicPensionEligibilityCalculator";
+import { LTCI_GRADES } from "../../data/ltciGradeBenefit2026";
+import { SRH_HOUSING_TYPES } from "../../data/seniorRentalHousingEligibility2026";
+import {
+  WBE_2026_THRESHOLDS,
+  WBE_ASSET_DEDUCTION_BY_REGION,
+  WBE_MONTHLY_CONVERSION_RATE,
+} from "../../data/welfareBenefitEligibility";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  bpec: {
+    selectionThreshold: BPEC_SELECTION_THRESHOLD,
+    maxBenefit: BPEC_MAX_BENEFIT,
+    basicAssetDeduction: BPEC_BASIC_ASSET_DEDUCTION,
+    financialAssetDeduction: BPEC_FINANCIAL_ASSET_DEDUCTION,
+    assetConversionRateAnnual: BPEC_ASSET_CONVERSION_RATE_ANNUAL,
+    workIncomeDeduction: BPEC_WORK_INCOME_DEDUCTION,
+    workIncomeRate: BPEC_WORK_INCOME_RATE,
+  },
+  ltciGrades: LTCI_GRADES,
+  housingTypes: SRH_HOUSING_TYPES,
+  wbe: {
+    thresholds: WBE_2026_THRESHOLDS,
+    assetDeductionByRegion: WBE_ASSET_DEDUCTION_BY_REGION,
+    rates: WBE_MONTHLY_CONVERSION_RATE,
+  },
+  missingInputHints: PWD_MISSING_INPUT_HINTS,
+  applicationAgency: PWD_APPLICATION_AGENCY,
+  presets: PWD_PRESETS,
+};
+
+const faqSchema = PWD_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={PWD_META.seoTitle}
+  description={PWD_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: PWD_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: PWD_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/parent-welfare-diagnosis-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="parent-welfare-diagnosis-calculator" pageClass="pwd-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="복지 통합진단"
+        title="부모님 복지 통합 자동진단"
+        description="부모님의 나이, 가구구성, 소득, 재산, 건강·주거 정보를 한 번 입력하면 기초연금부터 장기요양·노인일자리·주거지원·요금 감면까지 함께 점검합니다."
+      />
+      <p class="pwd-updated-badge">{PWD_META.criteriaDateLabel}</p>
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          PWD_META.dataNote,
+          "부부가구는 배우자의 소득과 재산을 함께 입력해야 정확도가 높아집니다.",
+          "현금급여, 노인일자리 활동비, 장기요양 서비스, 요금 감면은 성격이 달라 별도로 표시합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="pwdResetBtn" copyId="pwdCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">프리셋으로 입력값 채우기</h2>
+          </div>
+          <p class="panel-heading__summary">상황에 가까운 예시를 고른 뒤 조건을 조정하세요.</p>
+        </div>
+        <div class="pwd-preset-grid">
+          {PWD_PRESETS.map((preset) => (
+            <button type="button" class="pwd-preset-btn" data-pwd-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 1</p>
+            <h2 class="panel__title">기본 정보</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>나이</span>
+            <input data-pwd="age" type="number" min="40" max="110" class="input-number" value="68" />
+          </label>
+          <label class="field">
+            <span>주민등록상 가구원 수</span>
+            <input data-pwd="householdSize" type="number" min="1" max="6" class="input-number" value="1" />
+            <small>본인·배우자 외 함께 등재된 가족까지 포함해 입력하세요.</small>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" data-pwd="isCouple" />
+            <span>부부가구입니다</span>
+          </label>
+          <label class="field" data-pwd-conditional="spouse" hidden>
+            <span>배우자 나이</span>
+            <input data-pwd="spouseAge" type="number" min="40" max="110" class="input-number" value="65" />
+          </label>
+          <label class="field">
+            <span>거주지역</span>
+            <select data-pwd="region">
+              {Object.entries(PWD_REGION_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
+            </select>
+          </label>
+          <label class="field">
+            <span>주택보유 여부(세대원 전체 기준)</span>
+            <select data-pwd="housingOwnership">
+              <option value="none">무주택</option>
+              <option value="past">과거 보유</option>
+              <option value="current" selected>현재 보유</option>
+            </select>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 2</p>
+            <h2 class="panel__title">소득</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>본인 근로·사업소득</span>
+            <input data-pwd="earnedIncome" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field">
+            <span>본인 국민연금 등 공적연금</span>
+            <input data-pwd="publicPension" type="text" inputmode="numeric" class="input-number" value="300,000" />
+          </label>
+          <label class="field">
+            <span>본인 기타 소득(임대·이자 등)</span>
+            <input data-pwd="otherIncome" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field" data-pwd-conditional="spouse" hidden>
+            <span>배우자 근로·사업소득</span>
+            <input data-pwd="spouseEarnedIncome" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field" data-pwd-conditional="spouse" hidden>
+            <span>배우자 국민연금 등 공적연금</span>
+            <input data-pwd="spousePublicPension" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field" data-pwd-conditional="spouse" hidden>
+            <span>배우자 기타 소득</span>
+            <input data-pwd="spouseOtherIncome" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 3</p>
+            <h2 class="panel__title">재산</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>부동산(거주주택 시가 기준)</span>
+            <input data-pwd="realEstate" type="text" inputmode="numeric" class="input-number" value="200,000,000" />
+            <small>간편 진단이며 실제 행정기관 재산 조사와 다를 수 있습니다.</small>
+          </label>
+          <label class="field">
+            <span>본인 금융재산</span>
+            <input data-pwd="financialAsset" type="text" inputmode="numeric" class="input-number" value="10,000,000" />
+          </label>
+          <label class="field" data-pwd-conditional="spouse" hidden>
+            <span>배우자 금융재산</span>
+            <input data-pwd="spouseFinancialAsset" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field">
+            <span>부채</span>
+            <input data-pwd="debt" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field">
+            <span>자동차 가액</span>
+            <input data-pwd="carValue" type="text" inputmode="numeric" class="input-number" value="0" />
+            <small>현재 판정에 참고용으로만 반영되며, 실제 특례 적용은 별도 확인이 필요합니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 4</p>
+            <h2 class="panel__title">건강·돌봄</h2>
+          </div>
+          <p class="panel-heading__summary">장기요양 인정신청 필요성을 가늠하기 위한 참고 문항입니다. 의학적 진단을 대체하지 않습니다.</p>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>장기요양등급(보유 시)</span>
+            <select data-pwd="ltciGrade">
+              {Object.entries(PWD_LTCI_GRADE_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
+            </select>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" data-pwd="mealDifficulty" />
+            <span>혼자 식사하기 어렵다</span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" data-pwd="dressingDifficulty" />
+            <span>혼자 옷 입기 어렵다</span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" data-pwd="toiletDifficulty" />
+            <span>혼자 화장실 이용이 어렵다</span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" data-pwd="mobilityDifficulty" />
+            <span>실내 이동에 도움이 필요하다</span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" data-pwd="dementiaDiagnosis" />
+            <span>치매 진단 또는 인지저하가 있다</span>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="pwd-section">
+      <div class="pwd-section__head">
+        <p class="pwd-section__eyebrow">진단 결과</p>
+        <h2>부모님이 검토해볼 수 있는 복지</h2>
+        <p class="pwd-section__sub">현금급여·서비스·비용지원·참여·주거지원 세 그룹으로 나눠 보여드립니다.</p>
+      </div>
+
+      <div class="pwd-summary-grid" aria-live="polite">
+        <article class="pwd-kpi-card pwd-kpi-card--main">
+          <p>신청 검토 제도 수</p>
+          <strong id="pwdLikelyCount">-</strong>
+        </article>
+        <article class="pwd-kpi-card pwd-kpi-card--accent">
+          <p>예상 현금급여 합계</p>
+          <strong id="pwdCashBenefit">-</strong>
+          <span>노인일자리 활동비·요금 감면·서비스 이용액은 제외</span>
+        </article>
+        <article class="pwd-kpi-card">
+          <p>추가 정보 필요 제도 수</p>
+          <strong id="pwdNeedsCheckCount">-</strong>
+        </article>
+        <article class="pwd-kpi-card">
+          <p>가능성 낮음 제도 수</p>
+          <strong id="pwdUnlikelyCount">-</strong>
+        </article>
+      </div>
+
+      <div id="pwdGroupedMatrix"></div>
+
+      <div class="pwd-next-actions" id="pwdNextActions"></div>
+
+      <div class="pwd-message" id="pwdMessage"></div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={PWD_SEO_CONTENT.introTitle}
+        intro={PWD_SEO_CONTENT.intro}
+        inputPoints={PWD_SEO_CONTENT.inputPoints}
+        criteria={PWD_SEO_CONTENT.criteria}
+        faq={PWD_FAQ}
+        related={PWD_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="pwd-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/parent-welfare-diagnosis-calculator.js")}></script>
+</BaseLayout>

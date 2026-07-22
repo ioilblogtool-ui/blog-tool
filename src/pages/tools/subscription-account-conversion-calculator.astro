@@ -1,0 +1,233 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SACC_META,
+  SACC_POLICY_META,
+  SACC_DEFAULT_RATE_BY_TYPE,
+  SACC_HOUSING_RULES,
+  SACC_APPLICATION_TIMING,
+  SACC_ACCOUNT_TYPE_LABELS,
+  SACC_TAX_BRACKETS,
+  SACC_INCOME_DEDUCTION_META,
+  SACC_PRESETS,
+  SACC_FAQ,
+  SACC_SEO_CONTENT,
+  SACC_RELATED_LINKS,
+} from "../../data/subscriptionAccountConversionCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  policyMeta: SACC_POLICY_META,
+  defaultRateByType: SACC_DEFAULT_RATE_BY_TYPE,
+  housingRules: SACC_HOUSING_RULES,
+  applicationTiming: SACC_APPLICATION_TIMING,
+  incomeDeductionMeta: SACC_INCOME_DEDUCTION_META,
+  presets: SACC_PRESETS,
+};
+
+const faqSchema = SACC_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={SACC_META.seoTitle}
+  description={SACC_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: SACC_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: SACC_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/subscription-account-conversion-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="subscription-account-conversion-calculator" pageClass="sacc-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="청약통장 전환"
+        title="청약통장 전환 금리·자격 비교 계산기"
+        description="청약예금·부금·저축을 종합저축으로 바꾸면 금리, 청약 자격, 실적 인정 범위가 어떻게 달라지는지 9월 30일 전에 확인하세요."
+      />
+      <p class="sacc-deadline-badge" data-sacc-target="deadline-badge">확인 중...</p>
+      <InfoNotice
+        title="전환 전 반드시 확인"
+        lines={[
+          SACC_META.dataNote,
+          "전환하면 기존 청약예금·부금·저축으로 되돌릴 수 없습니다.",
+          "전환으로 새롭게 가능해진 주택 유형은 전환일 이후 실적만 인정될 수 있습니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="saccResetBtn" copyId="saccCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">프리셋으로 바로 계산</h2>
+          </div>
+          <p class="panel-heading__summary">보유 중인 통장에 가까운 예시를 고른 뒤 조정하세요.</p>
+        </div>
+        <div class="sacc-preset-grid">
+          {SACC_PRESETS.map((preset) => (
+            <button type="button" class="sacc-preset-btn" data-sacc-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">현재 통장 · 목표 주택</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>현재 통장 종류</span>
+            <select data-sacc="accountType">
+              {Object.entries(SACC_ACCOUNT_TYPE_LABELS).map(([value, label]) => <option value={value} selected={value === "deposit"}>{label}</option>)}
+            </select>
+          </label>
+          <label class="field">
+            <span>현재 예치금(잔액)</span>
+            <input data-sacc="currentBalance" type="text" inputmode="numeric" class="input-number" value="15,000,000" />
+          </label>
+          <label class="field">
+            <span>현재 적용금리(%)</span>
+            <input data-sacc="currentRate" type="number" step="0.1" min="0" max="10" value="2.1" />
+            <small>통장 약관의 실제 금리로 수정할 수 있습니다.</small>
+          </label>
+          <label class="field">
+            <span>가입 후 경과 기간(년)</span>
+            <input data-sacc="yearsHeld" type="number" min="0" max="40" value="8" />
+          </label>
+          <label class="field">
+            <span>전환 후 예상 보유 기간(년)</span>
+            <input data-sacc="yearsToHold" type="number" min="0" max="40" value="3" />
+          </label>
+          <label class="field">
+            <span>목표 주택 유형</span>
+            <select data-sacc="targetHousing">
+              <option value="national">국민주택</option>
+              <option value="private">민영주택</option>
+              <option value="both" selected>둘 다 검토</option>
+            </select>
+            <small>기존 실적 인정 범위와 전환 추천도 판단에 사용됩니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">선택 입력</p>
+            <h2 class="panel__title">소득공제 효과 확인</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>전환 후 월 추가 납입액</span>
+            <input data-sacc="monthlyContribution" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field">
+            <span>소득 구간(한계세율)</span>
+            <select data-sacc="taxRate">
+              {SACC_TAX_BRACKETS.map((bracket) => (
+                <option value={bracket.value} selected={bracket.value === 16.5}>{bracket.label}</option>
+              ))}
+            </select>
+            <small>{SACC_INCOME_DEDUCTION_META.eligibilityNote}</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="sacc-section">
+      <div class="sacc-section__head">
+        <p class="sacc-section__eyebrow">전환 손익 · 세전 단리 추정</p>
+        <h2>전환하면 얼마나 달라질까</h2>
+        <p class="sacc-section__sub">아래 이자 결과는 세전 단리 방식의 비교용 추정이며, 실제 정산은 은행 약관에 따라 다를 수 있습니다.</p>
+      </div>
+
+      <div class="sacc-compare-grid" id="saccCompareGrid"></div>
+      <p class="sacc-diff-banner" id="saccDiffBanner"></p>
+
+      <div class="sacc-deduction-card" id="saccDeductionCard"></div>
+    </section>
+
+    <section class="sacc-section">
+      <div class="sacc-section__head">
+        <p class="sacc-section__eyebrow">실적 인정 범위</p>
+        <h2>기존 실적과 신규 실적은 인정 방식이 다릅니다</h2>
+      </div>
+      <div class="sacc-rule-table-wrap">
+        <table class="sacc-rule-table" id="saccRuleTable"></table>
+      </div>
+      <p class="sacc-timing-note" id="saccTimingNote"></p>
+    </section>
+
+    <section class="sacc-section">
+      <div class="sacc-section__head">
+        <p class="sacc-section__eyebrow">전환 추천도</p>
+        <h2>나에게 전환이 유리할까</h2>
+      </div>
+      <article class="sacc-recommendation-card" id="saccRecommendationCard"></article>
+    </section>
+
+    <div class="sacc-message" id="saccMessage"></div>
+
+    <section class="sacc-section">
+      <div class="sacc-section__head">
+        <p class="sacc-section__eyebrow">신청 방법</p>
+        <h2>전환은 어떻게 신청하나요</h2>
+      </div>
+      <ol class="sacc-steps">
+        <li>통장 종류, 가입은행, 최초 가입일을 확인하세요.</li>
+        <li>가까운 청약 일정(입주자모집공고일, 접수 시작일)이 있는지 확인하세요.</li>
+        <li>은행 앱에서 전환 메뉴를 확인하세요. 2000년 3월 26일 이전 가입 통장 등 일부는 영업점 방문이 필요할 수 있습니다.</li>
+        <li>영업점 방문 시 신분증과 기존 통장(또는 계좌번호)을 준비하세요.</li>
+        <li>전환 완료 후 가입기간 인정 내용, 납입인정금액·회차, 적용금리를 다시 확인하세요.</li>
+      </ol>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={SACC_SEO_CONTENT.introTitle}
+        intro={SACC_SEO_CONTENT.intro}
+        inputPoints={SACC_SEO_CONTENT.inputPoints}
+        criteria={SACC_SEO_CONTENT.criteria}
+        faq={SACC_FAQ}
+        related={SACC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="sacc-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/subscription-account-conversion-calculator.js")}></script>
+</BaseLayout>

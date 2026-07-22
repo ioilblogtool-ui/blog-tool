@@ -2429,6 +2429,58 @@ export const tools: ToolMeta[] = [
       { label: "문전 기준", value: "역 이동비 포함" },
     ],
   },
+  {
+    slug: "short-term-parental-leave-calculator",
+    title: "단기 육아휴직 급여 계산기",
+    description: "2026년 8월 20일 시행되는 1주·2주 단기 육아휴직 급여를 월 통상임금 기준으로 계산하고 정상 근무 대비 감소액을 비교합니다.",
+    order: 78.4,
+    eyebrow: "단기 육아휴직",
+    category: "육아·출산",
+    badges: ["신규", "2026-08-20 시행"],
+    previewStats: [
+      { label: "1주 사용", value: "실수령 추정" },
+      { label: "2주 사용", value: "실수령 추정" },
+    ],
+  },
+  {
+    slug: "net-worth-percentile-calculator",
+    title: "내 순자산 상위 몇 % 계산기 | 가구 기준",
+    description: "부동산·예금·주식·코인·부채를 입력하면 가계금융복지조사의 대한민국 가구 순자산 분포에서 상위 몇 %인지 추정합니다.",
+    order: 78.5,
+    eyebrow: "순자산 진단",
+    category: "자산·재테크",
+    badges: ["신규", "2026"],
+    previewStats: [
+      { label: "전국 평균", value: "4.7억" },
+      { label: "상위 10%", value: "21.7억" },
+    ],
+  },
+  {
+    slug: "parent-welfare-diagnosis-calculator",
+    title: "부모님 복지 통합 자동진단",
+    description: "부모님 나이·소득·재산을 입력하면 기초연금, 장기요양보험, 노인일자리, 기초생활보장, 고령자 임대주택까지 한 화면에서 자가 진단합니다.",
+    order: 78.6,
+    eyebrow: "복지 통합진단",
+    category: "복지·지원금",
+    badges: ["신규", "2026"],
+    previewStats: [
+      { label: "진단 제도", value: "8개" },
+      { label: "입력", value: "1회" },
+    ],
+  },
+  {
+    slug: "subscription-account-conversion-calculator",
+    title: "청약통장 전환 금리·자격 비교 계산기",
+    description: "청약예금·부금·저축을 주택청약종합저축으로 전환할 때 금리 차이, 실적 인정 범위, 소득공제 효과를 함께 비교합니다. 전환 마감 2026년 9월 30일.",
+    order: 78.7,
+    eyebrow: "청약통장 전환",
+    category: "부동산",
+    badges: ["신규", "9월 30일 마감"],
+    previewStats: [
+      { label: "전환 후 금리", value: "최대 3.1%" },
+      { label: "마감", value: "9/30" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

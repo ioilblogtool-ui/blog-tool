@@ -1,0 +1,202 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  HBM_META,
+  HBM_GENERATIONS,
+  HBM_TIMELINE,
+  HBM_POSITION_TABLE,
+  HBM_MYTH_CARDS,
+  HBM_RELATED_COMPANY_IDS,
+  HBM_BENEFICIARY_NOTES,
+  HBM_FAQ,
+  HBM_SEO_CONTENT,
+  HBM_RELATED_LINKS,
+} from "../../data/hbm4VsHbm5Comparison";
+import { VC_COMPANIES } from "../../data/semiconductorValueChain";
+
+const beneficiaryCompanies = HBM_RELATED_COMPANY_IDS.map((id) => VC_COMPANIES.find((company) => company.id === id)).filter(
+  (company): company is NonNullable<typeof company> => Boolean(company)
+);
+
+const statusLabelToClass: Record<string, string> = {
+  legacy: "legacy",
+  production: "production",
+  earlyProduction: "earlyProduction",
+  mockupOnly: "mockupOnly",
+};
+
+const faqSchema = HBM_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={HBM_META.title}
+  description={HBM_META.description}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: HBM_META.title,
+    description: HBM_META.description,
+    dateModified: HBM_META.updatedAt,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page hbm-page">
+    <CalculatorHero
+      eyebrow="반도체 세대 비교 리포트"
+      title="HBM4 vs HBM5, 무엇이 달라지나"
+      description="HBM3E부터 HBM5까지 세대별 스펙 변화를 비교하고, 메모리·파운드리·패키징·테스트까지 수혜기업을 정리했습니다."
+    />
+
+    <InfoNotice
+      title="비교 기준 안내"
+      lines={[
+        "HBM5는 2026년 7월 기준 실물 목업 공개 단계이며 정식 양산 스펙이 아닙니다.",
+        HBM_META.disclaimer,
+        `데이터 기준일: ${HBM_META.updatedAt}`,
+      ]}
+    />
+
+    <section class="content-section hbm-gen-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">세대별 스펙</p>
+        <h2>HBM3E → HBM4 → HBM4E → HBM5</h2>
+        <p>인터페이스 폭, 데이터 전송속도, 대역폭이 세대마다 어떻게 달라지는지 비교합니다.</p>
+      </div>
+
+      <div class="hbm-gen-table-wrap">
+        <table class="hbm-gen-table">
+          <thead>
+            <tr>
+              <th>세대</th>
+              <th>인터페이스 폭</th>
+              <th>데이터 전송속도</th>
+              <th>대역폭</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody>
+            {HBM_GENERATIONS.map((gen) => (
+              <tr>
+                <td><strong>{gen.name}</strong></td>
+                <td>{gen.interfaceWidthBit ? `${gen.interfaceWidthBit.toLocaleString("en-US")}-bit` : "확정 전"}</td>
+                <td>{gen.maxDataRateGbps ? `최대 ${gen.maxDataRateGbps}Gbps/pin` : "확정 전"}</td>
+                <td>{gen.maxBandwidthTBs ? `최대 ${gen.maxBandwidthTBs}TB/s` : "확정 전"}</td>
+                <td><span class={`hbm-status-badge hbm-status-badge--${statusLabelToClass[gen.status]}`}>{gen.statusLabel}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="hbm-gen-note">
+        {HBM_GENERATIONS.filter((g) => g.note).map((g) => (
+          <span><strong>{g.name}</strong> — {g.note}</span>
+        ))}
+      </p>
+    </section>
+
+    <section class="content-section hbm-timeline-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">전환 타임라인</p>
+        <h2>세대 전환은 언제, 어떤 순서로 일어났나</h2>
+      </div>
+      <div class="hbm-timeline">
+        {HBM_TIMELINE.map((entry) => (
+          <div class="hbm-timeline-item">
+            <p class="hbm-timeline-date">{entry.date}</p>
+            <p class="hbm-timeline-label">{entry.label}</p>
+            <p class="hbm-timeline-desc">{entry.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section hbm-position-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">경쟁 구도</p>
+        <h2>삼성전자 vs SK하이닉스, HBM 기술 경쟁</h2>
+        <p>실적·성과급이 아니라 HBM 세대 기술 경쟁에만 초점을 맞췄습니다.</p>
+      </div>
+      <div class="hbm-position-table-wrap">
+        <table class="hbm-position-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>삼성전자</th>
+              <th>SK하이닉스</th>
+            </tr>
+          </thead>
+          <tbody>
+            {HBM_POSITION_TABLE.map((row) => (
+              <tr>
+                <td><strong>{row.aspect}</strong></td>
+                <td>{row.samsung}</td>
+                <td>{row.skhynix}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section hbm-beneficiary-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수혜기업 지도</p>
+        <h2>메모리부터 패키징·테스트까지</h2>
+        <p>HBM 세대 전환의 수혜는 메모리 제조사뿐 아니라 밸류체인 전반에 걸쳐 있습니다.</p>
+      </div>
+      <div class="hbm-beneficiary-grid">
+        {beneficiaryCompanies.map((company) => (
+          <article class="hbm-beneficiary-card">
+            <div class="hbm-beneficiary-card__head">
+              <span>{company.flag}</span>
+              <strong>{company.name}</strong>
+            </div>
+            <p class="hbm-beneficiary-card__scale">{company.marketCapDisplay} · {company.segment}</p>
+            <p class="hbm-beneficiary-card__role">{company.roleDesc}</p>
+            <p class="hbm-beneficiary-note">{HBM_BENEFICIARY_NOTES[company.id]}</p>
+            {company.etfs.length > 0 && (
+              <div class="hbm-beneficiary-etfs">
+                {company.etfs.map((etf) => <span>{etf}</span>)}
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section hbm-myth-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">자주 하는 오해</p>
+        <h2>HBM에 대해 흔히 잘못 아는 것들</h2>
+      </div>
+      <div class="hbm-myth-grid">
+        {HBM_MYTH_CARDS.map((myth, index) => (
+          <article class="hbm-myth-card">
+            <p class="hbm-myth-num">오해 {index + 1}</p>
+            <p class="hbm-myth-claim">"{myth.claim}"</p>
+            <p class="hbm-myth-fact">→ {myth.fact}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle={HBM_SEO_CONTENT.introTitle}
+      intro={HBM_SEO_CONTENT.intro}
+      criteria={HBM_SEO_CONTENT.criteria}
+      faq={HBM_FAQ}
+      related={HBM_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

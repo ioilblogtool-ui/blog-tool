@@ -1,0 +1,264 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  NWP_META,
+  NWP_BOUNDARY_POINTS,
+  NWP_MEAN_STATS,
+  NWP_PRESETS,
+  NWP_DISTRIBUTION_TABLE,
+  NWP_FAQ,
+  NWP_SEO_CONTENT,
+  NWP_RELATED_LINKS,
+} from "../../data/netWorthPercentileCalculator";
+import { koreaRichTop10Seed } from "../../data/koreaRichTop10Current";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const top1Entry = koreaRichTop10Seed.entries[0];
+const koreaTop1NetWorthKrw = top1Entry.netWorthUsdB * 1_000_000_000 * koreaRichTop10Seed.conversionDefaults.usdKrwRate;
+
+const config = {
+  boundaryPoints: NWP_BOUNDARY_POINTS,
+  meanStats: NWP_MEAN_STATS,
+  presets: NWP_PRESETS,
+  koreaTop1NetWorthKrw,
+  koreaTop1Name: top1Entry.name,
+  koreaTop1Display: `$${top1Entry.netWorthUsdB}B`,
+};
+
+const faqSchema = NWP_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={NWP_META.seoTitle}
+  description={NWP_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: NWP_META.title,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: NWP_META.seoDescription,
+    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/net-worth-percentile-calculator/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="net-worth-percentile-calculator" pageClass="nwp-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="자산 진단 · 가구 기준"
+        title="내 순자산 상위 몇 % 계산기"
+        description="부동산·예금·주식·코인·부채를 넣으면 대한민국 가구 순자산 분포에서 상위 몇 % 수준인지 추정합니다."
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          NWP_META.dataNote,
+          "비교 단위는 개인이 아닌 가구입니다. 부부라면 합산해 입력하세요.",
+          "국민연금 예상 수령액은 포함하지 마세요. 퇴직연금·개인연금 적립금만 입력합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="nwpResetBtn" copyId="nwpCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">프리셋으로 바로 계산</h2>
+          </div>
+          <p class="panel-heading__summary">상황에 가까운 예시를 고른 뒤 금액을 조정하세요.</p>
+        </div>
+        <div class="nwp-preset-grid">
+          {NWP_PRESETS.map((preset) => (
+            <button type="button" class="nwp-preset-btn" data-nwp-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">자산과 부채</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>부동산(자가)</span>
+            <input data-nwp="realEstate" type="text" inputmode="numeric" class="input-number" value="500,000,000" />
+          </label>
+          <label class="field">
+            <span>전세보증금</span>
+            <input data-nwp="jeonseDeposit" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field">
+            <span>예금·적금</span>
+            <input data-nwp="savings" type="text" inputmode="numeric" class="input-number" value="30,000,000" />
+          </label>
+          <label class="field">
+            <span>국내주식 평가액</span>
+            <input data-nwp="domesticStock" type="text" inputmode="numeric" class="input-number" value="10,000,000" />
+          </label>
+          <label class="field">
+            <span>해외주식 평가액</span>
+            <input data-nwp="overseasStock" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field">
+            <span>코인 평가액</span>
+            <input data-nwp="crypto" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+          <label class="field">
+            <span>퇴직연금·개인연금 적립금</span>
+            <input data-nwp="pension" type="text" inputmode="numeric" class="input-number" value="0" />
+            <small>해지환급금 또는 현재 적립금 기준. 국민연금 예상 수령액은 포함하지 마세요.</small>
+          </label>
+          <label class="field">
+            <span>대출·부채</span>
+            <input data-nwp="debt" type="text" inputmode="numeric" class="input-number" value="300,000,000" />
+            <small>주택담보대출·전세자금대출·신용대출 등을 합산해 입력하세요.</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="nwp-section">
+      <div class="nwp-section__head">
+        <p class="nwp-section__eyebrow">백분위 · 가구 기준</p>
+        <h2>전국 가구 추정 상위 위치</h2>
+        <p class="nwp-section__sub">순자산 3억 원 미만 57.0%, 10억 원 이상 11.8%라는 공식 누적분포 지점을 보간한 구간 추정입니다.</p>
+      </div>
+      <div class="nwp-gauge-wrap">
+        <div class="nwp-gauge" id="nwpGauge" aria-label="전국 가구 추정 상위 % 위치"></div>
+        <div class="nwp-gauge-ticks" aria-hidden="true">
+          <span class="nwp-gauge-tick" style="left:0%">0원</span>
+          <span class="nwp-gauge-tick" id="nwpTickAverage">평균</span>
+          <span class="nwp-gauge-tick" id="nwpTickLow">3억(상위43%)</span>
+          <span class="nwp-gauge-tick" id="nwpTickHigh">10억(상위12%)</span>
+        </div>
+      </div>
+
+      <div class="nwp-kpi-grid" aria-live="polite">
+        <article class="nwp-kpi-card nwp-kpi-card--main">
+          <p>순자산</p>
+          <strong id="nwpNetWorth">-</strong>
+          <span>총자산 - 부채</span>
+        </article>
+        <article class="nwp-kpi-card nwp-kpi-card--accent">
+          <p>전국 가구 추정 상위</p>
+          <strong id="nwpPercentile">-</strong>
+          <span id="nwpBandLabel">-</span>
+        </article>
+        <article class="nwp-kpi-card">
+          <p>평균 대비 배율</p>
+          <strong id="nwpAverageMultiple">-</strong>
+          <span>가구 평균 순자산 대비</span>
+        </article>
+        <article class="nwp-kpi-card">
+          <p>부채비율</p>
+          <strong id="nwpDebtRatio">-</strong>
+          <span>부채 ÷ 총자산</span>
+        </article>
+        <article class="nwp-kpi-card">
+          <p>다음 구간까지</p>
+          <strong id="nwpGapAmount">-</strong>
+          <span id="nwpGapLabel">-</span>
+        </article>
+      </div>
+
+      <p class="nwp-diagnosis" id="nwpDiagnosis"></p>
+    </section>
+
+    <section class="nwp-section">
+      <div class="nwp-section__head">
+        <p class="nwp-section__eyebrow">자산 흐름</p>
+        <h2>총자산 → 부채 → 순자산</h2>
+      </div>
+      <div class="nwp-waterfall" id="nwpWaterfall"></div>
+    </section>
+
+    <section class="nwp-section">
+      <div class="nwp-section__head">
+        <p class="nwp-section__eyebrow">자산 구성</p>
+        <h2>부동산·금융·기타 비중</h2>
+      </div>
+      <div class="nwp-composition">
+        <div class="nwp-donut" id="nwpDonut"></div>
+        <div class="nwp-composition-legend" id="nwpCompositionLegend"></div>
+      </div>
+    </section>
+
+    <section class="nwp-section">
+      <div class="nwp-section__head">
+        <p class="nwp-section__eyebrow">비교</p>
+        <h2>한국 부자 TOP10과 비교</h2>
+      </div>
+      <article class="nwp-top10-card">
+        <p id="nwpTop10Text">-</p>
+        <a href={withBase("/reports/korea-rich-top10-assets/")}>한국 부자 TOP10 자산 비교 리포트 보기 →</a>
+      </article>
+    </section>
+
+    <div class="nwp-message" id="nwpMessage"></div>
+
+    <section class="nwp-section">
+      <div class="nwp-section__head">
+        <p class="nwp-section__eyebrow">참고 데이터</p>
+        <h2>한국 가구 순자산 분포</h2>
+      </div>
+      <div class="nwp-distribution-table-wrap">
+        <table class="nwp-distribution-table">
+          <tbody>
+            {NWP_DISTRIBUTION_TABLE.map((row) => (
+              <tr>
+                <th>{row.label}</th>
+                <td>{row.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="nwp-table-note">
+        이 계산기의 백분위 추정은 "순자산 3억 원 미만 57.0%"와 "순자산 10억 원 이상 11.8%" 두 누적분포 지점만 사용합니다.
+        평균값(전체 평균, 상위 10% 가구 평균)은 백분위 경계가 아니라 참고용 통계이므로 계산에 사용하지 않습니다.
+      </p>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={NWP_SEO_CONTENT.introTitle}
+        intro={NWP_SEO_CONTENT.intro}
+        inputPoints={NWP_SEO_CONTENT.inputPoints}
+        criteria={NWP_SEO_CONTENT.criteria}
+        faq={NWP_FAQ}
+        related={NWP_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="nwp-data" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/net-worth-percentile-calculator.js")}></script>
+</BaseLayout>
