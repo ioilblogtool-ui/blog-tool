@@ -199,8 +199,8 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "us-rich-top10-patterns",
-    title: "미국 부자 TOP 10 성공 패턴 리포트",
-    description: "자산, 학력, 업종, 창업 배경, 성향 태그를 선택해서 비교해보는 인터랙티브 리포트입니다.",
+    title: "세계 부자 TOP 10 자산·성공 패턴 리포트",
+    description: "Forbes 기준 세계 부자 TOP 10의 자산, 학력, 업종, 자산 원천, 부 축적 방식을 선택해서 비교해보는 인터랙티브 리포트입니다.",
     order: 10,
     badges: ["리포트"],
   },

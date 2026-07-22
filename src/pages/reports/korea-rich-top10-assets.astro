@@ -47,15 +47,29 @@ const cautionNotes = [
 const distributionGroups = [
   {
     title: "업종 분포",
-    summary: "금융, 재벌, 플랫폼, 바이오가 같이 섞여 있는 한국형 상위 부자 구성을 보여줍니다.",
+    summary: "재벌·전자, 금융, 바이오·제약, 자동차가 함께 섞여 있는 한국형 상위 부자 구성을 보여줍니다.",
     items: koreaRichTop10Seed.sectorSummaries.map((item) => ({ label: item.label, body: item.description }))
   },
   {
     title: "부의 형성 방식",
-    summary: "상속형과 자수성가형이 함께 상위권을 구성하는 점이 핵심입니다.",
+    summary: "상속형 6명과 자수성가형 4명이 함께 상위권을 구성하는 점이 핵심입니다.",
     items: koreaRichTop10Seed.wealthTypeSummaries.map((item) => ({ label: item.label, body: item.description }))
   }
 ];
+
+const yoy = koreaRichTop10Seed.yearOverYear;
+const topEntry = overviewEntries[0];
+const topGainUsdB = topEntry.prevNetWorthUsdB != null ? topEntry.netWorthUsdB - topEntry.prevNetWorthUsdB : null;
+const topGainPercent =
+  topEntry.prevNetWorthUsdB != null && topEntry.prevNetWorthUsdB > 0 && topGainUsdB != null
+    ? Math.round((topGainUsdB / topEntry.prevNetWorthUsdB) * 100)
+    : null;
+const rankStatusLabel: Record<string, string> = {
+  up: "상승",
+  down: "하락",
+  same: "유지",
+  new: "신규 진입"
+};
 ---
 
 <BaseLayout title={koreaRichTop10Seed.meta.title} description={koreaRichTop10Seed.meta.subtitle}>
@@ -159,7 +173,7 @@ const distributionGroups = [
         <article class="usr-kpi-card">
           <p>자수성가형</p>
           <strong>{wealthTypeCounts["self-made"]}명</strong>
-          <span>금융·바이오·플랫폼 중심</span>
+          <span>금융·바이오·제약 중심</span>
         </article>
         <article class="usr-kpi-card usr-kpi-card--soft">
           <p>상위 3명 집중도</p>
@@ -268,9 +282,80 @@ const distributionGroups = [
 
     <section class="usr-section">
       <div class="usr-section__head">
-        <p class="usr-section__eyebrow">최근 10년 흐름</p>
-        <h2>선택 인물 기준 자산 변화</h2>
-        <p class="usr-section__sub">2016년부터 2025년까지 공개 자료 기준으로 확인되는 자산 흐름을 정리했습니다.</p>
+        <p class="usr-section__eyebrow">2025 → 2026 변화</p>
+        <h2>TOP 10 자산은 1년 사이 얼마나 늘었을까</h2>
+        <p class="usr-section__sub">Forbes가 2026년 4월 발표한 Korea's 50 Richest 순위를 2025년 발표본과 비교했습니다.</p>
+      </div>
+      <div class="usr-kpi-grid">
+        <article class="usr-kpi-card usr-kpi-card--primary">
+          <p>2026년 한국 1위</p>
+          <strong>{topEntry.name} · {formatUsdB(topEntry.netWorthUsdB)}</strong>
+          <span>
+            {topGainUsdB != null ? `전년 대비 +${formatUsdB(topGainUsdB)}` : "-"}
+            {topGainPercent != null ? ` (+${topGainPercent}%)` : ""}
+          </span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>상위 50명 합산 자산</p>
+          <strong>{`$${yoy.totalTop50UsdB}B`}</strong>
+          <span>전년 {`$${yoy.totalTop50PrevUsdB}B`} 대비 +{yoy.totalTop50ChangePercent}%</span>
+        </article>
+        <article class="usr-kpi-card">
+          <p>50위 진입 최소 자산</p>
+          <strong>{formatUsdB(yoy.minEntryUsdB)}</strong>
+          <span>사상 처음 10억 달러 돌파</span>
+        </article>
+        <article class="usr-kpi-card usr-kpi-card--soft">
+          <p>TOP 10 신규 진입</p>
+          <strong>{yoy.newEntrantNames.length}명</strong>
+          <span>{yoy.newEntrantNames.join(", ")}</span>
+        </article>
+      </div>
+
+      <article class="panel kr-yoy-panel">
+        <div class="kr-yoy-table-wrap">
+          <table class="kr-yoy-table">
+            <thead>
+              <tr>
+                <th>2026 순위</th>
+                <th>이름</th>
+                <th>2026 자산</th>
+                <th>2025 자산</th>
+                <th>변동</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                overviewEntries.map((entry) => {
+                  const gain = entry.prevNetWorthUsdB != null ? entry.netWorthUsdB - entry.prevNetWorthUsdB : null;
+                  return (
+                    <tr>
+                      <td>{entry.rank}위</td>
+                      <td>{entry.name}</td>
+                      <td>{formatUsdB(entry.netWorthUsdB)}</td>
+                      <td>{entry.prevNetWorthUsdB != null ? formatUsdB(entry.prevNetWorthUsdB) : "TOP10 밖"}</td>
+                      <td class={`kr-yoy-change is-${entry.rankStatus}`}>
+                        {entry.rankStatus === "new"
+                          ? "신규 진입"
+                          : `${rankStatusLabel[entry.rankStatus]} (${entry.prevRank}위→${entry.rank}위)`}
+                        {gain != null ? ` · ${gain >= 0 ? "+" : ""}${formatUsdB(gain)}` : ""}
+                      </td>
+                    </tr>
+                  );
+                })
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="kr-yoy-note">2025년 TOP10이었던 쿠팡 김범석, 카카오 김범수는 2026년 TOP10 밖으로 밀려났습니다.</p>
+      </article>
+    </section>
+
+    <section class="usr-section">
+      <div class="usr-section__head">
+        <p class="usr-section__eyebrow">연도별 자산 변화</p>
+        <h2>선택 인물의 Forbes 발표 자산 추이</h2>
+        <p class="usr-section__sub">2016년부터 2026년까지 각 연도 Forbes 발표 시점의 추정 자산입니다. 연속된 시계열이 아니라 연간 평가 결과이므로 참고용으로 확인해주세요.</p>
       </div>
       <article class="panel usr-chart-panel">
         <div class="usr-chart-wrap kr-chart-wrap--history" id="koreaHistoryChart">
@@ -367,10 +452,10 @@ const distributionGroups = [
       <SeoContent
         introTitle="한국 부자 TOP 10 리포트 읽는 법"
         intro={[
-          "한국 부자들의 자산 규모를 보면 막연하게 크다고만 느껴지지, 실제로 얼마나 차이가 나는지는 가늠하기 어렵습니다. 이 페이지는 2026년 현재 공개된 최신 Forbes Korea 순위(2025 발표본)를 기준으로 한국 부자 TOP 10의 자산 규모를 비교해보는 인터랙티브 리포트입니다.",
-          "미국 부자 TOP 10 성공 패턴 리포트와 같은 레이아웃 체계를 적용해, 선택 패널과 상세 카드, 차트, 패턴 요약을 한 흐름으로 읽을 수 있게 구성했습니다. 인물을 선택하면 자산 구성과 환산 비교까지 함께 확인할 수 있습니다.",
-          "환율, 서울 국평 가격, 그랜저 가격처럼 일상적으로 체감할 수 있는 기준으로 자산을 환산해보면, 단순 숫자보다 그 규모가 더 실감 나게 다가옵니다. 이런 환산 비교는 추상적인 자산 규모를 구체적으로 이해하는 데 도움이 됩니다.",
-          "이 리포트의 자산 규모는 Forbes Korea가 공개한 시점의 추정치이며, 자산 가치는 주가나 부동산 시세 변동에 따라 계속 달라질 수 있습니다. 정확한 최신 자산 규모는 Forbes의 공식 발표를 통해 확인하는 것이 안전합니다.",
+          "한국 부자들의 자산 규모를 보면 막연하게 크다고만 느껴지지, 실제로 얼마나 차이가 나는지는 가늠하기 어렵습니다. 이 페이지는 Forbes가 2026년 4월 발표한 Korea's 50 Richest 순위를 기준으로 한국 부자 TOP 10의 자산 규모와 전년 대비 변화를 비교해보는 인터랙티브 리포트입니다.",
+          "2026년 리스트는 AI 반도체 랠리로 이재용 삼성전자 회장이 다시 1위에 올라섰고, 한국 상위 50명의 합산 자산도 전년 990억 달러에서 1,750억 달러로 77% 늘어난 역대 최고치를 기록했습니다. 인물을 선택하면 자산 구성과 순위 변화, 환산 비교까지 함께 확인할 수 있습니다.",
+          "환율, 서울 국평 가격, 그랜저 가격처럼 일상적으로 체감할 수 있는 기준으로 자산을 환산해보면, 단순 숫자보다 그 규모가 더 실감 나게 다가옵니다. 다만 이 환산값과 자산 총액은 상장주식·비상장지분 등의 시장가치 추정치일 뿐, 실제 현금 보유액이 아니라는 점을 함께 봐야 합니다.",
+          "이 리포트의 자산 규모는 Forbes Korea가 2026년 4월 13일 발표한 시점(2026년 3월 27일 기준 평가)의 추정치이며, 자산 가치는 주가나 환율 변동에 따라 계속 달라질 수 있습니다. 정확한 최신 자산 규모는 Forbes의 공식 발표를 통해 확인하는 것이 안전합니다.",
         ]}
         inputPoints={[
           "왼쪽 패널에서 인물을 선택하면 상세 카드와 차트가 함께 바뀝니다.",
@@ -378,14 +463,16 @@ const distributionGroups = [
           "빠른 비교 카드와 가로 바 차트로 상위권 자산 격차를 먼저 훑을 수 있습니다."
         ]}
         criteria={[
-          "2026년 현재 공개된 최신 Forbes Korea 순위(2025 발표본)를 기준으로 정리합니다.",
+          "Forbes가 2026년 4월 발표한 Korea's 50 Richest 순위(2026년 3월 27일 기준 평가)를 기준으로 정리합니다.",
+          "자산은 현금 보유액이 아니라 상장주식·비상장지분 등을 추정한 시장가치이며, 전부 현금화하기는 어렵습니다.",
           "원화 환산은 입력한 환율을 적용한 참고값입니다.",
           "서울 국평과 그랜저 환산은 체감 비교용이며 투자나 재무 판단 기준이 아닙니다.",
           "업종과 유형 분류는 공개된 기업 배경과 부의 원천을 바탕으로 단순화했습니다."
         ]}
         faq={faqItems}
         related={[
-          { href: "/reports/us-rich-top10-patterns/", label: "미국 부자 TOP 10 성공 패턴 리포트" },
+          { href: "/reports/us-rich-top10-patterns/", label: "세계 부자 TOP 10 성공 패턴 리포트" },
+          { href: "/tools/fire-calculator/", label: "파이어족 목표자산 계산기" },
           { href: "/reports/", label: "비교 리포트 모아보기" },
           { href: "/tools/household-income/", label: "가구 소득 계산기" }
         ]}

@@ -35,6 +35,94 @@ Claude에게 아래처럼 말하면 됩니다:
 
 ---
 
+## 2026-07-21 (최근 1일)
+
+### 최근 1일 (PC + Mobile)
+| 지표 | 수치 | 전일 대비 |
+|------|------|---------|
+| 클릭 | 630 | +0.6% |
+| 노출 | 24,000 | -14% |
+| CTR | 2.7% | +0.4%p |
+
+### 상위 키워드 TOP 30 (1일 기준)
+| 순위 | 키워드 | 클릭 | 노출 | CTR% |
+|------|--------|------|------|------|
+| 1 | 대학교수 연봉 | 25 | 51 | 49.0 |
+| 2 | 삼성전자 성과급 계산기 | 18 | 101 | 17.8 |
+| 3 | 국회의원 재산순위 | 11 | 22 | 50.0 |
+| 4 | 성과급 계산기 | 10 | 90 | 11.1 |
+| 5 | 현대자동차 성과급 2026 | 8 | 140 | 5.7 |
+| 6 | 초등교사 월급 | 8 | 136 | 5.9 |
+| 7 | 성과급 세금 계산기 | 7 | 78 | 9.0 |
+| 8 | 최저시급 월급 세후 | 7 | 47 | 14.9 |
+| 9 | 아파트 보유세 계산기 | 6 | 28 | 21.4 |
+| 10 | 국립대 교수 연봉 | 5 | 32 | 15.6 |
+| 11 | 2026 k리그 연봉순위 | 5 | 10 | 50.0 |
+| 12 | 교수 연봉 | 4 | 66 | 6.1 |
+| 13 | 야근수당 계산기 | 4 | 64 | 6.2 |
+| 14 | 반도체 성과급 | 4 | 30 | 13.3 |
+| 15 | 코레일 성과급 | 4 | 20 | 20.0 |
+| 16 | 한성숙 프로필 | 3 | 953 | 0.3 |
+| 17 | 기간제교사 월급 | 3 | 39 | 7.7 |
+| 18 | 삼성 e&a 연봉 | 3 | 21 | 14.3 |
+| 19 | 중학교 교사 월급 | 3 | 20 | 15.0 |
+| 20 | 성과급 계산 | 3 | 14 | 21.4 |
+| 21 | 수원 대장아파트 | 3 | 10 | 30.0 |
+| 22 | 삼성 성과급 계산기 | 3 | 9 | 33.3 |
+| 23 | 성과금 계산기 | 3 | 8 | 37.5 |
+| 24 | 세후 최저월급 | 3 | 8 | 37.5 |
+| 25 | 세후 성과급 계산기 | 3 | 5 | 60.0 |
+| 26 | 2026 서울 구별 아파트 실거래가 완전 분석 | 3 | 1 | 300.0 |
+| 27 | 2026 k리그1 구단순위 | 2 | 2,972 | 0.1 |
+| 28 | 삼성전자 성과급 | 2 | 868 | 0.2 |
+| 29 | 약사 연봉 | 2 | 151 | 1.3 |
+| 30 | 이재명 재산 | 2 | 130 | 1.5 |
+
+### 상위 URL TOP 30 (1일 기준)
+| 순위 | URL | 클릭 | 노출 | CTR% |
+|------|-----|------|------|------|
+| 1 | /reports/professor-salary-2026/ | 51 | 306 | 16.7 |
+| 2 | /reports/teacher-salary-2026/ | 38 | 1,210 | 3.1 |
+| 3 | /tools/samsung-bonus/ | 26 | 667 | 3.9 |
+| 4 | /reports/kleague-salary-comparison-2026/ | 24 | 3,130 | 0.8 |
+| 5 | /tools/bonus-after-tax-calculator/ | 24 | 820 | 2.9 |
+| 6 | /tools/minimum-wage-2026/ | 24 | 423 | 5.7 |
+| 7 | /compare/bonus/ | 22 | 2,197 | 1.0 |
+| 8 | /tools/teacher-salary-calculator/ | 16 | 315 | 5.1 |
+| 9 | /tools/postnatal-care-income-eligibility/ | 12 | 163 | 7.4 |
+| 10 | /reports/national-assembly-wealth-2026/ | 12 | 45 | 26.7 |
+| 11 | /reports/corporate-bonus-comparison-2026/ | 11 | 370 | 3.0 |
+| 12 | /tools/apartment-holding-tax/ | 11 | 295 | 3.7 |
+| 13 | /reports/construction-salary-bonus-comparison-2026/ | 11 | 230 | 4.8 |
+| 14 | /reports/public-enterprise-bonus-comparison-2026/ | 11 | 100 | 11.0 |
+| 15 | /reports/military-salary-2026/ | 8 | 466 | 1.7 |
+| 16 | /tools/overtime-pay-calculator/ | 8 | 272 | 2.9 |
+| 17 | /tools/real-estate-acquisition-tax/ | 7 | 456 | 1.5 |
+| 18 | /tools/military-salary-calculator/ | 7 | 135 | 5.2 |
+| 19 | /reports/gold-price-2016-vs-2026/ | 7 | 57 | 12.3 |
+| 20 | /reports/suwon-yeongtong-apartment-price-2026/ | 7 | 51 | 13.7 |
+| 21 | /reports/new-employee-salary-2026/ | 6 | 186 | 3.2 |
+| 22 | /tools/stock-brokerage-fee-calculator/ | 6 | 130 | 4.6 |
+| 23 | /reports/samsung-ds-bonus-calculation-guide/ | 6 | 128 | 4.7 |
+| 24 | /tools/welfare-benefit-eligibility/ | 6 | 55 | 10.9 |
+| 25 | /tools/parental-leave-short-work-calculator/ | 5 | 256 | 2.0 |
+| 26 | /reports/property-tax-payment-2026/ | 5 | 215 | 2.3 |
+| 27 | /tools/semiconductor-bonus-comparison/ | 5 | 165 | 3.0 |
+| 28 | /reports/samsung-bonus-rank-net-comparison-2026/ | 5 | 128 | 3.9 |
+| 29 | /tools/pharmacist-salary-calculator/ | 5 | 123 | 4.1 |
+| 30 | /tools/auto-bonus-comparison/ | 5 | 106 | 4.7 |
+
+### 주목 포인트
+- 클릭 630(+0.6%), 노출 24,000(-14%), CTR 2.7%(+0.4%p) — 07-20(클릭630·노출28,000·CTR2.3%) 대비 노출이 크게 줄면서 CTR이 뚜렷하게 개선. 대량노출·저CTR 키워드 비중 축소가 원인으로 보임.
+- `대학교수 연봉`(클릭25·CTR49.0%)이 키워드 1위로 급부상 — 07-20 4위(클릭11·CTR28.9%) 대비 클릭 2배 이상. `삼성전자 성과급 계산기`(2위, 클릭18·CTR17.8%)·`국회의원 재산순위`(3위, 클릭11·CTR50.0%)도 순위·CTR 동반 상승.
+- `professor-salary-2026`(URL 1위, 클릭51·CTR16.7%)이 07-20 2위(클릭30·CTR11.7%)에서 1위로 올라서며 `teacher-salary-2026`(2위, 클릭38·CTR3.1%)을 제침 — 교수 연봉 리포트가 트래픽 최상단으로 자리잡음.
+- `kleague-salary-comparison-2026`(URL 4위, 노출3,130·CTR0.8%)·`2026 k리그1 구단순위`(키워드 27위, 노출2,972·CTR0.1%)·`/compare/bonus/`(URL 7위, 노출2,197·CTR1.0%) — 대량노출·저CTR 구조가 계속 반복되는 축, 타이틀·스니펫 보강 후보로 지속 모니터링 필요.
+- `/tools/worldcup-prize-money-calculator/`가 이번 스냅샷 URL TOP30에서 이탈 — 07-20 노출 1위(5,382)였던 대량노출 페이지가 빠지면서 전체 CTR 개선에 기여한 것으로 추정.
+- 재산세 시즌 콘텐츠(`property-tax-payment-2026`·`apartment-holding-tax`·`real-estate-acquisition-tax`·`suwon-yeongtong-apartment-price-2026`)와 복지·생활 계산기(`welfare-benefit-eligibility`·`parental-leave-short-work-calculator`·`pharmacist-salary-calculator`)가 URL TOP30에 다수 안착 — 콘텐츠 다각화 전략 유지.
+- `이재명 재산`·`약사 연봉`·`2026 서울 구별 아파트 실거래가 완전 분석`(노출1·클릭3, 표본 적어 노이즈 가능성) 등 신규 롱테일 진입.
+
+---
+
 ## 2026-07-20 (최근 1일)
 
 ### 최근 1일 (PC + Mobile)

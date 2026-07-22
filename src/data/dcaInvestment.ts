@@ -1461,10 +1461,10 @@ export const DCA_FAQ = [
 export const DCA_NEXT_REPORT = {
   href: "/reports/us-rich-top10-patterns/",
   eyebrow: "이어서 보면 좋은 리포트",
-  title: "미국 부자 TOP 10 성공 패턴",
+  title: "세계 부자 TOP 10 성공 패턴",
   desc: "세계 최대 자산가들이 어떤 방식으로 자산을 쌓았는지 정리한 리포트입니다. 장기 투자와 자산 배분의 실제 패턴을 확인할 수 있습니다.",
   badges: ["장기 투자", "자산 배분"],
-  cta: "미국 부자 TOP 10 패턴 보기",
+  cta: "세계 부자 TOP 10 패턴 보기",
   sub: [
     {
       href: "/reports/korea-rich-top10-assets/",

@@ -22,11 +22,10 @@ if (dataNode && select) {
     education: document.getElementById("profileEducation"),
     founderType: document.getElementById("profileFounderType"),
     style: document.getElementById("profileStyle"),
+    wealthSource: document.getElementById("profileWealthSource"),
+    wealthDriver: document.getElementById("profileWealthDriver"),
     companies: document.getElementById("profileCompanies"),
     tags: document.getElementById("profileTags"),
-    mbtiBlock: document.getElementById("mbtiBlock"),
-    mbti: document.getElementById("profileMbti"),
-    mbtiConfidence: document.getElementById("profileMbtiConfidence"),
     summary: document.getElementById("profileSummary"),
     highlights: document.getElementById("profileHighlights"),
     imageBlock: document.getElementById("profileImageBlock"),
@@ -47,10 +46,11 @@ if (dataNode && select) {
   };
 
   const styleMap = {
-    startup: "스타트업형",
-    ownership: "지분보유형",
-    investment: "투자형",
-    mixed: "혼합형"
+    "founder-equity": "창업·지분형",
+    "cofounder-platform": "공동창업 플랫폼형",
+    "executive-equity": "전문경영·지분형",
+    "investment-compound": "투자·복리형",
+    "family-expansion": "가업 확장형"
   };
 
   const funConversionConfig = {
@@ -295,6 +295,8 @@ if (dataNode && select) {
     if (els.education) els.education.textContent = profile.education.join(" · ");
     if (els.founderType) els.founderType.textContent = founderTypeMap[profile.founderType] || profile.founderType;
     if (els.style) els.style.textContent = styleMap[profile.selfMadeStyle] || profile.selfMadeStyle;
+    if (els.wealthSource) els.wealthSource.textContent = profile.wealthSource || "";
+    if (els.wealthDriver) els.wealthDriver.textContent = profile.wealthDriver || "";
     if (els.companies) els.companies.textContent = profile.companies.join(" / ");
     if (els.summary) els.summary.textContent = profile.summary;
 
@@ -305,15 +307,6 @@ if (dataNode && select) {
     renderOverviewCards(profile.id);
     renderOverviewChart(profile.id);
     updateUrl(profile.id);
-
-    const hasMbti = Boolean(profile.mbtiEstimate);
-    if (els.mbtiBlock) els.mbtiBlock.hidden = !hasMbti;
-    if (hasMbti) {
-      if (els.mbti) els.mbti.textContent = profile.mbtiEstimate;
-      if (els.mbtiConfidence) {
-        els.mbtiConfidence.textContent = profile.mbtiConfidence === "medium" ? "중간 신뢰도" : "낮은 신뢰도";
-      }
-    }
   }
 
   function handleCardSelection(id) {
