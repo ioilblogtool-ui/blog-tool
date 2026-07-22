@@ -9,9 +9,15 @@ import {
   HBM_GENERATIONS,
   HBM_TIMELINE,
   HBM_POSITION_TABLE,
+  HBM_POSITION_SUMMARY,
+  HBM_BASE_DIE_EXPLANATION,
+  HBM_BANDWIDTH_EXPLANATION,
+  HBM_CHALLENGE_TABLE,
+  HBM_INVESTOR_KPIS,
+  HBM_DRAM_IMPACT_NOTE,
   HBM_MYTH_CARDS,
   HBM_RELATED_COMPANY_IDS,
-  HBM_BENEFICIARY_NOTES,
+  HBM_BENEFICIARY_INFO,
   HBM_FAQ,
   HBM_SEO_CONTENT,
   HBM_RELATED_LINKS,
@@ -22,11 +28,19 @@ const beneficiaryCompanies = HBM_RELATED_COMPANY_IDS.map((id) => VC_COMPANIES.fi
   (company): company is NonNullable<typeof company> => Boolean(company)
 );
 
+const tierOrder = ["① HBM 제조사", "② 파운드리·베이스 다이", "③ 적층·패키징 장비·소재", "④ 검사·서버 인프라"];
+
 const statusLabelToClass: Record<string, string> = {
-  legacy: "legacy",
   production: "production",
-  earlyProduction: "earlyProduction",
-  mockupOnly: "mockupOnly",
+  productionExpanding: "productionExpanding",
+  sampleQualification: "sampleQualification",
+};
+
+const directnessLabel: Record<string, string> = {
+  veryHigh: "직접 수혜 · 매우 높음",
+  high: "직접 수혜 · 높음",
+  medium: "간접 수혜 · 중간",
+  indirect: "간접 수혜",
 };
 
 const faqSchema = HBM_FAQ.map((item) => ({
@@ -54,24 +68,20 @@ const faqSchema = HBM_FAQ.map((item) => ({
   <main class="container page-shell report-page hbm-page">
     <CalculatorHero
       eyebrow="반도체 세대 비교 리포트"
-      title="HBM4 vs HBM5, 무엇이 달라지나"
-      description="HBM3E부터 HBM5까지 세대별 스펙 변화를 비교하고, 메모리·파운드리·패키징·테스트까지 수혜기업을 정리했습니다."
+      title={HBM_META.h1}
+      description="HBM3E, HBM4, HBM4E의 인터페이스 폭·속도·대역폭·양산 단계를 비교하고, 메모리부터 파운드리·패키징·테스트까지 수혜기업을 정리했습니다."
     />
 
     <InfoNotice
       title="비교 기준 안내"
-      lines={[
-        "HBM5는 2026년 7월 기준 실물 목업 공개 단계이며 정식 양산 스펙이 아닙니다.",
-        HBM_META.disclaimer,
-        `데이터 기준일: ${HBM_META.updatedAt}`,
-      ]}
+      lines={[HBM_META.hbm5ExclusionNote, HBM_META.disclaimer, `데이터 기준일: ${HBM_META.updatedAt}`]}
     />
 
     <section class="content-section hbm-gen-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">세대별 스펙</p>
-        <h2>HBM3E → HBM4 → HBM4E → HBM5</h2>
-        <p>인터페이스 폭, 데이터 전송속도, 대역폭이 세대마다 어떻게 달라지는지 비교합니다.</p>
+        <h2>HBM3E → HBM4 → HBM4E</h2>
+        <p>인터페이스 폭, 핀 속도, 대역폭이 세대마다 어떻게 달라지는지 비교합니다. 대역폭은 표준(JEDEC) 기준과 제조사 제품 사양 기준을 함께 표시합니다.</p>
       </div>
 
       <div class="hbm-gen-table-wrap">
@@ -80,8 +90,9 @@ const faqSchema = HBM_FAQ.map((item) => ({
             <tr>
               <th>세대</th>
               <th>인터페이스 폭</th>
-              <th>데이터 전송속도</th>
+              <th>핀 속도</th>
               <th>대역폭</th>
+              <th>용량</th>
               <th>상태</th>
             </tr>
           </thead>
@@ -89,9 +100,10 @@ const faqSchema = HBM_FAQ.map((item) => ({
             {HBM_GENERATIONS.map((gen) => (
               <tr>
                 <td><strong>{gen.name}</strong></td>
-                <td>{gen.interfaceWidthBit ? `${gen.interfaceWidthBit.toLocaleString("en-US")}-bit` : "확정 전"}</td>
-                <td>{gen.maxDataRateGbps ? `최대 ${gen.maxDataRateGbps}Gbps/pin` : "확정 전"}</td>
-                <td>{gen.maxBandwidthTBs ? `최대 ${gen.maxBandwidthTBs}TB/s` : "확정 전"}</td>
+                <td>{gen.interfaceWidthBit.toLocaleString("en-US")}-bit</td>
+                <td>{gen.pinSpeedLabel}</td>
+                <td>{gen.bandwidthLabel}</td>
+                <td>{gen.capacityLabel}</td>
                 <td><span class={`hbm-status-badge hbm-status-badge--${statusLabelToClass[gen.status]}`}>{gen.statusLabel}</span></td>
               </tr>
             ))}
@@ -103,17 +115,27 @@ const faqSchema = HBM_FAQ.map((item) => ({
           <span><strong>{g.name}</strong> — {g.note}</span>
         ))}
       </p>
+      <p class="hbm-hbm5-note">{HBM_META.hbm5ExclusionNote}</p>
+    </section>
+
+    <section class="content-section hbm-explain-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">대역폭 계산 방식</p>
+        <h2>왜 HBM4 대역폭이 2.0TB/s로도, 3.3TB/s로도 나오나</h2>
+      </div>
+      <p class="hbm-explain-text">{HBM_BANDWIDTH_EXPLANATION}</p>
     </section>
 
     <section class="content-section hbm-timeline-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">전환 타임라인</p>
+        <p class="section-header__eyebrow">개발 · 샘플 · 양산 · 출하 타임라인</p>
         <h2>세대 전환은 언제, 어떤 순서로 일어났나</h2>
+        <p>개발 완료, 고객 샘플 공급, 양산 체제 구축, 상용 출하는 서로 다른 단계입니다.</p>
       </div>
       <div class="hbm-timeline">
         {HBM_TIMELINE.map((entry) => (
           <div class="hbm-timeline-item">
-            <p class="hbm-timeline-date">{entry.date}</p>
+            <p class="hbm-timeline-date">{entry.date} · {entry.company}</p>
             <p class="hbm-timeline-label">{entry.label}</p>
             <p class="hbm-timeline-desc">{entry.description}</p>
           </div>
@@ -124,7 +146,7 @@ const faqSchema = HBM_FAQ.map((item) => ({
     <section class="content-section hbm-position-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">경쟁 구도</p>
-        <h2>삼성전자 vs SK하이닉스, HBM 기술 경쟁</h2>
+        <h2>삼성전자 vs SK하이닉스 vs 마이크론</h2>
         <p>실적·성과급이 아니라 HBM 세대 기술 경쟁에만 초점을 맞췄습니다.</p>
       </div>
       <div class="hbm-position-table-wrap">
@@ -134,6 +156,7 @@ const faqSchema = HBM_FAQ.map((item) => ({
               <th>항목</th>
               <th>삼성전자</th>
               <th>SK하이닉스</th>
+              <th>마이크론</th>
             </tr>
           </thead>
           <tbody>
@@ -142,6 +165,75 @@ const faqSchema = HBM_FAQ.map((item) => ({
                 <td><strong>{row.aspect}</strong></td>
                 <td>{row.samsung}</td>
                 <td>{row.skhynix}</td>
+                <td>{row.micron}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="hbm-explain-text">{HBM_POSITION_SUMMARY}</p>
+    </section>
+
+    <section class="content-section hbm-explain-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">베이스 다이</p>
+        <h2>왜 베이스 다이가 HBM4부터 중요해지나</h2>
+      </div>
+      <p class="hbm-explain-text">{HBM_BASE_DIE_EXPLANATION}</p>
+    </section>
+
+    <section class="content-section hbm-beneficiary-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">수혜기업 지도</p>
+        <h2>메모리부터 패키징·테스트까지</h2>
+        <p>HBM 세대 전환의 수혜는 메모리 제조사뿐 아니라 밸류체인 전반에 걸쳐 있으며, 단계가 뒤로 갈수록 직접성이 낮아집니다.</p>
+      </div>
+      {tierOrder.map((tier) => {
+        const tierCompanies = beneficiaryCompanies.filter((c) => HBM_BENEFICIARY_INFO[c.id]?.tier === tier);
+        if (!tierCompanies.length) return null;
+        return (
+          <div class="hbm-tier-group">
+            <h3 class="hbm-tier-group__title">{tier}</h3>
+            <div class="hbm-beneficiary-grid">
+              {tierCompanies.map((company) => {
+                const info = HBM_BENEFICIARY_INFO[company.id];
+                return (
+                  <article class="hbm-beneficiary-card">
+                    <div class="hbm-beneficiary-card__head">
+                      <span>{company.flag}</span>
+                      <strong>{company.name}</strong>
+                      <span class={`hbm-directness-badge hbm-directness-badge--${info.directness}`}>{directnessLabel[info.directness]}</span>
+                    </div>
+                    <p class="hbm-beneficiary-card__scale">{company.marketCapDisplay} · {info.connection}</p>
+                    <p class="hbm-beneficiary-card__role">{company.roleDesc}</p>
+                    <p class="hbm-beneficiary-note">{info.note}</p>
+                    {info.caveat && <p class="hbm-beneficiary-caveat">⚠️ {info.caveat}</p>}
+                    {company.etfs.length > 0 && (
+                      <div class="hbm-beneficiary-etfs">
+                        {company.etfs.map((etf) => <span>{etf}</span>)}
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </section>
+
+    <section class="content-section hbm-explain-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">세대 전환의 과제</p>
+        <h2>HBM 세대가 바뀌면 무엇이 어려워지나</h2>
+      </div>
+      <div class="hbm-challenge-table-wrap">
+        <table class="hbm-challenge-table">
+          <tbody>
+            {HBM_CHALLENGE_TABLE.map((row) => (
+              <tr>
+                <td><strong>{row.challenge}</strong></td>
+                <td>{row.reason}</td>
               </tr>
             ))}
           </tbody>
@@ -149,30 +241,15 @@ const faqSchema = HBM_FAQ.map((item) => ({
       </div>
     </section>
 
-    <section class="content-section hbm-beneficiary-section">
+    <section class="content-section hbm-kpi-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">수혜기업 지도</p>
-        <h2>메모리부터 패키징·테스트까지</h2>
-        <p>HBM 세대 전환의 수혜는 메모리 제조사뿐 아니라 밸류체인 전반에 걸쳐 있습니다.</p>
+        <p class="section-header__eyebrow">투자자 체크리스트</p>
+        <h2>투자자가 봐야 할 숫자</h2>
       </div>
-      <div class="hbm-beneficiary-grid">
-        {beneficiaryCompanies.map((company) => (
-          <article class="hbm-beneficiary-card">
-            <div class="hbm-beneficiary-card__head">
-              <span>{company.flag}</span>
-              <strong>{company.name}</strong>
-            </div>
-            <p class="hbm-beneficiary-card__scale">{company.marketCapDisplay} · {company.segment}</p>
-            <p class="hbm-beneficiary-card__role">{company.roleDesc}</p>
-            <p class="hbm-beneficiary-note">{HBM_BENEFICIARY_NOTES[company.id]}</p>
-            {company.etfs.length > 0 && (
-              <div class="hbm-beneficiary-etfs">
-                {company.etfs.map((etf) => <span>{etf}</span>)}
-              </div>
-            )}
-          </article>
-        ))}
-      </div>
+      <ul class="hbm-kpi-list">
+        {HBM_INVESTOR_KPIS.map((kpi) => <li>{kpi}</li>)}
+      </ul>
+      <p class="hbm-explain-text">{HBM_DRAM_IMPACT_NOTE}</p>
     </section>
 
     <section class="content-section hbm-myth-section">

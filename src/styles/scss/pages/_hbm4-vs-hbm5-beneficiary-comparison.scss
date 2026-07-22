@@ -8,7 +8,7 @@
   .hbm-gen-table,
   .hbm-position-table {
     width: 100%;
-    min-width: 640px;
+    min-width: 760px;
     border-collapse: collapse;
     font-size: 0.86rem;
 
@@ -47,10 +47,62 @@
     font-weight: 800;
     white-space: nowrap;
 
-    &--production { background: #dcfce7; color: #166534; }
-    &--earlyProduction { background: #fef3c7; color: #92400e; }
-    &--legacy { background: #f3f4f6; color: #4b5563; }
-    &--mockupOnly { background: #e0e7ff; color: #3730a3; }
+    &--production { background: #f3f4f6; color: #4b5563; }
+    &--productionExpanding { background: #dcfce7; color: #166534; }
+    &--sampleQualification { background: #fef3c7; color: #92400e; }
+  }
+
+  .hbm-hbm5-note {
+    margin: 10px 0 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    font-size: 0.78rem;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .hbm-explain-section {
+    .hbm-explain-text {
+      margin: 8px 0 0;
+      font-size: 0.88rem;
+      color: #374151;
+      line-height: 1.75;
+    }
+  }
+
+  .hbm-challenge-table-wrap {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+
+  .hbm-challenge-table {
+    width: 100%;
+    min-width: 420px;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8ede9;
+    }
+
+    td:first-child { width: 140px; color: #0f6e56; font-weight: 800; }
+    td:last-child { color: #6b7280; }
+  }
+
+  .hbm-kpi-list {
+    margin: 12px 0 16px;
+    padding-left: 20px;
+    display: grid;
+    gap: 6px;
+    font-size: 0.86rem;
+    color: #374151;
+    line-height: 1.6;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .hbm-timeline {
@@ -95,10 +147,24 @@
     color: #6b7280;
   }
 
+  .hbm-tier-group {
+    margin-top: 24px;
+
+    &:first-of-type { margin-top: 12px; }
+  }
+
+  .hbm-tier-group__title {
+    font-size: 0.86rem;
+    font-weight: 800;
+    color: #0f6e56;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e1f5ee;
+  }
+
   .hbm-beneficiary-grid {
     display: grid;
     gap: 12px;
-    margin-top: 20px;
 
     @media (min-width: 768px) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -119,11 +185,36 @@
   .hbm-beneficiary-card__head {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
     font-size: 0.98rem;
     font-weight: 800;
     color: #111827;
     margin-bottom: 6px;
+  }
+
+  .hbm-directness-badge {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 0.66rem;
+    font-weight: 800;
+    white-space: nowrap;
+
+    &--veryHigh { background: #dcfce7; color: #166534; }
+    &--high { background: #e1f5ee; color: #0f6e56; }
+    &--medium { background: #fef3c7; color: #92400e; }
+    &--indirect { background: #f3f4f6; color: #6b7280; }
+  }
+
+  .hbm-beneficiary-caveat {
+    margin: 0 0 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: #fffbeb;
+    font-size: 0.72rem;
+    color: #92400e;
+    line-height: 1.5;
   }
 
   .hbm-beneficiary-card__scale {
