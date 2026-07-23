@@ -1,0 +1,235 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PENSION_BACKPAY_CHECKLIST_CAUTION,
+  PENSION_BACKPAY_CHECKLIST_POSITIVE,
+  PENSION_BACKPAY_DEFAULT_INPUT,
+  PENSION_BACKPAY_FAQ,
+  PENSION_BACKPAY_LIMITS,
+  PENSION_BACKPAY_META,
+  PENSION_BACKPAY_PRESETS,
+  PENSION_BACKPAY_PROCEDURE,
+  PENSION_BACKPAY_RATE_SCHEDULE,
+  PENSION_BACKPAY_RELATED_LINKS,
+  PENSION_BACKPAY_RULES,
+  PENSION_BACKPAY_SEO_CONTENT,
+  PENSION_START_AGE_TABLE,
+  MIN_ENROLLMENT_MONTHS,
+  MAX_BACKPAY_MONTHS,
+  calcNationalPensionBackPayment,
+} from "../../data/nationalPensionBackPaymentCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${PENSION_BACKPAY_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const defaultResult = calcNationalPensionBackPayment(PENSION_BACKPAY_DEFAULT_INPUT);
+const pageData = {
+  defaultInput: PENSION_BACKPAY_DEFAULT_INPUT,
+  presets: PENSION_BACKPAY_PRESETS,
+  limits: PENSION_BACKPAY_LIMITS,
+  minEnrollmentMonths: MIN_ENROLLMENT_MONTHS,
+  maxBackpayMonths: MAX_BACKPAY_MONTHS,
+};
+---
+
+<BaseLayout
+  title={PENSION_BACKPAY_META.seoTitle}
+  description={PENSION_BACKPAY_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: PENSION_BACKPAY_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: PENSION_BACKPAY_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: PENSION_BACKPAY_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId={PENSION_BACKPAY_META.slug} pageClass="augcalc-page pension-backpay-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="국민연금 추후납부"
+        title={PENSION_BACKPAY_META.title}
+        description="추납 보험료 총액과 예상 연금 증가액 기준 회수기간, 기대수명까지의 순이익을 계산합니다."
+        badges={["국민연금", "추납", "회수기간", "2026"]}
+      />
+      <InfoNotice title="계산 기준 안내" lines={[PENSION_BACKPAY_META.dataNote, "실제 추납 가능 기간과 예상 연금 증가액은 국민연금공단 조회 결과가 우선입니다."]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="npbResetBtn" copyId="npbCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading"><div><p class="panel-heading__eyebrow">빠른 예시</p><h2 class="panel__title">공백 기간 프리셋</h2></div></div>
+        <div class="augcalc-preset-grid">
+          {PENSION_BACKPAY_PRESETS.map((preset, index) => (
+            <button type="button" class:list={["augcalc-preset-btn", index === 0 && "is-active"]} data-npb-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading"><div><p class="panel-heading__eyebrow">입력</p><h2 class="panel__title">추납 조건</h2></div></div>
+        <div class="form-grid">
+          <label class="field"><span>월 기준소득</span><input type="text" inputmode="numeric" data-npb-input="monthlyIncome" value={PENSION_BACKPAY_DEFAULT_INPUT.monthlyIncome.toLocaleString("ko-KR")} /><small>2026년 기준 {won(PENSION_BACKPAY_LIMITS.minMonthlyIncome)}~{won(PENSION_BACKPAY_LIMITS.maxMonthlyIncome)} 범위로 제한됩니다.</small></label>
+          <label class="field"><span>추납 개월 수</span><input type="number" min="1" max="120" step="1" data-npb-input="missingMonths" value={PENSION_BACKPAY_DEFAULT_INPUT.missingMonths} /><small>최대 {MAX_BACKPAY_MONTHS}개월까지 가능(군복무기간 포함, 개인별 상이).</small></label>
+          <label class="field"><span>출생연도</span><input type="number" min="1950" max="2008" step="1" data-npb-input="birthYear" value={PENSION_BACKPAY_DEFAULT_INPUT.birthYear} /><small>출생연도에 따라 연금 개시연령이 자동 적용됩니다.</small></label>
+          <label class="field"><span>기존 가입기간(개월)</span><input type="number" min="0" max="600" step="1" data-npb-input="existingEnrolledMonths" value={PENSION_BACKPAY_DEFAULT_INPUT.existingEnrolledMonths} /><small>추납 전 이미 인정된 국민연금 가입개월 수입니다.</small></label>
+          <label class="field"><span>예상 월 연금 증가액</span><input type="text" inputmode="numeric" data-npb-input="expectedMonthlyPensionIncrease" value={PENSION_BACKPAY_DEFAULT_INPUT.expectedMonthlyPensionIncrease.toLocaleString("ko-KR")} /><small>공단 조회값이 있으면 그 값을 입력하세요.</small></label>
+          <label class="field"><span>분할 납부 개월 수</span><input type="number" min="1" max="60" step="1" data-npb-input="installmentMonths" value={PENSION_BACKPAY_DEFAULT_INPUT.installmentMonths} /></label>
+          <label class="field"><span>분할납부 연이자율(%)</span><input type="number" min="0" max="10" step="0.1" data-npb-input="installmentAnnualRate" value={PENSION_BACKPAY_DEFAULT_INPUT.installmentAnnualRate} /><small>정기예금 이자율 수준을 참고로 입력합니다.</small></label>
+          <label class="field"><span>기대수명(세)</span><input type="number" min="60" max="110" step="1" data-npb-input="lifeExpectancy" value={PENSION_BACKPAY_DEFAULT_INPUT.lifeExpectancy} /></label>
+          <label class="field"><span>할인율(%)</span><input type="number" min="0" max="10" step="0.1" data-npb-input="discountRate" value={PENSION_BACKPAY_DEFAULT_INPUT.discountRate} /><small>미래 연금액을 현재가치로 환산할 때 적용합니다.</small></label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="augcalc-section augcalc-result-section" aria-live="polite">
+      <div class="section-header"><p class="section-header__eyebrow">계산 결과</p><h2>추납 손익분기점</h2><p>보험료 총액과 월 연금 증가액으로 회수기간을 계산합니다.</p></div>
+      <div class="augcalc-result-layout">
+        <article class="augcalc-result-main">
+          <span>회수기간</span>
+          <strong data-npb-result="breakEven">{defaultResult.breakEvenYears.toFixed(1)}년</strong>
+          <small data-npb-result="ageAtBreakEven">연금 개시 후 약 {defaultResult.ageAtBreakEven.toFixed(1)}세</small>
+        </article>
+        <div class="augcalc-result-stats">
+          <article><span>월 추납 보험료</span><strong data-npb-result="monthlyPremium">{won(defaultResult.monthlyPremium)}</strong></article>
+          <article><span>추납 총액(일시납)</span><strong data-npb-result="totalBackPayment">{won(defaultResult.totalBackPayment)}</strong></article>
+          <article><span>인정 가입기간</span><strong data-npb-result="recognizedYears">{defaultResult.recognizedYears.toFixed(1)}년</strong></article>
+        </div>
+      </div>
+      <p class="pension-backpay-summary" data-npb-result="summaryCallout">
+        {defaultResult.pensionStartAge}세부터 연금을 받는다면 약 {defaultResult.ageAtBreakEven.toFixed(1)}세부터 납부 원금을 초과합니다. {PENSION_BACKPAY_DEFAULT_INPUT.lifeExpectancy}세까지 수령할 경우 추가 연금 총액은 약 {won(defaultResult.totalPensionAtLifeExpectancy)}이며, 추납 원금 대비 단순 차익은 약 {won(defaultResult.netProfitAtLifeExpectancy)}입니다.
+        <br />※ 물가연동, 세금 및 화폐의 시간가치는 반영하지 않은 단순 계산입니다.
+      </p>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">연금 수급 정보</p><h2>출생연도 기준 개시연령과 가입기간 충족 여부</h2></div>
+      <div class="augcalc-breakdown">
+        <div><span>현재 나이</span><strong data-npb-result="currentAge">{defaultResult.currentAge}세</strong></div>
+        <div><span>연금 개시연령</span><strong data-npb-result="pensionStartAge">{defaultResult.pensionStartAge}세</strong></div>
+        <div>
+          <span>추납 후 총 가입기간</span>
+          <strong data-npb-result="totalEnrolledMonthsAfter">{defaultResult.totalEnrolledMonthsAfter}개월</strong>
+          <small data-npb-result="minEnrollmentBadge" class:list={["augcalc-badge", defaultResult.minEnrollmentMet ? "is-good" : "is-warn"]}>
+            {defaultResult.minEnrollmentMet ? `최소가입기간(${MIN_ENROLLMENT_MONTHS}개월) 충족` : `최소가입기간(${MIN_ENROLLMENT_MONTHS}개월) 미충족`}
+          </small>
+        </div>
+      </div>
+      <p class="augcalc-warning" data-npb-result="overLimitWarning" hidden={!defaultResult.overLimitWarning}>
+        ⚠ 입력한 추납 개월 수가 추납 가능 한도({MAX_BACKPAY_MONTHS}개월)를 초과했습니다. 실제 신청 가능 개월 수는 국민연금공단 조회 결과를 따라야 합니다.
+      </p>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">납부 계획</p><h2>일시납 vs 분할납 비교</h2></div>
+      <div class="augcalc-breakdown">
+        <div><span>일시납 총액</span><strong data-npb-result="totalBackPaymentAlt">{won(defaultResult.totalBackPayment)}</strong></div>
+        <div><span>분할납부 총액(이자 포함)</span><strong data-npb-result="installmentTotalWithInterest">{won(defaultResult.installmentTotalWithInterest)}</strong><small>이자 약 {won(defaultResult.installmentTotalInterest)}</small></div>
+        <div><span>월 분할납부액</span><strong data-npb-result="installmentPayment">{won(defaultResult.installmentMonthlyPayment)}</strong></div>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">기대수명 기준 시뮬레이션</p><h2>총수령액과 순이익</h2></div>
+      <div class="augcalc-kpi-grid">
+        <article class="augcalc-kpi"><span>연금 수급 연수</span><strong data-npb-result="yearsReceiving">{defaultResult.yearsReceivingAtLifeExpectancy.toFixed(1)}년</strong></article>
+        <article class="augcalc-kpi"><span>기대수명까지 총 수령액</span><strong data-npb-result="totalPensionAtLifeExpectancy">{won(defaultResult.totalPensionAtLifeExpectancy)}</strong></article>
+        <article class="augcalc-kpi"><span>단순 순이익</span><strong data-npb-result="netProfit">{won(defaultResult.netProfitAtLifeExpectancy)}</strong><small data-npb-result="simpleReturnRate">단순수익률 약 {defaultResult.simpleReturnRatePercent.toFixed(1)}%</small></article>
+        <article class="augcalc-kpi augcalc-kpi--main"><span>현재가치 기준 순이익</span><strong data-npb-result="netProfitPv">{won(defaultResult.netProfitPresentValue)}</strong><small>할인율 반영, 현재가치 {won(defaultResult.presentValueOfPension)}</small></article>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">기준표</p><h2>추납 판단 전 확인할 것</h2></div>
+      <div class="augcalc-table-wrap">
+        <table class="augcalc-table">
+          <thead><tr><th>항목</th><th>기준</th><th>메모</th></tr></thead>
+          <tbody>{PENSION_BACKPAY_RULES.map((row) => <tr><td>{row.label}</td><td>{row.value}</td><td>{row.note}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">보험료율 인상 일정</p><h2>2026년 9.5%에서 2033년 13%까지 단계 인상</h2></div>
+      <div class="augcalc-table-wrap">
+        <table class="augcalc-table">
+          <thead><tr><th>연도</th><th>보험료율</th></tr></thead>
+          <tbody>{PENSION_BACKPAY_RATE_SCHEDULE.map((row) => <tr><td>{row.year}년</td><td>{row.rate.toFixed(1)}%</td></tr>)}</tbody>
+        </table>
+      </div>
+      <p class="augcalc-note">추납보험료는 원칙적으로 신청 당시가 아니라 납부기한이 속하는 달의 보험료율을 적용받습니다.</p>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">참고표</p><h2>출생연도별 노령연금 지급개시연령</h2></div>
+      <div class="augcalc-table-wrap">
+        <table class="augcalc-table">
+          <thead><tr><th>출생연도</th><th>지급개시연령</th></tr></thead>
+          <tbody>{PENSION_START_AGE_TABLE.map((row) => <tr><td>{row.birthYear}</td><td>{row.age}세</td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">추납 전 자가 진단</p><h2>추납, 나에게 유리할까요?</h2></div>
+      <div class="augcalc-two-col">
+        <div class="augcalc-check-card augcalc-check-card--positive">
+          <h3>적극적으로 검토할 수 있는 경우</h3>
+          <ul class="augcalc-list">{PENSION_BACKPAY_CHECKLIST_POSITIVE.map((item) => <li>{item}</li>)}</ul>
+        </div>
+        <div class="augcalc-check-card augcalc-check-card--caution">
+          <h3>신중하게 검토해야 하는 경우</h3>
+          <ul class="augcalc-list">{PENSION_BACKPAY_CHECKLIST_CAUTION.map((item) => <li>{item}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">신청 절차</p><h2>국민연금 추납 신청 6단계</h2></div>
+      <ol class="augcalc-steps">{PENSION_BACKPAY_PROCEDURE.map((step) => <li>{step}</li>)}</ol>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={PENSION_BACKPAY_SEO_CONTENT.introTitle}
+        intro={PENSION_BACKPAY_SEO_CONTENT.intro}
+        criteria={PENSION_BACKPAY_SEO_CONTENT.criteria}
+        faq={PENSION_BACKPAY_FAQ}
+        related={PENSION_BACKPAY_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script id="npb-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script type="module" src={withBase("/scripts/national-pension-back-payment-calculator-2026.js")}></script>
+</BaseLayout>

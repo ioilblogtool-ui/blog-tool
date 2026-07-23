@@ -1,0 +1,250 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  RESIDENT_TAX_DEFAULT_INPUT,
+  RESIDENT_TAX_FAQ,
+  RESIDENT_TAX_META,
+  RESIDENT_TAX_PRESETS,
+  RESIDENT_TAX_RELATED_LINKS,
+  RESIDENT_TAX_RULES,
+  RESIDENT_TAX_SEO_CONTENT,
+  calcResidentTax,
+} from "../../data/residentTaxCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${RESIDENT_TAX_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const num = (value: number) => value.toLocaleString("ko-KR");
+const defaultResult = calcResidentTax(RESIDENT_TAX_DEFAULT_INPUT);
+const pageData = { defaultInput: RESIDENT_TAX_DEFAULT_INPUT, presets: RESIDENT_TAX_PRESETS };
+---
+
+<BaseLayout
+  title={RESIDENT_TAX_META.seoTitle}
+  description={RESIDENT_TAX_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: RESIDENT_TAX_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: RESIDENT_TAX_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: RESIDENT_TAX_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId={RESIDENT_TAX_META.slug} pageClass="augcalc-page resident-tax-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="지방세"
+        title={RESIDENT_TAX_META.title}
+        description="개인분·사업소분·종업원분 주민세와 지방교육세를 나눠 2026년 예상 납부액을 계산합니다."
+        badges={["주민세", "지방교육세 포함", "2026", "참고"]}
+      />
+      <InfoNotice title="계산 기준 안내" lines={[RESIDENT_TAX_META.dataNote, "입력값은 브라우저에서만 계산되며 서버로 전송하지 않습니다."]} />
+      <InfoNotice title="계산 전 준비할 자료" lines={RESIDENT_TAX_SEO_CONTENT.prepItems} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="rtcResetBtn" copyId="rtcCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">상황별 프리셋</h2>
+          </div>
+        </div>
+        <div class="augcalc-preset-grid">
+          {RESIDENT_TAX_PRESETS.map((preset, index) => (
+            <button type="button" class:list={["augcalc-preset-btn", index === 1 && "is-active"]} data-rtc-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">납세자 유형</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>유형</span>
+            <select data-rtc-input="taxpayerType">
+              <option value="individual">일반 개인</option>
+              <option value="individualBusiness" selected>개인사업자</option>
+              <option value="corporation">법인 사업소</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-grid" data-rtc-group="individual" hidden>
+          <label class="field">
+            <span>개인분 본세</span>
+            <input type="text" inputmode="numeric" data-rtc-input="individualBaseTax" value={num(RESIDENT_TAX_DEFAULT_INPUT.individualBaseTax)} />
+            <small>서울 기준 4,800원이며 지자체 조례에 따라 다를 수 있습니다.</small>
+          </label>
+          <label class="field field--checkbox">
+            <input type="checkbox" data-rtc-input="isIndividualExempt" />
+            <span>감면·비과세 대상입니다</span>
+          </label>
+        </div>
+
+        <div class="form-grid" data-rtc-group="individualBusiness" hidden>
+          <label class="field field--checkbox">
+            <input type="checkbox" data-rtc-input="isVatExempt" />
+            <span>부가가치세 면세사업자입니다</span>
+          </label>
+          <label class="field" data-rtc-only-vat-exempt hidden>
+            <span>직전 연도 총수입금액</span>
+            <input type="text" inputmode="numeric" data-rtc-input="totalRevenue" value={num(RESIDENT_TAX_DEFAULT_INPUT.totalRevenue)} />
+          </label>
+          <label class="field">
+            <span>직전 연도 부가가치세 과세표준액</span>
+            <input type="text" inputmode="numeric" data-rtc-input="vatBase" value={num(RESIDENT_TAX_DEFAULT_INPUT.vatBase)} />
+            <small>과세표준액(또는 총수입금액)이 8천만원 이상이면 사업소분 대상입니다.</small>
+          </label>
+        </div>
+
+        <div class="form-grid" data-rtc-group="corporation" hidden>
+          <label class="field">
+            <span>법인 유형</span>
+            <select data-rtc-input="corporationType">
+              <option value="general" selected>일반 법인</option>
+              <option value="other">그 밖의 법인</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>자본금·출자금</span>
+            <input type="text" inputmode="numeric" data-rtc-input="capitalAmount" value={num(RESIDENT_TAX_DEFAULT_INPUT.capitalAmount)} />
+            <small>30억 이하 5만원, 30억~50억 10만원, 50억 초과 20만원(표준세율 기준)</small>
+          </label>
+        </div>
+
+        <div class="form-grid" data-rtc-group="individualBusiness,corporation" hidden>
+          <label class="field">
+            <span>사업소 연면적(㎡)</span>
+            <input type="number" min="0" step="1" data-rtc-input="businessFloorArea" value={RESIDENT_TAX_DEFAULT_INPUT.businessFloorArea} />
+            <small>330㎡를 초과하면 전체 연면적 × ㎡당 세액으로 계산합니다.</small>
+          </label>
+          <label class="field field--checkbox">
+            <input type="checkbox" data-rtc-input="isPollutionFacility" />
+            <span>오염물질 배출 사업소입니다 (㎡당 500원)</span>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel" data-rtc-group="individualBusiness,corporation" hidden>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">종업원분</p>
+            <h2 class="panel__title">급여총액</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>최근 12개월 급여총액</span>
+            <input type="text" inputmode="numeric" data-rtc-input="last12MonthsPayroll" value={num(RESIDENT_TAX_DEFAULT_INPUT.last12MonthsPayroll)} />
+            <small>월평균이 1억 8천만원을 초과하면 종업원분 대상입니다.</small>
+          </label>
+          <label class="field">
+            <span>해당 월 지급 급여총액</span>
+            <input type="text" inputmode="numeric" data-rtc-input="currentMonthPayroll" value={num(RESIDENT_TAX_DEFAULT_INPUT.currentMonthPayroll)} />
+            <small>대상인 경우 이 금액의 0.5%를 신고·납부합니다.</small>
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="augcalc-section augcalc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>예상 주민세 납부액</h2>
+        <p data-rtc-result="statusLabel">{defaultResult.statusLabel}</p>
+      </div>
+      <div class="augcalc-result-layout">
+        <article class="augcalc-result-main">
+          <span>총 예상 납부액</span>
+          <strong data-rtc-result="totalTax">{won(defaultResult.totalTax)}</strong>
+          <small>신고·납부 기한 <span data-rtc-result="dueLabel">{defaultResult.dueLabel}</span> · 고지서·위택스 기준 우선</small>
+        </article>
+        <div class="augcalc-result-stats">
+          <article><span>개인분 합계</span><strong data-rtc-result="individualTax">{won(defaultResult.individualTotal)}</strong></article>
+          <article><span>사업소분 합계</span><strong data-rtc-result="businessTax">{won(defaultResult.businessTotal)}</strong></article>
+          <article><span>종업원분</span><strong data-rtc-result="employeeTax">{won(defaultResult.employeeTax)}</strong></article>
+          <article><span>지방교육세 합계</span><strong data-rtc-result="eduTax">{won(defaultResult.individualEduTax + defaultResult.businessEduTax)}</strong></article>
+        </div>
+      </div>
+      <div class="augcalc-badge-row" data-rtc-result="badges"></div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 과정</p>
+        <h2>항목별 계산 내역</h2>
+      </div>
+      <div class="augcalc-formula" data-rtc-result="formula"></div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">기준표</p>
+        <h2>주민세 납부 구분</h2>
+      </div>
+      <div class="augcalc-table-wrap">
+        <table class="augcalc-table">
+          <thead><tr><th>구분</th><th>기간</th><th>대상</th><th>메모</th></tr></thead>
+          <tbody>
+            {RESIDENT_TAX_RULES.map((row) => (
+              <tr><td>{row.label}</td><td>{row.period}</td><td>{row.target}</td><td>{row.note}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="augcalc-table-note">신고·납부 기한: <strong data-rtc-result="dueLabel2">{defaultResult.dueLabel}</strong> (지자체·휴일 여부에 따라 조정될 수 있습니다)</p>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={RESIDENT_TAX_SEO_CONTENT.introTitle}
+        intro={RESIDENT_TAX_SEO_CONTENT.intro}
+        inputPoints={RESIDENT_TAX_SEO_CONTENT.inputPoints}
+        criteria={RESIDENT_TAX_SEO_CONTENT.criteria}
+        faq={RESIDENT_TAX_FAQ}
+        related={RESIDENT_TAX_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script id="rtc-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script type="module" src={withBase("/scripts/resident-tax-calculator-2026.js")}></script>
+</BaseLayout>

@@ -2481,6 +2481,45 @@ export const tools: ToolMeta[] = [
       { label: "마감", value: "9/30" },
     ],
   },
+  {
+    slug: "resident-tax-calculator-2026",
+    title: "주민세 계산기 2026",
+    description: "과세표준액·자본금·연면적 입력하면 개인분·사업소분·종업원분 예상 세액과 지방교육세를 바로 계산합니다.",
+    order: 78.8,
+    eyebrow: "8월 주민세",
+    category: "세금·연말정산",
+    badges: ["신규", "8월 납부", "2026"],
+    previewStats: [
+      { label: "개인분", value: "본세+교육세" },
+      { label: "사업소분", value: "8천만원 기준" },
+    ],
+  },
+  {
+    slug: "afterschool-care-cost-calculator-2026",
+    title: "2학기 방과후·돌봄 비용 계산기",
+    description: "방과후학교, 초등돌봄, 간식비, 교재비, 학원비를 합산해 월 비용과 2학기 순부담을 계산합니다.",
+    order: 78.81,
+    eyebrow: "초등 2학기 비용",
+    category: "육아·양육",
+    badges: ["신규", "방과후", "돌봄", "2026"],
+    previewStats: [
+      { label: "초3 이용권", value: "연 50만원" },
+      { label: "결과", value: "2학기 순부담" },
+    ],
+  },
+  {
+    slug: "national-pension-back-payment-calculator-2026",
+    title: "국민연금 추납 손익 계산기",
+    description: "납부예외·적용제외 기간을 추후납부할 때 총 납부액, 인정 가입기간, 예상 연금 증가액 기준 회수기간을 계산합니다.",
+    order: 78.82,
+    eyebrow: "국민연금 추납",
+    category: "투자·은퇴",
+    badges: ["신규", "연금", "추납", "2026"],
+    previewStats: [
+      { label: "보험료율", value: "9.5%" },
+      { label: "결과", value: "회수기간" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)

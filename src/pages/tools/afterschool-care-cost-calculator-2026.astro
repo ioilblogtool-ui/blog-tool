@@ -1,0 +1,196 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  AFTERSCHOOL_CARE_DEFAULT_INPUT,
+  AFTERSCHOOL_CARE_FAQ,
+  AFTERSCHOOL_CARE_META,
+  AFTERSCHOOL_CARE_PRESETS,
+  AFTERSCHOOL_CARE_RELATED_LINKS,
+  AFTERSCHOOL_CARE_SEO_CONTENT,
+  AFTERSCHOOL_CHECKLIST,
+  AFTERSCHOOL_SUPPORT_ROWS,
+  AFTERSCHOOL_VOUCHER_QUICK_VALUES,
+  calcAfterschoolCareCost,
+} from "../../data/afterschoolCareCostCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${AFTERSCHOOL_CARE_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const defaultResult = calcAfterschoolCareCost(AFTERSCHOOL_CARE_DEFAULT_INPUT);
+const pageData = { defaultInput: AFTERSCHOOL_CARE_DEFAULT_INPUT, presets: AFTERSCHOOL_CARE_PRESETS, voucherQuickValues: AFTERSCHOOL_VOUCHER_QUICK_VALUES };
+---
+
+<BaseLayout
+  title={AFTERSCHOOL_CARE_META.seoTitle}
+  description={AFTERSCHOOL_CARE_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: AFTERSCHOOL_CARE_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: AFTERSCHOOL_CARE_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: AFTERSCHOOL_CARE_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId={AFTERSCHOOL_CARE_META.slug} pageClass="augcalc-page afterschool-care-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="초등 2학기 예산"
+        title="2026 초등학교 2학기 방과후·돌봄 비용 계산기"
+        description="학교 방과후 수강료, 돌봄·간식·교재비, 학원비를 합산하고 초3 방과후 이용권 잔액을 반영해 학기 순부담을 계산합니다."
+        badges={["방과후", "돌봄", "초3 이용권", "2026"]}
+      />
+      <InfoNotice
+        title="계산 기준 안내"
+        lines={[
+          AFTERSCHOOL_CARE_META.dataNote,
+          "2학기 계산에는 연간 지원 한도 전체가 아니라 1학기 사용분을 제외한 남은 이용권 잔액을 입력하세요.",
+          "이용권은 일반 학원비까지 자유롭게 차감하는 금액이 아니라, 방과후 프로그램 수강료 범위 안에서만 반영하도록 계산합니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="accResetBtn" copyId="accCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading"><div><p class="panel-heading__eyebrow">빠른 예시</p><h2 class="panel__title">가정별 프리셋</h2></div></div>
+        <div class="augcalc-preset-grid">
+          {AFTERSCHOOL_CARE_PRESETS.map((preset, index) => (
+            <button type="button" class:list={["augcalc-preset-btn", index === 0 && "is-active"]} data-acc-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading"><div><p class="panel-heading__eyebrow">학교 방과후</p><h2 class="panel__title">과목·돌봄 비용</h2></div></div>
+        <div class="form-grid">
+          <label class="field"><span>학년</span><select data-acc-input="grade"><option value="lower">초1~2</option><option value="third" selected>초3</option><option value="upper">초4~6</option></select></label>
+          <label class="field"><span>방과후 과목 수</span><input type="number" min="0" step="1" data-acc-input="programCount" value={AFTERSCHOOL_CARE_DEFAULT_INPUT.programCount} /></label>
+          <label class="field"><span>과목당 월 수강료</span><input type="text" inputmode="numeric" data-acc-input="programMonthlyFee" value={AFTERSCHOOL_CARE_DEFAULT_INPUT.programMonthlyFee.toLocaleString("ko-KR")} /></label>
+          <label class="field"><span>돌봄 월 부담액</span><input type="text" inputmode="numeric" data-acc-input="careMonthlyFee" value={AFTERSCHOOL_CARE_DEFAULT_INPUT.careMonthlyFee.toLocaleString("ko-KR")} /></label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading"><div><p class="panel-heading__eyebrow">추가 비용</p><h2 class="panel__title">간식·교재·학원</h2></div></div>
+        <div class="form-grid">
+          <label class="field"><span>월 간식비</span><input type="text" inputmode="numeric" data-acc-input="snackMonthlyFee" value={AFTERSCHOOL_CARE_DEFAULT_INPUT.snackMonthlyFee.toLocaleString("ko-KR")} /></label>
+          <label class="field"><span>월 교재·재료비</span><input type="text" inputmode="numeric" data-acc-input="materialMonthlyFee" value={AFTERSCHOOL_CARE_DEFAULT_INPUT.materialMonthlyFee.toLocaleString("ko-KR")} /></label>
+          <label class="field"><span>월 학원·학습지 비용</span><input type="text" inputmode="numeric" data-acc-input="academyMonthlyFee" value={AFTERSCHOOL_CARE_DEFAULT_INPUT.academyMonthlyFee.toLocaleString("ko-KR")} /></label>
+          <label class="field"><span>2학기 개월 수</span><input type="number" min="1" max="8" step="1" data-acc-input="semesterMonths" value={AFTERSCHOOL_CARE_DEFAULT_INPUT.semesterMonths} /></label>
+          <label class="field field--wide">
+            <span>2학기에 사용할 수 있는 이용권 잔액</span>
+            <input type="text" inputmode="numeric" data-acc-input="voucherAmount" value={AFTERSCHOOL_CARE_DEFAULT_INPUT.voucherAmount.toLocaleString("ko-KR")} />
+            <small>초3 방과후 프로그램 이용권은 연간 지원 한도입니다. 1학기 사용분을 뺀 남은 금액만 입력하세요.</small>
+          </label>
+        </div>
+        <div class="augcalc-quick-row" aria-label="이용권 잔액 빠른 입력">
+          {AFTERSCHOOL_VOUCHER_QUICK_VALUES.map((item) => (
+            <button type="button" class="augcalc-chip-btn" data-acc-voucher={item.value}>{item.label}</button>
+          ))}
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="augcalc-section augcalc-result-section" aria-live="polite">
+      <div class="section-header"><p class="section-header__eyebrow">계산 결과</p><h2>2학기 예상 부담</h2><p>학교 비용, 학원 포함 전체 비용, 이용권 적용 한도를 나눠 보여줍니다.</p></div>
+      <div class="augcalc-result-layout">
+        <article class="augcalc-result-main">
+          <span>이용권 적용 후 2학기 순부담</span>
+          <strong data-acc-result="semesterNetCost">{won(defaultResult.semesterNetCost)}</strong>
+          <small data-acc-result="monthlyNetCost">월평균 {won(defaultResult.monthlyNetCost)}</small>
+        </article>
+        <div class="augcalc-result-stats">
+          <article><span>지원 전 총비용</span><strong data-acc-result="semesterGrossCost">{won(defaultResult.semesterGrossCost)}</strong></article>
+          <article><span>월 학교 비용</span><strong data-acc-result="monthlySchoolCost">{won(defaultResult.monthlySchoolCost)}</strong><small>방과후·돌봄·간식·교재</small></article>
+          <article><span>월 학원·학습지</span><strong data-acc-result="monthlyAcademyCost">{won(AFTERSCHOOL_CARE_DEFAULT_INPUT.academyMonthlyFee)}</strong><small data-acc-result="academyShare">전체 월 비용의 {defaultResult.academyShare.toFixed(1)}%</small></article>
+        </div>
+      </div>
+      <div class="augcalc-voucher-flow" aria-label="이용권 적용 내역">
+        <div><span>입력 잔액</span><strong data-acc-result="voucherInput">{won(AFTERSCHOOL_CARE_DEFAULT_INPUT.voucherAmount)}</strong></div>
+        <div class="augcalc-voucher-flow__arrow" aria-hidden="true">→</div>
+        <div><span>실제 적용</span><strong data-acc-result="semesterVoucher">{won(defaultResult.semesterVoucher)}</strong><small>방과후 수강료 한도</small></div>
+        <div class="augcalc-voucher-flow__arrow" aria-hidden="true">→</div>
+        <div><span>남은 이용권</span><strong data-acc-result="remainingVoucher">{won(defaultResult.remainingVoucher)}</strong><small data-acc-result="voucherSavingRate">절감률 {defaultResult.voucherSavingRate.toFixed(1)}%</small></div>
+      </div>
+      <p class="augcalc-insight" data-acc-result="insight">{defaultResult.insight}</p>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">비용 구성</p><h2>학교 비용과 전체 교육비를 분리해서 보세요</h2><p>방과후 수강료만 볼 때보다 학기 총액과 비중을 함께 보면 조정할 항목이 더 선명해집니다.</p></div>
+      <div class="augcalc-breakdown">
+        <div><span>방과후 수강료</span><strong data-acc-result="semesterProgramCost">{won(defaultResult.semesterProgramCost)}</strong><small>과목 수 × 월 수강료 × 개월 수</small></div>
+        <div><span>학교 관련 학기 비용</span><strong data-acc-result="semesterSchoolCost">{won(defaultResult.semesterSchoolCost)}</strong><small data-acc-result="schoolShare">월 총비용의 {defaultResult.schoolShare.toFixed(1)}%</small></div>
+        <div><span>학원·학습지 학기 비용</span><strong data-acc-result="semesterAcademyCost">{won(defaultResult.semesterAcademyCost)}</strong><small>학교 밖 고정비</small></div>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">지원 기준</p><h2>2026 초등돌봄·교육 변화</h2></div>
+      <div class="augcalc-table-wrap">
+        <table class="augcalc-table">
+          <thead><tr><th>학년</th><th>지원 방향</th><th>확인 포인트</th></tr></thead>
+          <tbody>{AFTERSCHOOL_SUPPORT_ROWS.map((row) => <tr><td>{row.label}</td><td>{row.support}</td><td>{row.note}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header"><p class="section-header__eyebrow">신청 전 체크</p><h2>학교 안내문에서 다시 볼 항목</h2></div>
+      <ul class="augcalc-checklist">
+        {AFTERSCHOOL_CHECKLIST.map((item) => <li>{item}</li>)}
+      </ul>
+      <InfoNotice
+        title="결과 활용 시 주의"
+        lines={[
+          "이 계산기는 가정의 교육비 예산을 세우기 위한 참고 도구입니다.",
+          "실제 수강료, 지원금, 운영 기간, 신청 가능 여부는 학교·교육청·지역별로 다를 수 있습니다.",
+          "계산 결과만으로 프로그램 신청 여부를 결정하지 말고 학교 가정통신문, 학교 홈페이지, 교육청 공지를 함께 확인하세요.",
+        ]}
+      />
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={AFTERSCHOOL_CARE_SEO_CONTENT.introTitle}
+        intro={AFTERSCHOOL_CARE_SEO_CONTENT.intro}
+        criteria={AFTERSCHOOL_CARE_SEO_CONTENT.criteria}
+        faq={AFTERSCHOOL_CARE_FAQ}
+        related={AFTERSCHOOL_CARE_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script id="acc-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script type="module" src={withBase("/scripts/afterschool-care-cost-calculator-2026.js")}></script>
+</BaseLayout>
