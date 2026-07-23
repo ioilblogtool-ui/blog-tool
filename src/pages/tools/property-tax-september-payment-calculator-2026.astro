@@ -1,0 +1,273 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  PROPERTY_TAX_SEPTEMBER_CHECKLIST,
+  PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT,
+  PROPERTY_TAX_SEPTEMBER_DUE_DATES,
+  PROPERTY_TAX_SEPTEMBER_FAQ,
+  PROPERTY_TAX_SEPTEMBER_META,
+  PROPERTY_TAX_SEPTEMBER_MODES,
+  PROPERTY_TAX_SEPTEMBER_RELATED_LINKS,
+  PROPERTY_TAX_SEPTEMBER_SEO_CONTENT,
+  calcPropertyTaxSeptemberPayment,
+} from "../../data/propertyTaxSeptemberPaymentCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${PROPERTY_TAX_SEPTEMBER_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const num = (value: number) => value.toLocaleString("ko-KR");
+const defaultResult = calcPropertyTaxSeptemberPayment(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT);
+const pageData = { defaultInput: PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT, modes: PROPERTY_TAX_SEPTEMBER_MODES };
+---
+
+<BaseLayout
+  title={PROPERTY_TAX_SEPTEMBER_META.seoTitle}
+  description={PROPERTY_TAX_SEPTEMBER_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: PROPERTY_TAX_SEPTEMBER_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: PROPERTY_TAX_SEPTEMBER_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: PROPERTY_TAX_SEPTEMBER_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId={PROPERTY_TAX_SEPTEMBER_META.slug} pageClass="augcalc-page property-tax-september-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="지방세"
+        title={PROPERTY_TAX_SEPTEMBER_META.title}
+        description="7월 주택분 고지액, 공시가격, 토지 과세표준을 입력해 2026년 9월 재산세 납부 예산을 계산합니다."
+        badges={["재산세", "9월분", "주택 2기분", "추정"]}
+      />
+      <InfoNotice
+        title="9월 재산세 납부기간"
+        lines={[`${PROPERTY_TAX_SEPTEMBER_DUE_DATES.label}입니다.`, PROPERTY_TAX_SEPTEMBER_META.dataNote]}
+      />
+      <InfoNotice title="고지서 확인 전 예산 추정용입니다" lines={["공시가격 기준 결과는 세부담 상한, 감면, 공동명의, 조례, 지방교육세·지역자원시설세가 실제와 다를 수 있습니다.", "최종 납부액은 지방자치단체 고지서와 위택스·이택스 확인 결과가 우선합니다."]} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="ptspResetBtn" copyId="ptspCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">계산 방식</p>
+            <h2 class="panel__title">모드 선택</h2>
+          </div>
+        </div>
+        <div class="augcalc-preset-grid">
+          {PROPERTY_TAX_SEPTEMBER_MODES.map((mode, index) => (
+            <button type="button" class:list={["augcalc-preset-btn", index === 0 && "is-active"]} data-ptsp-mode={mode.id}>
+              <strong>{mode.label}</strong>
+              <span>{mode.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel" data-ptsp-group="july">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">주택</p>
+            <h2 class="panel__title">7월 고지액 기준</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>7월 주택분 입력액</span>
+            <input type="text" inputmode="numeric" data-ptsp-input="julyHousingAmount" value={num(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.julyHousingAmount)} />
+            <small>본세 또는 총 납부액 기준으로 간단 추정합니다.</small>
+          </label>
+          <label class="field">
+            <span>입력 기준</span>
+            <select data-ptsp-input="julyInputBasis">
+              <option value="totalPayment" selected>총 납부액</option>
+              <option value="baseTax">재산세 본세</option>
+            </select>
+          </label>
+          <label class="field field--checkbox">
+            <input type="checkbox" data-ptsp-input="paidAllInJuly" />
+            <span>7월에 일시부과된 것으로 봅니다</span>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel" data-ptsp-group="house" hidden>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">주택</p>
+            <h2 class="panel__title">공시가격 기준 추정</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>주택 공시가격</span>
+            <input type="text" inputmode="numeric" data-ptsp-input="housingPublicPrice" value={num(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.housingPublicPrice)} />
+          </label>
+          <label class="field">
+            <span>공정시장가액비율(%)</span>
+            <input type="number" min="1" max="100" step="1" data-ptsp-input="fairMarketValueRatio" value={PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.fairMarketValueRatio} />
+            <small>구현 시점 기준 확인 필요. 기본값은 예산 추정용입니다.</small>
+          </label>
+          <label class="field field--checkbox">
+            <input type="checkbox" data-ptsp-input="useSingleHomeSpecialRate" checked />
+            <span>1세대 1주택 특례 세율을 적용합니다</span>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel" data-ptsp-group="land">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">토지</p>
+            <h2 class="panel__title">토지분 추가</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field field--checkbox" data-ptsp-land-toggle>
+            <input type="checkbox" data-ptsp-input="includeLandTax" />
+            <span>토지분을 9월 납부액에 포함합니다</span>
+          </label>
+          <label class="field">
+            <span>토지 과세 유형</span>
+            <select data-ptsp-input="landTaxType">
+              <option value="aggregate" selected>종합합산</option>
+              <option value="separate">별도합산</option>
+              <option value="specialGeneral">분리과세 일반 0.2%</option>
+              <option value="specialHighRate">분리과세 고율 4%</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>토지 과세표준</span>
+            <input type="text" inputmode="numeric" data-ptsp-input="landTaxBase" value={num(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.landTaxBase)} />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel" data-ptsp-group="manual" hidden>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">직접 입력</p>
+            <h2 class="panel__title">고지서 항목 합산</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>주택 2기분</span>
+            <input type="text" inputmode="numeric" data-ptsp-input="manualHousingTax" value={num(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.manualHousingTax)} />
+          </label>
+          <label class="field">
+            <span>토지분</span>
+            <input type="text" inputmode="numeric" data-ptsp-input="manualLandTax" value={num(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.manualLandTax)} />
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">선택 항목</p>
+            <h2 class="panel__title">부가세목·공제</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>지방교육세</span>
+            <input type="text" inputmode="numeric" data-ptsp-input="localEducationTax" value={num(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.localEducationTax)} />
+          </label>
+          <label class="field">
+            <span>지역자원시설세</span>
+            <input type="text" inputmode="numeric" data-ptsp-input="regionalResourceFacilityTax" value={num(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.regionalResourceFacilityTax)} />
+          </label>
+          <label class="field">
+            <span>전자송달·자동이체 등 공제</span>
+            <input type="text" inputmode="numeric" data-ptsp-input="taxCreditAmount" value={num(PROPERTY_TAX_SEPTEMBER_DEFAULT_INPUT.taxCreditAmount)} />
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="augcalc-section augcalc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>2026년 9월 예상 납부액</h2>
+        <p data-ptsp-result="modeLabel">{defaultResult.modeLabel}</p>
+      </div>
+      <div class="augcalc-result-layout">
+        <article class="augcalc-result-main">
+          <span>9월 예상 납부액</span>
+          <strong data-ptsp-result="septemberTotal">{won(defaultResult.septemberTotal)}</strong>
+          <small>납부기간 <span data-ptsp-result="dueDateLabel">{defaultResult.dueDateLabel}</span> · 고지서 기준 우선</small>
+        </article>
+        <div class="augcalc-result-stats">
+          <article><span>주택 2기분</span><strong data-ptsp-result="septemberHousingTax">{won(defaultResult.septemberHousingTax)}</strong></article>
+          <article><span>토지분</span><strong data-ptsp-result="landPropertyTax">{won(defaultResult.landPropertyTax)}</strong></article>
+          <article><span>부가세목</span><strong data-ptsp-result="extraTax">{won(defaultResult.localEducationTax + defaultResult.regionalResourceFacilityTax)}</strong></article>
+          <article><span>7월 입력액 대비</span><strong data-ptsp-result="julyComparisonAmount">{won(defaultResult.julyComparisonAmount)}</strong></article>
+        </div>
+      </div>
+      <p class="augcalc-insight" data-ptsp-result="insight">{defaultResult.insight}</p>
+      <div class="augcalc-badge-row" data-ptsp-result="badges"></div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 과정</p>
+        <h2>항목별 계산 내역</h2>
+      </div>
+      <div class="augcalc-formula" data-ptsp-result="formula"></div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">납부 전 확인</p>
+        <h2>9월 재산세 체크리스트</h2>
+      </div>
+      <ul class="augcalc-checklist">
+        {PROPERTY_TAX_SEPTEMBER_CHECKLIST.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={PROPERTY_TAX_SEPTEMBER_SEO_CONTENT.introTitle}
+        intro={PROPERTY_TAX_SEPTEMBER_SEO_CONTENT.intro}
+        inputPoints={PROPERTY_TAX_SEPTEMBER_SEO_CONTENT.inputPoints}
+        criteria={PROPERTY_TAX_SEPTEMBER_SEO_CONTENT.criteria}
+        faq={PROPERTY_TAX_SEPTEMBER_FAQ}
+        related={PROPERTY_TAX_SEPTEMBER_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script id="ptsp-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script type="module" src={withBase("/scripts/property-tax-september-payment-calculator-2026.js")}></script>
+</BaseLayout>

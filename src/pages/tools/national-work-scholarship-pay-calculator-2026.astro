@@ -1,0 +1,257 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  NATIONAL_WORK_SCHOLARSHIP_CHECKLIST,
+  NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT,
+  NATIONAL_WORK_SCHOLARSHIP_FAQ,
+  NATIONAL_WORK_SCHOLARSHIP_HOUR_SCENARIOS,
+  NATIONAL_WORK_SCHOLARSHIP_META,
+  NATIONAL_WORK_SCHOLARSHIP_PRESETS,
+  NATIONAL_WORK_SCHOLARSHIP_RELATED_LINKS,
+  NATIONAL_WORK_SCHOLARSHIP_SCHEDULE,
+  NATIONAL_WORK_SCHOLARSHIP_SEO_CONTENT,
+  NATIONAL_WORK_SCHOLARSHIP_WAGES,
+  calcNationalWorkScholarship,
+} from "../../data/nationalWorkScholarshipPayCalculator2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteBase}/tools/${NATIONAL_WORK_SCHOLARSHIP_META.slug}/`;
+const won = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}원`;
+const pct = (value: number) => `${Math.round(value).toLocaleString("ko-KR")}%`;
+const num = (value: number) => value.toLocaleString("ko-KR");
+const defaultResult = calcNationalWorkScholarship(NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT);
+const pageData = {
+  defaultInput: NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT,
+  presets: NATIONAL_WORK_SCHOLARSHIP_PRESETS,
+  wages: NATIONAL_WORK_SCHOLARSHIP_WAGES,
+  hourScenarios: NATIONAL_WORK_SCHOLARSHIP_HOUR_SCENARIOS,
+};
+---
+
+<BaseLayout
+  title={NATIONAL_WORK_SCHOLARSHIP_META.seoTitle}
+  description={NATIONAL_WORK_SCHOLARSHIP_META.seoDescription}
+  ogImage="/og/og-home.png"
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: NATIONAL_WORK_SCHOLARSHIP_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      url: pageUrl,
+      description: NATIONAL_WORK_SCHOLARSHIP_META.seoDescription,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: NATIONAL_WORK_SCHOLARSHIP_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ]}
+>
+  <SiteHeader />
+  <SimpleToolShell calculatorId={NATIONAL_WORK_SCHOLARSHIP_META.slug} pageClass="augcalc-page national-work-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="대학생 지원금"
+        title={NATIONAL_WORK_SCHOLARSHIP_META.title}
+        description="교내·교외 시급과 주당 근로시간을 넣어 월 예상 수령액, 학기 총액, 방학 집중근로 포함 총액을 계산합니다."
+        badges={["국가근로", "월수령액", "2학기", "추정"]}
+      />
+      <InfoNotice
+        title="선발 후 실제 근로시간 기준 예상액입니다"
+        lines={[NATIONAL_WORK_SCHOLARSHIP_META.dataNote, "국가근로장학금은 신청만으로 선발이 보장되지 않으며, 대학별 선발·배정·출근부 승인 기준이 우선합니다."]}
+      />
+      <InfoNotice title="2026년 2학기 공식 일정" lines={NATIONAL_WORK_SCHOLARSHIP_SCHEDULE.map((item) => `${item.label}: ${item.value}`)} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="nwscResetBtn" copyId="nwscCopyBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 예시</p>
+            <h2 class="panel__title">근로 상황 선택</h2>
+          </div>
+        </div>
+        <div class="augcalc-preset-grid">
+          {NATIONAL_WORK_SCHOLARSHIP_PRESETS.map((preset, index) => (
+            <button type="button" class:list={["augcalc-preset-btn", index === 2 && "is-active"]} data-nwsc-preset={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.summary}</span>
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">입력</p>
+            <h2 class="panel__title">학기 중 근로</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>근로 유형</span>
+            <select data-nwsc-input="workType">
+              <option value="campus">교내근로</option>
+              <option value="offcampus" selected>교외근로</option>
+              <option value="custom">직접입력</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>시급</span>
+            <input type="text" inputmode="numeric" data-nwsc-input="hourlyWage" value={num(NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT.hourlyWage)} />
+            <small>교내 {won(NATIONAL_WORK_SCHOLARSHIP_WAGES.campus)} · 교외 {won(NATIONAL_WORK_SCHOLARSHIP_WAGES.offcampus)} 기준, 직접 수정 가능</small>
+          </label>
+          <label class="field">
+            <span>주당 근로시간</span>
+            <input type="number" min="0" max="40" step="1" data-nwsc-input="weeklyHours" value={NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT.weeklyHours} />
+            <small>실제 배정 시간은 대학과 근로지 기준을 확인하세요.</small>
+          </label>
+          <label class="field">
+            <span>월 환산 주수</span>
+            <select data-nwsc-input="monthlyWeeks">
+              <option value="4">4주 간편 계산</option>
+              <option value="4.345" selected>4.345주 평균 계산</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>학기 중 근로 개월 수</span>
+            <input type="number" min="0" max="6" step="1" data-nwsc-input="semesterMonths" value={NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT.semesterMonths} />
+          </label>
+          <label class="field">
+            <span>월 생활비 예산</span>
+            <input type="text" inputmode="numeric" data-nwsc-input="monthlyLivingCost" value={num(NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT.monthlyLivingCost)} />
+          </label>
+          <label class="field">
+            <span>월 공제·차감액</span>
+            <input type="text" inputmode="numeric" data-nwsc-input="monthlyDeduction" value={num(NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT.monthlyDeduction)} />
+            <small>학교별 차감액이 없다면 0원으로 둡니다.</small>
+          </label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">선택</p>
+            <h2 class="panel__title">방학 집중근로</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label class="field field--checkbox">
+            <input type="checkbox" data-nwsc-input="includeVacation" />
+            <span>방학 집중근로를 포함합니다</span>
+          </label>
+          <label class="field">
+            <span>방학 주당 근로시간</span>
+            <input type="number" min="0" max="40" step="1" data-nwsc-input="vacationWeeklyHours" value={NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT.vacationWeeklyHours} />
+          </label>
+          <label class="field">
+            <span>방학 근로 개월 수</span>
+            <input type="number" min="0" max="3" step="1" data-nwsc-input="vacationMonths" value={NATIONAL_WORK_SCHOLARSHIP_DEFAULT_INPUT.vacationMonths} />
+          </label>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="augcalc-section augcalc-result-section" aria-live="polite">
+      <div class="section-header">
+        <p class="section-header__eyebrow">계산 결과</p>
+        <h2>국가근로장학금 예상 수령액</h2>
+        <p>입력 시급과 실제 근로시간 기준 추정액입니다.</p>
+      </div>
+      <div class="augcalc-result-layout">
+        <article class="augcalc-result-main">
+          <span>월 예상 수령액</span>
+          <strong data-nwsc-result="monthlyNetPay">{won(defaultResult.monthlyNetPay)}</strong>
+          <small>학기 중 주당 근로시간 기준 · 선발 및 출근부 승인 필요</small>
+        </article>
+        <div class="augcalc-result-stats">
+          <article><span>학기 중 총액</span><strong data-nwsc-result="semesterNetPay">{won(defaultResult.semesterNetPay)}</strong></article>
+          <article><span>방학 포함 총액</span><strong data-nwsc-result="totalNetPay">{won(defaultResult.totalNetPay)}</strong></article>
+          <article><span>생활비 충당률</span><strong data-nwsc-result="livingCoverageRate">{pct(defaultResult.livingCoverageRate)}</strong></article>
+          <article><span>월 부족·여유액</span><strong data-nwsc-result="shortageOrSurplus">{won(defaultResult.monthlyShortageOrSurplus)}</strong></article>
+        </div>
+      </div>
+      <p class="augcalc-insight" data-nwsc-result="insight">{defaultResult.insight}</p>
+      <div class="augcalc-badge-row">
+        <span class="augcalc-badge augcalc-badge--info">추정 · 입력값 기준</span>
+        <span class="augcalc-badge augcalc-badge--neutral">선발 보장 아님</span>
+        <span class="augcalc-badge augcalc-badge--neutral">대학별 근로시간 확인</span>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">비교</p>
+        <h2>교내·교외 동일 시간 비교</h2>
+      </div>
+      <div class="augcalc-breakdown augcalc-breakdown--result">
+        <div><span>교내 월 예상액</span><strong data-nwsc-result="campusMonthlyPay">{won(defaultResult.campusMonthlyPay)}</strong></div>
+        <div><span>교외 월 예상액</span><strong data-nwsc-result="offCampusMonthlyPay">{won(defaultResult.offCampusMonthlyPay)}</strong></div>
+        <div><span>교외 월 차액</span><strong data-nwsc-result="typeGapMonthly">{won(defaultResult.typeGapMonthly)}</strong></div>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">시나리오</p>
+        <h2>주당 근로시간별 월 예상액</h2>
+      </div>
+      <div class="augcalc-table-wrap">
+        <table class="augcalc-table">
+          <thead><tr><th>주당 시간</th><th>현재 시급 기준</th><th>교내 기준</th><th>교외 기준</th></tr></thead>
+          <tbody data-nwsc-result="scenarioRows">
+            {NATIONAL_WORK_SCHOLARSHIP_HOUR_SCENARIOS.map((hours) => (
+              <tr><td>주 {hours}시간</td><td>-</td><td>-</td><td>-</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="augcalc-section">
+      <div class="section-header">
+        <p class="section-header__eyebrow">신청 전 확인</p>
+        <h2>국가근로 체크리스트</h2>
+      </div>
+      <ul class="augcalc-checklist">
+        {NATIONAL_WORK_SCHOLARSHIP_CHECKLIST.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle={NATIONAL_WORK_SCHOLARSHIP_SEO_CONTENT.introTitle}
+        intro={NATIONAL_WORK_SCHOLARSHIP_SEO_CONTENT.intro}
+        inputPoints={NATIONAL_WORK_SCHOLARSHIP_SEO_CONTENT.inputPoints}
+        criteria={NATIONAL_WORK_SCHOLARSHIP_SEO_CONTENT.criteria}
+        faq={NATIONAL_WORK_SCHOLARSHIP_FAQ}
+        related={NATIONAL_WORK_SCHOLARSHIP_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+  <script id="nwsc-data" type="application/json" set:html={JSON.stringify(pageData)}></script>
+  <script type="module" src={withBase("/scripts/national-work-scholarship-pay-calculator-2026.js")}></script>
+</BaseLayout>

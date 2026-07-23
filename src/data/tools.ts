@@ -2520,6 +2520,32 @@ export const tools: ToolMeta[] = [
       { label: "결과", value: "회수기간" },
     ],
   },
+  {
+    slug: "national-work-scholarship-pay-calculator-2026",
+    title: "국가근로장학금 월수령액 계산기 2026",
+    description: "교내·교외 시급과 주당 근로시간을 입력하면 월 예상 수령액, 학기 총액, 방학 집중근로 포함 금액, 생활비 충당률을 계산합니다.",
+    order: 78.83,
+    eyebrow: "국가근로",
+    category: "복지·지원금",
+    badges: ["신규", "2학기", "대학생", "2026"],
+    previewStats: [
+      { label: "교내 시급", value: "10,320원" },
+      { label: "교외 시급", value: "12,790원" },
+    ],
+  },
+  {
+    slug: "property-tax-september-payment-calculator-2026",
+    title: "재산세 9월분 납부액 계산기 2026",
+    description: "7월 주택분 고지액, 공시가격, 토지 과세표준을 입력해 2026년 9월 재산세 주택 2기분과 토지분 납부 예산을 계산합니다.",
+    order: 78.84,
+    eyebrow: "9월 재산세",
+    category: "세금·연말정산",
+    badges: ["신규", "9월 납부", "재산세", "2026"],
+    previewStats: [
+      { label: "납부기간", value: "9/16~9/30" },
+      { label: "주택", value: "2기분" },
+    ],
+  },
 ];
 
 // 모바일 메뉴 "인기 계산기" 섹션에 고정 노출할 slug 목록 (운영 중 교체 시 이 배열만 수정)
