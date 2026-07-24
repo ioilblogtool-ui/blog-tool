@@ -1,0 +1,227 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  KSR_META,
+  KSR_CUMULATIVE_STATS,
+  KSR_HISTORICAL_COMPARISON,
+  KSR_MARKET_CONDITIONS,
+  KSR_MECHANISM_COMPARISON,
+  KSR_CB_STAGES,
+  KSR_CAUSE_CARDS,
+  KSR_CHECKLIST,
+  KSR_AVOID_LIST,
+  KSR_RECENT_RECORDS,
+  KSR_FAQ,
+  KSR_RELATED_LINKS,
+} from "../../data/kospiSidecarRecord2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${KSR_META.slug}/`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: KSR_META.title,
+    description: KSR_META.seoDescription,
+    dateModified: KSR_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: KSR_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: KSR_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={KSR_META.seoTitle} description={KSR_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page ksr-page" data-report="kospi-sidecar-record-2026">
+    <CalculatorHero
+      eyebrow="2008년 금융위기 기록 비교"
+      title={KSR_META.title}
+      description={KSR_META.description}
+    />
+
+    <p class="ksr-asof-badge">데이터 기준일: {KSR_META.updatedAt}</p>
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        KSR_META.dataNote,
+        "이 리포트는 투자를 추천하지 않습니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>2026년 누적 발동 현황</h2>
+      <div class="op-card-grid">
+        {KSR_CUMULATIVE_STATS.map((s) => (
+          <article class={`report-stat-card ${s.highlight ? "report-stat-card--primary" : ""}`}>
+            <strong>{s.value}</strong>
+            <p>{s.label}</p>
+            <small>{s.note}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>역대 비교 — 2008년 금융위기 vs 2026년</h2>
+      <table class="ksr-table">
+        <thead>
+          <tr><th>구분</th><th>2008년(금융위기)</th><th>2026년(현재까지)</th></tr>
+        </thead>
+        <tbody>
+          {KSR_HISTORICAL_COMPARISON.map((row) => (
+            <tr><td>{row.metric}</td><td>{row.year2008}</td><td>{row.year2026}</td></tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">2026년 수치는 연중 집계 중인 값이고 2008년 수치는 연간 최종 수치이므로, 비교 시 기준 기간이 다르다는 점을 감안해야 합니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>사이드카란?</h2>
+      <p class="op-message">
+        사이드카는 선물시장의 급격한 가격 변동이 현물시장 프로그램매매로 그대로 확산되는 것을 완화하기 위한 장치입니다.
+        발동되면 모든 주식 거래가 정지되는 것이 아니라, 프로그램매매 호가의 효력만 5분간 정지됩니다.
+        선물 가격이 급등할 때는 매수 사이드카, 급락할 때는 매도 사이드카가 각각 발동됩니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>코스피·코스닥 발동 조건</h2>
+      <table class="ksr-table">
+        <thead>
+          <tr><th>시장</th><th>선물 가격 조건</th><th>현물지수 조건</th><th>지속시간</th><th>조치</th></tr>
+        </thead>
+        <tbody>
+          {KSR_MARKET_CONDITIONS.map((row) => (
+            <tr>
+              <td>{row.market}</td>
+              <td>{row.futuresCondition}</td>
+              <td>{row.spotCondition}</td>
+              <td>{row.duration}</td>
+              <td>{row.action}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="op-section">
+      <h2>사이드카와 서킷브레이커 차이</h2>
+      <table class="ksr-table">
+        <thead>
+          <tr><th>구분</th><th>사이드카</th><th>서킷브레이커</th></tr>
+        </thead>
+        <tbody>
+          {KSR_MECHANISM_COMPARISON.map((row) => (
+            <tr><td>{row.label}</td><td>{row.sidecar}</td><td>{row.circuitBreaker}</td></tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3>서킷브레이커 단계</h3>
+      <table class="ksr-table">
+        <thead>
+          <tr><th>단계</th><th>주요 발동 조건</th><th>조치</th></tr>
+        </thead>
+        <tbody>
+          {KSR_CB_STAGES.map((row) => (
+            <tr><td>{row.stage}</td><td>{row.condition}</td><td>{row.action}</td></tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">쉽게 말하면 사이드카는 프로그램매매에 거는 일시적인 제동장치이고, 서킷브레이커는 시장 전체를 멈추는 비상정지 장치입니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>2026년 변동성을 키운 것으로 거론되는 배경</h2>
+      <div class="ksr-cause-grid">
+        {KSR_CAUSE_CARDS.map((c) => (
+          <article class="ksr-mechanism-card">
+            <strong>{c.title}</strong>
+            <p>{c.detail}</p>
+          </article>
+        ))}
+      </div>
+      <p class="op-message">위 항목은 시장 변동성 확대 배경으로 언론과 시장에서 거론되는 요인을 정리한 것입니다. 각 사이드카 발동의 원인을 한국거래소가 공식적으로 확정한 것은 아닙니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>사이드카 발동 시 확인할 5가지</h2>
+      <table class="ksr-table">
+        <thead>
+          <tr><th>확인 항목</th><th>체크 내용</th></tr>
+        </thead>
+        <tbody>
+          {KSR_CHECKLIST.map((item) => (
+            <tr><td>{item.title}</td><td>{item.detail}</td></tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3>투자자가 피해야 할 행동</h3>
+      <ul class="ksr-avoid-list">
+        {KSR_AVOID_LIST.map((item) => <li>{item}</li>)}
+      </ul>
+      <p class="op-message">
+        변동성이 극심한 날에는 시장가 주문보다 지정가 주문이 가격 통제에 유리할 수 있습니다.
+        매수 계획이 있더라도 한 번에 집행하지 않고 시간과 가격을 나눠 접근하는 방식이 급격한 가격 변동 위험을 줄이는 데 도움이 될 수 있습니다.
+        다만 이는 일반적인 위험관리 방식이며 수익을 보장하지 않습니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>최근 발동 기록</h2>
+      <table class="ksr-table">
+        <thead>
+          <tr><th>날짜</th><th>시장</th><th>구분</th><th>발동 시각</th><th>비고</th></tr>
+        </thead>
+        <tbody>
+          {KSR_RECENT_RECORDS.map((row) => (
+            <tr><td>{row.date}</td><td>{row.market}</td><td>{row.type}</td><td>{row.time}</td><td>{row.ordinalNote}</td></tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">전체 발동 이력이 아닌 최근 보도 기준 일부 기록입니다. 이후 발동 건은 순차적으로 갱신할 예정입니다.</p>
+    </section>
+
+    <SeoContent
+      introTitle="코스피 사이드카 역대 최다 기록 — 발동 기준부터 대응까지"
+      intro={[
+        "이 리포트는 2026년 코스피·코스닥 사이드카 누적 발동 현황을 2008년 금융위기 기록과 비교하고, 코스피·코스닥의 서로 다른 발동 조건과 서킷브레이커와의 차이를 정리합니다.",
+        "위에서 숫자와 제도를 확인했다면, 아래 FAQ에서는 실제로 궁금해할 만한 개별 상황(하루 중복 발동, 매수 사이드카의 위험성, VI와의 차이 등)을 다룹니다.",
+      ]}
+      criteria={[
+        "코스피·코스닥 사이드카 발동 조건은 한국거래소 규정을 기준으로 정리했으며, 발동 횟수·시각은 2026년 7월 24일 보도를 기준으로 한 스냅샷입니다.",
+        "서킷브레이커 3단계 조건(8%·15%·20%)은 사이드카와 별도의 제도이며, 정지 시간과 발동 조건이 다릅니다.",
+        "2026년 변동성 배경으로 소개한 5가지는 언론 보도의 분석·추정을 종합한 것이며, 한국거래소가 공식적으로 확정한 원인이 아닙니다.",
+        "체크리스트와 매매 시 주의사항은 일반적인 위험관리 정보이며 수익을 보장하지 않습니다.",
+      ]}
+      faq={KSR_FAQ}
+      related={KSR_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+    />
+  </main>
+</BaseLayout>
