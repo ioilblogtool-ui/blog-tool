@@ -1,0 +1,318 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  ADI_META,
+  ADI_CONCLUSION,
+  ADI_OVERVIEW,
+  ADI_PROJECTS,
+  ADI_PROJECT_NOTE,
+  ADI_POWER_BASE,
+  ADI_POWER_TABLE,
+  ADI_POWER_CAVEAT,
+  ADI_PUE_EXAMPLES,
+  ADI_PUE_NOTE,
+  ADI_CHAIN_DIAGRAM,
+  ADI_CHAIN_STAGES,
+  ADI_SECTORS,
+  ADI_SECTOR_NOTE,
+  ADI_FINANCING_DIAGRAM,
+  ADI_FINANCING_CAUTIONS,
+  ADI_PROJECT_CHECKLIST,
+  ADI_FINANCIAL_CHECKLIST,
+  ADI_RISKS,
+  ADI_FAQ,
+  ADI_SEO_INTRO,
+  ADI_SEO_CRITERIA,
+} from "../../data/aiDatacenterInfraBeneficiaries2026";
+
+const riskClass = (importance: string) => {
+  if (importance === "매우 높음" || importance === "높음") return "adi-risk-card--high";
+  if (importance === "중상") return "adi-risk-card--mid";
+  return "adi-risk-card--low";
+};
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/ai-datacenter-infra-beneficiaries-2026/`;
+
+const title = "AI 데이터센터 전력·냉각 수혜 업종 2026 | 2GW 시대 밸류체인 정리";
+const description = "AI 데이터센터의 전력·냉각·건설·통신 밸류체인을 정리합니다. 2GW 전력량 계산, PUE 개념, 국내외 프로젝트 진행 단계, 업종별 수혜 경로와 리스크까지 확인하세요.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": pageUrl,
+  url: pageUrl,
+  headline: title,
+  description,
+  inLanguage: "ko-KR",
+  datePublished: "2026-07-27",
+  dateModified: "2026-07-27",
+};
+
+const inputPoints = [
+  "발표된 GW 숫자가 IT 장비 전력인지, 시설 전체 전력인지, 전력 확보 목표인지부터 구분하세요.",
+  "'AI 데이터센터 관련주'라는 이유만으로 동일한 수혜를 받는 것은 아니며, 실제 수주잔고·매출 전환율을 확인해야 합니다.",
+  "오하이오 10GW·2,500억달러 금융보증은 확정 계약이 아니라 협의 단계라는 점을 유의하세요.",
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell adi-page">
+
+    <CalculatorHero
+      eyebrow="AI 데이터센터 밸류체인"
+      title="AI 시대, 칩보다 전력·냉각이 더 큰 병목이 되는 이유"
+      description="AI 인프라 경쟁의 중심이 GPU 확보에서 전력·냉각·부지·통신망 확보로 확대되고 있습니다."
+    />
+
+    <div class="adi-conclusion">
+      <p class="adi-conclusion__label">핵심 결론</p>
+      <p class="adi-conclusion__text">{ADI_CONCLUSION}</p>
+    </div>
+
+    <InfoNotice
+      title="개별 종목 추천이 아닙니다"
+      lines={[ADI_META.notice]}
+    />
+
+    <!-- ── 섹션 1: 한눈에 보기 ────────────────────── -->
+    <section class="content-section" aria-labelledby="overview-title">
+      <p class="adi-eyebrow">핵심 요약</p>
+      <h2 id="overview-title" class="adi-section-title">한눈에 보기</h2>
+      <div class="adi-role-table-wrap">
+        <table class="adi-role-table">
+          <tbody>
+            {ADI_OVERVIEW.map((row) => (
+              <tr>
+                <td>{row.category}</td>
+                <td>{row.content}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 섹션 2: 프로젝트 현황 ──────────────────── -->
+    <section class="content-section" aria-labelledby="project-title">
+      <p class="adi-eyebrow">프로젝트 현황</p>
+      <h2 id="project-title" class="adi-section-title">국내외 프로젝트 현황과 진행 단계</h2>
+      <div class="adi-project-table-wrap">
+        <table class="adi-project-table">
+          <thead>
+            <tr><th>프로젝트</th><th>주체</th><th>발표 규모</th><th>현재 단계</th><th>일정</th></tr>
+          </thead>
+          <tbody>
+            {ADI_PROJECTS.map((p) => (
+              <tr>
+                <td>{p.project}</td>
+                <td>{p.entity}</td>
+                <td>{p.scale}</td>
+                <td>{p.stage}</td>
+                <td>{p.timeline}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="adi-note">{ADI_PROJECT_NOTE}</p>
+    </section>
+
+    <!-- ── 섹션 3: 2GW 전력 규모 계산 ★ ───────────── -->
+    <section class="content-section" aria-labelledby="power-title">
+      <p class="adi-eyebrow">숫자로 보는 규모</p>
+      <h2 id="power-title" class="adi-section-title">2GW는 실제로 얼마나 큰 전력일까</h2>
+      <p class="adi-section-desc">2GW는 순간 최대 전력 기준으로 2,000MW입니다. 연중 동일한 전력을 사용한다고 단순 가정하면:</p>
+      <pre class="adi-structure-diagram">{ADI_POWER_BASE}</pre>
+      <p class="adi-section-desc">다만 데이터센터가 항상 최대 정격전력으로 가동되는 것은 아니므로, 실제 사용량은 가동률에 따라 달라집니다.</p>
+      <div class="adi-project-table-wrap">
+        <table class="adi-project-table">
+          <thead>
+            <tr><th>가동률 가정</th><th>연간 전력 사용량</th></tr>
+          </thead>
+          <tbody>
+            {ADI_POWER_TABLE.map((row) => (
+              <tr>
+                <td>{row.utilization}</td>
+                <td>{row.annual}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="adi-note">{ADI_POWER_CAVEAT}</p>
+    </section>
+
+    <!-- ── 섹션 4: PUE·냉각 구조 ★ ─────────────────── -->
+    <section class="content-section" aria-labelledby="pue-title">
+      <p class="adi-eyebrow">PUE란</p>
+      <h2 id="pue-title" class="adi-section-title">냉각 효율을 가르는 지표, PUE</h2>
+      <pre class="adi-structure-diagram">{`PUE = 데이터센터 전체 전력 ÷ IT 장비 전력`}</pre>
+      <p class="adi-section-desc">예를 들어 IT 장비가 1GW를 사용하고 PUE가 1.2라면 데이터센터 전체 전력은 약 1.2GW입니다.</p>
+      <div class="adi-project-table-wrap">
+        <table class="adi-project-table">
+          <thead>
+            <tr><th>IT 장비 전력</th><th>PUE</th><th>전체 시설 전력</th></tr>
+          </thead>
+          <tbody>
+            {ADI_PUE_EXAMPLES.map((row) => (
+              <tr>
+                <td>{row.itLoad}</td>
+                <td>{row.pue}</td>
+                <td>{row.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="adi-note">{ADI_PUE_NOTE}</p>
+    </section>
+
+    <!-- ── 섹션 5: 밸류체인 구조 ──────────────────── -->
+    <section class="content-section" aria-labelledby="chain-title">
+      <p class="adi-eyebrow">밸류체인 구조</p>
+      <h2 id="chain-title" class="adi-section-title">AI 인프라 밸류체인, 단계별로 보기</h2>
+      <pre class="adi-structure-diagram">{ADI_CHAIN_DIAGRAM}</pre>
+      <div class="adi-project-table-wrap">
+        <table class="adi-project-table">
+          <thead>
+            <tr><th>단계</th><th>매출이 발생하는 시점</th><th>확인 지표</th></tr>
+          </thead>
+          <tbody>
+            {ADI_CHAIN_STAGES.map((row) => (
+              <tr>
+                <td>{row.stage}</td>
+                <td>{row.timing}</td>
+                <td>{row.indicator}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 섹션 6: 업종별 수혜 경로 ★ ─────────────── -->
+    <section class="content-section" aria-labelledby="sector-title">
+      <p class="adi-eyebrow">업종별 수혜 경로</p>
+      <h2 id="sector-title" class="adi-section-title">어떤 업종이 왜, 어떤 조건에서 주목받나</h2>
+      <div class="adi-sector-table-wrap">
+        <table class="adi-sector-table">
+          <thead>
+            <tr><th>업종</th><th>수혜 경로</th><th>수혜 가시성</th><th>핵심 조건</th><th>주요 리스크</th></tr>
+          </thead>
+          <tbody>
+            {ADI_SECTORS.map((s) => (
+              <tr>
+                <td>{s.sector}</td>
+                <td>{s.path}</td>
+                <td>{s.visibility}</td>
+                <td>{s.condition}</td>
+                <td>{s.risk}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="adi-note">{ADI_SECTOR_NOTE}</p>
+    </section>
+
+    <!-- ── 섹션 7: 엔비디아 금융지원 구조 ─────────── -->
+    <section class="content-section" aria-labelledby="financing-title">
+      <p class="adi-eyebrow">금융 구조</p>
+      <h2 id="financing-title" class="adi-section-title">엔비디아 금융지원은 왜 논란이 될까</h2>
+      <p class="adi-section-desc">엔비디아는 GPU 공급을 넘어 데이터센터 시스템, 네트워크, 소프트웨어와 프로젝트 금융지원 영역까지 영향력을 확대하고 있습니다. 최근에는 오픈AI의 대규모 데이터센터 임차·자금조달을 지원하기 위해 금융보증을 검토하고 있다는 보도가 나왔습니다.</p>
+      <pre class="adi-structure-diagram">{ADI_FINANCING_DIAGRAM}</pre>
+      <p class="adi-section-desc">이러한 구조 자체가 곧바로 부적절한 거래를 의미하는 것은 아닙니다. 실제 데이터센터가 건설되고 최종 고객의 AI 서비스 수요가 발생한다면 정상적인 공급망 금융으로 볼 수 있습니다. 다만 다음 문제가 발생할 수 있어 순환거래 여부를 판단하려면 단순 투자관계가 아니라 최종 이용률, 고객 매출, 현금흐름, 보증 조건과 계약 해지 조항을 함께 확인해야 합니다.</p>
+      <ul class="adi-checklist">
+        {ADI_FINANCING_CAUTIONS.map((item) => (
+          <li class="adi-checklist__item">
+            <span class="adi-checklist__icon">！</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- ── 섹션 8: 투자자 체크리스트 ──────────────── -->
+    <section class="content-section" aria-labelledby="checklist-title">
+      <p class="adi-eyebrow">체크리스트</p>
+      <h2 id="checklist-title" class="adi-section-title">투자자 체크리스트</h2>
+      <p class="adi-section-desc adi-section-desc--tight">프로젝트 체크</p>
+      <ul class="adi-checklist">
+        {ADI_PROJECT_CHECKLIST.map((item) => (
+          <li class="adi-checklist__item">
+            <span class="adi-checklist__icon">✓</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+      <p class="adi-section-desc adi-section-desc--tight">기업 실적 체크</p>
+      <ul class="adi-checklist">
+        {ADI_FINANCIAL_CHECKLIST.map((item) => (
+          <li class="adi-checklist__item">
+            <span class="adi-checklist__icon">✓</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+      <p class="adi-note">AI 데이터센터 수혜가 예상되더라도 주가가 미래 성장률을 이미 과도하게 반영했다면 실적이 증가해도 주가 수익률은 낮을 수 있습니다. 과거 평균 PER·PBR, 예상 이익 증가율 대비 주가 상승률, 수주잔고 대비 시가총액을 함께 점검하세요.</p>
+    </section>
+
+    <!-- ── 섹션 9: 리스크 ─────────────────────────── -->
+    <section class="content-section" aria-labelledby="risk-title">
+      <p class="adi-eyebrow">리스크</p>
+      <h2 id="risk-title" class="adi-section-title">주의해야 할 리스크</h2>
+      <div class="adi-risk-list">
+        {ADI_RISKS.map((r) => (
+          <div class={`adi-risk-card ${riskClass(r.importance)}`}>
+            <div>
+              <p class="adi-risk-card__risk">{r.risk}</p>
+              <p class="adi-risk-card__content">{r.content}</p>
+            </div>
+            <span class="adi-risk-card__severity">{r.importance}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── FAQ ─────────────────────────────────────── -->
+    <section class="content-section" aria-labelledby="faq-title">
+      <p class="adi-eyebrow">FAQ</p>
+      <h2 id="faq-title" class="adi-section-title">자주 묻는 질문</h2>
+      <div class="adi-faq">
+        {ADI_FAQ.map((f) => (
+          <details class="adi-faq__item">
+            <summary class="adi-faq__q">{f.q}</summary>
+            <p class="adi-faq__a">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="AI 데이터센터 전력·냉각 밸류체인 핵심 정리"
+      intro={[ADI_SEO_INTRO]}
+      inputPoints={inputPoints}
+      criteria={ADI_SEO_CRITERIA}
+      faq={ADI_FAQ.map((f) => ({ question: f.q, answer: f.a }))}
+      related={[
+        { href: "/reports/semiconductor-value-chain/", label: "엔비디아는 왜 공장이 없을까? 반도체 산업 구조" },
+        { href: "/reports/skhynix-nvidia-partnership-2026/", label: "SK하이닉스 엔비디아 5,000억달러 협력 2026" },
+        { href: "/reports/samsung-broadcom-partnership-2026/", label: "삼성전자 브로드컴 2,000억달러 협력 2026" },
+        { href: "/reports/samsung-skhynix-800t-investment-comparison-2026/", label: "삼성전자·SK하이닉스 800조 투자 비교 리포트" },
+        { href: "/reports/semiconductor-etf-2026/", label: "국내·미국 반도체 ETF 비교 2026" },
+        { href: "/reports/semiconductor-stocks-h1-2026/", label: "반도체 주식 2026 상반기 수익률 랭킹" },
+      ]}
+    />
+
+    <p class="adi-sources">
+      출처: 국제에너지기구(IEA) Energy and AI 보고서, 로이터(Reuters) 보도, OpenAI 공식 발표 · 프로젝트 규모·일정은 발표·보도 기준이며 변경될 수 있습니다.
+    </p>
+
+  </main>
+</BaseLayout>

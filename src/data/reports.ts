@@ -1473,10 +1473,38 @@ export const reports: ReportMeta[] = [
     badges: ["신규", "세금", "종부세", "2026"],
   },
   {
+    slug: "real-estate-policy-debate-2026",
+    title: "7·23 부동산정책 국민 대토론회 총정리",
+    description: "2026년 7월 23일 부동산정책 국민 대토론회에서 논의된 공급·대출·세제 방향을 실거주 1주택자, 다주택자, 갈아타기 수요별로 정리합니다.",
+    order: 78.1,
+    badges: ["신규", "부동산정책", "대출", "세금"],
+  },
+  {
     slug: "hbm4-vs-hbm5-beneficiary-comparison",
     title: "HBM4·HBM4E 차이 총정리 | 삼성전자·SK하이닉스·마이크론 비교",
     description: "HBM3E, HBM4, HBM4E의 인터페이스 폭·핀 속도·대역폭·용량과 양산 현황을 비교하고, 삼성전자·SK하이닉스·마이크론 경쟁 구도와 수혜기업을 정리했습니다.",
     order: 79,
     badges: ["신규", "반도체", "HBM", "2026"],
+  },
+  {
+    slug: "samsung-broadcom-partnership-2026",
+    title: "삼성전자 브로드컴 2000억달러 협력 2026 완전 정리 | 파운드리 반전될까",
+    description: "삼성전자와 브로드컴의 2000억달러 규모 AI 반도체 MOU 내용을 정리합니다. HBM·2나노 파운드리·패키징 협력 범위, 파운드리 흑자 전환 가능성, 확인 체크포인트 포함.",
+    order: 80,
+    badges: ["신규", "삼성전자", "브로드컴", "반도체"],
+  },
+  {
+    slug: "skhynix-nvidia-partnership-2026",
+    title: "SK하이닉스 엔비디아 5000억달러 협력 2026 | 2GW AI 팩토리 완전 정리",
+    description: "SK그룹과 엔비디아의 5000억달러 규모 AI 인프라 협력 LOI를 정리합니다. HBM 공동개발 구조 변화, 2GW AI 팩토리 의미, SK그룹 밸류체인까지 한눈에 확인하세요.",
+    order: 81,
+    badges: ["신규", "SK하이닉스", "엔비디아", "반도체"],
+  },
+  {
+    slug: "ai-datacenter-infra-beneficiaries-2026",
+    title: "AI 데이터센터 전력·냉각 수혜 업종 2026 | 2GW 시대 밸류체인 정리",
+    description: "AI 데이터센터 확장에 따른 전력·냉각·건설·네트워크 밸류체인을 정리합니다. 업종별 수혜 강도, 국내외 2GW급 프로젝트 현황, 확인 체크리스트 포함.",
+    order: 82,
+    badges: ["신규", "AI 데이터센터", "전력", "냉각"],
   },
 ];

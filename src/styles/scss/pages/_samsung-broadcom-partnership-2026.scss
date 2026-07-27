@@ -1,0 +1,524 @@
+// samsung-broadcom-partnership-2026
+
+.sbp-page {
+  --sbp-ink:        #14213d;
+  --sbp-muted:      #5d6b82;
+  --sbp-line:       rgba(20, 33, 61, 0.12);
+  --sbp-soft:       #f5f7fb;
+  --sbp-primary:    #1a56db;
+  --sbp-primary-bg: #eff4ff;
+  --sbp-green:      #059669;
+  --sbp-green-bg:   #d1fae5;
+  --sbp-amber:      #d97706;
+  --sbp-amber-bg:   #fef3c7;
+  --sbp-red:        #dc2626;
+  --sbp-red-bg:     #fee2e2;
+}
+
+.sbp-page .content-section {
+  margin-bottom: 2.5rem;
+}
+
+.sbp-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--sbp-primary);
+  margin: 0 0 0.3rem;
+}
+
+.sbp-section-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--sbp-ink);
+  margin: 0 0 0.5rem;
+  line-height: 1.35;
+}
+
+.sbp-section-desc {
+  font-size: 0.82rem;
+  color: var(--sbp-muted);
+  margin: 0 0 1.25rem;
+  line-height: 1.6;
+}
+
+.sbp-note {
+  font-size: 0.775rem;
+  color: var(--sbp-muted);
+  margin: 0.75rem 0 0;
+  line-height: 1.6;
+}
+
+.sbp-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 100px;
+  margin-bottom: 0.5rem;
+
+  &--official { background: var(--sbp-green-bg); color: #065f46; border: 1px solid #6ee7b7; }
+  &--ref      { background: var(--sbp-primary-bg); color: var(--sbp-primary); border: 1px solid #bfdbfe; }
+  &--estimate { background: var(--sbp-amber-bg); color: #92400e; border: 1px solid #fcd34d; }
+}
+
+// ── 핵심 요약 그리드 ──────────────────────────────────
+.sbp-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.sbp-summary-card {
+  background: #fff;
+  border: 1px solid var(--sbp-line);
+  border-radius: 14px;
+  padding: 1.25rem;
+
+  &__label {
+    font-size: 0.78rem;
+    color: var(--sbp-muted);
+    margin: 0 0 0.3rem;
+  }
+
+  &__value {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--sbp-ink);
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// ── MOU 협력 범위 표 ──────────────────────────────────
+.sbp-scope-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--sbp-line);
+}
+
+.sbp-scope-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    vertical-align: middle;
+
+    &:first-child {
+      font-weight: 700;
+      color: var(--sbp-primary);
+      white-space: nowrap;
+      width: 30%;
+    }
+
+    &:last-child { color: var(--sbp-ink); }
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(odd) { background: var(--sbp-soft); }
+}
+
+// ── 구조도 ────────────────────────────────────────────
+.sbp-structure-diagram {
+  background: var(--sbp-soft);
+  border: 1px solid var(--sbp-line);
+  border-radius: 12px;
+  padding: 1.25rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin: 0 0 1rem;
+  color: var(--sbp-ink);
+}
+
+// ── 긍정 요인 vs 확인 필요 2열 ────────────────────────
+.sbp-impact-cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.sbp-impact-col {
+  background: #fff;
+  border: 1px solid var(--sbp-line);
+  border-radius: 12px;
+  padding: 1.1rem;
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--sbp-ink);
+    margin: 0 0 0.6rem;
+  }
+}
+
+// ── 체크리스트 (공용) ─────────────────────────────────
+.sbp-check-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sbp-check-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--sbp-ink);
+  line-height: 1.55;
+}
+
+.sbp-check-list__icon {
+  flex-shrink: 0;
+  color: var(--sbp-primary);
+  font-weight: 700;
+}
+
+// ── CTA 그룹 ──────────────────────────────────────────
+.sbp-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.sbp-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.15s;
+  border: 1.5px solid;
+
+  &:hover { opacity: 0.8; }
+
+  &--primary {
+    background: var(--sbp-primary);
+    color: #fff;
+    border-color: var(--sbp-primary);
+  }
+
+  &--outline {
+    background: #fff;
+    color: var(--sbp-primary);
+    border-color: var(--sbp-primary);
+  }
+}
+
+// ── 리스크 카드 ───────────────────────────────────────
+.sbp-risk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sbp-risk-card {
+  background: #fff;
+  border: 1px solid var(--sbp-line);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+
+  &--high { border-left-color: var(--sbp-red); }
+  &--mid  { border-left-color: var(--sbp-amber); }
+  &--low  { border-left-color: var(--sbp-green); }
+
+  &__risk {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--sbp-ink);
+    margin: 0 0 0.2rem;
+  }
+
+  &__content {
+    font-size: 0.82rem;
+    color: var(--sbp-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  &__severity {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    white-space: nowrap;
+  }
+
+  &--high &__severity { background: var(--sbp-red-bg); color: #991b1b; }
+  &--mid  &__severity { background: var(--sbp-amber-bg); color: #92400e; }
+  &--low  &__severity { background: var(--sbp-green-bg); color: #065f46; }
+}
+
+// ── FAQ ───────────────────────────────────────────────
+.sbp-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__item {
+    background: #fff;
+    border: 1px solid var(--sbp-line);
+    border-radius: 10px;
+    overflow: hidden;
+
+    &[open] summary {
+      background: var(--sbp-soft);
+      border-bottom: 1px solid var(--sbp-line);
+    }
+  }
+
+  &__q {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--sbp-ink);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &::-webkit-details-marker { display: none; }
+
+    &::after {
+      content: "+";
+      font-size: 1.2rem;
+      color: var(--sbp-muted);
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+    }
+
+    details[open] &::after { content: "−"; }
+  }
+
+  &__a {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    color: var(--sbp-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+}
+
+// ── 핵심 결론 콜아웃 ──────────────────────────────────
+.sbp-conclusion {
+  background: var(--sbp-primary-bg);
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid var(--sbp-primary);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  margin: 0 0 1.5rem;
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--sbp-primary);
+    margin: 0 0 0.4rem;
+  }
+
+  &__text {
+    font-size: 0.9rem;
+    color: var(--sbp-ink);
+    line-height: 1.65;
+    margin: 0;
+  }
+}
+
+// ── 왜 중요한가 리스트 ────────────────────────────────
+.sbp-why-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.sbp-why-list__item {
+  font-size: 0.85rem;
+  color: var(--sbp-ink);
+  line-height: 1.65;
+  padding: 0.85rem 1rem;
+  background: var(--sbp-soft);
+  border-radius: 10px;
+  border-left: 3px solid var(--sbp-primary);
+}
+
+// ── 2,000억달러 해석 표 ───────────────────────────────
+.sbp-interpretation-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--sbp-line);
+  margin-bottom: 0.75rem;
+}
+
+.sbp-interpretation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: left;
+    background: var(--sbp-soft);
+    border-bottom: 2px solid var(--sbp-line);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    color: var(--sbp-ink);
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+.sbp-possible {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding: 0 0.35rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+
+  &--yes { background: var(--sbp-green-bg); color: #065f46; }
+  &--no { background: var(--sbp-red-bg); color: #991b1b; }
+  &--unknown { background: var(--sbp-amber-bg); color: #92400e; }
+}
+
+// ── 성과급 단계 표 ────────────────────────────────────
+.sbp-stage-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--sbp-line);
+  margin: 1rem 0;
+}
+
+.sbp-stage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: left;
+    background: var(--sbp-soft);
+    border-bottom: 2px solid var(--sbp-line);
+  }
+
+  td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    color: var(--sbp-ink);
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+// ── 투자자 체크리스트 표 ──────────────────────────────
+.sbp-checklist-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--sbp-line);
+  margin-bottom: 1rem;
+}
+
+.sbp-checklist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  th {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-align: left;
+    background: var(--sbp-soft);
+    border-bottom: 2px solid var(--sbp-line);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    color: var(--sbp-ink);
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+// ── 삼성 vs SK하이닉스 비교 표 ────────────────────────
+.sbp-compare-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--sbp-line);
+  margin-bottom: 0.75rem;
+}
+
+.sbp-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: left;
+    background: var(--sbp-soft);
+    border-bottom: 2px solid var(--sbp-line);
+  }
+
+  td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid rgba(20, 33, 61, 0.06);
+    color: var(--sbp-ink);
+
+    &:first-child { font-weight: 700; color: var(--sbp-primary); white-space: nowrap; }
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+// ── 출처 푸터 ──────────────────────────────────────────
+.sbp-sources {
+  font-size: 0.72rem;
+  color: var(--sbp-muted);
+  line-height: 1.6;
+  margin: 1.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sbp-line);
+}

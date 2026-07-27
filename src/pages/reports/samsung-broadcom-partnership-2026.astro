@@ -1,0 +1,313 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  SBP_META,
+  SBP_SUMMARY_CARDS,
+  SBP_DEAL_SCOPE,
+  SBP_INTERPRETATION,
+  SBP_AVERAGE_NOTE,
+  SBP_WHY_IMPORTANT,
+  SBP_POSITIVE_FACTORS,
+  SBP_VERIFICATION_CHECKLIST,
+  SBP_BONUS_STAGES,
+  SBP_INVESTOR_CHECKLIST,
+  SBP_RISKS,
+  SBP_COMPARISON,
+  SBP_FAQ,
+  SBP_SEO_INTRO,
+  SBP_SEO_CRITERIA,
+} from "../../data/samsungBroadcomPartnership2026";
+
+const badgeClass = (badge?: string) => {
+  if (badge === "공식") return "sbp-badge--official";
+  if (badge === "보도 기반") return "sbp-badge--ref";
+  return "sbp-badge--estimate";
+};
+
+const riskClass = (severity: string) => {
+  if (severity === "높음") return "sbp-risk-card--high";
+  if (severity === "중간") return "sbp-risk-card--mid";
+  return "sbp-risk-card--low";
+};
+
+const possibleClass = (possible: string) => {
+  if (possible === "O") return "sbp-possible--yes";
+  if (possible === "X") return "sbp-possible--no";
+  return "sbp-possible--unknown";
+};
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/samsung-broadcom-partnership-2026/`;
+
+const title = "삼성전자 브로드컴 2000억달러 협력 2026 완전 정리 | 파운드리 반전될까";
+const description = "삼성전자와 브로드컴의 2000억달러 예상 협력 규모 MOU를 정리합니다. HBM·2나노 파운드리·패키징 범위, 2000억달러의 정확한 의미, 파운드리 영향, 확인 체크포인트 포함.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": pageUrl,
+  url: pageUrl,
+  headline: title,
+  description,
+  inLanguage: "ko-KR",
+  datePublished: "2026-07-27",
+  dateModified: "2026-07-27",
+};
+
+const inputPoints = [
+  "삼성전자가 메모리·파운드리·패키징을 함께 제공하는 턴키 경쟁력을 처음으로 대외 입증한 사례입니다.",
+  "실제 실적·주가 반영 여부는 확정 발주 전환, HBM 인증, 2나노 수율 안정화 세 가지로 확인하세요.",
+  "2,000억달러 수치를 볼 때는 항상 '예상 협력 규모'라는 전제를 함께 읽어야 합니다.",
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell sbp-page">
+
+    <CalculatorHero
+      eyebrow="삼성전자 · 브로드컴"
+      title="삼성전자·브로드컴 2,000억달러 MOU, 확정 계약일까 파운드리 반전 신호일까"
+      description="삼성전자는 2026년 7월 24일 현지시간 샌프란시스코 AI 서밋에서 브로드컴과 전략적 업무협약(MOU)을 체결했습니다. 2030년까지 5년간 메모리·파운드리 분야에서 2,000억달러 이상 규모의 협력을 예상한다고 밝혔습니다."
+    />
+
+    <div class="sbp-conclusion">
+      <p class="sbp-conclusion__label">핵심 결론</p>
+      <p class="sbp-conclusion__text">이번 협력은 삼성전자가 메모리·파운드리·첨단 패키징을 함께 제공하는 턴키 경쟁력을 입증했다는 점에서 긍정적입니다. 그러나 실제 실적과 주가 재평가로 연결되려면 개별 제품의 양산, 웨이퍼 투입, HBM 공급 확대, 파운드리 수율과 수익성 개선이 확인돼야 합니다.</p>
+    </div>
+
+    <InfoNotice
+      title="확정 매출이 아닙니다"
+      lines={[SBP_META.notice]}
+    />
+
+    <!-- ── 섹션 1: 핵심 요약 ──────────────────────── -->
+    <section class="content-section" aria-labelledby="summary-title">
+      <p class="sbp-eyebrow">핵심 요약</p>
+      <h2 id="summary-title" class="sbp-section-title">삼성전자 브로드컴 협력, 한눈에 보기</h2>
+      <div class="sbp-summary-grid">
+        {SBP_SUMMARY_CARDS.map((card) => (
+          <article class="sbp-summary-card">
+            <span class={`sbp-badge ${badgeClass(card.badge)}`}>{card.badge}</span>
+            <p class="sbp-summary-card__label">{card.label}</p>
+            <p class="sbp-summary-card__value">{card.value}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 섹션 2: MOU 협력 범위 ──────────────────── -->
+    <section class="content-section" aria-labelledby="scope-title">
+      <p class="sbp-eyebrow">MOU 상세</p>
+      <h2 id="scope-title" class="sbp-section-title">MOU 협력 범위</h2>
+      <div class="sbp-scope-table-wrap">
+        <table class="sbp-scope-table">
+          <tbody>
+            {SBP_DEAL_SCOPE.map((row) => (
+              <tr>
+                <td>{row.area}</td>
+                <td>{row.content}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="sbp-note">브로드컴은 구글 등 빅테크의 커스텀 AI 가속기(ASIC) 설계 생태계의 핵심 기업입니다. 삼성전자가 HBM·파운드리·패키징을 한 번에 묶어 제공하는 턴키 솔루션 계약 구조입니다.</p>
+    </section>
+
+    <!-- ── 섹션 3: 2,000억달러 해석 ★ ─────────────── -->
+    <section class="content-section" aria-labelledby="interpretation-title">
+      <p class="sbp-eyebrow">수치 해석</p>
+      <h2 id="interpretation-title" class="sbp-section-title">2,000억달러를 어떻게 봐야 하나</h2>
+      <div class="sbp-interpretation-table-wrap">
+        <table class="sbp-interpretation-table">
+          <thead>
+            <tr><th>해석</th><th>가능 여부</th><th>설명</th></tr>
+          </thead>
+          <tbody>
+            {SBP_INTERPRETATION.map((row) => (
+              <tr>
+                <td>{row.interpretation}</td>
+                <td><span class={`sbp-possible ${possibleClass(row.possible)}`}>{row.possible}</span></td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="sbp-note">{SBP_AVERAGE_NOTE}</p>
+    </section>
+
+    <!-- ── 섹션 4: 왜 중요한가 ────────────────────── -->
+    <section class="content-section" aria-labelledby="why-title">
+      <p class="sbp-eyebrow">왜 중요한가</p>
+      <h2 id="why-title" class="sbp-section-title">종합반도체(IDM) 구조를 활용한 턴키 계약</h2>
+      <pre class="sbp-structure-diagram">{`삼성 HBM
++ 삼성 2나노 파운드리
++ 삼성 첨단 패키징
+= AI·네트워킹 반도체 통합 공급`}</pre>
+      <ul class="sbp-why-list">
+        {SBP_WHY_IMPORTANT.map((item) => (
+          <li class="sbp-why-list__item">{item}</li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- ── 섹션 5: 삼성전자에 미치는 영향 ─────────── -->
+    <section class="content-section" aria-labelledby="impact-title">
+      <p class="sbp-eyebrow">영향 분석</p>
+      <h2 id="impact-title" class="sbp-section-title">삼성전자에 미치는 영향</h2>
+      <div class="sbp-impact-cols">
+        <div class="sbp-impact-col">
+          <p class="sbp-impact-col__title">긍정 요인</p>
+          <ul class="sbp-check-list">
+            {SBP_POSITIVE_FACTORS.map((item) => (
+              <li class="sbp-check-list__item">
+                <span class="sbp-check-list__icon">＋</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="sbp-impact-col">
+          <p class="sbp-impact-col__title">확인해야 할 부분</p>
+          <ul class="sbp-check-list">
+            {SBP_VERIFICATION_CHECKLIST.map((item) => (
+              <li class="sbp-check-list__item">
+                <span class="sbp-check-list__icon">？</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <p class="sbp-note">이번 발표는 아직 MOU 단계입니다. 위 확인 항목이 검증돼야 실질적 주가 재평가 근거가 됩니다.</p>
+    </section>
+
+    <!-- ── 섹션 6: 성과급 영향 ────────────────────── -->
+    <section class="content-section" aria-labelledby="bonus-title">
+      <p class="sbp-eyebrow">재직자 관점</p>
+      <h2 id="bonus-title" class="sbp-section-title">삼성전자 재직자 성과급에 영향을 줄까?</h2>
+      <p class="sbp-section-desc">이번 MOU가 당장 삼성전자 DS부문의 OPI나 사업부 성과급을 크게 높인다고 보기는 어렵습니다. 성과급에 실질적으로 영향을 주려면 제품 확정 → 양산·매출 반영 → 파운드리 적자 축소 → 목표이익 초과 순서를 거쳐야 합니다. 특히 파운드리는 매출 증가만큼 수율과 원가가 중요해, 수주가 늘어도 초기 수율이 낮거나 감가상각 부담이 크면 영업이익 개선 폭은 제한될 수 있습니다.</p>
+      <div class="sbp-stage-table-wrap">
+        <table class="sbp-stage-table">
+          <thead>
+            <tr><th>단계</th><th>성과급 영향</th></tr>
+          </thead>
+          <tbody>
+            {SBP_BONUS_STAGES.map((row) => (
+              <tr>
+                <td>{row.stage}</td>
+                <td>{row.impact}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="sbp-cta-group">
+        <a href="/reports/samsung-ds-bonus-calculation-guide/" class="sbp-cta-btn sbp-cta-btn--primary">
+          삼성전자 DS 성과급 계산 기준 가이드 →
+        </a>
+        <a href="/reports/samsung-bonus-rank-net-comparison-2026/" class="sbp-cta-btn sbp-cta-btn--outline">
+          삼성전자 성과급 직급별 실수령액 비교 2026 →
+        </a>
+      </div>
+    </section>
+
+    <!-- ── 섹션 7: 투자자 체크리스트 & 리스크 ──────── -->
+    <section class="content-section" aria-labelledby="risk-title">
+      <p class="sbp-eyebrow">투자자 체크리스트 & 리스크</p>
+      <h2 id="risk-title" class="sbp-section-title">투자 전 확인해야 할 것들</h2>
+      <div class="sbp-checklist-table-wrap">
+        <table class="sbp-checklist-table">
+          <thead>
+            <tr><th>확인 항목</th><th>실제로 볼 자료</th><th>의미</th></tr>
+          </thead>
+          <tbody>
+            {SBP_INVESTOR_CHECKLIST.map((row) => (
+              <tr>
+                <td>{row.item}</td>
+                <td>{row.source}</td>
+                <td>{row.meaning}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="sbp-risk-list">
+        {SBP_RISKS.map((r) => (
+          <div class={`sbp-risk-card ${riskClass(r.severity)}`}>
+            <div>
+              <p class="sbp-risk-card__risk">{r.risk}</p>
+              <p class="sbp-risk-card__content">{r.content}</p>
+            </div>
+            <span class="sbp-risk-card__severity">{r.severity}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 섹션 8: 삼성 vs SK하이닉스 비교 ★ ──────── -->
+    <section class="content-section" aria-labelledby="compare-title">
+      <p class="sbp-eyebrow">경쟁 구도</p>
+      <h2 id="compare-title" class="sbp-section-title">삼성전자 vs SK하이닉스, 무엇이 다른가</h2>
+      <div class="sbp-compare-table-wrap">
+        <table class="sbp-compare-table">
+          <thead>
+            <tr><th>구분</th><th>삼성전자</th><th>SK하이닉스</th></tr>
+          </thead>
+          <tbody>
+            {SBP_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.category}</td>
+                <td>{row.samsung}</td>
+                <td>{row.skhynix}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="sbp-section-desc">이번 협력의 핵심은 단순히 삼성전자가 HBM 고객을 확보했다는 데 있지 않습니다. 브로드컴의 AI·네트워킹 반도체에 메모리, 로직 생산, 첨단 패키징을 묶어서 공급할 수 있다는 점이 차별화 요소입니다. 다만 HBM 실제 공급량과 고객 인증, 파운드리 양산 물량은 별도로 확인해야 하며, 파운드리·패키징 생태계에서는 TSMC와의 경쟁도 계속됩니다.</p>
+    </section>
+
+    <!-- ── FAQ ─────────────────────────────────────── -->
+    <section class="content-section" aria-labelledby="faq-title">
+      <p class="sbp-eyebrow">FAQ</p>
+      <h2 id="faq-title" class="sbp-section-title">자주 묻는 질문</h2>
+      <div class="sbp-faq">
+        {SBP_FAQ.map((f) => (
+          <details class="sbp-faq__item">
+            <summary class="sbp-faq__q">{f.q}</summary>
+            <p class="sbp-faq__a">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="삼성전자 브로드컴 협력 핵심 정리"
+      intro={[SBP_SEO_INTRO]}
+      inputPoints={inputPoints}
+      criteria={SBP_SEO_CRITERIA}
+      faq={SBP_FAQ.map((f) => ({ question: f.q, answer: f.a }))}
+      related={[
+        { href: "/reports/samsung-ds-bonus-calculation-guide/", label: "삼성전자 DS 성과급 계산 기준 가이드" },
+        { href: "/reports/samsung-bonus-rank-net-comparison-2026/", label: "삼성전자 성과급 직급별 실수령액 비교 2026" },
+        { href: "/reports/samsung-skhynix-800t-investment-comparison-2026/", label: "삼성전자·SK하이닉스 800조 투자 비교 리포트" },
+        { href: "/reports/hbm4-vs-hbm5-beneficiary-comparison/", label: "HBM4 vs HBM5 수혜 비교" },
+        { href: "/reports/semiconductor-etf-2026/", label: "국내·미국 반도체 ETF 비교 2026" },
+        { href: "/reports/semiconductor-value-chain/", label: "엔비디아는 왜 공장이 없을까? 반도체 산업 구조" },
+        { href: "/reports/skhynix-nvidia-partnership-2026/", label: "SK하이닉스·엔비디아 5,000억달러 협력 2026" },
+      ]}
+    />
+
+    <p class="sbp-sources">
+      출처: 삼성전자 공식 발표(Samsung Newsroom Korea·Samsung Global Newsroom), 로이터(Reuters) 보도 · 2,000억달러는 삼성전자 공식 발표상 예상 협력 규모이며, 확정 발주액이 아닙니다.
+    </p>
+
+  </main>
+</BaseLayout>
