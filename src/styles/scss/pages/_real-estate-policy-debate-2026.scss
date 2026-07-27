@@ -1,0 +1,481 @@
+.repd-page {
+  display: grid;
+  gap: 28px;
+
+  .repd-section-heading {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 18px;
+
+    p,
+    h2,
+    span {
+      margin: 0;
+    }
+
+    p {
+      font-size: 12px;
+      font-weight: 900;
+      color: #1a56db;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: clamp(20px, 3vw, 30px);
+      line-height: 1.25;
+      color: #111928;
+    }
+
+    span {
+      color: #4b5563;
+      line-height: 1.65;
+    }
+  }
+
+  .repd-status-card,
+  .repd-summary-card,
+  .repd-impact-card,
+  .repd-loan-card,
+  .repd-insight-card,
+  .repd-cta-card,
+  .repd-timeline li {
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(22, 30, 46, 0.06);
+    padding: 18px;
+  }
+
+  .repd-status-card {
+    display: grid;
+    gap: 8px;
+    background: #f8faff;
+
+    h2 {
+      margin: 0;
+      font-size: clamp(18px, 2.6vw, 24px);
+      color: #111928;
+    }
+
+    p {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.65;
+    }
+  }
+
+  .repd-status-badge {
+    width: fit-content;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #eaf1ff;
+    color: #1a56db;
+    font-weight: 900;
+    font-size: 13px;
+  }
+
+  .repd-summary-grid,
+  .repd-loan-grid,
+  .repd-cta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .repd-summary-card {
+    display: grid;
+    gap: 8px;
+    background: #f8faff;
+
+    span {
+      width: fit-content;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #eaf1ff;
+      color: #1a56db;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    strong {
+      font-size: 20px;
+      color: #111928;
+    }
+
+    p {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+  }
+
+  .repd-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+  }
+
+  .repd-area-table,
+  .repd-fact-table,
+  .repd-supply-table,
+  .repd-loan-table,
+  .repd-tax-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #f8faff;
+
+    caption {
+      caption-side: top;
+      text-align: left;
+      font-size: 12px;
+      color: #6b7280;
+      padding: 12px 14px 8px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e9f5;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead th {
+      font-weight: 900;
+      color: #374151;
+      background: #eef2fb;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  .repd-level-badge,
+  .repd-status-pill,
+  .repd-impact-direction {
+    display: inline-block;
+    width: fit-content;
+    margin-bottom: 8px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #f1f4fa;
+    color: #475569;
+    font-weight: 900;
+    font-size: 12px;
+  }
+
+  .repd-status-pill {
+    margin-bottom: 0;
+    background: #eef2fb;
+    color: #1f2937;
+    white-space: nowrap;
+  }
+
+  .repd-impact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .repd-impact-card {
+    display: grid;
+    gap: 8px;
+    background: #f8faff;
+
+    h3 {
+      margin: 0;
+      color: #111928;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    p,
+    small {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    small {
+      color: #6b7280;
+    }
+
+    &[data-impact="직접 확인 필요"] .repd-impact-direction {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    &[data-impact="간접 영향 가능"] .repd-impact-direction,
+    &[data-impact="판단 보류"] .repd-impact-direction {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    &[data-impact="영향 제한적 예상"] .repd-impact-direction {
+      background: #ecfdf5;
+      color: #047857;
+    }
+  }
+
+  .repd-pipeline {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+
+    li {
+      border: 1px solid #dde3f0;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      font-weight: 900;
+      background: #f8faff;
+      color: #111928;
+    }
+  }
+
+  .repd-insight-card p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.65;
+  }
+
+  .repd-insight-card + .repd-table-wrap,
+  .repd-loan-grid + .repd-table-wrap,
+  .repd-table-wrap + .repd-table-wrap {
+    margin-top: 14px;
+  }
+
+  .repd-loan-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .repd-loan-card {
+    h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      color: #111928;
+    }
+
+    ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 18px;
+      color: #4b5563;
+      line-height: 1.55;
+      font-size: 13px;
+    }
+  }
+
+  .repd-caution-text {
+    margin: 12px 0 0;
+    color: #92400e;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    padding: 12px 14px;
+    line-height: 1.6;
+    font-size: 13px;
+  }
+
+  .repd-tax-section .repd-caution-text {
+    margin: 0 0 14px;
+  }
+
+  .repd-frame-compare {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+
+    article {
+      border: 1px solid #dde3f0;
+      border-radius: 8px;
+      background: #f8faff;
+      padding: 16px;
+      display: grid;
+      gap: 6px;
+    }
+
+    span {
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    strong {
+      color: #111928;
+      font-size: 16px;
+    }
+  }
+
+  .repd-checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    counter-reset: repd-checklist;
+
+    li {
+      counter-increment: repd-checklist;
+      border: 1px solid #dde3f0;
+      border-radius: 8px;
+      background: #f8faff;
+      padding: 14px;
+      display: grid;
+      gap: 4px;
+
+      &::before {
+        content: counter(repd-checklist);
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: #eaf1ff;
+        color: #1a56db;
+        font-size: 12px;
+        font-weight: 900;
+      }
+    }
+
+    strong {
+      color: #111928;
+      font-size: 14px;
+    }
+
+    span {
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+  }
+
+  .repd-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    counter-reset: repd-timeline;
+
+    li {
+      counter-increment: repd-timeline;
+      display: grid;
+      gap: 6px;
+
+      &::before {
+        content: counter(repd-timeline);
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: #eaf1ff;
+        color: #1a56db;
+        font-size: 12px;
+        font-weight: 900;
+      }
+    }
+
+    strong {
+      color: #111928;
+      font-size: 14px;
+    }
+
+    span {
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+  }
+
+  .repd-cta-card {
+    display: grid;
+    gap: 6px;
+    background: #f8faff;
+    color: #111928;
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      border-color: #1a56db;
+      box-shadow: 0 4px 16px rgba(26, 86, 219, 0.1);
+    }
+
+    strong {
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.55;
+    }
+  }
+
+  .repd-source-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+
+    li {
+      border: 1px solid #dde3f0;
+      border-radius: 8px;
+      background: #f8faff;
+      padding: 14px;
+      display: grid;
+      gap: 4px;
+    }
+
+    a {
+      color: #1a56db;
+      font-weight: 900;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    span {
+      color: #4b5563;
+      line-height: 1.55;
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 820px) {
+    .repd-summary-grid,
+    .repd-impact-grid,
+    .repd-loan-grid,
+    .repd-cta-grid,
+    .repd-frame-compare,
+    .repd-checklist,
+    .repd-timeline {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .repd-pipeline {
+      grid-template-columns: 1fr;
+    }
+  }
+}

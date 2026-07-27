@@ -1,0 +1,448 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  REPD_META,
+  REPD_SUMMARY_CARDS,
+  REPD_POLICY_AREAS,
+  REPD_FACT_CHECKS,
+  REPD_AUDIENCE_IMPACTS,
+  REPD_SUPPLY_STAGES,
+  REPD_LOAN_GROUPS,
+  REPD_LOAN_TYPES,
+  REPD_LOAN_CASES,
+  REPD_TAX_EXAMPLES,
+  REPD_TAX_CATEGORIES,
+  REPD_POLICY_TIMELINE,
+  REPD_CHECKLIST,
+  REPD_FAQ,
+  REPD_RELATED_LINKS,
+  REPD_SOURCE_LINKS,
+} from "../../data/realEstatePolicyDebate2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${REPD_META.slug}/`;
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: REPD_META.title,
+    description: REPD_META.description,
+    dateModified: REPD_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+    keywords: [
+      "7·23 부동산정책",
+      "부동산정책 국민 대토론회",
+      "종부세 개편",
+      "실거주 1주택자",
+      "갈아타기 대출",
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: REPD_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: REPD_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={REPD_META.seoTitle}
+  description={REPD_META.seoDescription}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <main class="container page-shell report-page repd-page" data-report="real-estate-policy-debate-2026">
+    <CalculatorHero
+      eyebrow="부동산 정책 리포트"
+      title={REPD_META.title}
+      description="확정 대책이 아니라 공급·대출·세제 방향을 논의한 의견수렴 자리입니다. 발언 주체와 정책 상태를 나눠 대상별 확인 사항을 정리했습니다."
+      badges={["2026-07-23", "확정안 아님", "발언 주체 구분", "대상별 체크"]}
+    />
+
+    <InfoNotice
+      title="토론회 논의 단계 안내"
+      lines={[
+        REPD_META.dataNote,
+        "이 페이지는 매도·매수 판단을 권하는 자료가 아니라, 후속 발표 때 확인할 항목을 정리한 참고 자료입니다.",
+      ]}
+    />
+
+    <section class="content-section repd-status-section" aria-labelledby="repd-status-title">
+      <article class="repd-status-card">
+        <span class="repd-status-badge">{REPD_META.policyStatusLabel}</span>
+        <h2 id="repd-status-title">이번 토론회는 확정 대책 발표가 아닙니다</h2>
+        <p>
+          토론회 개최와 의견수렴 사실만 확정됐습니다. 종부세 과세기준, 양도소득세 장기보유특별공제, 대출 한도, 재건축 이주비 대출 등 구체적인 제도 변경은 후속 정부 발표와 법령 개정에서 확인해야 합니다.
+        </p>
+      </article>
+    </section>
+
+    <section class="content-section repd-summary-section" aria-labelledby="repd-summary-title">
+      <div class="repd-section-heading">
+        <p>세 줄 요약</p>
+        <h2 id="repd-summary-title">공급·대출·세금, 세 축으로 보면 이해가 쉽습니다</h2>
+      </div>
+      <div class="repd-summary-grid">
+        {REPD_SUMMARY_CARDS.map((card) => (
+          <article class="repd-summary-card" data-topic={card.id}>
+            <span>{card.title}</span>
+            <strong>{card.value}</strong>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section repd-fact-section" aria-labelledby="repd-fact-title">
+      <div class="repd-section-heading">
+        <p>팩트체크</p>
+        <h2 id="repd-fact-title">무엇이 확정됐고, 무엇이 아직 제안일까</h2>
+        <span>토론회 참석자의 발언은 정부의 확정 정책과 다릅니다.</span>
+      </div>
+      <div class="table-wrap repd-table-wrap">
+        <table class="repd-fact-table">
+          <caption>확정·제안·해석 구분 표</caption>
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>현재 판단</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPD_FACT_CHECKS.map((item) => (
+              <tr>
+                <td><strong>{item.item}</strong></td>
+                <td><span class="repd-status-pill">{item.judgment}</span></td>
+                <td>{item.detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="repd-caution-text">
+        구체적인 세율, 공제금액, 대출 한도 또는 시행일이 포함된 정부 발표가 나오기 전까지는 현재 제도가 그대로 적용됩니다.
+      </p>
+    </section>
+
+    <section class="content-section repd-area-section" aria-labelledby="repd-area-title">
+      <div class="repd-section-heading">
+        <p>분야별 논의</p>
+        <h2 id="repd-area-title">분야별 핵심 논의 한눈에 보기</h2>
+        <span>모든 항목은 확정안이 아니라 토론회·보도 기준의 논의 방향입니다.</span>
+      </div>
+      <div class="table-wrap repd-table-wrap">
+        <table class="repd-area-table">
+          <caption>부동산정책 국민 대토론회 분야별 핵심 논의 표</caption>
+          <thead>
+            <tr>
+              <th>분야</th>
+              <th>토론회에서 나온 의견</th>
+              <th>발언 주체</th>
+              <th>상태</th>
+              <th>읽는 법</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPD_POLICY_AREAS.map((item) => (
+              <tr>
+                <td><strong>{item.area}</strong></td>
+                <td>{item.opinion}</td>
+                <td>{item.speaker}</td>
+                <td><span class="repd-status-pill">{item.status}</span></td>
+                <td>{item.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section repd-impact-section" aria-labelledby="repd-impact-title">
+      <div class="repd-section-heading">
+        <p>내 유형 찾기</p>
+        <h2 id="repd-impact-title">나는 어디에 해당하나 — 대상별 영향 진단</h2>
+        <span>영향은 확정 결과가 아니라 후속 발표 때 확인할 방향입니다.</span>
+      </div>
+      <div class="repd-impact-grid">
+        {REPD_AUDIENCE_IMPACTS.map((item) => (
+          <article class="repd-impact-card" data-impact={item.impact}>
+            <span class="repd-impact-direction">{item.impact}</span>
+            <h3>{item.audience}</h3>
+            <p>{item.summary}</p>
+            <small>{item.checkPoint}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section repd-supply-section" aria-labelledby="repd-supply-title">
+      <div class="repd-section-heading">
+        <p>공급</p>
+        <h2 id="repd-supply-title">공급은 새 계획보다 실제 착공·입주가 중요합니다</h2>
+      </div>
+      <ol class="repd-pipeline" aria-label="주택 공급 파이프라인">
+        {["후보지 발표", "지구 지정", "인허가", "착공", "분양·임대 모집", "준공·입주"].map((step) => (
+          <li>{step}</li>
+        ))}
+      </ol>
+      <div class="repd-insight-card">
+        <p>
+          공급 대책의 규모만 비교하면 실제 시장 영향을 과대평가할 수 있습니다. 정책 발표 물량 중 인허가, 착공, 분양 단계까지 진행된 물량이 얼마나 되는지를 함께 확인해야 합니다.
+        </p>
+      </div>
+      <div class="table-wrap repd-table-wrap">
+        <table class="repd-supply-table">
+          <caption>공급 발표 단계별 실제 입주와의 거리</caption>
+          <thead>
+            <tr>
+              <th>발표 단계</th>
+              <th>실제 입주와의 거리</th>
+              <th>확인해야 할 내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPD_SUPPLY_STAGES.map((item) => (
+              <tr>
+                <td><strong>{item.stage}</strong></td>
+                <td>{item.distance}</td>
+                <td>{item.checkPoint}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section repd-loan-section" aria-labelledby="repd-loan-title">
+      <div class="repd-section-heading">
+        <p>대출</p>
+        <h2 id="repd-loan-title">실수요는 보완, 우회 대출은 차단하는 방향입니다</h2>
+      </div>
+      <div class="repd-loan-grid">
+        {REPD_LOAN_GROUPS.map((group) => (
+          <article class="repd-loan-card">
+            <h3>{group.title}</h3>
+            <ul>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+      <div class="table-wrap repd-table-wrap">
+        <table class="repd-loan-table">
+          <caption>대출 완화 표현을 나눠 읽는 기준</caption>
+          <thead>
+            <tr>
+              <th>유형</th>
+              <th>의미</th>
+              <th>확인할 항목</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPD_LOAN_TYPES.map((item) => (
+              <tr>
+                <td><strong>{item.type}</strong></td>
+                <td>{item.meaning}</td>
+                <td>{item.checkPoint}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap repd-table-wrap">
+        <table class="repd-loan-table">
+          <caption>갈아타기·이주비 상황별 확인 규정</caption>
+          <thead>
+            <tr>
+              <th>상황</th>
+              <th>확인할 규정</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPD_LOAN_CASES.map((item) => (
+              <tr>
+                <td><strong>{item.situation}</strong></td>
+                <td>{item.rule}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="repd-caution-text">
+        갈아타기나 재건축 이주비 대출을 일부 보완하더라도 일반적인 투자 목적 추가 매수 대출까지 완화된다고 볼 수는 없습니다.
+      </p>
+    </section>
+
+    <section class="content-section repd-tax-section" aria-labelledby="repd-tax-title">
+      <div class="repd-section-heading">
+        <p>세금</p>
+        <h2 id="repd-tax-title">몇 채인가보다 얼마짜리인가, 그리고 실제 거주하는가</h2>
+        <span>현행 보유세도 공시가격과 과세표준을 기준으로 계산합니다. 다만 주택 수에 따라 공제, 세율, 중과 여부와 적용 조건이 달라지는 구조가 포함돼 있습니다.</span>
+      </div>
+      <div class="repd-frame-compare">
+        <article>
+          <span>기존 프레임</span>
+          <strong>1주택인가, 2주택인가</strong>
+        </article>
+        <article>
+          <span>논의 프레임</span>
+          <strong>전체 주택가액 + 실제 거주 여부</strong>
+        </article>
+      </div>
+      <p class="repd-caution-text">
+        토론회에서 제시된 방향은 주택 수 구분의 비중을 낮추고, 전체 보유가액과 실거주 여부를 더 중요하게 반영하자는 제안으로 이해하는 것이 정확합니다. 아래 표는 구조를 설명하기 위한 가상 사례이며 실제 세액 계산이 아닙니다.
+      </p>
+      <div class="table-wrap repd-table-wrap">
+        <table class="repd-tax-table">
+          <caption>보유 형태별 세금 개편 논의 체크 포인트</caption>
+          <thead>
+            <tr>
+              <th>보유 형태</th>
+              <th>현재 제도에서의 쟁점</th>
+              <th>개편 논의 시 확인할 점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPD_TAX_EXAMPLES.map((item) => (
+              <tr>
+                <td><strong>{item.holdingType}</strong></td>
+                <td>{item.currentIssue}</td>
+                <td>{item.reviewPoint}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap repd-table-wrap">
+        <table class="repd-tax-table">
+          <caption>세목별로 구분해서 확인할 사항</caption>
+          <thead>
+            <tr>
+              <th>세목</th>
+              <th>과세 시점</th>
+              <th>이번 논의에서 볼 부분</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPD_TAX_CATEGORIES.map((item) => (
+              <tr>
+                <td><strong>{item.tax}</strong></td>
+                <td>{item.timing}</td>
+                <td>{item.checkPoint}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section repd-timeline-section" aria-labelledby="repd-timeline-title">
+      <div class="repd-section-heading">
+        <p>진행 단계</p>
+        <h2 id="repd-timeline-title">토론회 이후 정책은 이렇게 확정됩니다</h2>
+        <span>법률 개정이 필요한 항목은 정부 발표가 나오더라도 즉시 시행되지 않을 수 있습니다.</span>
+      </div>
+      <ol class="repd-timeline">
+        {REPD_POLICY_TIMELINE.map((item) => (
+          <li>
+            <strong>{item.stage}</strong>
+            <span>{item.action}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section repd-checklist-section" aria-labelledby="repd-checklist-title">
+      <div class="repd-section-heading">
+        <p>후속 발표 확인</p>
+        <h2 id="repd-checklist-title">확정 발표 때 체크할 10가지</h2>
+      </div>
+      <ol class="repd-checklist">
+        {REPD_CHECKLIST.map((item) => (
+          <li>
+            <strong>{item.label}</strong>
+            <span>{item.detail}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section repd-cta-section" aria-labelledby="repd-cta-title">
+      <div class="repd-section-heading">
+        <p>현재 기준 계산</p>
+        <h2 id="repd-cta-title">현재 기준 세금은 계산기로 먼저 확인하세요</h2>
+        <span>개편안이 확정되기 전까지는 현재 제도가 그대로 적용됩니다.</span>
+      </div>
+      <div class="repd-cta-grid">
+        {REPD_RELATED_LINKS.slice(0, 3).map((link) => (
+          <a class="repd-cta-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <p>{link.desc}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section repd-source-section" aria-labelledby="repd-source-title">
+      <div class="repd-section-heading">
+        <p>출처</p>
+        <h2 id="repd-source-title">확인한 자료</h2>
+      </div>
+      <ul class="repd-source-list">
+        {REPD_SOURCE_LINKS.map((source) => (
+          <li>
+            <a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a>
+            <span>{source.note}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <SeoContent
+      introTitle="7·23 부동산정책 국민 대토론회, 어떻게 읽어야 할까"
+      intro={[
+        "2026년 7월 23일 부동산정책 국민 대토론회는 세금이나 대출 규제가 곧바로 바뀌었다는 발표가 아니라, 정부가 공급·금융·세제 분야의 의견을 모아 향후 정책 방향을 논의한 자리입니다. 그래서 이 리포트의 핵심은 확정된 세율이나 대출 한도를 찾는 것이 아니라, 후속 발표 때 어떤 항목을 확인해야 하는지 정리하는 데 있습니다.",
+        "토론회 내용은 크게 공급, 대출, 세금 세 축으로 나눠 읽는 편이 좋습니다. 공급은 인허가와 착공, 준공이 실제 입주로 이어지는지에 초점이 있고, 대출은 실수요성 보완과 우회 대출 차단이 함께 논의됐습니다. 세금은 주택 수만 보는 방식보다 전체 보유가액과 실제 거주 여부를 함께 보자는 흐름으로 정리할 수 있습니다.",
+        "사용자는 자신의 유형을 먼저 확인하는 것이 중요합니다. 일반적인 실거주 1주택자, 갈아타기 수요, 비거주 1주택자, 수도권 다주택자, 재건축 보유자는 같은 정책 논의를 보더라도 확인해야 할 항목이 다릅니다. 예를 들어 갈아타기 수요는 처분조건부 대출과 경과규정이 중요하고, 비거주 장기보유자는 장기보유특별공제 조정 여부가 더 중요합니다.",
+        "이 페이지는 매도나 매수를 권하는 자료가 아닙니다. 세율, 공제금액, 대출 한도, 시행일, 기존 계약에 대한 경과규정은 후속 정부 발표와 법령 개정에서 달라질 수 있습니다. 정책 발표 전에는 현재 제도 기준으로 보유세·양도세·취득세를 먼저 계산하고, 확정안이 나오면 바뀐 항목만 다시 비교하는 방식이 가장 안전합니다.",
+      ]}
+      inputPoints={[
+        "이번 토론회가 확정안인지 논의 단계인지 구분할 수 있습니다.",
+        "공급·대출·세금 쟁점을 한 화면에서 나눠 볼 수 있습니다.",
+        "실거주 1주택자, 다주택자, 갈아타기 수요별 체크 포인트를 확인할 수 있습니다.",
+      ]}
+      criteria={[
+        "2026년 7월 23일 부동산정책 국민 대토론회와 관련 공식·언론 보도를 기준으로 정리했습니다.",
+        "모든 영향 방향은 확정값이 아니라 토론회 논의 단계의 참고 해석입니다.",
+        "세금 계산은 현행 제도 기준 계산기를 먼저 이용하고, 후속 발표 이후 변경 사항을 반영해야 합니다.",
+      ]}
+      faq={REPD_FAQ}
+      related={REPD_RELATED_LINKS.map((link) => ({ href: link.href, label: link.label }))}
+    />
+  </main>
+</BaseLayout>
