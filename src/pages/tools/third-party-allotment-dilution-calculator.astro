@@ -1,0 +1,357 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  TPD_CASE_SUMMARY,
+  TPD_FAQ,
+  TPD_META,
+  TPD_PRESETS,
+  TPD_RELATED_LINKS,
+  TPD_RESULT_CARDS,
+  TPD_SIGNAL_GROUPS,
+  TPD_SOURCE_LINKS,
+  TPD_STRUCTURE_COMPARISON,
+} from "../../data/thirdPartyAllotmentDilution";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const defaultPreset = TPD_PRESETS[0];
+const config = {
+  DEFAULT_PRESET: defaultPreset,
+  PRESETS: TPD_PRESETS,
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: TPD_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Web",
+      inLanguage: "ko-KR",
+      url: `https://bigyocalc.com/tools/${TPD_META.slug}/`,
+      description: TPD_META.seoDescription,
+      dateModified: TPD_META.updatedAt,
+      publisher: {
+        "@type": "Organization",
+        name: "비교계산소",
+        url: "https://bigyocalc.com",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: TPD_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "홈",
+          item: "https://bigyocalc.com/",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "계산기",
+          item: "https://bigyocalc.com/tools/",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: TPD_META.title,
+          item: `https://bigyocalc.com/tools/${TPD_META.slug}/`,
+        },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={TPD_META.seoTitle}
+  description={TPD_META.seoDescription}
+  ogImage="/og/tools/third-party-allotment-dilution-calculator.png"
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="third-party-allotment-dilution" pageClass="tpd-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow={TPD_META.eyebrow}
+        title={TPD_META.h1}
+        description={TPD_META.description}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="tpdResetBtn" copyId="tpdCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="tpd-inputs">
+        <article class="panel tpd-input-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">입력</p>
+              <h2 class="panel__title">신주 발행 조건</h2>
+            </div>
+            <p class="panel-heading__summary">
+              보도·공시 수치를 넣으면 신주 발행가와 지분희석 효과를 즉시 계산합니다.
+            </p>
+          </div>
+
+          <div class="tpd-preset-row" aria-label="빠른 예시">
+            {TPD_PRESETS.map((preset) => (
+              <button type="button" class="tpd-preset-chip" data-preset={preset.id}>
+                {preset.label}
+              </button>
+            ))}
+          </div>
+
+          <div class="form-grid tpd-form-grid">
+            <label class="field">
+              <span>기존 발행주식 총수</span>
+              <input id="tpd-existing-shares" type="number" inputmode="numeric" value={defaultPreset.existingShares} min="1" />
+            </label>
+            <label class="field">
+              <span>기존 자사주 수</span>
+              <input id="tpd-treasury-shares" type="number" inputmode="numeric" value={defaultPreset.treasuryShares} min="0" />
+            </label>
+            <label class="field">
+              <span>신주 발행 수</span>
+              <input id="tpd-new-shares" type="number" inputmode="numeric" value={defaultPreset.newShares} min="0" />
+            </label>
+            <label class="field">
+              <span>투자금액</span>
+              <div class="tpd-money-field">
+                <input id="tpd-investment-amount" type="number" inputmode="decimal" value="14810" min="0" step="1" />
+                <select id="tpd-investment-unit" aria-label="투자금액 단위">
+                  <option value="won">원</option>
+                  <option value="man">만원</option>
+                  <option value="eok" selected>억원</option>
+                  <option value="jo">조원</option>
+                </select>
+              </div>
+            </label>
+            <label class="field">
+              <span>현재 주가</span>
+              <input id="tpd-current-price" type="number" inputmode="numeric" value={defaultPreset.currentPrice} min="0" />
+            </label>
+            <label class="field">
+              <span>내 보유 주식 수</span>
+              <input id="tpd-owned-shares" type="number" inputmode="decimal" value={defaultPreset.ownedShares} min="0" step="1" />
+            </label>
+            <label class="field">
+              <span>자사주 소각 수</span>
+              <input id="tpd-cancelled-shares" type="number" inputmode="numeric" value={defaultPreset.treasurySharesCancelled} min="0" />
+            </label>
+            <label class="field tpd-field-wide">
+              <span>신규 투자자 이름</span>
+              <input id="tpd-investor-name" type="text" value={defaultPreset.investorName} />
+            </label>
+          </div>
+        </article>
+
+        <InfoNotice
+          title="계산 전 확인"
+          lines={[
+            "이 페이지는 보도·공시 숫자를 입력해 보는 단순 계산 도구입니다.",
+            "최종 발행 조건, 기준일, 보호예수, 거래 종결 조건은 실제 공시에서 확인해야 합니다.",
+            "계산 결과는 투자 권유가 아니며 세금·수수료·주가 변동은 별도로 고려해야 합니다.",
+          ]}
+        />
+      </div>
+    </Fragment>
+
+    <article class="panel result-priority-panel tpd-result-panel" id="tpd-results" aria-live="polite">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 결과</p>
+          <h2 class="panel__title">신규 투자자 지분율과 기존 주주의 희석 효과</h2>
+        </div>
+      </div>
+
+      <div class="tpd-hero-result" data-status="neutral">
+        <span class="tpd-result-badge" data-result="resultBadge">단순 계산</span>
+        <strong class="tpd-hero-percent" data-result="dilutionRateHero">-</strong>
+        <p class="tpd-hero-sentence" data-result="resultSentence">값을 입력하면 희석률을 계산합니다.</p>
+      </div>
+
+      <div class="tpd-stat-grid">
+        {TPD_RESULT_CARDS.map((card) => (
+          <article class="tpd-stat-card" data-card={card.key}>
+            <div class="tpd-stat-card__top">
+              <p class="tpd-stat-label">{card.label}</p>
+              <span>{card.badge}</span>
+            </div>
+            <strong class="tpd-stat-value" data-result={card.key}>-</strong>
+            <p>{card.description}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="tpd-assessment" aria-label="발행가 해석">
+        <span>발행가 해석</span>
+        <p data-result="discountAssessment">현재 주가를 입력하면 발행가 적정성 참고 문구가 표시됩니다.</p>
+        <small>할인율만으로 유상증자의 유불리를 판단할 수 없으며, 기준 주가 산정일·보호예수·투자자 성격·자금 사용처를 함께 확인해야 합니다.</small>
+      </div>
+    </article>
+
+    <section class="content-section tpd-ownership-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">내 지분 변화</p>
+        <h2>보유 주식 기준으로 보면 이렇게 바뀝니다</h2>
+      </div>
+      <div class="tpd-ownership-grid">
+        <article>
+          <span>증자 전 지분율</span>
+          <strong data-result="ownershipBefore">-</strong>
+        </article>
+        <article>
+          <span>증자 후 지분율</span>
+          <strong data-result="ownershipAfter">-</strong>
+        </article>
+        <article class="tpd-ownership-comment">
+          <span>해석</span>
+          <p data-result="ownershipComment">보유 주식 수를 입력하면 개인 기준 변화가 표시됩니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">구조 비교</p>
+        <h2>유상증자·구주매각·지분교환은 결과가 다릅니다</h2>
+      </div>
+      <div class="tpd-structure-grid">
+        {TPD_STRUCTURE_COMPARISON.map((item) => (
+          <article class="tpd-structure-card">
+            <h3>{item.title}</h3>
+            <dl>
+              <div>
+                <dt>회사 현금</dt>
+                <dd>{item.capital}</dd>
+              </div>
+              <div>
+                <dt>주식 수</dt>
+                <dd>{item.shares}</dd>
+              </div>
+              <div>
+                <dt>희석</dt>
+                <dd>{item.dilution}</dd>
+              </div>
+            </dl>
+            <p>{item.point}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">해석 프레임</p>
+        <h2>호재와 희석을 같이 봐야 합니다</h2>
+      </div>
+      <div class="tpd-signal-grid">
+        {TPD_SIGNAL_GROUPS.map((group) => (
+          <article class="tpd-signal-card">
+            <h3>{group.title}</h3>
+            <ul>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">네이버·엔비디아 예시</p>
+        <h2>엔비디아는 네이버 지분을 얼마나 취득할까</h2>
+      </div>
+      <div class="tpd-case-grid">
+        {TPD_CASE_SUMMARY.map((item) => (
+          <article class="tpd-case-card">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+            <span>{item.note}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <InfoNotice
+      title="투자 판단 전 확인"
+      lines={[
+        "전략적 투자 뉴스는 기대감과 희석 효과가 동시에 존재합니다.",
+        "희석률이 낮아 보여도 발행가, 사용처, 종결 조건, 향후 실적 기여 여부를 함께 봐야 합니다.",
+        "보도 수치는 이후 정정·확정 공시로 바뀔 수 있으므로 최신 공시와 회사 발표를 우선 확인하세요.",
+      ]}
+    />
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처</p>
+        <h2>기본값에 참고한 공개 자료</h2>
+      </div>
+      <p class="tpd-source-note">자료 기준일: 2026년 7월 27일 · 최종 업데이트: 2026년 7월 27일</p>
+      <div class="tpd-source-list">
+        {TPD_SOURCE_LINKS.map((source) => (
+          <a href={source.href} target="_blank" rel="noreferrer">{source.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="제3자배정 유상증자에서 가장 먼저 볼 숫자"
+        intro={[
+          "제3자배정 유상증자는 회사가 특정 투자자에게 신주를 발행하고 자금을 받는 구조입니다. 회사에는 현금이 들어오지만 총주식수가 늘어나므로 기존 주주의 지분율은 낮아집니다. 그래서 투자 뉴스가 나왔을 때는 투자금 규모만 보는 것이 아니라 신주 수, 발행가, 증자 후 총주식수, 기존 주주 희석률을 함께 봐야 합니다.",
+          "네이버와 엔비디아 투자 보도처럼 전략적 투자자가 등장하면 시장은 협력 효과와 성장 기대를 먼저 반영하기 쉽습니다. 하지만 기존 주주 입장에서는 새로 발행되는 주식이 어느 정도인지, 발행가가 현재 주가 대비 할인인지 할증인지, 회사가 받은 자금이 실제 기업가치 상승으로 이어질 가능성이 있는지 분리해 볼 필요가 있습니다.",
+          "이 계산기는 기존 발행주식 총수, 자사주 수, 신주 수를 구분해 신규 투자자 지분율과 기존 유통주주의 지분율 감소를 계산합니다. 투자금액을 신주 수로 나누어 신주 발행가를 추정하고, 현재 주가를 넣으면 할인율 또는 할증률도 확인할 수 있습니다. 보유 주식 수를 입력하면 내 지분율이 증자 전후로 어떻게 달라지는지도 함께 보여줍니다.",
+          "지분율 감소 보완 기업가치 상승률은 이 페이지의 핵심 보조 지표입니다. 기존 주주 지분율 감소만을 기준으로 같은 경제적 몫을 유지하려면 전체 기업가치가 몇 % 올라야 하는지 보여줍니다. 회사에 들어오는 투자금, 향후 사업가치, 실제 주가 변동까지 반영한 결론은 아니므로 주가 목표처럼 해석하면 안 됩니다.",
+          "다만 이 계산기는 최종 공시를 대체하지 않습니다. 실제 거래에는 기준일, 발행가 산정 방식, 보호예수, 계약 해제 조건, 외국인 투자 규제, 세금과 수수료가 붙을 수 있습니다. 따라서 결과는 투자 결정을 위한 결론이 아니라 뉴스 구조를 숫자로 이해하기 위한 출발점으로 보는 것이 안전합니다.",
+        ]}
+        inputPoints={[
+          "신주 발행가와 신규 투자자 지분율을 먼저 확인합니다.",
+          "기존 주주의 지분율 변화와 현재가 대비 발행가 할인·할증을 비교합니다.",
+          "투자금 유입 후 발행가 기준 프리머니·포스트머니와 현재가 기준 시가총액을 함께 봅니다.",
+        ]}
+        criteria={[
+          "기존 유통주식 수 = 기존 발행주식 총수 - 기존 자사주 수",
+          "거래 후 발행주식 총수 = 기존 발행주식 총수 + 신주 수 - 자사주 소각 수",
+          "거래 후 자사주 수 = 기존 자사주 수 - 자사주 소각 수",
+          "거래 후 유통주식 수 = 기존 유통주식 수 + 신주 수",
+          "신주 발행가 = 투자금액 / 신주 수",
+          "신규 투자자 지분율 = 신주 수 / 거래 후 유통주식 수",
+          "기존 주주 지분율 감소 = 1 - 기존 유통주식 수 / 거래 후 유통주식 수",
+          "지분율 감소 보완 기업가치 상승률 = 1 / 기존 주주 잔존 지분율 - 1",
+        ]}
+        faq={TPD_FAQ}
+        related={TPD_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="tpdConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/third-party-allotment-dilution-calculator.js")}></script>
+</BaseLayout>

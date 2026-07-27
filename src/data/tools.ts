@@ -70,6 +70,19 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "third-party-allotment-dilution-calculator",
+    title: "제3자배정 유상증자 지분희석 계산기",
+    description: "기존 발행주식수, 신주 수, 투자금액, 현재 주가를 넣어 신주 발행가·투자자 지분율·기존 주주 희석률·희석 상쇄 필요 상승률을 계산합니다.",
+    order: 0,
+    eyebrow: "유상증자 희석",
+    category: "투자·재테크",
+    badges: ["신규", "투자", "지분희석"],
+    previewStats: [
+      { label: "네이버 예시 희석률", value: "약 4.5%" },
+      { label: "상쇄 필요 상승률", value: "약 4.7%" },
+    ],
+  },
+  {
     slug: "aircon-electricity-cost",
     title: "에어컨 전기요금 계산기",
     description: "에어컨 소비전력·사용 시간으로 월 전기요금 추가분과 누진 구간을 계산합니다. 인버터 보정, 여름 완화 구간 자동 적용.",
