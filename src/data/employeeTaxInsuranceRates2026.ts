@@ -185,6 +185,11 @@ export const EMPLOYEE_TAX_INSURANCE_FAQ: PayrollFaq[] = [
     answer:
       "부양가족 수, 자녀 수, 비과세 처리, 회사의 간이세액표 선택률 등에 따라 월 원천징수액이 달라질 수 있습니다.",
   },
+  {
+    question: "장기요양보험료는 왜 따로 계산되나요?",
+    answer:
+      "장기요양보험료는 월급에 직접 요율을 곱하지 않고, 먼저 계산된 건강보험료에 13.14%를 다시 곱하는 방식입니다. 건강보험료가 오르면 장기요양보험료도 함께 오르는 구조입니다.",
+  },
 ];
 
 export const EMPLOYEE_TAX_INSURANCE_RELATED = [
