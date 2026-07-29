@@ -1,0 +1,236 @@
+.shep-page {
+  --shep-ink: #172033;
+  --shep-muted: #667085;
+  --shep-line: #d8e0ea;
+  --shep-primary: #1a56db;
+  --shep-warn-bg: #fffaeb;
+  --shep-warn-border: #f0b429;
+  --shep-warn-ink: #92400e;
+
+  .shep-kpi-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .shep-kpi-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--shep-line);
+    border-radius: 8px;
+    background: #fff;
+
+    strong {
+      color: var(--shep-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      color: var(--shep-ink);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    small {
+      color: var(--shep-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    &--highlight {
+      border-color: var(--shep-primary);
+
+      p { color: var(--shep-primary); }
+    }
+  }
+
+  .shep-table-wrap {
+    overflow-x: auto;
+  }
+
+  .shep-quarter-table,
+  .shep-ps-structure-table,
+  .shep-scenario-table,
+  .shep-payout-variable-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--shep-line);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--shep-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    td {
+      color: var(--shep-ink);
+    }
+  }
+
+  .shep-multiple-card {
+    display: grid;
+    gap: 8px;
+    padding: 20px;
+    border: 1px solid var(--shep-primary);
+    border-radius: 8px;
+    background: #f5f7fb;
+    text-align: center;
+
+    strong {
+      font-size: 32px;
+      color: var(--shep-primary);
+    }
+
+    small {
+      color: var(--shep-muted);
+      font-size: 13px;
+    }
+  }
+
+  .shep-consensus-card {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid var(--shep-line);
+    border-radius: 8px;
+    background: #fff;
+
+    p {
+      margin: 0;
+      color: var(--shep-ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  }
+
+  .shep-scenario-detail {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border: 1px dashed var(--shep-line);
+    border-radius: 8px;
+
+    summary {
+      cursor: pointer;
+      color: var(--shep-primary);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    &__caption {
+      margin: 10px 0 0;
+      color: var(--shep-muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+  }
+
+  .shep-payout-risk-box {
+    padding: 16px;
+    border: 1px solid var(--shep-warn-border);
+    border-radius: 8px;
+    background: var(--shep-warn-bg);
+    color: var(--shep-warn-ink);
+
+    &__status {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+  }
+
+  .shep-cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border: 1px solid var(--shep-primary);
+      border-radius: 8px;
+      color: var(--shep-primary);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.16s, color 0.16s;
+
+      &:hover {
+        background: var(--shep-primary);
+        color: #fff;
+      }
+    }
+  }
+
+  .shep-checklist {
+    list-style: none;
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+
+    &__item {
+      padding: 10px 14px;
+      border: 1px solid var(--shep-line);
+      border-radius: 8px;
+      color: var(--shep-ink);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+
+  .shep-update-log {
+    list-style: none;
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+
+    &__item {
+      color: var(--shep-muted);
+
+      &[data-status="완료"] {
+        color: var(--shep-ink);
+        font-weight: 700;
+      }
+    }
+  }
+
+  @media (max-width: 900px) {
+    .shep-kpi-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 480px) {
+    .shep-kpi-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --shep-warn-bg: #3a2e10;
+    --shep-warn-ink: #fbbf24;
+  }
+}

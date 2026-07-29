@@ -1,0 +1,337 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  SHEP_META,
+  SHEP_Q1,
+  SHEP_Q2,
+  SHEP_Q2_GROWTH,
+  SHEP_NET_PROFIT_NOTE,
+  SHEP_H1,
+  SHEP_H1_VS_FY2025_MULTIPLE,
+  SHEP_FY2025_OPERATING_PROFIT,
+  SHEP_CONSENSUS,
+  SHEP_CONSENSUS_GAP,
+  SHEP_PS_BASELINE,
+  SHEP_PS_SCENARIO_RESULTS,
+  SHEP_PAYOUT_RISK,
+  SHEP_PAYOUT_VARIABLES,
+  SHEP_CHECKPOINTS,
+  SHEP_FAQ,
+  SHEP_SEO_INTRO,
+  SHEP_SEO_CRITERIA,
+  SHEP_RELATED_LINKS,
+  SHEP_UPDATE_LOG,
+} from "../../data/skHynixEarningsPsOutlook2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SHEP_META.slug}/`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SHEP_META.title,
+    description: SHEP_META.seoDescription,
+    dateModified: SHEP_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SHEP_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SHEP_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={SHEP_META.seoTitle} description={SHEP_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page shep-page" data-report="sk-hynix-earnings-ps-outlook-2026">
+    <CalculatorHero
+      eyebrow="실적 발표 시즌"
+      title={SHEP_META.title}
+      description={SHEP_META.description}
+    />
+
+    <div class="shep-kpi-grid">
+      <article class="shep-kpi-card">
+        <strong>2분기 매출</strong>
+        <p>{SHEP_Q2.revenue}조원</p>
+        <small>전년 동기 대비 +{SHEP_Q2_GROWTH.yoyRevenue}%</small>
+      </article>
+      <article class="shep-kpi-card">
+        <strong>2분기 영업이익</strong>
+        <p>{SHEP_Q2.operatingProfit}조원</p>
+        <small>전년 동기 대비 +{SHEP_Q2_GROWTH.yoyOperatingProfit}%</small>
+      </article>
+      <article class="shep-kpi-card shep-kpi-card--highlight">
+        <strong>상반기 영업이익</strong>
+        <p>{SHEP_H1.operatingProfit.toFixed(2)}조원</p>
+        <small>2025년 연간의 약 {SHEP_H1_VS_FY2025_MULTIPLE.toFixed(2)}배</small>
+      </article>
+      <article class="shep-kpi-card">
+        <strong>영업이익률</strong>
+        <p>{SHEP_Q2.operatingMargin}%</p>
+        <small>분기 기준 역대 최고 수준</small>
+      </article>
+    </div>
+
+    <InfoNotice
+      title="데이터 기준 안내 (중요)"
+      lines={[
+        SHEP_META.dataNote,
+        "PS 지급방식(현금·자사주 비율)은 2026년 7월 기준 노사 교섭 쟁점으로 진행 중이며 확정되지 않았습니다.",
+      ]}
+    />
+
+    <!-- 섹션 1: 2분기 실적 한눈에 보기 -->
+    <section class="op-section">
+      <h2>2분기 실적 한눈에 보기</h2>
+      <div class="shep-table-wrap">
+        <table class="shep-quarter-table">
+          <thead>
+            <tr><th>항목</th><th>2026 Q2</th><th>전분기 대비</th><th>전년 동기 대비</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>매출</td>
+              <td>{SHEP_Q2.revenue}조원</td>
+              <td>+{SHEP_Q2_GROWTH.qoqRevenue}%</td>
+              <td>+{SHEP_Q2_GROWTH.yoyRevenue}%</td>
+            </tr>
+            <tr>
+              <td>영업이익</td>
+              <td>{SHEP_Q2.operatingProfit}조원</td>
+              <td>+{SHEP_Q2_GROWTH.qoqOperatingProfit}%</td>
+              <td>+{SHEP_Q2_GROWTH.yoyOperatingProfit}%</td>
+            </tr>
+            <tr>
+              <td>영업이익률</td>
+              <td>{SHEP_Q2.operatingMargin}%</td>
+              <td>+{SHEP_Q2_GROWTH.qoqMarginPointDiff}%p</td>
+              <td>+{SHEP_Q2_GROWTH.yoyMarginPointDiff}%p</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">
+        참고(1분기 실적): 매출 {SHEP_Q1.revenue}조원, 영업이익 {SHEP_Q1.operatingProfit}조원, 영업이익률 {SHEP_Q1.operatingMargin}% —
+        분기 기준 사상 최대 기록을 4분기 연속 경신 중입니다.
+      </p>
+      <p class="op-message">
+        <small>{SHEP_NET_PROFIT_NOTE.label}. {SHEP_NET_PROFIT_NOTE.caption}</small>
+      </p>
+    </section>
+
+    <!-- 섹션 2: 상반기 vs 작년 연간 -->
+    <section class="op-section">
+      <h2>상반기 실적은 작년 연간의 몇 배인가</h2>
+      <div class="shep-multiple-card">
+        <small>2026년 상반기 영업이익 ÷ 2025년 연간 영업이익</small>
+        <strong>약 {SHEP_H1_VS_FY2025_MULTIPLE.toFixed(2)}배</strong>
+        <small>{SHEP_H1.operatingProfit.toFixed(2)}조원 ÷ {SHEP_FY2025_OPERATING_PROFIT}조원</small>
+      </div>
+      <p class="op-message">
+        반기 실적만으로 이미 전년 연간 실적의 2배를 넘어섰다는 것은 2026년 실적 기준 PS 재원이 전년 대비 큰 폭으로 늘어날 가능성을 시사합니다.
+        다만 하반기 흐름에 따라 연간 최종 실적은 달라질 수 있습니다.
+      </p>
+    </section>
+
+    <!-- 섹션 3: 컨센서스 갭 -->
+    <section class="op-section">
+      <h2>5월 컨센서스는 얼마나 빗나갔나</h2>
+      <div class="shep-consensus-card">
+        <p>
+          2026년 2분기 영업이익 {SHEP_Q2.operatingProfit}조원은 {SHEP_CONSENSUS.asOf} 시점 연간 컨센서스 {SHEP_CONSENSUS.annualOperatingProfit}조원의
+          약 {(SHEP_CONSENSUS_GAP.q2ToConsensusRatio * 100).toFixed(1)}%에 해당합니다.
+        </p>
+        <p>
+          상반기 누적 영업이익은 약 {SHEP_H1.operatingProfit.toFixed(1)}조원으로, 5월 당시 연간 전망치를 이미 약
+          {SHEP_CONSENSUS_GAP.h1ExcessAmount.toFixed(1)}조원({(SHEP_CONSENSUS_GAP.h1ExcessRatio * 100).toFixed(1)}%) 넘어섰습니다.
+        </p>
+        <p class="op-message">
+          <small>
+            다만 이는 5월 시점 컨센서스와의 비교일 뿐입니다. 실적 발표 이후 증권사 전망치는 상향 조정될 수 있으며, 하반기 메모리 가격·출하량·재고 조정에
+            따라 실제 연간 실적은 달라질 수 있습니다.
+          </small>
+        </p>
+      </div>
+    </section>
+
+    <!-- 섹션 4: PS 산정 구조 -->
+    <section class="op-section">
+      <h2>PS 산정 구조</h2>
+      <div class="shep-table-wrap">
+        <table class="shep-ps-structure-table">
+          <tbody>
+            <tr>
+              <td>PS 재원 기준</td>
+              <td>연간 영업이익의 {SHEP_PS_BASELINE.fundRatioOfOperatingProfit}%를 재원으로 활용</td>
+            </tr>
+            <tr>
+              <td>지급 시점</td>
+              <td>연간 실적 확정 후 익년 초 — 2026년 실적분은 2027년 초</td>
+            </tr>
+            <tr>
+              <td>지급 방식(현재 기준)</td>
+              <td>
+                산정액의 {SHEP_PS_BASELINE.immediateRatio * 100}% 당해 현금, 나머지
+                {(SHEP_PS_BASELINE.deferredRatioYear1 + SHEP_PS_BASELINE.deferredRatioYear2) * 100}%는 2년 이연
+              </td>
+            </tr>
+            <tr>
+              <td>2026년 초 실제 지급 사례</td>
+              <td>
+                2025년 실적(영업이익 {SHEP_PS_BASELINE.operatingProfit}조원) 기준 PS 기준급 {SHEP_PS_BASELINE.psRate}%
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">
+        <small>
+          주의: 기준급 {SHEP_PS_BASELINE.psRate}%는 "연봉의 {(SHEP_PS_BASELINE.psRate / 100).toFixed(2)}배"가 아니라 기준급(통상 연봉의
+          1/20 수준) 기준 {SHEP_PS_BASELINE.psRate}%입니다.
+        </small>
+      </p>
+    </section>
+
+    <!-- 섹션 5: 2027년 초 지급 PS 시나리오 ★ 핵심 -->
+    <section class="op-section">
+      <h2>2027년 초 지급 PS 시나리오</h2>
+      <div class="shep-table-wrap">
+        <table class="shep-scenario-table">
+          <thead>
+            <tr><th>시나리오</th><th>2026년 연간 영업이익 전망</th><th>PS 방향성</th></tr>
+          </thead>
+          <tbody>
+            {SHEP_PS_SCENARIO_RESULTS.map((s) => (
+              <tr>
+                <td>{s.label}</td>
+                <td>약 {s.annualOperatingProfit.toFixed(1)}조원</td>
+                <td>{s.directionNote}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <details class="shep-scenario-detail">
+        <summary>단순 비례 환산 배수 보기</summary>
+        <div class="shep-table-wrap">
+          <table class="shep-scenario-table">
+            <thead>
+              <tr><th>시나리오</th><th>하반기 가정</th><th>연간 영업이익</th><th>단순 비례 PS(참고치)</th></tr>
+            </thead>
+            <tbody>
+              {SHEP_PS_SCENARIO_RESULTS.map((s) => (
+                <tr>
+                  <td>{s.label}</td>
+                  <td>상반기의 {(s.h2ToH1Ratio * 100).toFixed(0)}%</td>
+                  <td>약 {s.annualOperatingProfit.toFixed(1)}조원</td>
+                  <td>약 {s.estimatedPsRate.toLocaleString()}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="shep-scenario-detail__caption">
+          위 PS 배수는 2025년 영업이익과 2026년 초 실제 지급률 간 관계를 단순 비례 적용한 참고치입니다. 실제 지급률은 대상 인원, 기준급 총액,
+          노사 합의 및 지급방식(아래 섹션 참고)에 따라 크게 달라질 수 있습니다.
+        </p>
+      </details>
+
+      <p class="op-message">
+        <small>
+          총 PS 산정액(예상) 분할: 2027년 초 즉시 지급 {SHEP_PS_BASELINE.immediateRatio * 100}% · 2028년 이연
+          {SHEP_PS_BASELINE.deferredRatioYear1 * 100}% · 2029년 이연 {SHEP_PS_BASELINE.deferredRatioYear2 * 100}%
+        </small>
+      </p>
+
+      <div class="shep-cta-group">
+        <a href={withBase("/tools/sk-hynix-bonus/")}>내 연봉으로 2027년 PS 계산하기 →</a>
+      </div>
+    </section>
+
+    <!-- 섹션 6: 지급방식 개편 리스크 ★ 신규 -->
+    <section class="op-section">
+      <h2>실적보다 더 중요한 변수: PS 지급방식이 바뀔까</h2>
+      <div class="shep-payout-risk-box">
+        <span class="shep-payout-risk-box__status">{SHEP_PAYOUT_RISK.status}</span>
+        <p>
+          SK하이닉스는 2025년 노사 합의로 "영업이익 10% 연동 PS" 체계를 도입했지만, 2026년 7월 임금·단체협상에서 PS 재원 기준은 유지하되
+          지급 방식 일부를 현금에서 자사주로 전환하는 방안이 사측 제안으로 거론되고 있습니다. 노조는 세금 부담과 현금화 문제 등을 이유로 반발
+          중이며, {SHEP_PAYOUT_RISK.asOf} 기준 확정되지 않은 진행 중인 협상 쟁점입니다.
+        </p>
+      </div>
+      <div class="shep-table-wrap">
+        <table class="shep-payout-variable-table">
+          <thead>
+            <tr><th>변수</th><th>현재 알려진 내용</th><th>영향</th></tr>
+          </thead>
+          <tbody>
+            {SHEP_PAYOUT_VARIABLES.map((v) => (
+              <tr><td>{v.variable}</td><td>{v.current}</td><td>{v.impact}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 섹션 7: 하반기 변수 체크리스트 -->
+    <section class="op-section">
+      <h2>PS를 좌우할 하반기 변수</h2>
+      <ul class="shep-checklist">
+        {SHEP_CHECKPOINTS.map((c) => <li class="shep-checklist__item">{c.text}</li>)}
+      </ul>
+    </section>
+
+    <!-- 섹션 8: 삼성전자 비교 딥링크 -->
+    <section class="op-section">
+      <h2>삼성전자와 비교하면?</h2>
+      <p class="op-message">
+        삼성전자는 7월 31일 2분기 확정실적(사업부문별 영업이익)을 발표할 예정입니다. SK하이닉스·삼성전자 실적·성과급 상세 비교는 아래에서
+        확인하세요.
+      </p>
+      <div class="shep-cta-group">
+        <a href={withBase("/reports/samsung-vs-skhynix-earnings-bonus-2026/")}>삼성전자 vs SK하이닉스 성과급 2026 비교 →</a>
+      </div>
+    </section>
+
+    <!-- 섹션 9: 업데이트 로그 -->
+    <section class="op-section">
+      <h2>업데이트 로그</h2>
+      <ul class="shep-update-log">
+        {SHEP_UPDATE_LOG.map((log) => (
+          <li class="shep-update-log__item" data-status={log.status}>{log.date} — {log.note} ({log.status})</li>
+        ))}
+      </ul>
+    </section>
+
+    <SeoContent
+      introTitle="SK하이닉스 2분기 실적·2027년 PS 전망 핵심 정리"
+      intro={SHEP_SEO_INTRO}
+      criteria={SHEP_SEO_CRITERIA}
+      faq={SHEP_FAQ}
+      related={SHEP_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

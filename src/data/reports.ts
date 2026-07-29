@@ -1507,4 +1507,11 @@ export const reports: ReportMeta[] = [
     order: 82,
     badges: ["신규", "AI 데이터센터", "전력", "냉각"],
   },
+  {
+    slug: "sk-hynix-earnings-ps-outlook-2026",
+    title: "SK하이닉스 2분기 실적·PS 전망 2026 | 2027 성과급 얼마나 될까",
+    description: "SK하이닉스 2026년 2분기 매출 79.3조 원, 영업이익 60.5조 원을 분석하고 2026년 실적 기준 2027년 초 지급될 PS 성과급을 시나리오별로 추정합니다.",
+    order: 83,
+    badges: ["신규", "SK하이닉스", "성과급", "실적 발표"],
+  },
 ];
