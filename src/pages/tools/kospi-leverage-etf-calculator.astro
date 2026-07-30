@@ -1,0 +1,310 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  KLC_META,
+  KLC_SCENARIOS,
+  KLC_PRINCIPAL_PRESETS,
+  KLC_DETAIL_CARDS,
+  KLC_MECHANISM,
+  KLC_REGULATION_TIMELINE,
+  KLC_FAQ,
+  KLC_RELATED_LINKS,
+  KLC_SOURCE_LINKS,
+} from "../../data/kospiLeverageEtfCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const defaultScenario = KLC_SCENARIOS[0];
+const config = {
+  SCENARIOS: KLC_SCENARIOS,
+  DEFAULT_SCENARIO_ID: defaultScenario.id,
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: KLC_META.title,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Web",
+      inLanguage: "ko-KR",
+      url: `https://bigyocalc.com/tools/${KLC_META.slug}/`,
+      description: KLC_META.seoDescription,
+      dateModified: KLC_META.updatedAt,
+      publisher: {
+        "@type": "Organization",
+        name: "비교계산소",
+        url: "https://bigyocalc.com",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: KLC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "홈", item: "https://bigyocalc.com/" },
+        { "@type": "ListItem", position: 2, name: "계산기", item: "https://bigyocalc.com/tools/" },
+        { "@type": "ListItem", position: 3, name: KLC_META.title, item: `https://bigyocalc.com/tools/${KLC_META.slug}/` },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={KLC_META.seoTitle}
+  description={KLC_META.seoDescription}
+  ogImage="/og/tools/kospi-leverage-etf-calculator.png"
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="kospi-leverage-etf" pageClass="klc-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow={KLC_META.eyebrow}
+        title={KLC_META.h1}
+        description={KLC_META.description}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="klcResetBtn" copyId="klcCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="stack" id="klc-inputs">
+        <article class="panel klc-input-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">① 투자금액 · ② 시장 흐름</p>
+              <h2 class="panel__title">투자 조건 입력</h2>
+            </div>
+          </div>
+
+          <label class="field klc-field-wide">
+            <span>투자금액</span>
+            <div class="klc-money-field">
+              <input id="klc-principal" type="number" inputmode="decimal" value="1000" min="0" step="1" />
+              <span class="klc-money-unit">만원</span>
+            </div>
+          </label>
+          <div class="klc-preset-row" aria-label="빠른 금액 선택">
+            {KLC_PRINCIPAL_PRESETS.map((preset) => (
+              <button type="button" class="klc-preset-chip" data-principal-preset={preset.won}>
+                {preset.label}
+              </button>
+            ))}
+          </div>
+
+          <div class="klc-scenario-grid" aria-label="시장 흐름 시나리오">
+            {KLC_SCENARIOS.map((scenario) => (
+              <button
+                type="button"
+                class="klc-scenario-card"
+                data-scenario-id={scenario.id}
+                aria-pressed={scenario.id === defaultScenario.id ? "true" : "false"}
+              >
+                <strong>{scenario.label}</strong>
+                <small>{scenario.narrative}</small>
+              </button>
+            ))}
+          </div>
+
+          <p class="klc-multiple-static">③ 상품 배율: <strong>2배 레버리지</strong> (국내 표준)</p>
+
+          <details class="klc-advanced">
+            <summary>고급 설정</summary>
+            <label class="field">
+              <span>배율 직접 입력</span>
+              <input id="klc-multiple" type="number" inputmode="decimal" value="2" min="1" max="5" step="0.5" />
+              <small>3배 등 다른 배율을 참고용으로 계산해볼 수 있습니다.</small>
+            </label>
+            <label class="field">
+              <span>연 운용보수(%)</span>
+              <input id="klc-fee-rate" type="number" inputmode="decimal" value="0.64" min="0" step="0.01" />
+              <small>
+                기본값은 삼성자산운용 KODEX 레버리지 총보수 공시 기준(연 0.64%)이며, 상품마다 다를 수 있습니다.
+                입력한 보수율만 단순 일할 계산한 값이며, 기타비용·거래비용·선물 관련 비용·추적오차는 포함되지 않습니다.
+              </small>
+            </label>
+          </details>
+        </article>
+
+        <InfoNotice
+          title="데이터 기준 안내"
+          lines={[
+            "이 계산기는 선택한 시장 흐름의 일별 등락률을 그대로 복리 계산한 참고용 시뮬레이션입니다. 실제 ETF 종가·순자산가치(NAV)를 사용한 백테스트가 아닙니다.",
+            "실제 상품 수익률에는 운용보수 외에도 선물 롤오버 비용, 추적오차, NAV와 시장가격 간 괴리, 거래·세금 비용이 추가로 반영됩니다.",
+            "투자 권유가 아니며, 실제 투자 판단에는 상품 투자설명서를 확인해야 합니다.",
+          ]}
+        />
+      </div>
+    </Fragment>
+
+    <article class="panel result-priority-panel klc-result-panel" id="klc-results" aria-live="polite">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">계산 결과</p>
+          <h2 class="panel__title">내 예상 손익</h2>
+        </div>
+      </div>
+
+      <div class="klc-hero-grid">
+        <div class="klc-hero-main">
+          <span class="klc-hero-label">내 예상 평가금액</span>
+          <strong class="klc-hero-amount" data-result="finalAmount">-</strong>
+          <p class="klc-hero-profit" data-result="profitAmount">-</p>
+        </div>
+        <div class="klc-hero-compare">
+          <span class="klc-hero-label">코스피200에 일반 투자했다면</span>
+          <strong class="klc-hero-compare-amount" data-result="indexOnlyFinalAmount">-</strong>
+        </div>
+      </div>
+
+      <p class="klc-compare-sentence" data-result="compareSentence">투자금액을 입력하면 계산합니다.</p>
+      <p class="klc-recovery-note" data-result="recoveryNote" hidden></p>
+
+      <details class="klc-detail-toggle">
+        <summary>자세히 보기</summary>
+        <div class="klc-detail-grid">
+          {KLC_DETAIL_CARDS.map((card) => (
+            <article class="klc-detail-card" data-card={card.key}>
+              <div class="klc-detail-card__top">
+                <p class="klc-detail-label">{card.label}</p>
+                <span>{card.badge}</span>
+              </div>
+              <strong class="klc-detail-value" data-result={card.key}>-</strong>
+              <p>{card.description}</p>
+            </article>
+          ))}
+        </div>
+        <p class="klc-detail-reason" data-result="detailReason"></p>
+      </details>
+    </article>
+
+    <section class="content-section klc-path-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">경로 시각화</p>
+        <h2>일별 등락 경로로 보는 괴리</h2>
+      </div>
+      <div class="table-wrap klc-table-wrap">
+        <table class="klc-mechanism-table">
+          <thead>
+            <tr><th>날짜</th><th>코스피200</th><th><span data-result="multipleLabelHint">2배</span> 레버리지</th></tr>
+          </thead>
+          <tbody data-klc-path-body></tbody>
+        </table>
+      </div>
+      <p class="klc-path-note">중간에는 레버리지 수익률이 더 높거나 낮았더라도, 상승과 하락이 반복되면 최종 결과는 단순 계산과 달라질 수 있습니다.</p>
+    </section>
+
+    <section class="content-section klc-mechanism-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 이런 일이 벌어질까</p>
+        <h2>{KLC_MECHANISM.title}</h2>
+      </div>
+      <div class="table-wrap klc-table-wrap">
+        <table class="klc-mechanism-table">
+          <thead>
+            <tr><th>구분</th><th>시작</th><th>1일차</th><th>2일차</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>코스피200</td>
+              <td>{KLC_MECHANISM.steps[0].indexValue}</td>
+              <td>{KLC_MECHANISM.steps[1].indexValue} ({KLC_MECHANISM.steps[1].indexReturnLabel})</td>
+              <td>{KLC_MECHANISM.steps[2].indexValue} ({KLC_MECHANISM.steps[2].indexReturnLabel})</td>
+            </tr>
+            <tr>
+              <td>2배 레버리지</td>
+              <td>{KLC_MECHANISM.steps[0].leverageValue}</td>
+              <td>{KLC_MECHANISM.steps[1].leverageValue} ({KLC_MECHANISM.steps[1].leverageReturnLabel})</td>
+              <td>{KLC_MECHANISM.steps[2].leverageValue} ({KLC_MECHANISM.steps[2].leverageReturnLabel})</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="klc-mechanism-conclusion">{KLC_MECHANISM.conclusion}</p>
+    </section>
+
+    <section class="content-section klc-regulation-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">참고</p>
+        <h2>2026년 레버리지 규제, KODEX 레버리지도 해당될까?</h2>
+      </div>
+      <p class="klc-regulation-answer">
+        <strong>아닙니다.</strong> 2026년 7월 31일부터 시행되는 현금 3천만원 예탁금 기준은 삼성전자·SK하이닉스처럼 개별 종목을 추종하는 <strong>단일종목 레버리지 ETF·ETN</strong>에 적용됩니다. 코스피200 지수를 추종하는 KODEX 레버리지 같은 일반 지수형 레버리지 ETF는 이번 단일종목 규제 대상이 아닙니다.
+      </p>
+      <ul class="klc-regulation-list">
+        {KLC_REGULATION_TIMELINE.map((event) => (
+          <li class="klc-regulation-item" data-status={event.status}>
+            <strong>{event.dateLabel}</strong>
+            <span>{event.content}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="content-section klc-source-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처</p>
+        <h2>기본값에 참고한 공개 자료</h2>
+      </div>
+      <p class="klc-source-note">최종 업데이트: 2026년 7월 30일</p>
+      <div class="klc-source-list">
+        {KLC_SOURCE_LINKS.map((source) => (
+          <a href={source.href} target="_blank" rel="noreferrer">{source.label}</a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="코스피 레버리지 ETF는 왜 정확히 2배가 아닐까요?"
+        intro={[
+          "레버리지 ETF는 코스피200의 전체 투자기간 수익률을 2배로 만드는 상품이 아닙니다. 코스피200의 하루 수익률을 매일 2배로 추종하도록 설계된 상품입니다. 하루 동안 코스피200이 5% 상승하면 2배 레버리지는 약 10% 상승을 목표로 합니다.",
+          "하지만 여러 날 보유하면 매일의 상승과 하락이 복리로 누적되기 때문에, 최종 수익률은 코스피200 누적수익률의 정확한 2배와 달라질 수 있습니다. 특히 지수가 크게 오르고 내리는 시장에서는 코스피200이 시작점으로 돌아와도 레버리지 ETF에는 손실이 남을 수 있습니다. 반대로 한 방향으로 꾸준히 상승하는 시장에서는 복리효과로 단순히 계산한 2배보다 높은 수익률이 나타날 수도 있습니다.",
+          "이 계산기는 선택한 시장 흐름의 일별 등락률을 기준으로 코스피200과 2배 레버리지의 시뮬레이션 누적수익률을 비교합니다. 실제 ETF 수익률에는 운용보수뿐 아니라 선물 관련 비용, 기타비용, 추적오차, 시장가격과 순자산가치의 차이 등이 반영되므로 계산 결과와 다를 수 있습니다.",
+        ]}
+        inputPoints={[
+          "내 예상 평가금액과 손익 금액을 먼저 확인합니다.",
+          "코스피200에 일반 투자했을 때 결과와 비교합니다.",
+          "자세히 보기를 눌러 단순 2배 계산과 시뮬레이션의 차이를 확인합니다.",
+          "다른 시장 흐름을 선택해 결과가 어떻게 달라지는지 비교합니다.",
+        ]}
+        criteria={[
+          "코스피200 누적수익률 = 일별 등락률을 복리로 곱한 값 - 1",
+          "단순 2배로 계산한 수익률 = 코스피200 누적수익률 × 배율",
+          "일별 복리 시뮬레이션 = 일별(등락률×배율)을 복리로 곱한 값 - 1",
+          "보수 반영 예상수익률 = 일별 복리 시뮬레이션 - (연 운용보수율 × 거래일수/252)",
+          "원금 복구 필요 상승률 = 1 ÷ (1 + 보수 반영 예상수익률) - 1 (손실일 때만 계산)",
+        ]}
+        faq={KLC_FAQ}
+        related={KLC_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="klcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/kospi-leverage-etf-calculator.js")}></script>
+</BaseLayout>
