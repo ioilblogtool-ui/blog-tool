@@ -1222,10 +1222,10 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "samsung-q2-earnings-bonus-outlook-2026",
-    title: "삼성전자 2분기 실적 성과급 전망 2026 | 하반기 OPI 얼마나 늘까",
-    description: "삼성전자 2026년 2분기 잠정실적(7/8)·확정실적(7/31) 발표 일정과 DS부문 영업이익 전망을 바탕으로 하반기 OPI 변화를 분석합니다. 성과급 계산기 연동.",
+    title: "삼성전자 2분기 확정실적 2026 | DS 89조·컨콜 하반기 성과급은",
+    description: "삼성전자 2026년 2분기 확정실적(매출 171.5조·영업이익 89.5조)과 컨퍼런스콜 내용, 이미 확정된 상반기 TAI 지급률부터 하반기 OPI 전망까지 정리했습니다.",
     order: 66,
-    badges: ["삼성전자", "성과급", "실적 발표", "2026"],
+    badges: ["삼성전자", "성과급", "확정실적", "2026"],
   },
   {
     slug: "senior-job-comparison-2026",

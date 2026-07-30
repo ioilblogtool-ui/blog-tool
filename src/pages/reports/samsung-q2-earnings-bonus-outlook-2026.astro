@@ -9,6 +9,11 @@ import {
   SQE_META,
   SQE_EARNINGS_CALENDAR,
   SQE_PROGRESS_CARDS,
+  SQE_Q2_SEGMENTS,
+  SQE_Q2_HIGHLIGHTS,
+  SQE_MEMORY_PRICE_TREND,
+  SQE_TAI_CONFIRMED,
+  SQE_H2_OUTLOOK,
   SQE_OPI_STRUCTURE,
   SQE_SCENARIO_OUTLOOK,
   SQE_CHECKPOINTS,
@@ -66,7 +71,7 @@ const jsonLd = [
       title="데이터 기준 안내 (중요)"
       lines={[
         SQE_META.dataNote,
-        "확정실적(7/31) 발표 전까지 하반기 전망은 컨센서스·시나리오 기준 추정입니다.",
+        "OPI·DS 특별성과급 등 하반기 전망은 연간 실적 확정과 노사 협의 전까지 컨센서스·시나리오 기준 추정입니다.",
       ]}
     />
 
@@ -81,7 +86,7 @@ const jsonLd = [
           </article>
         ))}
       </div>
-      <p class="op-message">잠정실적은 사업부문별 실적을 공개하지 않으므로, 성과급 근거를 확인하려면 7/31 확정실적을 봐야 합니다.</p>
+      <p class="op-message">7월 30일 확정실적 발표로 사업부문별 영업이익까지 모두 공개됐습니다. 아래 진행률·부문별 실적부터 확인하세요.</p>
     </section>
 
     <section class="op-section">
@@ -96,6 +101,52 @@ const jsonLd = [
           </article>
         ))}
       </div>
+    </section>
+
+    <section class="op-section">
+      <h2>2분기 사업부문별 확정실적</h2>
+      <div class="sqe-table-wrap">
+        <table class="sqe-structure-table">
+          <thead><tr><th>부문</th><th>매출</th><th>영업이익</th><th>비고</th></tr></thead>
+          <tbody>
+            {SQE_Q2_SEGMENTS.map((row) => (
+              <tr><td>{row.segment}</td><td>{row.revenue}</td><td>{row.operatingProfit}</td><td>{row.note}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">EPS {SQE_Q2_HIGHLIGHTS.eps} · R&D 투자 {SQE_Q2_HIGHLIGHTS.rnd}</p>
+      <p class="op-message">{SQE_Q2_HIGHLIGHTS.dsShare}</p>
+      <p class="op-message">{SQE_Q2_HIGHLIGHTS.dividend}</p>
+    </section>
+
+    <section class="op-section">
+      <h2>메모리 가격 동향과 하반기 공급 계획</h2>
+      <ul class="sqe-checklist">
+        {SQE_MEMORY_PRICE_TREND.map((line) => <li class="sqe-checklist__item">{line}</li>)}
+      </ul>
+    </section>
+
+    <section class="op-section">
+      <h2>상반기 TAI 지급률 (이미 확정)</h2>
+      <p class="op-message">7월 6일 공지, 7월 8일 지급된 실제 확정 수치입니다. 아래는 전망이 아닌 지급 완료 내역입니다.</p>
+      <div class="sqe-table-wrap">
+        <table class="sqe-structure-table">
+          <thead><tr><th>사업부</th><th>TAI 지급률</th><th>비고</th></tr></thead>
+          <tbody>
+            {SQE_TAI_CONFIRMED.map((row) => (
+              <tr><td>{row.unit}</td><td>{row.rate}</td><td>{row.note}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>컨퍼런스콜 하반기 전망</h2>
+      <ul class="sqe-checklist">
+        {SQE_H2_OUTLOOK.map((line) => <li class="sqe-checklist__item">{line}</li>)}
+      </ul>
     </section>
 
     <section class="op-section">
