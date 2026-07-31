@@ -1,0 +1,193 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import {
+  SKLU_META,
+  SKLU_KEY_METRICS,
+  SKLU_TIMELINE,
+  SKLU_MECHANISM_STEPS,
+  SKLU_LEVERAGE_COMPARISON,
+  SKLU_FACTCHECK,
+  SKLU_FAQ,
+  SKLU_SEO_INTRO,
+  SKLU_SEO_CRITERIA,
+  SKLU_RELATED_LINKS,
+} from "../../data/skHynixLiquidationUpperLimit2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${SKLU_META.slug}/`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: SKLU_META.title,
+    description: SKLU_META.seoDescription,
+    dateModified: SKLU_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SKLU_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: SKLU_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={SKLU_META.seoTitle} description={SKLU_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page sklu-page" data-report="sk-hynix-liquidation-upper-limit-2026">
+    <CalculatorHero
+      eyebrow="급등락 이벤트"
+      title={SKLU_META.title}
+      description={SKLU_META.description}
+    />
+
+    <div class="sklu-kpi-grid">
+      <article class="sklu-kpi-card">
+        <strong>이상 체결가</strong>
+        <p>{SKLU_KEY_METRICS.abnormalPrice.toLocaleString()}원</p>
+        <small>7/28 NXT 프리마켓</small>
+      </article>
+      <article class="sklu-kpi-card">
+        <strong>해외 청산 규모</strong>
+        <p>약 {(SKLU_KEY_METRICS.liquidationAmountKrw / 100_000_000).toFixed(0)}억원</p>
+        <small>900명 이상 영향</small>
+      </article>
+      <article class="sklu-kpi-card">
+        <strong>레버리지 ETF 낙폭</strong>
+        <p>-{SKLU_KEY_METRICS.leverageEtfDropMax}%</p>
+        <small>상장가 대비 최대</small>
+      </article>
+      <article class="sklu-kpi-card sklu-kpi-card--highlight">
+        <strong>상한가 상승률</strong>
+        <p>+{SKLU_KEY_METRICS.upperLimitGainPct}%</p>
+        <small>사상 첫 30% 상한가</small>
+      </article>
+    </div>
+
+    <InfoNotice
+      title="읽기 전에 확인해주세요"
+      lines={[SKLU_META.dataNote]}
+    />
+
+    <!-- 섹션 1: 타임라인 ★ 핵심 -->
+    <section class="op-section">
+      <h2>타임라인 — 사흘 사이 무슨 일이 있었나</h2>
+      <ul class="sklu-timeline">
+        {SKLU_TIMELINE.map((item) => (
+          <li class="sklu-timeline__item">
+            <div class="sklu-timeline__date">{item.dateLabel}</div>
+            <div class="sklu-timeline__headline">{item.headline}</div>
+            <p class="op-message">{item.detail}</p>
+            <a class="sklu-timeline__source" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">출처: {item.sourceLabel}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- 섹션 2: 메커니즘 -->
+    <section class="op-section">
+      <h2>어쩌다 1주가 826억 청산을 불렀나</h2>
+      <div class="sklu-mechanism-flow">
+        {SKLU_MECHANISM_STEPS.map((step) => (
+          <div class="sklu-mechanism-flow__step">
+            <strong>{step.order}. {step.title}</strong>
+            <p>{step.text}</p>
+          </div>
+        ))}
+      </div>
+      <p class="op-message">
+        <small>
+          국내 대체거래소의 유동성 부족(1주 체결)과 해외 파생상품의 오라클 설계 미비가 겹친 구조적 허점으로, 다수 매체가 "인재"로
+          평가하고 있습니다.
+        </small>
+      </p>
+    </section>
+
+    <!-- 섹션 3: 레버리지 낙폭 비교 -->
+    <section class="op-section">
+      <h2>국내 레버리지 ETF는 왜 더 크게 폭락했나</h2>
+      <div class="sklu-leverage-compare">
+        <div class="sklu-leverage-compare__row">
+          <span class="sklu-leverage-compare__label">SK하이닉스(정규장)</span>
+          <span class="sklu-leverage-compare__bar"><span style={`width:${SKLU_LEVERAGE_COMPARISON.underlyingDropPct}%`}></span></span>
+          <span class="sklu-leverage-compare__value">-{SKLU_LEVERAGE_COMPARISON.underlyingDropPct}%</span>
+        </div>
+        <div class="sklu-leverage-compare__row">
+          <span class="sklu-leverage-compare__label">레버리지 ETF(최대)</span>
+          <span class="sklu-leverage-compare__bar"><span style={`width:${SKLU_LEVERAGE_COMPARISON.leverageDropMaxPct}%`}></span></span>
+          <span class="sklu-leverage-compare__value">-{SKLU_LEVERAGE_COMPARISON.leverageDropMaxPct}%</span>
+        </div>
+      </div>
+      <p class="op-message">
+        레버리지 상품은 기초자산 일별 수익률의 배수를 추종하도록 설계돼 있어, 기초자산보다 낙폭이 구조적으로 훨씬 크게
+        증폭됩니다. 반대매매·강제청산 위험도 그만큼 커집니다.
+      </p>
+      <div class="sklu-cta-group">
+        <a href={withBase("/tools/kospi-leverage-etf-calculator/")}>레버리지 ETF 손익 직접 계산해보기 →</a>
+      </div>
+    </section>
+
+    <!-- 섹션 4: 반전 -->
+    <section class="op-section">
+      <h2>그리고 사흘 만에 사상 첫 상한가</h2>
+      <div class="sklu-reversal-card">
+        <small>7월 31일 정규장</small>
+        <strong>+{SKLU_KEY_METRICS.upperLimitGainPct}%</strong>
+        <small>{SKLU_KEY_METRICS.upperLimitPrice.toLocaleString()}원 — 2015년 가격제한폭 30% 확대 이후 첫 상한가</small>
+      </div>
+      <p class="op-message">
+        미국 필라델피아 반도체지수 급등과 AI 투자 지속 기대감이 국내 반도체주 전반의 급반등을 이끌었습니다. 삼성전자도
+        20%대 폭등했습니다.
+      </p>
+    </section>
+
+    <!-- 섹션 5: 팩트체크 -->
+    <section class="op-section">
+      <h2>온라인에서 도는 소문, 팩트체크</h2>
+      <div class="sklu-table-wrap">
+        <table class="sklu-factcheck-table">
+          <thead>
+            <tr><th>소문</th><th>상태</th><th>설명</th></tr>
+          </thead>
+          <tbody>
+            {SKLU_FACTCHECK.map((row) => (
+              <tr>
+                <td>{row.rumor}</td>
+                <td><span class="sklu-factcheck-table__status" data-status={row.status}>{row.status}</span></td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="SK하이닉스 청산 사태·상한가 핵심 정리"
+      intro={SKLU_SEO_INTRO}
+      criteria={SKLU_SEO_CRITERIA}
+      faq={SKLU_FAQ}
+      related={SKLU_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

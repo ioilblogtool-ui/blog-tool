@@ -1514,4 +1514,11 @@ export const reports: ReportMeta[] = [
     order: 83,
     badges: ["신규", "SK하이닉스", "성과급", "실적 발표"],
   },
+  {
+    slug: "sk-hynix-liquidation-upper-limit-2026",
+    title: "SK하이닉스 청산 사태 2026 완전 정리 | 사흘 만에 상한가 간 이유",
+    description: "1주 이상거래로 시작된 826억 원 해외 청산 사고와 레버리지 ETF 78% 폭락, 사흘 만의 사상 첫 상한가까지 타임라인으로 정리. 팩트체크 포함.",
+    order: 84,
+    badges: ["신규", "SK하이닉스", "청산사태", "상한가"],
+  },
 ];
