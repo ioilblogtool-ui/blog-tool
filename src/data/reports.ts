@@ -1521,4 +1521,11 @@ export const reports: ReportMeta[] = [
     order: 84,
     badges: ["신규", "SK하이닉스", "청산사태", "상한가"],
   },
+  {
+    slug: "president-bundang-apartment-mortgage-sale-2026",
+    title: "대통령 분당 아파트 근저당 2026 완전 정리 | 나도 가능할까",
+    description: "대통령 분당 아파트 29억 매도 과정에서 설정된 17.7억 근저당권을 쉽게 설명합니다. 셀러 파이낸싱 구조, 채권최고액의 진짜 의미, 일반인도 가능한지 팩트체크 포함.",
+    order: 85,
+    badges: ["신규", "부동산", "근저당", "셀러파이낸싱"],
+  },
 ];

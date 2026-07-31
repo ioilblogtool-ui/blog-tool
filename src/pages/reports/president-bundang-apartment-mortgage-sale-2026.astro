@@ -1,0 +1,495 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  PBAM_META,
+  PBAM_KEY_FACTS,
+  PBAM_KEY_FACTS_TABLE,
+  PBAM_SUMMARY_LINES,
+  PBAM_FLOW_NORMAL,
+  PBAM_FLOW_THIS_CASE,
+  PBAM_OWNERSHIP_TABLE,
+  PBAM_MORTGAGE_COMPARISON,
+  PBAM_REVERSE_EXAMPLES,
+  PBAM_LOAN_LIMIT_TABLE,
+  PBAM_FEASIBILITY_TABLE,
+  PBAM_DIFFICULTY_REASONS,
+  PBAM_MISCONCEPTIONS,
+  PBAM_LENDER_COMPARISON,
+  PBAM_FUNDING_DISCLOSURE_ITEMS,
+  PBAM_TAX_NOTES,
+  PBAM_RISK_SCENARIOS,
+  PBAM_SELLER_CONDITIONS,
+  PBAM_CHECKLISTS,
+  PBAM_FAQ,
+  PBAM_FINAL_SUMMARY,
+  PBAM_USAGE_NOTES,
+  PBAM_SEO_INTRO,
+  PBAM_SEO_CRITERIA,
+  PBAM_RELATED_LINKS,
+} from "../../data/presidentBundangApartmentMortgageSale2026";
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${PBAM_META.slug}/`;
+
+const verdictTone = (verdict: string) =>
+  verdict.includes("어려움") ? "hard" : verdict.includes("불필요") || verdict.includes("아님") || verdict.includes("주의") ? "caution" : "possible";
+
+const formatWon = (value: number) => `${(value / 100_000_000).toFixed(0)}억원`;
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: PBAM_META.title,
+    description: PBAM_META.seoDescription,
+    dateModified: PBAM_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: PBAM_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: PBAM_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={PBAM_META.seoTitle} description={PBAM_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page pbam-page" data-report="president-bundang-apartment-mortgage-sale-2026">
+    <CalculatorHero
+      eyebrow="거래구조 해설"
+      title={PBAM_META.title}
+      description={PBAM_META.description}
+    />
+
+    <div class="pbam-kpi-grid">
+      <article class="pbam-kpi-card">
+        <strong>매매가</strong>
+        <p>{PBAM_KEY_FACTS.salePriceLabel}</p>
+      </article>
+      <article class="pbam-kpi-card">
+        <strong>채권최고액</strong>
+        <p>{PBAM_KEY_FACTS.maxClaimAmountLabel}</p>
+        <small>실제 원금과 다를 수 있음</small>
+      </article>
+      <article class="pbam-kpi-card">
+        <strong>계약~등기</strong>
+        <p>2일</p>
+        <small>{PBAM_KEY_FACTS.contractDate} → {PBAM_KEY_FACTS.registryDate}</small>
+      </article>
+      <article class="pbam-kpi-card">
+        <strong>잔금 예정</strong>
+        <p>{PBAM_KEY_FACTS.settlementLabel}</p>
+        <small>{PBAM_KEY_FACTS.settlementCaption}</small>
+      </article>
+    </div>
+
+    <InfoNotice title="읽기 전에 확인해주세요" lines={[PBAM_META.dataNote]} />
+
+    <!-- 섹션: 핵심 숫자 -->
+    <section class="op-section">
+      <h2>핵심 숫자</h2>
+      <div class="pbam-table-wrap">
+        <table class="pbam-key-facts-table">
+          <tbody>
+            {PBAM_KEY_FACTS_TABLE.map((row) => (
+              <tr><td>{row.label}</td><td>{row.value}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">
+        <small>채권최고액이 매매가격의 약 61.3%에 해당하지만, 이를 매도인이 실제로 빌려준 원금의 비율로 단정할 수는 없습니다.</small>
+      </p>
+    </section>
+
+    <!-- 섹션: 3줄 요약 -->
+    <section class="op-section">
+      <h2>3줄 요약</h2>
+      <ul class="pbam-summary-list">
+        {PBAM_SUMMARY_LINES.map((line) => <li>{line}</li>)}
+      </ul>
+    </section>
+
+    <!-- 섹션: 무슨 일이 있었나 -->
+    <section class="op-section">
+      <h2>무슨 일이 있었나</h2>
+      <div class="pbam-mini-timeline">
+        <div class="pbam-mini-timeline__item">
+          <strong>{PBAM_KEY_FACTS.contractDate}</strong>
+          <p>분당구 아파트를 29억원에 매매하는 계약이 체결됐습니다.</p>
+        </div>
+        <div class="pbam-mini-timeline__item">
+          <strong>{PBAM_KEY_FACTS.registryDate}</strong>
+          <p>매수인 앞으로 소유권 이전등기가 완료됐습니다. 같은 날 채권최고액 17억 7,700만원의 근저당권이 설정됐습니다.</p>
+        </div>
+        <div class="pbam-mini-timeline__item">
+          <strong>{PBAM_KEY_FACTS.settlementLabel}</strong>
+          <p>보도에 따르면 매수인은 이 시점까지 잔금을 지급하겠다는 의사를 밝힌 것으로 알려졌습니다. 정확한 잔금 원금, 이자율, 연체이자, 상환기일 등 계약조건 전체는 공개되지 않았습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 섹션: 거래 구조 그림 -->
+    <section class="op-section">
+      <h2>29억원 거래 구조, 그림으로 보면</h2>
+      <div class="pbam-flow-compare">
+        <div class="pbam-flow-compare__col">
+          <h3>일반적인 아파트 거래</h3>
+          <ol>
+            {PBAM_FLOW_NORMAL.map((step) => <li>{step}</li>)}
+          </ol>
+        </div>
+        <div class="pbam-flow-compare__col pbam-flow-compare__col--this-case">
+          <h3>이번 거래로 알려진 구조</h3>
+          <ol>
+            {PBAM_FLOW_THIS_CASE.map((step) => <li>{step.text}</li>)}
+          </ol>
+        </div>
+      </div>
+      <p class="op-message">
+        집은 먼저 넘겨주되, 아직 받지 못한 돈을 보호하기 위해 매도인이 집에 담보(근저당)를 잡아 놓은 구조입니다.
+        은행 주택담보대출에서는 은행이 근저당권자가 되지만, 이번엔 매도인이 그 역할을 대신했습니다.
+      </p>
+    </section>
+
+    <!-- 섹션: 소유권을 넘겼는데 집은 누구 것일까 -->
+    <section class="op-section">
+      <h2>소유권을 넘겼는데 집은 누구 것일까</h2>
+      <p class="op-message">
+        소유권 이전등기가 끝났다면 아파트의 소유자는 매수인입니다. 매도인이 근저당권을 설정했다고 해서 집의
+        소유권을 계속 보유하는 것은 아닙니다. 이번 구조에서는 '집의 주인'과 '집에 담보를 잡은 채권자'가 서로
+        다릅니다.
+      </p>
+      <div class="pbam-table-wrap">
+        <table class="pbam-ownership-table">
+          <thead>
+            <tr><th>권리</th><th>보유자</th><th>의미</th></tr>
+          </thead>
+          <tbody>
+            {PBAM_OWNERSHIP_TABLE.map((row) => (
+              <tr><td>{row.right}</td><td>{row.holder}</td><td>{row.meaning}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 섹션: 매도인 근저당이란 -->
+    <section class="op-section">
+      <h2>매도인 근저당이란</h2>
+      <p class="op-message">
+        법률상 별도의 제도명이 정해져 있다기보다, 매도인이 매수인의 미지급 대금 또는 별도 금전채무를 담보하기
+        위해 매매 대상 부동산에 근저당권을 설정한 구조입니다. 해외 부동산 금융에서 쓰는 표현을 빌려 통상
+        '매도인 금융', '매도인 근저당', '셀러 파이낸싱(Seller Financing)', '벤더 파이낸싱(Vendor Financing)' 등으로
+        불리기도 합니다. 다만 국내 법률관계는 실제 계약서에 따라 판단해야 하므로, 이런 명칭만으로 거래의 법적
+        성격이 확정되는 것은 아닙니다.
+      </p>
+    </section>
+
+    <!-- 섹션: 채권최고액의 진짜 의미 -->
+    <section class="op-section">
+      <h2>채권최고액 17.7억원 = 실제 빚 17.7억원일까</h2>
+      <div class="pbam-table-wrap">
+        <table class="pbam-comparison-table">
+          <thead>
+            <tr><th></th><th>저당권</th><th>근저당권</th></tr>
+          </thead>
+          <tbody>
+            {PBAM_MORTGAGE_COMPARISON.map((row) => (
+              <tr>
+                <td>{row.label}</td>
+                <td>{row.mortgage}</td>
+                <td>{row.rootMortgage}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">
+        근저당권은 원금·이자·지연손해금 등을 포함해 담보할 수 있는 <strong>최대 한도</strong>를 등기하는
+        제도입니다. 채권최고액과 실제 미지급 잔금(원금)은 반드시 같은 금액이 아닙니다.
+      </p>
+
+      <div class="pbam-table-wrap">
+        <table class="pbam-reverse-table">
+          <thead>
+            <tr><th>설정비율</th><th>역산한 추정 원금</th></tr>
+          </thead>
+          <tbody>
+            {PBAM_REVERSE_EXAMPLES.map((row) => (
+              <tr>
+                <td>{row.ratio}%</td>
+                <td>약 {(row.estimatedPrincipal / 100_000_000).toFixed(2)}억원</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="pbam-reverse-table__caption">
+        위 계산은 거래구조를 이해하기 위한 가상 계산입니다. 실제 계약금액을 추정하거나 확정하는 자료가
+        아닙니다.
+      </p>
+    </section>
+
+    <!-- 섹션: 왜 잔금 다 받기 전에 소유권을 넘겼을까 -->
+    <section class="op-section">
+      <h2>왜 잔금을 다 받기 전에 소유권을 넘겼을까</h2>
+      <p class="op-message">
+        일반적으로 매도인은 잔금을 모두 받은 후 소유권을 이전합니다. 그런데 매수인이 기존 주택을 매도하거나
+        다른 자금을 확보할 때까지 시간이 필요한 경우, 당사자들이 ① 소유권을 먼저 이전하고 ② 미지급 잔금의
+        상환기일을 별도로 정한 뒤 ③ 매수인이 지급해야 할 금액을 채권으로 남기고 ④ 매도인이 그 채권을 보호하기
+        위해 근저당권을 설정하는 방식으로 합의할 수 있습니다. 매도인 입장에서는 소유권을 먼저 넘기는 위험을
+        근저당권으로 보완하고, 매수인 입장에서는 당장 매매대금 전액을 마련하지 않고도 소유권을 취득할 수
+        있습니다.
+      </p>
+    </section>
+
+    <!-- 섹션: 일반인도 가능한가 ★★ 핵심 -->
+    <section class="op-section">
+      <h2>일반인도 가능한가</h2>
+      <p class="op-message"><strong>법률상 개인도 가능하지만, 자금력과 위험관리 측면에서 일반적인 거래방식은 아닙니다.</strong></p>
+      <div class="pbam-table-wrap">
+        <table class="pbam-feasibility-table">
+          <thead>
+            <tr><th>질문</th><th>판단</th><th>설명</th></tr>
+          </thead>
+          <tbody>
+            {PBAM_FEASIBILITY_TABLE.map((row) => (
+              <tr>
+                <td>{row.item}</td>
+                <td><span class="pbam-feasibility-table__verdict" data-tone={verdictTone(row.verdict)}>{row.verdict}</span></td>
+                <td>{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 섹션: 일반인에게 현실적으로 어려운 이유 -->
+    <section class="op-section">
+      <h2>일반인에게 현실적으로 어려운 이유</h2>
+      <div class="pbam-reason-list">
+        {PBAM_DIFFICULTY_REASONS.map((reason, index) => (
+          <div class="pbam-reason-list__item">
+            <strong>{index + 1}. {reason.title}</strong>
+            {reason.body.map((paragraph) => <p>{paragraph}</p>)}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 섹션: 매수인이 안 갚으면? 오해 바로잡기 -->
+    <section class="op-section">
+      <h2>매수인이 돈을 갚지 않으면 어떻게 될까</h2>
+      <div class="pbam-misconception-grid">
+        {PBAM_MISCONCEPTIONS.map((item) => (
+          <div class="pbam-misconception-grid__card">
+            <p class="pbam-misconception-grid__myth">"{item.myth}"</p>
+            <p class="pbam-misconception-grid__reality">{item.reality}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 섹션: 대출규제 우회 논란 -->
+    <section class="op-section">
+      <h2>대출규제 우회 논란</h2>
+      <p class="op-message">이 부분은 '불법 여부'와 '정책적 논란'을 구분해야 합니다. 개인 간 잔금 지급 유예와 근저당권 설정 자체가 곧바로 불법으로 확인된 것은 아닙니다.</p>
+      <div class="pbam-table-wrap">
+        <table class="pbam-loan-limit-table">
+          <thead>
+            <tr><th>주택가격</th><th>주담대 최대 한도</th></tr>
+          </thead>
+          <tbody>
+            {PBAM_LOAN_LIMIT_TABLE.map((row) => (
+              <tr><td>{row.priceRange}</td><td>{row.maxLoan}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message">
+        <small>2025년 10월 16일 시행된 수도권·규제지역 기준. 이번 거래(29억원)는 25억원 초과 구간에 해당합니다.</small>
+      </p>
+
+      <div class="pbam-position-stack">
+        <div class="pbam-position-stack__item" data-role="fact">
+          <strong>확인된 사실</strong>등기부에 채권최고액 17억 7,700만원의 근저당이 설정됐습니다.
+        </div>
+        <div class="pbam-position-stack__item" data-role="government">
+          <strong>정부·여당 설명</strong>매수인의 사정을 고려한 통상적 거래라고 설명했습니다.
+        </div>
+        <div class="pbam-position-stack__item" data-role="opposition">
+          <strong>야당 주장</strong>대출규제 취지를 우회한 거래라고 비판했습니다.
+        </div>
+        <div class="pbam-position-stack__item" data-role="expert">
+          <strong>전문가 평가</strong>법적으로 가능하지만 세무·채권회수 위험이 있다는 지적이 나왔습니다.
+        </div>
+      </div>
+
+      <div class="pbam-conclusion-box">
+        이번 거래가 불법으로 확인된 것은 아닙니다. 다만 은행 대출이 제한된 고가주택 거래에서 매도인이 직접
+        잔금 지급을 유예하고 담보권을 취득했다는 점 때문에 규제의 형평성과 실효성에 관한 논란이 발생했습니다.
+        법적으로 가능한 거래와 일반 국민이 현실적으로 활용할 수 있는 거래는 구분해서 봐야 합니다.
+      </div>
+    </section>
+
+    <!-- 섹션: 은행 주담대 vs 매도인 금융 비교 -->
+    <section class="op-section">
+      <h2>은행 주담대와 무엇이 다를까</h2>
+      <div class="pbam-table-wrap">
+        <table class="pbam-lender-table">
+          <thead>
+            <tr><th>구분</th><th>은행 주택담보대출</th><th>매도인 금융</th></tr>
+          </thead>
+          <tbody>
+            {PBAM_LENDER_COMPARISON.map((row) => (
+              <tr><td>{row.label}</td><td>{row.bank}</td><td>{row.sellerFinancing}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="op-message"><small>사인 간 채무라도 실제 부채가 사라지는 것은 아닙니다. 향후 금융기관 대출을 신청할 때 채무현황과 상환부담이 심사에 영향을 줄 수 있습니다.</small></p>
+    </section>
+
+    <!-- 섹션: 자금조달계획서 -->
+    <section class="op-section">
+      <h2>자금조달계획서에는 어떻게 처리될까</h2>
+      <p class="op-message">
+        고가주택을 취득할 때에는 실제 자금의 출처와 차입구조를 사실대로 신고해야 합니다. 주택취득자금 조달 및
+        입주계획서는 금융기관 대출뿐 아니라 그 밖의 차입금 등 취득자금의 조달방법을 구분해 기재하도록
+        구성돼 있습니다. 허위 신고나 누락은 과태료 및 자금출처 조사 위험으로 이어질 수 있습니다. 매도인에게
+        지급하지 않은 잔금을 별도 채무로 남기는 거래라면 다음 자료를 명확히 준비할 필요가 있습니다.
+      </p>
+      <ul class="pbam-simple-list">
+        {PBAM_FUNDING_DISCLOSURE_ITEMS.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 섹션: 무이자라면 세금 문제는 -->
+    <section class="op-section">
+      <h2>무이자라면 세금 문제가 없을까</h2>
+      <p class="op-message">{PBAM_TAX_NOTES.intro}</p>
+      <div class="pbam-reason-list">
+        {PBAM_TAX_NOTES.points.map((point) => (
+          <div class="pbam-reason-list__item">
+            <strong>{point.title}</strong>
+            <p>{point.body}</p>
+          </div>
+        ))}
+      </div>
+      <p class="op-message">실제 거래에서는 반드시 세무사에게 다음을 확인하는 것이 안전합니다.</p>
+      <ul class="pbam-simple-list">
+        {PBAM_TAX_NOTES.checklist.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 섹션: 매도인 위험도 시뮬레이션 -->
+    <section class="op-section">
+      <h2>매도인 위험도 시뮬레이션</h2>
+      <p class="op-message"><small>다음은 실제 거래가 아닌 이해를 위한 가상 사례입니다. 실제 미지급 잔금을 15억원으로 가정합니다.</small></p>
+      <div class="pbam-table-wrap">
+        <table class="pbam-risk-table">
+          <thead>
+            <tr><th>시나리오</th><th>예상 경매 낙찰가</th><th>선순위 채권</th><th>세금·집행비용</th><th>회수 가능액</th></tr>
+          </thead>
+          <tbody>
+            {PBAM_RISK_SCENARIOS.map((scenario) => (
+              <tr>
+                <td>{scenario.label}</td>
+                <td>{formatWon(scenario.auctionPrice)}</td>
+                <td>{formatWon(scenario.seniorClaim)}</td>
+                <td>{formatWon(scenario.costs)}</td>
+                <td>{formatWon(scenario.recoverable)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {PBAM_RISK_SCENARIOS.map((scenario) => <p class="op-message"><small>{scenario.label}: {scenario.note}</small></p>)}
+      <p class="pbam-reverse-table__caption">근저당권 설정만으로 원금 전액이 보장되는 것은 아닙니다. 담보 순위와 예상 처분가치가 핵심입니다.</p>
+    </section>
+
+    <!-- 섹션: 이 거래가 가능한 매도인 조건 -->
+    <section class="op-section">
+      <h2>이 거래가 가능한 매도인 조건</h2>
+      <p class="op-message"><small>다음 조건을 많이 충족할수록 현실적으로 실행 가능성이 높습니다.</small></p>
+      <div class="pbam-table-wrap">
+        <table class="pbam-conditions-table">
+          <thead>
+            <tr><th>조건</th><th>중요도</th></tr>
+          </thead>
+          <tbody>
+            {PBAM_SELLER_CONDITIONS.map((row) => (
+              <tr>
+                <td>{row.condition}</td>
+                <td><span class="pbam-conditions-table__badge" data-level={row.importance}>{row.importance}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 섹션: 체크리스트 -->
+    <section class="op-section">
+      <h2>실제 거래 전 체크리스트</h2>
+      <div class="pbam-checklist-grid">
+        {PBAM_CHECKLISTS.map((group) => (
+          <div class="pbam-checklist-grid__group">
+            <h3>{group.title}</h3>
+            <ul>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 섹션: 최종 정리 -->
+    <section class="op-section">
+      <h2>최종 정리</h2>
+      <p class="op-message">{PBAM_FINAL_SUMMARY}</p>
+      <div class="pbam-conclusion-box">
+        가능하냐고 묻는다면 가능하지만, 누구나 할 수 있느냐고 묻는다면 그렇지 않습니다. 매도인이 거액의 대금을
+        나중에 받아도 될 정도의 자금력과 채권회수 위험을 감당할 능력이 있어야 하기 때문입니다.
+      </div>
+    </section>
+
+    <!-- 섹션: 이용 안내 -->
+    <section class="op-section">
+      <h2>이용 안내</h2>
+      <p class="op-message"><small>이 페이지는 공개된 보도와 관련 법령을 토대로 거래구조를 설명한 정보성 콘텐츠입니다.</small></p>
+      <ul class="pbam-simple-list">
+        {PBAM_USAGE_NOTES.map((note) => <li>{note}</li>)}
+      </ul>
+    </section>
+
+    <SeoContent
+      introTitle="대통령 분당 아파트 근저당 거래 핵심 정리"
+      intro={PBAM_SEO_INTRO}
+      criteria={PBAM_SEO_CRITERIA}
+      faq={PBAM_FAQ}
+      related={PBAM_RELATED_LINKS}
+    />
+  </main>
+</BaseLayout>

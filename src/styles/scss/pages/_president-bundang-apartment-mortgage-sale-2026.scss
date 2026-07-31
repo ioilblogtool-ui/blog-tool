@@ -1,0 +1,400 @@
+.pbam-page {
+  --pbam-ink: #172033;
+  --pbam-muted: #667085;
+  --pbam-line: #d8e0ea;
+  --pbam-primary: #1a56db;
+  --pbam-neutral-bg: #f5f7fb;
+  --pbam-success-bg: #ecfdf3;
+  --pbam-success-ink: #027a48;
+  --pbam-warn-bg: #fffaeb;
+  --pbam-warn-ink: #92400e;
+  --pbam-danger-bg: #fef2f2;
+  --pbam-danger-ink: #b42318;
+
+  .pbam-kpi-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pbam-kpi-card {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--pbam-line);
+    border-radius: 8px;
+    background: #fff;
+
+    strong {
+      color: var(--pbam-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      color: var(--pbam-ink);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    small {
+      color: var(--pbam-muted);
+      font-size: 12px;
+    }
+  }
+
+  .pbam-summary-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding: 10px 14px;
+      border: 1px solid var(--pbam-line);
+      border-radius: 8px;
+      background: var(--pbam-neutral-bg);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  }
+
+  .pbam-mini-timeline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    &__item {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 14px;
+      border: 1px solid var(--pbam-line);
+      border-radius: 8px;
+
+      strong {
+        display: block;
+        color: var(--pbam-primary);
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--pbam-ink);
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .pbam-flow-compare {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    &__col {
+      padding: 14px;
+      border: 1px solid var(--pbam-line);
+      border-radius: 8px;
+
+      h3 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: var(--pbam-muted);
+      }
+
+      ol {
+        margin: 0;
+        padding-left: 18px;
+        display: grid;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--pbam-ink);
+        line-height: 1.55;
+      }
+    }
+
+    &__col--this-case {
+      border-color: var(--pbam-primary);
+      background: var(--pbam-neutral-bg);
+    }
+  }
+
+  .pbam-table-wrap {
+    overflow-x: auto;
+  }
+
+  .pbam-comparison-table,
+  .pbam-reverse-table,
+  .pbam-feasibility-table,
+  .pbam-loan-limit-table,
+  .pbam-key-facts-table,
+  .pbam-ownership-table,
+  .pbam-lender-table,
+  .pbam-risk-table,
+  .pbam-conditions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--pbam-line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--pbam-muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    td {
+      color: var(--pbam-ink);
+    }
+  }
+
+  .pbam-reverse-table__caption {
+    margin: 10px 0 0;
+    padding: 10px 12px;
+    border: 1px dashed var(--pbam-line);
+    border-radius: 8px;
+    color: var(--pbam-muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .pbam-feasibility-table__verdict {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &[data-tone="possible"] {
+      background: var(--pbam-success-bg);
+      color: var(--pbam-success-ink);
+    }
+
+    &[data-tone="caution"] {
+      background: var(--pbam-warn-bg);
+      color: var(--pbam-warn-ink);
+    }
+
+    &[data-tone="hard"] {
+      background: var(--pbam-danger-bg);
+      color: var(--pbam-danger-ink);
+    }
+  }
+
+  .pbam-position-stack {
+    display: grid;
+    gap: 10px;
+    margin: 14px 0;
+
+    &__item {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--pbam-line);
+      font-size: 13px;
+      line-height: 1.6;
+
+      strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 12px;
+      }
+
+      &[data-role="fact"] {
+        background: #fff;
+      }
+
+      &[data-role="government"] {
+        background: var(--pbam-neutral-bg);
+      }
+
+      &[data-role="opposition"] {
+        background: var(--pbam-warn-bg);
+      }
+
+      &[data-role="expert"] {
+        background: var(--pbam-success-bg);
+      }
+    }
+  }
+
+  .pbam-conclusion-box {
+    padding: 16px;
+    border: 1px solid var(--pbam-primary);
+    border-radius: 8px;
+    background: var(--pbam-neutral-bg);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--pbam-ink);
+  }
+
+  .pbam-key-facts-table {
+    td:first-child {
+      color: var(--pbam-muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    td:last-child {
+      font-weight: 700;
+    }
+  }
+
+  .pbam-reason-list {
+    display: grid;
+    gap: 12px;
+
+    &__item {
+      padding: 14px;
+      border: 1px solid var(--pbam-line);
+      border-radius: 8px;
+
+      strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--pbam-primary);
+        font-size: 14px;
+      }
+
+      p {
+        margin: 6px 0 0;
+        font-size: 13px;
+        color: var(--pbam-ink);
+        line-height: 1.6;
+      }
+    }
+  }
+
+  .pbam-misconception-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    &__card {
+      padding: 14px;
+      border: 1px solid var(--pbam-danger-bg);
+      border-radius: 8px;
+      background: var(--pbam-neutral-bg);
+    }
+
+    &__myth {
+      margin: 0 0 8px;
+      color: var(--pbam-danger-ink);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    &__reality {
+      margin: 0;
+      font-size: 13px;
+      color: var(--pbam-ink);
+      line-height: 1.6;
+    }
+  }
+
+  .pbam-simple-list {
+    display: grid;
+    gap: 6px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding: 8px 12px;
+      border: 1px solid var(--pbam-line);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--pbam-ink);
+    }
+  }
+
+  .pbam-conditions-table__badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &[data-level="매우 높음"] {
+      background: var(--pbam-danger-bg);
+      color: var(--pbam-danger-ink);
+    }
+
+    &[data-level="높음"] {
+      background: var(--pbam-warn-bg);
+      color: var(--pbam-warn-ink);
+    }
+  }
+
+  .pbam-checklist-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    &__group {
+      padding: 14px;
+      border: 1px solid var(--pbam-line);
+      border-radius: 8px;
+
+      h3 {
+        margin: 0 0 10px;
+        font-size: 14px;
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 8px;
+      }
+
+      li {
+        padding: 8px 10px;
+        border: 1px solid var(--pbam-line);
+        border-radius: 6px;
+        font-size: 13px;
+        color: var(--pbam-ink);
+      }
+    }
+  }
+
+  @media (max-width: 900px) {
+    .pbam-kpi-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 720px) {
+    .pbam-flow-compare,
+    .pbam-checklist-grid,
+    .pbam-misconception-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .pbam-kpi-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --pbam-neutral-bg: #1c2433;
+    --pbam-success-bg: #0f2e1f;
+    --pbam-warn-bg: #3a2e10;
+    --pbam-danger-bg: #3a1414;
+  }
+}
