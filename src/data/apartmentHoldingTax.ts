@@ -215,6 +215,7 @@ export const AHT_RELATED_LINKS: RelatedLink[] = [
   { href: "/tools/real-estate-acquisition-tax/", label: "부동산 취득세 계산기", desc: "매수 시점 세금과 보유세를 나란히 비교" },
   { href: "/tools/jeonwolse-conversion/", label: "전월세 전환율 계산기", desc: "보유 대신 임차 비용을 환산" },
   { href: "/reports/seoul-apartment-price-2026/", label: "서울 아파트 가격 리포트", desc: "공시가격과 시세 변동을 함께 점검" },
+  { href: "/reports/real-estate-tax-reform-2026/", label: "2026 부동산 세제개편안 정리", desc: "종부세 공제·공정시장가액비율 개편안 확인" },
 ];
 
 export const AHT_SOURCE_LINKS = [
@@ -257,5 +258,10 @@ export const AHT_FAQ: FaqItem[] = [
     question: "계산 결과가 실제 고지서와 같나요?",
     answer:
       "같지 않을 수 있습니다. 실제 세액은 납세자별 합산, 공동명의, 합산배제, 감면, 세부담상한, 지자체 조례와 고지 시스템에 따라 달라집니다.",
+  },
+  {
+    question: "2026년 8월 발표된 세제개편안은 이 계산기에 반영됐나요?",
+    answer:
+      "아직 반영하지 않았습니다. 정부는 2026년 8월 3일 1세대 1주택 종부세 공제를 실거주 14억 원·비거주 9억 원으로 나누고, 공정시장가액비율을 일반 70%·3주택 이상 80%로 올리는 개편안을 발표했습니다. 다만 국회 통과 전 정부안이라 이 계산기는 2026년 현행 기준(공제 12억 원, 비율 60%)으로 계산합니다.",
   },
 ];

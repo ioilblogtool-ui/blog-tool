@@ -1,8 +1,8 @@
-.rtr-page {
+.isar-page {
   display: grid;
   gap: 28px;
 
-  .rtr-section-heading {
+  .isar-section-heading {
     display: grid;
     gap: 6px;
     margin-bottom: 18px;
@@ -29,7 +29,7 @@
   }
 
   // 상태 카드
-  .rtr-status-card {
+  .isar-status-card {
     border: 1px solid #dde3f0;
     border-radius: 8px;
     background: #f8faff;
@@ -51,7 +51,7 @@
     }
   }
 
-  .rtr-status-badge {
+  .isar-status-badge {
     width: fit-content;
     display: inline-block;
     padding: 4px 10px;
@@ -63,7 +63,7 @@
   }
 
   // 타임라인
-  .rtr-timeline {
+  .isar-timeline {
     display: flex;
     gap: 12px;
     list-style: none;
@@ -71,7 +71,7 @@
     margin: 0;
   }
 
-  .rtr-timeline-step {
+  .isar-timeline-step {
     flex: 1;
     text-align: center;
     border-top: 3px solid #dde3f0;
@@ -107,16 +107,17 @@
   }
 
   // 비교표
-  .rtr-table-wrap {
+  .isar-table-wrap {
     overflow-x: auto;
     margin-bottom: 8px;
     border: 1px solid #dde3f0;
     border-radius: 8px;
   }
 
-  .rtr-compare-table {
+  .isar-compare-table,
+  .isar-source-table {
     width: 100%;
-    min-width: 720px;
+    min-width: 760px;
     border-collapse: collapse;
     font-size: 13px;
     background: #f8faff;
@@ -153,214 +154,115 @@
     }
   }
 
-  .rtr-source-type-badge {
+  .isar-confidence-badge {
     display: inline-block;
     margin-right: 6px;
     margin-bottom: 4px;
     padding: 2px 8px;
     border-radius: 4px;
-    background: #f1f4fa;
     font-size: 11px;
     font-weight: 700;
-    color: #5b6472;
     white-space: nowrap;
 
-    &[data-source-type="정부 발표안"] {
+    &[data-level="문답자료 확인"] {
       background: #dcfce7;
       color: #15803d;
     }
 
-    &[data-source-type="전문가 제언"] {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    &[data-source-type="정부·국회 논의"] {
-      background: #eaf1ff;
-      color: #1a56db;
-    }
-
-    &[data-source-type="원칙 제시"] {
-      background: #e9f0fb;
-      color: #374151;
-    }
-
-    &[data-source-type="전망 단계"] {
+    &[data-level="언론 보도"] {
       background: #f1f4fa;
-      color: #9ca3af;
+      color: #5b6472;
+    }
+
+    &[data-level="확인 필요"] {
+      background: #fff4e5;
+      color: #b45309;
     }
   }
 
-  .rtr-table-note {
+  .isar-table-note {
     font-size: 12px;
     color: #9ca3af;
     margin-top: 6px;
     line-height: 1.6;
   }
 
-  // 이미 시행 중인 제도 박스
-  .rtr-current-box {
-    border: 1px solid #bbf7d0;
-    border-radius: 8px;
-    background: #f0fdf4;
-    padding: 20px;
+  // 이월 폐지 예시
+  .isar-carryover-grid {
     display: grid;
-    gap: 8px;
-
-    h2 {
-      margin: 0;
-      font-size: clamp(17px, 2.4vw, 22px);
-      color: #111928;
-    }
-
-    p {
-      margin: 0;
-      color: #374151;
-      line-height: 1.6;
-    }
-
-    a {
-      width: fit-content;
-      color: #16a34a;
-      font-weight: 700;
-      font-size: 13px;
-      text-decoration: none;
-
-      &:hover { text-decoration: underline; }
-    }
-  }
-
-  .rtr-current-badge {
-    width: fit-content;
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: #16a34a;
-    color: #fff;
-    font-weight: 900;
-    font-size: 12px;
-  }
-
-  // 시뮬레이션 표
-  .rtr-simulation-table,
-  .rtr-ltd-table,
-  .rtr-procedure-table,
-  .rtr-source-table {
-    width: 100%;
-    min-width: 640px;
-    border-collapse: collapse;
-    font-size: 13px;
-    background: #f8faff;
-
-    caption {
-      caption-side: top;
-      text-align: left;
-      font-size: 12px;
-      color: #6b7280;
-      padding: 12px 14px 8px;
-    }
-
-    th, td {
-      padding: 12px 14px;
-      border-bottom: 1px solid #e5e9f5;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    thead th {
-      font-weight: 900;
-      color: #374151;
-      background: #eef2fb;
-    }
-
-    tbody tr:last-child td { border-bottom: none; }
-
-    a {
-      color: #1a56db;
-      font-weight: 700;
-      text-decoration: none;
-
-      &:hover { text-decoration: underline; }
-    }
-  }
-
-  .rtr-simulation-increase,
-  .rtr-ltd-total {
-    font-weight: 900;
-    color: #1a56db;
-  }
-
-  .rtr-source-table {
-    min-width: 760px;
-  }
-
-  // 체크리스트
-  .rtr-checklist {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 10px;
-  }
-
-  .rtr-checklist-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 14px;
-    color: #374151;
-    line-height: 1.5;
-  }
-
-  .rtr-checklist-box {
-    flex-shrink: 0;
-    width: 18px;
-    height: 18px;
-    margin-top: 1px;
-    border: 2px solid #c7d2e3;
-    border-radius: 4px;
-  }
-
-  // CTA 밴드
-  .rtr-cta-band {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
+  }
+
+  .isar-carryover-card {
     border: 1px solid #dde3f0;
     border-radius: 8px;
     background: #f8faff;
-    padding: 18px 20px;
-    flex-wrap: wrap;
+    padding: 18px;
+    display: grid;
+    gap: 10px;
 
-    div { flex: 1; }
-
-    strong {
-      display: block;
+    h3 {
+      margin: 0;
       font-size: 15px;
-      font-weight: 900;
       color: #111928;
-      margin-bottom: 4px;
     }
 
-    p {
-      font-size: 13px;
-      color: #4b5563;
+    ul {
+      list-style: none;
       margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    li {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 13px;
+
+      strong {
+        color: #374151;
+      }
+
+      span {
+        color: #1a56db;
+        font-weight: 700;
+      }
+    }
+
+    &--after {
+      border-color: #fca5a5;
+      background: #fff7f7;
+
+      li span {
+        color: #dc2626;
+      }
     }
   }
 
-  // 개념 설명 / 유형별 영향 / CTA 그리드
-  .rtr-explainer-grid,
-  .rtr-impact-grid,
-  .rtr-cta-grid {
+  .isar-carryover-insight {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #f8f6ee;
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.6;
+  }
+
+  // 개념 설명 / 투자 성향 시나리오 / CTA 그리드
+  .isar-explainer-grid,
+  .isar-persona-grid,
+  .isar-cta-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
   }
 
-  .rtr-explainer-card,
-  .rtr-impact-card {
+  .isar-explainer-card,
+  .isar-persona-card {
     border: 1px solid #dde3f0;
     border-radius: 8px;
     background: #f8faff;
@@ -384,33 +286,33 @@
     }
   }
 
-  .rtr-impact-direction {
+  .isar-persona-direction {
     width: fit-content;
     font-size: 12px;
     font-weight: 900;
     color: #6b7280;
   }
 
-  .rtr-impact-card {
-    &[data-direction="영향 제한 가능"] .rtr-impact-direction {
+  .isar-persona-card {
+    &[data-direction="기존 ISA 유리"] .isar-persona-direction {
+      color: #1a56db;
+    }
+
+    &[data-direction="생산적금융 ISA 유리"] .isar-persona-direction {
       color: #16a34a;
     }
 
-    &[data-direction="부담 증가 가능"] .rtr-impact-direction {
-      color: #dc2626;
+    &[data-direction="혜택 제한적"] .isar-persona-direction {
+      color: #6b7280;
     }
 
-    &[data-direction="기준에 따라 다름"] .rtr-impact-direction {
-      color: #92400e;
-    }
-
-    &[data-direction="현재 특례 확인"] .rtr-impact-direction {
-      color: #1a56db;
+    &[data-direction="확인 필요"] .isar-persona-direction {
+      color: #b45309;
     }
   }
 
   // CTA 카드
-  .rtr-cta-card {
+  .isar-cta-card {
     display: grid;
     gap: 6px;
     border: 1px solid #dde3f0;
@@ -441,12 +343,12 @@
 
   // 반응형
   @media (max-width: 720px) {
-    .rtr-timeline {
+    .isar-timeline {
       flex-direction: column;
       gap: 0;
     }
 
-    .rtr-timeline-step {
+    .isar-timeline-step {
       text-align: left;
       border-top: none;
       border-left: 3px solid #dde3f0;
@@ -460,12 +362,16 @@
         border-left-color: #16a34a;
       }
     }
+
+    .isar-carryover-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   @media (max-width: 820px) {
-    .rtr-explainer-grid,
-    .rtr-impact-grid,
-    .rtr-cta-grid {
+    .isar-explainer-grid,
+    .isar-persona-grid,
+    .isar-cta-grid {
       grid-template-columns: 1fr;
     }
   }

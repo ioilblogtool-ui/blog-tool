@@ -1528,4 +1528,11 @@ export const reports: ReportMeta[] = [
     order: 85,
     badges: ["신규", "부동산", "근저당", "셀러파이낸싱"],
   },
+  {
+    slug: "isa-reform-2026",
+    title: "2026 ISA 개편안 정리 | 생산적금융 ISA·이월 폐지 총정리",
+    description: "2026년 8월 발표된 ISA 세제개편안을 정리했습니다. 생산적금융 ISA 신설, 기존 ISA 이월 폐지·계약기간 5년 제한 내용과 투자 성향별 영향을 확인하세요.",
+    order: 86,
+    badges: ["신규", "세금", "ISA", "2026"],
+  },
 ];

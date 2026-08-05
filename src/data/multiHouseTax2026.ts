@@ -116,7 +116,7 @@ export const MHT_META = {
   title: "2026 다주택자 세금 완전 분석",
   description:
     "2026년 다주택자 세금을 취득세, 종합부동산세, 양도소득세, 임대소득세로 나눠 분석합니다.",
-  updatedAt: "2026-05-22",
+  updatedAt: "2026-08-05",
 };
 
 export const POLICY_STATUS_LABELS: Record<PolicyStatus, string> = {
@@ -141,16 +141,22 @@ export const MHT_SUMMARY_CARDS = [
     status: "checkRequired" as PolicyStatus,
   },
   {
-    label: "양도세 중과 유예",
-    value: "2026.5.9 종료",
-    description: "국세청 뉴스레터 기준 다주택자 양도세 중과 유예는 2026년 5월 9일 종료로 안내됐습니다.",
-    status: "temporary" as PolicyStatus,
+    label: "양도세 중과",
+    value: "2026.5.9 재시행",
+    description: "국세청 뉴스레터 기준 다주택자 양도세 중과 유예는 2026년 5월 9일 종료되고 중과가 재시행됐습니다. 8월 3일 개편안은 2027~2028년 한시 완화를 다시 예고했습니다.",
+    status: "confirmed" as PolicyStatus,
   },
   {
     label: "종부세 기본공제",
-    value: "일반 9억·1주택 12억",
-    description: "주택분 종부세는 인별 공시가격 합계에서 공제금액을 차감해 판단합니다.",
+    value: "일반 9억·1주택 12억 (현행)",
+    description: "주택분 종부세는 인별 공시가격 합계에서 공제금액을 차감해 판단합니다. 2026년 8월 3일 발표된 개편안은 1세대 1주택 공제를 실거주 14억·비거주 9억으로 나누는 안을 담고 있지만, 아직 국회 통과 전입니다.",
     status: "confirmed" as PolicyStatus,
+  },
+  {
+    label: "종부세 세제개편안",
+    value: "가액 중심·실거주 차등",
+    description: "8월 3일 발표안은 주택 수 기준을 사실상 폐지하고 합산 공시가격 중심으로 바꾸며, 공정시장가액비율을 70~80%로 올리는 내용을 포함합니다.",
+    status: "proposed" as PolicyStatus,
   },
   {
     label: "임대소득 기준",
@@ -196,7 +202,7 @@ export const MHT_STAGES: MultiHouseTaxStageSummary[] = [
     headline: "양도세 중과",
     mainTaxes: ["양도소득세", "지방소득세"],
     keyVariables: ["양도일", "보유기간", "조정대상지역", "매도 순서"],
-    multiHouseIssue: "2026년 5월 9일 이후 중과 적용 여부와 장기보유특별공제 제한이 쟁점입니다.",
+    multiHouseIssue: "2026년 5월 9일 이후 중과 적용 여부와 장기보유특별공제 제한이 쟁점이며, 2027~2028년에는 중과 한시 완화안(개편안)도 함께 확인해야 합니다.",
     checkPoint: "계약일이 아니라 양도일 기준 판단 항목이 많으므로 신고 전 확인이 필요합니다.",
   },
   {
@@ -213,13 +219,23 @@ export const MHT_STAGES: MultiHouseTaxStageSummary[] = [
 export const MHT_POLICY_WATCH: PolicyWatchItem[] = [
   {
     id: "transfer-tax-surcharge-end",
-    title: "다주택자 양도세 중과 유예 종료",
-    status: "temporary",
-    effectiveDateLabel: "2026년 5월 9일 종료 안내",
-    summary: "국세청 뉴스레터는 다주택자 양도소득세 중과 유예가 2026년 5월 9일 종료된다고 안내했습니다.",
+    title: "다주택자 양도세 중과 재시행",
+    status: "confirmed",
+    effectiveDateLabel: "2026년 5월 9일부터 재시행",
+    summary: "국세청 뉴스레터는 다주택자 양도소득세 중과 유예가 2026년 5월 9일 종료되고 중과가 재시행된다고 안내했습니다.",
     impact: "조정대상지역 내 주택 양도 시 2주택 +20%p, 3주택 이상 +30%p 중과 여부와 장기보유특별공제 제한을 확인해야 합니다.",
     sourceLabel: "국세청 뉴스레터",
     sourceUrl: "https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=2209&nttSn=1350545",
+  },
+  {
+    id: "transfer-tax-surcharge-relief-2027-2028",
+    title: "다주택 양도세 중과 한시 완화 (개편안)",
+    status: "proposed",
+    effectiveDateLabel: "2027~2028년 한시 완화, 2029년 원상복귀 예정",
+    summary: "2026년 8월 3일 발표된 세제개편안은 2027년 2주택 +5%p·3주택 이상 +10%p, 2028년 각각 +10%p·+15%p로 중과를 2년간 낮추는 방안을 담고 있습니다.",
+    impact: "매도를 고려 중인 다주택자는 완화 구간(2027~2028년)에 맞춰 처분 시점을 검토할 수 있지만, 소득세법 개정과 국회 통과가 먼저 필요합니다.",
+    sourceLabel: "다음(언론사 종합) · 2026 세제개편안 양도세 정리",
+    sourceUrl: "https://v.daum.net/v/11aes1tW5L",
   },
   {
     id: "comprehensive-real-estate-tax-deduction",
@@ -499,10 +515,10 @@ export const MHT_STRATEGIES: StrategyItem[] = [
 
 export const MHT_SOURCE_LINKS: SourceLink[] = [
   {
-    label: "다주택자 양도세 중과 유예 종료",
+    label: "다주택자 양도세 중과 재시행 안내",
     organization: "국세청",
     url: "https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=2209&nttSn=1350545",
-    status: "temporary",
+    status: "confirmed",
     note: "2026년 4월 27일 국세청 뉴스레터 기준",
   },
   {
@@ -539,7 +555,12 @@ export const MHT_FAQ: FaqItem[] = [
   {
     question: "2026년에 다주택자 양도세 중과는 적용되나요?",
     answer:
-      "다주택자가 조정대상지역 내 주택을 양도하는 경우 중과 규정이 쟁점입니다. 국세청은 중과 유예가 2026년 5월 9일 종료된다고 안내했으므로 양도일, 보유기간, 주택 수 산정, 지역 상태를 최신 기준으로 확인해야 합니다.",
+      "네. 국세청은 중과 유예가 2026년 5월 9일 종료돼 다주택자 양도세 중과가 재시행된다고 안내했습니다. 조정대상지역 내 주택을 양도하는 경우 양도일, 보유기간, 주택 수 산정, 지역 상태를 최신 기준으로 확인해야 합니다.",
+  },
+  {
+    question: "다주택 양도세 중과가 다시 완화된다는 게 사실인가요?",
+    answer:
+      "2026년 8월 3일 발표된 세제개편안에 포함된 내용입니다. 2027년 2주택 +5%p·3주택 이상 +10%p, 2028년 각각 +10%p·+15%p로 2년간 한시 완화하고, 2029년부터 다시 기존 중과세율(2주택 +20%p, 3주택 이상 +30%p)로 복귀하는 방안입니다. 다만 소득세법 개정과 국회 통과가 필요해 아직 확정된 것은 아닙니다.",
   },
   {
     question: "2주택자도 종부세가 나오나요?",
