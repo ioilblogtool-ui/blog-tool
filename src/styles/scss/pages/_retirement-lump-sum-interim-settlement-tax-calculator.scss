@@ -1,0 +1,439 @@
+.rist-page {
+  --rist-ink: #172026;
+  --rist-muted: #5a6673;
+  --rist-line: #dbe3ea;
+  --rist-soft: #f6f9fb;
+  --rist-accent: #1a56db;
+  --rist-accent-dark: #123a94;
+  --rist-danger: #dc2626;
+
+  color: var(--rist-ink);
+}
+
+.rist-input-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.rist-preset-grid,
+.rist-result-grid,
+.rist-mini-grid,
+.rist-related-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.rist-preset-btn {
+  border: 1px solid var(--rist-line);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+
+  strong,
+  span {
+    display: block;
+  }
+
+  strong {
+    color: var(--rist-ink);
+    font-size: 0.94rem;
+  }
+
+  span {
+    margin-top: 4px;
+    color: var(--rist-muted);
+    font-size: 0.82rem;
+  }
+
+  &:hover {
+    border-color: var(--rist-accent);
+  }
+
+  &.is-active {
+    border-color: var(--rist-accent);
+    background: #eef2ff;
+  }
+}
+
+.rist-warning-card {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: #991b1b;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 4px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// ─── 상단 판정 요약 ───────────────────────────────────────────
+.rist-verdict-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.rist-verdict-badge {
+  width: fit-content;
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 0.86rem;
+  background: var(--rist-soft);
+  color: var(--rist-muted);
+
+  &[data-tone="favorable"] {
+    background: #eaf7ef;
+    color: #16a34a;
+  }
+
+  &[data-tone="unfavorable"] {
+    background: #fef2f2;
+    color: var(--rist-danger);
+  }
+
+  &[data-tone="neutral"] {
+    background: #eef2ff;
+    color: var(--rist-accent-dark);
+  }
+
+  &[data-tone="unknown"] {
+    background: #fff4e5;
+    color: #b45309;
+  }
+}
+
+.rist-verdict-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rist-verdict-card {
+  border: 1px solid var(--rist-line);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 16px;
+  min-width: 0;
+
+  span {
+    display: block;
+    color: var(--rist-muted);
+    font-size: 0.84rem;
+    font-weight: 800;
+  }
+
+  strong {
+    display: block;
+    margin-top: 8px;
+    font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+    color: var(--rist-ink);
+  }
+}
+
+.rist-verdict-card--main {
+  background: linear-gradient(180deg, #eef2ff, #ffffff);
+  border-color: rgba(26, 86, 219, 0.35);
+
+  strong {
+    color: var(--rist-accent-dark);
+    font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+  }
+}
+
+.rist-verdict-card--impact {
+  &[data-tone="favorable"] strong { color: #16a34a; }
+  &[data-tone="unfavorable"] strong { color: var(--rist-danger); }
+  &[data-tone="unknown"] strong { color: #b45309; }
+}
+
+.rist-verdict-guidance {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--rist-soft);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--rist-ink);
+}
+
+@media (min-width: 720px) {
+  .rist-verdict-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+// ─── 총세금 비교 막대그래프 (CSS bar, 라이브러리 없음) ───────────
+.rist-bar-chart {
+  display: grid;
+  gap: 14px;
+}
+
+.rist-bar-row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.rist-bar-label {
+  font-size: 0.8rem;
+  color: var(--rist-muted);
+  line-height: 1.4;
+
+  small {
+    color: #9aa5b1;
+  }
+}
+
+.rist-bar-track {
+  height: 22px;
+  border-radius: 999px;
+  background: var(--rist-soft);
+  overflow: hidden;
+
+  i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: var(--rist-muted);
+    transition: width 0.25s ease;
+  }
+}
+
+.rist-bar-track--accent i {
+  background: var(--rist-accent);
+}
+
+.rist-bar-row strong {
+  font-size: 0.9rem;
+  color: var(--rist-ink);
+  white-space: nowrap;
+}
+
+// ─── 세금·실수령액 구성 (누적 막대) ────────────────────────────
+.rist-composition-bar {
+  display: flex;
+  width: 100%;
+  height: 26px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--rist-soft);
+}
+
+.rist-composition-net {
+  display: block;
+  height: 100%;
+  background: var(--rist-accent);
+}
+
+.rist-composition-income {
+  display: block;
+  height: 100%;
+  background: #f59e0b;
+}
+
+.rist-composition-local {
+  display: block;
+  height: 100%;
+  background: #dc2626;
+}
+
+.rist-composition-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: var(--rist-muted);
+
+  span::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .rist-legend-net::before { background: var(--rist-accent); }
+  .rist-legend-income::before { background: #f59e0b; }
+  .rist-legend-local::before { background: #dc2626; }
+}
+
+// ─── 계산 흐름도 ─────────────────────────────────────────────
+.rist-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--rist-line);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    color: var(--rist-ink);
+    background: #ffffff;
+  }
+}
+
+.rist-flow-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--rist-accent);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.rist-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.rist-compare-card {
+  border: 1px solid var(--rist-line);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 16px;
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: 0.94rem;
+    color: var(--rist-ink);
+  }
+}
+
+.rist-mini-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  div {
+    border: 1px solid var(--rist-line);
+    border-radius: 8px;
+    background: var(--rist-soft);
+    padding: 12px;
+  }
+
+  span,
+  strong {
+    display: block;
+  }
+
+  span {
+    color: var(--rist-muted);
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  strong {
+    margin-top: 4px;
+    font-size: 0.95rem;
+    color: var(--rist-ink);
+  }
+}
+
+.rist-breakdown-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.rist-breakdown-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+
+  th,
+  td {
+    border-bottom: 1px solid var(--rist-line);
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--rist-soft);
+    font-weight: 900;
+    color: var(--rist-ink);
+  }
+}
+
+.rist-total-row td {
+  background: #eef2ff;
+  color: var(--rist-ink);
+  font-size: 0.94rem;
+  font-weight: 900;
+}
+
+.rist-message-panel p {
+  margin: 0 0 10px;
+  line-height: 1.7;
+  color: var(--rist-ink);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.rist-related-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  a {
+    display: block;
+    border: 1px solid var(--rist-line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--rist-ink);
+    text-decoration: none;
+    padding: 16px;
+  }
+
+  strong,
+  span {
+    display: block;
+  }
+
+  strong {
+    color: var(--rist-accent-dark);
+    font-size: 1rem;
+  }
+
+  span {
+    margin-top: 4px;
+    color: var(--rist-muted);
+    font-size: 0.86rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .rist-compare-grid,
+  .rist-mini-grid,
+  .rist-related-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rist-bar-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

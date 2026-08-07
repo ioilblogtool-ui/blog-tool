@@ -553,6 +553,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "retirement-lump-sum-interim-settlement-tax-calculator",
+    title: "퇴직금 중간정산 세금 계산기",
+    description: "근속연수·정산금액을 입력하면 근속연수공제·환산급여공제를 적용한 퇴직소득세를 계산합니다. 중간정산 없이 계속근무했을 때와 세금 차이까지 비교하고, 법정 중간정산 사유도 확인하세요.",
+    order: 4.86,
+    eyebrow: "퇴직소득세 계산기",
+    category: "투자·재테크",
+    iframeReady: false,
+    badges: ["신규", "퇴직소득세", "중간정산"],
+    previewStats: [
+      { label: "핵심 결과", value: "중간정산 세금 차이" },
+      { label: "포함", value: "법정 사유 체크리스트" },
+    ],
+  },
+  {
     slug: "retirement",
     title: "퇴직금 계산기",
     description: "평균임금 기준 퇴직금과 세후 추정액을 계산하는 페이지",

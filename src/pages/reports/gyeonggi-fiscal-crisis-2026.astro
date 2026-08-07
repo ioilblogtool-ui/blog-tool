@@ -1,0 +1,283 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  GFC_META,
+  GFC_KPI_CARDS,
+  GFC_CAUSE_CARDS,
+  GFC_SHORTFALL_ITEMS,
+  GFC_POLICY_MEASURES,
+  GFC_DEBT_TIMELINE,
+  GFC_DEBT_CAUTION,
+  GFC_FISCAL_INDEPENDENCE,
+  GFC_FISCAL_INDEPENDENCE_CAUTION,
+  GFC_RESPONSIBILITY_CLAIMS,
+  GFC_SOURCES,
+  GFC_FAQ,
+  GFC_SEO_INTRO,
+  GFC_SEO_CRITERIA,
+  GFC_RELATED_LINKS,
+} from "../../data/gyeonggiFiscalCrisis2026";
+
+const faqItems = GFC_FAQ.map((item) => ({ question: item.q, answer: item.a }));
+const related = GFC_RELATED_LINKS.map((item) => ({ href: item.href, label: item.label }));
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const siteUrl = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const pageUrl = `${siteUrl}/reports/${GFC_META.slug}/`;
+
+const badgeClass = (badge: string) =>
+  badge === "공식" ? "official" : badge === "확인 필요" ? "check" : "ref";
+
+const governorClass: Record<string, string> = {
+  이재명: "lee",
+  권한대행: "acting",
+  김동연: "kim",
+  추미애: "chu",
+};
+
+const shortfallMax = Math.max(...GFC_SHORTFALL_ITEMS.map((i) => i.amountEokwon));
+const debtMax = Math.max(...GFC_DEBT_TIMELINE.map((d) => d.debtEokwon));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": `${pageUrl}#article`,
+      url: pageUrl,
+      name: GFC_META.seoTitle,
+      description: GFC_META.seoDescription,
+      inLanguage: "ko-KR",
+      datePublished: GFC_META.updatedAt,
+      dateModified: GFC_META.updatedAt,
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${pageUrl}#faq`,
+      mainEntity: GFC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.a,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={GFC_META.seoTitle} description={GFC_META.seoDescription} jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page gfc-page">
+    <CalculatorHero
+      eyebrow="경기도 재정 비상 선언"
+      title={GFC_META.title}
+      description="2026-08-05 추미애 지사가 선언한 재정 비상 상황을 숫자로 정리하고, 이재명·김동연·추미애 3개 임기의 채무·재정자립도를 비교합니다."
+    />
+
+    <InfoNotice
+      title="데이터 기준 및 중립성 안내"
+      lines={[
+        `${GFC_META.dataSourceLabel} 기준으로 정리했습니다. 기준일: ${GFC_META.updatedAt}`,
+        GFC_META.notice,
+        GFC_META.neutralityNotice,
+      ]}
+    />
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-kpi-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">핵심 수치</p>
+        <h2 id="gfc-kpi-title">41.7조 예산인데 왜 비상선언했나</h2>
+        <p>총예산이 아니라 자체재원과 감액추경 규모를 함께 봐야 합니다.</p>
+      </div>
+
+      <div class="gfc-kpi-grid">
+        {GFC_KPI_CARDS.map((card) => (
+          <article class="gfc-kpi-card">
+            <span class={`gfc-badge gfc-badge--${badgeClass(card.badge)}`}>{card.badge}</span>
+            <p class="gfc-kpi-card__label">{card.label}</p>
+            <strong class="gfc-kpi-card__value">{card.value}</strong>
+            <p class="gfc-kpi-card__note">{card.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-cause-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">왜 이렇게 됐나</p>
+        <h2 id="gfc-cause-title">부동산 경기에 기댄 세입 구조가 흔들렸다</h2>
+      </div>
+
+      <div class="gfc-cause-grid">
+        {GFC_CAUSE_CARDS.map((card) => (
+          <article class="gfc-cause-card">
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-shortfall-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">연말 3개월분 부족 사업</p>
+        <h2 id="gfc-shortfall-title">9개월치만 편성됐다고 발표된 필수사업</h2>
+        <p>경기도가 직접 밝힌 사업 8건입니다. 실제 감액추경 결과는 도의회 심의 후 확정됩니다.</p>
+      </div>
+
+      <div class="gfc-shortfall-list">
+        {GFC_SHORTFALL_ITEMS.map((item) => (
+          <div class="gfc-shortfall-row">
+            <span class="gfc-shortfall-label">{item.label}</span>
+            <div class="gfc-shortfall-bar-wrap">
+              <div class="gfc-shortfall-bar" style={`width:${(item.amountEokwon / shortfallMax) * 100}%`} />
+            </div>
+            <span class="gfc-shortfall-value">{item.amountLabel}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-measure-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">경기도 발표 대책</p>
+        <h2 id="gfc-measure-title">4가지 재정 정상화 방안</h2>
+      </div>
+
+      <div class="gfc-measure-grid">
+        {GFC_POLICY_MEASURES.map((m) => (
+          <article class="gfc-measure-card">
+            <span class="gfc-measure-card__order">{m.order}</span>
+            <h3>{m.title}</h3>
+            <p>{m.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-debt-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">역대 지사 비교 · 채무</p>
+        <h2 id="gfc-debt-title">이재명 → 김동연 → 추미애, 채무는 어떻게 늘었나</h2>
+        <p>지방채 발행 잔액 기준입니다. 경기도는 대부분 자동차 구입 시 의무 매입하는 지역개발채권이라고 설명합니다.</p>
+      </div>
+
+      <div class="gfc-debt-legend">
+        <span class="gfc-gov-dot gfc-gov-dot--lee">이재명</span>
+        <span class="gfc-gov-dot gfc-gov-dot--acting">권한대행</span>
+        <span class="gfc-gov-dot gfc-gov-dot--kim">김동연</span>
+        <span class="gfc-gov-dot gfc-gov-dot--chu">추미애</span>
+      </div>
+
+      <div class="gfc-debt-list">
+        {GFC_DEBT_TIMELINE.map((d) => (
+          <div class="gfc-debt-row">
+            <span class="gfc-debt-year">
+              {d.year}
+              <span class={`gfc-gov-badge gfc-gov-badge--${governorClass[d.governor]}`}>{d.governor}</span>
+            </span>
+            <div class="gfc-debt-bar-wrap">
+              <div class={`gfc-debt-bar gfc-debt-bar--${governorClass[d.governor]}`} style={`width:${(d.debtEokwon / debtMax) * 100}%`} />
+            </div>
+            <span class="gfc-debt-value">
+              {(d.debtEokwon / 10000).toFixed(1)}조 원{d.note ? ` · ${d.note}` : ""}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p class="gfc-caution">{GFC_DEBT_CAUTION}</p>
+    </section>
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-independence-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">역대 지사 비교 · 재정자립도</p>
+        <h2 id="gfc-independence-title">재정자립도는 10년 만에 최저 수준</h2>
+      </div>
+
+      <div class="gfc-fi-list">
+        {GFC_FISCAL_INDEPENDENCE.map((f) => (
+          <div class="gfc-fi-row">
+            <span class="gfc-fi-year">{f.year}</span>
+            <div class="gfc-fi-bar-wrap">
+              <div class="gfc-fi-bar" style={`width:${f.rate}%`} />
+            </div>
+            <span class="gfc-fi-value">
+              {f.rate}%
+              <span class={`gfc-badge gfc-badge--${badgeClass(f.badge)}`}>{f.badge}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+      <p class="gfc-caution">{GFC_FISCAL_INDEPENDENCE_CAUTION}</p>
+    </section>
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-responsibility-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">책임 공방</p>
+        <h2 id="gfc-responsibility-title">누구 책임인가 — 양측 주장을 그대로 병기합니다</h2>
+        <p>{GFC_META.neutralityNotice}</p>
+      </div>
+
+      <div class="gfc-claim-grid">
+        {GFC_RESPONSIBILITY_CLAIMS.map((claim) => (
+          <article class="gfc-claim-card">
+            <strong>{claim.side}</strong>
+            <p>{claim.claim}</p>
+            <a href={claim.sourceUrl} target="_blank" rel="noopener noreferrer">{claim.sourceLabel} →</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-source-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">출처</p>
+        <h2 id="gfc-source-title">원문에서 직접 확인하세요</h2>
+      </div>
+
+      <div class="gfc-source-grid">
+        {GFC_SOURCES.map((s) => (
+          <a class="gfc-source-card" href={s.href} target="_blank" rel="noopener noreferrer">
+            <strong>{s.label}</strong>
+            <span>{s.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section gfc-section" aria-labelledby="gfc-related-title">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">함께 보기</p>
+        <h2 id="gfc-related-title">경기도 관련 리포트를 같이 확인하세요</h2>
+      </div>
+
+      <div class="gfc-related-grid">
+        {GFC_RELATED_LINKS.map((link) => (
+          <a class="gfc-related-card" href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>바로 보기</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SeoContent
+      introTitle="경기도 재정 비상 선언, 숫자로 보면 어느 정도인가"
+      intro={GFC_SEO_INTRO}
+      criteria={GFC_SEO_CRITERIA}
+      faq={faqItems}
+      related={related}
+    />
+  </main>
+</BaseLayout>

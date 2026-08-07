@@ -1,0 +1,388 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  RIST_META,
+  RIST_REASONS,
+  RIST_TAX_SETTLEMENT_OPTIONS,
+  RIST_SERVICE_YEAR_DEDUCTION_TIERS,
+  RIST_CONVERTED_INCOME_DEDUCTION_TIERS,
+  RIST_TAX_BRACKETS,
+  RIST_DEFAULT_INPUT,
+  RIST_PRESETS,
+  RIST_FAQ,
+  RIST_RELATED_LINKS,
+} from "../../data/retirementLumpSumInterimSettlementTaxCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const config = {
+  defaultInput: RIST_DEFAULT_INPUT,
+  reasons: RIST_REASONS,
+  serviceYearTiers: RIST_SERVICE_YEAR_DEDUCTION_TIERS,
+  convertedIncomeTiers: RIST_CONVERTED_INCOME_DEDUCTION_TIERS,
+  taxBrackets: RIST_TAX_BRACKETS,
+  presets: RIST_PRESETS,
+};
+
+const CALCULATION_STEPS = [
+  { label: "퇴직급여" },
+  { label: "근속연수공제" },
+  { label: "환산급여" },
+  { label: "환산급여공제" },
+  { label: "누진세율 적용" },
+  { label: "근속연수 반영" },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: RIST_META.title,
+      url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/${RIST_META.slug}/`,
+      description: RIST_META.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "All",
+      inLanguage: "ko-KR",
+      isAccessibleForFree: true,
+      provider: { "@type": "Organization", name: "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: RIST_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={RIST_META.seoTitle} description={RIST_META.description} jsonLd={jsonLd} ogImage="/og/og-home.png">
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="retirement-lump-sum-interim-settlement-tax-calculator" pageClass="rist-page" resultFirst={false}>
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="퇴직·세금 계산기"
+        title={RIST_META.title}
+        description="중간정산 받으면 세금을 더 낼 수도 있습니다. 중간정산 없이 한 번에 받았을 때와 총세금을 비교해보세요."
+        badges={["2026 기준", "퇴직소득세", "중간정산", "세액정산"]}
+      />
+      <InfoNotice
+        title="계산 전 확인"
+        lines={[
+          RIST_META.caution,
+          "법정 중간정산 사유(주택구입·전세보증금·요양·파산·개인회생·임금피크제·근로시간 단축·재난)에 해당해야 신청할 수 있으며, 해당하더라도 회사가 반드시 승인해야 하는 것은 아닙니다.",
+        ]}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetRistBtn" copyId="copyRistLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <div class="rist-input-stack" data-rist-root>
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">빠른 선택</p>
+              <h2 class="panel__title">대표 케이스</h2>
+            </div>
+          </div>
+          <div class="rist-preset-grid">
+            {RIST_PRESETS.map((preset, index) => (
+              <button type="button" class={`rist-preset-btn${index === 0 ? " is-active" : ""}`} data-preset={preset.id}>
+                <strong>{preset.label}</strong>
+                <span>{preset.summary}</span>
+              </button>
+            ))}
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">중간정산 사유</p>
+              <h2 class="panel__title">법정 사유 확인</h2>
+            </div>
+          </div>
+          <div class="form-grid">
+            <label class="field">
+              <span>중간정산 사유</span>
+              <select data-rist="reason">
+                {RIST_REASONS.map((reason) => (
+                  <option value={reason.id}>{reason.label}</option>
+                ))}
+              </select>
+              <small data-rist-output="reasonDetail">{RIST_REASONS[0].detail}</small>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-heading__eyebrow">기본 조건</p>
+              <h2 class="panel__title">근속·정산 정보</h2>
+            </div>
+          </div>
+          <div class="form-grid">
+            <label class="field">
+              <span>입사일</span>
+              <input data-rist="hireDate" type="date" value={RIST_DEFAULT_INPUT.hireDate} />
+            </label>
+
+            <label class="field">
+              <span>중간정산일</span>
+              <input data-rist="settlementDate" type="date" value={RIST_DEFAULT_INPUT.settlementDate} />
+            </label>
+
+            <label class="field">
+              <span>중간정산 지급액</span>
+              <input data-rist="settlementAmount" data-format="money" type="text" inputmode="numeric" />
+              <small>세전 정산 예정 금액입니다.</small>
+            </label>
+          </div>
+        </article>
+
+        <details class="detail-box detail-box--soft" open>
+          <summary>비교 시나리오 — 계속근무 가정</summary>
+          <div class="detail-box__content detail-box__content--tight">
+            <div class="form-grid">
+              <label class="field">
+                <span>예상 최종 퇴직일</span>
+                <input data-rist="futureRetireDate" type="date" value={RIST_DEFAULT_INPUT.futureRetireDate} />
+                <small>중간정산 없이 계속 근무했다고 가정할 시점입니다.</small>
+              </label>
+              <label class="field">
+                <span>예상 최종 퇴직급여 총액</span>
+                <input data-rist="futureTotalPay" data-format="money" type="text" inputmode="numeric" />
+                <small>중간정산 없이 한 번에 받았다고 가정할 총액입니다.</small>
+              </label>
+              <label class="field">
+                <span>최종 퇴직 시 퇴직소득 세액정산</span>
+                <select data-rist="taxSettlementOption">
+                  {RIST_TAX_SETTLEMENT_OPTIONS.map((opt) => (
+                    <option value={opt.id}>{opt.label}</option>
+                  ))}
+                </select>
+                <small>이전 퇴직소득을 합산해 재정산하는지 여부입니다. 모르면 "잘 모르겠음"을 선택하세요.</small>
+              </label>
+            </div>
+          </div>
+        </details>
+      </div>
+    </Fragment>
+
+    <div class="rist-warning-card" data-rist-output="reasonWarning" hidden>
+      ⚠ 선택한 사유로는 중간정산이 제한될 수 있습니다. 법정 중간정산 사유(주택구입·전세보증금·요양·파산·개인회생·임금피크제·근로시간 단축·재난)를 다시 확인하세요.
+    </div>
+
+    <section class="panel rist-verdict-panel" aria-live="polite">
+      <span class="rist-verdict-badge" data-rist-output="verdictBadge">-</span>
+      <div class="rist-verdict-grid">
+        <article class="rist-verdict-card rist-verdict-card--main">
+          <span>지금 받을 돈</span>
+          <strong data-rist-output="summaryInterimNet">-</strong>
+        </article>
+        <article class="rist-verdict-card">
+          <span>지금 내는 세금</span>
+          <strong data-rist-output="summaryInterimTax">-</strong>
+        </article>
+        <article class="rist-verdict-card rist-verdict-card--impact" data-rist-tone>
+          <span>장기 세금 영향</span>
+          <strong data-rist-output="summaryLongTermImpact">-</strong>
+        </article>
+      </div>
+      <p class="rist-verdict-guidance" data-rist-output="verdictGuidance">-</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">총세금 비교</p>
+          <h2 class="panel__title">중간정산 안 함 vs 중간정산(분리과세)</h2>
+        </div>
+      </div>
+      <div class="rist-bar-chart">
+        <div class="rist-bar-row">
+          <span class="rist-bar-label">중간정산 안 함<br /><small>(계속근무 일괄수령)</small></span>
+          <div class="rist-bar-track"><i data-rist-output="chartBarNoInterim"></i></div>
+          <strong data-rist-output="chartValueNoInterim">-</strong>
+        </div>
+        <div class="rist-bar-row">
+          <span class="rist-bar-label">중간정산 함<br /><small>(분리과세 기준)</small></span>
+          <div class="rist-bar-track rist-bar-track--accent"><i data-rist-output="chartBarSeparate"></i></div>
+          <strong data-rist-output="chartValueSeparate">-</strong>
+        </div>
+      </div>
+      <p class="rist-table-note">
+        분리과세 기준 차이: <strong data-rist-output="chartDiffSeparate">-</strong> · 최종 퇴직 시 세액정산이 적용되면 "중간정산 함" 막대는 "중간정산 안 함" 막대와 같아집니다.
+      </p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">세금·실수령액 구성</p>
+          <h2 class="panel__title">중간정산 지급액은 이렇게 나뉩니다</h2>
+        </div>
+      </div>
+      <div class="rist-composition-bar">
+        <i class="rist-composition-net" data-rist-output="compositionNet"></i><i class="rist-composition-income" data-rist-output="compositionIncomeTax"></i><i class="rist-composition-local" data-rist-output="compositionLocalTax"></i>
+      </div>
+      <div class="rist-composition-legend">
+        <span class="rist-legend-net" data-rist-output="compositionNetLabel">-</span>
+        <span class="rist-legend-income" data-rist-output="compositionIncomeTaxLabel">-</span>
+        <span class="rist-legend-local" data-rist-output="compositionLocalTaxLabel">-</span>
+      </div>
+    </section>
+
+    <section class="panel rist-message-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">요약</p>
+          <h2 class="panel__title">결과 해석</h2>
+        </div>
+      </div>
+      <div data-rist-output="naturalMessage">-</div>
+    </section>
+
+    <details class="detail-box detail-box--soft">
+      <summary>왜 세금 차이가 발생하나요?</summary>
+      <div class="detail-box__content">
+        <ol class="rist-flow">
+          {CALCULATION_STEPS.map((step, index) => (
+            <li>
+              <span class="rist-flow-index">{index + 1}</span>
+              <span>{step.label}</span>
+            </li>
+          ))}
+        </ol>
+        <p class="rist-table-note">
+          근속기간이 길수록 근속연수공제가 커지고, 퇴직급여를 근속기간에 걸쳐 번 소득으로 나누어 계산하기 때문에 일반적으로 장기근속자에게 유리합니다. 중간정산으로 근속연수가 쪼개지면 각 구간에서 더 낮은 단계의 공제만 적용받게 됩니다.
+        </p>
+
+        <div class="rist-compare-grid">
+          <article class="rist-compare-card">
+            <h3>중간정산</h3>
+            <div class="rist-mini-grid">
+              <div><span>근속연수</span><strong data-rist-output="interimYears">-</strong></div>
+              <div><span>근속연수공제</span><strong data-rist-output="interimServiceDeduction">-</strong></div>
+              <div><span>환산급여공제</span><strong data-rist-output="interimConvertedDeduction">-</strong></div>
+            </div>
+          </article>
+          <article class="rist-compare-card">
+            <h3>계속근무 일괄수령</h3>
+            <div class="rist-mini-grid">
+              <div><span>근속연수</span><strong data-rist-output="continuedYears">-</strong></div>
+              <div><span>근속연수공제</span><strong data-rist-output="continuedServiceDeduction">-</strong></div>
+              <div><span>환산급여공제</span><strong data-rist-output="continuedConvertedDeduction">-</strong></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="rist-breakdown-table-wrap">
+          <table class="rist-breakdown-table">
+            <thead>
+              <tr>
+                <th>계산 단계</th>
+                <th>중간정산</th>
+                <th>이후 퇴직분(분리과세 가정)</th>
+                <th>계속근무 일괄수령</th>
+              </tr>
+            </thead>
+            <tbody data-rist-output="breakdownRows"></tbody>
+          </table>
+        </div>
+        <p class="rist-table-note">
+          분리과세 총세금(중간정산 + 이후 퇴직분) = <strong data-rist-output="totalSeparateFooter">-</strong>
+        </p>
+      </div>
+    </details>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">중간정산 가능 사유</p>
+          <h2 class="panel__title">법정 사유 한눈에 보기</h2>
+        </div>
+      </div>
+      <div class="rist-breakdown-table-wrap">
+        <table class="rist-breakdown-table">
+          <thead>
+            <tr>
+              <th>사유</th>
+              <th>핵심 조건</th>
+              <th>확인할 자료</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RIST_REASONS.filter((r) => r.id !== "none").map((r) => (
+              <tr>
+                <td>{r.label}</td>
+                <td>{r.detail}</td>
+                <td>{r.evidence}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading__eyebrow">다음 계산</p>
+          <h2 class="panel__title">퇴직·세금 계산기 같이 보기</h2>
+        </div>
+      </div>
+      <div class="rist-related-grid">
+        {RIST_RELATED_LINKS.map((link) => (
+          <a href={withBase(link.href)}>
+            <strong>{link.label}</strong>
+            <span>{link.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="퇴직금 중간정산 세금 계산기는 무엇을 보여주나요?"
+        intro={[
+          "퇴직금 중간정산을 받으면 그 시점까지의 근속연수로 퇴직소득세를 미리 정산하고, 이후 근속연수는 정산일 다음날부터 다시 0에서 시작됩니다. 근속연수공제와 환산급여공제가 모두 근속연수·소득 구간이 커질수록 유리해지는 누진 구조라, 근속연수를 쪼개면 각 구간에서 더 낮은 단계의 공제만 적용받게 됩니다.",
+          "이 계산기는 지금 중간정산을 받을 경우의 총세금(중간정산분 + 이후 퇴직분)과, 중간정산 없이 계속 근무하다 한 번에 받았다고 가정할 경우의 총세금을 나란히 비교합니다.",
+          "최종 퇴직 시 이전 퇴직소득을 합산해 재정산하는 퇴직소득 세액정산이 적용되면, 총세금은 중간정산을 하지 않았을 때와 같아집니다. 적용 여부는 회사(원천징수의무자)의 처리 절차에 따라 달라지므로 미리 확인하는 것이 안전합니다.",
+        ]}
+        inputPoints={[
+          "중간정산 사유, 입사일, 정산일, 정산금액을 입력하면 예상 퇴직소득세를 바로 계산합니다.",
+          "비교 시나리오와 세액정산 적용 여부를 입력하면 총세금 차이를 바로 비교합니다.",
+          "왜 세금 차이가 나는지 근속연수공제·환산급여공제 단계별로 확인할 수 있습니다.",
+        ]}
+        criteria={[
+          "근속연수공제·환산급여공제·종합소득세 누진세율은 소득세법 §55 기준입니다.",
+          "법정 중간정산 사유는 근로자퇴직급여보장법 시행령 제3조 기준입니다.",
+          "세액정산 적용 시 총세금은 중간정산을 하지 않았을 때와 이론상 같아지며, 실제 적용 여부는 회사 처리 절차에 따라 달라집니다.",
+        ]}
+        faq={RIST_FAQ}
+        related={RIST_RELATED_LINKS.map((link) => ({ href: link.href, label: link.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="ristConfig" type="application/json" set:html={JSON.stringify(config)} />
+  <script type="module" src={withBase("/scripts/retirement-lump-sum-interim-settlement-tax-calculator.js")}></script>
+</BaseLayout>
