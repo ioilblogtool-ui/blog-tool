@@ -1,0 +1,345 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  reportMeta,
+  dataMeta,
+  cautionNotes,
+  earningsList,
+  earningsPatterns,
+  earningsFaq
+} from "../../data/usBigTechQ2Earnings2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const reportedList = earningsList.filter((item) => item.reported);
+const pendingList = earningsList.filter((item) => !item.reported);
+const selectedCompany = reportedList[0];
+
+const beatMissLabel: Record<string, string> = {
+  beat: "컨센서스 상회",
+  miss: "컨센서스 하회",
+  mixed: "엇갈림",
+  pending: "발표 전"
+};
+
+const reportedCount = reportedList.length;
+const revenueBeatCount = reportedList.filter((item) => item.revenueVsConsensus === "beat").length;
+const stockDownCount = reportedList.filter((item) => (item.stockReactionPct ?? 0) < 0).length;
+const capexRaiseCount = earningsList.filter((item) => item.tags.includes("capex상향")).length;
+
+const revenueBars = [...reportedList].sort((a, b) => (b.revenueYoyPct ?? 0) - (a.revenueYoyPct ?? 0));
+const maxRevenueYoy = Math.max(...revenueBars.map((item) => item.revenueYoyPct ?? 0));
+
+const reactionBars = [...reportedList].sort(
+  (a, b) => (b.stockReactionPct ?? 0) - (a.stockReactionPct ?? 0)
+);
+const maxAbsReaction = Math.max(...reactionBars.map((item) => Math.abs(item.stockReactionPct ?? 0)));
+---
+
+<BaseLayout title={reportMeta.title} description={reportMeta.description}>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId="us-bigtech-q2-2026-earnings" pageClass="beg-page">
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="Interactive Report"
+        title="미국 빅테크 2분기 실적 2026, 누가 오르고 누가 내렸나"
+        description={`애플·MS·구글·아마존·메타·테슬라·넷플릭스·AMD·팔란티어·엔비디아 ${dataMeta.periodLabel} 실적을 매출·EPS·주가 반응·AI 투자로 비교합니다.`}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="resetEarningsBtn" copyId="copyEarningsLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel beg-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">선택 패널</p>
+            <h2 class="panel__title">기업 선택</h2>
+          </div>
+          <p class="panel-heading__summary">셀렉트와 카드가 서로 연결됩니다.</p>
+        </div>
+
+        <label class="field beg-field">
+          <span>한 기업씩 자세히 보기</span>
+          <select id="earningsCompanySelect">
+            {
+              earningsList.map((item) => (
+                <option value={item.id} selected={item.id === selectedCompany.id}>
+                  {item.rank}. {item.nameKr}({item.ticker}){!item.reported ? " · 발표 예정" : ""}
+                </option>
+              ))
+            }
+          </select>
+        </label>
+      </article>
+
+      <article class="panel beg-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">{earningsList.length}개사</p>
+            <h2 class="panel__title">빠른 비교 카드</h2>
+          </div>
+          <p class="panel-heading__summary">카드를 클릭하면 바로 기업을 바꿔볼 수 있습니다.</p>
+        </div>
+
+        <div class="beg-overview-list">
+          {
+            earningsList.map((item) => (
+              <article
+                class={`beg-overview-card ${!item.reported ? "is-pending" : ""}`}
+                data-earnings-trigger={item.id}
+                tabindex="0"
+                role="button"
+                aria-label={`${item.nameKr} 상세 보기`}
+              >
+                <p>{item.ticker}</p>
+                <strong>{item.nameKr}</strong>
+                <span>
+                  {item.reported ? `매출 +${item.revenueYoyPct}%` : "발표 예정"}
+                </span>
+                <small>
+                  {item.reported && item.stockReactionPct !== null
+                    ? `주가 ${item.stockReactionPct > 0 ? "+" : ""}${item.stockReactionPct}%`
+                    : "—"}
+                </small>
+              </article>
+            ))
+          }
+        </div>
+      </article>
+
+      <InfoNotice title="참고" lines={cautionNotes} />
+    </Fragment>
+
+    <section class="beg-section beg-databar-section">
+      <div class="beg-databar">
+        <span class="beg-databar__item">
+          <strong>조사 기준일</strong> {dataMeta.asOfDateDisplay}
+        </span>
+        <span class="beg-databar__item">
+          <strong>대상 분기</strong> {dataMeta.periodLabel}
+        </span>
+        <span class="beg-databar__item">
+          <strong>출처</strong> {dataMeta.sourceNote}
+        </span>
+      </div>
+    </section>
+
+    <section class="beg-section">
+      <div class="beg-section__head">
+        <p class="beg-section__eyebrow">핵심 수치</p>
+        <h2>2분기 실적 시즌에서 먼저 읽을 숫자</h2>
+        <p class="beg-section__sub">발표 현황, beat 비율, 주가 반응, capex 상향 기업 수를 먼저 보여줍니다.</p>
+      </div>
+      <div class="beg-kpi-grid">
+        <article class="beg-kpi-card beg-kpi-card--primary">
+          <p>실적 발표 완료</p>
+          <strong>{reportedCount}/{earningsList.length}개사</strong>
+          <span>엔비디아는 2026년 8월 26일 발표 예정</span>
+        </article>
+        <article class="beg-kpi-card">
+          <p>매출 컨센서스 상회</p>
+          <strong>{revenueBeatCount}/{reportedCount}건</strong>
+          <span>대부분 매출은 예상치를 넘겼습니다</span>
+        </article>
+        <article class="beg-kpi-card beg-kpi-card--soft">
+          <p>실적 발표 후 주가 하락</p>
+          <strong>{stockDownCount}/{reportedCount}건</strong>
+          <span>매출 beat와 무관하게 하락한 기업이 더 많습니다</span>
+        </article>
+        <article class="beg-kpi-card">
+          <p>2026년 capex 가이던스 상향</p>
+          <strong>{capexRaiseCount}개사</strong>
+          <span>알파벳·아마존·메타</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="beg-section">
+      <div class="beg-section__head">
+        <p class="beg-section__eyebrow">선택 결과</p>
+        <h2>선택 기업 상세 카드</h2>
+        <p class="beg-section__sub">발표일, 매출, EPS, 주가 반응, capex 가이던스를 한 카드에 정리했습니다.</p>
+      </div>
+
+      <article class="panel beg-detail-card" id="earningsDetail">
+        <div class="beg-detail-card__header">
+          <div>
+            <p class="panel-heading__eyebrow" id="companyTicker">{selectedCompany.ticker}</p>
+            <h2 id="companyName">{selectedCompany.nameKr}</h2>
+          </div>
+          <div class="beg-rank-chip" id="companyRank">{selectedCompany.rank}위</div>
+        </div>
+
+        <div class="beg-detail-card__meta">
+          <span id="companyReportDate">{selectedCompany.reportDateDisplay}</span>
+          <span id="companyFiscalLabel">{selectedCompany.fiscalLabel}</span>
+        </div>
+
+        <div class="beg-detail-card__summary">
+          <article class="beg-kpi-card beg-kpi-card--primary">
+            <p>매출(YoY)</p>
+            <strong id="companyRevenue">
+              {selectedCompany.reported ? `$${selectedCompany.revenueUsdB}B (+${selectedCompany.revenueYoyPct}%)` : "—"}
+            </strong>
+            <span class="beg-badge" id="companyRevenueBadge">
+              {beatMissLabel[selectedCompany.revenueVsConsensus]}
+            </span>
+          </article>
+          <article class="beg-kpi-card">
+            <p>EPS</p>
+            <strong id="companyEps">{selectedCompany.epsDisplay ?? "—"}</strong>
+            <span class="beg-badge" id="companyEpsBadge">
+              {beatMissLabel[selectedCompany.epsVsConsensus]}
+            </span>
+          </article>
+          <article class="beg-kpi-card beg-kpi-card--soft">
+            <p>발표 후 주가 반응</p>
+            <strong id="companyStockReaction">
+              {selectedCompany.stockReactionPct !== null
+                ? `${selectedCompany.stockReactionPct > 0 ? "+" : ""}${selectedCompany.stockReactionPct}%`
+                : "—"}
+            </strong>
+            <span id="companyStockNote">{selectedCompany.stockReactionNote}</span>
+          </article>
+        </div>
+
+        <div class="beg-caveat-box" id="companyCaveatBox" hidden={!selectedCompany.epsCaveat}>
+          <span id="companyCaveatText">{selectedCompany.epsCaveat}</span>
+        </div>
+
+        <div class="beg-detail-card__capex">
+          <strong>AI 설비투자(capex)</strong>
+          <p id="companyCapexNote">{selectedCompany.capexNote}</p>
+        </div>
+
+        <div class="beg-detail-card__footer">
+          <p id="companySummary">{selectedCompany.summary}</p>
+          <ul class="beg-highlight-list" id="companyHighlights">
+            {selectedCompany.highlights.map((item) => <li>{item}</li>)}
+          </ul>
+          <a id="companySourceLink" href={selectedCompany.sourceUrl} target="_blank" rel="noreferrer">
+            출처: <span id="companySourceName">{selectedCompany.sourceName}</span>
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <section class="beg-section">
+      <div class="beg-section__head">
+        <p class="beg-section__eyebrow">비교</p>
+        <h2>매출 성장률(YoY) 비교</h2>
+        <p class="beg-section__sub">발표를 마친 {reportedCount}개사의 매출 성장률을 높은 순으로 정렬했습니다.</p>
+      </div>
+      <article class="panel beg-bar-panel">
+        {
+          revenueBars.map((item) => (
+            <div class="beg-bar-row" data-earnings-bar={item.id}>
+              <span class="beg-bar-row__label">{item.nameKr}</span>
+              <span class="beg-bar-track beg-bar-track--positive">
+                <span style={`width:${((item.revenueYoyPct ?? 0) / maxRevenueYoy) * 100}%`} />
+              </span>
+              <span class="beg-bar-row__value">+{item.revenueYoyPct}%</span>
+            </div>
+          ))
+        }
+      </article>
+    </section>
+
+    <section class="beg-section">
+      <div class="beg-section__head">
+        <p class="beg-section__eyebrow">비교</p>
+        <h2>실적 발표 후 주가 반응 비교</h2>
+        <p class="beg-section__sub">매출 beat와 무관하게 capex 가이던스에 더 민감하게 반응한 흐름을 확인할 수 있습니다.</p>
+      </div>
+      <article class="panel beg-bar-panel">
+        {
+          reactionBars.map((item) => (
+            <div class="beg-bar-row" data-earnings-bar={item.id}>
+              <span class="beg-bar-row__label">{item.nameKr}</span>
+              <span
+                class={`beg-bar-track ${
+                  (item.stockReactionPct ?? 0) >= 0 ? "beg-bar-track--positive" : "beg-bar-track--negative"
+                }`}
+              >
+                <span style={`width:${(Math.abs(item.stockReactionPct ?? 0) / maxAbsReaction) * 100}%`} />
+              </span>
+              <span class="beg-bar-row__value">
+                {(item.stockReactionPct ?? 0) > 0 ? "+" : ""}
+                {item.stockReactionPct}%
+              </span>
+            </div>
+          ))
+        }
+        {
+          pendingList.map((item) => (
+            <div class="beg-bar-row beg-bar-row--pending" data-earnings-bar={item.id}>
+              <span class="beg-bar-row__label">{item.nameKr}</span>
+              <span class="beg-bar-track">
+                <span style="width:0%" />
+              </span>
+              <span class="beg-bar-row__value">발표 예정</span>
+            </div>
+          ))
+        }
+      </article>
+    </section>
+
+    <section class="beg-section">
+      <div class="beg-section__head">
+        <p class="beg-section__eyebrow">패턴 해석</p>
+        <h2>2분기 실적 시즌에서 반복된 패턴</h2>
+      </div>
+      <div class="beg-pattern-grid">
+        {
+          earningsPatterns.map((pattern) => (
+            <article class="beg-pattern-card">
+              <strong>{pattern.title}</strong>
+              <p>{pattern.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="미국 빅테크 2분기 실적 2026 리포트 읽는 법"
+        intro={[
+          "2026년 2분기(4~6월) 실적 시즌 동안 애플, 마이크로소프트, 알파벳, 아마존, 메타, 테슬라, 넷플릭스, AMD, 팔란티어 9개사가 실적을 발표했습니다. 엔비디아만 2026년 8월 26일 발표를 앞두고 있어 이 리포트에는 아직 포함되어 있지 않습니다.",
+          "이번 실적 시즌에서 가장 눈에 띄는 흐름은 '매출이 컨센서스를 넘겨도 주가가 떨어지는' 패턴입니다. 알파벳과 메타는 매출 beat에도 불구하고 2026년 AI 설비투자(capex) 가이던스를 시장 예상보다 크게 상향하면서 주가가 급락했습니다. 반대로 마이크로소프트는 기존 capex 가이던스를 상향 없이 재확인만 했는데도 강한 Azure 성장과 맞물려 주가가 급등했습니다.",
+          "아마존과 알파벳의 헤드라인 EPS는 특히 주의해서 봐야 합니다. 두 기업 모두 지분 투자에서 발생한 대규모 일회성 평가이익이 순이익에 반영되며 EPS가 크게 부풀려졌습니다. 이 리포트는 해당 기업 카드에 별도 주의 문구를 넣어 헤드라인 수치와 실제 영업 실적을 구분해서 읽을 수 있게 했습니다.",
+          "기업을 선택하면 발표일, 매출·EPS의 컨센서스 대비 결과, 실적 발표 직후 주가 반응, capex 가이던스, 핵심 포인트를 같은 화면에서 비교할 수 있습니다. 매출 성장률과 주가 반응을 각각 비교 막대로 정리해 어떤 기업이 실적과 주가 반응이 엇갈렸는지 한눈에 확인할 수 있습니다.",
+          "매그니피센트7은 개별 기업 실적과 별개로, 2026년 들어 S&P500 대비 부진한 흐름을 보이고 있습니다. 실적 시즌 동안 나스닥100 변동성 지수가 약 14개월래 최고치를 기록할 만큼 시장 전체가 크게 출렁였다는 점도 함께 참고하면 좋습니다."
+        ]}
+        criteria={[
+          "각 사 공식 IR·SEC 공시, Reuters·CNBC·Bloomberg 등 보도를 종합해 2026년 8월 7일 기준으로 정리했습니다.",
+          "컨센서스 추정치와 주가 반응률은 보도 시점 기준이며, 이후 실적 정정이나 컨센서스 소급 수정이 있을 수 있습니다.",
+          "이 리포트는 투자 권유가 아니며, 투자 판단과 책임은 본인에게 있습니다."
+        ]}
+        faq={earningsFaq}
+        related={[
+          { href: "/reports/", label: "비교 리포트 모아보기" },
+          { href: "/reports/kospi-large-cap-2026-q2-earnings/", label: "코스피 대형주 2분기 실적 2026" },
+          { href: "/reports/semiconductor-etf-2026/", label: "미국·한국 반도체 ETF 비교" },
+          { href: "/reports/ai-stocks-h1-2026/", label: "AI 주식 2026 상반기 수익률" }
+        ]}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="earningsData" type="application/json" set:html={JSON.stringify(earningsList)}></script>
+  <script type="module" src={withBase("/scripts/us-bigtech-q2-2026-earnings.js")}></script>
+</BaseLayout>

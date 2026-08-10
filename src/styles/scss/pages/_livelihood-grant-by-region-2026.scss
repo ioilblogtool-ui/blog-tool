@@ -1,0 +1,281 @@
+.lgr-page {
+  --lgr-ink: #172033;
+  --lgr-muted: #627086;
+  --lgr-line: rgba(23, 32, 51, 0.12);
+  --lgr-soft: #f6f8fb;
+  --lgr-blue: #1a56db;
+  --lgr-green: #16a34a;
+  --lgr-amber: #f59e0b;
+  --lgr-slate: #64748b;
+}
+
+.lgr-section {
+  margin-bottom: 2.5rem;
+}
+
+// ------ KPI 카드 ------
+.lgr-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.9rem;
+}
+
+.lgr-kpi-card {
+  padding: 1.1rem;
+  border: 1px solid var(--lgr-line);
+  border-radius: 10px;
+  background: #fff;
+
+  &__label {
+    margin: 0 0 0.3rem;
+    color: var(--lgr-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  &__value {
+    display: block;
+    color: var(--lgr-ink);
+    font-size: 1.3rem;
+  }
+
+  &__note {
+    margin: 0.3rem 0 0;
+    color: var(--lgr-muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+}
+
+// ------ 진행중 카드 ------
+.lgr-progress-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media (min-width: 820px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1100px) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.lgr-progress-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem;
+  border: 1px solid var(--lgr-line);
+  border-top: 4px solid var(--lgr-slate);
+  border-radius: 10px;
+  background: #fff;
+
+  &--applying { border-top-color: var(--lgr-green); }
+  &--confirmed { border-top-color: var(--lgr-blue); }
+  &--conditional { border-top-color: var(--lgr-amber); }
+  &--inProgress { border-top-color: var(--lgr-amber); }
+  &--drafting { border-top-color: var(--lgr-slate); }
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  &__region {
+    font-size: 0.84rem;
+    font-weight: 800;
+    color: var(--lgr-ink);
+  }
+
+  &__amount {
+    display: block;
+    font-size: 1.05rem;
+    color: var(--lgr-ink);
+    margin-bottom: 0.4rem;
+    line-height: 1.35;
+  }
+
+  &__timing,
+  &__method {
+    margin: 0 0 0.3rem;
+    font-size: 0.82rem;
+    color: var(--lgr-muted);
+    line-height: 1.5;
+  }
+
+  &__note {
+    margin: 0.4rem 0;
+    padding: 0.5rem 0.6rem;
+    background: var(--lgr-soft);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    color: var(--lgr-muted);
+    line-height: 1.6;
+  }
+
+  a {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--lgr-blue);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.lgr-stage-badge {
+  display: inline-flex;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+
+  &--applying { background: var(--lgr-green); }
+  &--confirmed { background: var(--lgr-blue); }
+  &--conditional { background: var(--lgr-amber); }
+  &--inProgress { background: var(--lgr-amber); }
+  &--drafting { background: var(--lgr-slate); }
+}
+
+// ------ 지급완료 bar rows ------
+.lgr-bar-rows {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lgr-bar-row {
+  display: grid;
+  grid-template-columns: 9rem 1fr 13rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--lgr-line);
+  border-radius: 8px;
+  background: #fff;
+
+  &__label {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--lgr-ink);
+  }
+
+  &__track {
+    height: 9px;
+    border-radius: 4px;
+    background: #f3f4f6;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--lgr-blue);
+  }
+
+  &__value {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--lgr-ink);
+    text-align: right;
+  }
+}
+
+.lgr-completed-notes {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.lgr-caution {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  background: var(--lgr-soft);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: var(--lgr-muted);
+  line-height: 1.65;
+}
+
+// ------ 오해 정정 카드 ------
+.lgr-correction-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media (min-width: 820px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.lgr-correction-card {
+  padding: 1.1rem;
+  border: 1px solid var(--lgr-line);
+  border-radius: 10px;
+  background: var(--lgr-soft);
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.96rem;
+    color: var(--lgr-ink);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.84rem;
+    color: var(--lgr-muted);
+    line-height: 1.65;
+  }
+}
+
+// ------ 관련 링크 ------
+.lgr-related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.8rem;
+}
+
+.lgr-related-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem;
+  border: 1px solid var(--lgr-line);
+  border-radius: 10px;
+  background: #fff;
+  text-decoration: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+
+  &:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+  }
+
+  strong {
+    color: var(--lgr-ink);
+    font-size: 0.94rem;
+    line-height: 1.4;
+  }
+
+  span {
+    color: var(--lgr-muted);
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .lgr-bar-row {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+
+    .lgr-bar-row__value { text-align: left; }
+  }
+}
