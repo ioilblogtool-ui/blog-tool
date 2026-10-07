@@ -789,16 +789,16 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "welfare-benefit-eligibility",
-    title: "복지급여 수급 자격 계산기",
-    description: "가구원 수, 소득, 재산, 자동차 정보를 입력하면 2026년 기준 중위소득 대비 소득인정액과 생계·의료·주거·교육급여 수급 가능성을 간이 계산합니다.",
+    title: "2027 기준 중위소득·복지급여 자격 계산기",
+    description: "가구원 수와 월 소득인정액으로 2027 기준 중위소득 비율과 생계·의료·주거·교육급여 기준을 비교합니다. 2026년 비교와 월 소득 단순 비교를 제공합니다.",
     order: 11.7,
     eyebrow: "복지급여 계산",
     category: "support",
     iframeReady: true,
-    badges: ["복지", "2026", "자가 점검"],
+    badges: ["공식", "시뮬레이션"],
     previewStats: [
-      { label: "급여 기준", value: "4종", context: "생계·의료·주거·교육" },
-      { label: "핵심 결과", value: "소득인정액" }
+      { label: "4인 기준 중위소득", value: "6,929,885원" },
+      { label: "급여 기준", value: "32·40·48·50%", context: "2026·2027 비교" }
     ]
   },
   {
@@ -1064,6 +1064,20 @@ export const tools: ToolMeta[] = [
     previewStats: [
       { label: "핵심 결과", value: "월 절감액" },
       { label: "판단 기준", value: "회수 기간" },
+    ],
+  },
+  {
+    slug: "loan-interest-rate-change-calculator",
+    title: "대출금리 변동 계산기 2026",
+    description: "대출잔액·현재 금리·변경 후 금리를 입력하면 월 상환액과 총이자 변화를 계산합니다. 0.25%p·0.5%p·1%p 빠른 비교표 제공.",
+    order: 14.53,
+    eyebrow: "대출이자 계산",
+    category: "realestate",
+    iframeReady: true,
+    badges: ["신규", "대출", "금리"],
+    previewStats: [
+      { label: "0.25%p 변동", value: "월 약 4.3만원", context: "3억·30년·원리금균등" },
+      { label: "결과", value: "월 부담·총이자 증감" },
     ],
   },
   {
@@ -1937,8 +1951,8 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "year-end-tax-refund-calculator",
-    title: "연말정산 환급액 계산기",
-    description: "총급여·부양가족·신용카드·의료비·연금저축 등 공제 항목을 입력하면 연말정산 예상 환급액을 자동 계산합니다. 연금저축·IRP 한도 미달 시 추가 납입 효과도 함께 확인하세요.",
+    title: "연말정산 환급액 계산기 2026",
+    description: "총급여와 기납부 소득세로 예상 정산 결과를 확인하고, 카드 25% 문턱과 연금저축·IRP 추가 납입의 절세효과를 비교하세요.",
     order: 5.2,
     eyebrow: "연말정산 절세",
     category: "calculator",
@@ -1946,7 +1960,7 @@ export const tools: ToolMeta[] = [
     badges: ["연말정산", "세금", "절세"],
     previewStats: [
       { label: "핵심 결과", value: "예상 환급액" },
-      { label: "추가 기능", value: "연금저축 여력" },
+      { label: "추가 기능", value: "카드·연금 절세 여력" },
     ],
   },
   {

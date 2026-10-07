@@ -1,0 +1,366 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  LIRC_BASE_RATE,
+  LIRC_CRITERIA,
+  LIRC_DEFAULT_INPUT,
+  LIRC_FAQ,
+  LIRC_INFO_LINES,
+  LIRC_INPUT_POINTS,
+  LIRC_INTRO,
+  LIRC_LIMITS,
+  LIRC_META,
+  LIRC_PRESETS,
+  LIRC_QUICK_DELTAS,
+  LIRC_RATE_STRUCTURE,
+  LIRC_RELATED_LINKS,
+  LIRC_REPAY_OPTIONS,
+} from "../../data/loanInterestRateChangeCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+
+const fmtDate = (iso: string) => iso.replace(/-/g, ".");
+const fmtPct = (n: number) => `${n.toFixed(2)}%`;
+const defaultRepay =
+  LIRC_REPAY_OPTIONS.find((item) => item.id === LIRC_DEFAULT_INPUT.repay) ?? LIRC_REPAY_OPTIONS[0];
+const defaultYears = Math.floor(LIRC_DEFAULT_INPUT.months / 12);
+const defaultExtraMonths = LIRC_DEFAULT_INPUT.months % 12;
+const fmtChip = (d: number) => `${d > 0 ? "+" : "−"}${Math.abs(d)}%p`;
+
+const faqItems = LIRC_FAQ.map((item) => ({ question: item.question, answer: item.answer }));
+const ctaLinks = LIRC_RELATED_LINKS.slice(0, 2);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": LIRC_META.h1,
+      "url": `${import.meta.env.SITE}/tools/loan-interest-rate-change-calculator/`,
+      "description": LIRC_META.description,
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "inLanguage": "ko-KR",
+      "isAccessibleForFree": true,
+      "provider": { "@type": "Organization", "name": "비교계산소" },
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": LIRC_FAQ.map((item) => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={LIRC_META.title}
+  description={LIRC_META.description}
+  ogImage="/og/tools/loan-interest-rate-change-calculator.png"
+  recordSessions={false}
+  loadAds={false}
+  jsonLd={jsonLd}
+>
+  <meta slot="before-tracking" name="referrer" content="no-referrer" />
+  <SiteHeader />
+
+  <SimpleToolShell
+    calculatorId="loan-interest-rate-change-calculator"
+    pageClass="lirc-page"
+    resultFirst={false}
+  >
+    <Fragment slot="hero">
+      <CalculatorHero
+        eyebrow="대출이자 계산"
+        title={LIRC_META.h1}
+        description="금리가 0.25%p·0.5%p 바뀌면 내 월 상환액과 남은 기간 총이자가 얼마나 달라지는지, 현재 대출 조건 그대로 바로 계산합니다."
+      />
+      <InfoNotice title="금리 변동 시뮬레이션 안내" lines={LIRC_INFO_LINES} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="lircResetBtn" copyId="lircCopyLinkBtn" />
+      <p class="lirc-note">공유 링크에는 대출잔액·금리·기간이 포함됩니다. 주소 기록에도 남을 수 있으므로 공유 대상을 확인하세요.</p>
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">빠른 선택</p>
+            <h2 class="panel__title">대출 예시</h2>
+          </div>
+        </div>
+        <div class="lirc-presets">
+          {LIRC_PRESETS.map((preset) => (
+            <button class="lirc-preset-btn" type="button" data-preset-id={preset.id}>
+              <strong>{preset.label}</strong>
+              <span>{preset.description}</span>
+            </button>
+          ))}
+        </div>
+        <p class="lirc-note">예시 금리이며 실제 상품 금리가 아닙니다.</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 1</p>
+            <h2 class="panel__title">내 대출 조건</h2>
+          </div>
+        </div>
+        <div class="lirc-form-grid">
+          <label class="lirc-field">
+            <span>대출잔액</span>
+            <input id="lircBalance" type="text" inputmode="numeric" value={LIRC_DEFAULT_INPUT.balance.toLocaleString("ko-KR")} />
+            <small>지금 남아 있는 원금(원)</small>
+          </label>
+          <div class="lirc-field">
+            <span>남은 기간</span>
+            <div class="lirc-period">
+              <label><input id="lircYears" type="number" min="0" max="50" step="1" value={defaultYears} aria-label="남은 기간 년" /><em>년</em></label>
+              <label><input id="lircExtraMonths" type="number" min="0" max="11" step="1" value={defaultExtraMonths} aria-label="남은 기간 개월" /><em>개월</em></label>
+            </div>
+            <small id="lircPeriodNote">최대 50년(600개월)</small>
+          </div>
+          <div class="lirc-field">
+            <span>상환방식</span>
+            <div class="lirc-toggle">
+              {LIRC_REPAY_OPTIONS.map((option) => (
+                <button
+                  type="button"
+                  class={`lirc-pill-btn${option.id === LIRC_DEFAULT_INPUT.repay ? " is-active" : ""}`}
+                  data-repay={option.id}
+                  aria-pressed={option.id === LIRC_DEFAULT_INPUT.repay ? "true" : "false"}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <small id="lircRepayNote">{defaultRepay.note}</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">Step 2</p>
+            <h2 class="panel__title">금리가 얼마나 바뀌나요?</h2>
+          </div>
+        </div>
+        <div class="lirc-form-grid">
+          <label class="lirc-field">
+            <span>현재 적용 금리(연 %)</span>
+            <input id="lircRateNow" type="number" min={LIRC_LIMITS.rate.min} max={LIRC_LIMITS.rate.max} step="0.01" value={LIRC_DEFAULT_INPUT.rateNow.toFixed(2)} />
+            <small id="lircRateNowNote">은행 앱·약정서의 현재 연 금리</small>
+          </label>
+          <div class="lirc-toggle">
+            <button type="button" class="lirc-pill-btn is-active" data-rate-mode="delta" aria-pressed="true">변동폭으로 입력</button>
+            <button type="button" class="lirc-pill-btn" data-rate-mode="target" aria-pressed="false">바뀔 금리 직접 입력</button>
+          </div>
+          <div class="lirc-form-grid" data-mode-panel="delta">
+            <div class="lirc-chip-row">
+              {LIRC_QUICK_DELTAS.map((d) => (
+                <button type="button" class={`lirc-chip${d === LIRC_DEFAULT_INPUT.rateDelta ? " is-active" : ""}`} data-delta={d}>
+                  {fmtChip(d)}
+                </button>
+              ))}
+            </div>
+            <label class="lirc-field">
+              <span>변동폭 직접 입력(%p)</span>
+              <input id="lircRateDelta" type="number" min={LIRC_LIMITS.delta.min} max={LIRC_LIMITS.delta.max} step="0.01" value={LIRC_DEFAULT_INPUT.rateDelta} />
+              <small>인상은 +, 인하는 − 로 입력</small>
+            </label>
+          </div>
+          <label class="lirc-field" data-mode-panel="target" hidden>
+            <span>변경 후 예상 금리(연 %)</span>
+            <input id="lircRateNew" type="number" min={LIRC_LIMITS.rate.min} max={LIRC_LIMITS.rate.max} step="0.01" value={LIRC_DEFAULT_INPUT.rateNew.toFixed(2)} />
+            <small>은행 안내 문자·앱에서 확인한 바뀔 금리</small>
+          </label>
+          <p class="lirc-rate-preview" id="lircRatePreview">4.00% → 3.75% (−0.25%p)</p>
+        </div>
+      </article>
+    </Fragment>
+
+    <section class="lirc-section">
+      <p class="lirc-myth-banner">
+        기준금리 변화는 내 대출금리에 같은 폭·같은 날 반영되지 않을 수 있습니다. 아래 결과는 입력한 '내 대출금리' 기준입니다.
+        <span class="lirc-badge" data-badge="참고">참고</span>
+      </p>
+      <div class="lirc-section__head">
+        <p class="lirc-section__eyebrow">계산 결과 <span class="lirc-badge" data-badge="시뮬레이션">시뮬레이션</span></p>
+        <h2>금리가 바뀌면 내 상환액은 이렇게 달라집니다</h2>
+      </div>
+      <div class="lirc-invalid" id="lircInvalid" hidden></div>
+      <div class="lirc-kpi-grid" id="lircKpiGrid">
+        <article class="lirc-kpi-card lirc-kpi-card--main" id="lircKpiMonthly" data-sign="zero">
+          <p>월 부담 변화</p>
+          <strong id="lircMonthlyDiff">-</strong>
+          <span id="lircMonthlyDiffSub">-</span>
+        </article>
+        <article class="lirc-kpi-card">
+          <p>변경 후 월 상환액</p>
+          <strong id="lircNextMonthly">-</strong>
+          <span id="lircNextMonthlySub">-</span>
+        </article>
+        <article class="lirc-kpi-card" id="lircKpiTotal" data-sign="zero">
+          <p>남은 기간 총이자 변화</p>
+          <strong id="lircTotalDiff">-</strong>
+          <span id="lircTotalDiffSub">-</span>
+        </article>
+        <article class="lirc-kpi-card" id="lircKpiAnnual" data-sign="zero">
+          <p>첫 1년 이자 차이</p>
+          <strong id="lircAnnualDiff">-</strong>
+          <span>남은 기간이 12개월 미만이면 남은 기간 기준</span>
+        </article>
+      </div>
+      <p class="lirc-message" id="lircMessage">
+        조건을 입력하면 결과 해석이 표시됩니다.
+      </p>
+    </section>
+
+    <section class="lirc-section">
+      <div class="lirc-section__head">
+        <p class="lirc-section__eyebrow">상세 비교</p>
+        <h2>현재 금리 vs 변경 후 금리</h2>
+      </div>
+      <div class="lirc-table-wrap">
+        <table class="lirc-table">
+          <thead>
+            <tr><th>항목</th><th>현재</th><th>변경 후</th><th>차이</th></tr>
+          </thead>
+          <tbody id="lircDetailBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="lirc-section">
+      <div class="lirc-section__head">
+        <p class="lirc-section__eyebrow">빠른 비교</p>
+        <h2>0.25%p·0.5%p·1%p 바뀌면?</h2>
+        <p>행을 누르면 그 변동폭으로 계산합니다.</p>
+      </div>
+      <div class="lirc-table-wrap">
+        <table class="lirc-table lirc-quick-table">
+          <thead>
+            <tr>
+              <th>변동폭</th>
+              <th>적용 금리</th>
+              <th class="lirc-col-hide-sm">월 상환액</th>
+              <th>월 증감</th>
+              <th>총이자 증감</th>
+            </tr>
+          </thead>
+          <tbody id="lircQuickBody"></tbody>
+        </table>
+      </div>
+      <p class="lirc-note" id="lircQuickNote">
+        <span class="lirc-badge" data-badge="시뮬레이션">시뮬레이션</span>
+      </p>
+    </section>
+
+    <section class="lirc-section">
+      <div class="lirc-section__head">
+        <p class="lirc-section__eyebrow">참고 정보 <span class="lirc-badge" data-badge="공식">공식</span></p>
+        <h2>최근 한국은행 기준금리</h2>
+      </div>
+      <article class="lirc-base-card">
+        <div class="lirc-base-card__main">
+          <span>한국은행 기준금리</span>
+          <strong>연 {fmtPct(LIRC_BASE_RATE.current)}</strong>
+        </div>
+        <dl class="lirc-base-card__list">
+          <div>
+            <dt>최근 변경</dt>
+            <dd>
+              {fmtDate(LIRC_BASE_RATE.lastChange.date)} · {fmtPct(LIRC_BASE_RATE.lastChange.from)} → {fmtPct(LIRC_BASE_RATE.lastChange.to)} ({LIRC_BASE_RATE.lastChange.action})
+            </dd>
+          </div>
+          {LIRC_BASE_RATE.history.slice(1).map((item) => (
+            <div>
+              <dt>이전 변경</dt>
+              <dd>{fmtDate(item.date)} · {fmtPct(item.from)} → {fmtPct(item.to)} ({item.action})</dd>
+            </div>
+          ))}
+          <div id="lircNextMeetingRow" hidden>
+            <dt>다음 결정회의</dt>
+            <dd id="lircNextMeeting"></dd>
+          </div>
+        </dl>
+        <p class="lirc-base-card__warn" id="lircPendingWarn" hidden></p>
+        <p class="lirc-note">
+          기준금리는 참고 정보이며 위 계산에 자동 반영되지 않습니다. 출처:
+          <a href={LIRC_BASE_RATE.sourceUrl} target="_blank" rel="noopener noreferrer">{LIRC_BASE_RATE.sourceLabel}</a>
+          · {LIRC_BASE_RATE.checkedAt} 확인
+        </p>
+      </article>
+    </section>
+
+    <section class="lirc-section">
+      <div class="lirc-section__head">
+        <p class="lirc-section__eyebrow">금리 구조 <span class="lirc-badge" data-badge="참고">참고</span></p>
+        <h2>기준금리와 내 대출금리는 왜 다르게 움직일까</h2>
+      </div>
+      <div class="lirc-structure-grid">
+        {LIRC_RATE_STRUCTURE.map((item) => (
+          <article class="lirc-card">
+            <strong>{item.title}</strong>
+            <span>{item.body}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="lirc-section">
+      <div class="lirc-section__head">
+        <p class="lirc-section__eyebrow">다음 단계</p>
+        <h2>부담이 바뀐다면 이어서 비교해 보세요</h2>
+      </div>
+      <div class="lirc-cta-grid" id="lircCtaGrid">
+        {ctaLinks.map((item) => (
+          <a class="lirc-card lirc-cta-card" href={withBase(item.href)} data-cta={item.href.includes("refinancing") ? "refinance" : "prepay"}>
+            <strong>{item.label}</strong>
+            <span>{item.description}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="기준금리·대출금리 변동 계산기 — 결과 읽는 법"
+        intro={LIRC_INTRO}
+        inputPoints={LIRC_INPUT_POINTS}
+        criteria={LIRC_CRITERIA}
+        faq={faqItems}
+        related={LIRC_RELATED_LINKS.map((item) => ({ href: item.href, label: item.label }))}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script
+    id="lircConfig"
+    type="application/json"
+    set:html={JSON.stringify({
+      defaultInput: LIRC_DEFAULT_INPUT,
+      quickDeltas: LIRC_QUICK_DELTAS,
+      limits: LIRC_LIMITS,
+      presets: LIRC_PRESETS,
+      repayOptions: LIRC_REPAY_OPTIONS,
+      baseRate: LIRC_BASE_RATE,
+    })}
+  />
+  <script type="module" src={withBase("/scripts/loan-interest-rate-change-calculator.js")}></script>
+</BaseLayout>

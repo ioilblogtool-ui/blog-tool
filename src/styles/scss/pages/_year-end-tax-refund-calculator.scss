@@ -1,281 +1,55 @@
 .yetc-page {
-  .yetc-preset-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-
-  .yetc-preset-btn {
-    border: 1px solid #dce6e2;
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 0.82rem;
-    cursor: pointer;
-    background: #fff;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
-
-    &.is-active {
-      background: #0f6e56;
-      color: #fff;
-      border-color: #0f6e56;
-    }
-  }
-
-  // 탭 네비게이션
-  .yetc-tab-nav {
-    display: flex;
-    gap: 0;
-    border-bottom: 2px solid #e8ede9;
-    margin-bottom: 16px;
-    overflow-x: auto;
-  }
-
-  .yetc-tab-btn {
-    padding: 9px 16px;
-    font-size: 0.86rem;
-    font-weight: 600;
-    color: #6b7280;
-    border: none;
-    background: none;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    white-space: nowrap;
-    transition: color 0.15s, border-color 0.15s;
-
-    &.is-active {
-      color: #0f6e56;
-      border-bottom-color: #0f6e56;
-    }
-  }
-
-  // KPI 카드
-  .yetc-kpi-grid {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(2, 1fr);
-
-    @media (min-width: 900px) {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  .yetc-kpi-card {
-    background: #f8faf9;
-    border: 1px solid #e8ede9;
-    border-radius: 12px;
-    padding: 16px;
-
-    p     { font-size: 0.76rem; color: #6b7280; margin: 0 0 5px; }
-    strong { display: block; font-size: 1.15rem; font-weight: 800; color: #111827; margin-bottom: 4px; }
-    span  { font-size: 0.72rem; color: #9ca3af; }
-
-    &--refund {
-      background: #e1f5ee;
-      border-color: #0f6e56;
-      strong { color: #0f6e56; font-size: 1.35rem; }
-    }
-    &--pay {
-      background: #fff5f5;
-      border-color: #fca5a5;
-      strong { color: #b91c1c; font-size: 1.35rem; }
-    }
-    &--accent {
-      background: #f0f7ff;
-      border-color: #bfdbfe;
-    }
-    &--warn {
-      background: #fff8f0;
-      border-color: #fed7aa;
-      strong { color: #c2410c; }
-    }
-  }
-
-  // 공제 기여도 테이블
-  .yetc-deduction-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 0.86rem;
-
-    th, td {
-      padding: 9px 12px;
-      border-bottom: 1px solid #e8ede9;
-    }
-    th {
-      background: #f8fcfa;
-      font-weight: 700;
-      text-align: left;
-      font-size: 0.82rem;
-    }
-    td:not(:first-child) { text-align: right; }
-    tr.is-total td { font-weight: 700; background: #f0fdf4; }
-    tr.is-zero td  { color: #d1d5db; }
-    td.yetc-contribution { color: #0f6e56; font-weight: 600; }
-  }
-
-  // 연금저축 추가 납입 시나리오 카드
-  .yetc-scenario-card {
-    display: none;
-    background: #fff8e6;
-    border: 1.5px solid #fbbf24;
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-top: 20px;
-
-    &.is-visible { display: block; }
-
-    .yetc-scenario-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #92400e;
-      margin-bottom: 12px;
-    }
-
-    .yetc-scenario-rows {
-      display: grid;
-      gap: 8px;
-      @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    .yetc-scenario-row {
-      background: #fff;
-      border-radius: 8px;
-      padding: 12px 14px;
-
-      .yetc-scenario-item { font-size: 0.82rem; color: #374151; margin-bottom: 6px; }
-      .yetc-scenario-gain { font-size: 1.15rem; font-weight: 800; color: #0f6e56; }
-      .yetc-scenario-note { font-size: 0.74rem; color: #9ca3af; margin-top: 2px; }
-    }
-
-    .yetc-scenario-cta {
-      display: inline-block;
-      margin-top: 14px;
-      padding: 7px 16px;
-      background: #0f6e56;
-      color: #fff;
-      border-radius: 8px;
-      font-size: 0.84rem;
-      font-weight: 700;
-      text-decoration: none;
-    }
-  }
-
-  // 제휴 배너
-  .yetc-affiliate-banner {
-    display: none;
-    background: #f0f7ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-top: 16px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-
-    &.is-visible { display: flex; }
-
-    .yetc-banner-text {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: #1e3a5f;
-    }
-
-    .yetc-banner-btn {
-      padding: 7px 16px;
-      background: #1a56db;
-      color: #fff;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-  }
-
-  // 도넛 차트
-  .yetc-chart-wrap {
-    position: relative;
-    max-width: 280px;
-    margin: 24px auto 0;
-  }
-
-  // 결과 메시지
-  .yetc-message {
-    background: #f8faf9;
-    border-left: 3px solid #0f6e56;
-    border-radius: 0 10px 10px 0;
-    padding: 14px 18px;
-    font-size: 0.88rem;
-    line-height: 1.75;
-    color: #374151;
-    margin-top: 16px;
-  }
-
-  // 절세 전략 리포트 CTA
-  .yetc-report-cta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    background: #f0fdf4;
-    border: 1.5px solid #86efac;
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-top: 24px;
-
-    .yetc-report-text {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #111827;
-    }
-
-    .yetc-report-btn {
-      padding: 8px 18px;
-      background: #0f6e56;
-      color: #fff;
-      border-radius: 8px;
-      font-size: 0.84rem;
-      font-weight: 700;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-  }
-
-  // 자동 추정 배지
-  .yetc-auto-badge {
-    display: inline-block;
-    font-size: 0.7rem;
-    padding: 1px 7px;
-    background: #fef3c7;
-    color: #92400e;
-    border-radius: 10px;
-    margin-left: 6px;
-    vertical-align: middle;
-  }
-
-  // 관련 링크
-  .yetc-next-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: 1fr;
-    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  .yetc-next-link {
-    display: block;
-    padding: 13px 16px;
-    border: 1px solid #e8ede9;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #111827;
-    font-size: 0.88rem;
-    font-weight: 600;
-    transition: border-color 0.15s, background 0.15s;
-
-    &:hover { border-color: #0f6e56; background: #f5fbf8; color: #0f6e56; }
-  }
+  .yetc-helper, .yetc-field small, .yetc-data-date { color: #56665f; font-size: 0.85rem; line-height: 1.65; }
+  .yetc-data-date { margin: 0 0 16px; }
+  .yetc-badge { display: inline-block; font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; background: #fff3dc; color: #775012; font-weight: 600; }
+  .yetc-badge--official { background: #e1f5ee; color: #0f6e56; }
+  .yetc-presets, .yetc-quick-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .yetc-presets button, .yetc-quick-buttons button { padding: 9px 12px; border: 1px solid #c7d8cf; background: #fff; color: #0f6e56; border-radius: 8px; cursor: pointer; min-height: 44px; }
+  .yetc-presets button[aria-pressed='true'] { background: #0f6e56; color: #fff; }
+  .yetc-tab-nav { display: flex; gap: 4px; border-bottom: 1px solid #dce6e2; margin-top: 20px; }
+  .yetc-tab-nav button { flex: 1; min-width: 0; min-height: 48px; padding: 10px 5px; border: 0; border-bottom: 3px solid transparent; background: #fff; font-size: 0.82rem; cursor: pointer; color: #53625b; }
+  .yetc-tab-nav button[aria-selected='true'] { color: #0f6e56; border-bottom-color: #0f6e56; font-weight: 700; }
+  .yetc-panel-heading { font-size: 1rem; margin: 20px 0; }
+  .yetc-field { display: grid; gap: 6px; margin: 16px 0; }
+  .yetc-field label { font-weight: 600; font-size: 0.92rem; }
+  .yetc-field input:not([type='checkbox']), .yetc-field select, .yetc-copy-fallback { width: 100%; min-width: 0; box-sizing: border-box; min-height: 44px; border: 1px solid #b8cbc1; border-radius: 8px; background: #fff; padding: 10px 12px; font-size: 1rem; color: #152a21; }
+  .yetc-field input[type='checkbox'] { width: 22px; height: 22px; accent-color: #0f6e56; }
+  .yetc-field [aria-invalid='true'] { border-color: #b42318; }
+  .yetc-field .yetc-field-error { color: #b42318; }
+  .yetc-field-error:empty { display: none; }
+  .yetc-details { margin: 16px 0; border: 1px solid #dce6e2; padding: 12px; border-radius: 10px; }
+  .yetc-details summary { cursor: pointer; font-weight: 600; line-height: 1.6; }
+  .yetc-details ul, .yetc-source-panel ul { padding-left: 20px; line-height: 1.8; }
+  .yetc-results { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; min-width: 0; }
+  .yetc-results > * { min-width: 0; }
+  [hidden] { display: none; }
+  .yetc-kpi-grid { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+  .yetc-kpi { padding: 18px; border: 1px solid #dce6e2; border-radius: 12px; background: #f8faf9; min-width: 0; }
+  .yetc-kpi h2 { font-size: 0.86rem; line-height: 1.55; margin: 10px 0; color: #3f544a; }
+  .yetc-kpi strong { display: block; font-size: clamp(1.1rem, 2.3vw, 1.55rem); line-height: 1.4; overflow-wrap: anywhere; color: #0f6e56; }
+  .yetc-kpi p { font-size: 0.81rem; line-height: 1.65; margin: 10px 0 0; color: #53625b; }
+  .yetc-kpi--main { background: #e1f5ee; border-color: #9ed6bf; }
+  .yetc-kpi--pay { background: #fff4ed; border-color: #f0c4ae; }
+  .yetc-kpi--pay strong { color: #a3421c; }
+  .yetc-text-button { border: 0; padding: 10px 0; background: transparent; color: #0f6e56; font-size: 0.82rem; text-decoration: underline; cursor: pointer; }
+  .yetc-section-heading { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .yetc-section-heading h2 { margin: 0; }
+  progress { display: block; width: 100%; height: 14px; margin-top: 10px; accent-color: #0f6e56; }
+  .yetc-progress-text { font-size: 0.85rem; margin: 8px 0; line-height: 1.6; }
+  .yetc-table-wrap { width: 100%; min-width: 0; }
+  .yetc-table { width: 100%; min-width: 0; border-collapse: collapse; table-layout: fixed; font-size: 0.85rem; }
+  .yetc-table caption { text-align: left; color: #56665f; font-size: 0.8rem; padding: 12px 0; }
+  .yetc-table th, .yetc-table td { text-align: right; padding: 12px 5px; border-bottom: 1px solid #e4ece7; overflow-wrap: anywhere; line-height: 1.6; }
+  .yetc-table th:first-child, .yetc-table td:first-child { text-align: left; }
+  .yetc-table th { color: #3f544a; background: #f5f9f7; font-size: 0.8rem; }
+  .yetc-scenario-grid { display: grid; gap: 12px; margin: 18px 0; }
+  .yetc-scenario-grid > div { background: #f5f9f7; padding: 16px; border-radius: 10px; min-width: 0; }
+  .yetc-scenario-grid span { display: block; font-size: 0.85rem; }
+  .yetc-scenario-grid strong { display: block; font-size: 1.4rem; color: #0f6e56; margin-top: 8px; overflow-wrap: anywhere; }
+  .yetc-warnings { background: #fff8e9; border: 1px solid #eedbb3; border-radius: 10px; margin: 0; padding: 16px 16px 16px 34px; color: #6c531f; font-size: 0.85rem; line-height: 1.7; }
+  .yetc-source-panel { margin-top: 24px; }
+  .yetc-source-panel p { font-size: 0.87rem; line-height: 1.8; }
+  button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #534ab7; outline-offset: 3px; }
+  @media (min-width: 640px) { .yetc-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 820px) { .yetc-scenario-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 }

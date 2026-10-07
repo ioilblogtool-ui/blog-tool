@@ -1,382 +1,105 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import SiteHeader from "../../components/SiteHeader.astro";
-import CalculatorHero from "../../components/CalculatorHero.astro";
-import CompareCta from "../../components/CompareCta.astro";
-import InfoNotice from "../../components/InfoNotice.astro";
-import SeoContent from "../../components/SeoContent.astro";
-import ToolActionBar from "../../components/ToolActionBar.astro";
-import SimpleToolShell from "../../components/SimpleToolShell.astro";
-import {
-  WBE_2026_THRESHOLDS,
-  WBE_ASSET_DEDUCTION_BY_REGION,
-  WBE_BENEFIT_LABELS,
-  WBE_CAR_LABELS,
-  WBE_CHECKLIST,
-  WBE_FAQ,
-  WBE_HOUSING_LABELS,
-  WBE_META,
-  WBE_MONTHLY_CONVERSION_RATE,
-  WBE_OBLIGOR_LABELS,
-  WBE_PRESETS,
-  WBE_REGION_LABELS,
-  WBE_RELATED_LINKS,
-  WBE_SEO_CONTENT,
-  WBE_WORK_INCOME_DEDUCTION,
-} from "../../data/welfareBenefitEligibility";
-
-const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
-  ? import.meta.env.BASE_URL
-  : `${import.meta.env.BASE_URL}/`;
-const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
-
-const config = {
-  thresholds: WBE_2026_THRESHOLDS,
-  assetDeductions: WBE_ASSET_DEDUCTION_BY_REGION,
-  rates: WBE_MONTHLY_CONVERSION_RATE,
-  workDeduction: WBE_WORK_INCOME_DEDUCTION,
-  presets: WBE_PRESETS,
-  labels: {
-    benefits: WBE_BENEFIT_LABELS,
-    regions: WBE_REGION_LABELS,
-    housing: WBE_HOUSING_LABELS,
-    cars: WBE_CAR_LABELS,
-  },
-};
-
-const faqSchema = WBE_FAQ.map((item) => ({
-  "@type": "Question",
-  name: item.question,
-  acceptedAnswer: { "@type": "Answer", text: item.answer },
-}));
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import CalculatorHero from '../../components/CalculatorHero.astro';
+import SimpleToolShell from '../../components/SimpleToolShell.astro';
+import ToolActionBar from '../../components/ToolActionBar.astro';
+import SeoContent from '../../components/SeoContent.astro';
+import { WELFARE_CONFIG, WELFARE_YEARS, WELFARE_SOURCES } from '../../data/welfareThresholds';
+import { WBE_META, WBE_FAQ, WBE_RELATED_LINKS, WBE_SEO_CONTENT } from '../../data/welfareBenefitEligibility';
+const labels = WELFARE_CONFIG.benefitLabels;
+const money = (amount: number | null) => amount === null ? '공식 기준표 확인 후 안내 예정' : `${amount.toLocaleString('ko-KR')}원`;
+const scriptBase = import.meta.env.BASE_URL.replace(/\/$/, '');
+const jsonLd = {'@context':'https://schema.org','@graph':[
+  {'@type':'WebApplication',name:WBE_META.title,applicationCategory:'FinanceApplication',operatingSystem:'All',description:WBE_META.seoDescription,url:'https://bigyocalc.com/tools/welfare-benefit-eligibility/'},
+  {'@type':'FAQPage',mainEntity:WBE_FAQ.map(item=>({'@type':'Question',name:item.question,acceptedAnswer:{'@type':'Answer',text:item.answer}}))},
+]};
 ---
-
-<BaseLayout
-  title={WBE_META.seoTitle}
-  description={WBE_META.seoDescription}
-  ogImage="/og/og-home.png"
-  jsonLd={{
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: WBE_META.title,
-    applicationCategory: "FinanceApplication",
-    operatingSystem: "All",
-    description: WBE_META.seoDescription,
-    url: `${(import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "")}/tools/welfare-benefit-eligibility/`,
-    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
-  }}
->
+<BaseLayout title={WBE_META.seoTitle} description={WBE_META.seoDescription} ogImage="/og/tools/welfare-benefit-eligibility.png" jsonLd={jsonLd} recordSessions={false} loadAds={false}>
+  <script is:inline slot="before-tracking">
+    // 외부 스크립트 로딩 전에 금액·구형 재산 파라미터·fragment를 주소에서 제거한다.
+    window.__wbeInitialUrl = location.href;
+    const clean = new URL(location.href);
+    const publicParams = new URLSearchParams();
+    for (const key of ['v','year','hh','mode']) {
+      const value = clean.searchParams.get(key);
+      const valid = key === 'v' ? value === '2' : key === 'year' ? /^(2026|2027)$/.test(value || '') : key === 'hh' ? /^(?:[1-9]|1[0-9]|20)$/.test(value || '') : /^(recognized|monthly)$/.test(value || '');
+      if (valid && clean.searchParams.getAll(key).length === 1) publicParams.set(key,value);
+    }
+    clean.search = publicParams.toString();
+    if (!['#overview','#highlights','#criteria','#faq','#related'].includes(clean.hash)) clean.hash = '';
+    history.replaceState(null,'',clean.href);
+  </script>
   <SiteHeader />
-
-  <SimpleToolShell
-    calculatorId="welfare-benefit-eligibility"
-    pageClass="wbe-page"
-    resultFirst={false}
-  >
-    <Fragment slot="hero">
-      <CalculatorHero
-        eyebrow="복지급여 계산"
-        title="복지급여 수급 자격 계산기"
-        description="가구원 수, 소득, 재산, 자동차 정보를 입력해 2026년 생계·의료·주거·교육급여 가능성과 예상 생계급여액을 자가 점검해보세요."
-        badges={["기준 중위소득", "소득인정액", "2026", "자가 점검"]}
-      />
-      <InfoNotice
-        title="계산 전 확인"
-        lines={[
-          WBE_META.dataNote,
-          "입력한 소득·재산 정보는 브라우저에서만 계산되며 서버로 전송하지 않습니다.",
-          "자동차, 부양의무자, 재산 특례는 실제 조사에서 달라질 수 있어 결과에 확인 필요 메시지로 표시합니다.",
-        ]}
-      />
-    </Fragment>
-
-    <Fragment slot="actions">
-      <ToolActionBar resetId="wbeResetBtn" copyId="wbeCopyBtn" />
-    </Fragment>
-
-    <Fragment slot="aside">
-      <article class="panel">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-heading__eyebrow">빠른 예시</p>
-            <h2 class="panel__title">프리셋으로 바로 계산</h2>
-          </div>
-          <p class="panel-heading__summary">상황에 가까운 예시를 고른 뒤 금액을 조정하세요.</p>
+  <SimpleToolShell calculatorId="welfare-benefit-eligibility" pageClass="wbe-page">
+    <CalculatorHero slot="hero" eyebrow="복지급여 기준 비교" title={WBE_META.title} description={WBE_META.seoDescription} />
+    <div slot="actions">
+      <ToolActionBar resetId="wbe-reset" copyId="wbe-copy" />
+      <label class="wbe-share"><input id="wbe-share-amount" type="checkbox" disabled /> 금액도 링크에 포함하기 (직접 선택)</label>
+      <p class="wbe-muted">기본 링크에는 연도·가구원 수·입력 방식만 포함됩니다. 금액 포함 링크에는 입력액이 남습니다.</p>
+      <p id="wbe-share-status" role="status" aria-live="polite"></p>
+      <label id="wbe-copy-fallback" hidden>아래 링크를 직접 복사하세요<input id="wbe-share-link" type="text" readonly aria-label="직접 복사할 공유 링크" /></label>
+    </div>
+    <section slot="aside" class="panel wbe-inputs" aria-labelledby="wbe-input-title" data-clarity-mask="true">
+      <h2 id="wbe-input-title">내 가구 입력</h2>
+      <label for="wbe-year">기준연도</label>
+      <select id="wbe-year"><option value="2027">2027년 (2027.01.01 적용)</option><option value="2026">2026년</option></select>
+      <label for="wbe-hh">가구원 수</label>
+      <select id="wbe-hh">{Array.from({length:20},(_,i)=><option value={i+1} selected={i===3}>{i+1}인</option>)}</select>
+      <fieldset><legend>입력 금액의 의미</legend>
+        <label><input type="radio" name="wbe-mode" value="recognized" checked /> 소득인정액</label>
+        <label><input type="radio" name="wbe-mode" value="monthly" /> 월 소득 단순 비교</label>
+      </fieldset>
+      <label id="wbe-amount-label" for="wbe-amount">월 소득인정액 (원)</label>
+      <input id="wbe-amount" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 3,000,000" aria-describedby="wbe-amount-help wbe-error" />
+      <p id="wbe-amount-help" class="wbe-muted">0~1,000,000,000원, 정수 원 단위로 입력하세요. 소득인정액은 월급과 다릅니다.</p>
+      <p id="wbe-error" class="wbe-error" role="alert" hidden></p>
+      <p id="wbe-mode-note" class="wbe-notice">소득평가액과 재산의 소득환산액을 합한 월 소득인정액을 입력하세요. 재산·자동차·공제 산정은 상세 계산기에서 확인하세요.</p>
+      <a href="/tools/livelihood-benefit-income-recognition/">소득인정액 상세 계산 · 현재 2026 기준</a>
+      <noscript><p class="wbe-notice">계산에는 자바스크립트가 필요합니다. 아래 공식 기준표와 출처는 그대로 확인할 수 있습니다.</p></noscript>
+    </section>
+    <div class="stack" data-clarity-mask="true">
+      <p id="wbe-notice" class="wbe-notice" role="status" hidden></p>
+      <p id="wbe-config-error" class="wbe-error" role="alert" hidden>계산 데이터를 불러오지 못했습니다. 아래 기준표를 확인하고 잠시 후 다시 시도하세요.</p>
+      <section class="panel" aria-labelledby="wbe-result-title">
+        <h2 id="wbe-result-title">2027년 · 4인 가구 기준 비교</h2>
+        <p id="wbe-result-note">2027년 기준은 2027년 1월 1일부터 적용됩니다. 실제 수급 결정이 아닙니다.</p>
+        <div class="wbe-kpis">
+          <div><span>기준 중위소득 <small id="wbe-median-badge" class="wbe-badge">공식</small></span><strong id="wbe-median">6,929,885원</strong></div>
+          <div><span id="wbe-input-caption">입력 소득인정액</span><strong id="wbe-input-value">금액을 입력하세요</strong></div>
+          <div><span>중위소득 대비 <small class="wbe-badge">시뮬레이션</small></span><strong id="wbe-ratio">—</strong></div>
         </div>
-        <div class="wbe-preset-grid">
-          {WBE_PRESETS.map((preset) => (
-            <button type="button" class="wbe-preset-btn" data-wbe-preset={preset.id}>
-              <strong>{preset.label}</strong>
-              <span>{preset.summary}</span>
-            </button>
-          ))}
+        <p class="wbe-muted">비율은 반올림하며 기준 비교는 원 단위입니다. 남은 금액은 지급액이 아닙니다.</p>
+        <div id="wbe-benefits" class="wbe-benefits">
+          {Object.entries(labels).map(([key,label])=><article class="wbe-benefit" data-benefit={key}>
+            <h3>{label} <small>{WELFARE_YEARS[2027].ratios[key as keyof typeof labels]}%</small></h3>
+            <p>선정기준 <strong data-threshold>{money(WELFARE_YEARS[2027].rows[4][key as keyof typeof labels].amount)}</strong> <small class="wbe-badge" data-threshold-badge>공식</small></p>
+            <p data-comparison>금액을 입력하면 비교합니다.</p><p data-gap></p>
+            <div class="wbe-scale" aria-hidden="true"><span data-limit-marker></span><i data-income-marker hidden></i></div>
+          </article>)}
         </div>
-      </article>
-
-      <article class="panel wbe-input-panel">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-heading__eyebrow">입력</p>
-            <h2 class="panel__title">가구와 소득 정보</h2>
-          </div>
-        </div>
-
-        <section class="wbe-input-section" aria-labelledby="wbe-household-title">
-          <h3 id="wbe-household-title" class="wbe-input-section__title">가구 정보</h3>
-          <div class="form-grid">
-            <label class="field">
-              <span>가구원 수</span>
-              <input data-wbe="householdSize" type="number" min="1" max="6" class="input-number" value="4" />
-              <small>1~6인 기준을 사용합니다. 7인 이상은 주민센터 상담으로 확인하세요.</small>
-            </label>
-            <label class="field">
-              <span>거주 지역</span>
-              <select data-wbe="region">
-                {Object.entries(WBE_REGION_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
-              </select>
-              <small>재산 기본공제 간이 적용에 사용합니다.</small>
-            </label>
-            <label class="field">
-              <span>주거 형태</span>
-              <select data-wbe="housingType">
-                {Object.entries(WBE_HOUSING_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
-              </select>
-            </label>
-            <label class="field">
-              <span>미성년 자녀 수</span>
-              <input data-wbe="minorChildren" type="number" min="0" max="10" class="input-number" value="2" />
-            </label>
-            <label class="checkbox-option">
-              <input type="checkbox" data-wbe="isSingleParent" />
-              <span>한부모 가구입니다</span>
-            </label>
-            <label class="checkbox-option">
-              <input type="checkbox" data-wbe="hasDisabilityOrElderly" />
-              <span>장애·노인·중증질환 가구원이 있습니다</span>
-            </label>
-          </div>
-        </section>
-
-        <section class="wbe-input-section" aria-labelledby="wbe-income-title">
-          <h3 id="wbe-income-title" class="wbe-input-section__title">월 소득</h3>
-          <div class="form-grid">
-            <label class="field">
-              <span>근로소득</span>
-              <input data-wbe="earnedIncome" type="text" inputmode="numeric" class="input-number" value="2,500,000" />
-              <small>월평균 기준으로 입력하세요.</small>
-            </label>
-            <label class="field">
-              <span>사업소득</span>
-              <input data-wbe="businessIncome" type="text" inputmode="numeric" class="input-number" value="0" />
-            </label>
-            <label class="field">
-              <span>재산소득</span>
-              <input data-wbe="propertyIncome" type="text" inputmode="numeric" class="input-number" value="0" />
-            </label>
-            <label class="field">
-              <span>공적 이전소득</span>
-              <input data-wbe="publicTransferIncome" type="text" inputmode="numeric" class="input-number" value="0" />
-            </label>
-            <label class="field">
-              <span>사적 이전소득</span>
-              <input data-wbe="privateTransferIncome" type="text" inputmode="numeric" class="input-number" value="0" />
-            </label>
-            <label class="checkbox-option">
-              <input type="checkbox" data-wbe="applyWorkDeduction" checked />
-              <span>근로·사업소득 30% 간이 공제를 적용합니다</span>
-            </label>
-          </div>
-        </section>
-
-        <section class="wbe-input-section" aria-labelledby="wbe-asset-title">
-          <h3 id="wbe-asset-title" class="wbe-input-section__title">재산·자동차</h3>
-          <div class="form-grid">
-            <label class="field">
-              <span>주거용 재산</span>
-              <input data-wbe="housingAsset" type="text" inputmode="numeric" class="input-number" value="0" />
-              <small>자가 주택가액 또는 전세보증금 등을 입력하세요.</small>
-            </label>
-            <label class="field">
-              <span>일반 재산</span>
-              <input data-wbe="generalAsset" type="text" inputmode="numeric" class="input-number" value="0" />
-            </label>
-            <label class="field">
-              <span>금융재산</span>
-              <input data-wbe="financialAsset" type="text" inputmode="numeric" class="input-number" value="5,000,000" />
-            </label>
-            <label class="field">
-              <span>인정 가능 부채</span>
-              <input data-wbe="debt" type="text" inputmode="numeric" class="input-number" value="0" />
-            </label>
-            <label class="field">
-              <span>자동차 가액</span>
-              <input data-wbe="carValue" type="text" inputmode="numeric" class="input-number" value="0" />
-            </label>
-            <label class="field">
-              <span>자동차 구분</span>
-              <select data-wbe="carType">
-                {Object.entries(WBE_CAR_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
-              </select>
-            </label>
-          </div>
-        </section>
-
-        <section class="wbe-input-section" aria-labelledby="wbe-check-title">
-          <h3 id="wbe-check-title" class="wbe-input-section__title">신청 맥락</h3>
-          <div class="form-grid">
-            <label class="checkbox-option">
-              <input type="checkbox" data-wbe="hasSupportObligor" />
-              <span>부양의무자가 있습니다</span>
-            </label>
-            <label class="field">
-              <span>부양의무자 고소득·고재산 가능성</span>
-              <select data-wbe="obligorLevel">
-                {Object.entries(WBE_OBLIGOR_LABELS).map(([value, label]) => <option value={value}>{label}</option>)}
-              </select>
-              <small>의료급여 등은 별도 확인이 필요할 수 있습니다.</small>
-            </label>
-            <label class="checkbox-option">
-              <input type="checkbox" data-wbe="hasCrisisReason" />
-              <span>실직·질병·폐업 등 최근 위기 사유가 있습니다</span>
-            </label>
-          </div>
-        </section>
-      </article>
-    </Fragment>
-
-    <section class="wbe-section">
-      <div class="cdca-section__head">
-        <p class="cdca-section__eyebrow">계산 결과</p>
-        <h2>소득인정액과 급여별 가능성</h2>
-        <p class="cdca-section__sub">입력값을 바꾸면 2026년 기준선 대비 위치가 즉시 다시 계산됩니다.</p>
-      </div>
-
-      <div class="wbe-kpi-grid" aria-live="polite">
-        <article class="wbe-kpi-card wbe-kpi-card--main">
-          <p>소득인정액 추정</p>
-          <strong id="wbeIncomeRecognized">-</strong>
-          <span>소득 평가액 + 재산 소득환산액</span>
-        </article>
-        <article class="wbe-kpi-card">
-          <p>기준 중위소득 대비</p>
-          <strong id="wbeMedianRatio">-</strong>
-          <span id="wbeMedianBase">2026년 기준</span>
-        </article>
-        <article class="wbe-kpi-card wbe-kpi-card--accent">
-          <p>예상 생계급여액</p>
-          <strong id="wbeLivelihoodEstimate">-</strong>
-          <span>선정기준 - 소득인정액</span>
-        </article>
-        <article class="wbe-kpi-card">
-          <p>가장 가까운 지원</p>
-          <strong id="wbeNearestBenefit">-</strong>
-          <span>급여별 기준선과의 거리 기준</span>
-        </article>
-      </div>
-
-      <div class="wbe-benefit-table-wrap" role="region" aria-label="급여별 판정 표">
-        <table class="wbe-benefit-table">
-          <thead>
-            <tr>
-              <th>급여</th>
-              <th>선정기준</th>
-              <th>소득인정액</th>
-              <th>차이</th>
-              <th>판정</th>
-            </tr>
-          </thead>
-          <tbody id="wbeBenefitTableBody"></tbody>
-        </table>
-      </div>
-
-      <div class="wbe-message" id="wbeMessage"></div>
-    </section>
-
-    <section class="wbe-section">
-      <div class="cdca-section__head">
-        <p class="cdca-section__eyebrow">기준선 위치</p>
-        <h2>기준 중위소득 대비 현재 위치</h2>
-      </div>
-      <div class="wbe-gauge-wrap">
-        <div class="wbe-gauge" id="wbeGauge" aria-label="기준 중위소득 대비 위치"></div>
-        <div class="wbe-gauge-scale" aria-hidden="true">
-          <span>0%</span>
-          <span>60% 이상</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="wbe-section">
-      <div class="cdca-section__head">
-        <p class="cdca-section__eyebrow">분해</p>
-        <h2>소득인정액 구성</h2>
-        <p class="cdca-section__sub">공제 후 소득과 재산 환산액이 결과에 어느 정도 영향을 주는지 확인하세요.</p>
-      </div>
-      <div class="wbe-breakdown-list" id="wbeBreakdownList"></div>
-    </section>
-
-    <section class="wbe-section">
-      <div class="cdca-section__head">
-        <p class="cdca-section__eyebrow">주의</p>
-        <h2>확인 필요 항목</h2>
-      </div>
-      <div class="wbe-warning-grid" id="wbeWarningGrid"></div>
-    </section>
-
-    <section class="wbe-section">
-      <div class="cdca-section__head">
-        <p class="cdca-section__eyebrow">대체 지원</p>
-        <h2>함께 확인할 지원 후보</h2>
-      </div>
-      <div class="wbe-alternative-grid" id="wbeAlternativeGrid"></div>
-    </section>
-
-    <section class="wbe-section">
-      <div class="cdca-section__head">
-        <p class="cdca-section__eyebrow">신청 준비</p>
-        <h2>상담 전 서류 체크리스트</h2>
-      </div>
-      <div class="wbe-checklist-grid">
-        {WBE_CHECKLIST.map((item) => (
-          <article class="wbe-checklist-card">
-            <span aria-hidden="true">✓</span>
-            <p>{item}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-
-    <section class="wbe-official-cta">
-      <div>
-        <p class="wbe-official-cta__eyebrow">공식 확인</p>
-        <h2>최종 신청 전 복지로와 주민센터에서 한 번 더 확인하세요</h2>
-        <p>자가 계산 결과와 실제 조사 결과는 다를 수 있습니다. 온라인 확인은 복지로, 오프라인 상담은 주소지 읍면동 주민센터가 기준입니다.</p>
-      </div>
-      <a href="https://www.bokjiro.go.kr/" target="_blank" rel="noopener noreferrer">복지로 바로가기</a>
-    </section>
-
-    <CompareCta
-      variant="welfare"
-      title="복지급여 외 지원금 계산기도 함께 확인하세요"
-      description="소득인정액 기준을 확인했다면 청년 적금, 출산지원금, 육아 지원금처럼 상황별로 이어지는 지원금 비교표를 함께 볼 수 있습니다."
-      links={[
-        { href: "/compare/welfare/", label: "지원금 비교표 보기" },
-        { href: "/tools/birth-support-total/", label: "출산~2세 지원금 계산" },
-      ]}
-    />
-
-    <Fragment slot="seo">
-      <SeoContent
-        introTitle={WBE_SEO_CONTENT.introTitle}
-        intro={WBE_SEO_CONTENT.intro}
-        inputPoints={WBE_SEO_CONTENT.inputPoints}
-        criteria={WBE_SEO_CONTENT.criteria}
-        faq={WBE_FAQ}
-        related={WBE_RELATED_LINKS}
-      />
-    </Fragment>
+        <p id="wbe-scale-caption" class="wbe-muted">위치 막대는 중위소득 0~120% 구간입니다. 실제 금액은 위 숫자로 확인하세요.</p>
+        <p id="wbe-summary" class="wbe-sr-only" aria-live="polite" aria-atomic="true"></p>
+      </section>
+      <section class="panel" aria-labelledby="wbe-year-title"><h2 id="wbe-year-title">같은 금액으로 2026·2027 비교</h2>
+        <div class="wbe-table-scroll" tabindex="0" role="region" aria-label="연도별 비교표 가로 스크롤"><table><caption>선정기준과 입력액 차이 · 시뮬레이션</caption><thead><tr><th scope="col">급여</th><th scope="col">2026년</th><th scope="col">2027년</th></tr></thead><tbody id="wbe-year-rows"></tbody></table></div>
+      </section>
+      <section class="panel"><h2>신청 전 꼭 확인하세요</h2><ul>
+        <li>월 소득 단순 비교는 법적 소득인정액 산정 전 비교입니다.</li>
+        <li>의료급여는 부양의무자 관련 기준, 교육급여는 학생 요건 등 추가 확인이 필요합니다.</li>
+        <li>재산·자동차·금융재산·공제와 최종 자격은 공적자료 조사로 결정됩니다.</li>
+        <li>7인 이상 일부 급여는 원자료 확인 전까지 비교하지 않습니다.</li>
+      </ul><p>신청·상담: <a href="https://www.bokjiro.go.kr/" target="_blank" rel="noopener noreferrer">복지로</a> 또는 주소지 읍면동 주민센터</p></section>
+    </div>
+    <div slot="seo" class="stack">
+      <section class="panel"><h2>공식 기준표 · 월 원 단위</h2><p>확인일 2026-10-07. 원자료 금액은 공식, 가산·비율·차액 계산은 시뮬레이션입니다.</p>
+        {[2027,2026].map(year=><div class="wbe-table-scroll" tabindex="0" role="region" aria-label={`${year}년 공식 기준표 가로 스크롤`}><table><caption>{year}년 · {year}-01-01 적용</caption><thead><tr><th scope="col">가구</th><th scope="col">중위소득</th>{Object.values(labels).map(label=><th scope="col">{label}</th>)}</tr></thead><tbody>{Object.entries(WELFARE_YEARS[year as 2026|2027].rows).map(([hh,row])=><tr><th scope="row">{hh}인</th>{[row.median,row.livelihood,row.medical,row.housing,row.education].map(cell=><td>{money(cell.amount)} <small class="wbe-badge">{cell.badge}</small></td>)}</tr>)}</tbody></table></div>)}
+        <p>2027년 8인 이상 중위소득·주거급여는 각 7인 기준에 7인과 6인의 차액을 가산합니다. 2026년 중위소득은 1인 추가마다 959,198원을 가산합니다. 나머지 항목은 원표·산식 대조가 필요한 경우 계산을 막습니다.</p>
+      </section>
+      <section class="panel"><h2>공식 출처와 확인 범위</h2><ul class="wbe-sources">{Object.values(WELFARE_SOURCES).map(source=><li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a><p>{source.organization} · 발표 {source.publishedAt ?? '페이지에 미표시'} · 확인 {source.checkedAt}</p><p>{source.locator}. {source.verificationNote}</p></li>)}</ul></section>
+      <SeoContent {...WBE_SEO_CONTENT} faq={WBE_FAQ} related={WBE_RELATED_LINKS} />
+    </div>
   </SimpleToolShell>
-
-  <script id="wbe-data" type="application/json" set:html={JSON.stringify(config)} />
-  <script type="module" src={withBase("/scripts/welfare-benefit-eligibility.js")}></script>
+  <script is:inline id="wbe-config" type="application/json" set:html={JSON.stringify(WELFARE_CONFIG).replace(/</g,'\\u003c')} />
+  <script is:inline type="module" src={`${scriptBase}/scripts/welfare-benefit-eligibility.js`}></script>
 </BaseLayout>

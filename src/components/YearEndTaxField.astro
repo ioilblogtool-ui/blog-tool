@@ -1,0 +1,24 @@
+---
+import type { YetcField, YetcInput } from '../data/yearEndTaxRefundCalculator';
+interface Props { field: YetcField; value: YetcInput[keyof YetcInput] }
+const { field, value } = Astro.props;
+const id = `yetc-input-${field.key}`;
+const hintId = `yetc-hint-${field.key}`;
+const errorId = `yetc-error-${field.key}`;
+const display = value === null ? '' : field.type === 'money' ? Number(value).toLocaleString('ko-KR') : String(value);
+---
+<div class="yetc-field">
+  <label for={id}>{field.label}</label>
+  {field.type === 'select' ? (
+    <select id={id} data-yetc={field.key} aria-describedby={`${hintId} ${errorId}`}>
+      {field.options?.map(option => <option value={option.value} selected={option.value === value}>{option.label}</option>)}
+    </select>
+  ) : field.type === 'checkbox' ? (
+    <input id={id} data-yetc={field.key} type="checkbox" checked={value === true} aria-describedby={`${hintId} ${errorId}`} />
+  ) : (
+    <input id={id} data-yetc={field.key} type="text" inputmode="numeric" value={display}
+      autocomplete="off" aria-describedby={`${hintId} ${errorId}`} />
+  )}
+  <small id={hintId}>{field.hint}</small>
+  <small id={errorId} class="yetc-field-error" aria-live="polite"></small>
+</div>
