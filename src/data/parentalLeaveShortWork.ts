@@ -108,6 +108,7 @@ export const REFERENCE_LINKS = [
 ] as const;
 
 export const RELATED_LINKS = [
+  { href: "/reports/childbirth-benefits-changes-2027/", label: "2027 부모급여·아동수당 개편안 비교" },
   { href: '/tools/childcare-short-time-pay-calculator/', label: '육아기 근로시간 단축 급여 계산기' },
   { href: '/tools/parental-leave-pay/', label: '육아휴직 급여 계산기' },
   { href: '/tools/single-parental-leave-total/', label: '한 명만 육아휴직 총수령액 계산기' },

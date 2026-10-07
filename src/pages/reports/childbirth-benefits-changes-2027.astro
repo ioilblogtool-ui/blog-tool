@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import CalculatorHero from '../../components/CalculatorHero.astro';
+import InfoNotice from '../../components/InfoNotice.astro';
+import CompareCta from '../../components/CompareCta.astro';
+import SeoContent from '../../components/SeoContent.astro';
+import { CBC_META, CBC_SUMMARY, CBC_POLICIES, CBC_POLICY_BY_ID, CBC_TRANSITION, CBC_COMPARISON, CBC_HOME_TOTALS, CBC_SOURCES, CBC_RECHECK, CBC_CHANGELOG, CBC_CTA, CBC_RELATED, CBC_CRITERIA, CBC_INTRO, CBC_FAQ, formatAmount, policyAmountText, evidenceText } from '../../data/childbirthBenefitsChanges2027';
+
+const reportUrl = new URL(`/reports/${CBC_META.slug}/`, Astro.site ?? 'https://bigyocalc.com').href;
+const jsonLd = { '@context': 'https://schema.org', '@graph': [
+  { '@type': 'Article', headline: CBC_META.title, description: CBC_META.description, inLanguage: 'ko-KR', mainEntityOfPage: reportUrl, author: { '@type': 'Organization', name: '비교계산소' }, publisher: { '@type': 'Organization', name: '비교계산소' }, ...(CBC_META.publishedAt ? { datePublished: CBC_META.publishedAt } : {}), ...(CBC_META.modifiedAt ? { dateModified: CBC_META.modifiedAt } : {}) },
+  { '@type': 'FAQPage', mainEntity: CBC_FAQ.map(item => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })) },
+] };
+const welcome = CBC_POLICY_BY_ID['welcome-grant'];
+const basic = CBC_POLICY_BY_ID['basic-child-benefit'];
+const home = CBC_POLICY_BY_ID['homecare-extra'];
+const orderLabels = [['first', '첫째'], ['second', '둘째'], ['thirdOrMore', '셋째 이상']] as const;
+const welcomeAmount = (order: string, region: string) => welcome.amounts.value?.find(row => row.birthOrder === order && row.region === region)?.amountWon ?? null;
+const basicAmount = (region: string) => basic.amounts.value?.find(row => row.region === region);
+const comparisonText = (id: string, kind: string) => {
+  const policy = CBC_POLICY_BY_ID[id];
+  if (kind === 'region') return `${policy.name}: ${policy.regionalPreference.value ?? `재확인 필요: ${policy.regionalPreference.note}`}`;
+  if (kind === 'age') return `${policy.name}: ${evidenceText(policy.applicableTarget)} · ${evidenceText(policy.paymentPeriod)}`;
+  return `${policy.name}: ${policyAmountText(id)}`;
+};
+const comparisonFields = (row: typeof CBC_COMPARISON[number]) => [
+  ['현행 2026 제도', row.currentPolicyIds.map(id => comparisonText(id, row.id)).join(' · ')],
+  ['2027 개편안', row.proposalPolicyIds.map(id => comparisonText(id, row.id)).join(' · ')],
+  ['핵심 변화', row.changeSummary], ['확정 여부', '현행 시행 / 신규 정부 개편안·법 개정 필요'], ['재확인 필요', row.recheckItems.join(' · ')],
+];
+const navigation = [ ['cbc27-comparison', '현행 vs 개편안'], ['cbc27-birth-date', '6월생 vs 7월생'], ['cbc27-birth-order', '첫째·둘째·셋째'], ['cbc27-region', '지역 우대'], ['cbc27-childcare', '보육 형태'], ['cbc27-sources', '출처·확정 과정'], ['cbc27-next', '우리 집 지원금'], ['faq', 'FAQ'] ];
+---
+<BaseLayout title={CBC_META.title} description={CBC_META.description} ogImage={`/og/reports/${CBC_META.slug}.png`} jsonLd={jsonLd} loadAds={false}>
+  <SiteHeader />
+  <main class="container page-shell report-page cbc27-page">
+    <CalculatorHero eyebrow="2027 출산·육아 지원제도 변경 리포트" title={CBC_META.h1} description="익숙한 부모급여·아동수당에서 신규 제도로 무엇이 바뀌는지, 출생일·지역·보육 형태별로 비교합니다." />
+    <p class="cbc27-date"><span class="cbc27-badge">공식</span> 공식 발표 확인일 <time datetime={CBC_META.checkedAt}>{CBC_META.checkedAt}</time> · 정책 상태: {CBC_META.status}</p>
+    <InfoNotice title="정부 개편안 · 최종 확정 전" lines={[
+      '2027년 예산안·개편 추진 자료를 기준으로 정리했습니다. 예산·법령·시행지침에 따라 대상과 지급 조건이 달라질 수 있습니다.',
+      '‘공식’은 정부가 공개한 자료라는 뜻입니다. 모든 지급 조건이 최종 확정됐다는 뜻은 아닙니다.',
+      '현행 제도와 신규 급여 개편안을 구분합니다. 2027년에 모든 아이가 같은 수당으로 자동 전환되는 것은 아닙니다.',
+    ]} />
+    <section id="cbc27-summary" aria-label="2027 제도 변경 요약" class="cbc27-summary">
+      {CBC_SUMMARY.map(card => <article class="cbc27-stat"><p>{card.label}</p><strong>{card.value}</strong><small>정부 개편안</small><p>{card.note}</p></article>)}
+    </section>
+    <nav class="cbc27-nav" aria-label="리포트 목차">{navigation.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}</nav>
+
+    <section class="panel" id="cbc27-comparison">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">전체 지원 체계 비교</p><h2>2026 현행 vs 2027 개편안</h2></div>
+      <p>첫만남이용권·부모급여·아동수당을 아이맞이지원금·아동기본수당 체계로 개편하는 안입니다. 초기 총액과 매월 수당을 함께 읽으세요.</p>
+      <div class="cbc27-mobile-comparison">{CBC_COMPARISON.map(row => <article class="cbc27-comparison-card"><h3>{row.label}</h3><dl>{comparisonFields(row).map(([label, text]) => <div><dt>{label}</dt><dd>{text}</dd></div>)}</dl></article>)}</div>
+      <div class="cbc27-desktop-comparison cbc27-table-wrap" tabindex="0" role="region" aria-label="현행과 개편안 상세 비교표">
+        <table class="cbc27-table cbc27-table--wide"><caption>지원항목별 비교 · 신규 항목은 정부 개편안</caption><thead><tr><th scope="col">항목</th>{comparisonFields(CBC_COMPARISON[0]).map(([label]) => <th scope="col">{label}</th>)}</tr></thead><tbody>{CBC_COMPARISON.map(row => <tr><th scope="row">{row.label}</th>{comparisonFields(row).map(([, text]) => <td>{text}</td>)}</tr>)}</tbody></table>
+      </div>
+      <div class="cbc27-two"><article class="cbc27-note"><h3>지역 차등은 이미 있습니다</h3><p>{evidenceText(CBC_POLICY_BY_ID['child-allowance'].regionalPreference)}</p><p>신규 우대지역과 현행 인구감소지역을 같은 목록으로 단정하지 않습니다.</p></article><article class="cbc27-note"><h3>연령 확대와 신규 수당은 구분하세요</h3><p>{evidenceText(CBC_POLICY_BY_ID['child-allowance'].paymentPeriod)}</p><p>현행법의 대상 연령 확대가 기존 출생아의 신규 수당 전환을 의미하지 않습니다.</p></article></div>
+      <p class="cbc27-source-ref">근거: <a href="#cbc27-source-child">현행 아동수당 확대 안내</a> · <a href="#cbc27-source-reform">정부 개편 발표</a></p>
+    </section>
+
+    <section class="panel" id="cbc27-birth-date">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">같은 2027년생도 다를 수 있습니다</p><h2>6월 30일까지 vs 7월 1일 이후 출생</h2></div>
+      <div class="cbc27-two"><article class="cbc27-cohort"><p>정부안의 기존 체계 유지 대상</p><h3>{CBC_TRANSITION.previous.value?.through?.replaceAll('-', '.')}까지</h3><ul><li>첫만남이용권</li><li>0~1세 부모급여</li><li>아동수당</li></ul><p>각 제도의 대상 연령·보육 형태·지역 요건 확인</p></article><article class="cbc27-cohort cbc27-cohort--proposal"><p>정부안의 신규 체계 적용 대상</p><h3>{CBC_TRANSITION.next.value?.from?.replaceAll('-', '.')} 이후</h3><ul><li>아이맞이지원금: 출생 초기 총액</li><li>아동기본수당: 매월 지원</li><li>0~1세 가정보육 추가 지원안</li></ul><p>예산안·법 개정 필요, 세부 조건 재확인</p></article></div>
+      <p><strong>2026년생은?</strong> 현재 발표안에서는 기존 지원 체계를 유지하는 대상입니다. 2027년에 신규 수당으로 자동 전환된다고 안내하지 않습니다. 아이의 월령에 맞는 기존 급여를 확인하세요.</p>
+      <p class="cbc27-note">기존 체계 유지라는 경과조치도 정부 발표안입니다. 최종 부칙·예외·소급 기준은 재확인 필요입니다. 출산 예정일을 실제 출생일로 대신하거나 ‘한 달 차이로 평생 얼마 손해’라는 총액을 추정하지 않습니다.</p>
+      <p class="cbc27-source-ref">근거: <a href="#cbc27-source-reform">보건복지부의 출생일 경계·기존 체계 유지 발표</a></p>
+    </section>
+
+    <section class="panel" id="cbc27-birth-order">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">아이맞이지원금</p><h2>첫째·둘째·셋째, 총액은 얼마나 다른가요?</h2></div>
+      <p><span class="cbc27-badge">공식</span> 정부 개편안 · 최종 확정 전</p>
+      <div class="cbc27-table-wrap" tabindex="0" role="region" aria-label="출생순위별 아이맞이지원금 총액안"><table class="cbc27-table"><caption>출생 초기 지원 총액안 · 월 지급액이 아닙니다</caption><thead><tr><th scope="col">출생순위</th><th scope="col">일반지역</th><th scope="col">우대지역</th></tr></thead><tbody>{orderLabels.map(([id, label]) => <tr><th scope="row">{label}</th><td>{formatAmount(welcomeAmount(id, 'general'))}</td><td>{formatAmount(welcomeAmount(id, 'preferred'))}</td></tr>)}</tbody></table></div>
+      <p>{evidenceText(welcome.paymentPeriod)}</p><p class="cbc27-note">출생순위·다태아 처리, 지급 시작월과 회차별 금액은 세부 시행안 재확인이 필요합니다.</p>
+      <p class="cbc27-source-ref">근거: <a href="#cbc27-source-welcome">보건복지부 예산안 카드뉴스</a> · <a href="#cbc27-source-qa">분기 지급 Q&A</a></p>
+    </section>
+
+    <section class="panel" id="cbc27-region">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">서로 다른 두 가지 지역 가산</p><h2>일반지역 vs 우대지역</h2></div>
+      <div class="cbc27-two"><article class="cbc27-note"><h3>아이맞이지원금</h3><strong>총 500만원 추가안</strong><p>일반지역 총액에 추가하는 출생 초기 지원입니다.</p></article><article class="cbc27-note"><h3>아동기본수당</h3><strong>매월 10만원 추가안</strong><p>일반지역 월 20만원, 우대지역 월 30만원입니다.</p></article></div>
+      <p>{welcome.regionalPreference.note}</p><p>지역 목록이 확인되지 않았다고 일반지역으로 판정하지 않습니다. 현행 아동수당 지역 가산과 지자체 자체 출산장려금도 별개입니다.</p>
+      <h3>아동기본수당의 지급수단</h3><ul>{(['general', 'preferred'] as const).map(region => { const row = basicAmount(region); return <li>{region === 'general' ? '일반지역' : '우대지역'}: 월 {formatAmount(row?.amountWon ?? null)} — 현금 {formatAmount(row?.cashWon.value ?? null)} + 지역사랑상품권 {formatAmount(row?.voucherWon.value ?? null)}</li>; })}</ul>
+      <p class="cbc27-source-ref">근거: <a href="#cbc27-source-reform">지방우대지수·지급수단 발표</a></p>
+    </section>
+
+    <section class="panel" id="cbc27-childcare">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">신규 적용 0~1세 아동 기준</p><h2>가정보육 vs 어린이집 이용</h2></div>
+      <div class="cbc27-table-wrap" tabindex="0" role="region" aria-label="0~1세 보육 형태별 월 수당안"><table class="cbc27-table"><caption>정부 개편안의 월 수당 비교 · 보육료 포함 총혜택 비교가 아닙니다</caption><thead><tr><th scope="col">보육 형태</th><th scope="col">일반지역</th><th scope="col">우대지역</th></tr></thead><tbody><tr><th scope="row">가정보육</th>{CBC_HOME_TOTALS.value?.map(row => <td>월 {formatAmount(row.amountWon)}<small>기본수당 + 추가 30만원</small></td>)}</tr><tr><th scope="row">어린이집 이용</th>{(['general', 'preferred'] as const).map(region => <td>월 {formatAmount(basicAmount(region)?.amountWon ?? null)}<small>가정보육 추가 미적용</small></td>)}</tr></tbody></table></div>
+      <p>월 수당 전체가 현금으로 입금되는 것은 아닙니다. 기본수당의 현금·지역상품권 구성을 확인하세요.</p><p class="cbc27-note">{home.childcareConditions.note} · 가정보육 추가액의 지급수단도 재확인 필요입니다. 어린이집 보육료를 임의로 더하거나 어느 보육 방식이 무조건 유리하다고 단정하지 않습니다.</p>
+      <p class="cbc27-source-ref">근거: <a href="#cbc27-source-qa">인구전략위원회 가정보육 Q&A</a></p>
+    </section>
+
+    <section class="panel" id="cbc27-sources">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">발표 내용과 확정 과정 분리</p><h2>언제 최종 확정되나요?</h2></div>
+      <p>현재 확보한 자료는 정부 발표와 예산안입니다. 정확한 최종 확정일·신청 개시일은 예상하지 않습니다. 아래 항목이 공개되면 개별 조건을 다시 확인합니다.</p><ol>{CBC_RECHECK.map(item => <li>{item}</li>)}</ol>
+      <h3>정책별 확정 여부와 재확인 항목</h3><div class="cbc27-policy-list">{CBC_POLICIES.map(policy => <details><summary>{policy.name} — {policy.policyStatuses.includes('current') ? '현행' : '2027 개편안'}</summary><dl><div><dt>정책 상태</dt><dd>{policy.policyStatuses.includes('current') ? '현행 시행 기준' : '예산안·법 개정 필요·세부 시행안 재확인'}</dd></div><div><dt>적용 대상</dt><dd>{evidenceText(policy.applicableTarget)}</dd></div><div><dt>지급 주기·기간</dt><dd>{evidenceText(policy.paymentPeriod)}</dd></div><div><dt>보육 형태</dt><dd>{policy.childcareConditions.value ?? `재확인 필요: ${policy.childcareConditions.note}`}</dd></div><div><dt>재확인 필요</dt><dd>{policy.recheckItems.join(' · ')}</dd></div><div><dt>공식 근거</dt><dd>{policy.sourceIds.map(id => <a href={`#cbc27-source-${id}`}>{CBC_SOURCES.find(source => source.id === id)?.organization} </a>)}</dd></div></dl></details>)}</div>
+      <h3>공식 출처</h3><ul class="cbc27-sources">{CBC_SOURCES.map(source => <li id={`cbc27-source-${source.id}`}><span class="cbc27-badge">공식</span> <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a><p>{source.organization} · 발표/자료일 {source.publishedAt ?? '재확인 필요'} · 확인일 {source.checkedAt}</p>{source.limitation && <p>{source.limitation}</p>}</li>)}</ul>
+      <h3>자료 갱신 기록</h3><ul>{CBC_CHANGELOG.map(item => <li><time datetime={item.date}>{item.date}</time> — {item.text}</li>)}</ul>
+    </section>
+    <section id="cbc27-next"><CompareCta eyebrow="우리 집은 얼마 받나" title="내 조건의 지원금은 계산기로 확인하세요" description={CBC_CTA.note} links={[{ href: CBC_CTA.href, label: CBC_CTA.label, tone: 'primary' }]} variant="welfare" /></section>
+    <SeoContent introTitle="2027 부모급여·아동수당 개편안을 읽는 방법" intro={CBC_INTRO} criteria={CBC_CRITERIA} faq={CBC_FAQ} related={CBC_RELATED} introSummary="제도별 적용 대상과 정책 상태, 다음 확인 항목을 함께 정리했습니다." criteriaTitle="자료 기준과 비교 방법" criteriaLinkLabel="자료 기준" relatedTitle="함께 확인할 계산기와 리포트" relatedEyebrow="다음 확인" relatedLinkLabel="관련 콘텐츠" relatedSummary="지원금 계산과 출산 비용, 지역별 지원을 이어서 확인하세요." />
+  </main>
+</BaseLayout>

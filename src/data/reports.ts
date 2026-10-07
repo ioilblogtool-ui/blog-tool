@@ -8,6 +8,13 @@
 
 export const reports: ReportMeta[] = [
   {
+    slug: "childbirth-benefits-changes-2027",
+    title: "2027 부모급여·아동수당 변경 | 출산지원금 총정리",
+    description: "2027 부모급여·아동수당 정부 개편안의 적용시점·지급액·출생일·지역·보육 조건과 최종 확정 전 확인사항을 비교합니다.",
+    order: 0,
+    badges: ["공식"],
+  },
+  {
     slug: "it-salary-top10",
     title: "IT 업계 신입 초봉 TOP 10 연봉·복지 환경 비교 [2026]",
     description: "네이버, 카카오, SK텔레콤, 현대오토에버 등 주요 IT 기업의 2026년 신입 연봉과 복지를 카드형으로 비교하는 리포트입니다.",

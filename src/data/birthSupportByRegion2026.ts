@@ -304,6 +304,7 @@ export const BSR_SOURCE_LINKS = [
 ];
 
 export const BSR_RELATED_LINKS = [
+  { href: "/reports/childbirth-benefits-changes-2027/", label: "2027 부모급여·아동수당 개편안 비교" },
   { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" },
   { href: "/tools/birth-support-money/", label: "출산지원금 총수령액 계산기" },
   { href: "/tools/postnatal-care-cost/", label: "산후도우미 비용 계산기" },

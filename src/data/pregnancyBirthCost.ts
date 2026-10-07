@@ -99,6 +99,7 @@ export const PREGNANCY_TIPS = [
 ];
 
 export const PREGNANCY_RELATED_LINKS = [
+  { href: "/reports/childbirth-benefits-changes-2027/", label: "2027 부모급여·아동수당 개편안 비교" },
   { href: "/reports/postpartum-center-cost-2026/", label: "2026 산후조리원 비용 완전 비교" },
   { href: "/tools/birth-support-total/", label: "출산~2세 총지원금 계산기" },
   { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },

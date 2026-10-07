@@ -298,6 +298,7 @@ export const BSM_FAQ = [
 ];
 
 export const BSM_RELATED_LINKS = [
+  { href: "/reports/childbirth-benefits-changes-2027/", label: "2027 부모급여·아동수당 개편안 비교" },
   { href: "/reports/birth-support-by-region-2026/", label: "2026 지역별 출산지원금 비교" },
   { href: "/tools/postnatal-care-cost/", label: "산후도우미 비용 계산기" },
   { href: "/tools/parental-leave-pay/", label: "육아휴직 급여 계산기" },
