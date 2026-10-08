@@ -114,7 +114,7 @@ export const CBC_SUMMARY = [
   { label: '가장 큰 변경점', value: '3개 → 2개 체계', note: '기존 출생아는 기존 지원 체계를 유지하는 안' },
 ];
 export const CBC_RECHECK = ['국회 2027 예산 확정', '아동수당법 등 관련 법 개정과 경과규정', '보건복지부 세부 시행안·보육 판정', '우대지역 명단·거주 기준', '지급 신청방법·지급일·회차별 금액'];
-export const CBC_CTA = { supports2027Proposal: false, href: '/tools/birth-support-money/', label: '기존 제도 기준 출산지원금 계산하기', note: '현재 연결된 계산기는 2026 기준입니다. 2027 개편안 계산을 제공하는 도구로 해석하지 마세요.' };
+export const CBC_CTA = { supports2027Proposal: true, href: '/tools/birth-support-money/', label: '2027 출산지원금 계산기로 확인', note: '출생일·출생순위·지역·양육 방식을 넣으면 6월 30일 이전·7월 1일 이후 적용 예정 제도로 나눠 첫 1년·두 돌까지 예상 지원금을 계산합니다. 개편안 결과는 예산안 기준 예상치입니다.' };
 export const CBC_RELATED = [
   { href: CBC_CTA.href, label: CBC_CTA.label },
   { href: '/tools/pregnancy-birth-cost/', label: '임신·출산 비용도 함께 계산하기' },
