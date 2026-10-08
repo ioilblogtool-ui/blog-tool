@@ -9,6 +9,7 @@ import os
 
 # ── 도구 데이터 ────────────────────────────────────────────────────────────────
 TOOLS = [
+    {"slug": "health-insurance-premium-calculator", "title": "건강보험료 계산기 2027", "description": "요율 기반 이론값과 연봉 인상 전후 부담을 비교하세요 · 상하한·단수처리 미반영", "eyebrow": "연봉·이직", "stats": [("건강보험료율", "7.19% 동결"), ("계산 결과", "시뮬레이션")]},
     {"slug": "loan-interest-rate-change-calculator", "title": "대출금리 변동 계산기", "description": "금리 변동 전후 월 상환액과 남은 기간 총이자를 비교하세요", "eyebrow": "대출·금융", "stats": [("3억·30년·4% 예시", "시뮬레이션"), ("0.25%p 인하", "월 약 4.3만원 감소")]},
     {"slug": "year-end-tax-refund-calculator", "title": "연말정산 환급액 계산기 2026", "description": "카드 25% 문턱과 연금저축·IRP 추가 납입 효과를 비교하세요", "eyebrow": "세금·연말정산", "stats": [("카드 공제", "25% 문턱"), ("연금계좌", "절세 여력")]},
     {"slug": "welfare-benefit-eligibility", "title": "2027 기준 중위소득 계산기", "description": "생계·의료·주거·교육급여 선정기준과 내 소득을 비교하세요", "eyebrow": "복지급여 기준 비교", "stats": [("4인 중위소득", "6,929,885원"), ("비교 연도", "2026·2027")]},

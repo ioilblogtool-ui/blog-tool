@@ -498,16 +498,16 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "health-insurance-premium-calculator",
-    title: "건강보험료 계산기 2026",
-    description: "2026년 건강보험료율과 장기요양보험료율을 기준으로 직장가입자·지역가입자 월 보험료와 퇴직 전환 부담을 계산합니다.",
+    title: "건강보험료 계산기 2027",
+    description: "2027 건강보험 요율 기반 이론값과 연봉 인상 전후 부담 변화를 비교합니다. 미확인 장기요양·상하한 기준과 공단 조회를 함께 안내합니다.",
     order: 4.4,
     eyebrow: "건강보험료 계산",
     category: "calculator",
     iframeReady: true,
-    badges: ["신규", "2026", "4대보험"],
+    badges: ["2027", "시뮬레이션", "4대보험"],
     previewStats: [
-      { label: "건강보험료율", value: "7.19%", context: "2026년 공식" },
-      { label: "장기요양", value: "13.14%", context: "건보료 대비" }
+      { label: "건강보험료율", value: "7.19%", context: "2027년 동결" },
+      { label: "연봉 인상 비교", value: "본인·회사", context: "요율 기반 이론값" }
     ]
   },
   {
@@ -2611,6 +2611,5 @@ export const MOBILE_POPULAR_SLUGS: string[] = [
   "single-parental-leave-total",
   "fire-calculator",
 ];
-
 
 
