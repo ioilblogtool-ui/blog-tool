@@ -775,16 +775,16 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "birth-support-money",
-    title: "출산지원금 총수령액 계산기",
-    description: "출생일, 거주 지역, 출생순위를 입력하면 첫만남이용권, 부모급여, 아동수당과 일부 지자체 출산지원금을 합산해 예상 총수령액을 계산합니다.",
+    title: "2027 출산지원금 계산기",
+    description: "출생일·출생순위·거주지역을 입력하면 2027 출산지원금과 부모급여·아동수당 예상 총액을 바로 계산. 첫 1년·두 돌까지 합계와 7월 출생아부터 적용 예정인 개편안 비교 포함.",
     order: 11.5,
     eyebrow: "출산지원금 계산",
     category: "support",
     iframeReady: true,
-    badges: ["출산지원금", "육아", "지자체"],
+    badges: ["출산지원금", "육아", "2027"],
     previewStats: [
-      { label: "국가 공통", value: "3종" },
-      { label: "기간 선택", value: "12·24·95개월" }
+      { label: "적용 기준일", value: "2027.7.1 출생" },
+      { label: "첫째 두 돌까지", value: "약 2,200만원" }
     ]
   },
   {
