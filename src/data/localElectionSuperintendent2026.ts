@@ -9,7 +9,7 @@ export type EduOrientation = "진보" | "보수" | "중도" | "확정대기";
 export type EduBadge       = "확정" | "확정대기" | "재선";
 export type EduPledgeCategory =
   | "교육과정" | "학생인권" | "교원처우" | "학교시설"
-  | "돌봄" | "직업교육" | "디지털교육" | "기타";
+  | "돌봄" | "직업교육" | "디지털교육" | "환경" | "행정·자치" | "기타";
 
 export interface EduPledge {
   category: EduPledgeCategory;

@@ -12,11 +12,11 @@ interface FaqItem {
 
 interface Props {
   introTitle: string;
-  intro: string[];
-  inputPoints?: string[];
-  criteria?: string[];
-  faq?: FaqItem[];
-  related?: RelatedLink[];
+  intro: readonly string[];
+  inputPoints?: readonly string[];
+  criteria?: readonly string[];
+  faq?: readonly FaqItem[];
+  related?: readonly RelatedLink[];
   introSummary?: string;
   criteriaTitle?: string;
   criteriaLinkLabel?: string;
@@ -24,6 +24,9 @@ interface Props {
   relatedEyebrow?: string;
   relatedLinkLabel?: string;
   relatedSummary?: string;
+  faqTitle?: string;
+  formulaTitle?: string;
+  formula?: readonly string[];
 }
 
 const {
@@ -33,6 +36,9 @@ const {
   criteria = [],
   faq = [],
   related = [],
+  faqTitle = "자주 묻는 질문",
+  formulaTitle = "계산식",
+  formula = [],
   introSummary = "검색에서 바로 들어와도 계산 기준, 활용 맥락, 다음 행동까지 빠르게 이해할 수 있게 정리했습니다.",
   criteriaTitle = "계산 기준과 해석 포인트",
   criteriaLinkLabel = "계산 기준",
@@ -125,10 +131,15 @@ const relatedLinks = related
     )
   }
 
+  {formula.length > 0 && <article class="panel seo-panel" id="formula">
+    <h2 class="panel__title">{formulaTitle}</h2>
+    <ul class="seo-list">{formula.map((item) => <li>{item}</li>)}</ul>
+  </article>}
+
   {
     faq.length > 0 && (
       <article class="panel seo-panel" id="faq">
-        <h2 class="panel__title">자주 묻는 질문</h2>
+        <h2 class="panel__title">{faqTitle}</h2>
         <div class="faq-list">
           {faq.map((item, index) => (
             <details class="faq-item" open={index === 0}>

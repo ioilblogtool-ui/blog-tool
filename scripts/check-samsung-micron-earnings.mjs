@@ -1,0 +1,78 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import ts from "typescript";
+
+// 기존 TypeScript 런타임을 이용해 별도 테스트 프레임워크 없이 순수 모듈을 검증한다.
+async function loadModule(path) {
+  const { outputText } = ts.transpileModule(fs.readFileSync(path, "utf8"), {
+    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 },
+  });
+  return import(`data:text/javascript;base64,${Buffer.from(outputText).toString("base64")}`);
+}
+const data = await loadModule("src/data/samsungMicronEarnings2026.ts");
+const util = await loadModule("src/utils/samsungMicronEarnings2026.ts");
+util.validateReportData(data);
+const snapshot = util.resolveSnapshot(data.SME_ACTIVE_SNAPSHOT_ID, data);
+const view = util.buildReportView(snapshot, data);
+assert.equal(view.records.length, 2);
+assert.equal(view.faq.length, 9);
+assert.equal(util.formatPercent(util.calculateMargin(195, 107.4)), "55.1%");
+assert.equal(util.formatPercent(util.calculateMargin(54229, 43751)), "80.7%");
+assert.equal(util.formatPercent(util.calculateGrowth(54229, 41456).value, 2), "30.81%");
+assert.equal(util.formatPercent(util.calculateGrowth(43751, 3654).value, 2), "1,097.35%");
+assert.equal(util.calculateMargin(0, 1), null);
+assert.equal(util.calculateMargin(null, 1), null);
+assert.equal(util.calculateMargin(10, -1), -10);
+assert.equal(util.calculateGrowth(1, 0).label, "계산 불가");
+assert.equal(util.calculateGrowth(1, -1).label, "흑자 전환");
+assert.equal(util.calculateGrowth(-1, -2).label, "적자 축소");
+assert.equal(util.calculateGrowth(-3, -2).label, "적자 확대");
+assert.equal(util.calculateGrowth(null, 1).label, "계산 불가");
+assert.equal(view.rows.find(r => r.label === "매출 전년동기 증감률").cells[0].text, "126.59%");
+assert.equal(view.rows.find(r => r.label === "매출 전년동기 증감률").cells[0].badge, "공식");
+assert.equal(view.rows.find(r => r.label === "매출 전년동기 증감률").cells[1].badge, "시뮬레이션");
+assert.equal(util.formatMoney(view.records[1], view.records[1].revenue), "542.29억 달러");
+assert.ok(data.SME_SEO_INTRO.every(p => p.length >= 150));
+assert.ok(data.SME_SEO_INTRO.join("").length >= 600);
+assert.ok(view.meta.seoTitle.length <= 50);
+assert.ok(view.meta.seoDescription.length >= 80 && view.meta.seoDescription.length <= 120);
+const fresh = () => Object.fromEntries(Object.entries(data).filter(([key]) => key.startsWith("SME_")).map(([key, value]) => [key, structuredClone(value)]));
+const reject = (mutate) => { const fixture = fresh(); mutate(fixture); assert.throws(() => util.validateReportData(fixture)); };
+reject(d => { d.SME_RECORDS[0].previousQuarterId = d.SME_RECORDS[4].recordId; });
+reject(d => { d.SME_RECORDS[0].revenue.sourceId = "missing"; });
+reject(d => { d.SME_RECORDS[0].periodStart = "2026-02-30"; });
+reject(d => { d.SME_RECORDS[3].weeks = 13; });
+reject(d => { d.SME_RECORDS[3].basis = "non-GAAP"; });
+reject(d => { d.SME_RECORDS[0].netIncome.value = 0; });
+reject(d => { d.SME_RECORDS[0].releaseStatus = "guidance"; });
+reject(d => { d.SME_RECORDS[0].revision = 2; });
+reject(d => { d.SME_RECORDS[0].operatingProfit.badge = "추정"; });
+const fixture = fresh();
+const hynix = structuredClone(fixture.SME_RECORDS[0]);
+hynix.companyId = "skhynix"; hynix.recordId = "skhynix-2026-q3-consolidated-kifrs-r1";
+hynix.previousQuarterId = null; hynix.previousYearQuarterId = null;
+fixture.SME_RECORDS.push(hynix);
+fixture.SME_SNAPSHOTS[0].recordIds.push(hynix.recordId);
+assert.throws(() => util.validateReportData(fixture));
+fixture.SME_COMPANIES.find(c => c.id === "skhynix").availability = "available";
+util.validateReportData(fixture);
+const three = util.buildReportView(fixture.SME_SNAPSHOTS[0], fixture);
+assert.equal(three.records.length, 3);
+assert.deepEqual(three.companies.map(c => c.id), ["samsung", "skhynix", "micron"]);
+assert.ok(three.rows.every(row => row.cells.length === 3));
+assert.match(three.meta.title, /SK하이닉스/);
+const revision = structuredClone(fixture.SME_RECORDS[0]);
+revision.recordId = revision.recordId.replace("r1", "r2"); revision.revision = 2;
+revision.releaseStatus = "reported"; revision.operatingProfit.value = 100;
+fixture.SME_RECORDS.push(revision);
+fixture.SME_SNAPSHOTS.push({ ...structuredClone(fixture.SME_SNAPSHOTS[0]), id: "confirmed", recordIds: [revision.recordId, fixture.SME_RECORDS[3].recordId] });
+util.validateReportData(fixture);
+assert.equal(util.buildReportView(fixture.SME_SNAPSHOTS[0], fixture).records[0].operatingProfit.value, 107.4);
+assert.equal(util.buildReportView(fixture.SME_SNAPSHOTS[1], fixture).records[0].operatingProfit.value, 100);
+const zero = { status: "available", value: 0, badge: "공식", sourceId: "samsung-kr" };
+assert.equal(util.formatMoney(view.records[0], zero), "0조 원");
+assert.match(util.formatMoney(view.records[0], view.records[0].netIncome), /미공개/);
+const jsonLd = util.buildJsonLd(view, "https://bigyocalc.com/reports/samsung-micron-earnings-2026/");
+assert.equal(jsonLd["@graph"][1].mainEntity.length, view.faq.length);
+assert.ok(!("datePublished" in jsonLd["@graph"][0]));
+console.log("실적 산식·예외·범위·3사 확장·스냅샷 보존·SEO 검증 통과");

@@ -1,11 +1,15 @@
 ﻿---
 interface Props {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
+  // 기존 호출부의 메타데이터를 허용한다. 배지는 각 페이지 안내 영역에서 표시한다.
+  badges?: string[];
+  updatedAt?: string;
+  stats?: { label: string; value: string }[];
 }
 
-const { eyebrow, title, description } = Astro.props;
+const { eyebrow = "비교계산소", title, description } = Astro.props;
 ---
 
 <section class="hero">

@@ -465,7 +465,7 @@ function calcPartyAverage(code: PartyCode): number {
   return Math.round(list.reduce((s, c) => s + c.totalAssets, 0) / list.length);
 }
 
-export const partyAverages: PartyAverage[] = [
+export const partyAverages: PartyAverage[] = ([
   {
     partyCode: 'ppp',
     partyLabel: '국민의힘',
@@ -494,7 +494,7 @@ export const partyAverages: PartyAverage[] = [
     candidateCount: candidates.filter((c) => c.partyCode === 'etc').length,
     color: '#9ca3af',
   },
-].filter((p) => p.candidateCount > 0);
+] satisfies PartyAverage[]).filter((p) => p.candidateCount > 0);
 
 // ── KPI 집계 ─────────────────────────────────────────────────────────────────
 const totalAvg = Math.round(candidates.reduce((s, c) => s + c.totalAssets, 0) / candidates.length);

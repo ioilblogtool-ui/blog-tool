@@ -9,6 +9,8 @@ interface Props {
   jsonLd?: object;
   recordSessions?: boolean;
   loadAds?: boolean;
+  canonicalUrl?: string;
+  ogType?: "website" | "article";
 }
 
 const {
@@ -18,12 +20,14 @@ const {
   jsonLd,
   recordSessions = true,
   loadAds = true,
+  canonicalUrl: customCanonicalUrl,
+  ogType = "website",
 } = Astro.props;
 
 const siteName = "비교계산소";
 const rawSiteUrl = import.meta.env.SITE ?? "https://bigyocalc.com";
 const siteUrl = rawSiteUrl.replace(/\/$/, "");
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? siteUrl);
+const canonicalUrl = new URL(customCanonicalUrl ?? Astro.url.pathname, Astro.site ?? siteUrl);
 const defaultOg = `${siteUrl}/og/og-home.png`;
 const ogImageUrl = ogImage
   ? ogImage.startsWith("http")
@@ -57,7 +61,7 @@ const ogImageUrl = ogImage
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;800&display=swap" />
     </noscript>
     <meta property="og:locale" content="ko_KR" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

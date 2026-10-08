@@ -485,6 +485,8 @@ export const koreanMovieReport: KoreanMovieBreakEvenReportData = {
   ],
 
   relatedLinks: [
+    { label: "4대 기획사 시총·실적 비교 2026", href: "/reports/kpop-big4-agency-comparison-2026/" },
+    { label: "K팝 시장 규모 2026 — 음악산업 매출·수출", href: "/reports/kpop-market-size-2026/" },
     { label: "연봉 실수령 계산기", href: "/tools/salary" },
     { label: "적립식 투자 계산기", href: "/tools/dca-investment-calculator" },
     { label: "FIRE 계산기", href: "/tools/fire-calculator" },

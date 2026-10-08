@@ -6,7 +6,24 @@
   badges?: string[];
 };
 
+import { SME_META } from "./samsungMicronEarnings2026";
+
 export const reports: ReportMeta[] = [
+  {
+    slug: "kpop-market-size-2026",
+    title: "K팝 시장 규모 2026 | 매출·수출 얼마나 클까",
+    description: "K팝 시장 규모를 국내 음악산업 매출 13.3조원, 음악 수출 18억 달러, 기획업 해외매출, 세계 음악시장 317억 달러로 나눠 비교하고 통계마다 숫자가 다른 이유를 정리합니다.",
+    order: 93,
+    badges: ["공식", "참고"],
+  },
+  {
+    slug: "kpop-big4-agency-comparison-2026",
+    title: "4대 기획사 비교 2026 | HYBE·SM·JYP·YG 시총·실적",
+    description: "박진영 패노메논 이슈로 주목받은 HYBE·SM·JYP·YG 4대 기획사를 시가총액, 2025 매출·영업이익, 영업이익률, 대표 아티스트와 사업구조로 비교합니다.",
+    order: 92,
+    badges: ["공식", "시뮬레이션"],
+  },
+  { slug: SME_META.slug, title: SME_META.seoTitle, description: SME_META.seoDescription, order: 91, badges: ["공식", "시뮬레이션"] },
   {
     slug: "childbirth-benefits-changes-2027",
     title: "2027 부모급여·아동수당 변경 | 출산지원금 총정리",

@@ -12,7 +12,7 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
 type ReportCategory = "salary" | "bonus" | "estate" | "asset" | "life" | "culture" | "support" | "insurance" | "tax" | "politics" | "crypto" | "sports";
-type ReportTagMod = "salary" | "asset";
+type ReportTagMod = ReportCategory | "baby";
 
 type ReportIndexMeta = {
   eyebrow: string;
@@ -22,6 +22,9 @@ type ReportIndexMeta = {
 };
 
 const reportMetaBySlug: Record<string, ReportIndexMeta> = {
+  "kpop-market-size-2026": { eyebrow: "K팝 산업 규모", tags: [{ label: "음악산업", mod: "salary" }, { label: "수출", mod: "salary" }, { label: "세계시장", mod: "salary" }], category: "culture", isNew: true },
+  "kpop-big4-agency-comparison-2026": { eyebrow: "엔터 기업 비교", tags: [{ label: "기획사", mod: "salary" }, { label: "시총", mod: "salary" }, { label: "실적", mod: "salary" }], category: "culture", isNew: true },
+  "samsung-micron-earnings-2026": { eyebrow: "최신 반도체 실적", tags: [{ label: "삼성전자·마이크론", mod: "asset" }, { label: "실적 비교", mod: "asset" }], category: "asset", isNew: true },
   "childbirth-benefits-changes-2027": {
     eyebrow: "출산·육아 제도 개편안",
     tags: [{ label: "부모급여", mod: "asset" }, { label: "아동수당", mod: "asset" }, { label: "2027", mod: "asset" }],
@@ -1239,13 +1242,13 @@ const reportMetaBySlug: Record<string, ReportIndexMeta> = {
   "baby-food-cost-comparison-2026": {
     eyebrow: "이유식 비교",
     tags: [{ label: "이유식", mod: "baby" }, { label: "직접만들기", mod: "baby" }, { label: "베베쿡", mod: "baby" }],
-    category: "baby",
+    category: "life",
     isNew: true,
   },
   "english-kindergarten-vs-regular-kindergarten-cost-2026": {
     eyebrow: "유치원 비용 비교",
     tags: [{ label: "영어유치원", mod: "baby" }, { label: "일반유치원", mod: "baby" }, { label: "학비 비교", mod: "baby" }],
-    category: "baby",
+    category: "life",
     isNew: true,
   },
   "gangdong-apartment-price-2026": {
@@ -1648,7 +1651,7 @@ const reportEntries = reports
       order: report.order,
     };
   })
-  .filter(Boolean)
+  .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
   .sort((a, b) => a.order - b.order);
 
 const politicsSeries = reportEntries.filter((report) => report.category === "politics");
@@ -1691,7 +1694,7 @@ const recommendedReports = [
 ].map((item) => {
   const report = reportEntries.find((entry) => entry.slug === item.slug);
   return report ? { ...report, reason: item.reason } : null;
-}).filter(Boolean);
+}).filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
 const seriesIntroductions: Record<ReportCategory, string> = {
   politics: "지방선거 당선자, 공직자 재산, 후보 공약처럼 정치·선거 결과를 숫자로 읽는 시리즈입니다.",
@@ -2308,13 +2311,13 @@ const reportFaqJsonLd = {
 </BaseLayout>
 
 <script>
-  document.querySelectorAll('.reports-filter-chip').forEach((btn) => {
+  document.querySelectorAll<HTMLElement>('.reports-filter-chip').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.reports-filter-chip').forEach((b) => b.classList.remove('is-active'));
       btn.classList.add('is-active');
       const filter = btn.dataset.filter;
 
-      const featured = document.querySelector('.reports-featured-card');
+      const featured = document.querySelector<HTMLElement>('.reports-featured-card');
       if (featured) {
         if (filter === 'all' || featured.dataset.category === filter || featured.dataset.tag === filter) {
           featured.style.display = '';
@@ -2323,10 +2326,10 @@ const reportFaqJsonLd = {
         }
       }
 
-      let firstVisibleSeries = null;
-      document.querySelectorAll('.reports-series').forEach((series) => {
+      let firstVisibleSeries: HTMLElement | null = null;
+      document.querySelectorAll<HTMLElement>('.reports-series').forEach((series) => {
         let hasVisible = false;
-        series.querySelectorAll('.report-card-item').forEach((card) => {
+        series.querySelectorAll<HTMLElement>('.report-card-item').forEach((card) => {
           const show = filter === 'all' || card.dataset.category === filter || card.dataset.tag === filter;
           card.style.display = show ? '' : 'none';
           if (show) hasVisible = true;

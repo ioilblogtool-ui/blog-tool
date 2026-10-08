@@ -1,0 +1,286 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import CalculatorHero from '../../components/CalculatorHero.astro';
+import InfoNotice from '../../components/InfoNotice.astro';
+import SeoContent from '../../components/SeoContent.astro';
+import { KB4_META, KB4_SOURCES, KB4_AGENCIES, KB4_FANOMENON, KB4_RELATED, KB4_CHANGELOG, type Metric } from '../../data/kpopBig4AgencyComparison2026';
+import { validateData, top, buildBars, buildCopy, marketCap, capToSales, per, operatingMargin, growth, formatEok, formatJo, formatPct, formatGrowth, formatPer, ga } from '../../utils/kpopBig4AgencyComparison2026';
+
+validateData(KB4_AGENCIES, KB4_SOURCES, KB4_FANOMENON, KB4_META.publishReady);
+
+const A = KB4_AGENCIES;
+const copy = buildCopy(A, KB4_META.marketAsOf);
+const v = (m: Metric) => (m.status === 'available' ? m.value : null);
+const srcTitle = (id: string) => KB4_SOURCES.find(s => s.id === id)?.title ?? id;
+
+const kpis = [
+  { label: '시가총액 1위', row: top(A, 'marketCap'), value: (n: number) => formatJo(n), basis: `${KB4_META.marketAsOf} 종가 × 발행주식 수`, badge: '시뮬레이션' },
+  { label: '매출 1위', row: top(A, 'revenue'), value: formatEok, basis: '2025 연결 매출', badge: '공식' },
+  { label: '영업이익 1위', row: top(A, 'operatingIncome'), value: formatEok, basis: '2025 연결 영업이익', badge: '공식' },
+  { label: '영업이익률 1위', row: top(A, 'operatingMargin'), value: formatPct, basis: '2025 영업이익 ÷ 매출', badge: '공식' },
+];
+
+const capBars = buildBars(A, 'marketCap');
+const revBars = buildBars(A, 'revenue');
+const oiBars = buildBars(A, 'operatingIncome');
+const marginAnnual = buildBars(A, 'operatingMargin');
+const marginQ2 = buildBars(A, 'q2OperatingMargin');
+const maxMargin = Math.max(...[...marginAnnual, ...marginQ2].map(b => b.value ?? 0), 1);
+const marginWidth = (n: number | null) => (n === null || n <= 0 ? 0 : Math.round((n / maxMargin) * 1000) / 10);
+
+const revValues = A.map(a => v(a.annual.revenue) ?? 0);
+const revRatio = Math.round(Math.max(...revValues) / Math.max(Math.min(...revValues), 1));
+const facts = (kind: string) => KB4_FANOMENON.filter(f => f.kind === kind);
+const timeline = [
+  { date: '2026-07-27', title: '패노메논 개최 발표', text: '2027년 12월 개최 예정 K컬처 축제' },
+  { date: '2026-10-07', title: '박진영 국감 출석', text: '문체위 국정감사 증인 출석' },
+  { date: '2026-10-07', title: '4개사 전담 법인', text: '동일 자본금·동일 의결권 구조(보도)' },
+  { date: '2027-12', title: '개최 예정', text: '서울아레나·킨텍스' },
+];
+const trademark = KB4_FANOMENON.filter(f => f.topic === 'trademark' || f.topic === 'opportunityCost' || f.id === 'minister');
+
+const navigation = [
+  ['kb4-fanomenon', '패노메논 요약'], ['kb4-kpi', '한눈에 비교'], ['kb4-table', '전체 비교표'], ['kb4-chart-scale', '규모 차트'],
+  ['kb4-quarter', '2026 2분기'], ['kb4-companies', '회사별 카드'], ['kb4-valuation', '시총 vs 실적'], ['kb4-business', '무엇으로 버나'],
+  ['kb4-fanomenon-detail', '다시 패노메논'], ['kb4-sources', '출처'], ['faq', 'FAQ'],
+];
+
+const criteria = [
+  '실적은 각 사 2025 사업보고서 연결 재무제표, 최신 분기는 2026 반기보고서의 2분기(3개월) 값입니다.',
+  `시가총액은 ${KB4_META.marketAsOf} 종가 × 2026년 6월 말 발행주식 총수로 직접 계산한 시뮬레이션 값입니다.`,
+  '영업이익률 = 영업이익 ÷ 매출, 성장률은 전년 대비이며 전년이 적자면 ‘흑자전환’으로 표기합니다.',
+  '대표 아티스트는 각 사 2025 사업보고서 기재 기준이며, HYBE는 레이블 소속으로 표기합니다.',
+];
+
+const reportUrl = new URL(`/reports/${KB4_META.slug}/`, Astro.site ?? 'https://bigyocalc.com').href;
+const jsonLd = { '@context': 'https://schema.org', '@graph': [
+  { '@type': 'Article', headline: KB4_META.h1, description: KB4_META.description, inLanguage: 'ko-KR', mainEntityOfPage: reportUrl, author: { '@type': 'Organization', name: '비교계산소' }, publisher: { '@type': 'Organization', name: '비교계산소' }, datePublished: KB4_META.publishedAt, dateModified: KB4_META.modifiedAt },
+  { '@type': 'FAQPage', mainEntity: copy.faq.map(item => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })) },
+  { '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '홈', item: 'https://bigyocalc.com/' },
+    { '@type': 'ListItem', position: 2, name: '리포트', item: 'https://bigyocalc.com/reports/' },
+    { '@type': 'ListItem', position: 3, name: '4대 기획사 비교 2026', item: reportUrl },
+  ] },
+] };
+---
+<BaseLayout title={KB4_META.title} description={KB4_META.description} ogImage={`/og/reports/${KB4_META.slug}.png`} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell report-page kb4-page">
+    <CalculatorHero eyebrow="4대 기획사 비교 리포트" title={KB4_META.h1} description="패노메논을 위해 한 법인에 모인 HYBE·SM·JYP·YG. 시가총액·매출·영업이익·아티스트·사업구조를 공시 자료로 비교합니다." />
+    <p class="kb4-date">실적 기준: 2025 연결(사업보고서)·2026 2분기 연결(반기보고서) · 시가총액 기준일 <time datetime={KB4_META.marketAsOf}>{KB4_META.marketAsOf}</time> 종가 · 확인일 <time datetime={KB4_META.checkedAt}>{KB4_META.checkedAt}</time></p>
+    <InfoNotice title="공개 자료 비교 · 투자 권유 아님" lines={[
+      '실적·직원 수·매출 구성·아티스트는 각 사가 DART에 제출한 사업보고서·반기보고서 기준입니다(공식).',
+      '시가총액·시총/매출·PER은 기준일 종가와 발행주식 수로 직접 계산한 값입니다(시뮬레이션). 주가는 매일 달라집니다.',
+      '패노메논 관련 내용은 언론 보도 기준(참고)이며, 제기된 문제와 당사자 설명을 나눠 정리했습니다.',
+    ]} />
+    <ul class="kb4-legend" aria-label="데이터 배지 설명">
+      <li><span class="kb4-badge kb4-badge--official">공식</span> 공시·회사 자료</li>
+      <li><span class="kb4-badge kb4-badge--ref">참고</span> 언론·외부 시세</li>
+      <li><span class="kb4-badge kb4-badge--sim">시뮬레이션</span> 공식 수치로 직접 계산</li>
+      <li><span class="kb4-badge kb4-badge--est">추정</span> 기관 전망치</li>
+    </ul>
+    <nav class="kb4-nav" aria-label="리포트 목차">{navigation.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}</nav>
+
+    <section class="panel" id="kb4-fanomenon">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">최근 이슈</p><h2>패노메논, 왜 이 네 회사인가?</h2></div>
+      <ol class="kb4-timeline">{timeline.map(t => <li><time>{t.date}</time><strong>{t.title}</strong><span>{t.text}</span></li>)}</ol>
+      <p>평소 경쟁하는 4대 기획사가 같은 지분·같은 의결권으로 한 법인을 만들었다는 소식이 나왔습니다. 그렇다면 이 네 회사는 실제로 얼마나 크고, 각각 무엇으로 돈을 벌까요? 아래에서 공시 자료로 비교합니다. 논란의 세부 내용은 <a href="#kb4-fanomenon-detail">다시 패노메논</a>에서 정리했습니다.</p>
+    </section>
+
+    <section id="kb4-kpi" class="kb4-kpi" aria-label="4대 기획사 핵심 지표 1위">
+      {kpis.map(k => (
+        <article class="kb4-stat">
+          <p>{k.label}</p>
+          <strong>{k.row ? k.row.shortName : '집계 중'}</strong>
+          <span>{k.row ? k.value(k.row.value) : '재확인 필요'}</span>
+          <small><span class={`kb4-badge ${k.badge === '시뮬레이션' ? 'kb4-badge--sim' : 'kb4-badge--official'}`}>{k.badge}</span> {k.basis}</small>
+        </article>
+      ))}
+    </section>
+    {copy.differentLeaders && (
+      <p class="kb4-insight" id="kb4-insight"><strong>매출 1위와 영업이익 1위는 다른 회사입니다.</strong> 2025년 매출은 {ga(copy.revTop?.shortName)} 가장 컸지만, 영업이익은 {ga(copy.oiTop?.shortName)} 가장 많았고 {copy.oiLast?.shortName}의 영업이익은 4개사 중 가장 적었습니다.</p>
+    )}
+
+    <section class="panel" id="kb4-table">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">2025 연간 · 연결 기준</p><h2>4대 기획사 전체 비교표</h2></div>
+      <div class="kb4-cards-mobile">
+        {A.map(a => (
+          <article class="kb4-mcard">
+            <h3>{a.shortName} <small>{a.listedName} · {a.exchange} {a.ticker}</small></h3>
+            <dl>
+              <div><dt>시가총액</dt><dd>{formatJo(marketCap(a))} <span class="kb4-badge kb4-badge--sim">시뮬레이션</span></dd></div>
+              <div><dt>매출</dt><dd>{formatEok(v(a.annual.revenue))}</dd></div>
+              <div><dt>영업이익</dt><dd>{formatEok(v(a.annual.operatingIncome))}</dd></div>
+              <div><dt>영업이익률</dt><dd>{formatPct(operatingMargin(a.annual.revenue, a.annual.operatingIncome))}</dd></div>
+              <div><dt>순이익(연결)</dt><dd>{formatEok(v(a.annual.netIncome))}</dd></div>
+              <div><dt>총자산</dt><dd>{formatEok(v(a.annual.totalAssets))}</dd></div>
+              <div><dt>직원 수(별도)</dt><dd>{v(a.employees)?.toLocaleString('ko-KR')}명</dd></div>
+            </dl>
+          </article>
+        ))}
+      </div>
+      <div class="kb4-table-wrap kb4-desktop-only" tabindex="0" role="region" aria-label="4대 기획사 전체 비교표">
+        <table class="kb4-table">
+          <caption>2025 연결 실적(공식) · 시가총액은 {KB4_META.marketAsOf} 종가 기준 계산(시뮬레이션) · 직원 수는 2025년 말 별도 기준</caption>
+          <thead><tr><th scope="col">항목</th>{A.map(a => <th scope="col">{a.shortName}</th>)}</tr></thead>
+          <tbody>
+            <tr><th scope="row">시가총액</th>{A.map(a => <td>{formatJo(marketCap(a))}</td>)}</tr>
+            <tr><th scope="row">매출</th>{A.map(a => <td>{formatEok(v(a.annual.revenue))}<small>전년 대비 {formatGrowth(growth(a.annual.revenue, a.annual.prevRevenue))}</small></td>)}</tr>
+            <tr><th scope="row">영업이익</th>{A.map(a => <td>{formatEok(v(a.annual.operatingIncome))}<small>전년 대비 {formatGrowth(growth(a.annual.operatingIncome, a.annual.prevOperatingIncome))}</small></td>)}</tr>
+            <tr><th scope="row">영업이익률</th>{A.map(a => <td>{formatPct(operatingMargin(a.annual.revenue, a.annual.operatingIncome))}</td>)}</tr>
+            <tr><th scope="row">순이익(연결)</th>{A.map(a => <td>{formatEok(v(a.annual.netIncome))}</td>)}</tr>
+            <tr><th scope="row">총자산</th>{A.map(a => <td>{formatEok(v(a.annual.totalAssets))}</td>)}</tr>
+            <tr><th scope="row">직원 수</th>{A.map(a => <td>{v(a.employees)?.toLocaleString('ko-KR')}명</td>)}</tr>
+            <tr><th scope="row">대표 IP</th>{A.map(a => <td>{a.keyIp.slice(0, 3).map(i => i.name).join(', ')} 등</td>)}</tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="kb4-note">순이익은 영업 외 손익이 크게 섞입니다. SM은 관계기업 관련 이익(2,140억원)이 포함돼 영업이익보다 순이익이 크고, HYBE는 기타비용 증가로 순손실이 났습니다. 수익성 비교는 영업이익률을 우선 보세요.</p>
+    </section>
+
+    <section class="panel" id="kb4-chart-scale">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">2025 연결 · 공식</p><h2>매출과 영업이익, 순서가 다르다</h2></div>
+      <div class="kb4-bars" role="img" aria-label={`2025 매출과 영업이익: ${A.map(a => `${a.shortName} 매출 ${formatEok(v(a.annual.revenue))}, 영업이익 ${formatEok(v(a.annual.operatingIncome))}`).join('; ')}`}>
+        {A.map((a, i) => (
+          <div class="kb4-bar-group">
+            <p class="kb4-bar-label">{a.shortName}</p>
+            <div class="kb4-bar-row"><span class="kb4-bar-key">매출</span><span class="kb4-bar"><span class={`kb4-bar-fill kb4-c-${a.id}`} style={`width:${revBars[i].widthPct}%`}></span></span><span class="kb4-bar-val">{formatEok(revBars[i].value)}</span></div>
+            <div class="kb4-bar-row"><span class="kb4-bar-key">영업이익</span><span class="kb4-bar"><span class={`kb4-bar-fill kb4-c-${a.id} kb4-bar-fill--light`} style={`width:${oiBars[i].widthPct}%`}></span></span><span class="kb4-bar-val">{formatEok(oiBars[i].value)}</span></div>
+          </div>
+        ))}
+      </div>
+      <p class="kb4-caption">막대 길이는 지표별 최댓값 기준입니다. 매출 막대와 영업이익 막대의 길이를 서로 비교하지 마세요.</p>
+      <h3>시가총액 ({KB4_META.marketAsOf} 종가 기준)</h3>
+      <div class="kb4-bars" role="img" aria-label={`시가총액: ${A.map((a, i) => `${a.shortName} ${formatJo(capBars[i].value)}`).join(', ')}`}>
+        {A.map((a, i) => <div class="kb4-bar-row"><span class="kb4-bar-key">{a.shortName}</span><span class="kb4-bar"><span class={`kb4-bar-fill kb4-c-${a.id}`} style={`width:${capBars[i].widthPct}%`}></span></span><span class="kb4-bar-val">{formatJo(capBars[i].value)}</span></div>)}
+      </div>
+      <p class="kb4-caption"><span class="kb4-badge kb4-badge--sim">시뮬레이션</span> 종가(참고) × 2026년 6월 말 발행주식 총수(공식). 외부 사이트 시가총액과 자기주식 처리 방식에 따라 다를 수 있습니다.</p>
+    </section>
+
+    <section class="panel" id="kb4-quarter">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">2026년 2분기(4~6월) · 연결 · 공식</p><h2>최근 분기는 어땠나</h2></div>
+      <div class="kb4-table-wrap" tabindex="0" role="region" aria-label="2026년 2분기 실적 비교표">
+        <table class="kb4-table">
+          <caption>2026 반기보고서의 3개월(2분기) 값 · 연간 순위와 섞지 않습니다</caption>
+          <thead><tr><th scope="col">회사</th><th scope="col">매출</th><th scope="col">영업이익</th><th scope="col">영업이익률</th><th scope="col">영업이익 전년 동기 대비</th></tr></thead>
+          <tbody>{A.map(a => <tr><th scope="row">{a.shortName}</th><td>{formatEok(v(a.latestQuarter.revenue))}</td><td>{formatEok(v(a.latestQuarter.operatingIncome))}</td><td>{formatPct(operatingMargin(a.latestQuarter.revenue, a.latestQuarter.operatingIncome))}</td><td>{formatGrowth(growth(a.latestQuarter.operatingIncome, a.latestQuarter.prevYearOperatingIncome))}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <h3>영업이익률: 2025 연간 vs 2026 2분기</h3>
+      <div class="kb4-bars" role="img" aria-label={`영업이익률: ${A.map((a, i) => `${a.shortName} 2025 ${formatPct(marginAnnual[i].value)}, 2026 2분기 ${formatPct(marginQ2[i].value)}`).join('; ')}`}>
+        {A.map((a, i) => (
+          <div class="kb4-bar-group">
+            <p class="kb4-bar-label">{a.shortName}</p>
+            <div class="kb4-bar-row"><span class="kb4-bar-key">2025</span><span class="kb4-bar"><span class={`kb4-bar-fill kb4-c-${a.id}`} style={`width:${marginWidth(marginAnnual[i].value)}%`}></span></span><span class="kb4-bar-val">{formatPct(marginAnnual[i].value)}</span></div>
+            <div class="kb4-bar-row"><span class="kb4-bar-key">26.2Q</span><span class="kb4-bar"><span class={`kb4-bar-fill kb4-c-${a.id} kb4-bar-fill--light`} style={`width:${marginWidth(marginQ2[i].value)}%`}></span></span><span class="kb4-bar-val">{formatPct(marginQ2[i].value)}</span></div>
+          </div>
+        ))}
+      </div>
+      <p class="kb4-note">분기 실적은 월드투어·컴백 시기에 따라 크게 달라집니다. 최근 분기 순위를 회사 규모 순위로 읽지 마세요.</p>
+    </section>
+
+    <section class="panel" id="kb4-companies">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">공시 기반</p><h2>회사별 한눈에 보기</h2></div>
+      <div class="kb4-company-grid">
+        {A.map(a => (
+          <article class={`kb4-company kb4-company--${a.id}`} id={`kb4-company-${a.id}`}>
+            <h3>{a.shortName} <small>{a.nameKo}</small></h3>
+            <p class="kb4-company__scale">2025 매출 {formatEok(v(a.annual.revenue))} · 영업이익 {formatEok(v(a.annual.operatingIncome))} · 시총 {formatJo(marketCap(a))}</p>
+            <h4>사업 구조</h4>
+            <p>{a.structureText}</p>
+            {a.labels.length > 0 && <p class="kb4-small">주요 레이블: {a.labels.join(', ')} <a href="#kb4-src-hybe-business">[출처]</a></p>}
+            <h4>사업보고서 기재 아티스트</h4>
+            <ul class="kb4-chips">{a.keyIp.map(i => <li>{i.name}</li>)}</ul>
+            <p class="kb4-small">{a.ipNote}</p>
+            <h4>최근 실적</h4>
+            <p>2026년 2분기 매출 {formatEok(v(a.latestQuarter.revenue))}, 영업이익 {formatEok(v(a.latestQuarter.operatingIncome))}(전년 동기 대비 {formatGrowth(growth(a.latestQuarter.operatingIncome, a.latestQuarter.prevYearOperatingIncome))}). {a.latestQuarter.driverNote && <span><span class="kb4-badge kb4-badge--ref">{a.latestQuarter.driverNote.badge}</span> {a.latestQuarter.driverNote.text}</span>}</p>
+            <p class="kb4-small">해외 매출 비중 약 {a.overseasShare.value}% ({a.overseasShare.basisText})</p>
+            <div class="kb4-two">
+              <div><h4>강점</h4><ul>{a.strengths.map(t => <li>{t.text} <span class="kb4-badge kb4-badge--official">{t.badge}</span></li>)}</ul></div>
+              <div><h4>리스크</h4><ul>{a.risks.map(t => <li>{t.text} <span class="kb4-badge kb4-badge--official">{t.badge}</span></li>)}</ul></div>
+            </div>
+            <p class="kb4-source-ref">근거: {[...new Set([...a.strengths, ...a.risks].flatMap(t => t.sourceIds))].map(id => <a href={`#kb4-src-${id}`}>{srcTitle(id)} </a>)}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="panel" id="kb4-valuation">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">시뮬레이션 · {KB4_META.marketAsOf} 종가</p><h2>시가총액은 왜 매출에 비례하지 않을까</h2></div>
+      <div class="kb4-table-wrap" tabindex="0" role="region" aria-label="시가총액 대비 매출·PER">
+        <table class="kb4-table">
+          <caption>시총/매출 = 시가총액 ÷ 2025 매출 · PER = 시가총액 ÷ 2025 지배주주 순이익</caption>
+          <thead><tr><th scope="col">회사</th><th scope="col">시가총액</th><th scope="col">시총/매출</th><th scope="col">PER</th></tr></thead>
+          <tbody>{A.map(a => { const c = capToSales(a); return <tr><th scope="row">{a.shortName}</th><td>{formatJo(marketCap(a))}</td><td>{c === null ? '재확인 필요' : `${c.toFixed(2)}배`}</td><td>{formatPer(per(a))}</td></tr>; })}</tbody>
+        </table>
+      </div>
+      <p>시가총액은 지난해 실적이 아니라 시장이 기대하는 앞으로의 이익과 IP·플랫폼 가치가 반영된 가격입니다. 그래서 2025년 영업이익이 가장 적었던 회사가 시가총액은 가장 클 수 있습니다.</p>
+      <p>PER은 일회성 손익의 영향을 크게 받습니다. SM의 2025년 순이익에는 관계기업 관련 이익이 크게 포함돼 PER이 낮게 계산되고, HYBE는 순손실이라 PER을 계산할 수 없습니다. 이 표는 투자 판단 기준이 아니라 숫자의 차이를 이해하기 위한 참고입니다.</p>
+    </section>
+
+    <section class="panel" id="kb4-business">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">2025 연결 매출 구성 · 공식</p><h2>각 회사는 무엇으로 돈을 벌까</h2></div>
+      <p>회사마다 사업보고서의 매출 분류가 달라 같은 이름으로 묶어 비교할 수 없습니다. 각 사가 공시한 분류 그대로 비중을 보여줍니다.</p>
+      {A.map(a => { const total = v(a.annual.revenue) ?? 1; return (
+        <div class="kb4-mix">
+          <h3>{a.shortName}</h3>
+          <div class="kb4-mix-bar" role="img" aria-label={`${a.shortName} 매출 구성: ${a.segments.map(s => `${s.originalName} ${formatPct(Math.round(((v(s.revenue) ?? 0) / total) * 1000) / 10)}`).join(', ')}`}>
+            {a.segments.map((s, i) => <span class={`kb4-mix-seg kb4-mix-seg--${i}`} style={`width:${((v(s.revenue) ?? 0) / total) * 100}%`}></span>)}
+          </div>
+          <ul class="kb4-mix-legend">{a.segments.map((s, i) => <li><span class={`kb4-dot kb4-mix-seg--${i}`}></span>{s.originalName} <strong>{formatPct(Math.round(((v(s.revenue) ?? 0) / total) * 1000) / 10)}</strong> <small>{formatEok(v(s.revenue))}</small></li>)}</ul>
+          <p class="kb4-small">{a.segmentNote}</p>
+        </div>
+      ); })}
+    </section>
+
+    <section class="panel" id="kb4-fanomenon-detail">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">다시 패노메논</p><h2>경쟁사 네 곳이 한 법인을 만든 것이 왜 이례적인가</h2></div>
+      <p>위에서 본 것처럼 네 회사는 매출 규모가 최대 약 {revRatio}배 차이 나고 수익 구조도 다릅니다. 그런데도 같은 자본금·같은 의결권으로 행사 법인을 만들었다는 점이 주목받았습니다. 규모가 다른 회사들이 동등한 지분 구조를 택했다는 것은 공시가 아닌 보도로 확인된 내용이며, 세부 계약 내용은 공개되지 않았습니다.</p>
+      <div class="kb4-two">
+        <article class="kb4-fact"><h3>보도로 확인된 것</h3><ul>{facts('확인된 사실').map(f => <li>{f.text} <span class={`kb4-badge ${f.badge === '추정' ? 'kb4-badge--est' : 'kb4-badge--ref'}`}>{f.badge}</span> {f.sourceIds.map(id => <a href={`#kb4-src-${id}`} class="kb4-cite">[출처]</a>)}</li>)}</ul></article>
+        <article class="kb4-fact kb4-fact--unknown"><h3>아직 확인되지 않은 것</h3><ul>{facts('미확인').map(f => <li>{f.text}</li>)}</ul></article>
+      </div>
+      <h3>국정감사 쟁점: 제기된 문제와 당사자·정부 설명</h3>
+      <div class="kb4-table-wrap" tabindex="0" role="region" aria-label="패노메논 국정감사 쟁점">
+        <table class="kb4-table">
+          <caption>보도 기준(참고) · 어느 주장이 맞는지 이 페이지는 판단하지 않습니다</caption>
+          <thead><tr><th scope="col">구분</th><th scope="col">내용</th><th scope="col">출처</th></tr></thead>
+          <tbody>{[...trademark, ...KB4_FANOMENON.filter(f => f.topic === 'smallAgencies' && f.kind !== '미확인')].map(f => <tr><th scope="row">{f.kind}</th><td>{f.text}</td><td>{f.sourceIds.map(id => <a href={`#kb4-src-${id}`}>{KB4_SOURCES.find(s => s.id === id)?.publisher} </a>)}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="kb4-sources">
+      <div class="section-header section-header--compact"><p class="section-header__eyebrow">자료 기준</p><h2>출처와 갱신 기록</h2></div>
+      <ul class="kb4-sources">
+        {KB4_SOURCES.map(s => (
+          <li id={`kb4-src-${s.id}`}>
+            <span class={`kb4-badge ${/DART|하이브/.test(s.publisher) ? 'kb4-badge--official' : 'kb4-badge--ref'}`}>{/DART|하이브/.test(s.publisher) ? '공식' : '참고'}</span>
+            <a href={s.url} target="_blank" rel="noopener noreferrer">{s.title}</a>
+            <p>{s.publisher} · 발표 {s.publishedAt ?? '-'} · 확인 {s.checkedAt} · {s.locator}</p>
+            {s.limitation && <p>{s.limitation}</p>}
+          </li>
+        ))}
+      </ul>
+      <h3>갱신 기록</h3>
+      <ul>{KB4_CHANGELOG.map(c => <li><time datetime={c.date}>{c.date}</time> — {c.text}</li>)}</ul>
+      <p class="kb4-small">다음 갱신: 각 사 3분기 보고서 공시, 2025 사업보고서 정정, 주요 아티스트 계약 변경, 패노메논 행사 구조의 공식 발표 시 반영합니다.</p>
+    </section>
+
+    <SeoContent
+      introTitle="4대 기획사 비교, 이렇게 읽으세요"
+      intro={copy.intro}
+      criteria={criteria}
+      faq={copy.faq}
+      related={KB4_RELATED}
+      introSummary="패노메논 이슈에서 출발해 네 회사의 규모·수익성·사업 구조를 공시 자료로 비교했습니다."
+      criteriaTitle="자료 기준과 계산 방법"
+      criteriaLinkLabel="자료 기준"
+      relatedTitle="함께 볼 리포트"
+      relatedEyebrow="다음 비교"
+      relatedLinkLabel="관련 리포트"
+      relatedSummary="흥행 산업의 손익 구조와 대형주 실적 비교를 이어서 확인하세요."
+    />
+  </main>
+</BaseLayout>

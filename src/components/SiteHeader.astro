@@ -5,7 +5,7 @@ import { reports } from "../data/reports";
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
-const withBase = (path) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
 // tools.ts의 category 값은 내부 분류용 영문 코드("support", "calculator" 등)와
 // 표시용 한글 라벨("투자·재테크" 등)이 혼재되어 있어, 한글 라벨만 검색 결과 배지로 노출한다.
@@ -425,7 +425,7 @@ const popularTools = MOBILE_POPULAR_SLUGS
   }, { passive: true })
 
   const hamburger = document.querySelector('.site-header__hamburger')
-  const mobileMenu = document.querySelector('.site-header__mobile-menu')
+  const mobileMenu = document.querySelector<HTMLElement>('.site-header__mobile-menu')
   const overlay = document.getElementById('menu-overlay')
 
   const mobileSearchInput = document.getElementById('mobile-search-input')
@@ -480,7 +480,7 @@ const popularTools = MOBILE_POPULAR_SLUGS
     if (!mobileMenu.classList.contains('is-open')) return
 
     const focusable = Array.from(
-      mobileMenu.querySelectorAll('a, button, input, [tabindex]:not([tabindex="-1"])')
+      mobileMenu.querySelectorAll<HTMLElement>('a, button, input, [tabindex]:not([tabindex="-1"])')
     ).filter((el) => !el.hasAttribute('hidden') && el.offsetParent !== null)
 
     if (focusable.length === 0) return
@@ -518,7 +518,8 @@ const popularTools = MOBILE_POPULAR_SLUGS
 
   // 모바일 메뉴 검색
   const searchDataEl = document.getElementById('mobile-search-data')
-  const searchIndex = searchDataEl?.textContent ? JSON.parse(searchDataEl.textContent) : []
+  type SearchItem = { type: 'tool' | 'report'; title: string; description: string; category: string; href: string }
+  const searchIndex: SearchItem[] = searchDataEl?.textContent ? JSON.parse(searchDataEl.textContent) : []
 
   const resultsEl = document.getElementById('mobile-search-results')
   const defaultEl = document.getElementById('mobile-menu-default')
@@ -529,7 +530,7 @@ const popularTools = MOBILE_POPULAR_SLUGS
 
   const MAX_RESULTS = 6
 
-  function renderGroup(sectionEl, items) {
+  function renderGroup(sectionEl: HTMLElement | null, items: SearchItem[]) {
     if (!sectionEl) return
     const linksEl = sectionEl.querySelector('.site-header__mobile-links')
     if (!linksEl) return
@@ -552,7 +553,7 @@ const popularTools = MOBILE_POPULAR_SLUGS
     else sectionEl.removeAttribute('hidden')
   }
 
-  function runSearch(query) {
+  function runSearch(query: string) {
     const q = query.trim().toLowerCase()
 
     if (!q) {
@@ -586,7 +587,7 @@ const popularTools = MOBILE_POPULAR_SLUGS
     }
   }
 
-  let searchDebounce
+  let searchDebounce: ReturnType<typeof setTimeout> | undefined
   mobileSearchInput?.addEventListener('input', (e) => {
     clearTimeout(searchDebounce)
     const target = e.target

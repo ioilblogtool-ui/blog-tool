@@ -224,7 +224,7 @@ export const GDAP_APARTMENTS: GangdongApartmentRow[] = [
     fiveYearLowArea: "84㎡대",
     jeonseRatio: 43,
     tradeCountNote: "최근 입주축이라 5년 저점 비교가 기존 단지와 다를 수 있습니다.",
-    badge: "",
+    badge: "확인 필요",
     note: "둔촌 재건축 대표 단지입니다. 입주 물량 효과와 현재 실거래를 분리해야 합니다.",
   }),
   withGain({
@@ -273,7 +273,7 @@ export const GDAP_APARTMENTS: GangdongApartmentRow[] = [
     fiveYearLowArea: "84㎡ 3층",
     jeonseRatio: 47,
     tradeCountNote: "동별 가격 편차와 동일 면적 여부 확인이 필요합니다.",
-    badge: "",
+    badge: "확인 필요",
     note: "고덕·상일권 가격대를 넓게 보는 보완 후보입니다.",
   }),
   withGain({

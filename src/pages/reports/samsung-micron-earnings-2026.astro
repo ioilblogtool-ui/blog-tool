@@ -1,0 +1,101 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import * as data from "../../data/samsungMicronEarnings2026";
+import { validateReportData, resolveSnapshot, buildReportView, buildJsonLd, formatMoney, formatPercent } from "../../utils/samsungMicronEarnings2026";
+validateReportData(data);
+const snapshot = resolveSnapshot(data.SME_ACTIVE_SNAPSHOT_ID, data);
+const view = buildReportView(snapshot, data);
+const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://bigyocalc.com").href;
+const companyName = (id: string) => data.SME_COMPANIES.find(c => c.id === id)!.name;
+const hasHynix = view.companies.some(c => c.id === "skhynix");
+---
+<BaseLayout title={view.meta.seoTitle} description={view.meta.seoDescription} ogImage={view.meta.ogImage} jsonLd={buildJsonLd(view, canonical)}>
+  <SiteHeader />
+  <main class="container page-shell report-page sme-page">
+    <CalculatorHero eyebrow="최신 반도체 실적 비교" title={view.meta.title} description={view.meta.description} />
+    <p class="sme-dateline">자료 확인·갱신일 <time datetime={view.meta.updatedAt}>{view.meta.updatedAt}</time></p>
+    <InfoNotice title="실적 비교 기준" lines={view.noticeLines} />
+    <section class="content-section" id="sme-summary" aria-labelledby="sme-summary-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">핵심 숫자</p><h2 id="sme-summary-title">최신 실적 한눈에</h2></div>
+      <div class:list={["sme-kpi-grid", { "sme-kpi-grid--three": view.companies.length === 3 }]}>
+        {view.kpiGroups.map(group => <div class="sme-company-kpis">{group.cards.map(card => <article class="report-stat-card sme-kpi">
+          <h3>{card.label}</h3><p class="sme-kpi-value">{card.displayValue}</p>
+          <p><span class="sme-badge" data-badge={card.badge}>{card.badge}</span>{card.sourceId && <a class="sme-source-link" href={`#sme-source-${card.sourceId}`}>출처</a>}</p>
+          <small>{group.record.periodLabel} · {group.record.releaseStatus === "preliminary" ? "잠정" : "발표 실적"}</small>
+          {card.key === "operatingProfit" && <p class="sme-margin-caption">영업이익률 {group.margin === null ? "계산 불가" : formatPercent(group.margin)} {group.margin !== null && <span class="sme-badge" data-badge="시뮬레이션">시뮬레이션</span>}</p>}
+        </article>)}</div>)}
+      </div>
+    </section>
+    <section class="content-section" id="sme-comparison" aria-labelledby="sme-comparison-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">기간부터 확인</p><h2 id="sme-comparison-title">최신 실적 비교표</h2></div>
+      <p>{view.periodNote}</p>
+      <p class="sme-scroll-hint">작은 화면에서는 표를 좌우로 움직여 확인하세요.</p>
+      <div class="sme-table-wrap" tabindex="0" role="region" aria-labelledby="sme-comparison-title"><table class="sme-table">
+        <caption>회사 전체 연결실적. 증감률은 공식 발표값 우선, 없으면 같은 회사 비교 분기로 재계산합니다.</caption>
+        <thead><tr><th scope="col">항목</th>{view.records.map(r => <th scope="col">{companyName(r.companyId)}<small>{r.periodLabel}</small></th>)}</tr></thead>
+        <tbody>{view.rows.map(row => <tr><th scope="row">{row.label}</th>{row.cells.map(cell => <td><span>{cell.text}</span>{cell.badge && <span class="sme-badge" data-badge={cell.badge}>{cell.badge}</span>}{cell.sourceId && <a class="sme-source-link" href={`#sme-source-${cell.sourceId}`}>출처</a>}</td>)}</tr>)}</tbody>
+      </table></div>
+      <p class="sme-note">삼성전자 공식 증감률은 발표값을 보존합니다. 반올림된 비교 금액으로 다시 계산하면 일부 차이가 날 수 있습니다. 마이크론 원자료는 백만 달러이며 표시만 억 달러로 바꿨습니다.</p>
+    </section>
+    <section class="content-section" id="sme-trends" aria-labelledby="sme-trends-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">회사별 변화</p><h2 id="sme-trends-title">매출과 영업이익 추이</h2></div>
+      <p>각 회사 안에서 전년동기·직전 분기·현재를 비교합니다. 원통화와 분기 길이가 달라 서로 다른 회사의 막대 길이는 비교하지 마세요.</p>
+      <div class="sme-insight-grid">{view.trends.map(trend => <article class="sme-card sme-trend"><h3>{trend.company}</h3>{(["revenue", "operatingProfit"] as const).map(key => {
+        const maximum = Math.max(0, ...trend.history.map(r => r[key].value ?? 0));
+        return <div class="sme-trend-metric"><h4>{key === "revenue" ? "매출" : "영업이익"}</h4>{trend.history.map(r => <div class="sme-trend-row"><span>{r.periodLabel}</span><strong>{formatMoney(r, r[key])}</strong>{r[key].badge && <span class="sme-badge" data-badge={r[key].badge}>{r[key].badge}</span>}<div class="sme-bar-track" aria-hidden="true"><div class="sme-bar-fill" style={{ width: `${maximum > 0 ? Math.max(0, (r[key].value ?? 0) / maximum * 100) : 0}%` }}></div></div></div>)}</div>;
+      })}</article>)}</div>
+    </section>
+    <section class="content-section" id="sme-margin" aria-labelledby="sme-margin-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">규모와 수익성을 구분</p><h2 id="sme-margin-title">영업이익률은 얼마나 다른가요?</h2></div>
+      <p class="sme-formula">영업이익률 = 영업이익 ÷ 매출 × 100</p>
+      <div class="sme-margin-grid">{view.kpiGroups.map(g => <article class="sme-card"><h3>{g.company}</h3><p class="sme-kpi-value">{g.margin === null ? "계산 불가" : formatPercent(g.margin)}</p>{g.margin !== null && <><span class="sme-badge" data-badge="시뮬레이션">시뮬레이션</span>{g.margin >= 0 && <div class="sme-bar-track" aria-hidden="true"><div class="sme-bar-fill" style={{ width: `${Math.min(100, g.margin)}%` }}></div></div>}{g.margin > 100 && <p>막대는 100%까지만 표시합니다.</p>}{g.margin < 0 && <p>영업손실 구간입니다.</p>}</>}<small>{g.record.periodLabel}</small></article>)}</div>
+      <p class="sme-note">영업이익률만으로 기업 경쟁력을 단정할 수 없습니다. 삼성전자 전체에는 모바일·가전 등도 포함되며, 마이크론은 메모리 중심 기업입니다. 회계기준과 실적기간 차이도 남아 있습니다.</p>
+    </section>
+    <section class="content-section" id="sme-drivers" aria-labelledby="sme-drivers-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">공식 설명과 해석</p><h2 id="sme-drivers-title">왜 실적이 좋아졌나요?</h2></div>
+      <div class="sme-insight-grid">{view.evidence.map(item => <article class="sme-card"><p class="sme-eyebrow">{companyName(item.companyId)}</p><h3>{item.title}</h3><p>{item.text}</p>{item.badge && <span class="sme-badge" data-badge={item.badge}>{item.badge}</span>}{item.sourceIds.map(id => <a class="sme-source-link" href={`#sme-source-${id}`}>근거 자료</a>)}</article>)}</div>
+      <p class="sme-note"><span class="sme-badge" data-badge="참고">참고</span> 가격·출하량·제품 구성·비용이 함께 수익성을 바꿉니다. 공개된 수치만으로 각 요인이 전체 영업이익을 얼마나 늘렸는지 분해할 수는 없습니다.</p>
+    </section>
+    <section class="content-section" id="sme-business" aria-labelledby="sme-business-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">사업 범위의 차이</p><h2 id="sme-business-title">사업구조가 다른데 왜 비교하나요?</h2></div>
+      <div class="sme-insight-grid">{view.companies.map(c => <article class="sme-card"><h3>{c.name}</h3><p>{c.businessSummary}</p></article>)}</div>
+      <p>회사 전체의 규모와 수익성을 읽는 출발점입니다. 삼성전자 DS에는 메모리 외 사업도 포함됩니다. DS 수치가 나오더라도 메모리 영업이익과 같다고 표기하지 않습니다.</p>
+      {view.segments.length === 0 ? <p class="sme-note">이번 비교에는 사업부별 공식 수치가 수록되지 않았습니다. 확정실적에서 공개된 DS·메모리 정보는 확인 후 별도 표로 보강합니다.</p> : <div class="sme-table-wrap" tabindex="0" role="region" aria-label="공개된 사업부 실적"><table class="sme-table"><caption>사업부 범위 실적 — 전체 연결실적과 구분</caption><thead><tr><th scope="col">회사·사업부</th><th scope="col">기간</th><th scope="col">매출</th><th scope="col">영업이익</th></tr></thead><tbody>{view.segments.map(r => <tr><th scope="row">{companyName(r.companyId)} · {r.scope === "DS" ? "DS" : "메모리"}</th><td>{r.periodLabel}</td>{(["revenue", "operatingProfit"] as const).map(key => <td>{formatMoney(r, r[key])}{r[key].badge && <span class="sme-badge" data-badge={r[key].badge}>{r[key].badge}</span>}{r[key].sourceId && <a class="sme-source-link" href={`#sme-source-${r[key].sourceId}`}>출처</a>}</td>)}</tr>)}</tbody></table></div>}
+    </section>
+    <section class="content-section" id="sme-hbm" aria-labelledby="sme-hbm-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">발표 당시의 단계</p><h2 id="sme-hbm-title">HBM 경쟁과 다음 분기</h2></div>
+      <p>샘플·고객 협력·양산 출하·매출 인식은 서로 다른 단계입니다. 아래 발표가 이번 분기 이익 기여액을 뜻하지는 않습니다.</p>
+      <div class="sme-table-wrap" tabindex="0" role="region" aria-labelledby="sme-hbm-title"><table class="sme-table"><caption>HBM 세대별 공식 발표 내용</caption><thead><tr><th scope="col">세대</th>{view.companies.map(c => <th scope="col">{c.name}</th>)}</tr></thead><tbody>{(["HBM3E", "HBM4", "HBM4E"] as const).map(generation => <tr><th scope="row">{generation}</th>{view.companies.map(c => {
+        const p = data.SME_PRODUCT_UPDATES.find(p => p.companyId === c.id && p.generation === generation);
+        return <td>{p ? <><strong>{p.stage}</strong><p>{p.text}</p><small>{p.announcedAt ?? "게시일 미표기 · 확인일 2026-10-08"}</small><span class="sme-badge" data-badge="공식">공식</span>{p.sourceIds.map(id => <a class="sme-source-link" href={`#sme-source-${id}`}>출처</a>)}</> : "공식 자료 확인 필요"}</td>;
+      })}</tr>)}</tbody></table></div>
+      <p><a href={withBase("/reports/hbm4-vs-hbm5-beneficiary-comparison/")}>HBM4·HBM4E 기술과 경쟁 구도 자세히 보기 →</a></p>
+      {data.SME_GUIDANCE.filter(g => view.records.some(r => r.companyId === g.companyId)).map(g => <article class="sme-card sme-guidance"><h3>{companyName(g.companyId)} {g.periodLabel} 가이던스</h3><p><span class="sme-badge" data-badge="공식">공식</span> 회사가 발표한 전망이며 실현 실적이 아닙니다. {g.basis} 기준 · 발표일 {g.announcedAt}</p><ul>{g.lines.map(line => <li>{line}</li>)}</ul><a href={`#sme-source-${g.sourceId}`}>공식 전망 표 확인</a></article>)}
+      <p><a href={withBase("/reports/semiconductor-stocks-forecast-2026-2028/")}>반도체 4사 향후 실적 전망 보기 →</a></p>
+    </section>
+    <section class="content-section" id="sme-updates" aria-labelledby="sme-updates-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">계속 갱신하는 비교</p><h2 id="sme-updates-title">{hasHynix ? "3사 비교와 갱신 내역" : "SK하이닉스 발표 후 3사 비교로 확장"}</h2></div>
+      <p>{hasHynix ? "SK하이닉스 공식 실적을 같은 표에 추가했습니다. 회사별 대상기간을 함께 확인하세요." : "SK하이닉스 3분기 실적 발표 후 업데이트 예정입니다. 발표 전 예상값은 비교표에 넣지 않습니다."}</p>
+      <p>삼성전자 확정실적·컨콜, 마이크론 다음 분기, HBM 공식 발표가 나오면 자료를 갱신합니다. 정확한 발표 일정은 공식 IR에서 확인하세요.</p>
+      <p><a href="https://www.samsung.com/global/ir/financial-information/earnings-release/" target="_blank" rel="noopener noreferrer">삼성전자 공식 IR 실적자료</a></p>
+      <ul class="sme-update-list">{data.SME_UPDATE_LOG.map(item => <li><time datetime={item.date}>{item.date}</time> · {item.text}</li>)}</ul>
+    </section>
+    <section class="content-section" id="sme-bonus" aria-labelledby="sme-bonus-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">직원이 이어서 확인할 것</p><h2 id="sme-bonus-title">그래서 삼성전자·SK하이닉스 직원 성과급은 얼마나 달라질까요?</h2></div>
+      <p>영업이익 증가율이 개인 성과급 증가율과 같지는 않습니다. 삼성전자 OPI·TAI와 SK하이닉스 PS는 기준급·산정기간·사업부·지급방식이 다릅니다. 연간 실적과 회사별 산정 기준을 확인해야 합니다.</p>
+      <p class="sme-note">아래 리포트에는 별도 전망·시뮬레이션이 포함됩니다. 이번 분기 숫자를 기존 보상 모델에 자동 적용하지 않습니다.</p>
+      <div class="sme-cta-group">{data.SME_RELATED.slice(0, 2).map(link => <a class="button button--secondary" href={withBase(link.href)}>{link.label} →</a>)}</div>
+    </section>
+    <section class="content-section" id="sme-sources" aria-labelledby="sme-sources-title">
+      <div class="section-header section-header--compact"><p class="sme-eyebrow">원자료 확인</p><h2 id="sme-sources-title">출처와 계산 기준</h2></div>
+      <p>금액은 원자료 정밀도를 유지합니다. 이익률은 소수점 1자리, 재계산 증감률은 2자리로 표시합니다. 마이크론 분기 시작일은 직전 분기 종료일의 다음 날로 정리했습니다.</p>
+      <ol class="sme-source-list">{data.SME_SOURCES.map(s => <li id={`sme-source-${s.id}`}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.title}</a><p>{s.publisher} · {s.locator}</p><small>발표 {s.publishedAt ?? "게시일 미표기"} · 확인 {s.checkedAt}</small></li>)}</ol>
+    </section>
+    <SeoContent introTitle="최신 반도체 실적을 읽는 기준" intro={data.SME_SEO_INTRO} introSummary="기간과 사업구조를 함께 확인하며 실적을 비교하세요." criteria={data.SME_CRITERIA} criteriaTitle="비교 기준과 해석 포인트" faq={view.faq} related={data.SME_RELATED} relatedTitle="함께 보는 반도체·성과급 리포트" relatedEyebrow="관련 리포트" relatedLinkLabel="관련 리포트" relatedSummary="HBM 경쟁, 향후 실적 전망과 성과급 산정 기준을 이어서 확인하세요." />
+  </main>
+</BaseLayout>

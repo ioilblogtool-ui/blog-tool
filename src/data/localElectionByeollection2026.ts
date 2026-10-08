@@ -28,7 +28,7 @@ export interface ByeCandidate {
 }
 
 export interface ByePledge {
-  category: "경제" | "복지" | "교육" | "환경" | "교통" | "주거" | "청년" | "안전" | "기타";
+  category: "경제" | "복지" | "교육" | "환경" | "교통" | "주거" | "청년" | "안전" | "행정" | "기타";
   title: string;
   description: string;
 }

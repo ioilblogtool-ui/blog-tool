@@ -1,0 +1,228 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import { withBase } from "../../utils/base";
+import * as data from "../../data/kpopMarketSize2026";
+import { KB4_AGENCIES } from "../../data/kpopBig4AgencyComparison2026";
+import { buildReportView, buildJsonLd } from "../../utils/kpopMarketSize2026";
+const view = buildReportView(data, data.KMS_BIG4_ENABLED ? KB4_AGENCIES : null);
+const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://bigyocalc.com").href;
+const byId = (id: string) => view.scopeRows.find(r => r.stat.id === id)!;
+const content = view.content2024, music = byId("music-sales-2024"), popculture = byId("popculture-sales-2024");
+const agencyIn = byId("agency-domestic-2024"), agencyOut = byId("agency-overseas-2024");
+const musicExport = byId("music-export-2024"), album = byId("album-export-2025"), global = byId("global-recorded-2025");
+const toc = [
+  ["kms-kpi", "한눈에 보기"], ["kms-scope", "숫자가 다른 이유"], ["kms-trend", "성장 추이"], ["kms-overseas", "해외 매출"],
+  ["kms-channels", "수익 경로"], ["kms-big4", "4대 기획사"], ["kms-global", "세계 시장"], ["kms-economy", "경제 효과"], ["kms-sources", "출처"],
+];
+---
+<BaseLayout title={view.meta.seoTitle} description={view.meta.seoDescription} ogImage={view.meta.ogImage} jsonLd={buildJsonLd(view, canonical)}>
+  <SiteHeader />
+  <main class="container page-shell report-page kms-page">
+    <CalculatorHero eyebrow="K팝 산업 리포트" title={view.meta.h1} description={view.meta.heroDescription} />
+    <p class="kms-dateline">자료 확인·갱신일 <time datetime={view.meta.updatedAt}>{view.meta.updatedAt}</time></p>
+    <InfoNotice title="이 리포트의 기준" lines={[
+      "국내 매출·수출은 2024년 확정 통계이며, 2025년은 연간 동향분석의 잠정 성장률만 따로 표시합니다.",
+      "세계 시장은 IFPI 2025년 녹음음악 기준입니다. 공연·MD는 포함되지 않습니다.",
+      "‘K팝 시장’만 집계한 공식 단일 통계는 없습니다. 원화 환산은 해당 연도 연평균 환율을 적용한 시뮬레이션입니다.",
+    ]} />
+
+    <nav class="kms-toc" aria-label="리포트 목차">
+      <ol>{toc.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}</ol>
+    </nav>
+
+    <section class="content-section" id="kms-kpi" aria-labelledby="kms-kpi-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">핵심 숫자</p><h2 id="kms-kpi-title">K팝 시장 규모 한눈에 보기</h2></div>
+      <p class="kms-lead">카드마다 통계 범위·기준연도·통화가 다릅니다. 네 숫자를 더하거나 크기 순으로 비교하지 마세요.</p>
+      <div class="kms-kpi-grid">
+        {view.kpis.map(k => <article class="report-stat-card kms-kpi">
+          <h3>{k.stat.metricName}</h3>
+          <p class="kms-kpi-value">{k.display}</p>
+          {k.krw && <p class="kms-krw">{k.krw.display} <span class="kms-badge" data-badge="시뮬레이션">시뮬레이션</span></p>}
+          <p class="kms-kpi-meta">{k.stat.year}년 · {k.stat.scopeLabel} · {k.source?.publisher}</p>
+          <p><span class="kms-badge" data-badge={k.stat.badge}>{k.stat.badge}</span><a class="kms-source-link" href={`#kms-source-${k.stat.sourceId}`}>출처</a></p>
+        </article>)}
+      </div>
+    </section>
+
+    <section class="content-section" id="kms-scope" aria-labelledby="kms-scope-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">가장 먼저 확인할 것</p><h2 id="kms-scope-title">“K팝 시장 몇 조?” 숫자가 다른 이유</h2></div>
+      <p>K팝 시장 규모는 조사 범위에 따라 숫자가 달라집니다. 정부 통계는 ‘K팝’이 아니라 업종 단위로 집계하고, 세계 통계는 녹음음악만 따로 셉니다. 아래 그림은 각 통계가 어디에 속하는지 보여 줍니다.</p>
+      <div class="kms-diagram" role="group" aria-label="통계 범위 포함관계">
+        <div class="kms-diagram-col">
+          <p class="kms-diagram-head">국내 매출 · 원화</p>
+          <div class="kms-box kms-box--outer">
+            <p class="kms-box-title">콘텐츠산업 <strong>{content.display}</strong></p>
+            <small>게임·방송·출판·음악 등 11개 장르</small>
+            <div class="kms-box kms-box--inner">
+              <p class="kms-box-title">음악산업 <strong>{music.display}</strong></p>
+              <small>제작·유통·공연·노래연습장 등</small>
+            </div>
+          </div>
+          <div class="kms-box kms-box--dashed">
+            <span class="kms-overlap-tag">음악·방송 분야와 일부 겹침 · 별도 조사</span>
+            <p class="kms-box-title">대중문화예술산업 <strong>{popculture.display}</strong></p>
+            <small>기획업 + 제작업, 가수·배우·방송인 포함</small>
+            <div class="kms-box kms-box--inner">
+              <p class="kms-box-title">기획업 국내 <strong>{agencyIn.display}</strong> · 해외 <strong>{agencyOut.display}</strong></p>
+            </div>
+          </div>
+        </div>
+        <div class="kms-diagram-divider" aria-hidden="true"><span>통화·범위가 달라<br />크기 비교 불가</span></div>
+        <div class="kms-diagram-col">
+          <p class="kms-diagram-head">해외·세계 · 달러</p>
+          <div class="kms-box kms-box--outer">
+            <p class="kms-box-title">음악산업 수출 <strong>{musicExport.display}</strong></p>
+            <small>2024 · 음악산업 사업체의 해외 매출</small>
+          </div>
+          <div class="kms-box kms-box--dashed">
+            <span class="kms-overlap-tag">음악 수출과 일부 겹침 · 별도 통계</span>
+            <p class="kms-box-title">음반 수출 <strong>{album.display}</strong></p>
+            <small>2025 · 실물 음반 통관 수출</small>
+          </div>
+          <div class="kms-box kms-box--global">
+            <p class="kms-box-title">세계 녹음음악 시장 <strong>{global.display}</strong></p>
+            <small>2025 · 공연·MD 제외, 나라별 소비 합계</small>
+          </div>
+        </div>
+      </div>
+      <p class="kms-caption">박스 크기는 포함관계만 나타내며 금액에 비례하지 않습니다.</p>
+
+      <p class="kms-scroll-hint">작은 화면에서는 표를 좌우로 움직여 확인하세요.</p>
+      <div class="kms-table-wrap" tabindex="0" role="region" aria-labelledby="kms-scope-table-caption"><table class="kms-table">
+        <caption id="kms-scope-table-caption">통계별 포함 범위 비교 — 포함 범위가 서로 달라 직접적인 순위 의미는 없습니다.</caption>
+        <thead><tr><th scope="col">지표</th><th scope="col">규모</th><th scope="col">기준</th><th scope="col">무엇을 포함하나</th><th scope="col">무엇을 포함하지 않나</th></tr></thead>
+        <tbody>{view.scopeRows.map(r => <tr>
+          <th scope="row">{r.stat.metricName}</th>
+          <td><strong>{r.display}</strong>{r.krw && <small>{r.krw.display} (시뮬레이션)</small>}<span class="kms-badge" data-badge={r.stat.badge}>{r.stat.badge}</span></td>
+          <td>{r.stat.year}</td><td>{r.stat.includes}</td><td>{r.stat.excludes}</td>
+        </tr>)}</tbody>
+      </table></div>
+      <p class="kms-note">음악산업({music.display})보다 대중문화예술산업({popculture.display})이 큰 이유는 배우·방송인 매니지먼트와 제작업이 함께 집계되기 때문입니다. 반대로 대중문화예술산업에는 음원 유통·노래연습장 같은 음악산업 일부가 빠져 있어, 둘 중 어느 쪽도 ‘K팝 시장’과 정확히 같지 않습니다. 같은 콘텐츠산업 안의 다른 장르 수익 구조는 <a href={withBase("/reports/korean-movie-break-even-profit/")}>영화 흥행 손익 비교</a>에서 볼 수 있습니다.</p>
+    </section>
+
+    <section class="content-section" id="kms-trend" aria-labelledby="kms-trend-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">2019~2024 확정 통계</p><h2 id="kms-trend-title">국내 K팝·음악산업은 얼마나 커졌나</h2></div>
+      <p>같은 발표의 한 표에서 가져온 2019~2024년 값입니다. 음악산업 매출은 5년 새 약 <strong>{view.trend.salesMultiple}배</strong>, 수출은 약 <strong>{view.trend.exportMultiple}배</strong>가 됐습니다. 2024년 음악산업은 콘텐츠산업 매출의 약 {view.trend.salesShare}%, 수출의 약 {view.trend.exportShare}%를 차지합니다. <span class="kms-badge" data-badge="공식">공식</span> 원자료 기반 계산</p>
+      <div class="kms-chart-grid">
+        {[view.trend.sales, view.trend.export].map(t => <figure class="kms-card kms-chart">
+          <figcaption><h3>{t.series.label}</h3><small>{t.series.unit === "baekeok" ? "단위: 조원" : "단위: 억 달러"} · 문화체육관광부 콘텐츠산업조사</small></figcaption>
+          <ul class="kms-bars">{t.bars.map(b => <li>
+            <span class="kms-bar-year">{b.year}</span>
+            <span class="kms-bar-track" aria-hidden="true"><span class="kms-bar-fill" style={{ width: `${b.widthPct.toFixed(1)}%` }}></span></span>
+            <span class="kms-bar-label">{b.label}</span>
+          </li>)}</ul>
+          {t.series.provisional && <p class="kms-chip-row"><span class="kms-chip">2025 잠정 +{t.series.provisional.growthPct}%</span> 연간 동향분석 추계이며 확정 통계가 아니어서 막대로 그리지 않았습니다.</p>}
+          {t.series.breakNote && <p class="kms-caption">{t.series.breakNote}</p>}
+        </figure>)}
+      </div>
+      <p class="kms-note">2024년 음악산업 사업체는 {view.musicBiz.display}, 종사자는 {view.musicWorkers.display}입니다. 2025년 성장률을 2024년 확정값에 곱한 ‘2025년 추정 매출’은 조사 방식이 달라 제공하지 않습니다.</p>
+    </section>
+
+    <section class="content-section" id="kms-overseas" aria-labelledby="kms-overseas-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">수출과 해외 매출</p><h2 id="kms-overseas-title">K팝은 해외에서 얼마나 벌까</h2></div>
+      <p class="kms-warning-band">아래 세 숫자는 서로 겹치는 범위입니다. 더해서 ‘K팝 전체 해외 매출’로 보지 않습니다.</p>
+      <div class="kms-card-grid kms-card-grid--three">
+        {view.overseas.map(o => <article class="kms-card">
+          <h3>{o.stat.metricName}</h3>
+          <p class="kms-kpi-value">{o.display}</p>
+          {o.krw && <p class="kms-krw">{o.krw.display} <span class="kms-badge" data-badge="시뮬레이션">시뮬레이션</span><small>1달러 = {o.krw.rate}원 ({o.krw.year} 연평균) 기준</small></p>}
+          <p>{o.stat.includes}</p>
+          <p class="kms-kpi-meta">{o.stat.year}년 · {o.source?.publisher}</p>
+          <p><span class="kms-badge" data-badge={o.stat.badge}>{o.stat.badge}</span><a class="kms-source-link" href={`#kms-source-${o.stat.sourceId}`}>출처</a></p>
+        </article>)}
+      </div>
+      <p>음악산업 수출은 음악 관련 사업체 전체의 해외 매출, 기획업 해외 매출은 연예기획사만의 해외 매출, 음반 수출은 통관된 실물 음반만 셉니다. 해외 공연·MD·플랫폼을 따로 나눈 공공 통계는 아직 없습니다.</p>
+    </section>
+
+    <section class="content-section" id="kms-channels" aria-labelledby="kms-channels-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">산업 전체의 수익 경로</p><h2 id="kms-channels-title">K팝은 무엇으로 돈을 벌까</h2></div>
+      <p>K팝 기획사와 음악 사업자의 매출은 크게 10가지 경로로 나뉩니다. 경로별 산업 전체 금액을 집계한 공식 통계는 없어, 여기서는 구조만 정리합니다.</p>
+      <div class="kms-channel-grid">
+        {data.KMS_CHANNELS.map(c => <article class="kms-card kms-channel">
+          <h3>{c.label}</h3><p>{c.description}</p>
+          {c.example && <p class="kms-example">{c.example.text} <span class="kms-badge" data-badge={c.example.badge}>{c.example.badge}</span><a class="kms-source-link" href={`#kms-source-${c.example.sourceId}`}>출처</a></p>}
+        </article>)}
+      </div>
+    </section>
+
+    <section class="content-section" id="kms-big4" aria-labelledby="kms-big4-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">기업과 산업의 크기 비교</p><h2 id="kms-big4-title">4대 기획사는 산업에서 얼마나 차지할까</h2></div>
+      {view.big4 ? <>
+        <p>HYBE·SM·JYP·YG 4대 기획사의 연결매출을 국내 음악산업 매출과 나란히 놓으면 기업과 산업의 크기 차이를 가늠할 수 있습니다. 비교는 같은 연도(2024)끼리만 합니다.</p>
+        <div class="kms-big4-grid">
+          <div class="kms-table-wrap" tabindex="0" role="region" aria-labelledby="kms-big4-caption"><table class="kms-table kms-table--compact">
+            <caption id="kms-big4-caption">4대 기획사 연결매출 — 각 사 사업보고서(DART)</caption>
+            <thead><tr><th scope="col">회사</th><th scope="col">2025</th><th scope="col">2024</th></tr></thead>
+            <tbody>
+              {view.big4.rows.map(r => <tr><th scope="row">{r.name}</th><td>{r.revenue2025}</td><td>{r.revenue2024}</td></tr>)}
+              <tr class="kms-total-row"><th scope="row">4사 합계 <span class="kms-badge" data-badge="시뮬레이션">시뮬레이션</span></th><td>{view.big4.total2025}</td><td>{view.big4.total2024}</td></tr>
+            </tbody>
+          </table></div>
+          <article class="kms-card kms-compare">
+            <p class="kms-eyebrow">2024년 · 단순 규모 비교</p>
+            <h3>4사 연결매출 합계는 국내 음악산업 매출의 약 <strong>{view.big4.ratio}%</strong> 규모</h3>
+            <div class="kms-compare-bar" aria-hidden="true"><span style={{ width: `${Math.min(100, view.big4.ratioValue).toFixed(1)}%` }}></span></div>
+            <p class="kms-kpi-meta">{view.big4.total2024} ÷ 국내 음악산업 매출 {music.display}</p>
+            <p><span class="kms-badge" data-badge="시뮬레이션">시뮬레이션</span> 공식 원자료(DART·콘텐츠산업조사)를 나눈 계산 결과</p>
+          </article>
+        </div>
+        <p class="kms-note">이 비율은 시장점유율이 아닙니다. 연결매출에는 해외 자회사 매출과 플랫폼·게임 등 비음악 사업 매출이 포함되고, 국내 음악산업 매출은 국내 사업체 기준이어서 두 숫자의 범위가 정확히 겹치지 않습니다. 회사별 실적·시가총액·사업구조는 <a href={withBase("/reports/kpop-big4-agency-comparison-2026/")}>4대 기획사 비교 리포트</a>에서 볼 수 있습니다.</p>
+      </> : <>
+        <p>HYBE·SM·JYP·YG 4대 기획사 연결매출과 국내 음악산업 매출의 단순 규모 비교는 4개사 사업보고서 대조를 마친 뒤 제공합니다.</p>
+        <p class="kms-note">연결매출에는 해외 자회사와 플랫폼·게임 등 비음악 사업 매출도 포함됩니다. 그래서 합계가 나오더라도 국내 음악산업 매출 대비 비율은 ‘시장점유율’이 아니라 크기를 가늠하는 참고 비교로만 표시합니다.</p>
+      </>}
+    </section>
+
+    <section class="content-section" id="kms-global" aria-labelledby="kms-global-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">IFPI 2025</p><h2 id="kms-global-title">세계 음악시장과 비교</h2></div>
+      <div class="kms-card-grid">
+        {view.global.map(g => <article class="kms-card">
+          <h3>{g.stat.metricName}</h3>
+          <p class="kms-kpi-value">{g.display}</p>
+          {g.krw && <p class="kms-krw">{g.krw.display} <span class="kms-badge" data-badge="시뮬레이션">시뮬레이션</span><small>1달러 = {g.krw.rate}원 ({g.krw.year} 연평균) 기준</small></p>}
+          <p class="kms-kpi-meta">{g.stat.includes}</p>
+          <p><span class="kms-badge" data-badge={g.stat.badge}>{g.stat.badge}</span><a class="kms-source-link" href={`#kms-source-${g.stat.sourceId}`}>출처</a></p>
+        </article>)}
+      </div>
+      <p>한국 녹음음악 시장은 2025년 <strong>{view.koreaRank.display}</strong>입니다 <span class="kms-badge" data-badge={view.koreaRank.stat.badge}>{view.koreaRank.stat.badge}</span><a class="kms-source-link" href={`#kms-source-${view.koreaRank.stat.sourceId}`}>출처</a>. 이 순위는 한국 안에서 소비된 음악 매출 기준이라 K팝의 해외 수출은 반영되지 않습니다.</p>
+      <p class="kms-note">IFPI 통계는 공연·MD를 제외한 나라별 소비 합계이고, 국내 음악산업 매출은 공연을 포함한 사업체 매출입니다. 두 숫자를 나눠 ‘K팝 세계 점유율’을 만드는 것은 범위가 맞지 않아 계산하지 않습니다.</p>
+    </section>
+
+    <section class="content-section" id="kms-economy" aria-labelledby="kms-economy-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">한류 전체 기준</p><h2 id="kms-economy-title">K팝이 한국 경제에 미치는 영향</h2></div>
+      <p>K팝만의 경제효과를 따로 계산한 공공 연구는 확인되지 않았습니다. 아래는 게임·방송·음악 등을 함께 묶은 <strong>한류 전체</strong> 기준 연구 결과입니다.</p>
+      <h3 class="kms-subhead">한류산업 수출이 1억 달러 늘면</h3>
+      <div class="kms-card-grid kms-card-grid--three">
+        {view.effects.filter(e => e.group === "per-100m").map(e => <article class="kms-card">
+          <span class="kms-scope-tag">{e.scopeLabel}</span><h4>{e.label}</h4><p class="kms-kpi-value">{e.display}</p><p class="kms-kpi-meta">{e.note}</p>
+          <p><span class="kms-badge" data-badge={e.badge}>{e.badge}</span><a class="kms-source-link" href={`#kms-source-${e.sourceId}`}>출처</a></p>
+        </article>)}
+      </div>
+      <h3 class="kms-subhead">2025년 한류 파급효과</h3>
+      <div class="kms-card-grid">
+        {view.effects.filter(e => e.group === "annual-2025").map(e => <article class="kms-card">
+          <span class="kms-scope-tag">{e.scopeLabel}</span><h4>{e.label}</h4><p class="kms-kpi-value">{e.display}</p><p class="kms-kpi-meta">{e.note}</p>
+          <p><span class="kms-badge" data-badge={e.badge}>{e.badge}</span><a class="kms-source-link" href={`#kms-source-${e.sourceId}`}>출처</a></p>
+        </article>)}
+      </div>
+      <p class="kms-note">두 연구는 기관·분석 기간·방법이 다르므로 숫자를 서로 곱하거나 더하지 않습니다. 생산유발효과는 산업연관 분석에 따른 연구 추정치입니다.</p>
+    </section>
+
+    <section class="content-section" id="kms-sources" aria-labelledby="kms-sources-title">
+      <div class="section-header section-header--compact"><p class="kms-eyebrow">원자료 확인</p><h2 id="kms-sources-title">출처와 계산 기준</h2></div>
+      <p>금액은 원자료 단위를 유지해 계산하고 표시할 때만 바꿉니다. 콘텐츠산업조사 원표는 백억 원 단위입니다. 배수·비중은 원자료로 계산한 결과입니다. 공식은 기관 원문 확인, 참고는 언론·업계 매체 인용 또는 개별 사례, 시뮬레이션은 환산·합계 같은 계산 결과입니다.</p>
+      <ol class="kms-source-list">{data.KMS_SOURCES.map(s => <li id={`kms-source-${s.id}`}>
+        <a href={s.url} target="_blank" rel="noopener noreferrer">{s.title}</a>
+        <p>{s.publisher} · {s.locator} · {s.isPrimary ? "원문 확인" : "보도 인용"}</p>
+        <small>발표 {s.publishedAt} · 확인 {s.checkedAt}{s.limitation && ` · ${s.limitation}`}</small>
+      </li>)}</ol>
+      <ul class="kms-update-list">{data.KMS_UPDATE_LOG.map(u => <li><time datetime={u.date}>{u.date}</time> · {u.text}</li>)}</ul>
+    </section>
+
+    <SeoContent introTitle="K팝 시장 규모를 읽는 기준" intro={view.intro} introSummary="하나의 숫자 대신 통계 범위별로 K팝 산업의 크기를 확인하세요." criteria={data.KMS_CRITERIA} criteriaTitle="통계 기준과 해석 포인트" faq={view.faq} related={data.KMS_RELATED} relatedTitle="함께 보는 문화·기업 리포트" relatedEyebrow="관련 리포트" relatedLinkLabel="관련 리포트" relatedSummary="기획사별 실적, 콘텐츠 산업의 다른 장르와 상장 기업 실적도 이어서 확인하세요." />
+  </main>
+</BaseLayout>
