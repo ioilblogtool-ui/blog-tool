@@ -40,3 +40,14 @@ export function writeParams(map) {
   }
   history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
 }
+
+/**
+ * 현재 URL에서 지정한 파라미터를 제거합니다 (pushState 없이 조용히).
+ * @param {string[]} keys  제거할 파라미터 이름 목록
+ */
+export function deleteParams(keys) {
+  const params = new URLSearchParams(window.location.search);
+  keys.forEach((key) => params.delete(key));
+  const query = params.toString();
+  history.replaceState(null, "", query ? `${window.location.pathname}?${query}` : window.location.pathname);
+}

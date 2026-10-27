@@ -1,0 +1,349 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  SLR_META,
+  SLR_DEFAULT_INPUT,
+  SLR_LOSS_PRESETS,
+  SLR_REBOUND_STEPS,
+  SLR_REFERENCE_LOSSES,
+  SLR_CHART_LOSS_RANGE,
+  SLR_INFO_LINES,
+  SLR_SEO_INTRO,
+  SLR_INPUT_POINTS,
+  SLR_CRITERIA,
+  SLR_FAQ,
+  SLR_RELATED_LINKS,
+  SLR_CONDITIONAL_LINKS,
+} from "../../data/stockLossRecoveryCalculator";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (p: string) => `${normalizedBase}${p.replace(/^\//, "")}`;
+
+// 아직 배포되지 않은 리포트는 페이지 파일이 생긴 뒤에만 링크한다.
+// glob 인자는 리터럴이어야 하므로 대상 파일을 직접 적는다(SLR_CONDITIONAL_LINKS의 pageFile과 같은 값).
+const existingReportPages = Object.keys(import.meta.glob("../reports/kospi-october-crash-2026.astro"));
+const relatedLinks = [
+  ...SLR_RELATED_LINKS,
+  ...SLR_CONDITIONAL_LINKS.filter((link) => existingReportPages.includes(link.pageFile)).map(
+    ({ href, label }) => ({ href, label }),
+  ),
+];
+
+// 기본 입력값으로 서버에서 먼저 그려 둘 결과 (JS 로드 전에도 숫자가 보이도록)
+const d = SLR_DEFAULT_INPUT;
+const initCost = d.buyPrice * d.quantity;
+const initValue = d.currentPrice * d.quantity;
+const initLossRate = d.currentPrice / d.buyPrice - 1;
+const initRecovery = d.buyPrice / d.currentPrice - 1;
+const won = (v: number) => `${v < 0 ? "−" : ""}${Math.abs(Math.round(v)).toLocaleString("ko-KR")}원`;
+const pct = (v: number, digits = 2) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v * 100).toFixed(digits)}%`;
+const recoveryFromLoss = (lossPct: number) => lossPct / (100 - lossPct);
+
+const referenceRows = SLR_REFERENCE_LOSSES.map((loss) => ({
+  loss,
+  recovery: recoveryFromLoss(loss),
+}));
+
+const config = {
+  DEFAULT_INPUT: SLR_DEFAULT_INPUT,
+  REBOUND_STEPS: SLR_REBOUND_STEPS,
+  CHART_LOSS_RANGE: SLR_CHART_LOSS_RANGE,
+};
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const faqSchema = SLR_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={SLR_META.seoTitle}
+  description={SLR_META.seoDescription}
+  ogImage="/og/tools/stock-loss-recovery-calculator.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "주식 손실 복구율 계산기",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    description: "매수가와 현재가로 손실률과 본전까지 필요한 상승률, 추가매수 후 평균단가를 계산하는 도구",
+    url: `${siteBase}/tools/${SLR_META.slug}/`,
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: faqSchema,
+    },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={SLR_META.slug} pageClass="slr-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero eyebrow={SLR_META.eyebrow} title={SLR_META.h1} description={SLR_META.description} />
+      <InfoNotice title="계산 범위 안내" lines={SLR_INFO_LINES} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="slrResetBtn" copyId="slrCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">보유 종목</p>
+            <h2 class="panel__title">지금 손실 상태 입력</h2>
+          </div>
+          <p class="panel-heading__summary">매수가(평균단가)와 현재가를 넣으면 바로 계산합니다.</p>
+        </div>
+
+        <div class="slr-mode-tabs" role="group" aria-label="계산 방식">
+          <button type="button" class="slr-mode-tab is-active" data-slr-mode="price" aria-pressed="true">가격 입력</button>
+          <button type="button" class="slr-mode-tab" data-slr-mode="rate" aria-pressed="false">손실률만</button>
+        </div>
+
+        <div class="form-grid" data-slr-mode-panel="price">
+          <label class="field">
+            <span>매수가 · 평균단가 (원)</span>
+            <input id="slrBuyPrice" type="text" inputmode="numeric" class="input-number"
+              value={d.buyPrice.toLocaleString("ko-KR")} />
+            <small class="slr-field-error" data-slr-error="buyPrice" aria-live="polite"></small>
+          </label>
+
+          <label class="field">
+            <span>현재가 (원)</span>
+            <input id="slrCurrentPrice" type="text" inputmode="numeric" class="input-number"
+              value={d.currentPrice.toLocaleString("ko-KR")} />
+            <small class="slr-field-error" data-slr-error="currentPrice" aria-live="polite"></small>
+          </label>
+
+          <label class="field">
+            <span>보유 수량 (주)</span>
+            <input id="slrQuantity" type="number" inputmode="numeric" min="1" step="1" class="input-number"
+              value={d.quantity} />
+          </label>
+        </div>
+
+        <div class="form-grid" data-slr-mode-panel="rate" hidden>
+          <label class="field">
+            <span>현재 손실률 (%)</span>
+            <input id="slrLossRate" type="number" inputmode="decimal" min="0" max="99.99" step="0.1"
+              class="input-number" value={d.lossRate} />
+            <small class="slr-field-error" data-slr-error="lossRate" aria-live="polite"></small>
+          </label>
+        </div>
+
+        <div class="slr-preset-row" aria-label="손실률 빠른 선택">
+          {SLR_LOSS_PRESETS.map((loss) => (
+            <button type="button" class="slr-preset-chip" data-slr-preset={loss}>-{loss}%</button>
+          ))}
+        </div>
+        <p class="slr-help-text">빠른 선택은 매수가 100,000원 기준으로 현재가를 채웁니다.</p>
+      </article>
+
+      <article class="panel" data-slr-add-panel>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">추가매수 · 선택</p>
+            <h2 class="panel__title">물타기하면 어떻게 바뀔까</h2>
+          </div>
+          <p class="panel-heading__summary">금액을 넣으면 살 수 있는 주식 수와 새 평균단가를 계산합니다.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>추가매수 금액 (원)</span>
+            <input id="slrAddAmount" type="text" inputmode="numeric" class="input-number" value="0" />
+          </label>
+
+          <label class="field">
+            <span>추가매수 가격 (원)</span>
+            <input id="slrAddPrice" type="text" inputmode="numeric" class="input-number"
+              value={d.currentPrice.toLocaleString("ko-KR")} data-linked="true" />
+            <small class="slr-field-error" data-slr-error="addPrice" aria-live="polite"></small>
+          </label>
+        </div>
+        <button type="button" class="slr-link-btn" id="slrAddPriceSync" hidden>현재가와 같게 맞추기</button>
+        <p class="slr-help-text" data-slr-add-disabled hidden>손실률만 입력한 경우에는 가격 정보가 없어 추가매수를 계산할 수 없습니다.</p>
+      </article>
+    </Fragment>
+
+    <section class="slr-section">
+      <div class="slr-section__head">
+        <p class="slr-section__eyebrow">핵심 결과 <span class="slr-badge">시뮬레이션</span></p>
+        <h2>본전까지 필요한 상승률</h2>
+      </div>
+
+      <div class="slr-result-cards">
+        <article class="slr-result-card slr-result-card--main">
+          <p class="slr-result-label">원금 회복까지 필요한 상승률</p>
+          <strong class="slr-hero-number" data-slr-result="recoveryNeeded">{pct(initRecovery)}</strong>
+          <span class="slr-result-note" data-slr-result="mainNote">
+            손실률은 {pct(initLossRate)}지만, 줄어든 금액에서 다시 올라야 하므로 더 큰 상승이 필요합니다.
+          </span>
+        </article>
+
+        <article class="slr-result-card">
+          <p class="slr-result-label">현재 손익률</p>
+          <strong class="slr-result-value" data-slr-result="lossRate">{pct(initLossRate)}</strong>
+        </article>
+
+        <article class="slr-result-card" data-slr-money>
+          <p class="slr-result-label">현재 평가손익</p>
+          <strong class="slr-result-value" data-slr-result="pnl">{won(initValue - initCost)}</strong>
+          <span class="slr-result-note" data-slr-result="valueNote">
+            원금 {won(initCost)} → 평가 {won(initValue)}
+          </span>
+        </article>
+
+        <article class="slr-result-card" data-slr-money>
+          <p class="slr-result-label">손익분기 주가</p>
+          <strong class="slr-result-value" data-slr-result="breakevenPrice">{won(d.buyPrice)}</strong>
+          <span class="slr-result-note">수수료·거래세 미반영</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="slr-section" data-slr-avg hidden>
+      <div class="slr-section__head">
+        <p class="slr-section__eyebrow">추가매수 비교 <span class="slr-badge">시뮬레이션</span></p>
+        <h2>필요 상승률은 줄지만, 투자원금도 늘어납니다</h2>
+        <p class="slr-section__sub" data-slr-result="addSummary"></p>
+      </div>
+
+      <div class="slr-compare-grid">
+        <article class="slr-compare-card">
+          <p class="slr-result-label">본전까지 필요 상승률</p>
+          <p class="slr-compare-value">
+            <span data-slr-result="avgBeforeRecovery"></span>
+            <span class="slr-arrow" aria-hidden="true">→</span>
+            <strong data-slr-result="avgAfterRecovery"></strong>
+          </p>
+        </article>
+        <article class="slr-compare-card slr-compare-card--risk">
+          <p class="slr-result-label">투자원금</p>
+          <p class="slr-compare-value">
+            <span data-slr-result="avgBeforeCost"></span>
+            <span class="slr-arrow" aria-hidden="true">→</span>
+            <strong data-slr-result="avgAfterCost"></strong>
+          </p>
+          <span class="slr-result-note" data-slr-result="costIncrease"></span>
+        </article>
+        <article class="slr-compare-card">
+          <p class="slr-result-label">평균단가</p>
+          <p class="slr-compare-value">
+            <span data-slr-result="avgBeforePrice"></span>
+            <span class="slr-arrow" aria-hidden="true">→</span>
+            <strong data-slr-result="avgAfterPrice"></strong>
+          </p>
+        </article>
+      </div>
+      <p class="slr-warning" data-slr-result="addWarning" hidden></p>
+    </section>
+
+    <section class="slr-section" data-slr-rebound-section>
+      <div class="slr-section__head">
+        <p class="slr-section__eyebrow">반등 시나리오 <span class="slr-badge">시뮬레이션</span></p>
+        <h2>현재가에서 이만큼 오르면 손익은?</h2>
+        <p class="slr-section__sub">현재가 기준 상승률입니다. 매수가 기준 수익률과 다릅니다.</p>
+      </div>
+      <article class="panel">
+        <div class="table-wrap">
+          <table class="slr-rebound-table">
+            <thead>
+              <tr data-slr-rebound-head>
+                <th scope="col">현재가 대비</th>
+                <th scope="col">평가금액</th>
+                <th scope="col">손익</th>
+                <th scope="col">원금 대비</th>
+              </tr>
+            </thead>
+            <tbody data-slr-rebound-body></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="slr-section">
+      <div class="slr-section__head">
+        <p class="slr-section__eyebrow">손실률별 기준표 <span class="slr-badge slr-badge--plain">계산식</span></p>
+        <h2>손실이 클수록 복구 부담은 훨씬 빠르게 커집니다</h2>
+        <p class="slr-section__sub">복구 필요 상승률 = 손실률 ÷ (1 − 손실률)</p>
+      </div>
+      <article class="panel">
+        <div class="slr-chart-wrap" data-slr-chart-wrap hidden>
+          <div class="slr-chart-box">
+            <canvas id="slrChart" aria-label="손실률별 복구 필요 상승률 곡선" role="img"></canvas>
+          </div>
+          <p class="slr-help-text" data-slr-chart-note></p>
+        </div>
+        <div class="table-wrap">
+          <table class="slr-ref-table">
+            <caption class="sr-only">손실률별 원금 회복에 필요한 상승률</caption>
+            <thead>
+              <tr><th scope="col">손실률</th><th scope="col">원금 회복 필요 상승률</th></tr>
+            </thead>
+            <tbody>
+              {referenceRows.map((row) => (
+                <tr data-slr-ref-loss={row.loss}>
+                  <td>−{row.loss}%</td>
+                  <td>+{(row.recovery * 100).toFixed(1)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="slr-section">
+      <div class="slr-callout">
+        <strong>수수료·세금까지 넣은 본전 매도가가 궁금하다면</strong>
+        <p>
+          이 계산기의 손익분기 주가는 평균단가와 같습니다. 매수·매도 수수료와 증권거래세를 반영한 실제 본전 매도가는
+          <a href={withBase("/tools/stock-breakeven-calculator/")}>주식 손익분기점 계산기</a>에서 확인하세요.
+        </p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">이어보기</p>
+            <h2 class="panel__title">함께 쓰면 좋은 계산기</h2>
+          </div>
+        </div>
+        <div class="related-links">
+          {relatedLinks.map((link) => (
+            <a href={withBase(link.href)} class="related-link">{link.label}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="주식 손실 복구율 계산기 활용 가이드"
+        intro={SLR_SEO_INTRO}
+        inputPoints={SLR_INPUT_POINTS}
+        criteria={SLR_CRITERIA}
+        faq={SLR_FAQ}
+        related={relatedLinks}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="slrConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <script type="module" src={withBase("/scripts/stock-loss-recovery-calculator.js")}></script>
+</BaseLayout>

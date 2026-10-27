@@ -123,6 +123,7 @@ export const SBC_FAQ: FaqItem[] = [
 ];
 
 export const SBC_RELATED_LINKS: RelatedLink[] = [
+  { href: "/tools/stock-loss-recovery-calculator/",   label: "주식 손실 복구율 계산기" },
   { href: "/tools/domestic-stock-capital-gains-tax/", label: "국내주식 양도소득세 계산기" },
   { href: "/tools/dca-investment-calculator/",        label: "적립식 투자 수익 비교 계산기" },
   { href: "/tools/coin-tax-calculator/",              label: "코인 세금 계산기" },

@@ -9,6 +9,7 @@ import os
 
 # ── 도구 데이터 ────────────────────────────────────────────────────────────────
 TOOLS = [
+    {"slug": "stock-loss-recovery-calculator", "title": "주식 손실 복구율 계산기", "description": "손실률·본전 필요 상승률·물타기 후 평균단가를 바로 계산", "eyebrow": "투자·재테크", "stats": [("-30% 손실", "+42.9% 필요"), ("-50% 손실", "+100% 필요")]},
     {"slug": "health-insurance-premium-calculator", "title": "건강보험료 계산기 2027", "description": "요율 기반 이론값과 연봉 인상 전후 부담을 비교하세요 · 상하한·단수처리 미반영", "eyebrow": "연봉·이직", "stats": [("건강보험료율", "7.19% 동결"), ("계산 결과", "시뮬레이션")]},
     {"slug": "loan-interest-rate-change-calculator", "title": "대출금리 변동 계산기", "description": "금리 변동 전후 월 상환액과 남은 기간 총이자를 비교하세요", "eyebrow": "대출·금융", "stats": [("3억·30년·4% 예시", "시뮬레이션"), ("0.25%p 인하", "월 약 4.3만원 감소")]},
     {"slug": "year-end-tax-refund-calculator", "title": "연말정산 환급액 계산기 2026", "description": "카드 25% 문턱과 연금저축·IRP 추가 납입 효과를 비교하세요", "eyebrow": "세금·연말정산", "stats": [("카드 공제", "25% 문턱"), ("연금계좌", "절세 여력")]},

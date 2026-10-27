@@ -1866,6 +1866,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "stock-loss-recovery-calculator",
+    title: "주식 손실 복구율 계산기",
+    description: "매수가와 현재가로 손실률과 본전까지 필요한 상승률을 계산하고, 추가매수 후 평균단가와 반등률별 손익을 비교합니다.",
+    order: 27.31,
+    eyebrow: "주식 계산기",
+    category: "investment",
+    iframeReady: true,
+    badges: ["신규", "주식"],
+    previewStats: [
+      { label: "-30% 손실", value: "+42.9% 필요", context: "원금 회복 기준" },
+      { label: "-50% 손실", value: "+100% 필요", context: "원금 회복 기준" },
+    ],
+  },
+  {
     slug: "us-stock-exchange-profit-calculator",
     title: "미국주식 환차손익 계산기",
     description: "매수·매도 환율과 주가를 반영해 달러 수익률과 실제 원화 수익률 차이를 계산합니다.",

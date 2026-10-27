@@ -1,0 +1,344 @@
+.slr-page {
+  .slr-section {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .slr-section__head {
+    display: grid;
+    gap: 4px;
+  }
+
+  .slr-section__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a56db;
+    letter-spacing: 0.08em;
+  }
+
+  .slr-section__sub {
+    font-size: 12px;
+    color: #6c6a64;
+  }
+
+  .slr-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #854d0e;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0;
+
+    &--plain {
+      background: #ece9df;
+      color: #4d4a43;
+    }
+  }
+
+  .slr-help-text {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #6c6a64;
+  }
+
+  .slr-field-error {
+    display: block;
+    min-height: 0;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #d95c5c;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .slr-mode-tabs,
+  .slr-preset-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .slr-preset-row {
+    margin: 12px 0 0;
+  }
+
+  .slr-mode-tab,
+  .slr-preset-chip {
+    border: 1px solid #dcd9d0;
+    background: #f8f7f3;
+    color: #4d4a43;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+    &:hover,
+    &.is-active {
+      border-color: #1a56db;
+      color: #1a56db;
+      background: #e1eaff;
+    }
+  }
+
+  .slr-link-btn {
+    margin-top: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #1a56db;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .slr-result-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .slr-result-card {
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    min-width: 0;
+    padding: 14px 12px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #ebe8df;
+
+    &--main {
+      grid-column: 1 / -1;
+      border-color: #1a56db;
+      background: #eff4ff;
+    }
+  }
+
+  .slr-result-label {
+    font-size: 11px;
+    color: #6c6a64;
+  }
+
+  .slr-hero-number {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1a56db;
+
+    @media (min-width: 768px) {
+      font-size: 40px;
+    }
+  }
+
+  .slr-result-value {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #1a1a18;
+    overflow-wrap: anywhere;
+
+    &--loss {
+      color: #d95c5c;
+    }
+
+    &--profit {
+      color: #1f8f63;
+    }
+  }
+
+  .slr-result-note {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #6c6a64;
+  }
+
+  .slr-compare-grid {
+    display: grid;
+    gap: 8px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .slr-compare-card {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    padding: 14px 12px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #ebe8df;
+
+    &--risk {
+      border-color: #e8a000;
+      background: #fffbeb;
+    }
+  }
+
+  // 필요 상승률과 투자원금 증가를 같은 크기로 보여준다.
+  .slr-compare-value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 15px;
+    color: #6c6a64;
+
+    strong {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a1a18;
+    }
+  }
+
+  .slr-arrow {
+    color: #a8a49a;
+  }
+
+  .slr-warning {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .slr-rebound-table,
+  .slr-ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th,
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #ece9df;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6c6a64;
+    }
+  }
+
+  .slr-ref-table tr.is-current td {
+    background: #eff4ff;
+    font-weight: 800;
+    color: #1a56db;
+  }
+
+  .slr-cell-loss {
+    color: #d95c5c;
+  }
+
+  .slr-cell-profit {
+    color: #1f8f63;
+  }
+
+  .slr-chart-wrap {
+    margin-bottom: 12px;
+  }
+
+  .slr-chart-box {
+    position: relative;
+    height: 240px;
+
+    canvas {
+      max-width: 100%;
+    }
+  }
+
+  .slr-callout {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: #f8f7f3;
+    color: #4d4a43;
+
+    strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    a {
+      color: #1a56db;
+      font-weight: 700;
+    }
+  }
+
+  // 좁은 화면에서는 반등표 행을 카드로 바꿔 가로 스크롤을 없앤다.
+  @media (max-width: 480px) {
+    .slr-rebound-table {
+      thead {
+        display: none;
+      }
+
+      tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2px 8px;
+        padding: 10px 0;
+        border-bottom: 1px solid #ece9df;
+      }
+
+      td {
+        padding: 2px 0;
+        border: 0;
+        text-align: left;
+        white-space: normal;
+
+        &::before {
+          content: attr(data-label);
+          display: block;
+          font-size: 10px;
+          color: #6c6a64;
+        }
+      }
+
+      td:first-child {
+        grid-column: 1 / -1;
+        font-weight: 800;
+      }
+    }
+
+    .slr-chart-box {
+      height: 200px;
+    }
+  }
+}
