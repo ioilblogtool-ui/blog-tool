@@ -249,3 +249,13 @@ npm run build
 ```
 
 둘 다 성공해야 한다. **이 설계서 작성 시점에는 구현·실행하지 않았다.**
+
+## 구현 기록 · 2026-10-27
+
+- 변경 파일: `src/data/kospiSidecarRecord2026.ts`, `src/utils/kospiSidecarRecord2026.ts`(신규), `src/pages/reports/kospi-sidecar-record-2026.astro`, `src/styles/scss/pages/_kospi-sidecar-record-2026.scss`, `src/data/reports.ts`, `src/pages/reports/index.astro`, `public/sitemap.xml`, `scripts/generate-og-tools.py`, `public/og/reports/kospi-sidecar-record-2026.png`(신규), `src/data/kospiLeverageEtfCalculator.ts`(역링크 라벨)
+- 설계 대비 변경·추가:
+  - 7월 서킷브레이커는 7/29가 아니라 **7/28 10:13(코스피 올해 8번째)**로 보도(한국거래소 공시 인용)돼 `확정`으로 반영. 7/29는 장중 저점 날짜로 일부 기사에서 혼용.
+  - 7/11 스냅샷(34회)은 매도·매수 구분이 없어 추이 막대에서는 제외.
+  - 기존 페이지는 모바일에서 표 때문에 페이지 폭이 755px로 늘어나던 문제가 있었음. 640px 이하에서 표를 블록·가로 스크롤 박스로 바꾸고, 10월·서킷브레이커 표는 카드형으로 렌더링.
+- 아직 남은 확인: 한국거래소 시장조치 공지 대조(53회 잠정), 10/16~26 매수 25번째 발동일, 코스닥 7/24 이후 누적, 코스피 서킷브레이커 9번째 발동일.
+- 검증: `check:all` 오류 0건, 빌드 성공, 스냅샷 검증 함수 통과(29=14+15, 41=21+20, 51=27+24, 53=27+26), 375px 가로 스크롤 없음.

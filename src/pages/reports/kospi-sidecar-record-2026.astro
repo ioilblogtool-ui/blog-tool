@@ -6,18 +6,62 @@ import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import {
   KSR_META,
-  KSR_CUMULATIVE_STATS,
-  KSR_HISTORICAL_COMPARISON,
+  KSR_SOURCES,
+  KSR_SNAPSHOTS,
+  KSR_EVENTS_2026,
+  KSR_2008,
+  KSR_COUNT_NOTE,
+  KSR_CRASH_REPORT_LINK,
   KSR_MARKET_CONDITIONS,
   KSR_MECHANISM_COMPARISON,
   KSR_CB_STAGES,
   KSR_CAUSE_CARDS,
   KSR_CHECKLIST,
   KSR_AVOID_LIST,
-  KSR_RECENT_RECORDS,
   KSR_FAQ,
   KSR_RELATED_LINKS,
 } from "../../data/kospiSidecarRecord2026";
+
+import {
+  validateSnapshots,
+  validateEvents,
+  latestSnapshot,
+  ratio,
+  increments,
+  formatDateKo,
+} from "../../utils/kospiSidecarRecord2026";
+
+validateSnapshots(KSR_SNAPSHOTS, KSR_SOURCES);
+validateEvents(KSR_EVENTS_2026, KSR_SOURCES);
+
+const kospi = latestSnapshot(KSR_SNAPSHOTS, "코스피");
+const kosdaq = latestSnapshot(KSR_SNAPSHOTS, "코스닥");
+if (!kospi || kospi.total === null) throw new Error("[ksr] 코스피 최신 스냅샷 없음");
+const kospiTotal = kospi.total;
+const vs2008 = ratio(kospiTotal, KSR_2008.kospi);
+const buyShare = kospi.buy !== null ? ratio(kospi.buy, kospiTotal) : null;
+const kospiCbLatest = KSR_EVENTS_2026.filter((e) => e.market === "코스피" && e.kind.startsWith("서킷") && e.status === "확정").at(-1);
+const kospiCbCount = kospiCbLatest?.ordinalNote?.match(/올해 (\d+)번째/)?.[1] ?? null;
+const kospiSnapshots = KSR_SNAPSHOTS.filter((s) => s.market === "코스피");
+const maxTotal = Math.max(...kospiSnapshots.map((s) => s.total ?? 0));
+const deltas = new Map(increments(KSR_SNAPSHOTS, "코스피").map((d) => [d.asOf, d.delta]));
+const octoberEvents = KSR_EVENTS_2026.filter((e) => e.status === "확정" && e.date.startsWith("2026-10"));
+const cbEvents = KSR_EVENTS_2026.filter((e) => e.status === "확정" && e.kind.startsWith("서킷"));
+const sourceById = new Map(KSR_SOURCES.map((src) => [src.id, src]));
+const badgeClass = (b: string) => ({ 공식: "official", 참고: "ref", 시뮬레이션: "sim", 추정: "est" })[b] ?? "ref";
+const asOfLabel = formatDateKo(kospi.asOf);
+const fmtRatio = (v: number) => v.toFixed(2);
+const fmtPct1 = (v: number) => (v * 100).toFixed(1);
+
+const hasCrashReport = Object.keys(import.meta.glob("./kospi-october-crash-2026.astro")).length > 0;
+const relatedLinks = hasCrashReport ? [KSR_CRASH_REPORT_LINK, ...KSR_RELATED_LINKS] : KSR_RELATED_LINKS;
+
+const seoIntro = [
+  "사이드카는 선물시장의 급격한 가격 변동이 현물시장의 프로그램매매로 그대로 번지는 것을 막기 위한 장치입니다. 코스피는 코스피200 선물이 전일 기준가격보다 5% 이상 오르거나 내린 상태가 1분 동안 이어지면 발동되고, 코스닥은 코스닥150 선물 6%와 현물지수 3%가 같은 방향으로 함께 움직여야 발동됩니다. 발동되면 시장 전체가 멈추는 것이 아니라 프로그램매매 호가의 효력만 5분간 정지됩니다.",
+  `2026년 코스피 사이드카는 ${asOfLabel} 기준 ${kospiTotal}회(매도 ${kospi.sell}회·매수 ${kospi.buy}회)로 재구성됩니다. 매도와 매수가 거의 같은 횟수로 발동됐다는 점이 특징인데, 급락한 다음 날 급반등하고 다시 급락하는 장세가 반복됐다는 뜻입니다. 이 수치는 언론이 인용한 한국거래소 집계를 시점별로 모은 잠정값이며, 2008년 금융위기 당시 코스피 ${KSR_2008.kospi}회와 비교하면 약 ${fmtRatio(vs2008)}배입니다.`,
+  "10월에는 반도체 대형주 급락과 함께 사이드카가 다시 잦아졌습니다. 10월 13일 오전 9시 47분 매도 사이드카가 발동됐고, 10월 15일에는 개장 직후 코스피·코스닥 매도 사이드카에 이어 낮 12시대에 두 시장 모두 서킷브레이커가 발동돼 20분간 거래가 멈췄습니다. 반대로 10월 27일에는 코스피가 장중 4% 넘게 오르며 오전 10시 13분 매수 사이드카가 발동됐습니다.",
+  "사이드카는 매수·매도 신호가 아니라 단기 변동이 지나치게 컸다는 표시입니다. 매수 사이드카가 바닥을, 매도 사이드카가 추가 폭락을 뜻하지 않으며, 2008년과의 횟수 비교도 위기의 크기를 비교한 것이 아닙니다. 발동된 날에는 선물 움직임, 외국인 수급, 환율, 대형주 집중도를 함께 확인하고 시장가 대량 주문이나 레버리지 상품 추격은 피하는 것이 일반적인 위험관리 방법입니다.",
+];
 
 const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
 const reportUrl = `${siteBase}/reports/${KSR_META.slug}/`;
@@ -52,12 +96,12 @@ const jsonLd = [
   },
 ];
 ---
-<BaseLayout title={KSR_META.seoTitle} description={KSR_META.seoDescription} jsonLd={jsonLd}>
+<BaseLayout title={KSR_META.seoTitle} description={KSR_META.seoDescription} ogImage="/og/reports/kospi-sidecar-record-2026.png" jsonLd={jsonLd}>
   <SiteHeader />
 
   <main class="container page-shell report-page op-page ksr-page" data-report="kospi-sidecar-record-2026">
     <CalculatorHero
-      eyebrow="2008년 금융위기 기록 비교"
+      eyebrow="2026년 증시 변동성"
       title={KSR_META.title}
       description={KSR_META.description}
     />
@@ -75,29 +119,97 @@ const jsonLd = [
     <section class="op-section">
       <h2>2026년 누적 발동 현황</h2>
       <div class="op-card-grid">
-        {KSR_CUMULATIVE_STATS.map((s) => (
-          <article class={`report-stat-card ${s.highlight ? "report-stat-card--primary" : ""}`}>
-            <strong>{s.value}</strong>
-            <p>{s.label}</p>
-            <small>{s.note}</small>
-          </article>
-        ))}
+        <article class="report-stat-card report-stat-card--primary">
+          <strong>{kospiTotal}회</strong>
+          <p>코스피 사이드카 누적 <span class={`ksr-badge ksr-badge--${badgeClass(kospi.badge)}`}>{kospi.badge}</span></p>
+          <small>{asOfLabel} 기준 · 재구성 잠정값</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>{kospi.sell}회</strong>
+          <p>매도 사이드카</p>
+          <small>급락 때 발동</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>{kospi.buy}회</strong>
+          <p>매수 사이드카</p>
+          <small>급등 때 발동{buyShare !== null && ` · 전체의 ${fmtPct1(buyShare)}%`}</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>{kospiCbCount ? `${kospiCbCount}회` : "확인 중"}</strong>
+          <p>코스피 서킷브레이커</p>
+          <small>{kospiCbLatest ? `${formatDateKo(kospiCbLatest.date)} 발동이 올해 ${kospiCbCount}번째` : "한국거래소 공지 확인 중"}</small>
+        </article>
       </div>
+      <p class="op-message">
+        코스닥은 7월 24일 보도 기준 {kosdaq?.total}회(매도 {kosdaq?.sell}회·매수 {kosdaq?.buy}회)까지 확인됐고, 이후 누적은 다시 조사하고 있습니다.
+      </p>
+    </section>
+
+    <section class="op-section ksr-trend">
+      <h2>코스피 사이드카 누적 추이</h2>
+      <ol class="ksr-trend__list">
+        {kospiSnapshots.map((snap) => (
+          <li class="ksr-trend__row">
+            <span class="ksr-trend__date">{formatDateKo(snap.asOf)}</span>
+            <span class="ksr-trend__bar" style={`width:${((snap.total ?? 0) / maxTotal) * 100}%`}>
+              {snap.sell !== null && snap.buy !== null ? (
+                <>
+                  <span class="ksr-trend__sell" style={`flex:${snap.sell}`}>매도 {snap.sell}</span>
+                  <span class="ksr-trend__buy" style={`flex:${snap.buy}`}>매수 {snap.buy}</span>
+                </>
+              ) : (
+                <span class="ksr-trend__unknown">방향 미공개</span>
+              )}
+            </span>
+            <span class="ksr-trend__total">
+              {snap.total}회
+              {deltas.get(snap.asOf) !== null && deltas.get(snap.asOf) !== undefined && <small> (+{deltas.get(snap.asOf)})</small>}
+            </span>
+            <span class={`ksr-badge ksr-badge--${badgeClass(snap.badge)}`}>{snap.badge}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="op-message">언론이 인용한 한국거래소 집계를 시점별로 모은 값입니다. 괄호는 직전 시점 대비 증가 횟수입니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>10월 급락·반등 때 발동 기록</h2>
+      <table class="ksr-table ksr-table--cards">
+        <thead>
+          <tr><th>날짜</th><th>시장</th><th>구분</th><th>시각</th><th>비고</th></tr>
+        </thead>
+        <tbody>
+          {octoberEvents.map((ev) => (
+            <tr>
+              <td data-label="날짜">{formatDateKo(ev.date)}</td>
+              <td data-label="시장">{ev.market}</td>
+              <td data-label="구분">{ev.kind}</td>
+              <td data-label="시각">{ev.time ?? "—"}</td>
+              <td data-label="비고">{[ev.ordinalNote, ev.context].filter(Boolean).join(" · ")}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">
+        10월 27일 발동이 '올해 매수 26번째'로 보도돼 10월 16~26일 사이에 매수 사이드카가 한 번 더 있었던 것으로 보이지만, 발동일은 확인 중이라 표에 넣지 않았습니다.
+        {hasCrashReport && <> 10월 급락의 원인과 수급은 <a href={KSR_CRASH_REPORT_LINK.href}>{KSR_CRASH_REPORT_LINK.label}</a>에서 볼 수 있습니다.</>}
+      </p>
     </section>
 
     <section class="op-section">
       <h2>역대 비교 — 2008년 금융위기 vs 2026년</h2>
       <table class="ksr-table">
         <thead>
-          <tr><th>구분</th><th>2008년(금융위기)</th><th>2026년(현재까지)</th></tr>
+          <tr><th>구분</th><th>2008년(금융위기)</th><th>2026년({asOfLabel}까지)</th></tr>
         </thead>
         <tbody>
-          {KSR_HISTORICAL_COMPARISON.map((row) => (
-            <tr><td>{row.metric}</td><td>{row.year2008}</td><td>{row.year2026}</td></tr>
-          ))}
+          <tr><td>코스피 사이드카</td><td>{KSR_2008.kospi}회</td><td>{kospiTotal}회 (약 {fmtRatio(vs2008)}배 <span class="ksr-badge ksr-badge--sim">시뮬레이션</span>)</td></tr>
+          <tr><td>코스닥 사이드카</td><td>{KSR_2008.kosdaq}회</td><td>{kosdaq?.total}회 이상 (7월 24일 기준, 이후 재조사 중)</td></tr>
         </tbody>
       </table>
-      <p class="op-message">2026년 수치는 연중 집계 중인 값이고 2008년 수치는 연간 최종 수치이므로, 비교 시 기준 기간이 다르다는 점을 감안해야 합니다.</p>
+      <p class="op-message">
+        횟수 비교일 뿐 위기의 크기를 비교한 것이 아닙니다. 2026년에는 매수 사이드카가 전체의 절반 가까이를 차지해 하락 일변도였던 2008년과 성격이 다르고, 프로그램매매·선물 거래 규모도 달라졌습니다. 2008년 수치는 연간 최종값, 2026년 수치는 연중 집계 중인 값입니다.
+      </p>
     </section>
 
     <section class="op-section">
@@ -154,6 +266,24 @@ const jsonLd = [
         </tbody>
       </table>
       <p class="op-message">쉽게 말하면 사이드카는 프로그램매매에 거는 일시적인 제동장치이고, 서킷브레이커는 시장 전체를 멈추는 비상정지 장치입니다.</p>
+
+      <h3>2026년 서킷브레이커 기록 (보도로 확인된 건)</h3>
+      <table class="ksr-table ksr-table--cards">
+        <thead>
+          <tr><th>날짜</th><th>시장</th><th>시각</th><th>비고</th></tr>
+        </thead>
+        <tbody>
+          {cbEvents.map((ev) => (
+            <tr>
+              <td data-label="날짜">{formatDateKo(ev.date)}</td>
+              <td data-label="시장">{ev.market}</td>
+              <td data-label="시각">{ev.time ?? "—"}</td>
+              <td data-label="비고">{[ev.ordinalNote, ev.context].filter(Boolean).join(" · ")}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">전체 발동 이력이 아니라 보도로 시각과 횟수가 확인된 건만 정리했습니다.</p>
     </section>
 
     <section class="op-section">
@@ -194,37 +324,36 @@ const jsonLd = [
     </section>
 
     <section class="op-section">
-      <h2>최근 발동 기록</h2>
-      <table class="ksr-table">
-        <thead>
-          <tr><th>날짜</th><th>시장</th><th>구분</th><th>발동 시각</th><th>비고</th></tr>
-        </thead>
-        <tbody>
-          {KSR_RECENT_RECORDS.map((row) => (
-            <tr><td>{row.date}</td><td>{row.market}</td><td>{row.type}</td><td>{row.time}</td><td>{row.ordinalNote}</td></tr>
-          ))}
-        </tbody>
-      </table>
-      <p class="op-message">전체 발동 이력이 아닌 최근 보도 기준 일부 기록입니다. 이후 발동 건은 순차적으로 갱신할 예정입니다.</p>
+      <h2>'올해 N번째' 집계 기준 안내</h2>
+      <ul class="ksr-count-note">
+        {KSR_COUNT_NOTE.map((line) => <li>{line}</li>)}
+      </ul>
+    </section>
+
+    <section class="op-section">
+      <h2>출처</h2>
+      <ul class="ksr-source-list">
+        {KSR_SOURCES.map((src) => (
+          <li>
+            <a href={src.url} target="_blank" rel="noopener noreferrer">{src.org} · {src.title}</a>
+            <small>{src.publishedAt}</small>
+          </li>
+        ))}
+      </ul>
+      <p class="op-message">발동 조건은 한국거래소 유가증권·코스닥시장 업무규정 기준이며, 누적 횟수는 위 보도가 인용한 한국거래소 집계를 바탕으로 재구성했습니다.</p>
     </section>
 
     <SeoContent
-      introTitle="코스피 사이드카 역대 최다 기록 — 발동 기준부터 대응까지"
-      intro={[
-        "이 리포트는 2026년 코스피·코스닥 사이드카 누적 발동 현황을 2008년 금융위기 기록과 비교하고, 코스피·코스닥의 서로 다른 발동 조건과 서킷브레이커와의 차이를 정리합니다.",
-        "위에서 숫자와 제도를 확인했다면, 아래 FAQ에서는 실제로 궁금해할 만한 개별 상황(하루 중복 발동, 매수 사이드카의 위험성, VI와의 차이 등)을 다룹니다.",
-        "2026년 코스피 사이드카는 매수 20회·매도 21회로 누적 41회 발동돼, 2008년 금융위기 당시 26회를 이미 넘어섰습니다. 코스닥도 매수 14회·매도 11회로 누적 25회를 기록해 2008년 19회를 넘어섰고, 두 시장을 합치면 66회로 2008년 45회 대비 약 1.5배 수준입니다.",
-        "발동 조건은 시장마다 다릅니다. 코스피는 코스피200 선물이 기준가격 대비 5% 이상 등락한 상태가 1분 지속되면 발동되고, 코스닥은 코스닥150 선물 기준 6% 이상 등락이 조건입니다. 두 경우 모두 발동되면 시장 전체가 멈추는 것이 아니라 프로그램매매 호가의 효력만 5분간 정지됩니다.",
-        "사이드카와 자주 혼동되는 서킷브레이커는 코스피·코스닥 지수가 8%·15%·20% 하락할 때 단계별로 발동되며, 프로그램매매만 멈추는 사이드카와 달리 시장 전체 거래를 일정 시간 정지시키는 더 강력한 조치입니다. 두 제도의 발동 조건과 효과를 구분해서 이해해야 실제 뉴스에서 어떤 상황인지 정확히 판단할 수 있습니다. 2026년 수치는 연중 집계 중인 값이고 2008년 수치는 연간 최종 확정치이므로, 비교 시 기준 기간이 다르다는 점을 감안해서 읽어야 합니다. 발동 횟수와 시각은 2026년 7월 24일 보도를 기준으로 한 스냅샷이며, 이후 발동 건은 순차적으로 갱신할 예정입니다.",
-      ]}
+      introTitle="코스피 사이드카 2026 — 발동 조건부터 10월 기록까지"
+      intro={seoIntro}
       criteria={[
-        "코스피·코스닥 사이드카 발동 조건은 한국거래소 규정을 기준으로 정리했으며, 발동 횟수·시각은 2026년 7월 24일 보도를 기준으로 한 스냅샷입니다.",
-        "서킷브레이커 3단계 조건(8%·15%·20%)은 사이드카와 별도의 제도이며, 정지 시간과 발동 조건이 다릅니다.",
-        "2026년 변동성 배경으로 소개한 5가지는 언론 보도의 분석·추정을 종합한 것이며, 한국거래소가 공식적으로 확정한 원인이 아닙니다.",
-        "체크리스트와 매매 시 주의사항은 일반적인 위험관리 정보이며 수익을 보장하지 않습니다.",
+        "코스피·코스닥 사이드카 발동 조건은 한국거래소 업무규정을 기준으로 정리했습니다.",
+        `누적 횟수는 ${asOfLabel}까지 언론이 인용한 한국거래소 집계를 시점별로 재구성한 잠정값이며, 공지 대조 후 확정합니다.`,
+        "2008년 대비 배율과 매수 비중은 위 누적값으로 직접 계산한 시뮬레이션 값입니다.",
+        "변동성 배경으로 소개한 항목은 언론 보도의 분석을 종합한 것이며, 한국거래소가 확정한 원인이 아닙니다.",
       ]}
       faq={KSR_FAQ}
-      related={KSR_RELATED_LINKS.map((l) => ({ href: l.href, label: l.label }))}
+      related={relatedLinks.map((l) => ({ href: l.href, label: l.label }))}
     />
   </main>
 </BaseLayout>
