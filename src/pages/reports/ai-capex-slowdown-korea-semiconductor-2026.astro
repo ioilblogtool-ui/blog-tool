@@ -1,0 +1,305 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  ACS_META,
+  ACS_SOURCES,
+  ACS_METRICS,
+  ACS_SCENARIOS,
+  ACS_CAPEX,
+  ACS_CAPEX_NOTE,
+  ACS_EXPOSURE,
+  ACS_COUNTER_EVIDENCE,
+  ACS_CHECKLIST,
+  ACS_SEO_INTRO,
+  ACS_CRITERIA,
+  ACS_FAQ,
+  ACS_RELATED,
+  type AcsSource,
+} from "../../data/aiCapexSlowdownKoreaSemiconductor2026";
+import { SME_SOURCES } from "../../data/samsungMicronEarnings2026";
+import {
+  validateAcsData,
+  shareOf,
+  resolveBadge,
+  buildScenarioViews,
+} from "../../utils/aiCapexSlowdownKoreaSemiconductor2026";
+import { withBase } from "../../utils/base";
+
+// 삼성전자 실적·HBM 출처는 실적 비교 리포트의 출처를 그대로 쓴다(단일 출처).
+const smeSources: AcsSource[] = SME_SOURCES.map((s) => ({
+  id: s.id,
+  org: s.publisher,
+  title: s.title,
+  url: s.url,
+  publishedAt: s.publishedAt ?? "",
+  period: s.locator,
+  isPrimary: true,
+}));
+const usedSmeIds = new Set(ACS_EXPOSURE.flatMap((e) => e.facts.flatMap((f) => f.sourceIds)));
+const allSources = [...ACS_SOURCES, ...smeSources.filter((s) => usedSmeIds.has(s.id))];
+
+validateAcsData(ACS_METRICS, ACS_SCENARIOS, ACS_CAPEX, ACS_EXPOSURE, allSources);
+
+const metric = (id: string) => {
+  const m = ACS_METRICS.find((x) => x.id === id);
+  if (!m || m.value === null) throw new Error(`[acs] 지표 없음: ${id}`);
+  return m;
+};
+const semi = metric("exp-semi-sep");
+const total = metric("exp-total-sep");
+const gdp = ACS_METRICS.find((m) => m.id === "gdp-q3");
+const semiShare = shareOf(semi.value as number, total.value as number);
+
+const scenarioViews = buildScenarioViews(ACS_SCENARIOS, semi.value as number);
+const defaultScenario = "bear";
+const badgeClass = (b: string) => ({ 공식: "official", 참고: "ref", 시뮬레이션: "sim", 추정: "est" })[b] ?? "ref";
+const sourceById = new Map(allSources.map((s) => [s.id, s]));
+const capexKnown = ACS_CAPEX.filter((c) => c.guidanceLowUsdBn !== null && c.guidanceHighUsdBn !== null);
+const capexLow = capexKnown.reduce((sum, c) => sum + (c.guidanceLowUsdBn as number), 0);
+const capexHigh = capexKnown.reduce((sum, c) => sum + (c.guidanceHighUsdBn as number), 0);
+const fmtUsdBn = (v: number) => `${(v * 10).toLocaleString("ko-KR")}억 달러`;
+const fmtGuidance = (c: (typeof ACS_CAPEX)[number]) =>
+  c.guidanceLowUsdBn === null
+    ? "발표 확인 중"
+    : c.guidanceLowUsdBn === c.guidanceHighUsdBn
+      ? `약 ${fmtUsdBn(c.guidanceLowUsdBn)}`
+      : `${fmtUsdBn(c.guidanceLowUsdBn)}~${fmtUsdBn(c.guidanceHighUsdBn as number)}`;
+
+const pathSteps = [
+  { title: "빅테크 AI 설비투자", detail: "데이터센터·서버 투자" },
+  { title: "GPU·AI 가속기 주문", detail: "엔비디아 등 칩 수요" },
+  { title: "HBM·D램 수요와 가격", detail: "물량과 단가" },
+  { title: "삼성전자·SK하이닉스 실적", detail: "영업이익" },
+  { title: "수출·성장률", detail: "수출의 절반이 반도체" },
+  { title: "코스피·성과급", detail: "시가총액·보상" },
+];
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${ACS_META.slug}/`;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: ACS_META.title,
+    description: ACS_META.seoDescription,
+    dateModified: ACS_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: ACS_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: ACS_META.title, item: reportUrl },
+    ],
+  },
+];
+const bear = scenarioViews[defaultScenario];
+---
+<BaseLayout title={ACS_META.seoTitle} description={ACS_META.seoDescription} ogImage="/og/reports/ai-capex-slowdown-korea-semiconductor-2026.png" jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page acs-page" data-report={ACS_META.slug}>
+    <CalculatorHero eyebrow="반도체·거시 리포트" title={ACS_META.title} description={ACS_META.description} />
+
+    <p class="acs-asof-badge">데이터 기준일: {ACS_META.updatedAt}</p>
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        "한국은행 시나리오는 'AI 투자 둔화가 일어난다면'을 가정한 것으로 예측이 아닙니다.",
+        "한국은행 원문을 아직 확인하지 못한 수치는 '참고', 우리가 추가로 계산한 값은 '시뮬레이션'으로 표시했습니다.",
+        "특정 종목의 매수나 매도를 권유하지 않습니다.",
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>한국은 반도체에 얼마나 기대고 있나</h2>
+      <div class="op-card-grid">
+        <article class="report-stat-card report-stat-card--primary">
+          <strong>{(semiShare * 100).toFixed(1)}%</strong>
+          <p>9월 수출 중 반도체 비중 <span class="acs-badge acs-badge--sim">시뮬레이션</span></p>
+          <small>{semi.value?.toFixed(1)}억 ÷ {total.value?.toLocaleString("ko-KR")}억 달러</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>{semi.value?.toFixed(1)}억 달러</strong>
+          <p>9월 반도체 수출 <span class={`acs-badge acs-badge--${badgeClass(semi.badge)}`}>{semi.badge}</span></p>
+          <small>{semi.note}</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>{gdp && gdp.value !== null ? `+${gdp.value.toFixed(1)}%` : "확인 중"}</strong>
+          <p>3분기 실질 GDP(전기 대비) {gdp && <span class={`acs-badge acs-badge--${badgeClass(resolveBadge(gdp.badge, gdp.confirmed))}`}>{resolveBadge(gdp.badge, gdp.confirmed)}</span>}</p>
+          <small>반도체가 성장의 절반 정도를 이끈 것으로 한국은행이 추정</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>약 14조 원</strong>
+          <p>외국인 삼성전자·SK하이닉스 순매도 <span class="acs-badge acs-badge--ref">참고</span></p>
+          <small>10월 1~19일, 한국거래소 집계 인용 보도</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>AI 투자 둔화는 어떤 경로로 한국에 오나</h2>
+      <ol class="acs-path">
+        {pathSteps.map((step, i) => (
+          <li class="acs-path__step">
+            <span class="acs-path__num">{i + 1}</span>
+            <strong>{step.title}</strong>
+            <small>{step.detail}</small>
+          </li>
+        ))}
+      </ol>
+      <p class="op-message">
+        HBM은 AI 가속기 옆에 붙는 고대역폭 메모리로, 빅테크의 AI 서버 투자와 가장 직접적으로 연결됩니다. 세대별 차이와 업체별 현황은
+        <a href={withBase("/reports/hbm4-vs-hbm5-beneficiary-comparison/")}>HBM4·HBM4E 차이 총정리</a>에서 볼 수 있습니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>빅테크는 AI에 얼마를 쓰고 있나</h2>
+      <table class="acs-table acs-table--cards">
+        <thead><tr><th>회사</th><th>2026년 설비투자 가이던스</th><th>기준</th><th>비고</th></tr></thead>
+        <tbody>
+          {ACS_CAPEX.map((c) => (
+            <tr>
+              <td data-label="회사">{c.company}</td>
+              <td data-label="가이던스">{fmtGuidance(c)} <span class={`acs-badge acs-badge--${badgeClass(c.badge)}`}>{c.badge}</span></td>
+              <td data-label="기준">{c.fiscalBasis}</td>
+              <td data-label="비고">{c.note}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">
+        4개사 가이던스를 단순히 더하면 약 {fmtUsdBn(capexLow)}~{fmtUsdBn(capexHigh)}입니다 <span class="acs-badge acs-badge--sim">시뮬레이션</span>. {ACS_CAPEX_NOTE}
+      </p>
+    </section>
+
+    <section class="op-section acs-scenario" aria-labelledby="acs-sc-title">
+      <h2 id="acs-sc-title">한국은행 시나리오로 본 수출·성장률 영향</h2>
+      <div class="acs-scenario__tabs" role="tablist" aria-label="시나리오 선택">
+        {ACS_SCENARIOS.map((s) => (
+          <button type="button" role="tab" class="acs-scenario__tab" data-acs-sc={s.id}
+            aria-selected={s.id === defaultScenario ? "true" : "false"}>{s.label}</button>
+        ))}
+      </div>
+      <p class="acs-scenario__def" data-acs-out="definition">{bear.definition}</p>
+      <dl class="acs-scenario__result">
+        <div>
+          <dt>반도체 수출(기본 전망 대비)</dt>
+          <dd>
+            <strong data-acs-out="exportText">{bear.exportText}</strong>
+            <span class="acs-scenario__bar"><span data-acs-bar style={`width:${bear.barRatio * 100}%`}></span></span>
+          </dd>
+        </div>
+        <div>
+          <dt>9월 반도체 수출 환산 <span class="acs-badge acs-badge--sim">시뮬레이션</span></dt>
+          <dd><strong data-acs-out="monthsText">{bear.monthsText ?? "—"}</strong></dd>
+        </div>
+        <div>
+          <dt>경제성장률</dt>
+          <dd><strong data-acs-out="gdpText">{bear.gdpText}</strong></dd>
+        </div>
+        <div>
+          <dt>배지</dt>
+          <dd><span class={`acs-badge acs-badge--${badgeClass(bear.badge)}`} data-acs-badge>{bear.badge}</span></dd>
+        </div>
+      </dl>
+      <ul class="acs-scenario__notes" data-acs-out="footnotes">
+        {bear.footnotes.map((n) => <li>{n}</li>)}
+      </ul>
+      <p class="op-message">
+        기업별 2026~2028년 실적 시나리오는 <a href={withBase("/reports/semiconductor-stocks-forecast-2026-2028/")}>반도체 4사 실적 전망</a>에서 따로 비교합니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>삼성전자와 SK하이닉스는 어떻게 노출돼 있나</h2>
+      <div class="acs-exposure">
+        {ACS_EXPOSURE.map((e) => (
+          <article class="acs-exposure__card">
+            <strong>{e.company}</strong>
+            <ul>
+              {e.facts.map((f) => (
+                <li><span class={`acs-badge acs-badge--${badgeClass(f.badge)}`}>{f.badge}</span> {f.text}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+      <p class="op-message">
+        어느 회사가 더 크게 타격받는지는 HBM 공급 계약, 가격 협상, 원가 구조에 따라 달라져 단정할 수 없습니다. 최신 분기 실적은
+        <a href={withBase("/reports/samsung-micron-earnings-2026/")}>삼성전자 vs 마이크론 실적 비교</a>에서 확인할 수 있습니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>그럼에도 아직 단정할 수 없는 이유</h2>
+      <div class="acs-counter">
+        {ACS_COUNTER_EVIDENCE.map((c) => (
+          <article class="acs-counter__card">
+            <strong>{c.title}</strong>
+            <p>{c.detail} <span class={`acs-badge acs-badge--${badgeClass(c.badge)}`}>{c.badge}</span></p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="op-section">
+      <h2>앞으로 확인할 지표</h2>
+      <table class="acs-table">
+        <thead><tr><th>지표</th><th>보는 방법</th></tr></thead>
+        <tbody>
+          {ACS_CHECKLIST.map((c) => <tr><td>{c.title}</td><td>{c.detail}</td></tr>)}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="op-section acs-cta">
+      <h2>반도체 실적이 꺾이면 성과급은?</h2>
+      <p class="op-message">
+        삼성전자와 SK하이닉스의 성과급은 연간 영업이익·사업부 실적과 연동됩니다. 실적 시나리오에 따라 직급·연봉별 성과급이 얼마나 달라지는지
+        <a href={withBase("/tools/semiconductor-bonus-comparison/")}>반도체 성과급 비교 계산기</a>에서 계산해볼 수 있습니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>출처</h2>
+      <ul class="acs-source-list">
+        {allSources.map((src) => (
+          <li>
+            <a href={src.url} target="_blank" rel="noopener noreferrer">{src.org} · {src.title}</a>
+            <small>{src.publishedAt}{src.period && ` · ${src.period}`}{src.isPrimary && " · 1차 자료"}</small>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <SeoContent
+      introTitle="AI 투자 둔화 2026 — 한국 반도체·코스피 영향 경로"
+      intro={ACS_SEO_INTRO}
+      criteria={ACS_CRITERIA}
+      faq={ACS_FAQ}
+      related={ACS_RELATED}
+    />
+  </main>
+
+  <script id="acsConfig" type="application/json" set:html={JSON.stringify(scenarioViews)}></script>
+  <script type="module" src={withBase("/scripts/ai-capex-slowdown-korea-semiconductor-2026.js?v=20261028")}></script>
+</BaseLayout>

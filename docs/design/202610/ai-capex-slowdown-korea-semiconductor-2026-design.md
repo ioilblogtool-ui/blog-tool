@@ -228,7 +228,7 @@ Article(headline=H1, dateModified=updatedAt) + FAQPage + BreadcrumbList.
 
 보조(본문 인라인): `/reports/ai-datacenter-infra-beneficiaries-2026/`, `/reports/kospi-october-crash-2026/`(페이지 존재 시).
 
-**주의:** `samsung-micron-earnings-2026`는 페이지·sitemap·홈/리포트 허브 메타는 있으나 `src/data/reports.ts`에 항목이 없다(2026-10-27 확인). 링크 자체는 동작하지만, 리포트 목록 노출이 필요하면 이 구현과 별도로 등록 여부를 결정한다(이 설계 범위에서 수정하지 않음).
+**정정(구현 시 확인):** `samsung-micron-earnings-2026`는 `src/data/reports.ts`에 `SME_META.slug`로 등록돼 있다. 설계 당시 문자열 검색으로 놓친 것이며 별도 조치는 필요 없다.
 
 ### 등록 스케치
 
@@ -289,3 +289,15 @@ npm run build
 ```
 
 둘 다 성공해야 한다. **이 설계서 작성 시점에는 구현·실행하지 않았다.**
+
+## 구현 기록 · 2026-10-28
+
+- 신규 파일: `src/data/aiCapexSlowdownKoreaSemiconductor2026.ts`, `src/utils/aiCapexSlowdownKoreaSemiconductor2026.ts`, `src/pages/reports/ai-capex-slowdown-korea-semiconductor-2026.astro`, `public/scripts/ai-capex-slowdown-korea-semiconductor-2026.js`, `src/styles/scss/pages/_ai-capex-slowdown-korea-semiconductor-2026.scss`, `public/og/reports/ai-capex-slowdown-korea-semiconductor-2026.png`
+- 등록: `src/data/reports.ts`(order 95), 홈·리포트 허브 메타, `app.scss`, `sitemap.xml`, OG 스크립트
+- 데이터 결정:
+  - 3분기 GDP는 한국은행 보도자료 원문 대신 2026-10-27 보도(전기 대비 1.0%)로 반영, `confirmed=false` → 화면 배지 `참고`.
+  - 한국은행 비관 시나리오(수출 −500억~−1,000억 달러, 단가 −10%, 성장률 약 −0.4%p)는 원문 미확보 → 비관 시나리오 배지 `참고`, 둔화 시나리오 성장률(−0.2%p, 선형 계산)은 비노출.
+  - 빅테크 설비투자는 각사 IR이 아니라 집계 자료(datacentres.com 등) 기준 `참고`. 3분기 실적(10월 말) 발표 후 갱신 필요. 배포 게이트(IR 3행 이상)는 아직 충족하지 않음.
+  - 삼성전자 출처(`samsung-kr`, `samsung-hbm4`, `samsung-hbm4e`)는 `SME_SOURCES`에서 가져와 단일 출처 유지.
+  - 코스피 시총 비중 KPI는 KRX 원자료가 없어 "외국인 삼전닉스 순매도 약 14조 원(참고)"으로 대체.
+- 검증: 49.9%, 0.83/1.66개월, 시나리오 탭 3개·배지·각주 전환, `?sc=` 복원, 375px 가로 스크롤 없음, 콘솔 오류 없음.

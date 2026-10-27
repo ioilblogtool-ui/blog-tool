@@ -174,7 +174,7 @@ type CapexRow = { company: string; fiscalBasis: string; guidanceUsdBn: [number, 
 
 | 페이지 제목 | slug | 연결 이유 | 배치 위치 |
 |---|---|---|---|
-| 삼성전자 vs 마이크론 최신 실적 비교 2026 | `/reports/samsung-micron-earnings-2026/` | 현재 실적 수준 근거 | 기업별 노출 섹션 (※ 페이지 파일·sitemap·홈/리포트 메타 존재, **`src/data/reports.ts`에는 미등록** — 구현 시 확인 필요) |
+| 삼성전자 vs 마이크론 최신 실적 비교 2026 | `/reports/samsung-micron-earnings-2026/` | 현재 실적 수준 근거 | 기업별 노출 섹션 (정정: `src/data/reports.ts`에 `SME_META.slug`로 등록돼 있음을 구현 시 확인) |
 | HBM4·HBM4E 차이 총정리 | `/reports/hbm4-vs-hbm5-beneficiary-comparison/` | HBM 수요 경로 | 전달 경로 도식 하단 |
 | 삼성전자·SK하이닉스·마이크론·TSMC 2026~2028 실적 전망 비교 | `/reports/semiconductor-stocks-forecast-2026-2028/` | 기업별 전망 시나리오 | 시나리오 섹션 하단 |
 | 반도체 성과급 비교 계산기 | `/tools/semiconductor-bonus-comparison/` | 실적 둔화 → 성과급 민감도 | FAQ 6, 하단 CTA |
@@ -195,7 +195,7 @@ type CapexRow = { company: string; fiscalBasis: string; guidanceUsdBn: [number, 
 - 수출 통계 원값 단위(억 달러, 소수 첫째 자리) 유지. 비중은 같은 월 값끼리만 계산.
 - capex는 회계연도·금융리스 포함 여부를 표 주석으로 구분.
 - 삼성·마이크론 수치는 기존 데이터 파일 import로 단일 출처 유지.
-- `samsung-micron-earnings-2026`의 `reports.ts` 미등록 상태를 구현 담당자가 확인(이번 범위에서 수정하지 않음).
+- (정정) `samsung-micron-earnings-2026`는 `reports.ts`에 `SME_META.slug`로 등록돼 있다. 기획 당시 문자열 검색으로 놓쳤음.
 
 ## 10. 개발 전달·완료 조건
 

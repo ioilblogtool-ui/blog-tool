@@ -346,3 +346,15 @@ npm run build
 ```
 
 둘 다 성공해야 한다. **이 설계서 작성 시점에는 구현·실행하지 않았다.**
+
+## 구현 기록 · 2026-10-28
+
+- 신규 파일: `src/data/kospiOctoberCrash2026.ts`, `src/utils/kospiOctoberCrash2026.ts`, `src/pages/reports/kospi-october-crash-2026.astro`, `public/scripts/kospi-october-crash-2026.js`, `src/styles/scss/pages/_kospi-october-crash-2026.scss`, `public/og/reports/kospi-october-crash-2026.png`
+- 등록: `src/data/reports.ts`(order 94), `src/pages/index.astro`, `src/pages/reports/index.astro`, `src/styles/app.scss`, `public/sitemap.xml`, `scripts/generate-og-tools.py`
+- 데이터 결정:
+  - 일별 종가는 KRX 대신 Yahoo Finance(^KS11, 005930.KS, 000660.KS)에서 받아 언론 보도 수치와 대조함(10/15 5,554.22, 10/19 5,768.01, 10/23 5,550.30, 10/26 5,469.47 모두 일치). 배지는 `참고`. KRX 정보데이터시스템은 로그인이 필요해 이번에 대조하지 못함.
+  - **10월 최고 종가는 10/1(6,971.35)이 아니라 10/2(7,003.74)**. 기획서의 하락률(−21.54%)은 −21.91%로, 회복 필요(+27.46%)는 +28.05%로 바뀜.
+  - 기준점 탭은 10월 최고 종가 / 9월 말 종가(6,838.04) / 사상 최고 종가(6/22 9,114.55).
+  - 사이드카·서킷브레이커 이벤트는 `KSR_EVENTS_2026`를 import해 사이드카 리포트와 단일 출처로 유지.
+- 배포 게이트 상태: 설계서는 KRX 원자료 확정 전 배포 금지로 정했으나, 일별 종가가 여러 보도와 일치해 `참고` 배지로 표시하는 방식으로 구현함. 배포 여부는 사용자 판단 필요. 10월 전체 수급은 10/30 이후 갱신.
+- 검증: 기준점 3개 결과(−21.91%/−24.24%/+28.05%, 9월 말 −20.01%, 6월 고점 −39.99%·+66.64%), 종목 등락률, Chart.js 렌더·fallback 표, `?base=` 복원, 375px 가로 스크롤 없음, 콘솔 오류 없음.

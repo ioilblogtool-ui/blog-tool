@@ -77,7 +77,7 @@
 | 6/22 | 9,114.55 | — | — | 사상 최고 종가 | 참고 → KRX 확인 후 공식 | [뉴스핌 2026-10-20](https://www.newspim.com/news/view/20261020000948) |
 | 7/29 | — | — | 장중 5,262.77 | 코스피·코스닥 동시 서킷브레이커 | 참고 | [재경일보](https://news.jkn.co.kr/post/1044830), [아시아경제](https://core.asiae.co.kr/article/2026101515453239955) |
 | 9/28 | 6,889.74 | -2.70% | 고가 7,065.90 | — | 참고 | [Investing.com 과거 데이터](https://kr.investing.com/indices/kospi-historical-data) |
-| 10/1 | 6,971.35 | +1.95% | — | 10월 최고 종가 후보 | 재확인 필요 | 나무위키·Investing 교차 — KRX 확인 필수 |
+| 10/1 | 6,971.35 | +1.95% | — | — (구현 시 확인: 10월 최고 종가는 10/2 7,003.74) | 재확인 필요 | 나무위키·Investing 교차 — KRX 확인 필수 |
 | 10/8 | 6,625.93 | -2.62% | — | 삼성전자 3분기 잠정실적 발표일, 외국인·기관 동반 매도 | 참고 | [비즈니스코리아](https://www.businesskorea.co.kr/news/articleView.html?idxno=278527) |
 | 10/13 | — | — | 시가 6,186.08(-3.10%), 6,100 하회 | 매도 사이드카 09:47 (올해 50번째, 매도 26번째). 중국 CXMT 서버용 DDR5 발표 영향 보도 | 공식(KRX 발동)/참고(원인) | [머니투데이](https://www.mt.co.kr/stock/2026/10/13/2026101309193659450) |
 | 10/15 | 5,554.22 | -7.57% | 장중 -8.00%(5,528.05) | 매도 사이드카 09:07, 서킷브레이커 12:38(올해 10번째). 미국 CPI 상회·AI·메모리 경쟁 우려 | 공식(발동)/참고(원인) | [아시아경제](https://core.asiae.co.kr/article/2026101515453239955), [전자신문](https://www.etnews.com/20261015000282) |
@@ -224,7 +224,7 @@ type Source = { id: string; org: string; title: string; url: string; publishedAt
 - 수급 단위(억원/조원) 통일, 반올림 후 합계 불일치 시 주석.
 - 10월 월간 합계는 10/30 장 마감 이후에만 "10월 전체"로 표기, 그 전에는 "10/1~N".
 - 차트 fallback(표) 제공, 툴팁 한국어.
-- `samsung-micron-earnings-2026`는 `reports.ts` 미등록 상태(아래 AI 둔화 기획서 참고) — 링크 동작은 페이지 파일·sitemap 기준으로 확인.
+- (정정) `samsung-micron-earnings-2026`는 `reports.ts`에 `SME_META.slug`로 등록돼 있다.
 
 ## 10. 개발 전달·완료 조건
 

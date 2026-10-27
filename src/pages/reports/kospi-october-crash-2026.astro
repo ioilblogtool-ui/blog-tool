@@ -1,0 +1,358 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  KOC_META,
+  KOC_SOURCES,
+  KOC_SERIES,
+  KOC_BASE_POINTS,
+  KOC_OCT_INTRADAY_LOW,
+  KOC_TIMELINE,
+  KOC_STOCKS,
+  KOC_FLOWS,
+  KOC_FLOW_NOTES,
+  KOC_CAUSES,
+  KOC_CHECKLIST,
+  KOC_SEO_INTRO,
+  KOC_CRITERIA,
+  KOC_FAQ,
+  KOC_RELATED,
+} from "../../data/kospiOctoberCrash2026";
+import { KSR_EVENTS_2026 } from "../../data/kospiSidecarRecord2026";
+import {
+  validateKocData,
+  pctChange,
+  recoveryNeeded,
+  lowestClose,
+  formatPct,
+  formatIndex,
+  formatEok,
+  formatDateKo,
+} from "../../utils/kospiOctoberCrash2026";
+import { withBase } from "../../utils/base";
+
+validateKocData(
+  KOC_SERIES,
+  KOC_BASE_POINTS,
+  [
+    ...KOC_TIMELINE.flatMap((t) => t.sourceIds),
+    ...KOC_FLOWS.map((f) => f.sourceId),
+    ...KOC_CAUSES.flatMap((c) => c.sourceIds),
+  ],
+  KOC_SOURCES,
+);
+
+const [lowDate, lowClose] = lowestClose(KOC_SERIES, "2026-10-01", "2026-10-31");
+const latest = KOC_SERIES[KOC_SERIES.length - 1];
+const prevOfLatest = KOC_SERIES[KOC_SERIES.length - 2];
+
+// 기준점별 결과는 빌드 시 모두 계산하고, 클라이언트 JS는 표시만 바꾼다.
+const byBase = Object.fromEntries(
+  KOC_BASE_POINTS.map((bp) => [
+    bp.id,
+    {
+      label: bp.label,
+      date: formatDateKo(bp.date),
+      close: formatIndex(bp.close),
+      dropToLowClose: formatPct(pctChange(bp.close, lowClose)),
+      dropToLowIntraday: formatPct(pctChange(bp.close, KOC_OCT_INTRADAY_LOW.value)),
+      recoveryNeeded: formatPct(recoveryNeeded(bp.close, lowClose)),
+      fromLatest: formatPct(recoveryNeeded(bp.close, latest[1])),
+    },
+  ]),
+);
+const defaultBase = byBase.octHigh;
+
+const octEvents = KSR_EVENTS_2026.filter((e) => e.status === "확정" && e.date >= "2026-06-01" && e.market === "코스피");
+const chartView = {
+  labels: KOC_SERIES.map(([d]) => d),
+  closes: KOC_SERIES.map(([, c]) => c),
+  events: octEvents.map((e) => ({ date: e.date, label: `${e.kind}${e.time ? ` ${e.time}` : ""}` })),
+};
+const config = { byBase, chart: chartView };
+
+const foreignOct = KOC_FLOWS.find((f) => f.id === "oct1-19");
+const top2Share = (() => {
+  const all = KOC_FLOWS.find((f) => f.id === "oct1-19");
+  const top2 = KOC_FLOWS.find((f) => f.id === "oct1-19-top2");
+  return all && top2 ? top2.foreign / all.foreign : null;
+})();
+const sourceById = new Map(KOC_SOURCES.map((s) => [s.id, s]));
+const maxAbsFlow = Math.max(...KOC_FLOWS.flatMap((f) => [f.foreign, f.individual ?? 0, f.institution ?? 0].map(Math.abs)));
+const badgeClass = (b: string) => ({ 공식: "official", 참고: "ref", 시뮬레이션: "sim", 추정: "est" })[b] ?? "ref";
+const octEventCount = KSR_EVENTS_2026.filter((e) => e.status === "확정" && e.date.startsWith("2026-10") && e.market === "코스피").length;
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const reportUrl = `${siteBase}/reports/${KOC_META.slug}/`;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: KOC_META.title,
+    description: KOC_META.seoDescription,
+    dateModified: KOC_META.updatedAt,
+    mainEntityOfPage: reportUrl,
+    author: { "@type": "Organization", name: "비교계산소" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: KOC_FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: siteBase },
+      { "@type": "ListItem", position: 2, name: "리포트", item: `${siteBase}/reports/` },
+      { "@type": "ListItem", position: 3, name: KOC_META.title, item: reportUrl },
+    ],
+  },
+];
+---
+<BaseLayout title={KOC_META.seoTitle} description={KOC_META.seoDescription} ogImage="/og/reports/kospi-october-crash-2026.png" jsonLd={jsonLd}>
+  <SiteHeader />
+
+  <main class="container page-shell report-page op-page koc-page" data-report={KOC_META.slug}>
+    <CalculatorHero eyebrow="2026년 10월 증시" title={KOC_META.title} description={KOC_META.description} />
+
+    <p class="koc-asof-badge">데이터 기준일: {KOC_META.updatedAt}</p>
+
+    <InfoNotice
+      title="읽기 전 꼭 확인하세요"
+      lines={[
+        "과거 데이터를 정리한 리포트이며 특정 종목·ETF의 매수나 매도를 권유하지 않습니다.",
+        "원인 분석은 언론·증권가 해석(참고)이며, 사실과 해석을 나눠 적었습니다.",
+        KOC_META.dataNote,
+      ]}
+    />
+
+    <section class="op-section">
+      <h2>10월 코스피 한눈에 보기</h2>
+      <div class="op-card-grid">
+        <article class="report-stat-card report-stat-card--primary">
+          <strong>{defaultBase.dropToLowClose}</strong>
+          <p>10월 고점 → 최저 종가 <span class="koc-badge koc-badge--sim">시뮬레이션</span></p>
+          <small>{defaultBase.date} {defaultBase.close} → {formatDateKo(lowDate)} {formatIndex(lowClose)}</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>{formatIndex(lowClose)}</strong>
+          <p>10월 최저 종가 <span class="koc-badge koc-badge--ref">참고</span></p>
+          <small>{formatDateKo(lowDate)} · 장중 저점은 {formatDateKo(KOC_OCT_INTRADAY_LOW.date)} {formatIndex(KOC_OCT_INTRADAY_LOW.value)}</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>{foreignOct ? formatEok(Math.abs(foreignOct.foreign)).replace(/^\+/, "") : "—"}</strong>
+          <p>외국인 순매도(10월 1~19일) <span class="koc-badge koc-badge--ref">참고</span></p>
+          <small>{top2Share !== null && `약 ${Math.round(top2Share * 100)}%가 삼성전자·SK하이닉스`}</small>
+        </article>
+        <article class="report-stat-card">
+          <strong>{octEventCount}건</strong>
+          <p>10월 코스피 시장조치 <span class="koc-badge koc-badge--ref">참고</span></p>
+          <small>보도로 확인된 사이드카·서킷브레이커</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="op-section koc-base" aria-labelledby="koc-base-title">
+      <h2 id="koc-base-title">어디서부터 얼마나 떨어졌나</h2>
+      <div class="koc-base__tabs" role="tablist" aria-label="기준점 선택">
+        {KOC_BASE_POINTS.map((bp) => (
+          <button type="button" role="tab" class="koc-base__tab" data-koc-base={bp.id}
+            aria-selected={bp.id === "octHigh" ? "true" : "false"}>
+            {bp.label}
+          </button>
+        ))}
+      </div>
+      <p class="koc-base__caption" data-koc-out="caption">기준: {defaultBase.date} 종가 {defaultBase.close}</p>
+      <div class="koc-base__cards">
+        <article class="koc-card">
+          <p>10월 최저 종가까지 <span class="koc-badge koc-badge--sim">시뮬레이션</span></p>
+          <strong data-koc-out="dropToLowClose">{defaultBase.dropToLowClose}</strong>
+          <small>종가 기준</small>
+        </article>
+        <article class="koc-card">
+          <p>10월 장중 저점까지 <span class="koc-badge koc-badge--sim">시뮬레이션</span></p>
+          <strong data-koc-out="dropToLowIntraday">{defaultBase.dropToLowIntraday}</strong>
+          <small>장중 기준</small>
+        </article>
+        <article class="koc-card">
+          <p>최저 종가에서 기준점 회복까지 <span class="koc-badge koc-badge--sim">시뮬레이션</span></p>
+          <strong data-koc-out="recoveryNeeded">{defaultBase.recoveryNeeded}</strong>
+          <small>{formatDateKo(latest[0])} 종가 기준으로는 <span data-koc-out="fromLatest">{defaultBase.fromLatest}</span></small>
+        </article>
+      </div>
+      <a class="koc-inline-link" href={withBase("/tools/stock-loss-recovery-calculator/")}>내 종목은 몇 % 올라야 본전일까? 손실 복구율 계산하기 →</a>
+    </section>
+
+    <section class="op-section">
+      <h2>6월 이후 코스피 종가 흐름</h2>
+      <div class="koc-chart" data-koc-chart-wrap hidden>
+        <canvas id="kocChart" role="img" aria-label="2026년 6월부터 10월까지 코스피 일별 종가 그래프"></canvas>
+      </div>
+      <table class="koc-table koc-fallback" data-koc-fallback>
+        <caption>주요 지점 종가 (전체 일별 종가는 그래프에서 확인)</caption>
+        <thead><tr><th>날짜</th><th>종가</th><th>구분</th></tr></thead>
+        <tbody>
+          <tr><td>6월 22일</td><td>9,114.55</td><td>사상 최고 종가</td></tr>
+          <tr><td>7월 30일</td><td>5,593.56</td><td>7월 급락 저점(종가)</td></tr>
+          <tr><td>10월 2일</td><td>7,003.74</td><td>10월 최고 종가</td></tr>
+          <tr><td>{formatDateKo(lowDate)}</td><td>{formatIndex(lowClose)}</td><td>10월 최저 종가</td></tr>
+          <tr><td>{formatDateKo(latest[0])}</td><td>{formatIndex(latest[1])}</td><td>최신 종가</td></tr>
+        </tbody>
+      </table>
+      <p class="op-message">빨간 점은 보도로 확인된 코스피 사이드카·서킷브레이커 발동일입니다. 종가는 일별 시세 데이터 기준(참고)입니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>10월 날짜별 흐름</h2>
+      <ol class="koc-timeline">
+        {KOC_TIMELINE.map((item) => (
+          <li class="koc-timeline__item">
+            <div class="koc-timeline__head">
+              <span class="koc-timeline__date">{formatDateKo(item.date)}</span>
+              <span class={`koc-timeline__change ${item.changePct < 0 ? "is-down" : "is-up"}`}>
+                {formatIndex(item.close)} ({item.changePct > 0 ? "+" : "−"}{Math.abs(item.changePct).toFixed(2)}%)
+              </span>
+              {item.intraday && <span class="koc-timeline__intraday">{item.intraday}</span>}
+            </div>
+            <strong>{item.title}</strong>
+            <p>{item.detail}</p>
+            <small>출처: {item.sourceIds.map((id) => sourceById.get(id)?.org).filter(Boolean).join(", ")}</small>
+          </li>
+        ))}
+      </ol>
+      <p class="op-message">
+        사이드카·서킷브레이커 발동 기록과 제도 설명은 <a href={withBase("/reports/kospi-sidecar-record-2026/")}>코스피 사이드카 2026 리포트</a>에 정리했습니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>누가 팔고 누가 샀나</h2>
+      <table class="koc-table koc-flow-table">
+        <thead><tr><th>기간</th><th>대상</th><th>외국인</th><th>개인</th><th>기관</th></tr></thead>
+        <tbody>
+          {KOC_FLOWS.map((f) => (
+            <tr>
+              <td data-label="기간">{f.period}</td>
+              <td data-label="대상">{f.scope}</td>
+              <td data-label="외국인" class={f.foreign < 0 ? "is-down" : "is-up"}>{formatEok(f.foreign)}</td>
+              <td data-label="개인">{f.individual === null ? "—" : formatEok(f.individual)}</td>
+              <td data-label="기관">{f.institution === null ? "—" : formatEok(f.institution)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div class="koc-flow-bars" aria-hidden="true">
+        {KOC_FLOWS.filter((f) => f.id === "oct1-19" || f.id === "d1015").map((f) => (
+          <div class="koc-flow-bars__group">
+            <p>{f.period} · {f.scope}</p>
+            {[["외국인", f.foreign], ["개인", f.individual], ["기관", f.institution]].filter(([, v]) => v !== null).map(([label, v]) => (
+              <div class="koc-flow-bars__row">
+                <span>{label}</span>
+                <span class="koc-flow-bars__track">
+                  <span class={`koc-flow-bars__bar ${(v as number) < 0 ? "is-down" : "is-up"}`} style={`width:${(Math.abs(v as number) / maxAbsFlow) * 100}%`}></span>
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <ul class="koc-notes">
+        {KOC_FLOW_NOTES.map((n) => <li>{n}</li>)}
+      </ul>
+      <p class="op-message">
+        언론이 인용한 한국거래소 집계(참고)이며 단위는 원입니다. 개인의 레버리지 ETF 매수가 많았던 만큼, 급락·반등 경로에서 레버리지 손익이 어떻게 달라지는지는
+        <a href={withBase("/tools/kospi-leverage-etf-calculator/")}>코스피 레버리지 ETF 계산기</a>에서 확인할 수 있습니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>삼성전자·SK하이닉스는 얼마나 빠졌나</h2>
+      <table class="koc-table koc-stock-table">
+        <thead><tr><th>종목</th><th>10월 2일</th><th>10월 최저 종가</th><th>10월 26일</th><th>10월 27일</th></tr></thead>
+        <tbody>
+          {KOC_STOCKS.map((s) => (
+            <tr>
+              <td data-label="종목">{s.name}</td>
+              <td data-label="10월 2일">{s.base.toLocaleString("ko-KR")}원</td>
+              <td data-label="10월 최저 종가">{s.low.toLocaleString("ko-KR")}원 <small>({formatPct(pctChange(s.base, s.low))}, {formatDateKo(s.lowDate)})</small></td>
+              <td data-label="10월 26일">{s.latest.toLocaleString("ko-KR")}원 <small>({formatPct(pctChange(s.base, s.latest))})</small></td>
+              <td data-label="10월 27일">{s.rebound.toLocaleString("ko-KR")}원 <small>(전일 대비 {formatPct(pctChange(s.latest, s.rebound))})</small></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="op-message">종가는 일별 시세 데이터 기준(참고), 등락률은 그 종가로 계산한 시뮬레이션 값입니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>실적은 좋은데 주가는 왜 떨어졌나</h2>
+      <p class="op-message">
+        삼성전자는 10월 8일 3분기 잠정 매출 195조 원, 영업이익 107.4조 원을 발표했습니다 <span class="koc-badge koc-badge--official">공식</span>. 같은 날 코스피는 2.62% 하락했고 외국인과 기관은 2조 원대를 함께 팔았습니다.
+        주가는 이미 발표된 실적보다 앞으로의 이익 방향을 먼저 반영하기 때문에, 시장은 메모리 가격이 고점을 지났는지와 내년 AI 투자가 이어질지를 더 크게 봤다는 해석이 나옵니다.
+        실적 자체의 비교는 <a href={withBase("/reports/samsung-micron-earnings-2026/")}>삼성전자 vs 마이크론 실적 비교</a>에서 볼 수 있습니다.
+      </p>
+    </section>
+
+    <section class="op-section">
+      <h2>급락 배경으로 거론되는 7가지</h2>
+      <div class="koc-cause-grid">
+        {KOC_CAUSES.map((c) => (
+          <article class="koc-cause">
+            <strong>{c.title}</strong>
+            <p><span class={`koc-badge koc-badge--${badgeClass(c.factBadge)}`}>사실 · {c.factBadge}</span> {c.fact}</p>
+            <p class="koc-cause__interp"><span class="koc-badge koc-badge--ref">해석 · 참고</span> {c.interpretation}</p>
+          </article>
+        ))}
+      </div>
+      <p class="op-message">한국거래소나 정부가 이번 하락의 원인을 공식적으로 확정한 것은 아닙니다.</p>
+    </section>
+
+    <section class="op-section">
+      <h2>반등은 회복 신호일까</h2>
+      <p class="op-message">
+        {formatDateKo(latest[0])} 코스피는 {formatIndex(latest[1])}로 전일보다 {formatPct(pctChange(prevOfLatest[1], latest[1]))} 올랐고 매수 사이드카도 발동했습니다.
+        하지만 10월 21일에도 3% 넘게 오른 다음 날 다시 떨어졌습니다. 하루 반등만으로 추세가 바뀌었다고 판단하기보다 아래 지표를 함께 확인하는 것이 좋습니다.
+      </p>
+      <table class="koc-table">
+        <thead><tr><th>확인할 것</th><th>보는 방법</th></tr></thead>
+        <tbody>
+          {KOC_CHECKLIST.map((c) => (
+            <tr><td>{c.title}</td><td>{c.detail}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="op-section">
+      <h2>출처</h2>
+      <ul class="koc-source-list">
+        {KOC_SOURCES.map((src) => (
+          <li>
+            <a href={src.url} target="_blank" rel="noopener noreferrer">{src.org} · {src.title}</a>
+            <small>{src.publishedAt} · {src.period}</small>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <SeoContent
+      introTitle="코스피 10월 급락 2026 — 무엇이 지수를 끌어내렸나"
+      intro={KOC_SEO_INTRO}
+      criteria={KOC_CRITERIA}
+      faq={KOC_FAQ}
+      related={KOC_RELATED}
+    />
+  </main>
+
+  <script id="kocConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <script type="module" src={withBase("/scripts/kospi-october-crash-2026.js?v=20261027")}></script>
+</BaseLayout>

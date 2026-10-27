@@ -10,6 +10,20 @@ import { SME_META } from "./samsungMicronEarnings2026";
 
 export const reports: ReportMeta[] = [
   {
+    slug: "kospi-october-crash-2026",
+    title: "코스피 10월 급락 2026 | 외국인 매도·반도체 하락 원인 정리",
+    description: "2026년 10월 코스피 급락을 날짜별 지수, 외국인 수급, 삼성전자·SK하이닉스 흐름으로 정리했습니다. AI 투자 우려·금리·중국 메모리 변수와 최근 반등의 의미까지 확인하세요.",
+    order: 94,
+    badges: ["신규", "코스피", "급락", "2026"],
+  },
+  {
+    slug: "ai-capex-slowdown-korea-semiconductor-2026",
+    title: "AI 투자 둔화 2026 | 한국 반도체·코스피 얼마나 타격받나",
+    description: "미국 빅테크가 AI 데이터센터 투자를 줄이면 한국 반도체 수출과 성장률은 얼마나 줄까요? 한국은행 시나리오와 공식 수출 통계로 삼성전자·SK하이닉스 영향 경로를 정리했습니다.",
+    order: 95,
+    badges: ["신규", "반도체", "AI", "한국은행"],
+  },
+  {
     slug: "kpop-market-size-2026",
     title: "K팝 시장 규모 2026 | 매출·수출 얼마나 클까",
     description: "K팝 시장 규모를 국내 음악산업 매출 13.3조원, 음악 수출 18억 달러, 기획업 해외매출, 세계 음악시장 317억 달러로 나눠 비교하고 통계마다 숫자가 다른 이유를 정리합니다.",
@@ -1288,10 +1302,10 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "kospi-sidecar-record-2026",
-    title: "2026 코스피 사이드카 41회 | 2008 금융위기 26회 비교",
-    description: "2026년 7월 24일 기준 코스피 사이드카는 41회 발동됐습니다. 매수·매도 발동 횟수, 2008년 금융위기와의 비교, 코스닥·서킷브레이커와의 차이를 정리합니다.",
+    title: "코스피 사이드카 2026 | 폭락·반등 때 왜 발동되나",
+    description: "2026년 코스피 사이드카 발동 횟수를 매수·매도별로 정리하고 10월 급락·반등 기록을 추가했습니다. 발동 조건, 서킷브레이커와 차이, 2008년 비교까지 확인하세요.",
     order: 80,
-    badges: ["코스피", "사이드카", "변동성", "2026"],
+    badges: ["코스피", "사이드카", "서킷브레이커", "2026"],
   },
   {
     slug: "newlywed-government-support-2026",
