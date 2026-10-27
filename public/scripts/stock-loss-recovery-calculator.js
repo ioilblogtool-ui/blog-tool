@@ -1,4 +1,5 @@
-import { readParam, writeParams, deleteParams } from "./url-state.js";
+// url-state.js는 브라우저에 최대 4시간 캐시된다. deleteParams가 없는 이전 사본을 피하려고 버전 쿼리를 붙인다.
+import { readParam, writeParams, deleteParams } from "./url-state.js?v=20261027";
 
 const configEl = document.getElementById("slrConfig");
 const config = configEl ? JSON.parse(configEl.textContent || "{}") : {};
