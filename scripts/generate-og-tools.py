@@ -9,6 +9,7 @@ import os
 
 # ── 도구 데이터 ────────────────────────────────────────────────────────────────
 TOOLS = [
+    {"slug": "kospi-leverage-etf-calculator", "title": "코스피 레버리지 ETF 계산기", "description": "급락 후 반등해도 손실? 지수 경로별 2배 레버리지 손익과 원금 회복 필요 상승률", "eyebrow": "투자·재테크", "stats": [("-20% → +25% 반등", "레버리지 -10%"), ("등락 반복", "지수 0% · 레버리지 손실")]},
     {"slug": "stock-loss-recovery-calculator", "title": "주식 손실 복구율 계산기", "description": "손실률·본전 필요 상승률·물타기 후 평균단가를 바로 계산", "eyebrow": "투자·재테크", "stats": [("-30% 손실", "+42.9% 필요"), ("-50% 손실", "+100% 필요")]},
     {"slug": "health-insurance-premium-calculator", "title": "건강보험료 계산기 2027", "description": "요율 기반 이론값과 연봉 인상 전후 부담을 비교하세요 · 상하한·단수처리 미반영", "eyebrow": "연봉·이직", "stats": [("건강보험료율", "7.19% 동결"), ("계산 결과", "시뮬레이션")]},
     {"slug": "loan-interest-rate-change-calculator", "title": "대출금리 변동 계산기", "description": "금리 변동 전후 월 상환액과 남은 기간 총이자를 비교하세요", "eyebrow": "대출·금융", "stats": [("3억·30년·4% 예시", "시뮬레이션"), ("0.25%p 인하", "월 약 4.3만원 감소")]},
@@ -34,6 +35,9 @@ TOOLS = [
 
 # ── 리포트 데이터 ──────────────────────────────────────────────────────────────
 REPORTS = [
+    {"slug": "ai-capex-slowdown-korea-semiconductor-2026", "title": "AI 투자 둔화와 한국 반도체", "description": "한국은행 시나리오와 수출 통계로 본 반도체·코스피 영향 경로", "eyebrow": "자산 리포트", "stats": [("반도체 수출 비중", "49.9% · 2026.9"), ("한은 비관 시나리오", "수출 500억~1,000억$ 감소")]},
+    {"slug": "kospi-october-crash-2026", "title": "코스피 10월 급락 2026", "description": "날짜별 지수·외국인 수급·반도체 흐름으로 본 10월 조정", "eyebrow": "자산 리포트", "stats": [("10월 고점 대비", "-21.9% · 종가"), ("외국인 순매도", "17.6조 · 10/1~19")]},
+    {"slug": "kospi-sidecar-record-2026", "title": "코스피 사이드카 2026", "description": "폭락·반등 때 왜 발동되나 · 매수·매도 누적과 서킷브레이커 기록", "eyebrow": "자산 리포트", "stats": [("발동 조건", "선물 ±5% · 1분"), ("효력 정지", "프로그램매매 5분")]},
     {"slug": "kpop-market-size-2026", "title": "K팝 시장 규모 2026", "description": "음악산업·기획업·수출·세계시장, 범위별로 나눠 본 K팝 산업 규모", "eyebrow": "문화·엔터 리포트", "stats": [("음악산업 매출", "13.3조원 · 2024"), ("음악 수출", "18억 달러 · 2024")]},
     {"slug": "kpop-big4-agency-comparison-2026", "title": "4대 기획사 비교 2026", "description": "HYBE·SM·JYP·YG 시가총액·매출·영업이익·아티스트를 공시 자료로 비교합니다", "eyebrow": "문화·엔터 리포트", "stats": [("매출 1위", "HYBE"), ("영업이익 1위", "SM")]},
     {"slug": "samsung-micron-earnings-2026", "title": "삼성전자 vs 마이크론 실적 비교", "description": "최신 발표의 매출·영업이익·이익률을 기간과 사업구조까지 함께 비교합니다", "eyebrow": "자산 리포트", "stats": [("삼성전자", "2026 Q3 잠정"), ("마이크론", "FY2026 Q4")]},

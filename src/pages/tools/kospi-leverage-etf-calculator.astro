@@ -16,7 +16,16 @@ import {
   KLC_FAQ,
   KLC_RELATED_LINKS,
   KLC_SOURCE_LINKS,
+  KLC_SCENARIO_ORDER,
+  KLC_PATH_DEFAULTS,
+  KLC_PATH_LIMITS,
+  KLC_PATH_PRESETS,
+  KLC_RECOVERY_DROPS,
+  KLC_RECOVERY_SPLITS,
+  KLC_MECHANISM_CRASH,
+  KLC_CRASH_REPORT_LINK,
 } from "../../data/kospiLeverageEtfCalculator";
+import { buildRecoveryRows } from "../../utils/kospiLeverageEtfCalculator";
 
 const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -24,10 +33,24 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
 
 const defaultScenario = KLC_SCENARIOS[0];
+const orderedScenarios = KLC_SCENARIO_ORDER.map((id) => KLC_SCENARIOS.find((s) => s.id === id)).filter(
+  (s): s is (typeof KLC_SCENARIOS)[number] => Boolean(s),
+);
 const config = {
   SCENARIOS: KLC_SCENARIOS,
   DEFAULT_SCENARIO_ID: defaultScenario.id,
+  PATH_DEFAULTS: KLC_PATH_DEFAULTS,
+  PATH_LIMITS: KLC_PATH_LIMITS,
 };
+
+const recoveryRows = buildRecoveryRows(KLC_RECOVERY_DROPS, KLC_RECOVERY_SPLITS, 2);
+const pct = (v: number | null) =>
+  v === null ? "—" : `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v * 100).toFixed(2)}%`;
+const plainIndexRecovery = KLC_RECOVERY_DROPS.map((d) => `−${d}% → ${pct(d / (100 - d))}`).join(", ");
+
+// 신규 리포트는 페이지 파일이 생긴 뒤에만 링크한다.
+const hasCrashReport = Object.keys(import.meta.glob("../reports/kospi-october-crash-2026.astro")).length > 0;
+const relatedLinks = hasCrashReport ? [KLC_CRASH_REPORT_LINK, ...KLC_RELATED_LINKS] : KLC_RELATED_LINKS;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -117,7 +140,7 @@ const jsonLd = {
           </div>
 
           <div class="klc-scenario-grid" aria-label="시장 흐름 시나리오">
-            {KLC_SCENARIOS.map((scenario) => (
+            {orderedScenarios.map((scenario) => (
               <button
                 type="button"
                 class="klc-scenario-card"
@@ -128,6 +151,63 @@ const jsonLd = {
                 <small>{scenario.narrative}</small>
               </button>
             ))}
+          </div>
+
+          <div class="klc-path-panel" data-klc-path-panel hidden>
+            <div data-klc-builder="crashRebound">
+              <p class="klc-path-panel__title">하락·반등 조건</p>
+              <div class="klc-preset-row" aria-label="급락·반등 빠른 선택">
+                {KLC_PATH_PRESETS.map((preset) => (
+                  <button type="button" class="klc-preset-chip" data-klc-path-preset
+                    data-drop={preset.dropPct} data-days={preset.days}>{preset.label}</button>
+                ))}
+              </div>
+              <div class="klc-path-grid">
+                <label class="field">
+                  <span>코스피200 하락률(%)</span>
+                  <input id="klc-drop" type="number" inputmode="decimal" min={KLC_PATH_LIMITS.dropPct[0]}
+                    max={KLC_PATH_LIMITS.dropPct[1]} step="1" value={KLC_PATH_DEFAULTS.dropPct} />
+                </label>
+                <label class="field">
+                  <span>하락 기간(거래일)</span>
+                  <input id="klc-drop-days" type="number" inputmode="numeric" min={KLC_PATH_LIMITS.days[0]}
+                    max={KLC_PATH_LIMITS.days[1]} step="1" value={KLC_PATH_DEFAULTS.dropDays} />
+                </label>
+              </div>
+              <fieldset class="klc-rebound-mode">
+                <legend>반등 방식</legend>
+                <label><input type="radio" name="klc-rebound-mode" value="auto" checked /> 원점까지 회복</label>
+                <label><input type="radio" name="klc-rebound-mode" value="manual" /> 반등률 직접 입력</label>
+              </fieldset>
+              <div class="klc-path-grid">
+                <label class="field">
+                  <span>코스피200 반등률(%)</span>
+                  <input id="klc-rebound" type="number" inputmode="decimal" min={KLC_PATH_LIMITS.reboundPct[0]}
+                    max={KLC_PATH_LIMITS.reboundPct[1]} step="0.1" value={KLC_PATH_DEFAULTS.reboundPct} disabled />
+                  <small data-result="autoReboundHint">원점 회복에 필요한 +25.00%가 자동 적용됩니다.</small>
+                </label>
+                <label class="field">
+                  <span>반등 기간(거래일)</span>
+                  <input id="klc-rebound-days" type="number" inputmode="numeric" min={KLC_PATH_LIMITS.days[0]}
+                    max={KLC_PATH_LIMITS.days[1]} step="1" value={KLC_PATH_DEFAULTS.reboundDays} />
+                </label>
+              </div>
+            </div>
+            <div data-klc-builder="alternating">
+              <p class="klc-path-panel__title">오르내림 조건</p>
+              <div class="klc-path-grid">
+                <label class="field">
+                  <span>하루 등락 폭(%)</span>
+                  <input id="klc-alt-amp" type="number" inputmode="decimal" min={KLC_PATH_LIMITS.altAmpPct[0]}
+                    max={KLC_PATH_LIMITS.altAmpPct[1]} step="1" value={KLC_PATH_DEFAULTS.altAmpPct} />
+                </label>
+                <label class="field">
+                  <span>반복 횟수(오름+내림 1회)</span>
+                  <input id="klc-alt-cycles" type="number" inputmode="numeric" min={KLC_PATH_LIMITS.altCycles[0]}
+                    max={KLC_PATH_LIMITS.altCycles[1]} step="1" value={KLC_PATH_DEFAULTS.altCycles} />
+                </label>
+              </div>
+            </div>
           </div>
 
           <p class="klc-multiple-static">③ 상품 배율: <strong>2배 레버리지</strong> (국내 표준)</p>
@@ -183,6 +263,10 @@ const jsonLd = {
 
       <p class="klc-compare-sentence" data-result="compareSentence">투자금액을 입력하면 계산합니다.</p>
       <p class="klc-recovery-note" data-result="recoveryNote" hidden></p>
+      <p class="klc-recovery-note klc-recovery-note--index" data-result="indexRecoveryNote" hidden></p>
+      <p class="klc-warning" data-result="wipeoutWarning" hidden>
+        하루 변동이 커서 2배 레버리지 가치가 0이 되는 구간입니다. 실제 상품은 거래소 조치 등으로 다르게 움직일 수 있어 결과를 표시하지 않습니다.
+      </p>
 
       <details class="klc-detail-toggle">
         <summary>자세히 보기</summary>
@@ -202,6 +286,42 @@ const jsonLd = {
       </details>
     </article>
 
+    <section class="content-section klc-recovery">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">원금 회복 비교 · 시뮬레이션</p>
+        <h2>같은 하락이라도 레버리지는 회복이 훨씬 어렵습니다</h2>
+      </div>
+      <div class="table-wrap klc-table-wrap">
+        <table class="klc-mechanism-table klc-recovery__table">
+          <caption>2배 레버리지·운용보수 0% 기준 시뮬레이션 (원금 1 기준)</caption>
+          <thead>
+            <tr>
+              <th scope="col">코스피200 하락</th>
+              <th scope="col">하락 기간</th>
+              <th scope="col">레버리지 가치</th>
+              <th scope="col">레버리지 회복 필요</th>
+              <th scope="col">코스피200 회복 필요</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recoveryRows.map((row) => (
+              <tr data-group={row.dropPct}>
+                <td data-label="코스피200 하락">−{row.dropPct}%</td>
+                <td data-label="하락 기간">{row.days === 1 ? "하루" : `${row.days}거래일 분할`}</td>
+                <td data-label="레버리지 가치">{row.leverageValue.toFixed(4)}</td>
+                <td data-label="레버리지 회복 필요">{pct(row.etfRecoveryNeeded)}</td>
+                <td data-label="코스피200 회복 필요">{pct(row.indexRecoveryNeeded)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="klc-path-note">
+        코스피200 회복 필요 상승률은 하락과 같은 기간에 걸쳐 고르게 반등한다고 가정한 값입니다. 일반 코스피200 투자는 {plainIndexRecovery}만 오르면 원금이 됩니다.
+      </p>
+      <a class="klc-inline-link" href={withBase("/tools/stock-loss-recovery-calculator/")}>일반 주식 손실 복구율 계산하기 →</a>
+    </section>
+
     <section class="content-section klc-path-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">경로 시각화</p>
@@ -215,6 +335,7 @@ const jsonLd = {
           <tbody data-klc-path-body></tbody>
         </table>
       </div>
+      <button type="button" class="klc-path-toggle" data-klc-path-toggle hidden>전체 보기</button>
       <p class="klc-path-note">중간에는 레버리지 수익률이 더 높거나 낮았더라도, 상승과 하락이 반복되면 최종 결과는 단순 계산과 달라질 수 있습니다.</p>
     </section>
 
@@ -245,6 +366,30 @@ const jsonLd = {
         </table>
       </div>
       <p class="klc-mechanism-conclusion">{KLC_MECHANISM.conclusion}</p>
+
+      <h3 class="klc-subheading">{KLC_MECHANISM_CRASH.title}</h3>
+      <div class="table-wrap klc-table-wrap">
+        <table class="klc-mechanism-table">
+          <thead>
+            <tr>{["구분", ...KLC_MECHANISM_CRASH.steps.map((step) => step.day)].map((label) => <th>{label}</th>)}</tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>코스피200</td>
+              {KLC_MECHANISM_CRASH.steps.map((step) => (
+                <td>{step.indexValue}{step.indexReturnLabel !== "-" && ` (${step.indexReturnLabel})`}</td>
+              ))}
+            </tr>
+            <tr>
+              <td>2배 레버리지</td>
+              {KLC_MECHANISM_CRASH.steps.map((step) => (
+                <td>{step.leverageValue}{step.leverageReturnLabel !== "-" && ` (${step.leverageReturnLabel})`}</td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="klc-mechanism-conclusion">{KLC_MECHANISM_CRASH.conclusion}</p>
     </section>
 
     <section class="content-section klc-regulation-section">
@@ -253,7 +398,7 @@ const jsonLd = {
         <h2>2026년 레버리지 규제, KODEX 레버리지도 해당될까?</h2>
       </div>
       <p class="klc-regulation-answer">
-        <strong>아닙니다.</strong> 2026년 7월 31일부터 시행되는 현금 3천만원 예탁금 기준은 삼성전자·SK하이닉스처럼 개별 종목을 추종하는 <strong>단일종목 레버리지 ETF·ETN</strong>에 적용됩니다. 코스피200 지수를 추종하는 KODEX 레버리지 같은 일반 지수형 레버리지 ETF는 이번 단일종목 규제 대상이 아닙니다.
+        <strong>아닙니다.</strong> 2026년 7월 31일부터 시행된 3천만원 기본예탁금 기준(8월 19일부터 현금만 인정)은 삼성전자·SK하이닉스처럼 개별 종목을 추종하는 <strong>단일종목 레버리지 ETF·ETN</strong>에 적용됩니다. 코스피200 지수를 추종하는 KODEX 레버리지 같은 일반 지수형 레버리지 ETF는 이번 단일종목 규제 대상이 아닙니다.
       </p>
       <ul class="klc-regulation-list">
         {KLC_REGULATION_TIMELINE.map((event) => (
@@ -270,7 +415,7 @@ const jsonLd = {
         <p class="section-header__eyebrow">출처</p>
         <h2>기본값에 참고한 공개 자료</h2>
       </div>
-      <p class="klc-source-note">최종 업데이트: 2026년 7월 30일</p>
+      <p class="klc-source-note">최종 업데이트: 2026년 10월 27일 · 규제 시행일은 금융위원회 발표와 이후 보도 기준</p>
       <div class="klc-source-list">
         {KLC_SOURCE_LINKS.map((source) => (
           <a href={source.href} target="_blank" rel="noreferrer">{source.label}</a>
@@ -284,7 +429,8 @@ const jsonLd = {
         intro={[
           "레버리지 ETF는 코스피200의 전체 투자기간 수익률을 2배로 만드는 상품이 아닙니다. 코스피200의 하루 수익률을 매일 2배로 추종하도록 설계된 상품입니다. 하루 동안 코스피200이 5% 상승하면 2배 레버리지는 약 10% 상승을 목표로 합니다.",
           "하지만 여러 날 보유하면 매일의 상승과 하락이 복리로 누적되기 때문에, 최종 수익률은 코스피200 누적수익률의 정확한 2배와 달라질 수 있습니다. 특히 지수가 크게 오르고 내리는 시장에서는 코스피200이 시작점으로 돌아와도 레버리지 ETF에는 손실이 남을 수 있습니다. 반대로 한 방향으로 꾸준히 상승하는 시장에서는 복리효과로 단순히 계산한 2배보다 높은 수익률이 나타날 수도 있습니다.",
-          "이 계산기는 선택한 시장 흐름의 일별 등락률을 기준으로 코스피200과 2배 레버리지의 시뮬레이션 누적수익률을 비교합니다. 실제 ETF 수익률에는 운용보수뿐 아니라 선물 관련 비용, 기타비용, 추적오차, 시장가격과 순자산가치의 차이 등이 반영되므로 계산 결과와 다를 수 있습니다.",
+          "급락 뒤 반등하는 경우가 대표적입니다. 코스피200이 100에서 80으로 20% 떨어졌다가 다시 25% 올라 100이 되면, 2배 레버리지는 100에서 60으로 40% 떨어진 뒤 50% 올라 90에 머뭅니다. 하락으로 줄어든 금액에 2배가 적용되기 때문입니다. 같은 -20%라도 하루에 떨어졌는지, 여러 날에 나눠 떨어졌는지에 따라 레버리지에 남는 손실이 달라지므로 이 계산기에서는 하락·반등 기간을 직접 바꿔볼 수 있습니다.",
+          "이 계산기는 선택한 시장 흐름의 일별 등락률을 기준으로 코스피200과 2배 레버리지의 시뮬레이션 누적수익률을 비교합니다. 실제 ETF 수익률에는 운용보수뿐 아니라 선물 관련 비용, 기타비용, 추적오차, 시장가격과 순자산가치의 차이 등이 반영되므로 계산 결과와 다를 수 있습니다. 결과는 과거나 미래의 실제 수익률이 아니며 투자 권유가 아닙니다.",
         ]}
         inputPoints={[
           "내 예상 평가금액과 손익 금액을 먼저 확인합니다.",
@@ -298,13 +444,14 @@ const jsonLd = {
           "일별 복리 시뮬레이션 = 일별(등락률×배율)을 복리로 곱한 값 - 1",
           "보수 반영 예상수익률 = 일별 복리 시뮬레이션 - (연 운용보수율 × 거래일수/252)",
           "원금 복구 필요 상승률 = 1 ÷ (1 + 보수 반영 예상수익률) - 1 (손실일 때만 계산)",
+          "기간을 나눈 하락·반등은 총 변동을 거래일 수로 고르게 나눈 일별 등락률 (1 + 총 변동)^(1/일수) - 1로 계산합니다.",
         ]}
         faq={KLC_FAQ}
-        related={KLC_RELATED_LINKS}
+        related={relatedLinks}
       />
     </Fragment>
   </SimpleToolShell>
 
   <script id="klcConfig" type="application/json" set:html={JSON.stringify(config)}></script>
-  <script type="module" src={withBase("/scripts/kospi-leverage-etf-calculator.js")}></script>
+  <script type="module" src={withBase("/scripts/kospi-leverage-etf-calculator.js?v=20261027")}></script>
 </BaseLayout>

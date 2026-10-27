@@ -72,14 +72,14 @@ export const tools: ToolMeta[] = [
   {
     slug: "kospi-leverage-etf-calculator",
     title: "코스피 레버리지 ETF 손익 계산기",
-    description: "투자금액과 시장 흐름 시나리오를 선택해 코스피 지수 수익률과 레버리지 ETF 실제 수익률 차이, 변동성 감소효과를 계산합니다.",
+    description: "급락 후 반등, 등락 반복 등 시장 흐름을 직접 설정해 코스피200과 2배 레버리지 ETF 손익, 원금 회복 필요 상승률을 비교합니다.",
     order: 0,
     eyebrow: "레버리지 ETF 계산기",
     category: "투자·재테크",
     badges: ["신규", "투자", "레버리지 ETF"],
     previewStats: [
       { label: "박스권 프리셋 디케이", value: "약 -5.36%p" },
-      { label: "KODEX 레버리지 보수", value: "연 0.64%" },
+      { label: "-20%→+25% 반등", value: "레버리지 -10%" },
     ],
   },
   {

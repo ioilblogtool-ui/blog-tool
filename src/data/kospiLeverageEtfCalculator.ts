@@ -1,8 +1,36 @@
+export type KlcScenarioId = "sideways" | "uptrend" | "volatileUp2026" | "downtrend" | "crashRebound" | "alternating";
+
 export type KlcScenario = {
-  id: "sideways" | "uptrend" | "volatileUp2026" | "downtrend";
+  id: KlcScenarioId;
   label: string;
   narrative: string;
+  // 빌더형 시나리오는 빈 배열로 두고, 화면에서 입력한 하락·반등 조건으로 일별 경로를 만든다.
   dailyIndexReturns: number[];
+  builder?: "crashRebound" | "alternating";
+};
+
+export type KlcPathDefaults = {
+  dropPct: number;
+  dropDays: number;
+  reboundMode: "auto" | "manual";
+  reboundPct: number;
+  reboundDays: number;
+  altAmpPct: number;
+  altCycles: number;
+};
+
+export type KlcPathLimits = {
+  dropPct: [number, number];
+  days: [number, number];
+  reboundPct: [number, number];
+  altAmpPct: [number, number];
+  altCycles: [number, number];
+};
+
+export type KlcPathPreset = {
+  label: string;
+  dropPct: number;
+  days: number;
 };
 
 export type KlcPrincipalPreset = {
@@ -28,7 +56,7 @@ export type KlcMechanismStep = {
 export type KlcRegulationEvent = {
   dateLabel: string;
   content: string;
-  status: "완료" | "예정";
+  status: "완료" | "예정" | "확인 중";
 };
 
 export type KlcFaqItem = {
@@ -41,11 +69,11 @@ export const KLC_META = {
   eyebrow: "레버리지 ETF 계산기",
   title: "코스피 레버리지 ETF 손익 계산기",
   h1: "코스피 레버리지 ETF 손익 계산기",
-  description: "코스피200이 움직인 경로에 따라 2배 레버리지 수익률이 어떻게 달라지는지, 투자금액을 넣어 바로 확인해보세요.",
-  seoTitle: "코스피 레버리지 ETF 계산기 2026 | 지수 2배 아닌 진짜 손익",
+  description: "코스피200이 -20% 떨어졌다가 +25% 올라 원점이 돼도, 2배 레버리지는 -10%일 수 있습니다. 투자금과 시장 흐름을 넣어 직접 확인해보세요.",
+  seoTitle: "코스피 레버리지 ETF 계산기 2026 | 급락 후 반등해도 손실?",
   seoDescription:
-    "투자금액과 시장 흐름을 선택하면 코스피200 수익률과 2배 레버리지 시뮬레이션 수익률 차이를 바로 계산합니다. 예상 손익, 원금 복구 필요 상승률까지 확인하세요.",
-  updatedAt: "2026-07-30",
+    "코스피200이 -20% 뒤 +25% 반등해 원점이 돼도 2배 레버리지는 손실일 수 있습니다. 급락·반등·등락 반복 시나리오로 투자금별 손익과 원금 회복 필요 상승률을 계산하세요.",
+  updatedAt: "2026-10-27",
 };
 
 // 일별 등락률은 소수로 저장 (0.05 = +5%). 기본 프리셋 sideways는
@@ -75,7 +103,60 @@ export const KLC_SCENARIOS: KlcScenario[] = [
     narrative: "코스피200이 같은 방향으로 계속 하락합니다. 레버리지 ETF의 손실이 일반 지수 투자보다 빠르게 커집니다.",
     dailyIndexReturns: Array(5).fill(-0.02),
   },
+  {
+    id: "crashRebound",
+    label: "급락 후 반등",
+    narrative: "코스피200이 크게 떨어졌다가 다시 올라 원점으로 돌아옵니다. 지수는 본전이어도 레버리지 ETF는 손실이 남을 수 있습니다.",
+    dailyIndexReturns: [],
+    builder: "crashRebound",
+  },
+  {
+    id: "alternating",
+    label: "같은 폭 오르내림",
+    narrative: "같은 폭으로 오르고 내리기를 반복합니다. 반복할수록 일반 지수와 레버리지의 차이가 커집니다.",
+    dailyIndexReturns: [],
+    builder: "alternating",
+  },
 ];
+
+// 화면 표시 순서. 기본 시나리오(sideways, 배열 첫 요소)는 기존 URL과 결과를 유지하기 위해 그대로 둔다.
+export const KLC_SCENARIO_ORDER: KlcScenarioId[] = [
+  "crashRebound",
+  "sideways",
+  "alternating",
+  "volatileUp2026",
+  "uptrend",
+  "downtrend",
+];
+
+export const KLC_PATH_DEFAULTS: KlcPathDefaults = {
+  dropPct: 20,
+  dropDays: 1,
+  reboundMode: "auto",
+  reboundPct: 25,
+  reboundDays: 1,
+  altAmpPct: 10,
+  altCycles: 2,
+};
+
+export const KLC_PATH_LIMITS: KlcPathLimits = {
+  dropPct: [0.1, 95],
+  days: [1, 60],
+  reboundPct: [0, 500],
+  altAmpPct: [1, 30],
+  altCycles: [1, 20],
+};
+
+export const KLC_PATH_PRESETS: KlcPathPreset[] = [
+  { label: "-10% → 원점", dropPct: 10, days: 1 },
+  { label: "-20% → 원점", dropPct: 20, days: 1 },
+  { label: "-30% → 원점", dropPct: 30, days: 1 },
+  { label: "-20%를 10일에 나눠", dropPct: 20, days: 10 },
+];
+
+// 원금 회복 비교표: 2배·보수 0% 기준, 빌드 시 계산한다.
+export const KLC_RECOVERY_DROPS = [10, 20, 30];
+export const KLC_RECOVERY_SPLITS = [1, 10];
 
 export const KLC_PRINCIPAL_PRESETS: KlcPrincipalPreset[] = [
   { label: "100만원", won: 1_000_000 },
@@ -131,16 +212,43 @@ export const KLC_MECHANISM = {
     "레버리지 ETF는 전체 기간 수익률을 마지막에 2배로 계산하지 않습니다. 매일의 수익률을 2배로 적용하기 때문에 상승과 하락이 반복되면 코스피200은 본전이어도 레버리지 ETF에는 손실이 남을 수 있습니다.",
 };
 
-// 팩트체크 완료 (2026-07-30 기준, 금융위원회 보도자료 fsc.go.kr/no010101/87403).
-// 배포 시점마다 최신 시행일을 재확인한다.
+// 2026-07-16 금융위원회 보도자료(fsc.go.kr/no010101/87403)와 이후 조기 시행 보도 기준.
+// 2026-10-27 재확인: 예탁금 상향은 7/31 조기 시행, 대용증권 불인정·괴리율 기준은 8/19 시행으로 보도됨.
+// 매매단위 확대는 "11월 중 시행 예정"까지만 확인돼 시행일이 정해지면 갱신한다.
 export const KLC_REGULATION_TIMELINE: KlcRegulationEvent[] = [
   { dateLabel: "2026년 7월 16일", content: "단일종목 레버리지 상품(ETF·ETN) 신규상장 잠정 중단, 광고·판촉 금지", status: "완료" },
-  { dateLabel: "2026년 7월 31일", content: "단일종목 레버리지 상품 신규·추가 매수 시 현금 3천만원 예탁 필요 (대용증권 불인정)", status: "예정" },
-  { dateLabel: "2026년 8월 19일", content: "괴리율 관리 기준 강화 (3% → 2%)", status: "예정" },
-  { dateLabel: "2026년 11월", content: "국내 단일종목 상품 매매단위 확대 추진 (1주 → 20주)", status: "예정" },
+  { dateLabel: "2026년 7월 31일", content: "단일종목 레버리지 상품 신규·추가 매수 시 기본예탁금 3천만원 이상 필요 (조기 시행)", status: "완료" },
+  { dateLabel: "2026년 8월 19일", content: "기본예탁금에 대용증권 불인정(현금만 인정), 괴리율 관리 기준 강화 (3% → 2%)", status: "완료" },
+  { dateLabel: "2026년 11월 중", content: "국내 단일종목 상품 매매단위 확대 (1주 → 20주), 증권사 전산개발 후 시행 예정", status: "확인 중" },
 ];
 
+export const KLC_MECHANISM_CRASH = {
+  title: "지수가 -20% 후 +25%로 원점이면, 2배 레버리지는?",
+  steps: [
+    { day: "시작", indexValue: "100", indexReturnLabel: "-", leverageValue: "100", leverageReturnLabel: "-" },
+    { day: "급락", indexValue: "80", indexReturnLabel: "-20%", leverageValue: "60", leverageReturnLabel: "-40%" },
+    { day: "반등", indexValue: "100", indexReturnLabel: "+25%", leverageValue: "90", leverageReturnLabel: "+50%" },
+  ] as KlcMechanismStep[],
+  conclusion:
+    "지수는 원점이지만 레버리지는 90에 머뭅니다. 하락한 뒤에는 더 작아진 금액에 2배가 적용되기 때문입니다. 이 예시는 각 변동이 하루에 일어났다고 가정한 값이며, 운용보수는 반영하지 않았습니다.",
+};
+
 export const KLC_FAQ: KlcFaqItem[] = [
+  {
+    question: "코스피가 -20% 떨어졌다가 +25% 오르면 레버리지 ETF는 본전인가요?",
+    answer:
+      "아닙니다. 코스피200은 원점이지만 2배 레버리지는 하락과 반등이 각각 하루에 일어나면 약 -10%, 10거래일씩 나눠 일어나면 약 -0.99%가 남습니다(운용보수 제외 시뮬레이션). 하락 후 줄어든 금액에 2배가 적용되기 때문이며, 같은 원점 회복이라도 경로에 따라 결과가 달라집니다.",
+  },
+  {
+    question: "레버리지 ETF가 반토막 나면 지수가 몇 % 올라야 회복되나요?",
+    answer:
+      "ETF 가격 자체는 +100%가 올라야 원금이 됩니다. 이를 위해 코스피200이 얼마나 올라야 하는지는 반등 경로에 따라 다른데, 하루에 반등한다고 가정하면 +50%, 10거래일에 고르게 나눠 오르면 약 +42.3%가 필요합니다(운용보수 제외). 계산기에서 급락 후 반등 시나리오의 반등 기간을 바꿔 직접 비교해볼 수 있습니다.",
+  },
+  {
+    question: "급락이 하루에 오는 것과 며칠에 걸쳐 오는 것은 차이가 있나요?",
+    answer:
+      "있습니다. 코스피200이 -20% 하락할 때 하루에 떨어지면 2배 레버리지 가치는 0.6000(원금 1 기준)이지만, 10거래일에 고르게 나눠 떨어지면 약 0.6367입니다(운용보수 제외). 다만 실제 시장은 고르게 움직이지 않고 등락이 섞이므로, 분할 하락이라고 해서 손실이 작다고 단정할 수는 없습니다.",
+  },
   {
     question: "코스피200이 10% 오르면 레버리지도 20% 오르나요?",
     answer:
@@ -169,7 +277,7 @@ export const KLC_FAQ: KlcFaqItem[] = [
   {
     question: "현금 3천만원이 있어야 KODEX 레버리지를 살 수 있나요?",
     answer:
-      "아닙니다. 2026년 7월 31일 시행되는 현금 3천만원 예탁금 기준은 삼성전자·SK하이닉스처럼 개별 종목을 추종하는 '단일종목 레버리지 ETF·ETN'에 적용됩니다. 코스피200 지수를 추종하는 KODEX 레버리지 같은 일반 지수형 레버리지 ETF는 이번 단일종목 규제 대상이 아닙니다.",
+      "아닙니다. 2026년 7월 31일부터 시행된 3천만원 기본예탁금 기준(8월 19일부터 현금만 인정)은 삼성전자·SK하이닉스처럼 개별 종목을 추종하는 '단일종목 레버리지 ETF·ETN'에 적용됩니다. 코스피200 지수를 추종하는 KODEX 레버리지 같은 일반 지수형 레버리지 ETF는 이번 단일종목 규제 대상이 아닙니다.",
   },
   {
     question: "3배 레버리지 상품도 국내에 있나요?",
@@ -182,10 +290,16 @@ export const KLC_FAQ: KlcFaqItem[] = [
 ];
 
 export const KLC_RELATED_LINKS = [
+  { href: "/tools/stock-loss-recovery-calculator/", label: "주식 손실 복구율 계산기" },
+  { href: "/reports/kospi-sidecar-record-2026/", label: "코스피 사이드카 2026 리포트" },
   { href: "/tools/dca-investment-calculator/", label: "적립식 투자 계산기" },
-  { href: "/tools/etf-distribution-tax-calculator/", label: "ETF 분배금 세금 계산기" },
-  { href: "/reports/kospi-sidecar-record-2026/", label: "2026 코스피 사이드카 41회 리포트" },
 ];
+
+// 신규 리포트가 배포된 뒤에만 노출한다(페이지 astro에서 import.meta.glob으로 확인).
+export const KLC_CRASH_REPORT_LINK = {
+  href: "/reports/kospi-october-crash-2026/",
+  label: "코스피 10월 급락 2026 리포트",
+};
 
 export const KLC_SOURCE_LINKS = [
   { label: "삼성자산운용 KODEX 레버리지 상품 페이지", href: "https://www.samsungfund.com/etf/product/view.do?id=2ETF25" },

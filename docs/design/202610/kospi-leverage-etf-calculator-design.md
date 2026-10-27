@@ -334,3 +334,14 @@ npm run build
 ```
 
 둘 다 성공해야 한다. **이 설계서 작성 시점에는 구현·실행하지 않았다.**
+
+## 구현 기록 · 2026-10-27
+
+- 변경 파일: `src/data/kospiLeverageEtfCalculator.ts`, `src/utils/kospiLeverageEtfCalculator.ts`(신규), `src/pages/tools/kospi-leverage-etf-calculator.astro`, `public/scripts/kospi-leverage-etf-calculator.js`, `src/styles/scss/pages/_kospi-leverage-etf-calculator.scss`, `src/data/tools.ts`, `scripts/generate-og-tools.py`, `public/og/tools/kospi-leverage-etf-calculator.png`(신규)
+- 설계 대비 변경·추가:
+  - `deleteParams`는 손실 복구 계산기 작업에서 이미 추가됨. 운영 4시간 캐시 문제 때문에 `url-state.js?v=20261027`로 import하고 페이지 스크립트 태그에도 버전 쿼리를 붙임.
+  - 기존 버그 수정: URL의 `principal`을 만원 단위로 쓰고 원 단위로 읽어 공유 링크가 0원으로 열리던 문제.
+  - 분할 경로의 부동소수 오차로 "-0.00%"가 보이던 표시를 반올림 후 부호 판단으로 수정.
+  - 기존에 `ogImage`로 지정만 되고 파일이 없던 OG 이미지를 새로 생성.
+  - 규제 타임라인: 7/31 예탁금 3천만원 조기 시행, 8/19 대용증권 불인정·괴리율 2%를 `완료`로, 11월 매매단위 확대는 `확인 중`으로 표기(언론 보도 기준, 금융위 후속 공식 자료는 재확인 권장).
+- 검증: C1~C11, 원금 회복 비교표 6행이 9-1·9-2 기대값과 일치(C9 차이는 +4.23%p로 설계서 4.22는 반올림 오기). 기존 sideways −5.36% 유지, 375px 가로 스크롤 없음, 60일 경로 접힘·펼침, URL 복원 확인.

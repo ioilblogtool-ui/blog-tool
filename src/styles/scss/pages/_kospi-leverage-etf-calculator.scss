@@ -348,6 +348,112 @@
 
     &[data-status="완료"] { border-left-color: #059669; }
     &[data-status="예정"] { border-left-color: #d97706; }
+    &[data-status="확인 중"] { border-left-color: #94a3b8; }
+  }
+
+  // ── 급락·반등 경로 설정 ──────────────────────
+  .klc-path-panel {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: 8px;
+    background: #f8fbff;
+
+    > div {
+      display: grid;
+      gap: 0.65rem;
+    }
+  }
+
+  .klc-path-panel__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .klc-path-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+
+    small {
+      color: #64748b;
+      font-size: 0.74rem;
+      line-height: 1.45;
+    }
+  }
+
+  .klc-rebound-mode {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 0.82rem;
+    color: #334155;
+
+    legend {
+      width: 100%;
+      margin-bottom: 0.2rem;
+      font-weight: 700;
+    }
+  }
+
+  .klc-warning {
+    margin: 0.6rem 0 0;
+    padding: 0.7rem 0.85rem;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .klc-recovery-note--index {
+    margin-top: 0.35rem;
+  }
+
+  // ── 원금 회복 비교표 ─────────────────────────
+  .klc-recovery__table caption {
+    caption-side: bottom;
+    padding: 0.5rem 0.75rem;
+    color: #64748b;
+    font-size: 0.78rem;
+    text-align: left;
+  }
+
+  .klc-inline-link {
+    display: inline-block;
+    margin-top: 0.6rem;
+    color: #1d4ed8;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .klc-subheading {
+    margin: 1.4rem 0 0.6rem;
+    font-size: 1rem;
+    color: #0f172a;
+  }
+
+  .klc-path-gap td {
+    color: #94a3b8;
+    text-align: center;
+  }
+
+  .klc-path-toggle {
+    margin-top: 0.6rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid rgba(15, 23, 42, 0.16);
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-weight: 700;
+    cursor: pointer;
   }
 
   // ── 출처 ─────────────────────────────────────
@@ -400,6 +506,45 @@
     .klc-regulation-item {
       grid-template-columns: 1fr;
       gap: 0.25rem;
+    }
+  }
+
+  // 좁은 화면에서는 비교표 행을 카드로 바꿔 가로 스크롤을 없앤다.
+  @media (max-width: 480px) {
+    .klc-recovery .klc-table-wrap {
+      overflow-x: visible;
+    }
+
+    .klc-recovery__table {
+      min-width: 0;
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.15rem 0.6rem;
+        padding: 0.6rem 0.75rem;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      }
+
+      td {
+        padding: 0;
+        border: 0;
+
+        &::before {
+          content: attr(data-label);
+          display: block;
+          color: #64748b;
+          font-size: 0.7rem;
+        }
+      }
+    }
+
+    .klc-path-grid {
+      grid-template-columns: 1fr;
     }
   }
 }
