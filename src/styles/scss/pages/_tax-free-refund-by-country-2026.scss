@@ -1,0 +1,296 @@
+.tfrr-page {
+  .tfrr-note {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #6c6a64;
+
+    a {
+      font-weight: 700;
+      color: #1a56db;
+    }
+  }
+
+  .tfrr-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: #6c6a64;
+  }
+
+  .tfrr-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #854d0e;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &--ok {
+      background: #dcfce7;
+      color: #166534;
+    }
+  }
+
+  .tfrr-japan {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #fcd34d;
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    background: #fff7ed;
+  }
+
+  .tfrr-japan__lead {
+    margin: 0 0 12px;
+    font-weight: 700;
+    line-height: 1.65;
+    color: #7c2d12;
+  }
+
+  .tfrr-tips {
+    display: grid;
+    gap: 6px;
+    margin: 12px 0 0;
+    padding-left: 18px;
+    list-style: disc;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .tfrr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    th,
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #ece9df;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.55;
+    }
+
+    thead th {
+      background: #f4f2ec;
+      font-size: 0.8rem;
+      color: #4d4a43;
+    }
+
+    tr.is-off {
+      color: #8f8b80;
+    }
+
+    // 공통 리포트 표의 min-width(720px)를 3열 일본 비교표에서는 해제
+    &--japan {
+      min-width: 0;
+    }
+  }
+
+  .tfrr-place {
+    min-width: 200px;
+    font-size: 0.85rem;
+  }
+
+  // 10개국 표: 좁은 화면에서는 국가별 카드로 전환
+  @media (max-width: 640px) {
+    .tfrr-table--matrix {
+      min-width: 0;
+
+      thead {
+        display: none;
+      }
+
+      .tfrr-sub {
+        grid-column: 2;
+        margin-top: -6px;
+      }
+
+      .tfrr-badge {
+        justify-self: start;
+      }
+
+      tr {
+        display: block;
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        border: 1px solid #e4e0d6;
+        border-radius: 12px;
+      }
+
+      th,
+      td {
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 8px;
+        padding: 4px 0;
+        border-bottom: 0;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #6c6a64;
+      }
+
+      th {
+        display: block;
+        font-size: 1rem;
+      }
+
+      .tfrr-place {
+        min-width: 0;
+      }
+    }
+  }
+
+  .tfrr-steps {
+    display: grid;
+    gap: 10px;
+    padding: 0;
+    list-style: none;
+    counter-reset: tfrr-step;
+
+    @media (min-width: 720px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    li {
+      padding: 14px;
+      border: 1px solid #e4e0d6;
+      border-radius: 12px;
+      background: #fff;
+      counter-increment: tfrr-step;
+
+      strong::before {
+        content: counter(tfrr-step) ". ";
+        color: #1a56db;
+      }
+
+      p {
+        margin: 6px 0 0;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        color: #4d4a43;
+      }
+    }
+  }
+
+  .tfrr-country-grid,
+  .tfrr-method-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
+
+    @media (min-width: 720px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .tfrr-country-card,
+  .tfrr-method-card {
+    padding: 14px 16px;
+    border: 1px solid #e4e0d6;
+    border-radius: 12px;
+    background: #fff;
+
+    ul {
+      display: grid;
+      gap: 4px;
+      margin: 8px 0 0;
+      padding-left: 18px;
+      list-style: disc;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+  }
+
+  .tfrr-country-card__title,
+  .tfrr-method-card__title {
+    margin: 0;
+    font-weight: 800;
+  }
+
+  .tfrr-sources {
+    margin: 8px 0 0;
+    font-size: 0.78rem;
+    color: #6c6a64;
+    overflow-wrap: anywhere;
+
+    a {
+      color: #1a56db;
+    }
+  }
+
+  .tfrr-tag {
+    display: inline-block;
+    margin: 10px 0 0;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    &--pro {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    &--con {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  }
+
+  .tfrr-warning {
+    padding: 18px 20px;
+    border: 1px solid #bfd3fb;
+    border-left: 4px solid #1a56db;
+    border-radius: 12px;
+    background: #f3f7ff;
+    font-size: 0.9rem;
+    line-height: 1.65;
+
+    strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #1e3a8a;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .tfrr-cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid #dce6e2;
+    border-radius: 14px;
+    background: #f1f8f5;
+
+    p {
+      margin: 6px 0 0;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    a {
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: #1a56db;
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+  }
+}

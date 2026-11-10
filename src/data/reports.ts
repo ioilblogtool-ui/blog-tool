@@ -10,6 +10,13 @@ import { SME_META } from "./samsungMicronEarnings2026";
 
 export const reports: ReportMeta[] = [
   {
+    slug: "tax-free-refund-by-country-2026",
+    title: "해외 택스프리 2026 나라별 완전 정리",
+    description: "일본 환급 방식 변경부터 유럽·동남아·호주까지 10개국 택스프리 최소금액과 환급 방법을 비교합니다.",
+    order: 96,
+    badges: ["신규", "여행", "택스프리", "2026"],
+  },
+  {
     slug: "kospi-october-crash-2026",
     title: "코스피 10월 급락 2026 | 외국인 매도·반도체 하락 원인 정리",
     description: "2026년 10월 코스피 급락을 날짜별 지수, 외국인 수급, 삼성전자·SK하이닉스 흐름으로 정리했습니다. AI 투자 우려·금리·중국 메모리 변수와 최근 반등의 의미까지 확인하세요.",

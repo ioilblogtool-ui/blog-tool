@@ -273,6 +273,8 @@ export const TCVE_FAQ = [
 
 // ─── 관련 링크 ──────────────────────────────────────────────
 export const TCVE_RELATED_LINKS = [
+  { href: "/reports/tax-free-refund-by-country-2026/",       label: "해외 택스프리 2026 나라별 정리" },
+  { href: "/tools/tax-free-refund-calculator/",              label: "택스프리 환급액 계산기" },
   { href: "/tools/travel-exchange-calculator/",              label: "여행 환전 손익 계산기" },
   { href: "/tools/travel-savings-goal-calculator/",          label: "여행 적금 목표 계산기" },
   { href: "/tools/travel-expense-split/",                    label: "여행 경비 분담 계산기" },

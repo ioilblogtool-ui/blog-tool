@@ -1,0 +1,286 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import ToolActionBar from "../../components/ToolActionBar.astro";
+import SimpleToolShell from "../../components/SimpleToolShell.astro";
+import {
+  TFR_META,
+  TFR_COUNTRIES,
+  TFR_FX,
+  TFR_COMPARE_KRW,
+  TFR_DEFAULT_INPUT,
+  TFR_JAPAN_CHANGE,
+  TFR_INFO_LINES,
+  TFR_SEO_INTRO,
+  TFR_INPUT_POINTS,
+  TFR_CRITERIA,
+  TFR_FAQ,
+  TFR_RELATED_LINKS,
+  tfrCalc,
+} from "../../data/taxFreeRefund2026";
+
+const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (p: string) => `${normalizedBase}${p.replace(/^\//, "")}`;
+
+// 기본 입력(일본 33,000엔)으로 서버에서 먼저 그려 둘 결과
+const d = TFR_DEFAULT_INPUT;
+const initCountry = TFR_COUNTRIES.find((c) => c.code === d.country)!;
+const initFx = TFR_FX.rates[initCountry.currency];
+const init = tfrCalc(initCountry, d.amount, d.rateType);
+const krw = (v: number) => `${(Math.round(v / 10) * 10).toLocaleString("ko-KR")}원`;
+const local = (v: number) => Math.round(v).toLocaleString("ko-KR");
+
+// 100만원어치 사면 나라별 최대 환급액 (SSR 고정 표)
+const compareRows = TFR_COUNTRIES.map((c) => {
+  const fx = TFR_FX.rates[c.currency];
+  if (!c.available || !fx) return { country: c, refundKrw: 0 };
+  const localAmount = TFR_COMPARE_KRW / fx;
+  return { country: c, refundKrw: tfrCalc(c, localAmount).vat * fx };
+}).sort((a, b) => b.refundKrw - a.refundKrw);
+const compareMax = Math.max(...compareRows.map((r) => r.refundKrw));
+
+const config = {
+  COUNTRIES: TFR_COUNTRIES.map(({ sources, ...rest }) => rest),
+  FX: TFR_FX.rates,
+  DEFAULT_INPUT: TFR_DEFAULT_INPUT,
+};
+
+const siteBase = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
+const faqSchema = TFR_FAQ.map((item) => ({
+  "@type": "Question",
+  name: item.question,
+  acceptedAnswer: { "@type": "Answer", text: item.answer },
+}));
+---
+
+<BaseLayout
+  title={TFR_META.seoTitle}
+  description={TFR_META.seoDescription}
+  ogImage="/og/tools/tax-free-refund-calculator.png"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "택스프리 환급액 계산기",
+    applicationCategory: "TravelApplication",
+    operatingSystem: "All",
+    description: "여행 국가와 결제 금액으로 택스프리 최대 환급액과 최소금액 충족 여부를 원화로 계산하는 도구",
+    url: `${siteBase}/tools/${TFR_META.slug}/`,
+    mainEntity: { "@type": "FAQPage", mainEntity: faqSchema },
+  }}
+>
+  <SiteHeader />
+
+  <SimpleToolShell calculatorId={TFR_META.slug} pageClass="tfr-page" resultFirst={true}>
+    <Fragment slot="hero">
+      <CalculatorHero eyebrow={TFR_META.eyebrow} title={TFR_META.h1} description={TFR_META.description} />
+      <InfoNotice title="계산 기준 안내" lines={TFR_INFO_LINES} />
+    </Fragment>
+
+    <Fragment slot="actions">
+      <ToolActionBar resetId="tfrResetBtn" copyId="tfrCopyLinkBtn" />
+    </Fragment>
+
+    <Fragment slot="aside">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">여행 국가</p>
+            <h2 class="panel__title">어디서 샀나요?</h2>
+          </div>
+        </div>
+        <div class="tfr-country-chips" role="group" aria-label="여행 국가 선택">
+          {TFR_COUNTRIES.map((c) => (
+            <button
+              type="button"
+              class:list={["tfr-chip", { "is-active": c.code === d.country, "is-off": !c.available }]}
+              data-tfr-country={c.code}
+              aria-pressed={c.code === d.country ? "true" : "false"}
+            >
+              <span aria-hidden="true">{c.flag}</span> {c.name}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">결제 금액</p>
+            <h2 class="panel__title">같은 매장에서 낸 금액</h2>
+          </div>
+          <p class="panel-heading__summary">영수증의 세금 포함 금액을 넣으세요.</p>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>결제 금액 (<span id="tfrCurrencyLabel">{initCountry.currencyLabel}</span>)</span>
+            <input id="tfrAmount" type="text" inputmode="decimal" class="input-number" value={d.amount.toLocaleString("ko-KR")} />
+            <small class="tfr-field-error" data-tfr-error="amount" aria-live="polite"></small>
+          </label>
+        </div>
+
+        <div class="tfr-rate-toggle" data-tfr-rate-wrap role="group" aria-label="일본 세율 선택">
+          <button type="button" class="tfr-toggle is-active" data-tfr-rate="standard" aria-pressed="true">일반 물품 10%</button>
+          <button type="button" class="tfr-toggle" data-tfr-rate="reduced" aria-pressed="false">식품·음료 8%</button>
+        </div>
+
+        <details class="tfr-advanced">
+          <summary>고급 설정 (환율·수수료)</summary>
+          <div class="form-grid">
+            <label class="field">
+              <span>환율 (1<span data-tfr-fx-unit>{initCountry.currencyLabel}</span>당 원)</span>
+              <input id="tfrFx" type="text" inputmode="decimal" class="input-number" value={String(initFx)} />
+              <small class="tfr-help">{TFR_FX.note}</small>
+            </label>
+            <label class="field">
+              <span>대행사 수수료 (환급액 대비 %)</span>
+              <input id="tfrFee" type="number" inputmode="decimal" min="0" max="100" step="1" class="input-number" placeholder="모르면 비워 두세요" />
+              <small class="tfr-field-error" data-tfr-error="fee" aria-live="polite"></small>
+            </label>
+          </div>
+        </details>
+      </article>
+    </Fragment>
+
+    <section class="tfr-section">
+      <div class="tfr-section__head">
+        <p class="tfr-section__eyebrow">핵심 결과 <span class="tfr-badge tfr-badge--plain">계산식</span></p>
+        <h2>돌려받을 수 있는 최대 금액</h2>
+      </div>
+
+      <div class="tfr-result-cards">
+        <article class="tfr-result-card tfr-result-card--main">
+          <p class="tfr-result-label">최대 환급액 (원화)</p>
+          <strong class="tfr-hero-number" data-tfr-result="refundKrw">{krw(init.vat * initFx)}</strong>
+          <span class="tfr-result-note" data-tfr-result="refundLocal">
+            {local(init.vat)}{initCountry.currencyLabel} · 결제 금액의 {(init.maxRate * 100).toFixed(2)}%
+          </span>
+          <span class="tfr-result-note tfr-result-note--fee" data-tfr-result="feeNote">
+            대행사 수수료가 있으면 실제로 받는 금액은 이보다 적습니다.
+          </span>
+        </article>
+
+        <article class="tfr-result-card" data-tfr-min-card data-state={init.meetsMin ? "ok" : "short"}>
+          <p class="tfr-result-label">최소 구매금액</p>
+          <strong class="tfr-result-value" data-tfr-result="minStatus">{init.meetsMin ? "환급 대상" : "금액 부족"}</strong>
+          <span class="tfr-result-note" data-tfr-result="minNote">{initCountry.minLabel}</span>
+        </article>
+      </div>
+      <p class="tfr-unavailable" data-tfr-unavailable hidden></p>
+    </section>
+
+    <section class="tfr-section" data-tfr-breakdown-section>
+      <div class="tfr-section__head">
+        <p class="tfr-section__eyebrow">금액 분해</p>
+        <h2>결제 금액 안에 들어 있는 세금</h2>
+      </div>
+      <article class="panel">
+        <div class="table-wrap">
+          <table class="tfr-breakdown">
+            <tbody data-tfr-breakdown>
+              <tr><th scope="row">결제 금액 (세금 포함)</th><td>{local(d.amount)}{initCountry.currencyLabel}</td></tr>
+              <tr><th scope="row">세금 뺀 금액</th><td>{local(init.preTax)}{initCountry.currencyLabel}</td></tr>
+              <tr><th scope="row">포함된 부가세 = 최대 환급액</th><td><strong>{local(init.vat)}{initCountry.currencyLabel}</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="tfr-section">
+      <div class="tfr-section__head">
+        <p class="tfr-section__eyebrow">
+          <span data-tfr-result="countryName">{initCountry.name}</span> 환급 안내
+          <span class:list={["tfr-badge", { "tfr-badge--ok": initCountry.status === "verified" }]} data-tfr-result="status">
+            {initCountry.status === "verified" ? "공식 확인" : "확인 필요"}
+          </span>
+        </p>
+        <h2>어디서, 어떻게 돌려받나</h2>
+      </div>
+      <article class="panel tfr-guide">
+        <p class="tfr-guide__place" data-tfr-result="place">{initCountry.refundPlace}</p>
+        <ul class="tfr-guide__notes" data-tfr-result="notes">
+          {initCountry.notes.map((n) => <li>{n}</li>)}
+        </ul>
+        <div class="tfr-japan" data-tfr-japan hidden={initCountry.code !== "JP"}>
+          <p class="tfr-japan__title">2026년 11월 일본 제도 변경</p>
+          <div class="table-wrap">
+            <table class="tfr-japan__table">
+              <thead><tr><th scope="col">항목</th><th scope="col">2026-10-31까지</th><th scope="col">2026-11-01부터</th></tr></thead>
+              <tbody>
+                {TFR_JAPAN_CHANGE.map((row) => (
+                  <tr><th scope="row">{row.item}</th><td>{row.before}</td><td>{row.after}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="tfr-section">
+      <div class="tfr-section__head">
+        <p class="tfr-section__eyebrow">나라별 비교 <span class="tfr-badge tfr-badge--plain">계산식</span></p>
+        <h2>100만원어치 사면 나라별 최대 환급액</h2>
+        <p class="tfr-section__sub">원화 100만원을 현지 통화로 바꿔 샀다고 가정한 최대값입니다. 수수료는 빠져 있지 않습니다.</p>
+      </div>
+      <article class="panel">
+        <ul class="tfr-bars">
+          {compareRows.map((row) => (
+            <li class="tfr-bar" data-tfr-bar={row.country.code}>
+              <span class="tfr-bar__label">{row.country.flag} {row.country.name}</span>
+              <span class="tfr-bar__track">
+                <span class="tfr-bar__fill" style={`--v:${compareMax ? row.refundKrw / compareMax : 0}`}></span>
+              </span>
+              <span class="tfr-bar__value">{row.country.available ? krw(row.refundKrw) : "제도 없음"}</span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    </section>
+
+    <section class="tfr-section">
+      <div class="tfr-callout">
+        <strong>나라별 최소금액·환급 장소를 한 번에 보고 싶다면</strong>
+        <p>
+          10개국 제도를 한 표로 정리한
+          <a href={withBase("/reports/tax-free-refund-by-country-2026/")}>해외 택스프리 2026 나라별 정리</a>에서 확인하세요.
+        </p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">이어보기</p>
+            <h2 class="panel__title">함께 보면 좋은 여행 콘텐츠</h2>
+          </div>
+        </div>
+        <div class="related-links">
+          {TFR_RELATED_LINKS.map((link) => (
+            <a href={withBase(link.href)} class="related-link">{link.label}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Fragment slot="seo">
+      <SeoContent
+        introTitle="택스프리 환급액 계산기 활용 가이드"
+        intro={TFR_SEO_INTRO}
+        inputPoints={TFR_INPUT_POINTS}
+        criteria={TFR_CRITERIA}
+        faq={TFR_FAQ}
+        related={TFR_RELATED_LINKS}
+      />
+    </Fragment>
+  </SimpleToolShell>
+
+  <script id="tfrConfig" type="application/json" set:html={JSON.stringify(config)}></script>
+  <script type="module" src={withBase("/scripts/tax-free-refund-calculator.js?v=20261110")}></script>
+</BaseLayout>

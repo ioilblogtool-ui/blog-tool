@@ -2020,6 +2020,20 @@ export const tools: ToolMeta[] = [
     ],
   },
   {
+    slug: "tax-free-refund-calculator",
+    title: "택스프리 환급액 계산기",
+    description: "여행 국가와 결제 금액으로 최대 택스프리 환급액과 최소금액 충족 여부를 원화로 계산합니다.",
+    order: 25.05,
+    eyebrow: "여행 쇼핑",
+    category: "travel",
+    iframeReady: true,
+    badges: ["신규", "여행", "택스프리"],
+    previewStats: [
+      { label: "일본 33,000엔", value: "3,000엔 환급" },
+      { label: "대상 국가", value: "10개국" },
+    ],
+  },
+  {
     slug: "us-bigtech-salary-by-level-calculator",
     title: "미국 빅테크 연봉 계산기",
     description: "엔비디아, 애플, 아마존, 마이크로소프트, 테슬라, 오라클의 직급(레벨)별 연봉을 levels.fyi 기준으로 원화로 환산합니다.",
