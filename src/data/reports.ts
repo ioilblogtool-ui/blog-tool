@@ -1,4 +1,4 @@
-﻿export type ReportMeta = {
+export type ReportMeta = {
   slug: string;
   title: string;
   description: string;
@@ -945,8 +945,8 @@ export const reports: ReportMeta[] = [
   },
   {
     slug: "2026-year-end-tax-saving-guide",
-    title: "2026 연말정산 절세 전략 완전 정복",
-    description: "공제 항목별 절세 전략, 연봉 구간별 환급 시뮬레이션, 절세 실수 TOP10 체크리스트를 총정리합니다.",
+    title: "연말정산 2026 귀속: 연말 공제 체크리스트",
+    description: "카드·연금계좌·월세·의료비·가족·기부금의 요건과 증빙을 점검하고, 기존 계산기로 예상 소득세·환급액을 확인합니다.",
     order: 46,
     badges: ["연말정산", "절세", "세금", "2026"],
   },

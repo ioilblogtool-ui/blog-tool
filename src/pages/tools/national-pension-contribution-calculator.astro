@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SimpleToolShell from '../../components/SimpleToolShell.astro';
+import CalculatorHero from '../../components/CalculatorHero.astro';
+import InfoNotice from '../../components/InfoNotice.astro';
+import SeoContent from '../../components/SeoContent.astro';
+import { NP_META, NP_CONFIG, NP_PRESETS, NP_EXAMPLES, NP_GUIDES, NP_INTRO, NP_FAQ, NP_RELATED, NP_SOURCES } from '../../data/nationalPensionContributionCalculator';
+const months = [2026, 2027].flatMap(year => Array.from({length: 12}, (_, i) => `${year}-${String(i + 1).padStart(2, '0')}`));
+const won = (n: number) => `${n.toLocaleString('ko-KR')}원`;
+const config = JSON.stringify(NP_CONFIG).replace(/</g, '\\u003c');
+const scriptUrl = `${import.meta.env.BASE_URL}scripts/national-pension-contribution-calculator.js`;
+const jsonLd = { '@context': 'https://schema.org', '@graph': [
+  { '@type': 'WebApplication', name: NP_META.title, url: `https://bigyocalc.com/tools/${NP_META.slug}/`, applicationCategory: 'FinanceApplication', operatingSystem: 'All', inLanguage: 'ko-KR', isAccessibleForFree: true, description: NP_META.description },
+  { '@type': 'FAQPage', mainEntity: NP_FAQ.map(f => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })) }
+] };
+---
+<BaseLayout title={NP_META.seoTitle} description={NP_META.description} ogImage="/og/tools/national-pension-contribution-calculator.png" recordSessions={false} loadAds={false} jsonLd={jsonLd}>
+  <meta slot="before-tracking" name="referrer" content="no-referrer" />
+  <SiteHeader />
+  <SimpleToolShell calculatorId={NP_META.slug} pageClass="np-contribution-page">
+    <Fragment slot="hero">
+      <CalculatorHero eyebrow="2027 국민연금 보험료" title={NP_META.title} description="같은 기준소득월액으로 2026년과 2027년 본인·회사 부담을 비교하고, 월 차이와 12개월 환산을 확인하세요." />
+      <InfoNotice title="요율 비교와 고지액은 다릅니다" lines={['2026년 전체 9.5% → 2027년 10%. 직장가입자 본인 부담은 4.75% → 5%입니다.', '기본 요율 비교는 상·하한과 단수 처리를 제외합니다. 월별 추정은 별도 가정 확인 후 제공합니다.', '개인별 지원·감면·납부예외는 미반영입니다. 기준 확인일: 2026.11.10']} />
+    </Fragment>
+    <Fragment slot="aside">
+      <form data-np-form novalidate autocomplete="off" class="np-form">
+        <h2>비교 조건 입력</h2>
+        <label for="npMode">비교 방식</label>
+        <select id="npMode" name="mode"><option value="rate_only">2026·2027 같은 기준금액 요율 비교</option><option value="monthly_estimate">월별 참고 추정 · 단수 처리 가정</option></select>
+        <fieldset><legend>가입 유형</legend><label class="np-choice"><input type="radio" name="subscriber" value="employee" checked /> 직장가입자</label><label class="np-choice"><input type="radio" name="subscriber" value="regional" /> 지역가입자 · 지원 전</label></fieldset>
+        <label for="npAmount" data-np-amount-label>기준소득월액</label>
+        <div class="np-amount"><input id="npAmount" name="amount" type="text" inputmode="numeric" maxlength="13" placeholder="예: 3,000,000" aria-describedby="npAmountHelp" /><span>원</span></div>
+        <p id="npAmountHelp" class="np-note">기준소득월액은 월급과 다를 수 있습니다. 원 단위 정수, 최대 1억원.</p>
+        <div class="np-presets" aria-label="기준금액 예시">{NP_PRESETS.map(n => <button type="button" data-np-preset={n}>{n / 10000}만원</button>)}</div>
+        <div data-np-monthly-fields hidden>
+          <label for="npInputKind">입력 금액의 종류</label><select id="npInputKind" name="inputKind" disabled><option value="reported_basis">신고된 기준소득월액 · 자동 보정 없음</option><option value="income_estimate">소득월액으로 추정 · 절사·상하한 적용</option></select>
+          <label for="npBefore">기준월</label><select id="npBefore" name="beforeMonth" disabled>{months.map(m => <option value={m} selected={m === '2026-11'}>{m}</option>)}</select>
+          <label for="npAfter">비교월</label><select id="npAfter" name="afterMonth" disabled>{months.map(m => <option value={m} selected={m === '2027-01'}>{m}</option>)}</select>
+          <p class="np-note">2027년 7월 이후 상·하한 데이터가 없어 월별 추정을 제공하지 않습니다.</p>
+          <label class="np-choice np-consent"><input type="checkbox" name="allowEstimate" disabled /> 보험료 원 미만 버림은 확인 전 가정입니다. 공식 고지액이 아닌 참고 추정임을 확인했습니다.</label>
+        </div>
+        <p data-np-error role="alert" class="np-error" hidden></p>
+        <button type="submit" class="np-primary">보험료 비교하기</button>
+        <div class="np-actions"><button type="button" data-np-reset>초기화</button><button type="button" data-np-copy>페이지 주소 복사</button></div>
+        <p data-np-copy-status role="status" class="np-note"></p><input data-np-copy-fallback aria-label="입력값 없는 페이지 주소" readonly hidden />
+        <p class="np-note">입력값은 저장하지 않습니다. 공유 주소에는 입력값이 포함되지 않습니다.</p>
+      </form>
+    </Fragment>
+    <p data-np-status role="status" aria-live="polite" class="np-status">조건을 입력하고 보험료 비교하기를 눌러 주세요.</p>
+    <section data-np-results hidden aria-label="보험료 비교 결과" class="np-results">
+      <p data-np-mode-note class="np-badge"></p><h2 data-np-after-label></h2><p data-np-after-amount class="np-total"></p>
+      <div class="np-summary"><div><h3>본인 월 차이</h3><strong data-np-monthly-delta></strong></div><div><h3>동일 조건 12개월 환산 차이</h3><strong data-np-annual-delta></strong></div></div>
+      <p data-np-basis-note></p><p class="np-note">12개월 환산은 월 차액 × 12이며 실제 연간 합계가 아닙니다. 요율 비교는 원 미만 값을 보존해 계산하고 화면에서 원 단위 반올림합니다.</p>
+      <div class="np-table"><table><caption>본인·회사·전체 보험료 비교</caption><thead><tr><th scope="col">구분</th><th scope="col" data-np-before-heading></th><th scope="col" data-np-after-heading></th></tr></thead><tbody data-np-breakdown></tbody></table></div>
+      <p data-np-adjustments class="np-note"></p><details><summary>사용한 계산 기준 확인</summary><p data-np-rule-note class="np-note"></p></details>
+      <details><summary>2033년까지 같은 소득의 요율 경로 보기</summary><p data-np-path-basis class="np-note"></p>
+      <div class="np-table"><table><caption>소득 고정 시뮬레이션 · 미래 고지액 예측 아님</caption><thead><tr><th scope="col">연도</th><th scope="col">전체 요율</th><th scope="col">본인 요율</th><th scope="col">월 본인 부담</th></tr></thead><tbody data-np-path></tbody></table></div></details>
+    </section>
+    <section class="np-examples"><h2>직장가입자 요율 비교 예시</h2><p>상·하한·단수 처리 없이 같은 기준소득월액을 적용한 예시입니다.</p><div class="np-table"><table><caption>2026년 4.75% → 2027년 5% 본인 부담</caption><thead><tr><th scope="col">기준소득월액</th><th scope="col">2026년</th><th scope="col">2027년</th><th scope="col">월 차이</th><th scope="col">12개월 환산</th></tr></thead><tbody>{NP_EXAMPLES.map(e => <tr><th scope="row">{won(e.basis)}</th><td>{won(e.before)}</td><td>{won(e.after)}</td><td>+{won(e.monthly)}</td><td>+{won(e.annualized)}</td></tr>)}</tbody></table></div></section>
+    <noscript><p>직접 계산하려면 JavaScript를 켜 주세요. 위의 요율 비교 예시와 아래 계산 기준은 그대로 확인할 수 있습니다.</p></noscript>
+    <Fragment slot="seo">
+      <section class="np-guides">{NP_GUIDES.map(g => <article><h2>{g.title}</h2><p>{g.body}</p></article>)}</section>
+      <SeoContent introTitle="2027 국민연금 보험료 비교 방법" intro={NP_INTRO} faq={NP_FAQ} related={NP_RELATED} formula={['직장가입자 본인 부담 = 고정 기준소득월액 × 해당 연도 근로자 요율', '지역가입자 지원 전 부담 = 고정 기준소득월액 × 전체 요율', '동일 조건 12개월 환산 차이 = 비교 조건의 본인 월 부담 차이 × 12']} />
+      <section class="np-sources"><h2>공식 출처와 확인 범위</h2><p>기준 확인일 {NP_META.updatedAt}. 단수 처리 가정과 개인별 지원은 공식 확인 범위에 포함하지 않습니다.</p><ul>{NP_SOURCES.map(s => <li><a href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a> — {s.note}</li>)}</ul></section>
+    </Fragment>
+  </SimpleToolShell>
+  <script id="npContributionConfig" type="application/json" is:inline set:html={config} />
+  <script type="module" is:inline src={scriptUrl}></script>
+</BaseLayout>

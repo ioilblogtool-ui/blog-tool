@@ -42,7 +42,7 @@
 }
 
 .fic-kpi-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .fic-detail-grid,
@@ -191,3 +191,280 @@
   }
 }
 
+
+// ─── 2027 갱신 ─────────────────────────────────────────────────────────────
+.fic-status {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--fic-line);
+  border-radius: 8px;
+  background: var(--fic-soft);
+}
+
+.fic-status__title {
+  margin: 0 0 0.6rem;
+  color: var(--fic-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.fic-status__list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    min-width: 0;
+    font-size: 0.9rem;
+  }
+
+  small {
+    flex-basis: 100%;
+    color: var(--fic-muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+}
+
+.fic-status__value {
+  font-weight: 800;
+}
+
+.fic-badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+
+  &--verified {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &--announced {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  &--scenario {
+    background: #fef3c7;
+    color: #854d0e;
+  }
+
+  &--unknown {
+    background: #f1f5f9;
+    color: #475569;
+  }
+}
+
+.fic-segment {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: var(--fic-soft);
+}
+
+.fic-segment__btn {
+  flex: 1;
+  min-height: 2.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fic-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+
+  &.is-active {
+    background: #fff;
+    color: var(--fic-green);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 12%);
+  }
+}
+
+.fic-before-pay,
+.fic-tax-fields {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  &[hidden] {
+    display: none;
+  }
+
+  .fic-help {
+    grid-column: 1 / -1;
+  }
+}
+
+.fic-help,
+.fic-caption {
+  margin: 0.5rem 0 0;
+  color: var(--fic-muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.fic-error {
+  display: block;
+  color: #c2410c;
+  font-weight: 700;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.fic-advanced {
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+
+  summary {
+    cursor: pointer;
+    font-weight: 800;
+  }
+
+  .check-field {
+    margin-top: 0.6rem;
+  }
+
+  .form-grid[hidden] {
+    display: none;
+  }
+}
+
+.fic-form-error {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #fff4ed;
+  color: #9a3412;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.fic-scenario {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  padding: 0.8rem 1rem;
+  border: 1px dashed #f59e0b;
+  border-radius: 8px;
+  background: #fffbeb;
+
+  &[hidden] {
+    display: none;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+}
+
+.fic-compare-table tfoot th,
+.fic-compare-table tfoot td {
+  padding: 0.85rem 1rem;
+  background: var(--fic-soft);
+  font-weight: 800;
+}
+
+.fic-muted {
+  color: var(--fic-muted);
+  font-size: 0.85rem;
+}
+
+.fic-notes {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.85rem 0 0;
+  padding-left: 1.1rem;
+  list-style: disc;
+  color: var(--fic-muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
+
+  strong {
+    color: var(--fic-ink);
+  }
+}
+
+@media (max-width: 640px) {
+  .fic-status__list,
+  .fic-before-pay,
+  .fic-tax-fields {
+    grid-template-columns: 1fr;
+  }
+
+  // 비교표는 항목별 카드로
+  .fic-compare-table {
+    min-width: 0;
+
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0.25rem 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--fic-line);
+    }
+
+    th,
+    td,
+    tfoot th,
+    tfoot td {
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+
+    th {
+      grid-column: 1 / -1;
+    }
+
+    td::before {
+      content: attr(data-label) " ";
+      color: var(--fic-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    tfoot tr {
+      background: var(--fic-soft);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  // 3열 표(공제 후 금액·회사 부담)는 가로 스크롤 없이 화면 폭에 맞춘다
+  .fic-table {
+    min-width: 0;
+  }
+
+  .fic-table th,
+  .fic-table td {
+    padding: 0.7rem 0.6rem;
+  }
+
+  .fic-table tbody th {
+    white-space: normal;
+  }
+}

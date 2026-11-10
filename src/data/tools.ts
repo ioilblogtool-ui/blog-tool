@@ -18,6 +18,32 @@ export type ToolMeta = {
 
 export const tools: ToolMeta[] = [
   {
+    slug: "overseas-stock-capital-gains-tax-calculator",
+    title: "해외주식 양도소득세 계산기 2026",
+    description: "원화 실현손익 합산, 기본공제와 국세·지방세, 추가 이익·손실 실현 시나리오를 비교합니다.",
+    order: 0,
+    eyebrow: "해외주식 세금",
+    category: "투자·재테크",
+    badges: ["신규"],
+    previewStats: [
+      { label: "기본공제", value: "연 250만원", context: "일반 모드·전체 계좌 합산에 한 번" },
+      { label: "예상 세액", value: "165만원", context: "일반 이익 1천만원·손실/별도 비용 없음" },
+    ],
+  },
+  {
+    slug: "national-pension-contribution-calculator",
+    title: "국민연금 보험료 계산기 2027",
+    description: "2026·2027 국민연금 본인·회사 부담과 월 차이, 동일 조건 12개월 환산을 비교합니다.",
+    order: 0,
+    eyebrow: "국민연금 보험료",
+    category: "연봉·이직",
+    badges: ["신규"],
+    previewStats: [
+      { label: "2027 본인 월 부담", value: "15만원", context: "기준소득월액 300만원·직장·요율 비교" },
+      { label: "월 차이", value: "+7,500원", context: "2026 대비·같은 기준금액" },
+    ],
+  },
+  {
     slug: "kbo-salary-calculator",
     title: "KBO 선수 연봉 계산기",
     description: "KBO 선수 연봉 입력 → 세후 월 실수령·리그 내 상위 몇%·포지션 평균 대비·류현진 등 대표 선수 비교.",
@@ -442,16 +468,16 @@ export const tools: ToolMeta[] = [
   },
   {
     slug: "four-insurance-calculator",
-    title: "4대보험 계산기 2026",
-    description: "월급과 비과세 금액을 입력해 국민연금, 건강보험, 장기요양보험, 고용보험 공제액과 간이 세금, 예상 실수령액을 계산합니다.",
+    title: "4대보험 계산기 2027",
+    description: "같은 월급에서 2026·2027 국민연금, 건강보험·장기요양, 고용보험 근로자 공제액이 얼마나 달라지는지 항목별로 비교합니다.",
     order: 4.1,
     eyebrow: "4대보험",
     category: "calculator",
     iframeReady: true,
-    badges: ["신규", "2026", "급여명세서"],
+    badges: ["업데이트", "2027", "급여명세서"],
     previewStats: [
-      { label: "국민연금", value: "4.75%", context: "근로자" },
-      { label: "건강보험", value: "3.595%", context: "근로자" }
+      { label: "국민연금", value: "4.75%→5%", context: "근로자" },
+      { label: "장기요양", value: "13.14%→13.90%", context: "건보료 대비" }
     ]
   },
   {

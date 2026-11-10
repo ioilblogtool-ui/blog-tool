@@ -2,17 +2,22 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import CalculatorHero from "../../components/CalculatorHero.astro";
-import InfoNotice from "../../components/InfoNotice.astro";
 import SeoContent from "../../components/SeoContent.astro";
 import ToolActionBar from "../../components/ToolActionBar.astro";
 import SimpleToolShell from "../../components/SimpleToolShell.astro";
 import {
-  FOUR_INSURANCE_CONFIG,
-  FOUR_INSURANCE_DEFAULT_INPUT,
-  FOUR_INSURANCE_FAQ,
-  FOUR_INSURANCE_GUIDES,
-  FOUR_INSURANCE_PRESETS,
-  FOUR_INSURANCE_RELATED,
+  FIC_CONFIG,
+  FIC_CRITERIA,
+  FIC_DEFAULT_INPUT,
+  FIC_FAQ,
+  FIC_GUIDES,
+  FIC_INPUT_POINTS,
+  FIC_META,
+  FIC_PRESETS,
+  FIC_RELATED,
+  FIC_RULE_STATUS,
+  FIC_SEO_INTRO,
+  FIC_STATUS_LABELS,
 } from "../../data/fourInsuranceCalculator";
 
 const site = (import.meta.env.SITE ?? "https://bigyocalc.com").replace(/\/$/, "");
@@ -20,28 +25,27 @@ const normalizedBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path: string) => `${normalizedBase}${path.replace(/^\//, "")}`;
+const d = FIC_DEFAULT_INPUT;
 
-const faqSchema = FOUR_INSURANCE_FAQ.map((item) => ({
-  "@type": "Question",
-  name: item.question,
-  acceptedAnswer: {
-    "@type": "Answer",
-    text: item.answer,
-  },
-}));
+const applicabilityFields = [
+  { key: "pension", label: "국민연금" },
+  { key: "health", label: "건강보험·장기요양" },
+  { key: "employment", label: "고용보험" },
+] as const;
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "WebApplication",
-      name: "4대보험 계산기 2026",
+      name: "4대보험 계산기 2027",
       applicationCategory: "FinanceApplication",
       operatingSystem: "All",
       inLanguage: "ko-KR",
       isAccessibleForFree: true,
       url: `${site}/tools/four-insurance-calculator/`,
-      description: "월급과 비과세 금액을 입력해 2026년 기준 4대보험 공제액과 예상 실수령액을 계산합니다.",
+      description: "월급과 보험별 산정 기준으로 2026·2027 근로자 4대보험 공제액을 항목별로 비교합니다.",
+      dateModified: FIC_META.updatedAt,
       provider: { "@type": "Organization", name: "비교계산소" },
     },
     {
@@ -49,39 +53,40 @@ const jsonLd = {
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "홈", item: `${site}/` },
         { "@type": "ListItem", position: 2, name: "계산기", item: `${site}/tools/` },
-        { "@type": "ListItem", position: 3, name: "4대보험 계산기 2026", item: `${site}/tools/four-insurance-calculator/` },
+        { "@type": "ListItem", position: 3, name: "4대보험 계산기 2027", item: `${site}/tools/four-insurance-calculator/` },
       ],
     },
     {
       "@type": "FAQPage",
-      mainEntity: faqSchema,
+      mainEntity: FIC_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
     },
   ],
 };
 ---
 
-<BaseLayout
-  title="4대보험 계산기 2026 | 월급 국민연금·건강보험·고용보험 공제액"
-  description="월급과 비과세 금액을 입력해 2026년 기준 국민연금, 건강보험, 장기요양보험, 고용보험 공제액과 예상 실수령액을 계산합니다."
-  jsonLd={jsonLd}
->
+<BaseLayout title={FIC_META.seoTitle} description={FIC_META.seoDescription} jsonLd={jsonLd} recordSessions={false} loadAds={false}>
   <SiteHeader />
 
   <SimpleToolShell calculatorId="four-insurance-calculator" pageClass="fic-page" resultFirst={true}>
     <Fragment slot="hero">
-      <CalculatorHero
-        eyebrow="급여 공제 계산"
-        title="4대보험 계산기 2026"
-        description="월급과 비과세 금액을 입력하면 국민연금, 건강보험, 장기요양보험, 고용보험, 간이 세금과 예상 실수령액을 한 번에 계산합니다."
-      />
-      <InfoNotice
-        title="계산 기준 안내"
-        lines={[
-          "4대보험은 2026년 공개 요율 기준 모의 계산입니다.",
-          "소득세는 급여명세서 이해를 돕기 위한 간이 추정이며 실제 원천징수액과 다를 수 있습니다.",
-          "산재보험은 근로자 부담 공제 항목이 아니므로 실수령액 차감액에 포함하지 않습니다.",
-        ]}
-      />
+      <CalculatorHero eyebrow="급여 공제 계산" title={FIC_META.h1} description={FIC_META.description} />
+      <section class="fic-status" aria-label="2027 요율 확정 상태">
+        <p class="fic-status__title">2027 요율 상태 · {FIC_META.updatedAt} 확인</p>
+        <ul class="fic-status__list">
+          {FIC_RULE_STATUS.map((s) => (
+            <li>
+              <strong>{s.kind}</strong>
+              <span class="fic-status__value">{s.value}</span>
+              <span class={`fic-badge fic-badge--${s.status}`}>{FIC_STATUS_LABELS[s.status]}</span>
+              <small>{s.text}</small>
+            </li>
+          ))}
+        </ul>
+      </section>
     </Fragment>
 
     <Fragment slot="actions">
@@ -95,136 +100,238 @@ const jsonLd = {
             <p class="panel-heading__eyebrow">입력</p>
             <h2 class="panel__title">월급 정보 입력</h2>
           </div>
-          <p class="panel-heading__summary">월 급여와 비과세 금액만 넣어도 4대보험 공제액을 바로 볼 수 있습니다.</p>
+          <p class="panel-heading__summary">입력한 값은 저장하거나 주소에 남기지 않습니다.</p>
+        </div>
+
+        <div class="fic-segment" role="group" aria-label="비교 방식">
+          <button type="button" class="fic-segment__btn is-active" data-fic-compare="same_basis" aria-pressed="true">같은 월급으로 비교</button>
+          <button type="button" class="fic-segment__btn" data-fic-compare="changed_pay" aria-pressed="false">급여 변화 포함</button>
         </div>
 
         <div class="fic-preset-grid">
-          {FOUR_INSURANCE_PRESETS.map((preset) => (
-            <button class="fic-preset-btn" type="button">{preset.label}</button>
+          {FIC_PRESETS.map((preset, i) => (
+            <button class="fic-preset-btn" type="button" data-fic-preset={i}>{preset.label}</button>
           ))}
         </div>
 
         <div class="form-grid form-grid--compact">
+          <label class="field">
+            <span>2026 기준월</span>
+            <input id="ficBeforeMonth" type="month" min="2026-01" max="2026-12" value={d.beforeMonth} />
+          </label>
+          <label class="field">
+            <span>2027 비교월</span>
+            <input id="ficAfterMonth" type="month" min="2027-01" max="2027-12" value={d.afterMonth} />
+          </label>
+
           <label class="field field-span-full">
-            <span>월 급여</span>
-            <input id="ficMonthlySalary" type="number" min="0" step="10000" value={FOUR_INSURANCE_DEFAULT_INPUT.monthlySalary} />
-            <small>세전 월급 기준입니다. 성과급은 별도 지급월에는 실제 공제액이 달라질 수 있습니다.</small>
+            <span data-fic-salary-label>세전 월 급여 (원)</span>
+            <input id="ficMonthlySalary" type="number" min="0" step="10000" inputmode="numeric" value={d.monthlySalary} />
+            <small class="fic-error" data-fic-error="after_grossPayWon" aria-live="polite"></small>
+          </label>
+          <label class="field field-span-full">
+            <span data-fic-taxfree-label>비과세 금액 (원)</span>
+            <input id="ficTaxFreeAmount" type="number" min="0" step="10000" inputmode="numeric" value={d.taxFreeAmount} />
+            <small>예: 식대 월 20만원. 보험료 기준만 줄이고 지급액에서 다시 빼지 않습니다.</small>
+            <small class="fic-error" data-fic-error="after_nonTaxablePayWon" aria-live="polite"></small>
           </label>
 
-          <label class="field">
-            <span>비과세 금액</span>
-            <input id="ficTaxFreeAmount" type="number" min="0" step="10000" value={FOUR_INSURANCE_DEFAULT_INPUT.taxFreeAmount} />
-            <small>예: 식대 20만원</small>
-          </label>
-
-          <label class="field">
-            <span>부양가족 수</span>
-            <input id="ficDependents" type="number" min="1" max="11" step="1" value={FOUR_INSURANCE_DEFAULT_INPUT.dependents} />
-          </label>
-
-          <label class="field">
-            <span>20세 이하 자녀 수</span>
-            <input id="ficChildrenUnder20" type="number" min="0" max="8" step="1" value={FOUR_INSURANCE_DEFAULT_INPUT.childrenUnder20} />
-          </label>
-
-          <label class="check-field field-span-full">
-            <input id="ficApplyNationalPension" type="checkbox" checked={FOUR_INSURANCE_DEFAULT_INPUT.applyNationalPension} />
-            <span>국민연금 적용</span>
-          </label>
-
-          <label class="check-field field-span-full">
-            <input id="ficApplyEmploymentInsurance" type="checkbox" checked={FOUR_INSURANCE_DEFAULT_INPUT.applyEmploymentInsurance} />
-            <span>고용보험 적용</span>
-          </label>
-
-          <label class="check-field field-span-full">
-            <input id="ficShowEmployerShare" type="checkbox" checked={FOUR_INSURANCE_DEFAULT_INPUT.showEmployerShare} />
-            <span>회사 부담 참고액 표시</span>
-          </label>
+          <div class="field-span-full fic-before-pay" data-fic-before-pay hidden>
+            <label class="field">
+              <span>2026 세전 월 급여 (원)</span>
+              <input id="ficBeforeMonthlySalary" type="number" min="0" step="10000" inputmode="numeric" value={d.beforeMonthlySalary} />
+              <small class="fic-error" data-fic-error="before_grossPayWon" aria-live="polite"></small>
+            </label>
+            <label class="field">
+              <span>2026 비과세 금액 (원)</span>
+              <input id="ficBeforeTaxFreeAmount" type="number" min="0" step="10000" inputmode="numeric" value={d.beforeTaxFreeAmount} />
+              <small class="fic-error" data-fic-error="before_nonTaxablePayWon" aria-live="polite"></small>
+            </label>
+          </div>
         </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">보험 적용</p>
+            <h2 class="panel__title">어떤 보험이 적용되나요?</h2>
+          </div>
+          <p class="panel-heading__summary">'모름'은 0원으로 치지 않고 해당 항목을 계산하지 않습니다.</p>
+        </div>
+        <div class="form-grid form-grid--compact">
+          {applicabilityFields.map((f) => (
+            <label class="field">
+              <span>{f.label}</span>
+              <select data-fic-applies={f.key}>
+                <option value="applies" selected>적용</option>
+                <option value="not_applicable">미적용</option>
+                <option value="unknown">모름</option>
+              </select>
+            </label>
+          ))}
+        </div>
+        <p class="fic-help">장기요양보험은 건강보험 적용 여부를 따릅니다. 면제·경감 대상은 지원하지 않습니다.</p>
+
+        <details class="fic-advanced" data-fic-advanced>
+          <summary>고급: 보험별 산정 기준 직접 입력</summary>
+          <label class="check-field">
+            <input id="ficExplicitBases" type="checkbox" />
+            <span>급여명세서의 보험별 기준 금액을 직접 입력</span>
+          </label>
+          <div class="form-grid form-grid--compact" data-fic-explicit-fields hidden>
+            <label class="field">
+              <span>국민연금 기준소득월액</span>
+              <input id="ficBasisPension" type="number" min="0" step="1000" inputmode="numeric" />
+              <small class="fic-error" data-fic-error="after_explicit_pension" aria-live="polite"></small>
+            </label>
+            <label class="field">
+              <span>건강보험 보수월액</span>
+              <input id="ficBasisHealth" type="number" min="0" step="1000" inputmode="numeric" />
+              <small class="fic-error" data-fic-error="after_explicit_health" aria-live="polite"></small>
+            </label>
+            <label class="field">
+              <span>고용보험 보수</span>
+              <input id="ficBasisEmployment" type="number" min="0" step="1000" inputmode="numeric" />
+              <small class="fic-error" data-fic-error="after_explicit_employment" aria-live="polite"></small>
+            </label>
+          </div>
+          <p class="fic-help" data-fic-explicit-note>직접 입력한 기준은 2026·2027 양쪽에 같이 씁니다. 국민연금 기준소득월액은 천원 단위·상하한 안의 값만 받으며 자동으로 고치지 않습니다. 급여 변화 포함 비교에서는 쓸 수 없습니다.</p>
+        </details>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-heading__eyebrow">가정·세금</p>
+            <h2 class="panel__title">추가 옵션</h2>
+          </div>
+        </div>
+        <label class="check-field">
+          <input id="ficEmploymentScenario" type="checkbox" />
+          <span>2027 고용보험 정부안(1.0%)을 가정해서 보기</span>
+        </label>
+        <p class="fic-help">켜면 '가정 합계'를 따로 보여줍니다. 확정 합계와 섞지 않습니다.</p>
+
+        <div class="form-grid form-grid--compact">
+          <label class="field field-span-full">
+            <span>세금 반영</span>
+            <select id="ficTaxMode">
+              <option value="excluded" selected>세금 제외 (보험료 공제 후 금액)</option>
+              <option value="manual">급여명세서 세금 직접 입력</option>
+              <option value="legacy_preview">간이 추정 (참고용)</option>
+            </select>
+          </label>
+          <div class="field-span-full fic-tax-fields" data-fic-tax="manual" hidden>
+            <label class="field">
+              <span>소득세 (원)</span>
+              <input id="ficIncomeTax" type="number" min="0" step="10" inputmode="numeric" />
+            </label>
+            <label class="field">
+              <span>지방소득세 (원)</span>
+              <input id="ficLocalTax" type="number" min="0" step="10" inputmode="numeric" />
+            </label>
+            <small class="fic-help">두 기간에 같은 세금을 적용합니다.</small>
+          </div>
+          <div class="field-span-full fic-tax-fields" data-fic-tax="legacy_preview" hidden>
+            <label class="field">
+              <span>부양가족 수 (본인 포함)</span>
+              <input id="ficDependents" type="number" min="1" max="11" step="1" value={d.dependents} />
+            </label>
+            <label class="field">
+              <span>자녀 수 (간이 추정용)</span>
+              <input id="ficChildren" type="number" min="0" max="8" step="1" value={d.children} />
+            </label>
+            <small class="fic-help">국세청 간이세액표가 아닌 연간 세율 단순 추정입니다. 실제 원천징수액과 다를 수 있습니다.</small>
+          </div>
+        </div>
+
+        <label class="check-field">
+          <input id="ficShowEmployerShare" type="checkbox" />
+          <span>회사 부담 참고액 표시</span>
+        </label>
       </article>
     </Fragment>
 
     <section class="content-section content-section--tight">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">핵심 결과</p>
-        <h2>월급에서 빠지는 금액을 먼저 봅니다</h2>
-        <p id="ficSummaryText">입력값을 기준으로 예상 공제액을 계산합니다.</p>
+        <h2>2027년 월급에서 빠지는 보험료</h2>
+        <p id="ficModeCaption" class="fic-caption">같은 월급 기준 · 2026년 11월 vs 2027년 1월</p>
       </div>
 
-      <div class="fic-kpi-grid">
+      <div class="fic-form-error" id="ficFormError" role="alert" hidden></div>
+
+      <div class="fic-kpi-grid" id="ficKpis">
         <article class="fic-kpi-card fic-kpi-card--main">
-          <p>예상 실수령액</p>
-          <strong id="ficNetPay">-</strong>
-          <span>총 공제 후 월 수령 추정</span>
+          <p id="ficAfterTotalLabel">2027 근로자 보험료</p>
+          <strong id="ficAfterTotal">-</strong>
+          <span id="ficAfterTotalNote">-</span>
         </article>
         <article class="fic-kpi-card">
-          <p>4대보험 합계</p>
-          <strong id="ficTotalInsurance">-</strong>
-          <span>근로자 부담 기준</span>
+          <p>2026년 대비 월 차이</p>
+          <strong id="ficDelta">-</strong>
+          <span id="ficDeltaNote">-</span>
         </article>
         <article class="fic-kpi-card">
-          <p>간이 세금 합계</p>
-          <strong id="ficTaxTotal">-</strong>
-          <span>소득세 + 지방소득세</span>
+          <p id="ficCashLabel">보험료 공제 후 금액</p>
+          <strong id="ficCash">-</strong>
+          <span id="ficCashNote">-</span>
         </article>
-        <article class="fic-kpi-card">
-          <p>총 공제액</p>
-          <strong id="ficTotalDeduction">-</strong>
-          <span>보험료 + 세금</span>
-        </article>
+      </div>
+
+      <div class="fic-scenario" id="ficScenario" hidden>
+        <span class="fic-badge fic-badge--scenario">가정 적용</span>
+        <p id="ficScenarioText"></p>
       </div>
     </section>
 
     <section class="content-section">
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">상세 공제</p>
-        <h2>공제 항목별 금액</h2>
+        <p class="section-header__eyebrow">항목별 비교</p>
+        <h2>2026 · 2027 공제액</h2>
       </div>
-
-      <div class="fic-detail-grid">
-        <article class="fic-detail-card">
-          <p>과세 기준 월급</p>
-          <strong id="ficTaxablePay">-</strong>
-        </article>
-        <article class="fic-detail-card">
-          <p>국민연금</p>
-          <strong id="ficNationalPension">-</strong>
-        </article>
-        <article class="fic-detail-card">
-          <p>건강보험</p>
-          <strong id="ficHealthInsurance">-</strong>
-        </article>
-        <article class="fic-detail-card">
-          <p>장기요양보험</p>
-          <strong id="ficLongTermCare">-</strong>
-        </article>
-        <article class="fic-detail-card">
-          <p>고용보험</p>
-          <strong id="ficEmploymentInsurance">-</strong>
-        </article>
-        <article class="fic-detail-card">
-          <p>회사 부담 참고액</p>
-          <strong id="ficEmployerShare">-</strong>
-        </article>
+      <div class="fic-table-wrap">
+        <table class="fic-table fic-compare-table">
+          <thead>
+            <tr>
+              <th scope="col">항목</th>
+              <th scope="col">2026</th>
+              <th scope="col">2027</th>
+              <th scope="col">월 차이</th>
+              <th scope="col">기준 상태</th>
+            </tr>
+          </thead>
+          <tbody id="ficCompareBody"></tbody>
+          <tfoot id="ficCompareFoot"></tfoot>
+        </table>
       </div>
+      <ul class="fic-notes" id="ficNotes"></ul>
     </section>
 
-    <section class="content-section">
+    <section class="content-section" id="ficEmployerSection" hidden>
       <div class="section-header section-header--compact">
-        <p class="section-header__eyebrow">급여명세서 표</p>
-        <h2>공제 항목별 계산 기준</h2>
+        <p class="section-header__eyebrow">회사 부담</p>
+        <h2>지원 항목의 회사 부담 참고액</h2>
+        <p class="fic-caption">국민연금·건강보험·장기요양 회사분과 고용보험 실업급여 회사분만 더했습니다. 고용안정·직업능력개발 사업분과 산재보험은 포함하지 않습니다.</p>
       </div>
       <div class="fic-table-wrap">
         <table class="fic-table">
-          <thead>
-            <tr>
-              <th>항목</th>
-              <th>예상 금액</th>
-              <th>계산 기준</th>
-            </tr>
-          </thead>
-          <tbody id="ficBreakdownBody"></tbody>
+          <thead><tr><th scope="col">항목</th><th scope="col">2026 회사분</th><th scope="col">2027 회사분</th></tr></thead>
+          <tbody id="ficEmployerBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header section-header--compact">
+        <p class="section-header__eyebrow">공제 후 금액</p>
+        <h2>세금 반영 범위</h2>
+      </div>
+      <div class="fic-table-wrap">
+        <table class="fic-table">
+          <thead><tr><th scope="col">구분</th><th scope="col">2026</th><th scope="col">2027</th></tr></thead>
+          <tbody id="ficCashBody"></tbody>
         </table>
       </div>
     </section>
@@ -232,10 +339,10 @@ const jsonLd = {
     <section class="content-section">
       <div class="section-header section-header--compact">
         <p class="section-header__eyebrow">해석 가이드</p>
-        <h2>이 결과를 읽는 방법</h2>
+        <h2>보험료 항목별 기준</h2>
       </div>
       <div class="fic-guide-grid">
-        {FOUR_INSURANCE_GUIDES.map((item) => (
+        {FIC_GUIDES.map((item) => (
           <article class="fic-guide-card">
             <h3>{item.title}</h3>
             <p>{item.body}</p>
@@ -248,38 +355,23 @@ const jsonLd = {
       <div>
         <p class="fic-eyebrow">요율표와 함께 보기</p>
         <h2>2026 직장인 세금·4대보험 요율표</h2>
-        <p>급여명세서 공제 항목이 왜 이렇게 계산되는지 리포트에서 표와 예시로 다시 확인할 수 있습니다.</p>
+        <p>2026년 요율과 급여명세서 예시는 요율표 리포트에서 확인할 수 있습니다.</p>
       </div>
       <a class="button button--secondary" href={withBase("/reports/employee-tax-insurance-rates-2026/")}>요율표 리포트 보기</a>
     </section>
 
     <Fragment slot="seo">
       <SeoContent
-        introTitle="4대보험 계산기 2026 사용법"
-        intro={[
-          "이 계산기는 입사 직전 연봉 협상 결과를 받았을 때, 이직 후 첫 월급명세서를 받기 전에 실수령액을 미리 가늠해보고 싶을 때, 혹은 부양가족이 늘거나 비과세 식대가 바뀌어 공제액이 어떻게 달라지는지 확인하고 싶을 때 사용하면 좋습니다. 월급과 비과세 금액, 부양가족 수, 20세 이하 자녀 수만 입력하면 국민연금·건강보험·장기요양보험·고용보험과 간이 소득세까지 한 번에 계산되어 매번 급여명세서를 받아보지 않아도 대략적인 통장 입금액을 추정할 수 있습니다.",
-          "국민연금과 건강보험은 월급에서 비과세 금액을 제외한 과세 기준 월급에 정해진 보험료율을 곱해 계산하며, 국민연금은 기준소득월액 상한·하한 구간을 적용합니다. 장기요양보험은 건강보험료에 13.14%를 추가로 곱하는 구조이고, 고용보험은 과세 기준 월급에 근로자 부담률을 곱해 산출합니다. 소득세와 지방소득세는 국세청 간이세액표를 단순화한 방식으로 부양가족 수와 자녀 수에 따라 공제 구간이 달라지도록 추정한 값입니다.",
-          "결과 화면에서 예상 실수령액이 세전 월급보다 많이 줄어들었다면 부양가족 수가 적거나 비과세 금액이 낮게 설정된 경우일 수 있으니 입력값을 다시 확인해보는 것이 좋습니다. 4대보험 합계와 간이 세금 합계를 따로 비교하면 어느 항목이 공제액 증가의 주된 원인인지 파악할 수 있고, 회사 부담 참고액을 켜면 같은 월급이라도 회사가 추가로 부담하는 인건비 규모를 함께 가늠해볼 수 있습니다.",
-          "이 계산기는 2026년 공개된 보험료율을 기준으로 한 모의 계산이며, 실제 공제액은 회사의 4대보험 신고 기준일, 입사월의 근무일수, 비과세 항목 인정 범위, 연말정산 결과에 따라 달라질 수 있습니다. 산재보험은 전액 회사 부담이라 실수령액 차감 항목에서 제외했고, 소득세 추정값도 국세청 간이세액표의 실제 원천징수액과 차이가 날 수 있으므로 정확한 금액은 회사 인사·급여 담당 부서나 국민연금공단, 국민건강보험공단 홈페이지에서 최종 확인하기 바랍니다.",
-          "2026년 기준 근로자 부담 요율은 국민연금 4.75%, 건강보험 3.595%, 장기요양보험은 건강보험료의 13.14%, 고용보험 0.9%입니다. 국민연금은 기준소득월액 상한·하한 구간이 있어 고소득자는 일정 금액 이상에서 공제액이 더 이상 늘지 않는 반면, 건강보험과 장기요양보험은 보수월액에 비례해 계속 늘어나는 구조입니다. 월 300만원, 400만원, 500만원, 700만원 프리셋으로 구간별 공제액 차이를 빠르게 비교해볼 수 있습니다.",
-        ]}
-        inputPoints={[
-          "월 급여와 비과세 금액을 입력하면 근로자 부담 4대보험을 계산합니다.",
-          "부양가족 수와 자녀 수를 반영해 소득세를 간이 추정합니다.",
-          "회사 부담 참고액을 켜면 근로자 부담과 회사 부담을 같이 볼 수 있습니다.",
-        ]}
-        criteria={[
-          "국민연금은 기준소득월액 상한·하한을 적용합니다.",
-          "장기요양보험은 건강보험료에 13.14%를 곱해 계산합니다.",
-          "소득세는 실제 국세청 간이세액표 원천징수액과 다를 수 있는 추정값입니다.",
-        ]}
-        faq={FOUR_INSURANCE_FAQ}
-        related={FOUR_INSURANCE_RELATED}
+        introTitle="4대보험 계산기 2027 사용법과 계산 기준"
+        intro={FIC_SEO_INTRO}
+        inputPoints={FIC_INPUT_POINTS}
+        criteria={FIC_CRITERIA}
+        faq={FIC_FAQ}
+        related={FIC_RELATED}
       />
     </Fragment>
   </SimpleToolShell>
 
-  <script id="ficConfig" type="application/json" set:html={JSON.stringify(FOUR_INSURANCE_CONFIG)} />
-  <script src={withBase("/scripts/four-insurance-calculator.js")} defer></script>
+  <script id="ficConfig" type="application/json" set:html={JSON.stringify(FIC_CONFIG)} />
+  <script type="module" src={withBase("/scripts/four-insurance-calculator.js?v=20261110")}></script>
 </BaseLayout>
-

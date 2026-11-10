@@ -1,224 +1,408 @@
+// 4대보험 계산기 2027 — 화면 연결만 담당. 계산은 four-insurance-core.js(국민연금은 공용 모듈)에서 한다.
+// 입력값은 주소·저장소에 남기지 않는다. 링크 복사는 페이지 주소만 복사한다.
+import {
+  calculateFourInsuranceComparison,
+  INSURANCE_KINDS,
+  INSURANCE_LABELS,
+} from "./four-insurance-core.js?v=20261110";
+
 const configEl = document.getElementById("ficConfig");
-const { rates = {}, defaults = {}, presets = [] } = JSON.parse(configEl?.textContent || "{}");
+const { rules, defaults = {}, presets = [], statusLabels = {} } = JSON.parse(configEl?.textContent || "{}");
 
 const $ = (id) => document.getElementById(id);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 const page = document.querySelector('[data-calculator="four-insurance-calculator"]');
 
-function formatWon(value) {
-  return `${Math.round(Number(value || 0)).toLocaleString("ko-KR")}원`;
-}
+const state = { comparisonMode: defaults.comparisonMode || "same_basis" };
 
-function getNumber(id, fallback = 0) {
-  const value = Number($(id)?.value);
-  return Number.isFinite(value) ? value : fallback;
-}
-
-function getChecked(id, fallback = false) {
+// ─── 표시 ───
+const won = (v) => `${Math.round(v).toLocaleString("ko-KR")}원`;
+const signedWon = (v) => (v > 0 ? `+${won(v)}` : v < 0 ? `−${won(-v)}` : "0원");
+const monthText = (m) => (m ? `${m.slice(0, 4)}년 ${Number(m.slice(5, 7))}월` : "-");
+const listKinds = (kinds) => kinds.map((k) => INSURANCE_LABELS[k]).join("·");
+function setText(id, text) {
   const el = $(id);
-  return el ? el.checked : fallback;
+  if (el) el.textContent = text;
+}
+function el(tag, attrs = {}, children = []) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") node.className = v;
+    else if (k === "text") node.textContent = v;
+    else node.setAttribute(k, v);
+  }
+  for (const c of [].concat(children)) if (c != null) node.append(c);
+  return node;
+}
+function badge(status) {
+  return el("span", { class: `fic-badge fic-badge--${status}`, text: statusLabels[status] || status });
 }
 
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
+// ─── 입력 읽기 ───
+function readInt(id) {
+  const raw = $(id)?.value;
+  if (raw == null || String(raw).trim() === "") return null;
+  const v = Number(raw);
+  return Number.isFinite(v) ? Math.round(v) : null;
 }
 
-function taxableMonthlyPay(input) {
-  return Math.max(0, input.monthlySalary - input.taxFreeAmount);
+function readApplicability() {
+  const out = {};
+  $$("[data-fic-applies]").forEach((s) => (out[s.dataset.ficApplies] = s.value));
+  return out;
 }
 
-function calcNationalPension(monthlyPay, enabled) {
-  if (!enabled) return 0;
-  const base = clamp(
-    monthlyPay,
-    rates.nationalPensionMinMonthlyBase || 410000,
-    rates.nationalPensionMaxMonthlyBase || 6590000
+function readInput() {
+  const applicability = readApplicability();
+  const explicit = $("ficExplicitBases")?.checked && state.comparisonMode === "same_basis";
+  const explicitBases = explicit
+    ? { pension: readInt("ficBasisPension"), health: readInt("ficBasisHealth"), employment: readInt("ficBasisEmployment") }
+    : {};
+  const basisMode = explicit ? "explicit_bases" : "simple_estimate";
+  const after = {
+    month: $("ficAfterMonth")?.value,
+    grossPayWon: readInt("ficMonthlySalary"),
+    nonTaxablePayWon: readInt("ficTaxFreeAmount") ?? 0,
+    basisMode,
+    explicitBases,
+    applicability,
+  };
+  const before =
+    state.comparisonMode === "changed_pay"
+      ? { ...after, month: $("ficBeforeMonth")?.value, grossPayWon: readInt("ficBeforeMonthlySalary"), nonTaxablePayWon: readInt("ficBeforeTaxFreeAmount") ?? 0 }
+      : { ...after, month: $("ficBeforeMonth")?.value };
+
+  const taxMode = $("ficTaxMode")?.value || "excluded";
+  let tax = { mode: "excluded" };
+  if (taxMode === "manual") tax = { mode: "manual", incomeTaxWon: readInt("ficIncomeTax") ?? 0, localTaxWon: readInt("ficLocalTax") ?? 0 };
+  if (taxMode === "legacy_preview") tax = { mode: "legacy_preview", dependents: readInt("ficDependents") ?? 1, children: readInt("ficChildren") ?? 0 };
+
+  return {
+    comparisonMode: state.comparisonMode,
+    before,
+    after,
+    assumptions: { employmentScenario: Boolean($("ficEmploymentScenario")?.checked) },
+    tax,
+  };
+}
+
+// ─── 렌더 ───
+function clearErrors() {
+  $$("[data-fic-error]").forEach((e) => (e.textContent = ""));
+  const box = $("ficFormError");
+  if (box) box.hidden = true;
+}
+
+function showErrors(errors) {
+  const messages = [];
+  for (const side of ["before", "after"]) {
+    for (const e of errors[side] || []) {
+      const slot = document.querySelector(`[data-fic-error="${side}_${e.field}"]`) || document.querySelector(`[data-fic-error="after_${e.field}"]`);
+      if (slot) slot.textContent = e.message;
+      messages.push(e.message);
+    }
+  }
+  const box = $("ficFormError");
+  if (box) {
+    box.hidden = false;
+    box.textContent = `입력을 확인해 주세요: ${[...new Set(messages)].join(" ")}`;
+  }
+  // 오래된 결과를 최신처럼 보이지 않게 비운다
+  ["ficAfterTotal", "ficDelta", "ficCash"].forEach((id) => setText(id, "-"));
+  ["ficAfterTotalNote", "ficDeltaNote", "ficCashNote"].forEach((id) => setText(id, "입력 오류"));
+  $("ficCompareBody")?.replaceChildren();
+  $("ficCompareFoot")?.replaceChildren();
+  $("ficNotes")?.replaceChildren();
+  $("ficCashBody")?.replaceChildren();
+  $("ficEmployerBody")?.replaceChildren();
+  const sc = $("ficScenario");
+  if (sc) sc.hidden = true;
+}
+
+function itemCell(item) {
+  if (!item) return "-";
+  if (item.status === "calculated") return won(item.employeeWon);
+  if (item.status === "not_applicable") return "미적용";
+  return "계산 안 함";
+}
+
+function itemStatus(item) {
+  if (item.status === "not_applicable") return el("span", { class: "fic-muted", text: "미적용" });
+  if (item.status === "unavailable") {
+    if (item.issue.code === "FI_SCENARIO_NOT_OPTED_IN") return el("span", { class: "fic-badge fic-badge--unknown", text: "정부안 · 합계 제외" });
+    return badge("unknown");
+  }
+  if (item.assumption) return badge("scenario");
+  const roundingAssumption = item.provenance?.roundingStatus !== "verified";
+  if (roundingAssumption) return el("span", { class: "fic-badge fic-badge--scenario", text: `${statusLabels[item.ruleStatus || "verified"] || "요율 확인"} · 단수 가정` });
+  return badge(item.ruleStatus || "verified");
+}
+
+function renderTable(r) {
+  const body = $("ficCompareBody");
+  const foot = $("ficCompareFoot");
+  if (!body || !foot) return;
+  body.replaceChildren(
+    ...r.comparison.rows.map((row) => {
+      const deltaText = row.deltaWon == null ? "-" : signedWon(row.deltaWon) + (row.after.assumption ? " (가정)" : "");
+      return el("tr", {}, [
+        el("th", { scope: "row", text: INSURANCE_LABELS[row.kind] }),
+        el("td", { "data-label": "2026", text: itemCell(row.before) }),
+        el("td", { "data-label": "2027", text: itemCell(row.after) }),
+        el("td", { "data-label": "월 차이", text: deltaText }),
+        el("td", { "data-label": "기준 상태" }, [itemStatus(row.after)]),
+      ]);
+    }),
   );
-  return base * (rates.nationalPensionEmployee || 0.0475);
+
+  const b = r.before;
+  const a = r.after;
+  const subset = r.comparison.scope === "common_subset";
+  // 비교 범위가 일부 항목이면 양쪽 모두 같은 범위의 소계를 보여 준다(전체 합계 vs 소계를 나란히 두지 않음)
+  const total = (agg, sub) =>
+    subset ? `${won(sub)} (같은 범위 소계)` : agg.completeTotalWon != null ? won(agg.completeTotalWon) : `${won(agg.verifiedSubtotalWon)} (소계)`;
+  const deltaText =
+    r.comparison.scope === "complete" ? signedWon(r.comparison.deltaWon)
+    : r.comparison.scope === "common_subset" ? `${signedWon(r.comparison.deltaWon)} (${listKinds(r.comparison.kinds)})`
+    : "-";
+  const scopeText =
+    a.completeTotalWon != null && b.completeTotalWon != null ? "전체 합계" : `계산 가능 항목 소계 · 단수 가정${a.missingKinds.length ? ` · ${listKinds(a.missingKinds)} 제외` : ""}`;
+  foot.replaceChildren(
+    el("tr", {}, [
+      el("th", { scope: "row", text: "근로자 보험료 합계" }),
+      el("td", { "data-label": "2026", text: total(b, r.comparison.beforeSubtotalWon) }),
+      el("td", { "data-label": "2027", text: total(a, r.comparison.afterSubtotalWon) }),
+      el("td", { "data-label": "월 차이", text: deltaText }),
+      el("td", { "data-label": "기준 상태", text: scopeText }),
+    ]),
+  );
 }
 
-function calcHealthInsurance(monthlyPay) {
-  return monthlyPay * (rates.healthInsuranceEmployee || 0.03595);
+function renderNotes(r) {
+  const notes = [];
+  const push = (label, text) => notes.push(el("li", {}, [el("strong", { text: `${label} ` }), text]));
+  for (const [side, agg, month] of [["2026", r.before, r.periods.before.month], ["2027", r.after, r.periods.after.month]]) {
+    for (const item of agg.items) {
+      const label = `${side} ${INSURANCE_LABELS[item.kind]}:`;
+      if (item.status === "unavailable") push(label, item.issue.message);
+      for (const adj of item.adjustments || []) {
+        const kind = { income_rounding: "천원 미만 버림", lower_bound: "하한 적용", upper_bound: "상한 적용" }[adj.kind];
+        push(label, `${kind} ${won(adj.beforeWon)} → ${won(adj.afterWon)} (${monthText(month)} 기준)`);
+      }
+      for (const n of item.notes || []) push(label, n);
+    }
+  }
+  for (const w of r.warnings) push("확인:", w.message);
+  push("단수 처리:", "국민연금 원 미만, 건강·장기요양·고용보험 10원 미만 버림(통용 방식)으로 계산했습니다. 공단 고지액과 몇십 원 다를 수 있습니다.");
+  $("ficNotes")?.replaceChildren(...notes);
 }
 
-function calcLongTermCare(healthInsurance) {
-  return healthInsurance * (rates.longTermCareRateOnHealth || 0.1314);
-}
+const CASH_LABELS = {
+  after_insurance: "보험료 공제 후 금액",
+  estimated_take_home: "추정 수령액 (세금 직접 입력)",
+  preview: "참고 수령액 (간이 세금 추정)",
+  unavailable: "공제 후 금액",
+};
 
-function calcEmploymentInsurance(monthlyPay, enabled) {
-  return enabled ? monthlyPay * (rates.employmentInsuranceEmployee || 0.009) : 0;
-}
-
-function calcSimpleAnnualTaxBase(annualTaxable, dependents, childrenUnder20) {
-  const earnedIncomeDeduction = Math.min(12_000_000, Math.max(7_500_000, annualTaxable * 0.2));
-  const personalDeduction = Math.max(1, dependents) * 1_500_000;
-  const childDeduction = Math.max(0, childrenUnder20) * 150_000;
-  return Math.max(0, annualTaxable - earnedIncomeDeduction - personalDeduction - childDeduction);
-}
-
-function calcProgressiveTax(taxBase) {
-  const brackets = [
-    { limit: 14_000_000, rate: 0.06, deduction: 0 },
-    { limit: 50_000_000, rate: 0.15, deduction: 1_260_000 },
-    { limit: 88_000_000, rate: 0.24, deduction: 5_760_000 },
-    { limit: 150_000_000, rate: 0.35, deduction: 15_440_000 },
-    { limit: 300_000_000, rate: 0.38, deduction: 19_940_000 },
-    { limit: 500_000_000, rate: 0.4, deduction: 25_940_000 },
-    { limit: 1_000_000_000, rate: 0.42, deduction: 35_940_000 },
-    { limit: Infinity, rate: 0.45, deduction: 65_940_000 },
-  ];
-  const bracket = brackets.find((item) => taxBase <= item.limit) || brackets[0];
-  const annualTax = Math.max(0, taxBase * bracket.rate - bracket.deduction);
-  const credit = annualTax <= 1_300_000 ? annualTax * 0.55 : 715_000 + (annualTax - 1_300_000) * 0.3;
-  return Math.max(0, annualTax - Math.min(740_000, credit));
-}
-
-function calcEstimatedIncomeTax(input, monthlyPay) {
-  const annualTaxable = monthlyPay * 12;
-  const taxBase = calcSimpleAnnualTaxBase(annualTaxable, input.dependents, input.childrenUnder20);
-  return calcProgressiveTax(taxBase) / 12;
-}
-
-function calculate(input) {
-  const taxablePay = taxableMonthlyPay(input);
-  const nationalPension = calcNationalPension(taxablePay, input.applyNationalPension);
-  const healthInsurance = calcHealthInsurance(taxablePay);
-  const longTermCare = calcLongTermCare(healthInsurance);
-  const employmentInsurance = calcEmploymentInsurance(taxablePay, input.applyEmploymentInsurance);
-  const totalInsurance = nationalPension + healthInsurance + longTermCare + employmentInsurance;
-  const estimatedIncomeTax = calcEstimatedIncomeTax(input, taxablePay);
-  const estimatedLocalTax = estimatedIncomeTax * (rates.localIncomeTaxRate || 0.1);
-  const totalDeduction = totalInsurance + estimatedIncomeTax + estimatedLocalTax;
-  const employerShareTotal =
-    nationalPension +
-    healthInsurance +
-    longTermCare +
-    (input.applyEmploymentInsurance ? taxablePay * (rates.employmentInsuranceEmployerBase || 0.009) : 0);
-
-  return {
-    taxablePay,
-    nationalPension,
-    healthInsurance,
-    longTermCare,
-    employmentInsurance,
-    totalInsurance,
-    estimatedIncomeTax,
-    estimatedLocalTax,
-    totalDeduction,
-    estimatedNetPay: Math.max(0, input.monthlySalary - totalDeduction),
-    employerShareTotal,
-  };
-}
-
-function getState() {
-  return {
-    monthlySalary: getNumber("ficMonthlySalary", defaults.monthlySalary || 4000000),
-    taxFreeAmount: getNumber("ficTaxFreeAmount", defaults.taxFreeAmount || 200000),
-    dependents: getNumber("ficDependents", defaults.dependents || 1),
-    childrenUnder20: getNumber("ficChildrenUnder20", defaults.childrenUnder20 || 0),
-    applyNationalPension: getChecked("ficApplyNationalPension", defaults.applyNationalPension !== false),
-    applyEmploymentInsurance: getChecked("ficApplyEmploymentInsurance", defaults.applyEmploymentInsurance !== false),
-    showEmployerShare: getChecked("ficShowEmployerShare", defaults.showEmployerShare !== false),
-  };
-}
-
-function setText(id, value) {
-  const el = $(id);
-  if (el) el.textContent = value;
-}
-
-function renderBreakdown(result, state) {
-  const tbody = $("ficBreakdownBody");
-  if (!tbody) return;
+function renderCash(r) {
+  const b = r.cash.before;
+  const a = r.cash.after;
+  const v = (x) => (x == null ? "-" : won(x));
   const rows = [
-    ["국민연금", result.nationalPension, "기준소득월액 4.75%"],
-    ["건강보험", result.healthInsurance, "보수월액 3.595%"],
-    ["장기요양보험", result.longTermCare, "건강보험료의 13.14%"],
-    ["고용보험", result.employmentInsurance, state.applyEmploymentInsurance ? "보수월액 0.9%" : "미적용"],
-    ["근로소득세", result.estimatedIncomeTax, "간이 추정"],
-    ["지방소득세", result.estimatedLocalTax, "소득세의 10%"],
+    ["세전 월 급여", v(b.grossPayWon), v(a.grossPayWon)],
+    ["근로자 보험료", b.insuranceTotalWon == null ? "계산 안 함" : v(b.insuranceTotalWon), a.insuranceTotalWon == null ? "계산 안 함" : v(a.insuranceTotalWon) + (a.assumption ? " (가정)" : "")],
+    ["소득세", b.incomeTaxWon == null ? "제외" : v(b.incomeTaxWon), a.incomeTaxWon == null ? "제외" : v(a.incomeTaxWon)],
+    ["지방소득세", b.localTaxWon == null ? "제외" : v(b.localTaxWon), a.localTaxWon == null ? "제외" : v(a.localTaxWon)],
+    [CASH_LABELS[a.label === "unavailable" ? b.label : a.label], v(b.amountWon), v(a.amountWon)],
   ];
-  tbody.innerHTML = rows
-    .map(
-      ([label, amount, note]) => `
-        <tr>
-          <th>${label}</th>
-          <td>${formatWon(amount)}</td>
-          <td>${note}</td>
-        </tr>
-      `
-    )
-    .join("");
+  $("ficCashBody")?.replaceChildren(
+    ...rows.map(([label, x, y]) => el("tr", {}, [el("th", { scope: "row", text: label }), el("td", { "data-label": "2026", text: x }), el("td", { "data-label": "2027", text: y })])),
+  );
+
+  setText("ficCashLabel", `2027 ${CASH_LABELS[a.label]}`);
+  if (a.amountWon == null) {
+    setText("ficCash", "-");
+    const missing = r.after.missingKinds;
+    const hint = missing.length === 1 && missing[0] === "employment"
+      ? " 고용보험 정부안 가정을 켜거나 고용보험 '미적용'을 고르면 계산합니다."
+      : "";
+    setText("ficCashNote", (a.issue?.message || "계산할 수 없습니다.") + hint);
+  } else {
+    setText("ficCash", won(a.amountWon));
+    const extra = a.label === "after_insurance" ? "소득세 제외 · 세후 실수령액 아님" : a.label === "preview" ? "간이 세금 추정 포함 · 참고용" : "입력한 세금 반영 · 기타 공제 미포함";
+    setText("ficCashNote", (a.assumption ? "고용보험 가정 포함 · " : "") + extra + (a.amountWon < 0 ? " · 공제액이 급여보다 큽니다. 입력을 확인하세요." : ""));
+  }
+}
+
+function renderEmployer(r) {
+  const section = $("ficEmployerSection");
+  const show = Boolean($("ficShowEmployerShare")?.checked);
+  if (section) section.hidden = !show;
+  if (!show) return;
+  const cell = (item) =>
+    item.status === "calculated" && item.employerWon != null ? won(item.employerWon) + (item.assumption ? " (가정)" : "")
+    : item.status === "not_applicable" ? "미적용" : "계산 안 함";
+  const rows = INSURANCE_KINDS.map((kind) => {
+    const b = r.before.items.find((i) => i.kind === kind);
+    const a = r.after.items.find((i) => i.kind === kind);
+    const label = kind === "employment" ? "고용보험 (실업급여분)" : INSURANCE_LABELS[kind];
+    return el("tr", {}, [el("th", { scope: "row", text: label }), el("td", { "data-label": "2026", text: cell(b) }), el("td", { "data-label": "2027", text: cell(a) })]);
+  });
+  $("ficEmployerBody")?.replaceChildren(...rows);
 }
 
 function render() {
-  const state = getState();
-  const result = calculate(state);
+  clearErrors();
+  syncModeUi();
+  const input = readInput();
+  const res = calculateFourInsuranceComparison(input, rules);
+  if (!res.ok) {
+    showErrors(res.errors);
+    return;
+  }
+  const r = res.value;
+  const a = r.after;
 
-  setText("ficNetPay", formatWon(result.estimatedNetPay));
-  setText("ficTotalInsurance", formatWon(result.totalInsurance));
-  setText("ficTaxTotal", formatWon(result.estimatedIncomeTax + result.estimatedLocalTax));
-  setText("ficTotalDeduction", formatWon(result.totalDeduction));
-  setText("ficTaxablePay", formatWon(result.taxablePay));
-  setText("ficNationalPension", formatWon(result.nationalPension));
-  setText("ficHealthInsurance", formatWon(result.healthInsurance));
-  setText("ficLongTermCare", formatWon(result.longTermCare));
-  setText("ficEmploymentInsurance", formatWon(result.employmentInsurance));
-  setText("ficEmployerShare", state.showEmployerShare ? formatWon(result.employerShareTotal) : "숨김");
   setText(
-    "ficSummaryText",
-    `월급 ${formatWon(state.monthlySalary)} 기준 예상 총 공제액은 ${formatWon(result.totalDeduction)}입니다.`
+    "ficModeCaption",
+    `${r.comparisonMode === "same_basis" ? "같은 월급 기준" : "급여 변화 포함"} · ${monthText(r.periods.before.month)} vs ${monthText(r.periods.after.month)}` +
+      (r.periods.after.basisMode === "explicit_bases" ? " · 보험별 기준 직접 입력" : " · 급여−비과세를 산정 기준으로 추정"),
   );
-  renderBreakdown(result, state);
+
+  if (a.completeTotalWon != null) {
+    setText("ficAfterTotalLabel", "2027 근로자 보험료 합계");
+    setText("ficAfterTotal", won(a.completeTotalWon));
+    setText("ficAfterTotalNote", `${monthText(r.periods.after.month)} · 적용 항목 모두 계산`);
+  } else {
+    setText("ficAfterTotalLabel", "2027 계산 가능 항목 소계 · 단수 가정");
+    setText("ficAfterTotal", won(a.verifiedSubtotalWon));
+    setText("ficAfterTotalNote", `${listKinds(a.includedKinds) || "계산된 항목 없음"}만 포함 · ${listKinds(a.missingKinds)} 제외`);
+  }
+
+  if (r.comparison.deltaWon == null) {
+    setText("ficDelta", "-");
+    setText("ficDeltaNote", r.comparison.issue?.message || "비교할 수 없습니다.");
+  } else {
+    setText("ficDelta", signedWon(r.comparison.deltaWon));
+    setText(
+      "ficDeltaNote",
+      r.comparison.scope === "complete"
+        ? `연 환산 ${signedWon(r.comparison.deltaWon * 12)} (12개월 같은 조건 가정)`
+        : `${listKinds(r.comparison.kinds)}만 비교 · 연 환산 ${signedWon(r.comparison.deltaWon * 12)}`,
+    );
+  }
+
+  const sc = $("ficScenario");
+  if (sc) {
+    sc.hidden = !r.scenarioComparison;
+    if (r.scenarioComparison) {
+      setText(
+        "ficScenarioText",
+        `고용보험 정부안 1.0%를 가정하면 2027 근로자 보험료는 ${won(r.scenarioComparison.afterWon)}, 2026년보다 월 ${signedWon(r.scenarioComparison.deltaWon)}입니다. 법령 개정 전 가정값입니다.`,
+      );
+    }
+  }
+
+  renderTable(r);
+  renderNotes(r);
+  renderCash(r);
+  renderEmployer(r);
 }
 
-function applyPreset(preset) {
-  if (!preset) return;
-  if ($("ficMonthlySalary")) $("ficMonthlySalary").value = preset.monthlySalary;
-  if ($("ficTaxFreeAmount")) $("ficTaxFreeAmount").value = preset.taxFreeAmount;
-  render();
+// ─── 모드 UI ───
+function syncModeUi() {
+  const changed = state.comparisonMode === "changed_pay";
+  $$("[data-fic-compare]").forEach((b) => {
+    const on = b.dataset.ficCompare === state.comparisonMode;
+    b.classList.toggle("is-active", on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+  const before = document.querySelector("[data-fic-before-pay]");
+  if (before) before.hidden = !changed;
+  const sl = document.querySelector("[data-fic-salary-label]");
+  if (sl) sl.textContent = changed ? "2027 세전 월 급여 (원)" : "세전 월 급여 (원)";
+  const tl = document.querySelector("[data-fic-taxfree-label]");
+  if (tl) tl.textContent = changed ? "2027 비과세 금액 (원)" : "비과세 금액 (원)";
+
+  const explicitBox = $("ficExplicitBases");
+  if (explicitBox) explicitBox.disabled = changed;
+  const explicitFields = document.querySelector("[data-fic-explicit-fields]");
+  if (explicitFields) explicitFields.hidden = !(explicitBox?.checked && !changed);
+
+  const mode = $("ficTaxMode")?.value;
+  $$("[data-fic-tax]").forEach((p) => (p.hidden = p.dataset.ficTax !== mode));
 }
 
-function reset() {
-  if ($("ficMonthlySalary")) $("ficMonthlySalary").value = defaults.monthlySalary || 4000000;
-  if ($("ficTaxFreeAmount")) $("ficTaxFreeAmount").value = defaults.taxFreeAmount || 200000;
-  if ($("ficDependents")) $("ficDependents").value = defaults.dependents || 1;
-  if ($("ficChildrenUnder20")) $("ficChildrenUnder20").value = defaults.childrenUnder20 || 0;
-  if ($("ficApplyNationalPension")) $("ficApplyNationalPension").checked = defaults.applyNationalPension !== false;
-  if ($("ficApplyEmploymentInsurance")) $("ficApplyEmploymentInsurance").checked = defaults.applyEmploymentInsurance !== false;
-  if ($("ficShowEmployerShare")) $("ficShowEmployerShare").checked = defaults.showEmployerShare !== false;
-  render();
+function applyDefaults() {
+  state.comparisonMode = defaults.comparisonMode || "same_basis";
+  const set = (id, v) => $(id) && ($(id).value = v ?? "");
+  set("ficBeforeMonth", defaults.beforeMonth);
+  set("ficAfterMonth", defaults.afterMonth);
+  set("ficMonthlySalary", defaults.monthlySalary);
+  set("ficTaxFreeAmount", defaults.taxFreeAmount);
+  set("ficBeforeMonthlySalary", defaults.beforeMonthlySalary);
+  set("ficBeforeTaxFreeAmount", defaults.beforeTaxFreeAmount);
+  ["ficBasisPension", "ficBasisHealth", "ficBasisEmployment", "ficIncomeTax", "ficLocalTax"].forEach((id) => set(id, ""));
+  set("ficDependents", defaults.dependents);
+  set("ficChildren", defaults.children);
+  set("ficTaxMode", defaults.taxMode);
+  $$("[data-fic-applies]").forEach((s) => (s.value = defaults.applicability?.[s.dataset.ficApplies] || "applies"));
+  if ($("ficExplicitBases")) $("ficExplicitBases").checked = false;
+  if ($("ficEmploymentScenario")) $("ficEmploymentScenario").checked = Boolean(defaults.employmentScenario);
+  if ($("ficShowEmployerShare")) $("ficShowEmployerShare").checked = Boolean(defaults.showEmployerShare);
 }
 
-function copyLink() {
-  const state = getState();
-  const url = new URL(window.location.href);
-  url.searchParams.set("salary", String(state.monthlySalary));
-  url.searchParams.set("taxfree", String(state.taxFreeAmount));
-  url.searchParams.set("dependents", String(state.dependents));
-  navigator.clipboard?.writeText(url.toString());
-}
-
-function hydrateFromQuery() {
+/** 예전 공유 링크(?salary=&taxfree=)는 한 번만 읽고 주소에서 지운다 */
+function hydrateLegacyQuery() {
   const params = new URLSearchParams(window.location.search);
-  const pairs = [
-    ["salary", "ficMonthlySalary"],
-    ["taxfree", "ficTaxFreeAmount"],
-    ["dependents", "ficDependents"],
-  ];
-  pairs.forEach(([key, id]) => {
-    const value = params.get(key);
-    if (value && $(id)) $(id).value = value;
-  });
+  const salary = Number(params.get("salary"));
+  const taxfree = Number(params.get("taxfree"));
+  if (Number.isFinite(salary) && salary > 0) $("ficMonthlySalary").value = String(Math.round(salary));
+  if (Number.isFinite(taxfree) && taxfree >= 0 && params.has("taxfree")) $("ficTaxFreeAmount").value = String(Math.round(taxfree));
+  if (["salary", "taxfree", "dependents"].some((k) => params.has(k))) {
+    ["salary", "taxfree", "dependents"].forEach((k) => params.delete(k));
+    const q = params.toString();
+    history.replaceState(null, "", q ? `${location.pathname}?${q}` : location.pathname);
+  }
 }
 
-if (page) {
-  hydrateFromQuery();
-  page.querySelectorAll("input").forEach((input) => input.addEventListener("input", render));
-  page.querySelectorAll(".fic-preset-btn").forEach((button, index) => {
-    button.addEventListener("click", () => applyPreset(presets[index]));
+if (page && rules) {
+  hydrateLegacyQuery();
+  page.addEventListener("input", render);
+  page.addEventListener("change", render);
+  $$("[data-fic-compare]").forEach((b) =>
+    b.addEventListener("click", () => {
+      state.comparisonMode = b.dataset.ficCompare;
+      render();
+    }),
+  );
+  $$("[data-fic-preset]").forEach((b) =>
+    b.addEventListener("click", () => {
+      const p = presets[Number(b.dataset.ficPreset)];
+      if (!p) return;
+      $("ficMonthlySalary").value = p.monthlySalary;
+      $("ficTaxFreeAmount").value = p.taxFreeAmount;
+      if (state.comparisonMode === "changed_pay") {
+        $("ficBeforeMonthlySalary").value = p.monthlySalary;
+        $("ficBeforeTaxFreeAmount").value = p.taxFreeAmount;
+      }
+      render();
+    }),
+  );
+  $("resetFicBtn")?.addEventListener("click", () => {
+    applyDefaults();
+    render();
   });
-  $("resetFicBtn")?.addEventListener("click", reset);
-  $("copyFicLinkBtn")?.addEventListener("click", copyLink);
+  $("copyFicLinkBtn")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    const clean = `${location.origin}${location.pathname}`;
+    try {
+      await navigator.clipboard.writeText(clean);
+      button.textContent = "페이지 링크 복사됨";
+    } catch {
+      button.textContent = "복사 실패";
+    }
+    setTimeout(() => (button.textContent = "링크 복사"), 1600);
+  });
   render();
 }
-

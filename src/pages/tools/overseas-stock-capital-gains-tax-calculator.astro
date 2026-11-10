@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SimpleToolShell from '../../components/SimpleToolShell.astro';
+import CalculatorHero from '../../components/CalculatorHero.astro';
+import InfoNotice from '../../components/InfoNotice.astro';
+import SeoContent from '../../components/SeoContent.astro';
+import { OS_META, OS_CONFIG, OS_ELIGIBILITY, OS_EXAMPLES, OS_INTRO, OS_FAQ, OS_RELATED, OS_SOURCES } from '../../data/overseasStockCapitalGainsTaxCalculator';
+const config = JSON.stringify(OS_CONFIG).replace(/</g, '\\u003c');
+const won = (n: number) => `${n.toLocaleString('ko-KR')}원`;
+const jsonLd = {'@context':'https://schema.org','@graph':[
+  {'@type':'WebApplication',name:OS_META.title,url:`https://bigyocalc.com/tools/${OS_META.slug}/`,description:OS_META.description,applicationCategory:'FinanceApplication',operatingSystem:'All',inLanguage:'ko-KR',isAccessibleForFree:true},
+  {'@type':'FAQPage',mainEntity:OS_FAQ.map(f => ({'@type':'Question',name:f.question,acceptedAnswer:{'@type':'Answer',text:f.answer}}))}
+]};
+---
+<BaseLayout title={OS_META.seoTitle} description={OS_META.description} ogImage="/og/tools/overseas-stock-capital-gains-tax-calculator.png" recordSessions={false} loadAds={false} jsonLd={jsonLd}>
+  <meta slot="before-tracking" name="referrer" content="no-referrer" />
+  <SiteHeader />
+  <SimpleToolShell calculatorId={OS_META.slug} pageClass="os-tax-page">
+    <Fragment slot="hero">
+      <CalculatorHero eyebrow="2026 귀속 · 해외주식 세금" title={OS_META.title} description="올해 원화 실현손익을 합산하고, 추가 이익·손실을 실현한다면 예상 세금이 얼마나 달라지는지 비교하세요." />
+      <InfoNotice title="일반 사례 예상 세액 · 신고 및 매매 판단과 구분" lines={['일반 국세 20% 적용 해외 상장 주식·ETF만 지원합니다. 원화 실현손익을 입력하세요.', '국내 상장 ETF·국내 과세주식 혼합·특례·외국납부세액공제·기납부세액 등은 지원하지 않습니다.', '기본공제는 합산 손익에 한 번 적용합니다. 세금 감소액은 손실을 보전하는 투자수익이 아닙니다.']} />
+    </Fragment>
+    <Fragment slot="aside">
+      <form data-os-base-form novalidate autocomplete="off" class="os-form">
+        <h2>1. 계산 대상 확인</h2><p class="os-note">2026 귀속 고정. 모든 요건을 확인한 뒤 금액을 입력할 수 있습니다. 대상 선택을 바꾸면 입력과 결과가 초기화됩니다.</p>
+        {OS_ELIGIBILITY.map(item => <div class="os-field"><label for={`os-${item.name}`}>{item.label}</label><select id={`os-${item.name}`} name={item.name} data-os-eligibility><option value="">선택해 주세요</option>{item.options.map(([value,label]) => <option value={value}>{label}</option>)}</select></div>)}
+        <p class="os-note">국세청은 양도일까지 계속 5년 이상 국내에 주소 또는 거소를 둔 거주자의 국외주식을 과세대상으로 안내합니다. 단순 국적만으로 판정하지 않으며 단기 거주·비거주 등 예외는 별도 확인하세요. <a href={OS_SOURCES[0].href} target="_blank" rel="noopener noreferrer">공식 과세대상·세율 확인</a></p>
+        <p data-os-eligibility-message class="os-status" aria-live="polite">계산 대상의 모든 항목을 확인해 주세요.</p>
+        <fieldset data-os-inputs disabled hidden class="os-inputs">
+          <legend>2. 올해 실현손익 · 원화</legend>
+          <label for="osMode">입력 방식</label><select id="osMode" data-os-mode><option value="aggregate">모든 계좌 합계</option><option value="accounts">계좌별 입력</option></select>
+          <p class="os-note">합계 → 계좌: 기존 금액을 계좌 1로 이전합니다. 계좌 → 합계: 계좌 내역을 한 행으로 통합하며 공제를 중복 적용하지 않습니다.</p>
+          <p data-os-row-count class="os-note"></p><div data-os-rows></div>
+          <button type="button" data-os-add hidden>계좌 추가</button>
+          <p class="os-note">이익·손실은 모두 양수로 입력합니다. 한쪽이 비면 0, 둘 다 비면 해당 행을 제외합니다. 각 금액은 최대 1조원, 계좌는 최대 20개까지 입력할 수 있습니다.</p>
+          <p data-os-error role="alert" class="os-error" hidden></p><button type="submit" class="os-primary">기준 세금 계산</button>
+        </fieldset>
+      </form>
+      <div class="os-actions"><button type="button" data-os-reset>전체 초기화</button><button type="button" data-os-copy>페이지 주소 복사</button></div>
+      <p data-os-copy-status role="status" class="os-note"></p><input data-os-copy-fallback readonly hidden aria-label="입력값 없는 페이지 주소" />
+      <p class="os-note">손익·결과를 주소나 브라우저 저장소에 저장하지 않습니다. 공유 시 페이지 주소만 복사합니다.</p>
+    </Fragment>
+    <p data-os-status class="os-status" role="status" aria-live="polite">계산 대상을 확인한 뒤 올해 실현손익을 입력하세요.</p>
+    <section data-os-result hidden class="os-card" aria-label="기준 세금 계산 결과">
+      <p class="os-badge">2026 귀속 · 일반 사례 예상 · 별도 조정 없음</p><h2>현재 예상 총 세액</h2><p data-os-total class="os-total"></p>
+      <div class="os-summary"><div><h3>공제 후 과세표준</h3><strong data-os-taxable></strong></div><div><h3>일반 모드 기본공제 잔여</h3><strong data-os-remaining></strong></div></div>
+      <p class="os-note">공제 잔여는 최대 250만원이며 손실 상쇄 여유액을 더하지 않습니다. 세액 0원도 신고 의무가 없다는 뜻은 아닙니다.</p>
+      <div class="os-table"><table><caption>국세·지방소득세 계산 내역</caption><thead><tr><th scope="col">항목</th><th scope="col">원화 금액</th></tr></thead><tbody data-os-breakdown></tbody></table></div>
+      <p class="os-note">국세와 지방세를 같은 과세표준에서 각각 계산하고 각 세액의 10원 미만을 버린 뒤 합산합니다. 합계에 22%를 한 번 곱해 절사하는 방식과 소액 차이가 날 수 있습니다. 세액공제·기납부액·가산세는 미반영입니다.</p>
+    </section>
+    <section data-os-scenario-panel hidden class="os-card" aria-label="추가 실현 시나리오">
+      <h2>3. 추가 이익·손실 실현 시나리오</h2><p>기준에 아직 포함하지 않은 추가 금액만 입력하세요. 평가손익이 올해 실제로 확정됐다고 간주하지 않습니다.</p>
+      <form data-os-scenario-form novalidate autocomplete="off" class="os-form">
+        <fieldset data-os-scenario-row class="os-row"><legend>추가 실현 가정 · 원화</legend>
+          <label for="osScenarioGain">추가 이익</label><input id="osScenarioGain" data-os-key="gain" type="text" inputmode="numeric" maxlength="18" placeholder="예: 0" />
+          <label for="osScenarioLoss">추가 손실 · 양수</label><input id="osScenarioLoss" data-os-key="loss" type="text" inputmode="numeric" maxlength="18" placeholder="예: 3,000,000" />
+          <label for="osScenarioCostKind">추가 손익의 비용 처리</label><select id="osScenarioCostKind" data-os-key="costKind"><option value="already_included">손익에 이미 반영 · 추가 차감 없음</option><option value="separate_eligible_cost">미반영 적격 필요경비 별도 입력</option></select>
+          <div data-os-cost-wrap hidden><label for="osScenarioCost">미반영 적격 필요경비</label><input id="osScenarioCost" data-os-key="cost" type="text" inputmode="numeric" maxlength="18" disabled /><p class="os-note">추가 손익에 이미 반영된 비용은 다시 입력하지 마세요.</p></div>
+        </fieldset>
+        <p data-os-scenario-error role="alert" class="os-error" hidden></p><div class="os-actions"><button type="submit" class="os-primary">시나리오 비교</button><button type="button" data-os-clear-scenario>시나리오 지우기</button></div>
+      </form>
+      <section data-os-scenario-result hidden aria-label="시나리오 비교 결과"><h3 data-os-delta class="os-delta"></h3><p>세금 감소액은 손실 금액을 보전하는 투자수익이 아닙니다. 세금 차이는 매매 수수료·가격 변동·재매수 비용 등을 포함한 투자 손익과 다릅니다.</p><div class="os-table"><table><caption>기준 대비 추가 실현 후 비교 · 차이 = 추가 후 − 현재</caption><thead><tr><th scope="col">항목</th><th scope="col">현재</th><th scope="col">추가 실현 후</th><th scope="col">차이</th></tr></thead><tbody data-os-comparison></tbody></table></div></section>
+    </section>
+    <section class="os-card"><h2>일반 해외주식 예상 세액 예시</h2><p>기본공제 전액 적용 가능·비용 반영 완료·다른 조정 없음의 사례입니다.</p><div class="os-table"><table><caption>여러 계좌도 합산 후 기본공제 한 번 적용</caption><thead><tr><th scope="col">사례</th><th scope="col">이익</th><th scope="col">손실</th><th scope="col">과세표준</th><th scope="col">국세</th><th scope="col">지방세</th><th scope="col">합계</th></tr></thead><tbody>{OS_EXAMPLES.map(e => <tr><th scope="row">{e.label}</th><td>{won(e.gain)}</td><td>{won(e.loss)}</td><td>{won(e.base)}</td><td>{won(e.national)}</td><td>{won(e.local)}</td><td>{won(e.total)}</td></tr>)}</tbody></table></div><p class="os-note">이익 1천만원에서 손실 300만원을 추가 실현하는 가정: 165만원 → 99만원, 예상 세금 66만원 감소. 매매손실을 모두 보전한다는 뜻이 아닙니다.</p></section>
+    <noscript><p>직접 계산에는 JavaScript가 필요합니다. 정적 예시와 계산 방법·공식 출처는 아래에서 확인할 수 있습니다.</p></noscript>
+    <Fragment slot="seo">
+      <section class="os-guides"><article class="os-card"><h2>평가손익 대신 원화 실현손익</h2><p>증권사 양도소득 계산 자료에서 같은 귀속연도 손익과 비용 반영 여부를 확인하세요. 달러 평가손익에 현재 환율만 곱하지 않습니다. 계좌별 입력은 증권사별 기본공제를 뜻하지 않습니다.</p></article><article class="os-card"><h2>연말 귀속연도 확인 순서</h2><ol><li>거래 시장의 결제일과 휴장일을 확인합니다.</li><li>증권사의 연말 해외주식 양도세 공지를 확인합니다.</li><li>한국 시간 차이를 포함해 올해 귀속 여부를 확인합니다.</li><li>완료된 원화 양도손익 자료에만 반영합니다.</li></ol><p>이 도구는 시장별 마지막 매도일을 계산하지 않습니다.</p></article><article class="os-card"><h2>포함·제외 대상</h2><p>포함: 거주 요건과 일반 세율을 확인한 해외 상장 주식·ETF의 2026 실현손익.</p><p>제외: 국내 상장 ETF·배당·파생상품·가상자산·다른 세율·국내 과세주식 혼합·특례·외국납부세액공제·기납부세액 등 별도 조정.</p></article></section>
+      <SeoContent introTitle="해외주식 손익통산과 세금 비교 방법" intro={OS_INTRO} faq={OS_FAQ} related={OS_RELATED} formula={['합산 순손익 = 실현이익 − 실현손실 − 아직 반영하지 않은 적격 필요경비', '과세표준 = max(합산 순손익 − 기본공제 250만원, 0)', '예상 총 세액 = 국세(과세표준 × 20%, 10원 미만 버림) + 지방세(과세표준 × 2%, 10원 미만 버림)']} />
+      <section class="os-card"><h2>공식 출처와 계산 기준</h2><p>2026 귀속 일반 사례 · 확인일 {OS_META.checkedAt} · 기준 버전 {OS_CONFIG.rule.id}</p><ul>{OS_SOURCES.map(s => <li><a href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a> — {s.scope}</li>)}</ul><p class="os-note">예상 세액이며 신고 대행·고지액 확정·매도 권유를 제공하지 않습니다. 급여 연말정산과 해외주식 양도소득세 신고는 별도 절차입니다.</p></section>
+    </Fragment>
+    <template data-os-row-template>
+      <fieldset data-os-row class="os-row"><legend>실현손익</legend>
+        <label data-os-label="gain">실현이익 · 원</label><input data-os-key="gain" type="text" inputmode="numeric" maxlength="18" placeholder="예: 10,000,000" />
+        <label data-os-label="loss">실현손실 · 양수·원</label><input data-os-key="loss" type="text" inputmode="numeric" maxlength="18" placeholder="예: 0" />
+        <label data-os-label="costKind">비용 반영 방식</label><select data-os-key="costKind"><option value="already_included">손익에 이미 반영 · 추가 차감 없음</option><option value="separate_eligible_cost">미반영 적격 필요경비 별도 입력</option></select>
+        <div data-os-cost-wrap hidden><label data-os-label="cost">미반영 적격 필요경비 · 원</label><input data-os-key="cost" type="text" inputmode="numeric" maxlength="18" disabled /><p class="os-note">이미 차감한 비용은 다시 넣지 마세요. 취득가액을 손익에서 한 번 더 빼지 않습니다. <a href={OS_SOURCES[0].href} target="_blank" rel="noopener noreferrer">필요경비 확인</a></p></div>
+        <button type="button" data-os-remove hidden>이 계좌 삭제</button>
+      </fieldset>
+    </template>
+  </SimpleToolShell>
+  <script id="osTaxConfig" type="application/json" is:inline set:html={config} />
+  <script type="module" is:inline src={`${import.meta.env.BASE_URL}scripts/overseas-stock-capital-gains-tax-calculator.js`}></script>
+</BaseLayout>

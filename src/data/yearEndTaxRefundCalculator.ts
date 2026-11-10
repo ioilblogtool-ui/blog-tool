@@ -131,7 +131,7 @@ export const YETC_INTRO = [
   '연금저축과 IRP는 일반 세액공제 한도 안에서 추가 납입의 효과를 확인할 수 있습니다. 단독 한도와 계좌 합산 한도가 겹치므로 잔여 금액을 중복해서 더하지 않습니다. 명목 세액공제 증가가 있어도 현재 결정세액이 이미 0이라면 실제 세금 감소가 없을 수 있습니다. 모든 결과는 입력에 따른 시뮬레이션이며 실제 신고에는 공제요건과 증빙자료가 필요합니다. 연금계좌의 자금 사용 제한과 미반영 공제도 확인하고 회사 및 국세청 자료와 대조하세요.',
 ];
 export const YETC_RELATED_LINKS: YetcLink[] = [
-  { href: '/reports/2026-year-end-tax-saving-guide/', label: '2026 연말정산 공제항목별 절세 전략' },
+  { href: '/reports/2026-year-end-tax-saving-guide/', label: '2026 귀속 연말 공제 체크리스트' },
   { href: '/reports/pension-irp-comparison-2026/', label: '연금저축과 IRP, 어디에 넣을지 비교하기' },
   { href: '/tools/irp-pension-calculator/', label: 'IRP 추가 납입 후 은퇴 연금 계산하기' },
   { href: '/tools/salary/', label: '연봉 실수령 계산기' }, { href: '/tools/retirement/', label: '퇴직금 계산기' },
