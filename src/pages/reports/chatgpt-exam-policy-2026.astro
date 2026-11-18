@@ -1,0 +1,113 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  CHATGPT_EXAM_META as meta, policyFaq, policyIntro, policyRelated,
+  policyRows, policySources, policyStatus,
+} from "../../data/chatgptExamPolicy2026";
+
+const canonicalUrl = new URL(`/reports/${meta.slug}/`, Astro.site ?? "https://bigyocalc.com").href;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: meta.title,
+  description: meta.description,
+  image: new URL(meta.ogImage, canonicalUrl).href,
+  mainEntityOfPage: canonicalUrl,
+  inLanguage: "ko-KR",
+  author: { "@type": "Organization", name: "비교계산소" },
+  publisher: { "@type": "Organization", name: "비교계산소" },
+};
+const sections = [
+  ["check", "시험 전 확인"], ["comparison", "평가별 비교"], ["disclosure", "사용 표기"],
+  ["sources", "공식 자료"], ["faq", "자주 묻는 질문"],
+];
+---
+
+<BaseLayout title={meta.title} description={meta.description} canonicalUrl={canonicalUrl} ogImage={meta.ogImage} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell report-page cep-page" data-report={meta.slug}>
+    <div id="overview">
+      <CalculatorHero eyebrow="시험·과제 규정" title={meta.title} description={meta.description} />
+      <InfoNotice title={`자료 확인일 · ${meta.asOf}`} lines={[
+        "오픈북 시험이라면 자료 열람, 인터넷 접속, 생성형 AI 사용을 각각 확인하세요.",
+      ]} />
+      <nav class="cep-nav" aria-label="리포트 목차">
+        {sections.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
+      </nav>
+    </div>
+
+    <section class="content-section cep-section" id="check" aria-labelledby="cep-check-title">
+      <h2 id="cep-check-title">시험 전에 무엇을 확인해야 하나요?</h2>
+      <ol class="cep-checklist">
+        <li>강의계획서에서 적용되는 대학 지침과 평가 기준을 찾습니다.</li>
+        <li>최신 시험·과제 공지에서 허용 자료, 외부 검색, AI 기능, 공개·제출 조건을 확인합니다.</li>
+        <li>범위가 모호하면 평가 전에 담당자에게 도구·기능·사용 단계와 제출 조건을 문의합니다.</li>
+      </ol>
+      <p>문의 예시 · “이 과제에서 ChatGPT로 제가 작성한 문장을 교정해도 될까요? 가능하다면 사용 내역을 어디에 적어야 하나요?”</p>
+    </section>
+
+    <section class="content-section cep-section" id="comparison" aria-labelledby="cep-comparison-title">
+      <h2 id="cep-comparison-title">평가 유형별 AI 사용 규정</h2>
+      <p>규정 미확인은 해당 평가를 특정할 공식 규정을 확인해야 한다는 뜻입니다.</p>
+      <div class="cep-table-wrap" tabindex="0" role="region" aria-labelledby="cep-comparison-title">
+        <table>
+          <caption>자료·인터넷·생성형 AI의 허용 범위와 확인할 곳</caption>
+          <thead>
+            <tr><th scope="col">평가·적용 대상</th><th scope="col">자료 열람</th><th scope="col">인터넷</th><th scope="col">AI 상태</th><th scope="col">다음 행동·확인처</th></tr>
+          </thead>
+          <tbody>
+            {policyRows.map((row) => (
+              <tr>
+                <th scope="row">{row.evaluation}<small>{row.scope}</small></th>
+                <td>{row.materials}</td>
+                <td>{row.internet}</td>
+                <td><span class="cep-status" data-status={row.status}>{policyStatus[row.status]}</span></td>
+                <td>
+                  {row.nextStep}<small>확인 · {row.contact}</small>
+                  {row.sourceIds.map((id) => <small><a href={policySources[id].url}>{policySources[id].publisher} 자료</a></small>)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>실제 적발과 제재는 <a href={policyRelated[0].href}>{policyRelated[0].label}</a>에서 확인할 수 있습니다.</p>
+    </section>
+
+    <section class="content-section cep-section" id="disclosure" aria-labelledby="cep-disclosure-title">
+      <h2 id="cep-disclosure-title">AI를 사용했다면 어떻게 밝히나요?</h2>
+      <p>평가 공지에서 사용과 공개가 요구되는 범위를 확인하고, 실제 쓴 도구명·목적·범위를 기록하세요. 프롬프트나 출력 내역은 해당 공지가 요구할 때 제출합니다.</p>
+      <figure class="cep-example">
+        <figcaption>참고 · 문장 교정만 허용된 과제</figcaption>
+        <blockquote>ChatGPT를 제가 쓴 본문의 문장 표현을 점검하는 데 사용했습니다. 최종 문장을 직접 수정하고 인용은 원문과 대조했습니다.</blockquote>
+      </figure>
+      <p><a href={policySources.pusan.url}>부산대학교 교육 분야 AI 활용 가이드라인</a>에서 평가별 허용 범위와 표기 항목 예시를 확인할 수 있습니다.</p>
+    </section>
+
+    <section class="content-section cep-section" id="sources" aria-labelledby="cep-sources-title">
+      <h2 id="cep-sources-title">공식 자료와 적용 범위</h2>
+      <p>자료 확인일 <time datetime={meta.asOf}>{meta.asOf}</time>. 아래 자료의 적용 범위와 함께 현재 응시하는 시험의 공지를 확인하세요.</p>
+      <ul class="cep-sources">
+        {Object.values(policySources).map((source) => (
+          <li><a href={source.url}>{source.publisher} · {source.title}</a><small>{source.scope}</small></li>
+        ))}
+      </ul>
+    </section>
+
+    <SeoContent
+      introTitle="시험과 과제에서 AI 사용 기준 읽는 법"
+      introSummary="어떤 자료와 기능을 사용할 수 있는지 평가 전에 확인하세요."
+      intro={policyIntro}
+      faq={policyFaq}
+      related={policyRelated}
+      relatedTitle="관련 리포트"
+      relatedEyebrow="AI 학습"
+      relatedLinkLabel="리포트 보기"
+      relatedSummary="시험 부정행위 사례와 AI 학습·코딩 도구를 살펴보세요."
+    />
+  </main>
+</BaseLayout>

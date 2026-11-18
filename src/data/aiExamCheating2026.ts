@@ -59,6 +59,7 @@ export const examFaq = ([
 ] as const).map(([question, answer, sourceIds]) => ({ question, answer, sourceIds }));
 
 export const examRelated = [
+  { href: "/reports/chatgpt-exam-policy-2026/", label: "ChatGPT 시험·과제 사용 규정 2026" },
   { href: "/reports/ai-learning-vs-academy-2026/", label: "AI 학습 도구와 학원 비용·효과 비교" },
   { href: "/tools/ai-tutoring-vs-academy-cost/", label: "AI 과외·학원비 비교 계산기" },
 ];

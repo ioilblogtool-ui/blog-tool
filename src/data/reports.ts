@@ -6,10 +6,18 @@ export type ReportMeta = {
   badges?: string[];
 };
 
+import { CHATGPT_EXAM_META } from "./chatgptExamPolicy2026";
 import { EXAM_META } from "./aiExamCheating2026";
 import { SME_META } from "./samsungMicronEarnings2026";
 
 export const reports: ReportMeta[] = [
+  {
+    slug: CHATGPT_EXAM_META.slug,
+    title: CHATGPT_EXAM_META.title,
+    description: CHATGPT_EXAM_META.description,
+    order: 98,
+    badges: ["신규", "ChatGPT", "시험·과제", "2026"],
+  },
   {
     slug: EXAM_META.slug,
     title: EXAM_META.title,
