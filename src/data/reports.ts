@@ -6,11 +6,19 @@ export type ReportMeta = {
   badges?: string[];
 };
 
+import { NVIDIA_EARNINGS_META } from "./nvidiaJensenHuangEarnings2026";
 import { CHATGPT_EXAM_META } from "./chatgptExamPolicy2026";
 import { EXAM_META } from "./aiExamCheating2026";
 import { SME_META } from "./samsungMicronEarnings2026";
 
 export const reports: ReportMeta[] = [
+  {
+    slug: NVIDIA_EARNINGS_META.slug,
+    title: NVIDIA_EARNINGS_META.title,
+    description: NVIDIA_EARNINGS_META.description,
+    order: 99,
+    badges: ["신규", "엔비디아", "반도체", "2026"],
+  },
   {
     slug: CHATGPT_EXAM_META.slug,
     title: CHATGPT_EXAM_META.title,

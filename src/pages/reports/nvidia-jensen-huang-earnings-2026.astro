@@ -1,0 +1,123 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import CalculatorHero from "../../components/CalculatorHero.astro";
+import InfoNotice from "../../components/InfoNotice.astro";
+import SeoContent from "../../components/SeoContent.astro";
+import {
+  NVIDIA_EARNINGS_META as meta, dataCenter, fiscalTimeline, guidance,
+  nvidiaFaq, nvidiaRelated, nvidiaResults, nvidiaSources, revenue,
+} from "../../data/nvidiaJensenHuangEarnings2026";
+
+const canonicalUrl = `https://bigyocalc.com/reports/${meta.slug}/`;
+const dollars = (billions: number) => `${Math.round(billions * 10).toLocaleString("ko-KR")}억 달러`;
+const formatResult = (value: number, unit: "usd" | "percent") =>
+  unit === "usd" ? dollars(value) : `${value.toFixed(1)}%`;
+const dataCenterShare = (dataCenter.current / revenue.current * 100).toFixed(1);
+const guidanceLow = dollars(guidance.midpoint * (1 - guidance.tolerance));
+const guidanceHigh = dollars(guidance.midpoint * (1 + guidance.tolerance));
+const guidanceGrowth = ((guidance.midpoint / revenue.current - 1) * 100).toFixed(1);
+const sections = [
+  ["transition", "CEO 승계"], ["results", "분기 실적"], ["rubin", "Vera Rubin"],
+  ["outlook", "4분기 전망"], ["sources", "출처"], ["faq", "자주 묻는 질문"],
+];
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: meta.title,
+  description: meta.description,
+  image: new URL(meta.ogImage, canonicalUrl).href,
+  mainEntityOfPage: canonicalUrl,
+  inLanguage: "ko-KR",
+  author: { "@type": "Organization", name: "비교계산소" },
+  publisher: { "@type": "Organization", name: "비교계산소" },
+};
+---
+<BaseLayout title={meta.title} description={meta.description} canonicalUrl={canonicalUrl} ogImage={meta.ogImage} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main class="container page-shell report-page nje-page" data-report={meta.slug}>
+    <div id="overview">
+      <CalculatorHero eyebrow="반도체 실적" title={meta.title} description={meta.description} />
+      <InfoNotice title={`자료 확인일 · ${meta.asOf}`} lines={[
+        "FY2027 3분기는 2026년 10월 25일에 종료됐고, 젠슨 황의 사임은 11월 11일 수리됐습니다. 이 실적은 승계 이전 사업 기간을 집계합니다.",
+      ]} />
+      <dl class="nje-summary">
+        <div><dt>3분기 연결 매출 · 공식</dt><dd>{dollars(revenue.current)}</dd></div>
+        <div><dt>데이터센터 매출 비중 · 계산값</dt><dd>약 {dataCenterShare}%</dd></div>
+        <div><dt>4분기 매출 · 회사 가이던스</dt><dd>{dollars(guidance.midpoint)} ±{guidance.tolerance * 100}%</dd></div>
+      </dl>
+      <nav class="nje-nav" aria-label="리포트 목차">
+        {sections.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
+      </nav>
+    </div>
+
+    <section class="content-section nje-section" id="transition" aria-labelledby="nje-transition">
+      <h2 id="nje-transition">CEO 승계와 실적 발표 타임라인</h2>
+      <ol class="nje-timeline">
+        {fiscalTimeline.map(({ date, label, detail, source }) => (
+          <li>
+            <time datetime={date}>{date}</time>
+            <h3>{label}</h3>
+            <p>{detail}</p>
+            <a href={nvidiaSources[source].url}>{nvidiaSources[source].title}</a>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="content-section nje-section" id="results" aria-labelledby="nje-results">
+      <h2 id="nje-results">FY2027 3분기 실적과 데이터센터 성장</h2>
+      <p>데이터센터 매출은 전년 동기 512억 달러에서 1,076억 달러로 늘었습니다. 전체 매출에서 차지한 비중은 약 {dataCenterShare}%입니다.</p>
+      <div class="nje-table-wrap" tabindex="0" role="region" aria-labelledby="nje-results">
+        <table>
+          <caption>연결 실적과 데이터센터 매출 · 억 달러, %, %p</caption>
+          <thead><tr><th scope="col">지표</th><th scope="col">FY2026 3분기</th><th scope="col">FY2027 2분기</th><th scope="col">FY2027 3분기</th><th scope="col">전년 동기 대비</th><th scope="col">직전 분기 대비</th></tr></thead>
+          <tbody>
+            {nvidiaResults.map((row) => (
+              <tr><th scope="row">{row.label}</th><td>{formatResult(row.yearAgo, row.unit)}</td><td>{formatResult(row.previous, row.unit)}</td><td><strong>{formatResult(row.current, row.unit)}</strong></td><td>{row.yoy}</td><td>{row.qoq}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>증감률은 NVIDIA 발표값입니다. 비중은 데이터센터 매출을 연결 매출로 나눠 계산했습니다.</p>
+      <p class="nje-nav">{[nvidiaSources.yearAgo, nvidiaSources.previous, nvidiaSources.earnings].map((source) => <a href={source.url}>{source.title}</a>)}</p>
+    </section>
+
+    <section class="content-section nje-section" id="rubin" aria-labelledby="nje-rubin">
+      <h2 id="nje-rubin">Vera Rubin NVL72 출하와 매출 공개 범위</h2>
+      <p>NVIDIA는 Vera Rubin NVL72 생산을 확대하고 출하를 시작했다고 발표했습니다. CoreWeave, Google Cloud, Microsoft Azure, Oracle Cloud Infrastructure, Nebius에서 랙이 가동되고 있다고 밝혔습니다.</p>
+      <p><strong>제품 단독 매출 · 별도 금액 미확인</strong> 이번 실적 발표에서 Rubin의 매출 기여액을 따로 확인할 수 있는 수치는 제시되지 않았습니다.</p>
+      <p><a href={nvidiaSources.earnings.url}>NVIDIA 실적 발표의 데이터센터 항목</a></p>
+    </section>
+
+    <section class="content-section nje-section" id="outlook" aria-labelledby="nje-outlook">
+      <h2 id="nje-outlook">FY2027 4분기 회사 가이던스</h2>
+      <div class="nje-table-wrap" tabindex="0" role="region" aria-labelledby="nje-outlook">
+        <table>
+          <caption>4분기 회사 전망과 공표값 기반 계산</caption>
+          <thead><tr><th scope="col">지표</th><th scope="col">전망</th><th scope="col">해석 기준</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">연결 매출</th><td>{dollars(guidance.midpoint)} ±{guidance.tolerance * 100}%</td><td>{guidanceLow}~{guidanceHigh}는 범위 계산값입니다.</td></tr>
+            <tr><th scope="row">직전 분기 대비</th><td>약 +{guidanceGrowth}%</td><td>중심값 기준 계산이며 4분기에는 1주가 추가됩니다.</td></tr>
+            <tr><th scope="row">GAAP·비GAAP 매출총이익률</th><td>{guidance.grossMarginLow}~{guidance.grossMarginHigh}%</td><td>회사가 두 회계 기준에 같은 범위를 제시했습니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>회사는 이 전망에 <strong>중국 데이터센터 컴퓨트 매출</strong>을 가정하지 않았습니다. 전망 달성 여부와 매출총이익률은 4분기 실적에서 확인할 수 있습니다.</p>
+      <p><a href={nvidiaSources.earnings.url}>NVIDIA 회사 전망 원문</a></p>
+    </section>
+
+    <section class="content-section nje-section" id="sources" aria-labelledby="nje-sources">
+      <h2 id="nje-sources">출처 및 갱신 기준</h2>
+      <p>확인일 <time datetime={meta.asOf}>{meta.asOf}</time>. 정식 CEO 선임, Rubin 단독 매출 공개, 4분기 실적 발표를 각각 확인해 갱신합니다.</p>
+      <ul>{Object.values(nvidiaSources).map((source) => <li><a href={source.url}>{source.title}</a></li>)}</ul>
+    </section>
+
+    <SeoContent introTitle="엔비디아 발표를 읽는 기준" introSummary="집계 기간, 매출 구성, 제품 출하, 회사 전망을 확인하세요." intro={[
+      "엔비디아의 FY2027 3분기 실적은 2026년 10월 25일에 마감된 기간을 대상으로 합니다. 이사회는 그 뒤인 11월 11일 젠슨 황의 사임을 수리했고, 회사는 11월 12일 승계 내용을 공개했습니다. 발표 당시 콜레트 크레스는 CFO직을 유지하면서 임시 CEO를 맡았습니다. 회계연도와 달력연도, 실적 집계일과 발표일을 함께 보면 각각의 사건이 언제 일어났는지 확인할 수 있습니다.",
+      "실적 비교표는 연결 매출과 GAAP 영업이익, 연결 매출총이익률을 데이터센터 사업 매출과 함께 제시합니다. 전년 동기와 직전 분기는 NVIDIA의 발표 자료를 사용했고, 회사가 제공한 증감률과 공개 수치를 이용해 계산한 비중은 구분했습니다. 데이터센터가 연결 매출에서 차지하는 비중은 사업 구성을 보여주며, 매출총이익률 변화는 퍼센트포인트 단위로 읽을 수 있습니다.",
+      "Vera Rubin NVL72는 회사 발표에서 생산 확대, 출하 개시, 일부 고객 환경에서의 가동이 확인되는 제품입니다. 제품별 매출이 얼마인지 판단하려면 제품 단독 금액이나 다른 공시 기준이 필요합니다. 데이터센터 매출에는 여러 제품과 서비스가 포함될 수 있으므로, 확인된 출하 이정표와 회사가 재무자료에서 공개한 매출 범위를 따로 보여줍니다.",
+      "회사가 제시한 다음 분기 매출 중심값과 허용 범위는 발표 당시 전망입니다. 4분기에는 이전 분기보다 1주가 추가되고 회사는 중국 데이터센터 컴퓨트 매출을 가정하지 않았습니다. 이후 공시에서 같은 회계 기준의 매출과 매출총이익률을 대조하면 전망 달성 여부를 확인할 수 있습니다. 후임 CEO와 제품별 매출 공개도 후속 발표에서 확인할 항목입니다.",
+    ]} faq={nvidiaFaq} related={nvidiaRelated} relatedTitle="관련 반도체 리포트" relatedEyebrow="반도체 산업" relatedLinkLabel="리포트 보기" relatedSummary="AI 설비투자와 반도체 공급망을 함께 살펴보세요." />
+  </main>
+</BaseLayout>
