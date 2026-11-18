@@ -17,6 +17,12 @@ const dataCenterShare = (dataCenter.current / revenue.current * 100).toFixed(1);
 const guidanceLow = dollars(guidance.midpoint * (1 - guidance.tolerance));
 const guidanceHigh = dollars(guidance.midpoint * (1 + guidance.tolerance));
 const guidanceGrowth = ((guidance.midpoint / revenue.current - 1) * 100).toFixed(1);
+const chartQuarters = [
+  { label: "FY2026 3분기", key: "yearAgo" },
+  { label: "FY2027 2분기", key: "previous" },
+  { label: "FY2027 3분기", key: "current" },
+] as const;
+const chartMax = Math.max(...chartQuarters.map(({ key }) => revenue[key]));
 const sections = [
   ["transition", "CEO 승계"], ["results", "분기 실적"], ["rubin", "Vera Rubin"],
   ["outlook", "4분기 전망"], ["sources", "출처"], ["faq", "자주 묻는 질문"],
@@ -36,7 +42,7 @@ const jsonLd = {
 <BaseLayout title={meta.title} description={meta.description} canonicalUrl={canonicalUrl} ogImage={meta.ogImage} jsonLd={jsonLd}>
   <SiteHeader />
   <main class="container page-shell report-page nje-page" data-report={meta.slug}>
-    <div id="overview">
+    <div id="overview" class="visual-report__cover">
       <CalculatorHero eyebrow="반도체 실적" title={meta.title} description={meta.description} />
       <InfoNotice title={`자료 확인일 · ${meta.asOf}`} lines={[
         "FY2027 3분기는 2026년 10월 25일에 종료됐고, 젠슨 황의 사임은 11월 11일 수리됐습니다. 이 실적은 승계 이전 사업 기간을 집계합니다.",
@@ -68,6 +74,23 @@ const jsonLd = {
     <section class="content-section nje-section" id="results" aria-labelledby="nje-results">
       <h2 id="nje-results">FY2027 3분기 실적과 데이터센터 성장</h2>
       <p>데이터센터 매출은 전년 동기 512억 달러에서 1,076억 달러로 늘었습니다. 전체 매출에서 차지한 비중은 약 {dataCenterShare}%입니다.</p>
+      <figure class="visual-report__chart">
+        <figcaption>연결 매출 중 데이터센터 매출</figcaption>
+        <p class="visual-report__legend"><span>데이터센터</span><span>그 외 매출</span></p>
+        <ul>
+          {chartQuarters.map(({ label, key }) => (
+            <li>
+              <div class="visual-report__chart-label"><strong>{label}</strong><span>전체 {dollars(revenue[key])}</span></div>
+              <div class="visual-report__track" aria-hidden="true">
+                <div class="visual-report__bar" style={`inline-size:${revenue[key] / chartMax * 100}%`}>
+                  <span style={`inline-size:${dataCenter[key] / revenue[key] * 100}%`}></span>
+                </div>
+              </div>
+              <small>데이터센터 {dollars(dataCenter[key])}</small>
+            </li>
+          ))}
+        </ul>
+      </figure>
       <div class="nje-table-wrap" tabindex="0" role="region" aria-labelledby="nje-results">
         <table>
           <caption>연결 실적과 데이터센터 매출 · 억 달러, %, %p</caption>

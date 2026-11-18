@@ -41,12 +41,17 @@ const jsonLd = {
 <BaseLayout title={EXAM_META.title} description={EXAM_META.description} canonicalUrl={canonicalUrl} ogImage={EXAM_META.ogImage} jsonLd={jsonLd}>
   <SiteHeader />
   <main class="container page-shell report-page aec-page" data-report={EXAM_META.slug}>
-    <div id="overview">
+    <div id="overview" class="visual-report__cover">
       <CalculatorHero eyebrow="시험 규정 비교" title={EXAM_META.title} description={EXAM_META.description} />
       <InfoNotice title="조사 기준일 · 2026년 11월 18일" lines={[
         "2027학년도 수능은 2026년 11월 19일 시행 예정입니다. 교육부는 11월 18일 강화된 수험생 유의사항을 추가 안내했습니다.",
         "국가자격시험에서는 스마트안경 관련 적발·수사의뢰가 발표됐고, 세무사 시험에서는 별도의 처분 절차가 시작됐습니다.",
       ]} />
+      <dl class="visual-report__tiles">
+        <div><dt>2027학년도 수능</dt><dd>11월 19일</dd><a href="#csat">수험생 안내 보기</a></div>
+        <div><dt>공단 시행 국가자격시험</dt><dd>12건</dd><a href="#cases">스마트안경 적발·수사의뢰</a></div>
+        <div><dt>제63회 세무사 시험</dt><dd>처분 절차 개시</dd><a href="#cases">사건 진행 상태 보기</a></div>
+      </dl>
       <nav class="aec-nav" aria-label="리포트 목차">
         {sections.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
       </nav>
