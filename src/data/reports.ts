@@ -6,9 +6,17 @@ export type ReportMeta = {
   badges?: string[];
 };
 
+import { EXAM_META } from "./aiExamCheating2026";
 import { SME_META } from "./samsungMicronEarnings2026";
 
 export const reports: ReportMeta[] = [
+  {
+    slug: EXAM_META.slug,
+    title: EXAM_META.title,
+    description: EXAM_META.description,
+    order: 97,
+    badges: ["신규", "수능", "AI", "2026"],
+  },
   {
     slug: "tax-free-refund-by-country-2026",
     title: "해외 택스프리 2026 나라별 완전 정리",
